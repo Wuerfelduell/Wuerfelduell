@@ -4,7 +4,13 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <meta name="theme-color" content="#0d1016" />
-  <title>Würfelduell · V18.3</title>
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-title" content="Würfelduell" />
+  <link rel="manifest" href="manifest.json" />
+  <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png" />
+  <link rel="apple-touch-icon" sizes="192x192" href="icon-192.png" />
+  <title>Würfelduell · V18.4</title>
   <style>
     * { box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
     :root{
@@ -868,7 +874,7 @@
     .campaign-world-name{display:block;font-size:13px;font-weight:1000}
     .campaign-world-state{display:block;margin-top:3px;color:var(--muted);font-size:9px;font-weight:900;text-transform:uppercase;letter-spacing:.05em}
     .campaign-world-desc{margin:0 0 12px;padding:9px 10px;border-radius:12px;background:#101620;border:1px solid rgba(255,255,255,.06);color:var(--muted);font-size:11px;line-height:1.45}
-    .campaign-top{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-bottom:12px}
+    .campaign-top{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px;margin-bottom:12px}
     .campaign-top .menu-info-card{min-width:0}
     .campaign-label{color:var(--muted);font-size:10px;font-weight:1000;text-transform:uppercase;letter-spacing:.08em;margin-bottom:5px}
     .campaign-value{font-size:15px;font-weight:1000;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
@@ -1068,7 +1074,7 @@
       <button id="menuRulesBtn"><span class="menu-icon">📖</span> Regeln</button>
       <button id="menuChangelogBtn"><span class="menu-icon">📝</span> Changelog</button>
     </div>
-    <div class="version-footer">WÜRFELDUELL · VERSION 18.3</div>
+    <div class="version-footer">WÜRFELDUELL · VERSION 18.4</div>
   </section>
 
 
@@ -1082,6 +1088,7 @@
     <div class="campaign-top">
       <div class="menu-info-card"><div class="campaign-label">Profil</div><div id="campaignProfileSummary" class="campaign-value">–</div></div>
       <div class="menu-info-card"><div class="campaign-label">Fortschritt</div><div id="campaignProgressSummary" class="campaign-value">0 / 5</div></div>
+      <div class="menu-info-card"><div class="campaign-label">Prestige</div><div id="campaignTrophySummary" class="campaign-value">🏆 0</div></div>
     </div>
     <div class="campaign-controls">
       <label>Spielerprofil<select id="campaignProfileSelect"></select></label>
@@ -1160,6 +1167,7 @@
   <section id="changelogScreen" class="card screen-card hidden">
     <div class="screen-topbar"><button class="menuBackBtn">←</button><h2 class="screen-title">📝 Changelog</h2></div>
     <div class="screen-subtitle">Die großen Versionssprünge, ohne jeden Mini-Hotfix.</div>
+    <div class="changelog-entry"><div class="changelog-version">V18.4</div><ul><li>Prestige-System mit profilgebundenen Trophäen eingeführt</li><li>Royal Flush und Rift Sovereign sind als Boss-Fights wiederholt für Trophäen farmbar</li><li>Rift Sovereign: Challenge auf 10 HP Heilung geändert; erster Clear schaltet Glück (BETA) nur für die Zweitfähigkeit ab ≤12 HP frei</li><li>Rift Circuit auf 15 Encounter erweitert</li><li>Serpent's Law schaltet Angriffsvorsprung frei; danach startet der Prestige-Trophäenmodus</li><li>Homescreen-/PWA-Icon, Manifest und App-Metadaten ergänzt</li></ul></div>
     <div class="changelog-entry"><div class="changelog-version">V18.3</div><ul><li>Mobile Scroll-Safety erweitert; der Menü-Button bleibt während des Kampfes erreichbar und Overlays können selbst scrollen</li><li>Counterattack-Button für menschliche Spieler gegen hängen gebliebenen Bot-Input-State abgesichert</li><li>Royal Flush: 8-HP-Restleben-Bedingung entfernt; nur noch die 14-Schaden-Challenge zählt</li><li>Rift Circuit auf 10 Encounter erweitert</li><li>Neue Fähigkeits-Challenges: Snake Eyes, Loaded Dice, Blutpreis, High Stakes und Counterattack müssen aktiv eingesetzt werden</li></ul></div>
     <div class="changelog-entry"><div class="changelog-version">V18.2</div><ul><li>Damage-Challenges zählen jetzt den erzeugten Rohschaden vor dem HP-Cap des Gegners</li><li>Neue Welt-Auswahl in der Solo-Kampagne</li><li>Welt 2 „Rift Circuit“ wird nach Abschluss von Encounter 10 freigeschaltet</li><li>Fünf zusätzliche Rift-Encounter mit eigener Progression und neuen Fähigkeits-Unlocks</li><li>Snake Eyes triggert jetzt bei mindestens drei gleichen Würfeln jeder Zahl, nicht mehr nur bei Einsern</li></ul></div>
     <div class="changelog-entry"><div class="changelog-version">V18.1</div><ul><li>Vertikales Scrollen im Kampf wieder aktiviert – lange Fähigkeitstexte blockieren keine Controls mehr</li><li>Kampagne auf 15 Encounter erweitert</li><li>Neue Kämpfe: Vampire's Cut, No Safety Net, Chaos Room, Three of a Kind und Royal Flush</li><li>Neue kombinierte Kampagnen-Challenges und Heilungs-Challenge</li><li>Three of a Kind als echter 1-gegen-3-Kampf</li><li>Royal Flush als neuer Kapitel-Boss im 2-gegen-1</li></ul></div>
@@ -1265,10 +1273,10 @@
   const CHOOSABLE_ABILITY_IDS = REAL_ABILITY_IDS.filter(id=>id!==7);
 
 
-  const GAME_VERSION="18.3";
+  const GAME_VERSION="18.4";
   const SAVE_KEY="wuerfelduell_save_v1"; // absichtlich stabil: Updates lesen denselben Browser-Save
-  const SAVE_SCHEMA_VERSION=3;
-  const CAMPAIGN_VERSION=5;
+  const SAVE_SCHEMA_VERSION=4;
+  const CAMPAIGN_VERSION=6;
 
   const ACHIEVEMENTS={
     grande:{name:"GRANDE!",desc:"Beende einen Angriff mit allen 5 Würfeln als Treffer.",rewardDice:"gold"},
@@ -1291,9 +1299,11 @@
   const DICE_UNLOCK_ACHIEVEMENT={gold:"grande",obsidian:"not_today",blood:"blood_money",arcane:"dual_wielding",emerald:"back_from_dead"};
 
   const CAMPAIGN_START_ABILITIES=[3];
+  const CAMPAIGN_SECONDARY_ONLY_ABILITY_IDS=[7];
+  const CAMPAIGN_PRESTIGE_REQUIRED_IDS=REAL_ABILITY_IDS.filter(id=>!CAMPAIGN_SECONDARY_ONLY_ABILITY_IDS.includes(id));
   const CAMPAIGN_WORLDS=[
     {id:"house",name:"Welt 1 · House Circuit",shortName:"House Circuit",desc:"Die ursprüngliche Kampagne. 15 Encounter vom Rookie bis Royal Flush.",unlockRequires:[],finalEncounterId:"royal_flush"},
-    {id:"rift",name:"Welt 2 · Rift Circuit",shortName:"Rift Circuit",desc:"Ein alternativer Pfad mit 10 Encountern und eigenen Gegnern. Wird freigeschaltet, sobald Black Table (Encounter 10) geschafft ist.",unlockRequires:["black_table"],finalEncounterId:"rift_sovereign"}
+    {id:"rift",name:"Welt 2 · Rift Circuit",shortName:"Rift Circuit",desc:"Der alternative Prestige-Pfad mit 15 Encountern. Wird freigeschaltet, sobald Black Table (Encounter 10) geschafft ist.",unlockRequires:["black_table"],finalEncounterId:"rift_eclipse"}
   ];
   const CAMPAIGN_ENCOUNTERS=[
     {id:"first_blood",world:"house",requires:[],title:"1 · First Blood",subtitle:"Der Rookie",desc:"Ein sauberer Einstieg gegen einen leichten Gegner. Kein Trick – erst einmal überleben und gewinnen.",challenge:{type:"win",text:"Gewinne den Kampf."},rewardAbility:4,enemies:[{name:"Rookie",level:"easy",ability:0}]},
@@ -1312,7 +1322,7 @@
     {id:"no_safety_net",world:"house",requires:["vampires_cut"],title:"12 · No Safety Net",subtitle:"Der Marksman",desc:"Präzision plus Loaded Dice macht jeden kleinen Fehler teuer. Spiele kontrolliert und bezahle nicht dauernd mit deinem eigenen Leben.",challenge:{type:"self_damage_max",value:3,text:"Gewinne mit höchstens 3 selbst verursachtem Schaden."},rewardAbility:8,enemies:[{name:"Marksman",level:"hard",ability:8,secondAbility:18}]},
     {id:"chaos_room",world:"house",requires:["no_safety_net"],title:"13 · Chaos Room",subtitle:"Der Joker · 28 HP",desc:"Wildcard und Gambling Man machen seine Angriffe schwer lesbar. Du musst selbst offensiv bleiben, ohne am Ende zerlegt dazustehen.",challenge:{type:"all",rules:[{type:"base_over_25"},{type:"finish_hp",value:10}],text:"Beende mindestens einen Basiswurf über 25 und gewinne mit mindestens 10 HP."},rewardAbility:17,enemies:[{name:"Joker",level:"hard",hp:28,ability:17,secondAbility:12}]},
     {id:"three_of_a_kind",world:"house",requires:["chaos_room"],title:"14 · Three of a Kind",subtitle:"1 gegen 3",desc:"Drei kleinere Gegner teilen sich den Tisch. Jeder hat nur 15 HP, aber Momentum, Double Tap und Insurance erzeugen konstanten Druck.",challenge:{type:"turn_damage",value:12,text:"Verursache mindestens 12 Schaden in einem eigenen Zug."},rewardAbility:25,enemies:[{name:"Rush",level:"normal",hp:15,ability:10},{name:"Tap",level:"normal",hp:15,ability:24},{name:"Shield",level:"normal",hp:15,ability:19}]},
-    {id:"royal_flush",world:"house",requires:["three_of_a_kind"],title:"15 · Royal Flush",subtitle:"Kapitel-Boss · 2 gegen 1",desc:"Der King spielt mit Präzision und Wildcard, sein Ace mit Brutalen Einsen und Underdog. Zusammen kontrollieren sie fast jede Angriffszahl.",challenge:{type:"turn_damage",value:14,text:"Boss-Challenge: Verursache mindestens 14 Schaden in einem eigenen Zug."},rewardAbility:15,enemies:[{name:"The King",level:"hard",hp:42,ability:8,secondAbility:17},{name:"Ace",level:"hard",hp:20,ability:1,secondAbility:25}]},
+    {id:"royal_flush",world:"house",requires:["three_of_a_kind"],title:"15 · Royal Flush",subtitle:"Kapitel-Boss · 2 gegen 1 · Trophy Farm",desc:"Der King spielt mit Präzision und Wildcard, sein Ace mit Brutalen Einsen und Underdog. Royal Flush bleibt nach dem Clear offen: Jeder weitere erfolgreiche Sieg bringt erneut eine Prestige-Trophäe.",challenge:{type:"turn_damage",value:14,text:"Boss-Challenge: Verursache mindestens 14 Schaden in einem eigenen Zug."},rewardAbility:15,farmTrophy:true,enemies:[{name:"The King",level:"hard",hp:42,ability:8,secondAbility:17},{name:"Ace",level:"hard",hp:20,ability:1,secondAbility:25}]},
 
     {id:"rift_gate",world:"rift",requires:["black_table"],title:"1 · Rift Gate",subtitle:"Welt 2 · Der Gatekeeper",desc:"Hinter Black Table öffnet sich ein zweiter Pfad. Der Gatekeeper drückt früh auf 1er-Angriffe und bestraft vorsichtiges Spiel.",challenge:{type:"base_over_25",text:"Beende mindestens einen Basiswurf mit mehr als 25 und gewinne."},rewardAbility:1,enemies:[{name:"Gatekeeper",level:"hard",hp:30,ability:1}]},
     {id:"blood_market_rift",world:"rift",requires:["rift_gate"],title:"2 · Blood Market",subtitle:"2 gegen 1 · Kaufen mit HP",desc:"Broker und Loader bezahlen beide Leben für bessere Würfe. Du darfst dich von ihrem Tempo nicht zum selben Fehler zwingen lassen.",challenge:{type:"self_damage_max",value:4,text:"Gewinne mit höchstens 4 selbst verursachtem Schaden."},rewardAbility:11,enemies:[{name:"Broker",level:"hard",hp:24,ability:11},{name:"Loader",level:"normal",hp:20,ability:18}]},
@@ -1320,16 +1330,22 @@
     {id:"crossfire_rift",world:"rift",requires:["house_of_chance_rift"],title:"4 · Crossfire",subtitle:"1 gegen 3 · Split Pressure",desc:"Drei kleinere Gegner teilen den Tisch. Der Kampf ist gebaut, um Mehrziel-Schaden und saubere Zielwahl zu belohnen.",challenge:{type:"finish_hp",value:8,text:"Besiege alle drei Gegner mit mindestens 8 HP Restleben."},rewardAbility:16,enemies:[{name:"Red",level:"normal",hp:16,ability:10},{name:"Blue",level:"normal",hp:16,ability:19},{name:"Gold",level:"normal",hp:16,ability:24}]},
     {id:"rift_crown",world:"rift",requires:["crossfire_rift"],title:"5 · Rift Crown",subtitle:"Welt-Boss · 2 gegen 1",desc:"Der Rift King heilt über doppelte Sechser und verweigert einmal den Tod. Echo eröffnet Angriffe schon bei 25 und wird stärker, sobald Blut geflossen ist.",challenge:{type:"all",rules:[{type:"turn_damage",value:15},{type:"finish_hp",value:5}],text:"Boss-Challenge: Erzeuge mindestens 15 Schaden in einem eigenen Zug und gewinne mit mindestens 5 HP."},rewardAbility:22,enemies:[{name:"Rift King",level:"hard",hp:45,ability:22,secondAbility:14},{name:"Echo",level:"hard",hp:18,ability:5,secondAbility:23}]},
 
-    {id:"serpents_law_rift",world:"rift",requires:["rift_crown"],title:"6 · Serpent's Law",subtitle:"Fähigkeitsprüfung · Snake Eyes",desc:"The Coil zwingt dich in einen längeren, kontrollierten Kampf. Diesmal zählt nicht nur der Sieg: Du musst Snake Eyes wirklich zum Einsatz bringen.",challenge:{type:"ability_use",ability:20,count:1,text:"Nutze Snake Eyes mindestens einmal und gewinne."},rewardAbility:8,enemies:[{name:"The Coil",level:"hard",hp:30,ability:20,secondAbility:8}]},
-    {id:"loaded_contract_rift",world:"rift",requires:["serpents_law_rift"],title:"7 · Loaded Contract",subtitle:"Fähigkeitsprüfung · Loaded Dice",desc:"Der Fixer manipuliert seine Würfe und bestraft Zögern. Bezahle selbst einmal für einen garantierten Fünfer und gewinne den Vertrag.",challenge:{type:"ability_use",ability:18,count:1,text:"Benutze Loaded Dice mindestens einmal und gewinne."},rewardAbility:9,enemies:[{name:"The Fixer",level:"hard",hp:34,ability:18,secondAbility:19}]},
-    {id:"blood_oath_rift",world:"rift",requires:["loaded_contract_rift"],title:"8 · Blood Oath",subtitle:"Fähigkeitsprüfung · Blutpreis",desc:"Der Red Broker macht aus Lebenspunkten Währung. Um ihn zu schlagen, musst du selbst mindestens einmal Blutpreis aktiv einsetzen.",challenge:{type:"ability_use",ability:11,count:1,text:"Benutze Blutpreis mindestens einmal und gewinne."},rewardAbility:17,enemies:[{name:"Red Broker",level:"hard",hp:36,ability:11,secondAbility:23}]},
-    {id:"double_or_nothing_rift",world:"rift",requires:["blood_oath_rift"],title:"9 · Double or Nothing",subtitle:"Fähigkeitsprüfung · High Stakes",desc:"Der Croupier lebt vom Risiko. Ein bloßer Klick auf High Stakes reicht nicht: Mindestens ein Gamble muss mit 4–6 erfolgreich sein.",challenge:{type:"ability_success",ability:13,count:1,text:"Gewinne mindestens einen High-Stakes-Wurf mit 4–6 und besiege den Gegner."},rewardAbility:25,enemies:[{name:"Croupier",level:"hard",hp:38,ability:13,secondAbility:12}]},
-    {id:"rift_sovereign",world:"rift",requires:["double_or_nothing_rift"],title:"10 · Rift Sovereign",subtitle:"Final-Boss · 2 gegen 1",desc:"Der Sovereign und sein Warden spielen maximal aggressiv. Für den Abschluss musst du einen echten Counterattack provozieren und trotzdem selbst einen schweren Schlag landen.",challenge:{type:"all",rules:[{type:"ability_use",ability:21,count:1},{type:"turn_damage",value:12}],text:"Final-Challenge: Löse mindestens 1 Counterattack aus und erzeuge mindestens 12 Schaden in einem eigenen Zug."},rewardAbility:10,enemies:[{name:"Rift Sovereign",level:"hard",hp:48,ability:1,secondAbility:13},{name:"Warden",level:"hard",hp:24,ability:24,secondAbility:17}]}
+    {id:"serpents_law_rift",world:"rift",requires:["rift_crown"],title:"6 · Serpent's Law",subtitle:"Fähigkeitsprüfung · Snake Eyes",desc:"The Coil zwingt dich in einen längeren, kontrollierten Kampf. Diesmal zählt nicht nur der Sieg: Du musst Snake Eyes wirklich zum Einsatz bringen. Der Clear schaltet die letzte reguläre Hauptfähigkeit frei und aktiviert Prestige.",challenge:{type:"ability_use",ability:20,count:1,text:"Nutze Snake Eyes mindestens einmal und gewinne."},rewardAbility:5,enemies:[{name:"The Coil",level:"hard",hp:30,ability:20,secondAbility:8}]},
+    {id:"loaded_contract_rift",world:"rift",requires:["serpents_law_rift"],title:"7 · Loaded Contract",subtitle:"Prestige-Prüfung · Loaded Dice",desc:"Der Fixer manipuliert seine Würfe und bestraft Zögern. Ab hier werden Siege zu Prestige-Trophäen, sobald alle regulären Hauptfähigkeiten freigeschaltet sind.",challenge:{type:"ability_use",ability:18,count:1,text:"Benutze Loaded Dice mindestens einmal und gewinne."},enemies:[{name:"The Fixer",level:"hard",hp:34,ability:18,secondAbility:19}]},
+    {id:"blood_oath_rift",world:"rift",requires:["loaded_contract_rift"],title:"8 · Blood Oath",subtitle:"Prestige-Prüfung · Blutpreis",desc:"Der Red Broker macht aus Lebenspunkten Währung. Um ihn zu schlagen, musst du selbst mindestens einmal Blutpreis aktiv einsetzen.",challenge:{type:"ability_use",ability:11,count:1,text:"Benutze Blutpreis mindestens einmal und gewinne."},enemies:[{name:"Red Broker",level:"hard",hp:36,ability:11,secondAbility:23}]},
+    {id:"double_or_nothing_rift",world:"rift",requires:["blood_oath_rift"],title:"9 · Double or Nothing",subtitle:"Prestige-Prüfung · High Stakes",desc:"Der Croupier lebt vom Risiko. Ein bloßer Klick auf High Stakes reicht nicht: Mindestens ein Gamble muss mit 4–6 erfolgreich sein.",challenge:{type:"ability_success",ability:13,count:1,text:"Gewinne mindestens einen High-Stakes-Wurf mit 4–6 und besiege den Gegner."},enemies:[{name:"Croupier",level:"hard",hp:38,ability:13,secondAbility:12}]},
+    {id:"rift_sovereign",world:"rift",requires:["double_or_nothing_rift"],title:"10 · Rift Sovereign",subtitle:"Boss · 2 gegen 1 · Trophy Farm",desc:"Der Sovereign und sein Warden spielen maximal aggressiv. Der Boss bleibt nach dem Clear farmbar. Sein erster erfolgreicher Clear schaltet zusätzlich Glück (BETA) für den Zweitfähigkeits-Pool ab 12 HP frei.",challenge:{type:"healed_min",value:10,text:"Boss-Challenge: Heile während des Kampfes insgesamt mindestens 10 HP und gewinne."},rewardSecondaryAbility:7,farmTrophy:true,enemies:[{name:"Rift Sovereign",level:"hard",hp:48,ability:1,secondAbility:13},{name:"Warden",level:"hard",hp:24,ability:24,secondAbility:17}]},
+
+    {id:"lucky_break_rift",world:"rift",requires:["rift_sovereign"],title:"11 · Lucky Break",subtitle:"Prestige · Glückswurf",desc:"Der Hex Dealer lässt dir kaum saubere Würfe. Gewinne, nachdem du Glückswurf bewusst mindestens einmal eingesetzt hast.",challenge:{type:"ability_use",ability:3,count:1,text:"Benutze Glückswurf mindestens einmal und gewinne."},enemies:[{name:"Hex Dealer",level:"hard",hp:36,ability:17,secondAbility:19}]},
+    {id:"second_chance_protocol_rift",world:"rift",requires:["lucky_break_rift"],title:"12 · Second Chance Protocol",subtitle:"Prestige · Zweite Chance",desc:"Der Protocoler bestraft schlechte Angriffswürfe. Ein Sieg zählt nur, wenn du Zweite Chance aktiv in einem Angriff verwendest.",challenge:{type:"ability_use",ability:4,count:1,text:"Benutze Zweite Chance mindestens einmal und gewinne."},enemies:[{name:"Protocoler",level:"hard",hp:40,ability:8,secondAbility:24}]},
+    {id:"dead_mans_hand_rift",world:"rift",requires:["second_chance_protocol_rift"],title:"13 · Dead Man's Hand",subtitle:"Prestige · Last Stand",desc:"Der Executioner soll dich einmal wirklich an den Rand bringen. Last Stand muss auslösen – und danach musst du den Kampf trotzdem noch drehen.",challenge:{type:"ability_use",ability:14,count:1,text:"Löse Last Stand mindestens einmal aus und gewinne."},enemies:[{name:"Executioner",level:"hard",hp:42,ability:1,secondAbility:10}]},
+    {id:"bloodstorm_rift",world:"rift",requires:["dead_mans_hand_rift"],title:"14 · Bloodstorm",subtitle:"Prestige · 2 gegen 1",desc:"Broker Prime und the Gambler kombinieren Blutpreis und High Stakes. Du musst beide Systeme selbst erfolgreich einsetzen.",challenge:{type:"all",rules:[{type:"ability_use",ability:11,count:1},{type:"ability_success",ability:13,count:1}],text:"Benutze Blutpreis mindestens einmal UND gewinne mindestens einen High-Stakes-Wurf mit 4–6."},enemies:[{name:"Broker Prime",level:"hard",hp:32,ability:11,secondAbility:23},{name:"The Gambler",level:"hard",hp:26,ability:13,secondAbility:12}]},
+    {id:"rift_eclipse",world:"rift",requires:["bloodstorm_rift"],title:"15 · Rift Eclipse",subtitle:"Prestige-Finale · 2 gegen 1",desc:"Eclipse und Shard sind der Abschluss des Rift Circuit. Der Boss hält 58 HP und kann Last Stand auslösen; Shard setzt dich mit Double Tap und Wildcard unter Druck.",challenge:{type:"all",rules:[{type:"base_over_25"},{type:"turn_damage",value:15}],text:"Final-Challenge: Beende mindestens einen Basiswurf über 25 UND erzeuge mindestens 15 Schaden in einem eigenen Zug."},enemies:[{name:"Eclipse",level:"hard",hp:58,ability:22,secondAbility:14},{name:"Shard",level:"hard",hp:26,ability:24,secondAbility:17}]}
   ];
   const CAMPAIGN_FINAL_ENCOUNTER_IDS=CAMPAIGN_WORLDS.map(w=>w.finalEncounterId);
 
   function defaultCampaignProgress(){
-    return {campaignVersion:CAMPAIGN_VERSION,completedEncounters:[],unlockedAbilities:[...CAMPAIGN_START_ABILITIES],wins:0,losses:0};
+    return {campaignVersion:CAMPAIGN_VERSION,completedEncounters:[],unlockedAbilities:[...CAMPAIGN_START_ABILITIES],unlockedSecondaryAbilities:[],trophies:0,wins:0,losses:0};
   }
 
 
@@ -1382,6 +1398,28 @@
       version=3;
     }
 
+    // V3 -> V4: Prestige-Trophäen + separat freischaltbare Zweitfähigkeiten.
+    // Bestehende Clears der beiden farmbaren Bosse erhalten einmalig ihre erste Trophäe.
+    if(version<4){
+      if(Array.isArray(migrated.profiles)){
+        migrated.profiles=migrated.profiles.map(profile=>{
+          if(!profile || typeof profile!=="object") return profile;
+          const next={...profile};
+          const campaign=(next.campaign&&typeof next.campaign==="object")?{...next.campaign}:{};
+          const completed=Array.isArray(campaign.completedEncounters)?campaign.completedEncounters.map(String):[];
+          if(!Number.isFinite(Number(campaign.trophies))){
+            campaign.trophies=["royal_flush","rift_sovereign"].reduce((n,id)=>n+(completed.includes(id)?1:0),0);
+          }
+          const secondary=Array.isArray(campaign.unlockedSecondaryAbilities)?campaign.unlockedSecondaryAbilities.map(Number):[];
+          if(completed.includes("rift_sovereign") && !secondary.includes(7)) secondary.push(7);
+          campaign.unlockedSecondaryAbilities=[...new Set(secondary.filter(id=>Number.isInteger(id)&&id>0))];
+          next.campaign=campaign;
+          return next;
+        });
+      }
+      version=4;
+    }
+
     migrated.schemaVersion=Math.max(version,SAVE_SCHEMA_VERSION);
     migrated.campaignVersion=Number(migrated.campaignVersion)||CAMPAIGN_VERSION;
     migrated.lastGameVersion=GAME_VERSION;
@@ -1409,12 +1447,23 @@
     const earnedRewards=CAMPAIGN_ENCOUNTERS
       .filter(e=>p.campaign.completedEncounters.includes(e.id) && e.rewardAbility)
       .map(e=>e.rewardAbility);
+    const earnedSecondaryRewards=CAMPAIGN_ENCOUNTERS
+      .filter(e=>p.campaign.completedEncounters.includes(e.id) && e.rewardSecondaryAbility)
+      .map(e=>e.rewardSecondaryAbility);
     const storedCampaignAbilities=Array.isArray(rawCampaign.unlockedAbilities)
-      ? rawCampaign.unlockedAbilities.map(Number).filter(id=>Number.isInteger(id)&&id>0)
+      ? rawCampaign.unlockedAbilities.map(Number).filter(id=>Number.isInteger(id)&&id>0&&!CAMPAIGN_SECONDARY_ONLY_ABILITY_IDS.includes(id))
       : [];
-    // Auch noch unbekannte numerische Ability-IDs behalten. Ein älterer Build zeigt sie nicht an,
-    // löscht sie aber beim Speichern auch nicht aus einem neueren Save.
+    const legacySecondaryFromMain=Array.isArray(rawCampaign.unlockedAbilities)
+      ? rawCampaign.unlockedAbilities.map(Number).filter(id=>CAMPAIGN_SECONDARY_ONLY_ABILITY_IDS.includes(id))
+      : [];
+    const storedSecondaryAbilities=Array.isArray(rawCampaign.unlockedSecondaryAbilities)
+      ? rawCampaign.unlockedSecondaryAbilities.map(Number).filter(id=>Number.isInteger(id)&&id>0)
+      : [];
+    // Unbekannte numerische Haupt-Ability-IDs bleiben erhalten; explizit second-only markierte IDs
+    // werden dagegen in ihren eigenen Pool verschoben und können nie als Hauptfähigkeit gewählt werden.
     p.campaign.unlockedAbilities=[...new Set([...CAMPAIGN_START_ABILITIES,...earnedRewards,...storedCampaignAbilities])];
+    p.campaign.unlockedSecondaryAbilities=[...new Set([...earnedSecondaryRewards,...storedSecondaryAbilities,...legacySecondaryFromMain])];
+    p.campaign.trophies=Math.max(0,Math.floor(Number(rawCampaign.trophies)||0));
 
     p.stats={...emptyProfileStats(),...(p.stats||{})};
     p.stats.abilities=(p.stats.abilities&&typeof p.stats.abilities==="object")?p.stats.abilities:{};
@@ -1578,7 +1627,7 @@
   const insuranceModal=$("insuranceModal"), insuranceDie=$("insuranceDie"), insuranceResult=$("insuranceResult"), insuranceSub=$("insuranceSub");
   const counterModal=$("counterModal"), counterTitle=$("counterTitle"), counterDiceEl=$("counterDice"), counterResult=$("counterResult"), counterRollBtn=$("counterRollBtn");
   const campaignBackBtn=$("campaignBackBtn"), campaignProfileSelect=$("campaignProfileSelect"), campaignAbilitySelect=$("campaignAbilitySelect"), campaignStartBtn=$("campaignStartBtn"), campaignProfilesBtn=$("campaignProfilesBtn");
-  const campaignPath=$("campaignPath"), campaignProfileSummary=$("campaignProfileSummary"), campaignProgressSummary=$("campaignProgressSummary"), campaignAbilityGrid=$("campaignAbilityGrid"), campaignCompleteBanner=$("campaignCompleteBanner");
+  const campaignPath=$("campaignPath"), campaignProfileSummary=$("campaignProfileSummary"), campaignProgressSummary=$("campaignProgressSummary"), campaignTrophySummary=$("campaignTrophySummary"), campaignAbilityGrid=$("campaignAbilityGrid"), campaignCompleteBanner=$("campaignCompleteBanner");
   const campaignWorldTabs=$("campaignWorldTabs"), campaignWorldDesc=$("campaignWorldDesc");
 
   let players=[], setupAbilityRolls=[], current=0, dice=[], phase="idle", isAnimating=false;
@@ -1688,7 +1737,43 @@
 
   function campaignUnlockedAbilities(profile){
     const progress=campaignProgress(profile);
-    return progress ? [...new Set(progress.unlockedAbilities)].filter(id=>ABILITIES[id]) : [...CAMPAIGN_START_ABILITIES];
+    return progress
+      ? [...new Set(progress.unlockedAbilities)].filter(id=>ABILITIES[id]&&!CAMPAIGN_SECONDARY_ONLY_ABILITY_IDS.includes(id))
+      : [...CAMPAIGN_START_ABILITIES];
+  }
+
+  function campaignUnlockedSecondAbilities(profile){
+    const progress=campaignProgress(profile);
+    if(!progress) return [...CAMPAIGN_START_ABILITIES];
+    return [...new Set([
+      ...campaignUnlockedAbilities(profile),
+      ...(Array.isArray(progress.unlockedSecondaryAbilities)?progress.unlockedSecondaryAbilities:[])
+    ])].filter(id=>ABILITIES[id]);
+  }
+
+  function campaignHasAllMainAbilities(profile){
+    const owned=new Set(campaignUnlockedAbilities(profile));
+    return CAMPAIGN_PRESTIGE_REQUIRED_IDS.every(id=>owned.has(id));
+  }
+
+  function campaignRewardLabel(profile,encounter){
+    if(!encounter) return "–";
+    const progress=campaignProgress(profile);
+    const parts=[];
+    if(encounter.rewardAbility){
+      const already=!!progress?.unlockedAbilities?.includes(encounter.rewardAbility);
+      parts.push(`${already?"✓":"🔓"} ${ABILITIES[encounter.rewardAbility]?.name||`Fähigkeit ${encounter.rewardAbility}`}`);
+    }
+    if(encounter.rewardSecondaryAbility){
+      const already=!!progress?.unlockedSecondaryAbilities?.includes(encounter.rewardSecondaryAbility);
+      parts.push(`${already?"✓":"🍀"} ${ABILITIES[encounter.rewardSecondaryAbility]?.name||`Fähigkeit ${encounter.rewardSecondaryAbility}`} · nur Zweitfähigkeit ≤12 HP`);
+    }
+    if(encounter.farmTrophy){
+      parts.push("🏆 1 Trophäe pro erfolgreichem Clear");
+    }else if(campaignHasAllMainAbilities(profile) || (!encounter.rewardAbility && !encounter.rewardSecondaryAbility)){
+      parts.push("🏆 1 Prestige-Trophäe bei erfolgreichem Clear");
+    }
+    return parts.length?parts.join(" · "):"Fortschritt";
   }
 
   function renderCampaign(){
@@ -1731,6 +1816,8 @@
 
     campaignProfileSummary.textContent=profile?profileLabel(profile):"Profil erforderlich";
     campaignProgressSummary.textContent=`${completed} / ${worldEncounters.length} Encounter`;
+    const prestige=!!profile && campaignHasAllMainAbilities(profile);
+    campaignTrophySummary.textContent=profile?`🏆 ${Math.max(0,progress?.trophies||0)}${prestige?" · PRESTIGE":""}`:"🏆 0";
 
     campaignCompleteBanner.classList.toggle("hidden",!worldComplete);
     if(worldComplete){
@@ -1759,13 +1846,13 @@
       const done=!!progress?.completedEncounters?.includes(e.id);
       const available=!!profile && campaignEncounterAvailable(profile,e);
       const current=available && e.id===campaignEncounterId;
-      const reward=ABILITIES[e.rewardAbility]?.name||`Fähigkeit ${e.rewardAbility}`;
-      const state=done?"✓ Geschafft":current?"▶ Ausgewählt":available?"Offen":"🔒 Gesperrt";
+      const reward=campaignRewardLabel(profile,e);
+      const state=done?(e.farmTrophy?"🏆 Farmbar":"✓ Geschafft"):current?"▶ Ausgewählt":available?"Offen":"🔒 Gesperrt";
       return `<button type="button" class="campaign-encounter${done?" done":""}${current?" current":""}${available?"":" locked"}" data-campaign-id="${e.id}" ${available?"":"disabled"}>
         <div class="campaign-encounter-head"><div><div class="campaign-encounter-title">${escapeHtml(e.title)}</div><div class="campaign-label">${escapeHtml(e.subtitle)}</div></div><div class="campaign-state">${state}</div></div>
         <div class="campaign-desc">${escapeHtml(e.desc)}</div>
         <div class="campaign-challenge">🎯 <strong>Challenge:</strong> ${escapeHtml(e.challenge.text)}</div>
-        <div class="campaign-reward">🔓 Belohnung: ${e.rewardAbility} · ${escapeHtml(reward)}</div>
+        <div class="campaign-reward">🎁 <strong>Belohnung:</strong> ${escapeHtml(reward)}</div>
       </button>`;
     }).join("");
 
@@ -1773,9 +1860,12 @@
       btn.onclick=()=>{campaignEncounterId=btn.dataset.campaignId;gameContext.encounterId=campaignEncounterId;renderCampaign();};
     });
 
+    const secondaryUnlocked=new Set(progress?.unlockedSecondaryAbilities||[]);
     campaignAbilityGrid.innerHTML=REAL_ABILITY_IDS.map(id=>{
-      const on=unlocked.includes(id);
-      return `<span class="campaign-ability-chip${on?"":" locked"}">${on?"✓":"🔒"} ${id} · ${escapeHtml(ABILITIES[id].name)}</span>`;
+      const secondOnly=CAMPAIGN_SECONDARY_ONLY_ABILITY_IDS.includes(id);
+      const on=secondOnly?secondaryUnlocked.has(id):unlocked.includes(id);
+      const suffix=secondOnly?" · nur Zweitfähigkeit ≤12 HP":"";
+      return `<span class="campaign-ability-chip${on?"":" locked"}">${on?(secondOnly?"✦":"✓"):"🔒"} ${id} · ${escapeHtml(ABILITIES[id].name)}${suffix}</span>`;
     }).join("");
 
     campaignStartBtn.disabled=!profile || !campaignEncounterById(campaignEncounterId) || !unlocked.length;
@@ -1846,6 +1936,25 @@
     return true;
   }
 
+  function unlockCampaignSecondaryReward(profile,encounter){
+    const progress=campaignProgress(profile);
+    if(!progress || !encounter?.rewardSecondaryAbility) return false;
+    if(!Array.isArray(progress.unlockedSecondaryAbilities)) progress.unlockedSecondaryAbilities=[];
+    if(progress.unlockedSecondaryAbilities.includes(encounter.rewardSecondaryAbility)) return false;
+    progress.unlockedSecondaryAbilities.push(encounter.rewardSecondaryAbility);
+    return true;
+  }
+
+  function awardCampaignTrophy(profile,encounter){
+    const progress=campaignProgress(profile);
+    if(!progress || !encounter) return 0;
+    // Royal Flush und Rift Sovereign sind ausdrücklich immer farmbar.
+    // Nach Freischaltung aller regulären Hauptfähigkeiten wird jeder erfolgreiche Clear zu Prestige.
+    if(!encounter.farmTrophy && !campaignHasAllMainAbilities(profile)) return 0;
+    progress.trophies=Math.max(0,Math.floor(Number(progress.trophies)||0))+1;
+    return 1;
+  }
+
   function startCampaignEncounter(){
     const profile=getProfile(campaignProfileSelect.value);
     const encounter=campaignEncounterById(campaignEncounterId);
@@ -1912,13 +2021,15 @@
       progress.losses=(progress.losses||0)+1;
     }
 
-    let newlyCompleted=false,rewardUnlocked=false;
+    let newlyCompleted=false,rewardUnlocked=false,secondaryRewardUnlocked=false,trophiesEarned=0;
     if(heroWon && challengeMet && profile && progress){
       if(!progress.completedEncounters.includes(encounter.id)){
         progress.completedEncounters.push(encounter.id);
         newlyCompleted=true;
       }
       rewardUnlocked=unlockCampaignReward(profile,encounter);
+      secondaryRewardUnlocked=unlockCampaignSecondaryReward(profile,encounter);
+      trophiesEarned=awardCampaignTrophy(profile,encounter);
       progress.campaignVersion=Math.max(Number(progress.campaignVersion)||1,CAMPAIGN_VERSION);
     }
     const campaignComplete=profile?isCampaignComplete(profile):false;
@@ -1931,9 +2042,12 @@
     if(heroWon && challengeMet){
       queueEventPopup(campaignComplete?"Kampagne geschafft!":"Encounter geschafft!","win");
       winnerText.innerHTML=campaignComplete?"🏆 KAMPAGNE GESCHAFFT!":"🗺️ Encounter geschafft!";
-      const rewardText=rewardUnlocked?`<br><strong>Neue Fähigkeit:</strong> ${encounter.rewardAbility} · ${escapeHtml(ABILITIES[encounter.rewardAbility].name)}`:"";
+      const rewardText=rewardUnlocked?`<br><strong>Neue Hauptfähigkeit:</strong> ${encounter.rewardAbility} · ${escapeHtml(ABILITIES[encounter.rewardAbility].name)}`:"";
+      const secondaryRewardText=secondaryRewardUnlocked?`<br>🍀 <strong>${escapeHtml(ABILITIES[encounter.rewardSecondaryAbility].name)} freigeschaltet:</strong> ausschließlich als Zweitfähigkeit ab ≤12 HP.`:"";
+      const trophyText=trophiesEarned?`<br>🏆 <strong>+${trophiesEarned} Prestige-Trophäe</strong> · Gesamt: ${progress?.trophies||0}`:"";
+      const prestigeText=(rewardUnlocked && campaignHasAllMainAbilities(profile))?"<br>✨ <strong>PRESTIGE AKTIV:</strong> Ab jetzt bringt jeder erfolgreiche Encounter-Clear 1 Trophäe.":"";
       const worldUnlockText=(newlyCompleted && encounter.id==="black_table")?"<br>🌌 <strong>Welt 2 · Rift Circuit wurde freigeschaltet!</strong>":"";
-      roundResultText.innerHTML=`✅ Gegner besiegt.<br>✅ Challenge erfüllt: <strong>${escapeHtml(encounter.challenge.text)}</strong>${rewardText}${newlyCompleted?"<br>Der nächste Encounter wurde freigeschaltet.":"<br>Dieser Encounter war bereits abgeschlossen."}${worldUnlockText}`;
+      roundResultText.innerHTML=`✅ Gegner besiegt.<br>✅ Challenge erfüllt: <strong>${escapeHtml(encounter.challenge.text)}</strong>${rewardText}${secondaryRewardText}${trophyText}${prestigeText}${newlyCompleted?"<br>Der nächste Encounter wurde freigeschaltet.":"<br>Dieser Encounter war bereits abgeschlossen und bleibt spielbar."}${worldUnlockText}`;
     }else if(heroWon){
       queueEventPopup("Challenge verfehlt","survive");
       winnerText.textContent="⚠️ Sieg – aber Challenge verfehlt";
@@ -3740,6 +3854,7 @@
     const idx=dice.findIndex(d=>!d.locked&&d.value===1);
     if(idx===-1) return;
     baseRerollUsed=true;
+    markCampaignAbilityUse(current,3);
     const old=dice[idx].value;
     animateIndices([idx],()=>{
       addLog(`⚡ ${players[current].name} nutzt Glückswurf: ${old} → ${dice[idx].value}.`);
@@ -3823,7 +3938,7 @@
   function randomSecondAbilityChoices(index){
     const owned=new Set(playerAbilities(index));
     const allowed=(campaignMode && players[index]?.campaignTeam==="hero")
-      ? campaignUnlockedAbilities(getProfile(campaignProfileId))
+      ? campaignUnlockedSecondAbilities(getProfile(campaignProfileId))
       : REAL_ABILITY_IDS;
     const pool=allowed.filter(a=>!owned.has(a));
 
@@ -3941,6 +4056,7 @@
       p.lastStandUsed=true;
       p.roundLastStandTriggered=true;
       lastStand=true;
+      markCampaignAbilityUse(index,14);
       addLog(`🛡️ LAST STAND: ${p.name} überlebt tödlichen Schaden mit 1 HP!`);
       queueEventPopup(`${p.name} LAST STAND!`,"survive");
     }
@@ -4433,6 +4549,7 @@
     if(!indices.length) return;
 
     attackPowerUsed=true;
+    markCampaignAbilityUse(current,4);
     addLog(`⚡ ${players[current].name} nutzt Zweite Chance: alle Nicht-Treffer werden neu gewürfelt.`);
     animateIndices(indices,()=>{
       let bonusHits=0;
