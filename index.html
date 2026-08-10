@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <meta name="theme-color" content="#0d1016" />
-  <title>Würfelduell · V18.1</title>
+  <title>Würfelduell · V18.2</title>
   <style>
     * { box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
     :root{
@@ -861,6 +861,14 @@
 
     /* V17 – Solo-Kampagne */
     .menu-actions button.menu-campaign{grid-column:1/-1;justify-content:center;text-align:center;background:linear-gradient(135deg,#b88cff,#ff6f91);color:#170c19;border:0;font-weight:1000}
+    .campaign-world-tabs{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin:0 0 8px}
+    .campaign-world-btn{min-height:52px;padding:9px 10px;border-radius:14px;border:1px solid var(--border);background:#121925;color:var(--text);text-align:left}
+    .campaign-world-btn.active{border-color:rgba(104,167,255,.72);box-shadow:0 0 0 2px rgba(104,167,255,.12);background:linear-gradient(145deg,rgba(104,167,255,.10),#121925)}
+    .campaign-world-btn.done{border-color:rgba(77,209,125,.42)}
+    .campaign-world-btn:disabled{opacity:.42;filter:saturate(.45)}
+    .campaign-world-name{display:block;font-size:13px;font-weight:1000}
+    .campaign-world-state{display:block;margin-top:3px;color:var(--muted);font-size:9px;font-weight:900;text-transform:uppercase;letter-spacing:.05em}
+    .campaign-world-desc{margin:0 0 12px;padding:9px 10px;border-radius:12px;background:#101620;border:1px solid rgba(255,255,255,.06);color:var(--muted);font-size:11px;line-height:1.45}
     .campaign-top{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-bottom:12px}
     .campaign-top .menu-info-card{min-width:0}
     .campaign-label{color:var(--muted);font-size:10px;font-weight:1000;text-transform:uppercase;letter-spacing:.08em;margin-bottom:5px}
@@ -890,7 +898,7 @@
     .campaign-ability-chip{font-size:10px;font-weight:900;padding:4px 7px;border-radius:999px;border:1px solid #334055;background:#18212e;color:#c9d4e4}
     .campaign-ability-chip.locked{opacity:.34}
     .campaign-complete{margin:0 0 12px;padding:11px 12px;border-radius:14px;border:1px solid rgba(255,200,87,.32);background:linear-gradient(135deg,rgba(255,200,87,.10),rgba(184,140,255,.08));font-size:12px;line-height:1.45}
-    @media (max-width:540px){.campaign-top,.campaign-controls{grid-template-columns:1fr}.campaign-start-row{grid-template-columns:1fr}.campaign-start-row .secondary{width:100%}}
+    @media (max-width:540px){.campaign-world-tabs{grid-template-columns:1fr 1fr}.campaign-top,.campaign-controls{grid-template-columns:1fr}.campaign-start-row{grid-template-columns:1fr}.campaign-start-row .secondary{width:100%}}
   </style>
 </head>
 <body>
@@ -1019,15 +1027,17 @@
       <button id="menuRulesBtn"><span class="menu-icon">📖</span> Regeln</button>
       <button id="menuChangelogBtn"><span class="menu-icon">📝</span> Changelog</button>
     </div>
-    <div class="version-footer">WÜRFELDUELL · VERSION 18.1</div>
+    <div class="version-footer">WÜRFELDUELL · VERSION 18.2</div>
   </section>
 
 
 
   <section id="campaignScreen" class="card screen-card hidden">
     <div class="screen-topbar"><button id="campaignBackBtn">←</button><h2 class="screen-title">🗺️ Solo-Kampagne</h2></div>
-    <div class="screen-subtitle">Ein Profil kämpft sich durch feste Encounter. Fähigkeiten werden nur hier schrittweise freigeschaltet. Um den nächsten Kampf zu öffnen, musst du den Gegner besiegen <strong>und</strong> die jeweilige Challenge erfüllen.</div>
+    <div class="screen-subtitle">Ein Profil kämpft sich durch mehrere Welten mit festen Encountern. Fähigkeiten werden hier schrittweise freigeschaltet. Nach Encounter 10 öffnet sich eine zweite Welt, zwischen der du jederzeit wechseln kannst.</div>
     <div id="campaignCompleteBanner" class="campaign-complete hidden"></div>
+    <div id="campaignWorldTabs" class="campaign-world-tabs"></div>
+    <div id="campaignWorldDesc" class="campaign-world-desc"></div>
     <div class="campaign-top">
       <div class="menu-info-card"><div class="campaign-label">Profil</div><div id="campaignProfileSummary" class="campaign-value">–</div></div>
       <div class="menu-info-card"><div class="campaign-label">Fortschritt</div><div id="campaignProgressSummary" class="campaign-value">0 / 5</div></div>
@@ -1109,6 +1119,7 @@
   <section id="changelogScreen" class="card screen-card hidden">
     <div class="screen-topbar"><button class="menuBackBtn">←</button><h2 class="screen-title">📝 Changelog</h2></div>
     <div class="screen-subtitle">Die großen Versionssprünge, ohne jeden Mini-Hotfix.</div>
+    <div class="changelog-entry"><div class="changelog-version">V18.2</div><ul><li>Damage-Challenges zählen jetzt den erzeugten Rohschaden vor dem HP-Cap des Gegners</li><li>Neue Welt-Auswahl in der Solo-Kampagne</li><li>Welt 2 „Rift Circuit“ wird nach Abschluss von Encounter 10 freigeschaltet</li><li>Fünf zusätzliche Rift-Encounter mit eigener Progression und neuen Fähigkeits-Unlocks</li><li>Snake Eyes triggert jetzt bei mindestens drei gleichen Würfeln jeder Zahl, nicht mehr nur bei Einsern</li></ul></div>
     <div class="changelog-entry"><div class="changelog-version">V18.1</div><ul><li>Vertikales Scrollen im Kampf wieder aktiviert – lange Fähigkeitstexte blockieren keine Controls mehr</li><li>Kampagne auf 15 Encounter erweitert</li><li>Neue Kämpfe: Vampire's Cut, No Safety Net, Chaos Room, Three of a Kind und Royal Flush</li><li>Neue kombinierte Kampagnen-Challenges und Heilungs-Challenge</li><li>Three of a Kind als echter 1-gegen-3-Kampf</li><li>Royal Flush als neuer Kapitel-Boss im 2-gegen-1</li></ul></div>
     <div class="changelog-entry"><div class="changelog-version">V18.0</div><ul><li>Kampagne auf 10 Encounter erweitert</li><li>Neue Kämpfe: Snake Pit, Mirror Chamber, Double Trouble, Blood Bank und Black Table</li><li>Mirror-Gegner übernimmt dynamisch deine gewählte Hauptfähigkeit</li><li>Kampagnengegner können eigene HP und eine Zweitfähigkeit besitzen</li><li>Neuer Kapitel-Boss mit 40 HP</li><li>„Zur Kampagne“ vollständig vom Kampfzustand entkoppelt und robust zurückgesetzt</li></ul></div>
     <div class="changelog-entry"><div class="changelog-version">V17.1</div><ul><li>Zukunftssichere Save-Migrationen und getrennte Spiel-/Save-/Kampagnenversion</li><li>Encounter-Freischaltung über stabile IDs und explizite Voraussetzungen statt Level-Anzahl</li><li>Unbekannte Encounter-IDs bleiben beim Laden erhalten</li><li>Save Export/Import als JSON</li><li>„Zur Kampagne“ nutzt einen stabilen Navigationskontext statt nur campaignMode</li></ul></div>
@@ -1212,10 +1223,10 @@
   const CHOOSABLE_ABILITY_IDS = REAL_ABILITY_IDS.filter(id=>id!==7);
 
 
-  const GAME_VERSION="18.1";
+  const GAME_VERSION="18.2";
   const SAVE_KEY="wuerfelduell_save_v1"; // absichtlich stabil: Updates lesen denselben Browser-Save
   const SAVE_SCHEMA_VERSION=3;
-  const CAMPAIGN_VERSION=3;
+  const CAMPAIGN_VERSION=4;
 
   const ACHIEVEMENTS={
     grande:{name:"GRANDE!",desc:"Beende einen Angriff mit allen 5 Würfeln als Treffer.",rewardDice:"gold"},
@@ -1238,26 +1249,36 @@
   const DICE_UNLOCK_ACHIEVEMENT={gold:"grande",obsidian:"not_today",blood:"blood_money",arcane:"dual_wielding",emerald:"back_from_dead"};
 
   const CAMPAIGN_START_ABILITIES=[3];
-  const CAMPAIGN_ENCOUNTERS=[
-    {id:"first_blood",requires:[],title:"1 · First Blood",subtitle:"Der Rookie",desc:"Ein sauberer Einstieg gegen einen leichten Gegner. Kein Trick – erst einmal überleben und gewinnen.",challenge:{type:"win",text:"Gewinne den Kampf."},rewardAbility:4,enemies:[{name:"Rookie",level:"easy",ability:0}]},
-    {id:"push_it",requires:["first_blood"],title:"2 · Push It",subtitle:"Die Zockerin",desc:"Sie spielt aggressiver. Zeig, dass du nicht nur auf Sicherheit würfelst.",challenge:{type:"base_over_25",text:"Beende mindestens einen Basiswurf mit mehr als 25."},rewardAbility:19,enemies:[{name:"Zockerin",level:"easy",ability:3}]},
-    {id:"hit_hard",requires:["push_it"],title:"3 · Hit Hard",subtitle:"Der Schläger",desc:"Mehr Druck, härtere Entscheidungen. Ein einzelner starker Zug ist jetzt Pflicht.",challenge:{type:"turn_damage",value:8,text:"Verursache mindestens 8 Schaden in einem eigenen Zug."},rewardAbility:18,enemies:[{name:"Schläger",level:"normal",ability:9}]},
-    {id:"blood_table",requires:["hit_hard"],title:"4 · Blood Table",subtitle:"Der Dealer",desc:"Der Dealer bezahlt für bessere Treffer mit seinem eigenen Blut. Gewinne, ohne dich komplett zerlegen zu lassen.",challenge:{type:"finish_hp",value:10,text:"Gewinne mit mindestens 10 HP Restleben."},rewardAbility:14,enemies:[{name:"Blood Dealer",level:"hard",ability:11}]},
-    {id:"house_always_wins",requires:["blood_table"],title:"5 · The House",subtitle:"Kapitel-Boss · 2 gegen 1",desc:"Der Housemaster und sein Guard spielen als Team. Beide greifen ausschließlich dich an – du musst beide ausschalten.",challenge:{type:"turn_damage",value:10,text:"Boss-Challenge: Verursache mindestens 10 Schaden in einem eigenen Zug."},rewardAbility:13,enemies:[{name:"Housemaster",level:"hard",ability:21},{name:"House Guard",level:"normal",ability:10}]},
-
-    {id:"snake_pit",requires:["house_always_wins"],title:"6 · Snake Pit",subtitle:"Der Schlangenzüchter",desc:"Nach dem House wartet kein Urlaub. Der Schlangenzüchter lebt von chaotischen Basiswürfen – du sollst dagegen möglichst sauber spielen.",challenge:{type:"self_damage_max",value:5,text:"Gewinne mit höchstens 5 selbst verursachtem Schaden."},rewardAbility:20,enemies:[{name:"Snake Charmer",level:"hard",ability:20}]},
-    {id:"mirror_chamber",requires:["snake_pit"],title:"7 · Mirror Chamber",subtitle:"Du gegen dich selbst",desc:"Der Spiegel übernimmt exakt deine gewählte Hauptfähigkeit. Deine stärkste Option kann damit plötzlich gegen dich arbeiten.",challenge:{type:"finish_hp",value:12,text:"Besiege dein Spiegelbild mit mindestens 12 HP Restleben."},rewardAbility:23,enemies:[{name:"Mirror",level:"hard",ability:"mirror"}]},
-    {id:"double_trouble_campaign",requires:["mirror_chamber"],title:"8 · Double Trouble",subtitle:"2 gegen 1 · Druck ohne Pause",desc:"Zwei abgestimmte Gegner: Einer baut Momentum auf, der andere bestraft exakt zwei Treffer. Du bist wieder allein.",challenge:{type:"turn_damage",value:10,text:"Verursache mindestens 10 Schaden in einem eigenen Zug."},rewardAbility:24,enemies:[{name:"Runner",level:"normal",ability:10},{name:"Trigger",level:"normal",ability:24}]},
-    {id:"blood_bank",requires:["double_trouble_campaign"],title:"9 · Blood Bank",subtitle:"Der Leech · 32 HP",desc:"Der Leech startet mit mehr Leben und heilt sich über seinen verursachten Schaden zurück. Lange Kämpfe spielen ihm in die Hände.",challenge:{type:"finish_hp",value:8,text:"Gewinne mit mindestens 8 HP Restleben."},rewardAbility:2,enemies:[{name:"The Leech",level:"hard",hp:32,ability:2,secondAbility:9}]},
-    {id:"black_table",requires:["blood_bank"],title:"10 · Black Table",subtitle:"Kapitel-Boss · 40 HP",desc:"Der Pit Boss hat 40 HP, Counterattack und High Stakes. Große Treffer können ihn beenden – oder sofort einen brutalen Gegenschlag auslösen.",challenge:{type:"turn_damage",value:12,text:"Final-Challenge: Verursache mindestens 12 Schaden in einem eigenen Zug."},rewardAbility:21,enemies:[{name:"Pit Boss",level:"hard",hp:40,ability:21,secondAbility:13}]},
-
-    {id:"vampires_cut",requires:["black_table"],title:"11 · Vampire's Cut",subtitle:"Der Collector · 30 HP",desc:"Der Collector lebt von langen Kämpfen: 30 HP, Lifesteal und Rache. Diesmal reicht Überleben nicht – du musst selbst Leben zurückholen.",challenge:{type:"healed_min",value:4,text:"Heile während des Kampfes mindestens 4 HP und gewinne."},rewardAbility:9,enemies:[{name:"Collector",level:"hard",hp:30,ability:2,secondAbility:9}]},
-    {id:"no_safety_net",requires:["vampires_cut"],title:"12 · No Safety Net",subtitle:"Der Marksman",desc:"Präzision plus Loaded Dice macht jeden kleinen Fehler teuer. Spiele kontrolliert und bezahle nicht dauernd mit deinem eigenen Leben.",challenge:{type:"self_damage_max",value:3,text:"Gewinne mit höchstens 3 selbst verursachtem Schaden."},rewardAbility:8,enemies:[{name:"Marksman",level:"hard",ability:8,secondAbility:18}]},
-    {id:"chaos_room",requires:["no_safety_net"],title:"13 · Chaos Room",subtitle:"Der Joker · 28 HP",desc:"Wildcard und Gambling Man machen seine Angriffe schwer lesbar. Du musst selbst offensiv bleiben, ohne am Ende zerlegt dazustehen.",challenge:{type:"all",rules:[{type:"base_over_25"},{type:"finish_hp",value:10}],text:"Beende mindestens einen Basiswurf über 25 und gewinne mit mindestens 10 HP."},rewardAbility:17,enemies:[{name:"Joker",level:"hard",hp:28,ability:17,secondAbility:12}]},
-    {id:"three_of_a_kind",requires:["chaos_room"],title:"14 · Three of a Kind",subtitle:"1 gegen 3",desc:"Drei kleinere Gegner teilen sich den Tisch. Jeder hat nur 15 HP, aber Momentum, Double Tap und Insurance erzeugen konstanten Druck.",challenge:{type:"turn_damage",value:12,text:"Verursache mindestens 12 Schaden in einem eigenen Zug."},rewardAbility:25,enemies:[{name:"Rush",level:"normal",hp:15,ability:10},{name:"Tap",level:"normal",hp:15,ability:24},{name:"Shield",level:"normal",hp:15,ability:19}]},
-    {id:"royal_flush",requires:["three_of_a_kind"],title:"15 · Royal Flush",subtitle:"Kapitel-Boss · 2 gegen 1",desc:"Der King spielt mit Präzision und Wildcard, sein Ace mit Brutalen Einsen und Underdog. Zusammen kontrollieren sie fast jede Angriffszahl.",challenge:{type:"all",rules:[{type:"turn_damage",value:14},{type:"finish_hp",value:8}],text:"Boss-Challenge: Verursache mindestens 14 Schaden in einem Zug und gewinne mit mindestens 8 HP."},rewardAbility:15,enemies:[{name:"The King",level:"hard",hp:42,ability:8,secondAbility:17},{name:"Ace",level:"hard",hp:20,ability:1,secondAbility:25}]}
+  const CAMPAIGN_WORLDS=[
+    {id:"house",name:"Welt 1 · House Circuit",shortName:"House Circuit",desc:"Die ursprüngliche Kampagne. 15 Encounter vom Rookie bis Royal Flush.",unlockRequires:[],finalEncounterId:"royal_flush"},
+    {id:"rift",name:"Welt 2 · Rift Circuit",shortName:"Rift Circuit",desc:"Ein alternativer Pfad mit eigenen Gegnern. Wird freigeschaltet, sobald Black Table (Encounter 10) geschafft ist.",unlockRequires:["black_table"],finalEncounterId:"rift_crown"}
   ];
-  const CAMPAIGN_FINAL_ENCOUNTER_IDS=["royal_flush"];
+  const CAMPAIGN_ENCOUNTERS=[
+    {id:"first_blood",world:"house",requires:[],title:"1 · First Blood",subtitle:"Der Rookie",desc:"Ein sauberer Einstieg gegen einen leichten Gegner. Kein Trick – erst einmal überleben und gewinnen.",challenge:{type:"win",text:"Gewinne den Kampf."},rewardAbility:4,enemies:[{name:"Rookie",level:"easy",ability:0}]},
+    {id:"push_it",world:"house",requires:["first_blood"],title:"2 · Push It",subtitle:"Die Zockerin",desc:"Sie spielt aggressiver. Zeig, dass du nicht nur auf Sicherheit würfelst.",challenge:{type:"base_over_25",text:"Beende mindestens einen Basiswurf mit mehr als 25."},rewardAbility:19,enemies:[{name:"Zockerin",level:"easy",ability:3}]},
+    {id:"hit_hard",world:"house",requires:["push_it"],title:"3 · Hit Hard",subtitle:"Der Schläger",desc:"Mehr Druck, härtere Entscheidungen. Ein einzelner starker Zug ist jetzt Pflicht.",challenge:{type:"turn_damage",value:8,text:"Verursache mindestens 8 Schaden in einem eigenen Zug."},rewardAbility:18,enemies:[{name:"Schläger",level:"normal",ability:9}]},
+    {id:"blood_table",world:"house",requires:["hit_hard"],title:"4 · Blood Table",subtitle:"Der Dealer",desc:"Der Dealer bezahlt für bessere Treffer mit seinem eigenen Blut. Gewinne, ohne dich komplett zerlegen zu lassen.",challenge:{type:"finish_hp",value:10,text:"Gewinne mit mindestens 10 HP Restleben."},rewardAbility:14,enemies:[{name:"Blood Dealer",level:"hard",ability:11}]},
+    {id:"house_always_wins",world:"house",requires:["blood_table"],title:"5 · The House",subtitle:"Kapitel-Boss · 2 gegen 1",desc:"Der Housemaster und sein Guard spielen als Team. Beide greifen ausschließlich dich an – du musst beide ausschalten.",challenge:{type:"turn_damage",value:10,text:"Boss-Challenge: Verursache mindestens 10 Schaden in einem eigenen Zug."},rewardAbility:13,enemies:[{name:"Housemaster",level:"hard",ability:21},{name:"House Guard",level:"normal",ability:10}]},
+
+    {id:"snake_pit",world:"house",requires:["house_always_wins"],title:"6 · Snake Pit",subtitle:"Der Schlangenzüchter",desc:"Nach dem House wartet kein Urlaub. Der Schlangenzüchter lebt von chaotischen Basiswürfen – du sollst dagegen möglichst sauber spielen.",challenge:{type:"self_damage_max",value:5,text:"Gewinne mit höchstens 5 selbst verursachtem Schaden."},rewardAbility:20,enemies:[{name:"Snake Charmer",level:"hard",ability:20}]},
+    {id:"mirror_chamber",world:"house",requires:["snake_pit"],title:"7 · Mirror Chamber",subtitle:"Du gegen dich selbst",desc:"Der Spiegel übernimmt exakt deine gewählte Hauptfähigkeit. Deine stärkste Option kann damit plötzlich gegen dich arbeiten.",challenge:{type:"finish_hp",value:12,text:"Besiege dein Spiegelbild mit mindestens 12 HP Restleben."},rewardAbility:23,enemies:[{name:"Mirror",level:"hard",ability:"mirror"}]},
+    {id:"double_trouble_campaign",world:"house",requires:["mirror_chamber"],title:"8 · Double Trouble",subtitle:"2 gegen 1 · Druck ohne Pause",desc:"Zwei abgestimmte Gegner: Einer baut Momentum auf, der andere bestraft exakt zwei Treffer. Du bist wieder allein.",challenge:{type:"turn_damage",value:10,text:"Verursache mindestens 10 Schaden in einem eigenen Zug."},rewardAbility:24,enemies:[{name:"Runner",level:"normal",ability:10},{name:"Trigger",level:"normal",ability:24}]},
+    {id:"blood_bank",world:"house",requires:["double_trouble_campaign"],title:"9 · Blood Bank",subtitle:"Der Leech · 32 HP",desc:"Der Leech startet mit mehr Leben und heilt sich über seinen verursachten Schaden zurück. Lange Kämpfe spielen ihm in die Hände.",challenge:{type:"finish_hp",value:8,text:"Gewinne mit mindestens 8 HP Restleben."},rewardAbility:2,enemies:[{name:"The Leech",level:"hard",hp:32,ability:2,secondAbility:9}]},
+    {id:"black_table",world:"house",requires:["blood_bank"],title:"10 · Black Table",subtitle:"Kapitel-Boss · 40 HP",desc:"Der Pit Boss hat 40 HP, Counterattack und High Stakes. Große Treffer können ihn beenden – oder sofort einen brutalen Gegenschlag auslösen.",challenge:{type:"turn_damage",value:12,text:"Final-Challenge: Verursache mindestens 12 Schaden in einem eigenen Zug."},rewardAbility:21,enemies:[{name:"Pit Boss",level:"hard",hp:40,ability:21,secondAbility:13}]},
+
+    {id:"vampires_cut",world:"house",requires:["black_table"],title:"11 · Vampire's Cut",subtitle:"Der Collector · 30 HP",desc:"Der Collector lebt von langen Kämpfen: 30 HP, Lifesteal und Rache. Diesmal reicht Überleben nicht – du musst selbst Leben zurückholen.",challenge:{type:"healed_min",value:4,text:"Heile während des Kampfes mindestens 4 HP und gewinne."},rewardAbility:9,enemies:[{name:"Collector",level:"hard",hp:30,ability:2,secondAbility:9}]},
+    {id:"no_safety_net",world:"house",requires:["vampires_cut"],title:"12 · No Safety Net",subtitle:"Der Marksman",desc:"Präzision plus Loaded Dice macht jeden kleinen Fehler teuer. Spiele kontrolliert und bezahle nicht dauernd mit deinem eigenen Leben.",challenge:{type:"self_damage_max",value:3,text:"Gewinne mit höchstens 3 selbst verursachtem Schaden."},rewardAbility:8,enemies:[{name:"Marksman",level:"hard",ability:8,secondAbility:18}]},
+    {id:"chaos_room",world:"house",requires:["no_safety_net"],title:"13 · Chaos Room",subtitle:"Der Joker · 28 HP",desc:"Wildcard und Gambling Man machen seine Angriffe schwer lesbar. Du musst selbst offensiv bleiben, ohne am Ende zerlegt dazustehen.",challenge:{type:"all",rules:[{type:"base_over_25"},{type:"finish_hp",value:10}],text:"Beende mindestens einen Basiswurf über 25 und gewinne mit mindestens 10 HP."},rewardAbility:17,enemies:[{name:"Joker",level:"hard",hp:28,ability:17,secondAbility:12}]},
+    {id:"three_of_a_kind",world:"house",requires:["chaos_room"],title:"14 · Three of a Kind",subtitle:"1 gegen 3",desc:"Drei kleinere Gegner teilen sich den Tisch. Jeder hat nur 15 HP, aber Momentum, Double Tap und Insurance erzeugen konstanten Druck.",challenge:{type:"turn_damage",value:12,text:"Verursache mindestens 12 Schaden in einem eigenen Zug."},rewardAbility:25,enemies:[{name:"Rush",level:"normal",hp:15,ability:10},{name:"Tap",level:"normal",hp:15,ability:24},{name:"Shield",level:"normal",hp:15,ability:19}]},
+    {id:"royal_flush",world:"house",requires:["three_of_a_kind"],title:"15 · Royal Flush",subtitle:"Kapitel-Boss · 2 gegen 1",desc:"Der King spielt mit Präzision und Wildcard, sein Ace mit Brutalen Einsen und Underdog. Zusammen kontrollieren sie fast jede Angriffszahl.",challenge:{type:"all",rules:[{type:"turn_damage",value:14},{type:"finish_hp",value:8}],text:"Boss-Challenge: Verursache mindestens 14 Schaden in einem Zug und gewinne mit mindestens 8 HP."},rewardAbility:15,enemies:[{name:"The King",level:"hard",hp:42,ability:8,secondAbility:17},{name:"Ace",level:"hard",hp:20,ability:1,secondAbility:25}]},
+
+    {id:"rift_gate",world:"rift",requires:["black_table"],title:"1 · Rift Gate",subtitle:"Welt 2 · Der Gatekeeper",desc:"Hinter Black Table öffnet sich ein zweiter Pfad. Der Gatekeeper drückt früh auf 1er-Angriffe und bestraft vorsichtiges Spiel.",challenge:{type:"base_over_25",text:"Beende mindestens einen Basiswurf mit mehr als 25 und gewinne."},rewardAbility:1,enemies:[{name:"Gatekeeper",level:"hard",hp:30,ability:1}]},
+    {id:"blood_market_rift",world:"rift",requires:["rift_gate"],title:"2 · Blood Market",subtitle:"2 gegen 1 · Kaufen mit HP",desc:"Broker und Loader bezahlen beide Leben für bessere Würfe. Du darfst dich von ihrem Tempo nicht zum selben Fehler zwingen lassen.",challenge:{type:"self_damage_max",value:4,text:"Gewinne mit höchstens 4 selbst verursachtem Schaden."},rewardAbility:11,enemies:[{name:"Broker",level:"hard",hp:24,ability:11},{name:"Loader",level:"normal",hp:20,ability:18}]},
+    {id:"house_of_chance_rift",world:"rift",requires:["blood_market_rift"],title:"3 · House of Chance",subtitle:"Der Oracle · 34 HP",desc:"Gambling Man und Wildcard machen seine Angriffszahl unberechenbar. Ein großer eigener Zug ist der sicherste Weg durch das Chaos.",challenge:{type:"turn_damage",value:11,text:"Verursache mindestens 11 Schaden in einem eigenen Zug."},rewardAbility:12,enemies:[{name:"Oracle",level:"hard",hp:34,ability:12,secondAbility:17}]},
+    {id:"crossfire_rift",world:"rift",requires:["house_of_chance_rift"],title:"4 · Crossfire",subtitle:"1 gegen 3 · Split Pressure",desc:"Drei kleinere Gegner teilen den Tisch. Der Kampf ist gebaut, um Mehrziel-Schaden und saubere Zielwahl zu belohnen.",challenge:{type:"finish_hp",value:8,text:"Besiege alle drei Gegner mit mindestens 8 HP Restleben."},rewardAbility:16,enemies:[{name:"Red",level:"normal",hp:16,ability:10},{name:"Blue",level:"normal",hp:16,ability:19},{name:"Gold",level:"normal",hp:16,ability:24}]},
+    {id:"rift_crown",world:"rift",requires:["crossfire_rift"],title:"5 · Rift Crown",subtitle:"Welt-Boss · 2 gegen 1",desc:"Der Rift King heilt über doppelte Sechser und verweigert einmal den Tod. Echo eröffnet Angriffe schon bei 25 und wird stärker, sobald Blut geflossen ist.",challenge:{type:"all",rules:[{type:"turn_damage",value:15},{type:"finish_hp",value:5}],text:"Boss-Challenge: Erzeuge mindestens 15 Schaden in einem eigenen Zug und gewinne mit mindestens 5 HP."},rewardAbility:22,enemies:[{name:"Rift King",level:"hard",hp:45,ability:22,secondAbility:14},{name:"Echo",level:"hard",hp:18,ability:5,secondAbility:23}]}
+  ];
+  const CAMPAIGN_FINAL_ENCOUNTER_IDS=CAMPAIGN_WORLDS.map(w=>w.finalEncounterId);
 
   function defaultCampaignProgress(){
     return {campaignVersion:CAMPAIGN_VERSION,completedEncounters:[],unlockedAbilities:[...CAMPAIGN_START_ABILITIES],wins:0,losses:0};
@@ -1435,7 +1456,7 @@
     17:{name:"Wildcard",desc:"Vor deinem ersten Angriffswurf wird eine zusätzliche zufällige Zahl 1–6 bestimmt. Im ersten Wurf zählen Zielzahl und Wildcard als Treffer; Wildcard-Treffer verursachen trotzdem nur den normalen Schaden deiner eigentlichen Zielzahl."},
     18:{name:"Loaded Dice",desc:"Einmal pro Basiszug darfst du einen gerade gewürfelten, noch nicht eingeloggten Würfel direkt auf eine 5 drehen. Das kostet 2 HP."},
     19:{name:"Insurance",desc:"Endet dein Basiswurf unter 25, würfelst du vor dem Eigenschaden einen D6. Bei 5–6 wird der Eigenschaden halbiert und abgerundet."},
-    20:{name:"Snake Eyes",desc:"Würfelst du in einem einzelnen Basiswurf mindestens 3 Einser gleichzeitig, darfst du alle in diesem Wurf gewürfelten Einser gleichzeitig gratis neu würfeln. Kein Limit: Erzeugt der Reroll wieder mindestens 3 Einser oder passiert es später im selben Basiszug erneut, darfst du Snake Eyes wieder benutzen."},
+    20:{name:"Snake Eyes",desc:"Würfelst du in einem einzelnen Basiswurf mindestens 3 gleiche Zahlen gleichzeitig, darfst du alle Würfel dieser Zahl aus genau diesem Wurf gratis neu würfeln. Gilt für 1er bis 6er und hat kein Limit: Entsteht danach erneut mindestens ein Drilling, darfst du Snake Eyes wieder benutzen."},
     21:{name:"Counterattack",desc:"Erhältst du durch den Hauptangriff eines Gegners mindestens 5 Schaden und überlebst, startest du sofort einen normalen Angriff auf 1er mit 5 Würfeln: 1er werden gelockt und die übrigen Würfel weitergewürfelt, bis ein Wurf keinen neuen Treffer bringt."},
     22:{name:"12",desc:"Immer wenn du in einem einzelnen Würfelwurf mindestens zwei 6er gleichzeitig würfelst, heilst du 1 HP. Kein Limit pro Zug oder Runde; maximal 25 HP. Gilt auch für Angriffswürfe und Counterattack."},
     23:{name:"Blood Rush",desc:"Wenn du seit deinem letzten eigenen Zug durch einen Gegner HP verloren hast oder in diesem Zug freiwillig HP für Loaded Dice/Blutpreis bezahlt hast, verursacht dein nächster Angriff +1 Schaden pro Treffer. Danach ist der Effekt verbraucht."},
@@ -1510,6 +1531,7 @@
   const counterModal=$("counterModal"), counterTitle=$("counterTitle"), counterDiceEl=$("counterDice"), counterResult=$("counterResult"), counterRollBtn=$("counterRollBtn");
   const campaignBackBtn=$("campaignBackBtn"), campaignProfileSelect=$("campaignProfileSelect"), campaignAbilitySelect=$("campaignAbilitySelect"), campaignStartBtn=$("campaignStartBtn"), campaignProfilesBtn=$("campaignProfilesBtn");
   const campaignPath=$("campaignPath"), campaignProfileSummary=$("campaignProfileSummary"), campaignProgressSummary=$("campaignProgressSummary"), campaignAbilityGrid=$("campaignAbilityGrid"), campaignCompleteBanner=$("campaignCompleteBanner");
+  const campaignWorldTabs=$("campaignWorldTabs"), campaignWorldDesc=$("campaignWorldDesc");
 
   let players=[], setupAbilityRolls=[], current=0, dice=[], phase="idle", isAnimating=false;
   let attackFace=null, attackTarget=null, attackHits=0, attackDamage=0, firstAttackRoll=true, currentAttackRollNewHits=0;
@@ -1535,8 +1557,9 @@
   let tutorialMode=false, tutorialOpen=false, tutorialSeen=new Set(), tutorialQueue=[], tutorialStepCount=0;
   let achievementToastQueue=[], achievementToastBusy=false;
   let profileScreenOrigin="menu";
-  let campaignMode=false, campaignEncounterId=null, campaignProfileId=null;
-  let campaignMetrics={baseOver25:false};
+  let campaignMode=false, campaignEncounterId=null, campaignProfileId=null, campaignWorldId="house";
+  function freshCampaignMetrics(){return {baseOver25:false,maxRawTurnDamage:0,currentRawTurnDamage:0};}
+  let campaignMetrics=freshCampaignMetrics();
   let gameContext={mode:"menu",returnScreen:"menu",profileId:null,encounterId:null};
 
 
@@ -1550,32 +1573,59 @@
     return CAMPAIGN_ENCOUNTERS.find(e=>e.id===id)||null;
   }
 
+  function campaignWorldById(id){
+    return CAMPAIGN_WORLDS.find(w=>w.id===id)||null;
+  }
+
+  function campaignEncountersForWorld(worldId){
+    return CAMPAIGN_ENCOUNTERS.filter(e=>(e.world||"house")===worldId);
+  }
+
+  function campaignWorldUnlocked(profile,worldOrId){
+    const world=typeof worldOrId==="string"?campaignWorldById(worldOrId):worldOrId;
+    const progress=campaignProgress(profile);
+    if(!world || !progress) return false;
+    const requires=Array.isArray(world.unlockRequires)?world.unlockRequires:[];
+    return requires.every(id=>progress.completedEncounters.includes(id));
+  }
+
   function campaignEncounterAvailable(profile,encounterOrIndex){
     const progress=campaignProgress(profile);
     const encounter=typeof encounterOrIndex==="number"?CAMPAIGN_ENCOUNTERS[encounterOrIndex]:encounterOrIndex;
     if(!progress || !encounter) return false;
+    if(!campaignWorldUnlocked(profile,encounter.world||"house")) return false;
     if(progress.completedEncounters.includes(encounter.id)) return true;
     const requires=Array.isArray(encounter.requires)?encounter.requires:[];
     return requires.every(id=>progress.completedEncounters.includes(id));
   }
 
-  function campaignCurrentCompletedCount(profile){
+  function campaignCurrentCompletedCount(profile,worldId=campaignWorldId){
     const done=new Set(campaignProgress(profile)?.completedEncounters||[]);
-    return CAMPAIGN_ENCOUNTERS.reduce((n,e)=>n+(done.has(e.id)?1:0),0);
+    return campaignEncountersForWorld(worldId).reduce((n,e)=>n+(done.has(e.id)?1:0),0);
+  }
+
+  function isCampaignWorldComplete(profile,worldId){
+    const world=campaignWorldById(worldId);
+    if(!world || !campaignWorldUnlocked(profile,world)) return false;
+    const done=new Set(campaignProgress(profile)?.completedEncounters||[]);
+    return !!world.finalEncounterId && done.has(world.finalEncounterId);
   }
 
   function isCampaignComplete(profile){
-    const done=new Set(campaignProgress(profile)?.completedEncounters||[]);
-    return CAMPAIGN_FINAL_ENCOUNTER_IDS.length>0 && CAMPAIGN_FINAL_ENCOUNTER_IDS.every(id=>done.has(id));
+    return CAMPAIGN_WORLDS.every(w=>campaignWorldUnlocked(profile,w) && isCampaignWorldComplete(profile,w.id));
   }
 
-  function defaultCampaignEncounter(profile){
-    if(!profile) return CAMPAIGN_ENCOUNTERS[0]||null;
+  function defaultCampaignEncounter(profile,worldId=campaignWorldId){
+    const worldEncounters=campaignEncountersForWorld(worldId);
+    if(!worldEncounters.length) return CAMPAIGN_ENCOUNTERS[0]||null;
+    if(!profile) return worldEncounters[0]||null;
     const progress=campaignProgress(profile);
-    const openIncomplete=CAMPAIGN_ENCOUNTERS.find(e=>!progress.completedEncounters.includes(e.id)&&campaignEncounterAvailable(profile,e));
+    const openIncomplete=worldEncounters.find(e=>!progress.completedEncounters.includes(e.id)&&campaignEncounterAvailable(profile,e));
     if(openIncomplete) return openIncomplete;
-    const finalDone=CAMPAIGN_FINAL_ENCOUNTER_IDS.map(campaignEncounterById).find(Boolean);
-    return finalDone || CAMPAIGN_ENCOUNTERS.find(e=>progress.completedEncounters.includes(e.id)) || CAMPAIGN_ENCOUNTERS[0] || null;
+    const world=campaignWorldById(worldId);
+    const finalDone=campaignEncounterById(world?.finalEncounterId);
+    if(finalDone && progress.completedEncounters.includes(finalDone.id)) return finalDone;
+    return worldEncounters.find(e=>progress.completedEncounters.includes(e.id)) || worldEncounters[0] || null;
   }
 
   function campaignUnlockedAbilities(profile){
@@ -1598,14 +1648,37 @@
     const profile=getProfile(campaignProfileSelect.value);
     campaignProfileId=profile?.id||null;
     const progress=campaignProgress(profile);
-    const completed=profile?campaignCurrentCompletedCount(profile):0;
-    const campaignComplete=profile?isCampaignComplete(profile):false;
-    campaignProfileSummary.textContent=profile?profileLabel(profile):"Profil erforderlich";
-    campaignProgressSummary.textContent=`${completed} / ${CAMPAIGN_ENCOUNTERS.length} Encounter`;
 
-    campaignCompleteBanner.classList.toggle("hidden",!campaignComplete);
-    if(campaignComplete){
-      campaignCompleteBanner.innerHTML=`🏆 <strong>Aktueller Kampagnenstand abgeschlossen.</strong> Neue Kapitel können später ergänzt werden, ohne diesen Fortschritt zu verlieren.`;
+    if(profile && !campaignWorldUnlocked(profile,campaignWorldId)){
+      campaignWorldId=CAMPAIGN_WORLDS.find(w=>campaignWorldUnlocked(profile,w))?.id||"house";
+      campaignEncounterId=null;
+    }
+    const world=campaignWorldById(campaignWorldId)||CAMPAIGN_WORLDS[0];
+    const worldEncounters=campaignEncountersForWorld(world.id);
+    const completed=profile?campaignCurrentCompletedCount(profile,world.id):0;
+    const worldComplete=profile?isCampaignWorldComplete(profile,world.id):false;
+    const campaignComplete=profile?isCampaignComplete(profile):false;
+
+    campaignWorldTabs.innerHTML=CAMPAIGN_WORLDS.map(w=>{
+      const unlocked=!!profile && campaignWorldUnlocked(profile,w);
+      const done=unlocked && isCampaignWorldComplete(profile,w.id);
+      const active=w.id===world.id;
+      let state=unlocked?(done?"✓ Abgeschlossen":`${campaignCurrentCompletedCount(profile,w.id)} / ${campaignEncountersForWorld(w.id).length}`):"🔒 Nach Encounter 10";
+      return `<button type="button" class="campaign-world-btn${active?" active":""}${done?" done":""}" data-world-id="${w.id}" ${unlocked?"":"disabled"}><span class="campaign-world-name">${escapeHtml(w.name)}</span><span class="campaign-world-state">${escapeHtml(state)}</span></button>`;
+    }).join("");
+    campaignWorldTabs.querySelectorAll("[data-world-id]").forEach(btn=>{
+      btn.onclick=()=>{campaignWorldId=btn.dataset.worldId;campaignEncounterId=null;renderCampaign();};
+    });
+    campaignWorldDesc.textContent=world.desc;
+
+    campaignProfileSummary.textContent=profile?profileLabel(profile):"Profil erforderlich";
+    campaignProgressSummary.textContent=`${completed} / ${worldEncounters.length} Encounter`;
+
+    campaignCompleteBanner.classList.toggle("hidden",!worldComplete);
+    if(worldComplete){
+      campaignCompleteBanner.innerHTML=campaignComplete
+        ? `🏆 <strong>Alle aktuellen Welten abgeschlossen.</strong> Dein Fortschritt bleibt für spätere Erweiterungen erhalten.`
+        : `🏆 <strong>${escapeHtml(world.shortName)} abgeschlossen.</strong> Du kannst über die Welt-Auswahl jederzeit in die andere Kampagne wechseln.`;
     }
 
     const unlocked=campaignUnlockedAbilities(profile);
@@ -1617,14 +1690,14 @@
     if(unlocked.includes(oldAbility)) campaignAbilitySelect.value=String(oldAbility);
 
     let selectedEncounter=campaignEncounterById(campaignEncounterId);
-    if(!selectedEncounter || !profile || !campaignEncounterAvailable(profile,selectedEncounter)){
-      selectedEncounter=profile?defaultCampaignEncounter(profile):CAMPAIGN_ENCOUNTERS[0];
+    if(!selectedEncounter || selectedEncounter.world!==world.id || !profile || !campaignEncounterAvailable(profile,selectedEncounter)){
+      selectedEncounter=profile?defaultCampaignEncounter(profile,world.id):worldEncounters[0];
       campaignEncounterId=selectedEncounter?.id||null;
     }
     gameContext.profileId=profile?.id||gameContext.profileId;
     gameContext.encounterId=campaignEncounterId||gameContext.encounterId;
 
-    campaignPath.innerHTML=CAMPAIGN_ENCOUNTERS.map((e,i)=>{
+    campaignPath.innerHTML=worldEncounters.map(e=>{
       const done=!!progress?.completedEncounters?.includes(e.id);
       const available=!!profile && campaignEncounterAvailable(profile,e);
       const current=available && e.id===campaignEncounterId;
@@ -1660,7 +1733,7 @@
     clearBotAutomation();
     tutorialMode=false;
     campaignMode=false;
-    campaignMetrics={baseOver25:false};
+    campaignMetrics=freshCampaignMetrics();
     isAnimating=false;
     eventPopupQueue=[];eventPopupBusy=false;
     eventPopup.classList.remove("active","death","win","survive");
@@ -1673,7 +1746,10 @@
     restartBtn.disabled=false;
 
     if(keepProfileId && getProfile(keepProfileId)) campaignProfileId=keepProfileId;
-    if(keepEncounterId && campaignEncounterById(keepEncounterId)) campaignEncounterId=keepEncounterId;
+    if(keepEncounterId && campaignEncounterById(keepEncounterId)){
+      campaignEncounterId=keepEncounterId;
+      campaignWorldId=campaignEncounterById(keepEncounterId).world||"house";
+    }
     gameContext={mode:"campaign-map",returnScreen:"campaign",profileId:campaignProfileId||keepProfileId,encounterId:campaignEncounterId||keepEncounterId};
 
     renderCampaign();
@@ -1691,7 +1767,7 @@
     if(c.type==="all") return Array.isArray(c.rules) && c.rules.every(rule=>campaignChallengeRuleMet(rule,heroIndex));
     if(c.type==="win") return true;
     if(c.type==="base_over_25") return !!campaignMetrics.baseOver25;
-    if(c.type==="turn_damage") return (roundStats[heroIndex]?.maxTurnDamage||0)>=(c.value||0);
+    if(c.type==="turn_damage") return (campaignMetrics.maxRawTurnDamage||0)>=(c.value||0);
     if(c.type==="finish_hp") return (players[heroIndex]?.hp||0)>=(c.value||0);
     if(c.type==="self_damage_max") return (roundStats[heroIndex]?.selfDamage||0)<=(c.value??0);
     if(c.type==="healed_min") return (roundStats[heroIndex]?.healed||0)>=(c.value||0);
@@ -1726,7 +1802,7 @@
     campaignMode=true;
     campaignProfileId=profile.id;
     gameContext={mode:"campaign-game",returnScreen:"campaign",profileId:profile.id,encounterId:encounter.id};
-    campaignMetrics={baseOver25:false};
+    campaignMetrics=freshCampaignMetrics();
 
     const hero={
       name:profile.name,battleTag:`#${profile.tagNumber}`,profileId:profile.id,botLevel:"human",campaignTeam:"hero",hp:START_HP,maxHp:START_HP,
@@ -1746,7 +1822,7 @@
     current=0;prepareBloodRushForTurn(current);dice=freshDice();phase="idle";isAnimating=false;
     attackFace=null;attackTarget=null;attackHits=0;attackDamage=0;firstAttackRoll=true;currentAttackRollNewHits=0;
     baseRerollUsed=false;loadedDiceUsed=false;lastBaseRollIndices=[];attackPowerUsed=false;precisionUses=0;momentumBonus=0;bloodPriceNeighbors=[];bloodRushActiveThisAttack=false;doubleTapApplied=false;pendingDamage=null;pendingHeal=null;pendingExtraDamageFx=[];pendingExtraHealFx=[];
-    roundNumber=Math.max(1,CAMPAIGN_ENCOUNTERS.findIndex(e=>e.id===encounter.id)+1);roundEliminationOrder=[];lastPlaceIndex=null;roundWinnerHandled=false;roundWinnerIndex=null;nextRoundAbilityRolls=[];eventPopupQueue=[];eventPopupBusy=false;secondAbilityDraftBusy=false;secondAbilityDraftIndex=null;deferredBaseAdvance=false;
+    roundNumber=Math.max(1,campaignEncountersForWorld(encounter.world||"house").findIndex(e=>e.id===encounter.id)+1);roundEliminationOrder=[];lastPlaceIndex=null;roundWinnerHandled=false;roundWinnerIndex=null;nextRoundAbilityRolls=[];eventPopupQueue=[];eventPopupBusy=false;secondAbilityDraftBusy=false;secondAbilityDraftIndex=null;deferredBaseAdvance=false;
     gamblingRolling=false;gamblingBaseTotal=null;gamblingModal.classList.add("hidden");highStakesRolling=false;highStakesDecisionThisAttack=false;highStakesModal.classList.add("hidden");perfect25Rolling=false;perfect25D4Rolling=false;perfect25BaseTotal=null;pendingPerfect25Total=null;perfect25Modal.classList.add("hidden");perfect25D4Modal.classList.add("hidden");insuranceRolling=false;insuranceContext=null;insuranceModal.classList.add("hidden");counterRolling=false;counterContext=null;counterDiceState=[];counterHits=0;counterFirstRoll=true;pendingCounterattack=null;deferredAttackFinish=false;counterModal.classList.add("hidden");wildcardFace=null;secondAbilityDraftQueue=[];secondAbilityModal.classList.add("hidden");
     logEl.innerHTML="";winnerBox.classList.add("hidden");nextRoundBox.classList.add("hidden");nextRoundPrepBtn.classList.add("hidden");restartBtn.textContent="Zur Kampagne";
     hideFrontScreens();game.classList.remove("hidden");document.body.classList.add("playing");
@@ -1787,7 +1863,7 @@
     }
     const campaignComplete=profile?isCampaignComplete(profile):false;
     if(newlyCompleted && profile){
-      const nextEncounter=defaultCampaignEncounter(profile);
+      const nextEncounter=defaultCampaignEncounter(profile,encounter.world||campaignWorldId);
       if(nextEncounter) gameContext.encounterId=nextEncounter.id;
     }
     if(profile) saveGameData();
@@ -1796,7 +1872,8 @@
       queueEventPopup(campaignComplete?"Kampagne geschafft!":"Encounter geschafft!","win");
       winnerText.innerHTML=campaignComplete?"🏆 KAMPAGNE GESCHAFFT!":"🗺️ Encounter geschafft!";
       const rewardText=rewardUnlocked?`<br><strong>Neue Fähigkeit:</strong> ${encounter.rewardAbility} · ${escapeHtml(ABILITIES[encounter.rewardAbility].name)}`:"";
-      roundResultText.innerHTML=`✅ Gegner besiegt.<br>✅ Challenge erfüllt: <strong>${escapeHtml(encounter.challenge.text)}</strong>${rewardText}${newlyCompleted?"<br>Der nächste Encounter wurde freigeschaltet.":"<br>Dieser Encounter war bereits abgeschlossen."}`;
+      const worldUnlockText=(newlyCompleted && encounter.id==="black_table")?"<br>🌌 <strong>Welt 2 · Rift Circuit wurde freigeschaltet!</strong>":"";
+      roundResultText.innerHTML=`✅ Gegner besiegt.<br>✅ Challenge erfüllt: <strong>${escapeHtml(encounter.challenge.text)}</strong>${rewardText}${newlyCompleted?"<br>Der nächste Encounter wurde freigeschaltet.":"<br>Dieser Encounter war bereits abgeschlossen."}${worldUnlockText}`;
     }else if(heroWon){
       queueEventPopup("Challenge verfehlt","survive");
       winnerText.textContent="⚠️ Sieg – aber Challenge verfehlt";
@@ -2391,6 +2468,13 @@
     }
   }
 
+  function recordCampaignRawDamage(index,amount){
+    if(!campaignMode || index==null || amount<=0 || index!==current) return;
+    if(players[index]?.campaignTeam!=="hero") return;
+    campaignMetrics.currentRawTurnDamage=(campaignMetrics.currentRawTurnDamage||0)+amount;
+    campaignMetrics.maxRawTurnDamage=Math.max(campaignMetrics.maxRawTurnDamage||0,campaignMetrics.currentRawTurnDamage);
+  }
+
   function recordHealing(index,amount){
     if(index==null || !roundStats[index] || amount<=0) return;
     roundStats[index].healed+=amount;
@@ -2930,9 +3014,22 @@
     return false;
   }
 
+  function snakeEyesGroup(){
+    const groups=new Map();
+    lastBaseRollIndices.forEach(i=>{
+      const d=dice[i];
+      if(!d || d.locked || d.value==null) return;
+      if(!groups.has(d.value)) groups.set(d.value,[]);
+      groups.get(d.value).push(i);
+    });
+    const eligible=[...groups.entries()].filter(([,indices])=>indices.length>=3).sort((a,b)=>b[1].length-a[1].length || a[0]-b[0]);
+    if(!eligible.length) return null;
+    return {face:eligible[0][0],indices:eligible[0][1]};
+  }
+
   function botHandleBaseSelect(index,level){
-    const snakeOnes=lastBaseRollIndices.filter(i=>dice[i] && !dice[i].locked && dice[i].value===1);
-    if(hasAbility(20,index) && snakeOnes.length>=3){
+    const snakeGroup=snakeEyesGroup();
+    if(hasAbility(20,index) && snakeGroup){
       useSnakeEyes();
       return;
     }
@@ -3383,10 +3480,10 @@
         }
       }
 
-      const snakeOnes=lastBaseRollIndices.filter(i=>dice[i] && !dice[i].locked && dice[i].value===1);
-      if(hasAbility(20) && snakeOnes.length>=3){
+      const snakeGroup=snakeEyesGroup();
+      if(hasAbility(20) && snakeGroup){
         snakeEyesBtn.classList.remove("hidden");
-        snakeEyesBtn.textContent=`🐍 Snake Eyes: alle ${snakeOnes.length} Einser neu würfeln`;
+        snakeEyesBtn.textContent=`🐍 Snake Eyes: ${snakeGroup.indices.length}× ${snakeGroup.face}er neu würfeln`;
       }
     }
     if(phase==="base_ready"){primaryBtn.classList.remove("hidden");primaryBtn.textContent="🎲 Rest würfeln";}
@@ -3626,17 +3723,18 @@
   function useSnakeEyes(){
     if(!hasAbility(20) || isAnimating || phase!=="base_select") return;
 
-    const ones=lastBaseRollIndices.filter(i=>dice[i] && !dice[i].locked && dice[i].value===1);
-    if(ones.length<3) return;
+    const group=snakeEyesGroup();
+    if(!group) return;
+    const rerollIndices=group.indices;
 
     if(roundStats[current]){
       roundStats[current].snakeEyesUsesThisTurn++;
       if(roundStats[current].snakeEyesUsesThisTurn>=2) unlockAchievementForPlayer(current,"snake_charmer");
     }
 
-    animateIndices(ones,()=>{
-      const results=ones.map(i=>dice[i].value).join(" / ");
-      addLog(`🐍 Snake Eyes: ${players[current].name} würfelt alle ${ones.length} gleichzeitig gewürfelten Einser gratis neu → ${results}.`);
+    animateIndices(rerollIndices,()=>{
+      const results=rerollIndices.map(i=>dice[i].value).join(" / ");
+      addLog(`🐍 Snake Eyes: ${players[current].name} würfelt ${rerollIndices.length} gleichzeitig gewürfelte ${group.face}er gratis neu → ${results}.`);
       phase="base_select";
       renderAll();
     });
@@ -4601,6 +4699,7 @@
     const targetHpBefore=target?.hp||0;
     if(rawDamage>=targetHpBefore+10) unlockAchievementForPlayer(current,"overkill");
 
+    recordCampaignRawDamage(current,rawDamage);
     const mainResult=applyDamageToPlayer(attackTarget,rawDamage,"opponent");
     const actualDamage=mainResult.lost;
     recordDamageDealt(current,actualDamage,true);
@@ -4623,6 +4722,7 @@
       const ricochetTarget=nextRicochetTarget(attackTarget,aliveSnapshot);
       if(ricochetTarget!==-1){
         const ricochetDamage=attackHits;
+        recordCampaignRawDamage(current,ricochetDamage);
         const ricResult=applyDamageToPlayer(ricochetTarget,ricochetDamage,"opponent");
         ricochetActual=ricResult.lost;
         recordDamageDealt(current,ricochetActual,true);
@@ -4691,6 +4791,7 @@
     const n=nextAlive(current);
     if(n===-1){checkWinner();return;}
     current=n;
+    if(campaignMode && players[current]?.campaignTeam==="hero") campaignMetrics.currentRawTurnDamage=0;
     prepareBloodRushForTurn(current);
     if(turnDamageThisTurn[current]!=null) turnDamageThisTurn[current]=0;
     if(roundStats[current]) roundStats[current].snakeEyesUsesThisTurn=0;
@@ -4966,7 +5067,7 @@
     campaignMode=false;
     campaignEncounterId=null;
     campaignProfileId=null;
-    campaignMetrics={baseOver25:false};
+    campaignMetrics=freshCampaignMetrics();
     gameContext={mode:"menu",returnScreen:"menu",profileId:null,encounterId:null};
     resetTutorialUi();
     quitModal.classList.add("hidden");
