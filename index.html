@@ -10,7 +10,7 @@
   <link rel="manifest" href="manifest.json" />
   <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png" />
   <link rel="apple-touch-icon" sizes="192x192" href="icon-192.png" />
-  <title>Würfelduell · V18.4</title>
+  <title>Würfelduell · V19.0</title>
   <style>
     * { box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
     :root{
@@ -185,6 +185,11 @@
       border-radius:14px;padding:11px;
     }
     .setup-grid{display:grid;grid-template-columns:1.2fr 1fr 1fr 1fr;gap:8px}
+    #setup.local-human-only .setup-grid{grid-template-columns:1.2fr 1fr 1fr}
+    .local-mode-card{margin-bottom:12px;padding:12px;border:1px solid rgba(104,167,255,.24);border-radius:14px;background:linear-gradient(145deg,rgba(104,167,255,.08),rgba(184,140,255,.05))}
+    .local-mode-card label{display:grid;gap:6px;font-weight:900;color:var(--text)}
+    .local-mode-card select{width:100%}
+    .local-mode-info{margin-top:8px;color:var(--muted);font-size:12px;line-height:1.45}
     .bot-choice{width:100%}
     .bot-tag{
       display:inline-flex;align-items:center;gap:4px;
@@ -641,7 +646,7 @@
       box-shadow:0 0 22px rgba(185,145,255,.15)
     }
     .second-ability-card.luck .num{background:#3f246f;color:#e2d2ff}
-    .ability-tag.second{
+    .ability-tag.second,.ability-tag.third{
       color:#9fc4ff;
       margin-top:2px;
     }
@@ -1074,7 +1079,7 @@
       <button id="menuRulesBtn"><span class="menu-icon">📖</span> Regeln</button>
       <button id="menuChangelogBtn"><span class="menu-icon">📝</span> Changelog</button>
     </div>
-    <div class="version-footer">WÜRFELDUELL · VERSION 18.4</div>
+    <div class="version-footer">WÜRFELDUELL · VERSION 19.0</div>
   </section>
 
 
@@ -1152,7 +1157,9 @@
       <div class="menu-info-card"><strong>❤️ Unter 25</strong><div class="small">Endsumme unter 25: Du verlierst die Differenz zu 25 als HP.</div></div>
       <div class="menu-info-card"><strong>⚔ Über 25</strong><div class="small">26 greift auf 1er an, 27 auf 2er, 28 auf 3er, 29 auf 4er und 30 auf 5er. Fähigkeiten können diese Regeln verändern.</div></div>
       <div class="menu-info-card"><strong>🎯 Angriff</strong><div class="small">Treffer werden automatisch gelockt. Die übrigen Würfel werden weitergewürfelt. Ein Wurf ohne neuen Treffer beendet den Angriff.</div></div>
-      <div class="menu-info-card"><strong>⚡ Fähigkeiten</strong><div class="small">Zu Rundenbeginn wird eine Fähigkeit mit W25 bestimmt. Bei 12 HP oder weniger bekommst du einmal pro Runde eine Auswahl aus zwei Zweitfähigkeiten.</div></div>
+      <div class="menu-info-card"><strong>⚡ Fähigkeiten</strong><div class="small">Classic: Zu Rundenbeginn wird eine Fähigkeit mit W25 bestimmt. Bei 12 HP oder weniger bekommst du einmal pro Runde eine Auswahl aus zwei Zweitfähigkeiten.</div></div>
+      <div class="menu-info-card"><strong>🛡️ Endurance · 50 HP</strong><div class="small">Nur lokal, 2–4 Menschen, keine Bots. Jeder startet mit 2 unterschiedlichen zufälligen Fähigkeiten. Bei 30 HP oder weniger wählst du eine 3. Fähigkeit aus zwei zufälligen Optionen. Der Letztplatzierte darf zwischen Runden beide Startfähigkeiten frei wählen.</div></div>
+      <div class="menu-info-card"><strong>🔥 Overload · 75 HP</strong><div class="small">Nur lokal, 2–4 Menschen, keine Bots. Jeder startet mit 3 unterschiedlichen zufälligen Fähigkeiten. Keine zusätzliche HP-Fähigkeit. Der Letztplatzierte darf zwischen Runden genau 1 Fähigkeit frei wählen; die anderen 2 bleiben zufällig.</div></div>
       <div class="menu-info-card"><strong>🏆 Sieg</strong><div class="small">Ausgeschiedene Spieler werden übersprungen. Der letzte lebende Spieler gewinnt die Runde.</div></div>
     </div>
     <div class="rules-extra"><button id="allAbilitiesBtn">⚡ Alle Fähigkeiten anzeigen</button></div>
@@ -1167,6 +1174,7 @@
   <section id="changelogScreen" class="card screen-card hidden">
     <div class="screen-topbar"><button class="menuBackBtn">←</button><h2 class="screen-title">📝 Changelog</h2></div>
     <div class="screen-subtitle">Die großen Versionssprünge, ohne jeden Mini-Hotfix.</div>
+    <div class="changelog-entry"><div class="changelog-version">V19.0</div><ul><li>Zwei neue reine Local-Modi: Endurance (50 HP) und Overload (75 HP)</li><li>Endurance: 2 zufällige Startfähigkeiten und 3. Fähigkeit bei ≤30 HP</li><li>Overload: 3 zufällige Startfähigkeiten; Letztplatzierter wählt nur 1 davon frei</li><li>Neue Modi sind auf 2–4 menschliche Spieler begrenzt und enthalten keine Bots</li><li>Mehrfachfähigkeiten werden in Kampf-UI, Statistiken und Rundenwechsel vollständig unterstützt</li></ul></div>
     <div class="changelog-entry"><div class="changelog-version">V18.4</div><ul><li>Prestige-System mit profilgebundenen Trophäen eingeführt</li><li>Royal Flush und Rift Sovereign sind als Boss-Fights wiederholt für Trophäen farmbar</li><li>Rift Sovereign: Challenge auf 10 HP Heilung geändert; erster Clear schaltet Glück (BETA) nur für die Zweitfähigkeit ab ≤12 HP frei</li><li>Rift Circuit auf 15 Encounter erweitert</li><li>Serpent's Law schaltet Angriffsvorsprung frei; danach startet der Prestige-Trophäenmodus</li><li>Homescreen-/PWA-Icon, Manifest und App-Metadaten ergänzt</li></ul></div>
     <div class="changelog-entry"><div class="changelog-version">V18.3</div><ul><li>Mobile Scroll-Safety erweitert; der Menü-Button bleibt während des Kampfes erreichbar und Overlays können selbst scrollen</li><li>Counterattack-Button für menschliche Spieler gegen hängen gebliebenen Bot-Input-State abgesichert</li><li>Royal Flush: 8-HP-Restleben-Bedingung entfernt; nur noch die 14-Schaden-Challenge zählt</li><li>Rift Circuit auf 10 Encounter erweitert</li><li>Neue Fähigkeits-Challenges: Snake Eyes, Loaded Dice, Blutpreis, High Stakes und Counterattack müssen aktiv eingesetzt werden</li></ul></div>
     <div class="changelog-entry"><div class="changelog-version">V18.2</div><ul><li>Damage-Challenges zählen jetzt den erzeugten Rohschaden vor dem HP-Cap des Gegners</li><li>Neue Welt-Auswahl in der Solo-Kampagne</li><li>Welt 2 „Rift Circuit“ wird nach Abschluss von Encounter 10 freigeschaltet</li><li>Fünf zusätzliche Rift-Encounter mit eigener Progression und neuen Fähigkeits-Unlocks</li><li>Snake Eyes triggert jetzt bei mindestens drei gleichen Würfeln jeder Zahl, nicht mehr nur bei Einsern</li></ul></div>
@@ -1185,7 +1193,17 @@
 
   <section id="setup" class="card hidden">
     <div class="screen-topbar"><button id="setupBackBtn">←</button><div><h2 class="setup-title">Spiel vorbereiten</h2></div></div>
-    <div class="setup-intro">Profile oder Bots auswählen und Sitzpositionen festlegen. Menschliche Spieler verwenden das im Profil gewählte Würfeldesign.</div>
+    <div id="setupIntro" class="setup-intro">Profile oder Bots auswählen und Sitzpositionen festlegen. Menschliche Spieler verwenden das im Profil gewählte Würfeldesign.</div>
+    <div class="local-mode-card">
+      <label for="localModeSelect">🎮 Local-Modus
+        <select id="localModeSelect">
+          <option value="classic">Classic · 25 HP</option>
+          <option value="endurance50">Endurance · 50 HP</option>
+          <option value="overload75">Overload · 75 HP</option>
+        </select>
+      </label>
+      <div id="localModeInfo" class="local-mode-info"></div>
+    </div>
     <div class="setup-row"><label for="playerCount">Spieler:</label><select id="playerCount"><option>2</option><option>3</option><option>4</option><option>5</option><option>6</option><option>7</option><option>8</option></select><button id="makeNames" class="secondary">Spieler erstellen</button><button id="setupProfilesBtn" class="secondary">👤 Profile</button></div>
     <div id="nameInputs"></div><div id="setupStatus" class="setup-status"></div>
     <div class="controls" style="margin-top:12px"><button id="rollAbilities" class="gold">🎲 Fähigkeiten auswürfeln</button><button id="startGame" class="good" disabled>Spiel starten</button></div>
@@ -1272,8 +1290,15 @@
   const REAL_ABILITY_IDS = [1,2,3,4,5,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25];
   const CHOOSABLE_ABILITY_IDS = REAL_ABILITY_IDS.filter(id=>id!==7);
 
+  const LOCAL_MODES={
+    classic:{id:"classic",name:"Classic",startHp:25,startAbilityCount:1,bonusThreshold:12,bonusSlot:2,maxPlayers:8,allowBots:true,lastPlaceFreeChoices:1},
+    endurance50:{id:"endurance50",name:"Endurance",startHp:50,startAbilityCount:2,bonusThreshold:30,bonusSlot:3,maxPlayers:4,allowBots:false,lastPlaceFreeChoices:2},
+    overload75:{id:"overload75",name:"Overload",startHp:75,startAbilityCount:3,bonusThreshold:null,bonusSlot:null,maxPlayers:4,allowBots:false,lastPlaceFreeChoices:1}
+  };
+  let localModeId="classic";
+  function localModeRules(){return LOCAL_MODES[localModeId]||LOCAL_MODES.classic;}
 
-  const GAME_VERSION="18.4";
+  const GAME_VERSION="19.0";
   const SAVE_KEY="wuerfelduell_save_v1"; // absichtlich stabil: Updates lesen denselben Browser-Save
   const SAVE_SCHEMA_VERSION=4;
   const CAMPAIGN_VERSION=6;
@@ -1536,7 +1561,7 @@
   const ABILITIES = {
     0:{name:"Keine Fähigkeit",desc:"Im Tutorial spielt dieser Teilnehmer ohne Fähigkeit."},
     1:{name:"Brutale Einsen",desc:"Wenn du auf 1er angreifst, zählen 1er UND 2er als Treffer. Beide verursachen 3 Grundschaden pro Treffer. Bei einem normalen Angriff auf 2er gilt dieser Effekt nicht."},
-    2:{name:"Lifesteal",desc:"Du heilst die Hälfte des tatsächlich verursachten Angriffsschadens, abgerundet. Maximal 25 Leben."},
+    2:{name:"Lifesteal",desc:"Du heilst die Hälfte des tatsächlich verursachten Angriffsschadens, abgerundet. Maximal bis zu deinem aktuellen Maximalleben."},
     3:{name:"Glückswurf",desc:"Einmal pro Zug darfst du einen nicht eingeloggten 1er eines Basiswurfs neu würfeln."},
     4:{name:"Zweite Chance",desc:"Einmal pro Zug darfst du nach einem beliebigen Angriffswurf alle Nicht-Treffer noch einmal würfeln. Du bestimmst den Zeitpunkt."},
     5:{name:"Angriffsvorsprung",desc:"Du greifst schon bei 25 auf 1er an; 26→2er, 27→3er, 28→4er, 29→5er, 30→6er."},
@@ -1555,7 +1580,7 @@
     19:{name:"Insurance",desc:"Endet dein Basiswurf unter 25, würfelst du vor dem Eigenschaden einen D6. Bei 5–6 wird der Eigenschaden halbiert und abgerundet."},
     20:{name:"Snake Eyes",desc:"Würfelst du in einem einzelnen Basiswurf mindestens 3 gleiche Zahlen gleichzeitig, darfst du alle Würfel dieser Zahl aus genau diesem Wurf gratis neu würfeln. Gilt für 1er bis 6er und hat kein Limit: Entsteht danach erneut mindestens ein Drilling, darfst du Snake Eyes wieder benutzen."},
     21:{name:"Counterattack",desc:"Erhältst du durch den Hauptangriff eines Gegners mindestens 5 Schaden und überlebst, startest du sofort einen normalen Angriff auf 1er mit 5 Würfeln: 1er werden gelockt und die übrigen Würfel weitergewürfelt, bis ein Wurf keinen neuen Treffer bringt."},
-    22:{name:"12",desc:"Immer wenn du in einem einzelnen Würfelwurf mindestens zwei 6er gleichzeitig würfelst, heilst du 1 HP. Kein Limit pro Zug oder Runde; maximal 25 HP. Gilt auch für Angriffswürfe und Counterattack."},
+    22:{name:"12",desc:"Immer wenn du in einem einzelnen Würfelwurf mindestens zwei 6er gleichzeitig würfelst, heilst du 1 HP. Kein Limit pro Zug oder Runde; maximal bis zu deinem aktuellen Maximalleben. Gilt auch für Angriffswürfe und Counterattack."},
     23:{name:"Blood Rush",desc:"Wenn du seit deinem letzten eigenen Zug durch einen Gegner HP verloren hast oder in diesem Zug freiwillig HP für Loaded Dice/Blutpreis bezahlt hast, verursacht dein nächster Angriff +1 Schaden pro Treffer. Danach ist der Effekt verbraucht."},
     24:{name:"Double Tap",desc:"Endet dein Angriff mit exakt 2 Würfeltreffern, erhalten beide Treffer +2 Schaden. Das sind insgesamt +4 Schaden vor High Stakes."},
     25:{name:"Underdog",desc:"Solange du allein die wenigsten HP aller lebenden Spieler hast, verursachen deine Angriffstreffer +1 Schaden."}
@@ -1605,6 +1630,7 @@
   const achievementList=$("achievementList"), achievementToastLayer=$("achievementToastLayer");
   const statsKpis=$("statsKpis"), profileStatsList=$("profileStatsList"), abilityStatsList=$("abilityStatsList");
   const allAbilitiesList=$("allAbilitiesList"), allAbilitiesBtn=$("allAbilitiesBtn"), abilitiesBackBtn=$("abilitiesBackBtn");
+  const localModeSelect=$("localModeSelect"), localModeInfo=$("localModeInfo"), setupIntro=$("setupIntro");
   const playerCount=$("playerCount"), playersEl=$("players"), diceEl=$("dice");
   const turnLine=$("turnLine"), statusEl=$("status"), abilityState=$("abilityState");
   const sumEl=$("sum"), sumLabel=$("sumLabel"), primaryBtn=$("primaryBtn");
@@ -1650,6 +1676,7 @@
   let insuranceRolling=false, insuranceContext=null;
   let counterRolling=false, counterContext=null, counterDiceState=[], counterHits=0, counterFirstRoll=true, pendingCounterattack=null, deferredAttackFinish=false;
   let secondAbilityDraftChoices=[];
+  let secondAbilityDraftSlot=2;
   let botTimer=null, botSequence=0;
   let tutorialMode=false, tutorialOpen=false, tutorialSeen=new Set(), tutorialQueue=[], tutorialStepCount=0;
   let achievementToastQueue=[], achievementToastBusy=false;
@@ -2487,11 +2514,13 @@
       if(p.primaryWasChosen) primary.chosen++;
       if(win) primary.wins++;
 
-      if(p.secondAbility!=null){
-        const secondary=abilityStatFor(profile,p.secondAbility);
-        secondary.equipped++;secondary.secondary++;secondary.chosen++;
+      [[p.secondAbility,p.secondAbilityWasChosen],[p.thirdAbility,p.thirdAbilityWasChosen]].forEach(([id,wasChosen])=>{
+        if(id==null) return;
+        const secondary=abilityStatFor(profile,id);
+        secondary.equipped++;secondary.secondary++;
+        if(wasChosen!==false) secondary.chosen++;
         if(win) secondary.wins++;
-      }
+      });
 
       if(win && s.currentWinStreak>=3) unlockAchievementForPlayer(i,"hat_trick");
     });
@@ -2504,7 +2533,7 @@
     if(!p?.profileId) return;
     if(p.roundLastStandTriggered) unlockAchievementForPlayer(winnerIndex,"not_today");
     if(p.hp===1) unlockAchievementForPlayer(winnerIndex,"one_hp_wonder");
-    if(p.hp===START_HP) unlockAchievementForPlayer(winnerIndex,"untouchable");
+    if(p.hp===maxHpForPlayer(p)) unlockAchievementForPlayer(winnerIndex,"untouchable");
     if(p.secondAbility!=null) unlockAchievementForPlayer(winnerIndex,"dual_wielding");
   }
   function randAbilityRoll(){ return Math.floor(Math.random()*25)+1; }
@@ -3309,7 +3338,44 @@
     scheduleBotAction(200);
   }
 
+  function randomUniqueAbilityIds(count,exclude=[]){
+    const used=new Set(exclude.filter(id=>REAL_ABILITY_IDS.includes(id)));
+    const pool=REAL_ABILITY_IDS.filter(id=>!used.has(id));
+    for(let i=pool.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[pool[i],pool[j]]=[pool[j],pool[i]];}
+    return pool.slice(0,Math.max(0,count));
+  }
+
+  function rebuildPlayerCountOptions(){
+    const rules=localModeRules();
+    const previous=Math.max(2,Math.min(Number(playerCount.value)||2,rules.maxPlayers));
+    playerCount.innerHTML="";
+    for(let n=2;n<=rules.maxPlayers;n++){const opt=document.createElement("option");opt.value=String(n);opt.textContent=String(n);playerCount.appendChild(opt);}
+    playerCount.value=String(previous);
+  }
+
+  function applyLocalModeSetup(){
+    localModeId=LOCAL_MODES[localModeSelect?.value]?localModeSelect.value:"classic";
+    const rules=localModeRules();
+    rebuildPlayerCountOptions();
+    setup.classList.toggle("local-human-only",!rules.allowBots);
+    if(rules.id==="classic"){
+      setupIntro.textContent="Profile oder Bots auswählen und Sitzpositionen festlegen. Menschliche Spieler verwenden das im Profil gewählte Würfeldesign.";
+      localModeInfo.innerHTML="25 HP · 1 W25-Startfähigkeit · bei ≤12 HP eine Zweitfähigkeit · Bots erlaubt · bis 8 Spieler.";
+      rollAbilitiesBtn.textContent="🎲 Fähigkeiten auswürfeln";
+    }else if(rules.id==="endurance50"){
+      setupIntro.textContent="Endurance ist ein reiner Local-Modus: nur echte Spielerprofile, keine Bots, maximal 4 Spieler.";
+      localModeInfo.innerHTML="50 HP · 2 unterschiedliche zufällige Startfähigkeiten · bei ≤30 HP Auswahl der 3. Fähigkeit · Letztplatzierter wählt zwischen Runden beide Startfähigkeiten frei.";
+      rollAbilitiesBtn.textContent="🎲 2 Startfähigkeiten auswürfeln";
+    }else{
+      setupIntro.textContent="Overload ist ein reiner Local-Modus: nur echte Spielerprofile, keine Bots, maximal 4 Spieler.";
+      localModeInfo.innerHTML="75 HP · 3 unterschiedliche zufällige Startfähigkeiten · keine weitere HP-Fähigkeit · Letztplatzierter wählt zwischen Runden genau 1 Fähigkeit frei, 2 bleiben random.";
+      rollAbilitiesBtn.textContent="🎲 3 Startfähigkeiten auswürfeln";
+    }
+    makeNameFields();
+  }
+
   function makeNameFields(){
+    const rules=localModeRules();
     const n=+playerCount.value;
     setupAbilityRolls=Array(n).fill(null);
     nameInputs.innerHTML="";
@@ -3325,6 +3391,7 @@
       botChoice.id="botChoice"+i;botChoice.className="bot-choice";
       [["human","👤 Profil"],["easy","🤖 Bot · Leicht"],["normal","🤖 Bot · Normal"],["hard","🤖 Bot · Schwer"]].forEach(([value,label])=>{const opt=document.createElement("option");opt.value=value;opt.textContent=label;botChoice.appendChild(opt);});
       botChoice.value="human";
+      if(!rules.allowBots){botChoice.classList.add("hidden");botChoice.disabled=true;}
 
       const profileChoice=document.createElement("select");
       profileChoice.id="profileChoice"+i;profileChoice.className="setup-profile";
@@ -3343,9 +3410,11 @@
       profileChoice.onchange=()=>syncSetupBotChoice(i);
       seat.onchange=updateStartAvailability;
 
-      grid.appendChild(botChoice);grid.appendChild(profileChoice);grid.appendChild(seat);grid.appendChild(diceReadout);
+      if(rules.allowBots) grid.appendChild(botChoice);
+      grid.appendChild(profileChoice);grid.appendChild(seat);grid.appendChild(diceReadout);
 
-      const ability=document.createElement("div");ability.id="abilityResult"+i;ability.className="ability-roll";ability.innerHTML=`🎲 Fähigkeit: <strong>noch nicht gewürfelt</strong>`;
+      const ability=document.createElement("div");ability.id="abilityResult"+i;ability.className="ability-roll";
+      ability.innerHTML=rules.id==="classic"?`🎲 Fähigkeit: <strong>noch nicht gewürfelt</strong>`:`🎲 ${rules.startAbilityCount} Startfähigkeiten: <strong>noch nicht gewürfelt</strong>`;
       const choice=document.createElement("select");choice.id="abilityChoice"+i;choice.className="ability-choice hidden";
       CHOOSABLE_ABILITY_IDS.forEach(a=>{const opt=document.createElement("option");opt.value=a;opt.textContent=`${a} – ${ABILITIES[a].name}`;choice.appendChild(opt);});
       choice.onchange=updateStartAvailability;
@@ -3357,20 +3426,25 @@
   }
 
   function rollSetupAbilities(){
+    const rules=localModeRules();
     const n=+playerCount.value;
     for(let i=0;i<n;i++){
-      const roll=randAbilityRoll();
-      setupAbilityRolls[i]=roll;
       const result=$("abilityResult"+i);
       const choice=$("abilityChoice"+i);
-
+      if(rules.id!=="classic"){
+        const abilities=randomUniqueAbilityIds(rules.startAbilityCount);
+        setupAbilityRolls[i]=abilities;
+        result.innerHTML=`🎲 <strong>${abilities.map(id=>escapeHtml(ABILITIES[id].name)).join(" · ")}</strong><div class="ability-desc">${abilities.map(id=>`${id}: ${escapeHtml(ABILITIES[id].desc)}`).join("<br>")}</div>`;
+        choice.classList.add("hidden");
+        continue;
+      }
+      const roll=randAbilityRoll();
+      setupAbilityRolls[i]=roll;
       if(roll===6){
-        result.innerHTML=`🎲 W25 = <strong>6</strong> → <strong>Freie Wahl!</strong>
-          <div class="ability-desc">Wähle jetzt eine Fähigkeit aus 1–5 oder 8–25. Glück (BETA) gibt es ausschließlich bei einer direkt gewürfelten 7.</div>`;
+        result.innerHTML=`🎲 W25 = <strong>6</strong> → <strong>Freie Wahl!</strong><div class="ability-desc">Wähle jetzt eine Fähigkeit aus 1–5 oder 8–25. Glück (BETA) gibt es ausschließlich bei einer direkt gewürfelten 7.</div>`;
         choice.classList.remove("hidden");
       }else{
-        result.innerHTML=`🎲 W25 = <strong>${roll}</strong> → <strong>${ABILITIES[roll].name}</strong>
-          <div class="ability-desc">${ABILITIES[roll].desc}</div>`;
+        result.innerHTML=`🎲 W25 = <strong>${roll}</strong> → <strong>${ABILITIES[roll].name}</strong><div class="ability-desc">${ABILITIES[roll].desc}</div>`;
         choice.classList.add("hidden");
       }
       syncSetupBotChoice(i);
@@ -3379,8 +3453,9 @@
   }
 
   function updateStartAvailability(){
+    const rules=localModeRules();
     const n=+playerCount.value;
-    const abilitiesReady=setupAbilityRolls.length===n && setupAbilityRolls.every(v=>v!=null);
+    const abilitiesReady=setupAbilityRolls.length===n && setupAbilityRolls.every(v=>v!=null && (!Array.isArray(v)||v.length===rules.startAbilityCount));
     const humanProfileIds=[];
     let profilesValid=true;
 
@@ -3389,24 +3464,28 @@
         const id=$("profileChoice"+i)?.value||"";
         if(!id || !getProfile(id) || humanProfileIds.includes(id)) profilesValid=false;
         humanProfileIds.push(id);
+      }else if(!rules.allowBots){
+        profilesValid=false;
       }
     }
 
     if(!profilesValid){
-      setupStatus.textContent=saveData.profiles.length?"⚠️ Jeder menschliche Spieler braucht ein eigenes Profil.":"⚠️ Erstelle zuerst ein Profil oder stelle die Plätze auf Bots.";
+      setupStatus.textContent=saveData.profiles.length?"⚠️ Jeder menschliche Spieler braucht ein eigenes Profil.":(rules.allowBots?"⚠️ Erstelle zuerst ein Profil oder stelle die Plätze auf Bots.":"⚠️ Erstelle zuerst genügend Spielerprofile.");
       setupStatus.className="setup-status error";
     }else if(!abilitiesReady){
-      setupStatus.textContent="Profile/Bots und Sitzplätze stehen. Jetzt noch die Fähigkeiten auswürfeln.";
+      setupStatus.textContent=rules.id==="classic"?"Profile/Bots und Sitzplätze stehen. Jetzt noch die Fähigkeiten auswürfeln.":`Profile und Sitzplätze stehen. Jetzt ${rules.startAbilityCount} Startfähigkeiten pro Spieler auswürfeln.`;
       setupStatus.className="setup-status";
     }else{
-      setupStatus.textContent="✅ Profile, Bots, Sitzplätze und Fähigkeiten bereit.";
+      setupStatus.textContent=`✅ ${rules.name}: Spieler, Sitzplätze und Fähigkeiten bereit.`;
       setupStatus.className="setup-status";
     }
     startGameBtn.disabled=!(abilitiesReady&&profilesValid);
   }
 
-  function getSetupAbility(i){
-    return setupAbilityRolls[i]===6 ? +$("abilityChoice"+i).value : setupAbilityRolls[i];
+  function getSetupAbilities(i){
+    const rules=localModeRules();
+    if(rules.id!=="classic") return Array.isArray(setupAbilityRolls[i])?[...setupAbilityRolls[i]]:[];
+    return [setupAbilityRolls[i]===6 ? +$("abilityChoice"+i).value : setupAbilityRolls[i]];
   }
 
   function aliveCount(){ return players.filter(p=>p.hp>0).length; }
@@ -3437,7 +3516,7 @@
   function playerAbilities(index=current){
     const p=players[index];
     if(!p) return [];
-    return [p.ability,p.secondAbility].filter(a=>a!=null);
+    return [p.ability,p.secondAbility,p.thirdAbility].filter(a=>a!=null);
   }
 
   function hasAbility(id,index=current){
@@ -3459,6 +3538,7 @@
         <div class="hp">❤️ <strong>${Math.max(0,p.hp)}</strong> / ${maxHpForPlayer(p)}</div>
         <div class="ability-tag">⚡ ${escapeHtml(ABILITIES[p.ability].name)}</div>
         ${p.secondAbility!=null ? `<div class="ability-tag second">✦ ${escapeHtml(ABILITIES[p.secondAbility].name)}</div>` : ""}
+        ${p.thirdAbility!=null ? `<div class="ability-tag third">✦ ${escapeHtml(ABILITIES[p.thirdAbility].name)}</div>` : ""}
         <div class="seat-tag">💺 ${escapeHtml(SEATS[p.seat].name)} · 🎲 ${escapeHtml(DICE_DESIGNS[p.diceDesign]?.name||"Classic")}</div>
         <div class="live-stats">
           <span>⚔ ${roundStats[i]?.damage||0}</span>
@@ -3615,7 +3695,7 @@
       if(a===17) usage=wildcardFace!=null&&firstAttackRoll?`Wildcard: ${wildcardFace}`:"erster Angriffswurf";
       if(a===18) usage=loadedDiceUsed?"diesen Zug benutzt":"1× pro Basiszug bereit";
       if(a===19) usage="bei Basiswurf unter 25";
-      if(a===20) usage="ab 3 Einsern im selben Wurf";
+      if(a===20) usage="ab 3 gleichen Würfeln im selben Wurf";
       if(a===21) usage="ab 5 Hauptangriffsschaden";
       if(a===22) usage="2+ Sechser im selben Wurf = +1 HP";
       if(a===23) usage=bloodRushActiveThisAttack?"BLOOD RUSH AKTIV: +1 pro Treffer":((players[current].bloodRushPrimed||players[current].voluntaryHpPaidThisTurn)?"für nächsten Angriff bereit":"wartet auf HP-Verlust");
@@ -3949,12 +4029,24 @@
     return pool.slice(0,2);
   }
 
+  function bonusAbilityRuleFor(index){
+    const p=players[index];
+    if(!p) return null;
+    if(campaignMode) return {threshold:SECOND_ABILITY_HP,slot:2,label:"2. Fähigkeit"};
+    if(localModeId==="classic") return {threshold:SECOND_ABILITY_HP,slot:2,label:"2. Fähigkeit"};
+    if(localModeId==="endurance50") return {threshold:30,slot:3,label:"3. Fähigkeit"};
+    return null;
+  }
+
   function maybeTriggerSecondAbility(index,oldHp,newHp){
     if(tutorialMode) return false;
     const p=players[index];
-    if(!p || p.hp<=0 || p.secondAbilityUnlocked) return false;
-    if(oldHp>SECOND_ABILITY_HP && newHp<=SECOND_ABILITY_HP){
-      p.secondAbilityUnlocked=true;
+    const rule=bonusAbilityRuleFor(index);
+    if(!p || !rule || p.hp<=0) return false;
+    const already=rule.slot===3?p.thirdAbilityUnlocked:p.secondAbilityUnlocked;
+    if(already) return false;
+    if(oldHp>rule.threshold && newHp<=rule.threshold){
+      if(rule.slot===3) p.thirdAbilityUnlocked=true; else p.secondAbilityUnlocked=true;
       openSecondAbilityDraft(index);
       return true;
     }
@@ -3963,7 +4055,10 @@
 
   function openSecondAbilityDraft(index){
     const p=players[index];
-    if(!p || p.hp<=0 || p.secondAbility!=null) return;
+    const rule=bonusAbilityRuleFor(index);
+    if(!p || !rule || p.hp<=0) return;
+    if(rule.slot===2 && p.secondAbility!=null) return;
+    if(rule.slot===3 && p.thirdAbility!=null) return;
 
     if(secondAbilityDraftBusy){
       if(!secondAbilityDraftQueue.includes(index)) secondAbilityDraftQueue.push(index);
@@ -3972,10 +4067,11 @@
 
     secondAbilityDraftBusy=true;
     secondAbilityDraftIndex=index;
+    secondAbilityDraftSlot=rule.slot;
     const options=randomSecondAbilityChoices(index);
     secondAbilityDraftChoices=[...options];
 
-    secondAbilityTitle.textContent=`${p.name}: Wähle deine 2. Fähigkeit`;
+    secondAbilityTitle.textContent=`${p.name}: Wähle deine ${rule.label}`;
     secondAbilityOptions.innerHTML="";
 
     options.forEach(id=>{
@@ -3987,7 +4083,7 @@
     });
 
     secondAbilityModal.classList.remove("hidden");
-    addLog(`✨ ${p.name} ist auf ${p.hp} HP gefallen und darf zwischen zwei zufälligen Zweitfähigkeiten wählen.`);
+    addLog(`✨ ${p.name} ist auf ${p.hp} HP gefallen und darf zwischen zwei zufälligen Optionen für die ${rule.label} wählen.`);
     scheduleBotAction(120);
   }
 
@@ -3996,13 +4092,16 @@
     const p=players[index];
     if(!p || !REAL_ABILITY_IDS.includes(id)) return;
 
-    p.secondAbility=id;
+    const slot=secondAbilityDraftSlot;
+    if(slot===3){p.thirdAbility=id;p.thirdAbilityWasChosen=true;}
+    else{p.secondAbility=id;p.secondAbilityWasChosen=true;}
     secondAbilityModal.classList.add("hidden");
     secondAbilityDraftBusy=false;
     secondAbilityDraftIndex=null;
     secondAbilityDraftChoices=[];
+    secondAbilityDraftSlot=2;
 
-    addLog(`✨ ${p.name} wählt als Zweitfähigkeit: ${ABILITIES[id].name}.`);
+    addLog(`✨ ${p.name} wählt als ${slot===3?"3.":"2."} Fähigkeit: ${ABILITIES[id].name}.`);
 
     if(id===23 && index===current && (phase.startsWith("attack") || phase==="counterattack")){
       activateBloodRushMidAttackIfEligible(index);
@@ -4023,13 +4122,6 @@
       return;
     }
 
-    if(pendingCounterattack){
-      const ctx=pendingCounterattack;
-      pendingCounterattack=null;
-      setTimeout(()=>openCounterattack(ctx.defenderIndex,ctx.attackerIndex),120);
-      return;
-    }
-
     if(deferredAttackFinish){
       deferredAttackFinish=false;
       setTimeout(()=>finishAttackAfterCounter(),120);
@@ -4038,10 +4130,12 @@
 
     if(deferredBaseAdvance && phase==="base_auto_end"){
       deferredBaseAdvance=false;
-      setTimeout(()=>advanceTurn(),220);
+      setTimeout(()=>advanceTurn(),140);
+      return;
     }
-  }
 
+    scheduleBotAction(120);
+  }
 
   function applyDamageToPlayer(index,amount,source="self"){
     const p=players[index];
@@ -5111,58 +5205,77 @@
     return select;
   }
 
+  function makeSpecialAbilityChoiceSelect(id,index,slot,selected){
+    const select=document.createElement("select");
+    select.id=`nextAbilityChoice${index}_${slot}`;
+    REAL_ABILITY_IDS.forEach(a=>{const opt=document.createElement("option");opt.value=a;opt.textContent=`${a} – ${ABILITIES[a].name}`;if(a===selected)opt.selected=true;select.appendChild(opt);});
+    return select;
+  }
+
   function prepareNextRound(){
     if(lastPlaceIndex==null) return;
+    const rules=localModeRules();
+    if(rules.id!=="classic" && !campaignMode){
+      nextRoundAbilityRolls=Array(players.length).fill(null);
+      nextRoundAbilities.innerHTML="";
+      nextRoundTitle.textContent=`Runde ${roundNumber+1} · ${rules.name}`;
+      nextRoundInfo.innerHTML=rules.id==="endurance50"
+        ? `<span class="last-place-note">${escapeHtml(players[lastPlaceIndex].name)}</span> startet. Als Letztplatzierter darf diese Person beide Startfähigkeiten frei wählen; alle anderen bekommen 2 neue zufällige Fähigkeiten.`
+        : `<span class="last-place-note">${escapeHtml(players[lastPlaceIndex].name)}</span> startet. Als Letztplatzierter darf diese Person genau 1 von 3 Startfähigkeiten frei wählen; die anderen 2 werden beim Start zufällig bestimmt.`;
+
+      players.forEach((p,i)=>{
+        const box=document.createElement("div");box.className="round-prep-player";
+        const title=document.createElement("div");title.innerHTML=`<strong>${escapeHtml(p.name)}</strong>`;box.appendChild(title);
+        const isLast=i===lastPlaceIndex && i!==roundWinnerIndex;
+        if(isLast){
+          const freeCount=Math.min(rules.lastPlaceFreeChoices,rules.startAbilityCount);
+          nextRoundAbilityRolls[i]={kind:"SPECIAL_LAST",freeCount};
+          const currentAbilities=playerAbilities(i);
+          for(let slot=0;slot<freeCount;slot++){
+            const note=document.createElement("div");note.className="round-note last-place-note";note.textContent=`🏁 Freie Wahl ${slot+1}/${freeCount}`;box.appendChild(note);
+            box.appendChild(makeSpecialAbilityChoiceSelect("nextAbilityChoice",i,slot,currentAbilities[slot]||REAL_ABILITY_IDS[slot]));
+          }
+          const randomCount=rules.startAbilityCount-freeCount;
+          if(randomCount>0){const note=document.createElement("div");note.className="round-note";note.textContent=`🎲 ${randomCount} weitere ${randomCount===1?"Fähigkeit wird":"Fähigkeiten werden"} beim Rundenstart zufällig bestimmt.`;box.appendChild(note);}
+        }else{
+          const abilities=randomUniqueAbilityIds(rules.startAbilityCount);
+          nextRoundAbilityRolls[i]={kind:"SPECIAL_RANDOM",abilities};
+          const note=document.createElement("div");note.className="round-note";note.innerHTML=`🎲 ${abilities.map(id=>escapeHtml(ABILITIES[id].name)).join(" · ")}`;box.appendChild(note);
+        }
+        nextRoundAbilities.appendChild(box);
+      });
+
+      winnerBox.classList.add("hidden");nextRoundBox.classList.remove("hidden");nextRoundAbilities.scrollTop=0;
+      return;
+    }
+
     nextRoundAbilityRolls=Array(players.length).fill(null);
     nextRoundAbilities.innerHTML="";
     nextRoundTitle.textContent=`Runde ${roundNumber+1} vorbereiten`;
     nextRoundInfo.innerHTML=`<span class="last-place-note">${escapeHtml(players[lastPlaceIndex].name)}</span> startet und bekommt als Letztplatzierter die freie Fähigkeitswahl aus 1–5 oder 8–25. Der Sieger und alle anderen würfeln ihre Fähigkeit mit einem W25 neu; nur eine gewürfelte 6 erlaubt freie Wahl. Glück (BETA) gibt es nur bei einer direkt gewürfelten 7.`;
 
     players.forEach((p,i)=>{
-      const box=document.createElement("div");
-      box.className="round-prep-player";
-      const title=document.createElement("div");
-      title.innerHTML=`<strong>${escapeHtml(p.name)}</strong>`;
-      box.appendChild(title);
-
+      const box=document.createElement("div");box.className="round-prep-player";
+      const title=document.createElement("div");title.innerHTML=`<strong>${escapeHtml(p.name)}</strong>`;box.appendChild(title);
       if(i===lastPlaceIndex && i!==roundWinnerIndex){
         nextRoundAbilityRolls[i]="FREE_LAST";
-        const note=document.createElement("div");
-        note.className="round-note last-place-note";
-        note.textContent="🏁 Letzter Platz: freie Wahl ohne Würfelwurf";
-        box.appendChild(note);
+        const note=document.createElement("div");note.className="round-note last-place-note";note.textContent="🏁 Letzter Platz: freie Wahl ohne Würfelwurf";box.appendChild(note);
         const select=makeAbilityChoiceSelect("nextAbilityChoice",i,p.ability||1);
-        if(p.botLevel&&p.botLevel!=="human"){
-          select.value=botPickAbility(CHOOSABLE_ABILITY_IDS,p.botLevel,[]);
-          select.disabled=true;
-        }
+        if(p.botLevel&&p.botLevel!=="human"){select.value=botPickAbility(CHOOSABLE_ABILITY_IDS,p.botLevel,[]);select.disabled=true;}
         box.appendChild(select);
       }else{
-        // Sieger und alle übrigen Spieler würfeln ganz normal mit W25 neu.
-        const roll=randAbilityRoll();
-        nextRoundAbilityRolls[i]=roll;
-        const note=document.createElement("div");
-        note.className="round-note";
+        const roll=randAbilityRoll();nextRoundAbilityRolls[i]=roll;
+        const note=document.createElement("div");note.className="round-note";
         if(roll===6){
-          note.innerHTML=`🎲 W25 = <strong>6</strong> → freie Wahl`;
-          box.appendChild(note);
+          note.innerHTML=`🎲 W25 = <strong>6</strong> → freie Wahl`;box.appendChild(note);
           const select=makeAbilityChoiceSelect("nextAbilityChoice",i,p.ability||1);
-          if(p.botLevel&&p.botLevel!=="human"){
-            select.value=botPickAbility(CHOOSABLE_ABILITY_IDS,p.botLevel,[]);
-            select.disabled=true;
-          }
+          if(p.botLevel&&p.botLevel!=="human"){select.value=botPickAbility(CHOOSABLE_ABILITY_IDS,p.botLevel,[]);select.disabled=true;}
           box.appendChild(select);
-        }else{
-          note.innerHTML=`🎲 W25 = <strong>${roll}</strong> → ${escapeHtml(ABILITIES[roll].name)}`;
-          box.appendChild(note);
-        }
+        }else{note.innerHTML=`🎲 W25 = <strong>${roll}</strong> → ${escapeHtml(ABILITIES[roll].name)}`;box.appendChild(note);}
       }
       nextRoundAbilities.appendChild(box);
     });
-
-    winnerBox.classList.add("hidden");
-    nextRoundBox.classList.remove("hidden");
-    nextRoundAbilities.scrollTop=0;
+    winnerBox.classList.add("hidden");nextRoundBox.classList.remove("hidden");nextRoundAbilities.scrollTop=0;
   }
 
   function startNextRound(){
@@ -5170,67 +5283,60 @@
     clearBotAutomation();
     const starter=lastPlaceIndex;
     const starterPlayer=players[starter];
+    const rules=localModeRules();
+    const special=rules.id!=="classic" && !campaignMode;
 
     players.forEach((p,i)=>{
-      let roll=nextRoundAbilityRolls[i];
-
-      // Sicherheitsnetz: Nur der echte Letztplatzierte darf FREE_LAST besitzen.
-      // Der Sieger wird in jedem Fall normal neu ausgewürfelt.
-      if(roll==="FREE_LAST" && (i!==starter || i===roundWinnerIndex)){
-        roll=randAbilityRoll();
-        nextRoundAbilityRolls[i]=roll;
-      }
-
-      let ability;
-      if(roll==="FREE_LAST" || roll===6){
-        ability=+$(`nextAbilityChoice${i}`).value;
+      if(special){
+        const payload=nextRoundAbilityRolls[i]||{};
+        let abilities=[];
+        if(payload.kind==="SPECIAL_LAST"){
+          const free=[];
+          for(let slot=0;slot<payload.freeCount;slot++){
+            const id=+$(`nextAbilityChoice${i}_${slot}`)?.value;
+            if(REAL_ABILITY_IDS.includes(id) && !free.includes(id)) free.push(id);
+          }
+          while(free.length<payload.freeCount){free.push(...randomUniqueAbilityIds(1,free));}
+          abilities=[...free,...randomUniqueAbilityIds(rules.startAbilityCount-free.length,free)];
+          p.primaryWasChosen=true;
+          p.rolledAbility="FREE_LAST_MULTI";
+        }else{
+          abilities=Array.isArray(payload.abilities)?[...payload.abilities]:randomUniqueAbilityIds(rules.startAbilityCount);
+          p.primaryWasChosen=false;p.rolledAbility="MULTI_RANDOM";
+        }
+        p.ability=abilities[0]??1;
+        p.secondAbility=abilities[1]??null;
+        p.thirdAbility=abilities[2]??null;
+        p.secondAbilityUnlocked=rules.startAbilityCount>=2;
+        p.thirdAbilityUnlocked=rules.startAbilityCount>=3;
+        const chosenCount=payload.kind==="SPECIAL_LAST"?Math.min(payload.freeCount||0,rules.startAbilityCount):0;
+        p.secondAbilityWasChosen=chosenCount>=2;
+        p.thirdAbilityWasChosen=chosenCount>=3;
       }else{
-        ability=roll;
+        let roll=nextRoundAbilityRolls[i];
+        if(roll==="FREE_LAST" && (i!==starter || i===roundWinnerIndex)){roll=randAbilityRoll();nextRoundAbilityRolls[i]=roll;}
+        let ability;if(roll==="FREE_LAST" || roll===6){ability=+$(`nextAbilityChoice${i}`).value;}else{ability=roll;}
+        p.ability=ability;p.rolledAbility=roll;p.primaryWasChosen=(roll==="FREE_LAST" || roll===6);
+        p.secondAbility=null;p.thirdAbility=null;p.secondAbilityUnlocked=false;p.thirdAbilityUnlocked=false;p.secondAbilityWasChosen=false;p.thirdAbilityWasChosen=false;
       }
-      p.ability=ability;
-      p.rolledAbility=roll;
-      p.primaryWasChosen=(roll==="FREE_LAST" || roll===6);
-      p.secondAbility=null;
-      p.secondAbilityUnlocked=false;
-      p.hp=START_HP;
-      p.momentumStreak=0;
-      p.lastStandUsed=false;
-      p.roundLastStandTriggered=false;
-      p.damageSinceLastOwnTurn=false;
-      p.bloodRushPrimed=false;
-      p.voluntaryHpPaidThisTurn=false;
-      p.botBloodUsesThisAttack=0;
+      p.hp=special?rules.startHp:START_HP;p.maxHp=special?rules.startHp:START_HP;
+      p.momentumStreak=0;p.lastStandUsed=false;p.roundLastStandTriggered=false;p.damageSinceLastOwnTurn=false;p.bloodRushPrimed=false;p.voluntaryHpPaidThisTurn=false;p.botBloodUsesThisAttack=0;
     });
 
-    roundNumber++;
-    roundEliminationOrder=[];
-    lastPlaceIndex=null;
-    roundWinnerHandled=false;
-    roundWinnerIndex=null;
-    nextRoundAbilityRolls=[];
-    secondAbilityDraftBusy=false;secondAbilityDraftIndex=null;deferredBaseAdvance=false;
-    gamblingRolling=false;gamblingBaseTotal=null;gamblingModal.classList.add("hidden");highStakesRolling=false;highStakesDecisionThisAttack=false;highStakesModal.classList.add("hidden");perfect25Rolling=false;perfect25D4Rolling=false;perfect25BaseTotal=null;pendingPerfect25Total=null;perfect25Modal.classList.add("hidden");perfect25D4Modal.classList.add("hidden");insuranceRolling=false;insuranceContext=null;insuranceModal.classList.add("hidden");counterRolling=false;counterContext=null;counterDiceState=[];counterHits=0;counterFirstRoll=true;pendingCounterattack=null;deferredAttackFinish=false;counterModal.classList.add("hidden");wildcardFace=null;secondAbilityDraftQueue=[];
-    secondAbilityModal.classList.add("hidden");
-    randomizePlayerOrder(true);
-    resetRoundStats();
-    current=Math.max(0,players.indexOf(starterPlayer));
-    prepareBloodRushForTurn(current);
-    dice=freshDice();phase="idle";isAnimating=false;
-    attackFace=null;attackTarget=null;attackHits=0;attackDamage=0;firstAttackRoll=true;currentAttackRollNewHits=0;
+    roundNumber++;roundEliminationOrder=[];lastPlaceIndex=null;roundWinnerHandled=false;roundWinnerIndex=null;nextRoundAbilityRolls=[];
+    secondAbilityDraftBusy=false;secondAbilityDraftIndex=null;secondAbilityDraftSlot=2;deferredBaseAdvance=false;
+    gamblingRolling=false;gamblingBaseTotal=null;gamblingModal.classList.add("hidden");highStakesRolling=false;highStakesDecisionThisAttack=false;highStakesModal.classList.add("hidden");perfect25Rolling=false;perfect25D4Rolling=false;perfect25BaseTotal=null;pendingPerfect25Total=null;perfect25Modal.classList.add("hidden");perfect25D4Modal.classList.add("hidden");insuranceRolling=false;insuranceContext=null;insuranceModal.classList.add("hidden");counterRolling=false;counterContext=null;counterDiceState=[];counterHits=0;counterFirstRoll=true;pendingCounterattack=null;deferredAttackFinish=false;counterModal.classList.add("hidden");wildcardFace=null;secondAbilityDraftQueue=[];secondAbilityModal.classList.add("hidden");
+    randomizePlayerOrder(true);resetRoundStats();current=Math.max(0,players.indexOf(starterPlayer));prepareBloodRushForTurn(current);
+    dice=freshDice();phase="idle";isAnimating=false;attackFace=null;attackTarget=null;attackHits=0;attackDamage=0;firstAttackRoll=true;currentAttackRollNewHits=0;
     baseRerollUsed=false;loadedDiceUsed=false;lastBaseRollIndices=[];attackPowerUsed=false;precisionUses=0;momentumBonus=0;bloodPriceNeighbors=[];bloodRushActiveThisAttack=false;doubleTapApplied=false;pendingDamage=null;pendingHeal=null;
-    winnerBox.classList.add("hidden");nextRoundBox.classList.add("hidden");
-    logEl.innerHTML="";
+    winnerBox.classList.add("hidden");nextRoundBox.classList.add("hidden");logEl.innerHTML="";
     addLog(`Runde ${roundNumber} startet. ${players[current].name} beginnt als Letztplatzierter der vorherigen Runde.`);
     players.forEach((p,i)=>{
-      const roll=p.rolledAbility;
-      const source=roll==="FREE_LAST" ? "freie Wahl als Letztplatzierter" : roll===6 ? "W25 = 6 → freie Wahl" : `W25 = ${roll}`;
-      addLog(`${p.name}: ${source} → Fähigkeit ${p.ability}: ${ABILITIES[p.ability].name}. Zweitfähigkeit wird bei ≤12 HP neu freigeschaltet.`);
+      if(special){addLog(`${p.name}: ${playerAbilities(i).map(id=>ABILITIES[id].name).join(" + ")} · ${rules.startHp} HP.`);}
+      else{const roll=p.rolledAbility;const source=roll==="FREE_LAST"?"freie Wahl als Letztplatzierter":roll===6?"W25 = 6 → freie Wahl":`W25 = ${roll}`;addLog(`${p.name}: ${source} → Fähigkeit ${p.ability}: ${ABILITIES[p.ability].name}. Zweitfähigkeit wird bei ≤12 HP neu freigeschaltet.`);}
     });
     renderAll();
   }
-
-
-
 
   function applyStoredSettings(){
     animationSetting.value=saveData.settings.animation==="fast"?"fast":"normal";
@@ -5397,57 +5503,48 @@
 
   $("makeNames").onclick=makeNameFields;
   playerCount.onchange=makeNameFields;
+  localModeSelect.onchange=applyLocalModeSetup;
   rollAbilitiesBtn.onclick=rollSetupAbilities;
 
   startGameBtn.onclick=()=>{
-    tutorialMode=false;
-    campaignMode=false;
-    gameContext={mode:"normal-game",returnScreen:"setup",profileId:null,encounterId:null};
-    resetTutorialUi();
-    nextRoundPrepBtn.classList.remove("hidden");
-    restartBtn.textContent="Neue Partie";
-    const n=+playerCount.value;
-    if(setupAbilityRolls.some(v=>v==null)) return;
+    tutorialMode=false;campaignMode=false;
+    const rules=localModeRules();
+    gameContext={mode:`local-${rules.id}`,returnScreen:"setup",profileId:null,encounterId:null};
+    resetTutorialUi();nextRoundPrepBtn.classList.remove("hidden");restartBtn.textContent="Neue Partie";
+    const n=+playerCount.value;if(setupAbilityRolls.some(v=>v==null)) return;if(!rules.allowBots && n>4) return;
 
     clearBotAutomation();
     const seats=Array.from({length:n},(_,i)=>+$("seatChoice"+i).value);
-    const botLevels=Array.from({length:n},(_,i)=>setupBotLevel(i));
+    const botLevels=Array.from({length:n},(_,i)=>rules.allowBots?setupBotLevel(i):"human");
 
     players=Array.from({length:n},(_,i)=>{
+      const abilities=getSetupAbilities(i);
       const rolled=setupAbilityRolls[i];
-      const ability=getSetupAbility(i);
       const profile=botLevels[i]==="human"?getProfile($("profileChoice"+i)?.value):null;
       return{
-        name:profile?.name||`Bot ${i+1}`,
-        battleTag:profile?`#${profile.tagNumber}`:"",
-        profileId:profile?.id||null,
-        botLevel:botLevels[i],
-        hp:START_HP, ability, secondAbility:null, secondAbilityUnlocked:false, rolledAbility:rolled,
-        primaryWasChosen:rolled===6,
-        seat:seats[i], diceDesign:profile?.selectedDice||"classic", wins:0, momentumStreak:0, lastStandUsed:false, roundLastStandTriggered:false, damageSinceLastOwnTurn:false, bloodRushPrimed:false, voluntaryHpPaidThisTurn:false, botBloodUsesThisAttack:0
+        name:profile?.name||`Bot ${i+1}`,battleTag:profile?`#${profile.tagNumber}`:"",profileId:profile?.id||null,botLevel:botLevels[i],
+        hp:rules.startHp,maxHp:rules.startHp,ability:abilities[0]??1,secondAbility:abilities[1]??null,thirdAbility:abilities[2]??null,
+        secondAbilityUnlocked:rules.startAbilityCount>=2,thirdAbilityUnlocked:rules.startAbilityCount>=3,rolledAbility:rolled,
+        primaryWasChosen:rules.id==="classic"&&rolled===6,secondAbilityWasChosen:false,thirdAbilityWasChosen:false,
+        seat:seats[i],diceDesign:profile?.selectedDice||"classic",wins:0,momentumStreak:0,lastStandUsed:false,roundLastStandTriggered:false,damageSinceLastOwnTurn:false,bloodRushPrimed:false,voluntaryHpPaidThisTurn:false,botBloodUsesThisAttack:0
       };
     });
 
-    randomizePlayerOrder(false);
-    resetRoundStats();
-    current=0;
-    prepareBloodRushForTurn(current);
-    dice=freshDice();phase="idle";isAnimating=false;
+    randomizePlayerOrder(false);resetRoundStats();current=0;prepareBloodRushForTurn(current);dice=freshDice();phase="idle";isAnimating=false;
     attackFace=null;attackTarget=null;attackHits=0;attackDamage=0;firstAttackRoll=true;currentAttackRollNewHits=0;
     baseRerollUsed=false;loadedDiceUsed=false;lastBaseRollIndices=[];attackPowerUsed=false;precisionUses=0;momentumBonus=0;bloodPriceNeighbors=[];bloodRushActiveThisAttack=false;doubleTapApplied=false;pendingDamage=null;pendingHeal=null;
-    roundNumber=1;roundEliminationOrder=[];lastPlaceIndex=null;roundWinnerHandled=false;roundWinnerIndex=null;nextRoundAbilityRolls=[];eventPopupQueue=[];eventPopupBusy=false;secondAbilityDraftBusy=false;secondAbilityDraftIndex=null;deferredBaseAdvance=false;gamblingRolling=false;gamblingBaseTotal=null;gamblingModal.classList.add("hidden");highStakesRolling=false;highStakesDecisionThisAttack=false;highStakesModal.classList.add("hidden");perfect25Rolling=false;perfect25D4Rolling=false;perfect25BaseTotal=null;pendingPerfect25Total=null;perfect25Modal.classList.add("hidden");perfect25D4Modal.classList.add("hidden");insuranceRolling=false;insuranceContext=null;insuranceModal.classList.add("hidden");counterRolling=false;counterContext=null;counterDiceState=[];counterHits=0;counterFirstRoll=true;pendingCounterattack=null;deferredAttackFinish=false;counterModal.classList.add("hidden");wildcardFace=null;secondAbilityDraftQueue=[];secondAbilityModal.classList.add("hidden");
-    logEl.innerHTML="";winnerBox.classList.add("hidden");nextRoundBox.classList.add("hidden");
-    hideFrontScreens();
-    game.classList.remove("hidden");
-    document.body.classList.add("playing");
+    roundNumber=1;roundEliminationOrder=[];lastPlaceIndex=null;roundWinnerHandled=false;roundWinnerIndex=null;nextRoundAbilityRolls=[];eventPopupQueue=[];eventPopupBusy=false;secondAbilityDraftBusy=false;secondAbilityDraftIndex=null;secondAbilityDraftSlot=2;deferredBaseAdvance=false;gamblingRolling=false;gamblingBaseTotal=null;gamblingModal.classList.add("hidden");highStakesRolling=false;highStakesDecisionThisAttack=false;highStakesModal.classList.add("hidden");perfect25Rolling=false;perfect25D4Rolling=false;perfect25BaseTotal=null;pendingPerfect25Total=null;perfect25Modal.classList.add("hidden");perfect25D4Modal.classList.add("hidden");insuranceRolling=false;insuranceContext=null;insuranceModal.classList.add("hidden");counterRolling=false;counterContext=null;counterDiceState=[];counterHits=0;counterFirstRoll=true;pendingCounterattack=null;deferredAttackFinish=false;counterModal.classList.add("hidden");wildcardFace=null;secondAbilityDraftQueue=[];secondAbilityModal.classList.add("hidden");
+    logEl.innerHTML="";winnerBox.classList.add("hidden");nextRoundBox.classList.add("hidden");hideFrontScreens();game.classList.remove("hidden");document.body.classList.add("playing");
 
-    addLog(`Spiel gestartet mit ${n} Teilnehmern. Bots würfeln fair und unterscheiden sich nur durch ihre Entscheidungen. Jeder startet mit ${START_HP} Leben.`);
-    players.forEach(p=>{
-      const abilityText=p.rolledAbility===6
-        ? `W25 = 6 → freie Wahl → Fähigkeit ${p.ability}: ${ABILITIES[p.ability].name}`
-        : `W25 = ${p.rolledAbility} → Fähigkeit ${p.ability}: ${ABILITIES[p.ability].name}`;
-      const controller=p.botLevel==="human"?"Mensch":BOT_LEVELS[p.botLevel].name;
-      addLog(`${p.name}: ${abilityText} · ${controller} · Sitz: ${SEATS[p.seat].name} · Würfel: ${DICE_DESIGNS[p.diceDesign]?.name||"Classic"}.`);
+    if(rules.id==="classic") addLog(`Classic gestartet mit ${n} Teilnehmern. Jeder startet mit ${rules.startHp} Leben.`);
+    else addLog(`${rules.name} gestartet: ${n} lokale Spieler · ${rules.startHp} HP · ${rules.startAbilityCount} Startfähigkeiten · keine Bots.`);
+    players.forEach((p,i)=>{
+      if(rules.id==="classic"){
+        const roll=p.rolledAbility;const abilityText=roll===6?`W25 = 6 → freie Wahl → ${ABILITIES[p.ability].name}`:`W25 = ${roll} → ${ABILITIES[p.ability].name}`;
+        const controller=p.botLevel==="human"?"Mensch":BOT_LEVELS[p.botLevel].name;addLog(`${p.name}: ${abilityText} · ${controller} · Sitz: ${SEATS[p.seat].name}.`);
+      }else{
+        addLog(`${p.name}: ${playerAbilities(i).map(id=>ABILITIES[id].name).join(" + ")}.`);
+      }
     });
     renderAll();
   };
@@ -5516,7 +5613,7 @@
   renderProfiles();
   renderAchievements();
   renderStats();
-  makeNameFields();
+  applyLocalModeSetup();
   renderCampaign();
   openMainMenu();
 })();
