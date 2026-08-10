@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <meta name="theme-color" content="#0d1016" />
-  <title>Würfelduell · V18.2</title>
+  <title>Würfelduell · V18.3</title>
   <style>
     * { box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
     :root{
@@ -191,7 +191,6 @@
     body.bot-acting #game .controls button{pointer-events:none}
     body.bot-acting .special-roll-modal button,
     body.bot-acting #gamblingModal button,
-    body.bot-acting #counterModal button,
     body.bot-acting #secondAbilityModal button{pointer-events:none}
     .ability-roll,.seat-box{
       margin-top:8px;padding:9px 10px;border-radius:11px;border:1px solid var(--border);
@@ -899,6 +898,48 @@
     .campaign-ability-chip.locked{opacity:.34}
     .campaign-complete{margin:0 0 12px;padding:11px 12px;border-radius:14px;border:1px solid rgba(255,200,87,.32);background:linear-gradient(135deg,rgba(255,200,87,.10),rgba(184,140,255,.08));font-size:12px;line-height:1.45}
     @media (max-width:540px){.campaign-world-tabs{grid-template-columns:1fr 1fr}.campaign-top,.campaign-controls{grid-template-columns:1fr}.campaign-start-row{grid-template-columns:1fr}.campaign-start-row .secondary{width:100%}}
+  
+    /* V18.3 mobile safety: the match may always scroll vertically.
+       Fixed dialogs scroll themselves instead of trapping content outside the viewport. */
+    body.playing{
+      touch-action:pan-y;
+      overflow-y:auto!important;
+      height:auto!important;
+      min-height:100dvh!important;
+    }
+    body.playing .app,
+    body.playing #game:not(.hidden){
+      height:auto!important;
+      min-height:100dvh!important;
+      overflow:visible!important;
+    }
+    body.playing .game-menu-btn{
+      position:fixed;
+      top:max(8px,env(safe-area-inset-top));
+      right:8px;
+      z-index:850;
+    }
+    .round-overlay,
+    .utility-overlay,
+    #secondAbilityModal,
+    #gamblingModal,
+    .special-roll-modal{
+      overflow-y:auto!important;
+      -webkit-overflow-scrolling:touch;
+      overscroll-behavior-y:contain;
+      align-items:flex-start!important;
+    }
+    .round-overlay-panel,
+    .utility-panel,
+    .second-ability-panel,
+    .gambling-panel,
+    .special-roll-panel{
+      max-height:none!important;
+      overflow:visible!important;
+      margin-top:auto;
+      margin-bottom:auto;
+    }
+
   </style>
 </head>
 <body>
@@ -1027,7 +1068,7 @@
       <button id="menuRulesBtn"><span class="menu-icon">📖</span> Regeln</button>
       <button id="menuChangelogBtn"><span class="menu-icon">📝</span> Changelog</button>
     </div>
-    <div class="version-footer">WÜRFELDUELL · VERSION 18.2</div>
+    <div class="version-footer">WÜRFELDUELL · VERSION 18.3</div>
   </section>
 
 
@@ -1119,6 +1160,7 @@
   <section id="changelogScreen" class="card screen-card hidden">
     <div class="screen-topbar"><button class="menuBackBtn">←</button><h2 class="screen-title">📝 Changelog</h2></div>
     <div class="screen-subtitle">Die großen Versionssprünge, ohne jeden Mini-Hotfix.</div>
+    <div class="changelog-entry"><div class="changelog-version">V18.3</div><ul><li>Mobile Scroll-Safety erweitert; der Menü-Button bleibt während des Kampfes erreichbar und Overlays können selbst scrollen</li><li>Counterattack-Button für menschliche Spieler gegen hängen gebliebenen Bot-Input-State abgesichert</li><li>Royal Flush: 8-HP-Restleben-Bedingung entfernt; nur noch die 14-Schaden-Challenge zählt</li><li>Rift Circuit auf 10 Encounter erweitert</li><li>Neue Fähigkeits-Challenges: Snake Eyes, Loaded Dice, Blutpreis, High Stakes und Counterattack müssen aktiv eingesetzt werden</li></ul></div>
     <div class="changelog-entry"><div class="changelog-version">V18.2</div><ul><li>Damage-Challenges zählen jetzt den erzeugten Rohschaden vor dem HP-Cap des Gegners</li><li>Neue Welt-Auswahl in der Solo-Kampagne</li><li>Welt 2 „Rift Circuit“ wird nach Abschluss von Encounter 10 freigeschaltet</li><li>Fünf zusätzliche Rift-Encounter mit eigener Progression und neuen Fähigkeits-Unlocks</li><li>Snake Eyes triggert jetzt bei mindestens drei gleichen Würfeln jeder Zahl, nicht mehr nur bei Einsern</li></ul></div>
     <div class="changelog-entry"><div class="changelog-version">V18.1</div><ul><li>Vertikales Scrollen im Kampf wieder aktiviert – lange Fähigkeitstexte blockieren keine Controls mehr</li><li>Kampagne auf 15 Encounter erweitert</li><li>Neue Kämpfe: Vampire's Cut, No Safety Net, Chaos Room, Three of a Kind und Royal Flush</li><li>Neue kombinierte Kampagnen-Challenges und Heilungs-Challenge</li><li>Three of a Kind als echter 1-gegen-3-Kampf</li><li>Royal Flush als neuer Kapitel-Boss im 2-gegen-1</li></ul></div>
     <div class="changelog-entry"><div class="changelog-version">V18.0</div><ul><li>Kampagne auf 10 Encounter erweitert</li><li>Neue Kämpfe: Snake Pit, Mirror Chamber, Double Trouble, Blood Bank und Black Table</li><li>Mirror-Gegner übernimmt dynamisch deine gewählte Hauptfähigkeit</li><li>Kampagnengegner können eigene HP und eine Zweitfähigkeit besitzen</li><li>Neuer Kapitel-Boss mit 40 HP</li><li>„Zur Kampagne“ vollständig vom Kampfzustand entkoppelt und robust zurückgesetzt</li></ul></div>
@@ -1223,10 +1265,10 @@
   const CHOOSABLE_ABILITY_IDS = REAL_ABILITY_IDS.filter(id=>id!==7);
 
 
-  const GAME_VERSION="18.2";
+  const GAME_VERSION="18.3";
   const SAVE_KEY="wuerfelduell_save_v1"; // absichtlich stabil: Updates lesen denselben Browser-Save
   const SAVE_SCHEMA_VERSION=3;
-  const CAMPAIGN_VERSION=4;
+  const CAMPAIGN_VERSION=5;
 
   const ACHIEVEMENTS={
     grande:{name:"GRANDE!",desc:"Beende einen Angriff mit allen 5 Würfeln als Treffer.",rewardDice:"gold"},
@@ -1251,7 +1293,7 @@
   const CAMPAIGN_START_ABILITIES=[3];
   const CAMPAIGN_WORLDS=[
     {id:"house",name:"Welt 1 · House Circuit",shortName:"House Circuit",desc:"Die ursprüngliche Kampagne. 15 Encounter vom Rookie bis Royal Flush.",unlockRequires:[],finalEncounterId:"royal_flush"},
-    {id:"rift",name:"Welt 2 · Rift Circuit",shortName:"Rift Circuit",desc:"Ein alternativer Pfad mit eigenen Gegnern. Wird freigeschaltet, sobald Black Table (Encounter 10) geschafft ist.",unlockRequires:["black_table"],finalEncounterId:"rift_crown"}
+    {id:"rift",name:"Welt 2 · Rift Circuit",shortName:"Rift Circuit",desc:"Ein alternativer Pfad mit 10 Encountern und eigenen Gegnern. Wird freigeschaltet, sobald Black Table (Encounter 10) geschafft ist.",unlockRequires:["black_table"],finalEncounterId:"rift_sovereign"}
   ];
   const CAMPAIGN_ENCOUNTERS=[
     {id:"first_blood",world:"house",requires:[],title:"1 · First Blood",subtitle:"Der Rookie",desc:"Ein sauberer Einstieg gegen einen leichten Gegner. Kein Trick – erst einmal überleben und gewinnen.",challenge:{type:"win",text:"Gewinne den Kampf."},rewardAbility:4,enemies:[{name:"Rookie",level:"easy",ability:0}]},
@@ -1270,13 +1312,19 @@
     {id:"no_safety_net",world:"house",requires:["vampires_cut"],title:"12 · No Safety Net",subtitle:"Der Marksman",desc:"Präzision plus Loaded Dice macht jeden kleinen Fehler teuer. Spiele kontrolliert und bezahle nicht dauernd mit deinem eigenen Leben.",challenge:{type:"self_damage_max",value:3,text:"Gewinne mit höchstens 3 selbst verursachtem Schaden."},rewardAbility:8,enemies:[{name:"Marksman",level:"hard",ability:8,secondAbility:18}]},
     {id:"chaos_room",world:"house",requires:["no_safety_net"],title:"13 · Chaos Room",subtitle:"Der Joker · 28 HP",desc:"Wildcard und Gambling Man machen seine Angriffe schwer lesbar. Du musst selbst offensiv bleiben, ohne am Ende zerlegt dazustehen.",challenge:{type:"all",rules:[{type:"base_over_25"},{type:"finish_hp",value:10}],text:"Beende mindestens einen Basiswurf über 25 und gewinne mit mindestens 10 HP."},rewardAbility:17,enemies:[{name:"Joker",level:"hard",hp:28,ability:17,secondAbility:12}]},
     {id:"three_of_a_kind",world:"house",requires:["chaos_room"],title:"14 · Three of a Kind",subtitle:"1 gegen 3",desc:"Drei kleinere Gegner teilen sich den Tisch. Jeder hat nur 15 HP, aber Momentum, Double Tap und Insurance erzeugen konstanten Druck.",challenge:{type:"turn_damage",value:12,text:"Verursache mindestens 12 Schaden in einem eigenen Zug."},rewardAbility:25,enemies:[{name:"Rush",level:"normal",hp:15,ability:10},{name:"Tap",level:"normal",hp:15,ability:24},{name:"Shield",level:"normal",hp:15,ability:19}]},
-    {id:"royal_flush",world:"house",requires:["three_of_a_kind"],title:"15 · Royal Flush",subtitle:"Kapitel-Boss · 2 gegen 1",desc:"Der King spielt mit Präzision und Wildcard, sein Ace mit Brutalen Einsen und Underdog. Zusammen kontrollieren sie fast jede Angriffszahl.",challenge:{type:"all",rules:[{type:"turn_damage",value:14},{type:"finish_hp",value:8}],text:"Boss-Challenge: Verursache mindestens 14 Schaden in einem Zug und gewinne mit mindestens 8 HP."},rewardAbility:15,enemies:[{name:"The King",level:"hard",hp:42,ability:8,secondAbility:17},{name:"Ace",level:"hard",hp:20,ability:1,secondAbility:25}]},
+    {id:"royal_flush",world:"house",requires:["three_of_a_kind"],title:"15 · Royal Flush",subtitle:"Kapitel-Boss · 2 gegen 1",desc:"Der King spielt mit Präzision und Wildcard, sein Ace mit Brutalen Einsen und Underdog. Zusammen kontrollieren sie fast jede Angriffszahl.",challenge:{type:"turn_damage",value:14,text:"Boss-Challenge: Verursache mindestens 14 Schaden in einem eigenen Zug."},rewardAbility:15,enemies:[{name:"The King",level:"hard",hp:42,ability:8,secondAbility:17},{name:"Ace",level:"hard",hp:20,ability:1,secondAbility:25}]},
 
     {id:"rift_gate",world:"rift",requires:["black_table"],title:"1 · Rift Gate",subtitle:"Welt 2 · Der Gatekeeper",desc:"Hinter Black Table öffnet sich ein zweiter Pfad. Der Gatekeeper drückt früh auf 1er-Angriffe und bestraft vorsichtiges Spiel.",challenge:{type:"base_over_25",text:"Beende mindestens einen Basiswurf mit mehr als 25 und gewinne."},rewardAbility:1,enemies:[{name:"Gatekeeper",level:"hard",hp:30,ability:1}]},
     {id:"blood_market_rift",world:"rift",requires:["rift_gate"],title:"2 · Blood Market",subtitle:"2 gegen 1 · Kaufen mit HP",desc:"Broker und Loader bezahlen beide Leben für bessere Würfe. Du darfst dich von ihrem Tempo nicht zum selben Fehler zwingen lassen.",challenge:{type:"self_damage_max",value:4,text:"Gewinne mit höchstens 4 selbst verursachtem Schaden."},rewardAbility:11,enemies:[{name:"Broker",level:"hard",hp:24,ability:11},{name:"Loader",level:"normal",hp:20,ability:18}]},
     {id:"house_of_chance_rift",world:"rift",requires:["blood_market_rift"],title:"3 · House of Chance",subtitle:"Der Oracle · 34 HP",desc:"Gambling Man und Wildcard machen seine Angriffszahl unberechenbar. Ein großer eigener Zug ist der sicherste Weg durch das Chaos.",challenge:{type:"turn_damage",value:11,text:"Verursache mindestens 11 Schaden in einem eigenen Zug."},rewardAbility:12,enemies:[{name:"Oracle",level:"hard",hp:34,ability:12,secondAbility:17}]},
     {id:"crossfire_rift",world:"rift",requires:["house_of_chance_rift"],title:"4 · Crossfire",subtitle:"1 gegen 3 · Split Pressure",desc:"Drei kleinere Gegner teilen den Tisch. Der Kampf ist gebaut, um Mehrziel-Schaden und saubere Zielwahl zu belohnen.",challenge:{type:"finish_hp",value:8,text:"Besiege alle drei Gegner mit mindestens 8 HP Restleben."},rewardAbility:16,enemies:[{name:"Red",level:"normal",hp:16,ability:10},{name:"Blue",level:"normal",hp:16,ability:19},{name:"Gold",level:"normal",hp:16,ability:24}]},
-    {id:"rift_crown",world:"rift",requires:["crossfire_rift"],title:"5 · Rift Crown",subtitle:"Welt-Boss · 2 gegen 1",desc:"Der Rift King heilt über doppelte Sechser und verweigert einmal den Tod. Echo eröffnet Angriffe schon bei 25 und wird stärker, sobald Blut geflossen ist.",challenge:{type:"all",rules:[{type:"turn_damage",value:15},{type:"finish_hp",value:5}],text:"Boss-Challenge: Erzeuge mindestens 15 Schaden in einem eigenen Zug und gewinne mit mindestens 5 HP."},rewardAbility:22,enemies:[{name:"Rift King",level:"hard",hp:45,ability:22,secondAbility:14},{name:"Echo",level:"hard",hp:18,ability:5,secondAbility:23}]}
+    {id:"rift_crown",world:"rift",requires:["crossfire_rift"],title:"5 · Rift Crown",subtitle:"Welt-Boss · 2 gegen 1",desc:"Der Rift King heilt über doppelte Sechser und verweigert einmal den Tod. Echo eröffnet Angriffe schon bei 25 und wird stärker, sobald Blut geflossen ist.",challenge:{type:"all",rules:[{type:"turn_damage",value:15},{type:"finish_hp",value:5}],text:"Boss-Challenge: Erzeuge mindestens 15 Schaden in einem eigenen Zug und gewinne mit mindestens 5 HP."},rewardAbility:22,enemies:[{name:"Rift King",level:"hard",hp:45,ability:22,secondAbility:14},{name:"Echo",level:"hard",hp:18,ability:5,secondAbility:23}]},
+
+    {id:"serpents_law_rift",world:"rift",requires:["rift_crown"],title:"6 · Serpent's Law",subtitle:"Fähigkeitsprüfung · Snake Eyes",desc:"The Coil zwingt dich in einen längeren, kontrollierten Kampf. Diesmal zählt nicht nur der Sieg: Du musst Snake Eyes wirklich zum Einsatz bringen.",challenge:{type:"ability_use",ability:20,count:1,text:"Nutze Snake Eyes mindestens einmal und gewinne."},rewardAbility:8,enemies:[{name:"The Coil",level:"hard",hp:30,ability:20,secondAbility:8}]},
+    {id:"loaded_contract_rift",world:"rift",requires:["serpents_law_rift"],title:"7 · Loaded Contract",subtitle:"Fähigkeitsprüfung · Loaded Dice",desc:"Der Fixer manipuliert seine Würfe und bestraft Zögern. Bezahle selbst einmal für einen garantierten Fünfer und gewinne den Vertrag.",challenge:{type:"ability_use",ability:18,count:1,text:"Benutze Loaded Dice mindestens einmal und gewinne."},rewardAbility:9,enemies:[{name:"The Fixer",level:"hard",hp:34,ability:18,secondAbility:19}]},
+    {id:"blood_oath_rift",world:"rift",requires:["loaded_contract_rift"],title:"8 · Blood Oath",subtitle:"Fähigkeitsprüfung · Blutpreis",desc:"Der Red Broker macht aus Lebenspunkten Währung. Um ihn zu schlagen, musst du selbst mindestens einmal Blutpreis aktiv einsetzen.",challenge:{type:"ability_use",ability:11,count:1,text:"Benutze Blutpreis mindestens einmal und gewinne."},rewardAbility:17,enemies:[{name:"Red Broker",level:"hard",hp:36,ability:11,secondAbility:23}]},
+    {id:"double_or_nothing_rift",world:"rift",requires:["blood_oath_rift"],title:"9 · Double or Nothing",subtitle:"Fähigkeitsprüfung · High Stakes",desc:"Der Croupier lebt vom Risiko. Ein bloßer Klick auf High Stakes reicht nicht: Mindestens ein Gamble muss mit 4–6 erfolgreich sein.",challenge:{type:"ability_success",ability:13,count:1,text:"Gewinne mindestens einen High-Stakes-Wurf mit 4–6 und besiege den Gegner."},rewardAbility:25,enemies:[{name:"Croupier",level:"hard",hp:38,ability:13,secondAbility:12}]},
+    {id:"rift_sovereign",world:"rift",requires:["double_or_nothing_rift"],title:"10 · Rift Sovereign",subtitle:"Final-Boss · 2 gegen 1",desc:"Der Sovereign und sein Warden spielen maximal aggressiv. Für den Abschluss musst du einen echten Counterattack provozieren und trotzdem selbst einen schweren Schlag landen.",challenge:{type:"all",rules:[{type:"ability_use",ability:21,count:1},{type:"turn_damage",value:12}],text:"Final-Challenge: Löse mindestens 1 Counterattack aus und erzeuge mindestens 12 Schaden in einem eigenen Zug."},rewardAbility:10,enemies:[{name:"Rift Sovereign",level:"hard",hp:48,ability:1,secondAbility:13},{name:"Warden",level:"hard",hp:24,ability:24,secondAbility:17}]}
   ];
   const CAMPAIGN_FINAL_ENCOUNTER_IDS=CAMPAIGN_WORLDS.map(w=>w.finalEncounterId);
 
@@ -1558,7 +1606,17 @@
   let achievementToastQueue=[], achievementToastBusy=false;
   let profileScreenOrigin="menu";
   let campaignMode=false, campaignEncounterId=null, campaignProfileId=null, campaignWorldId="house";
-  function freshCampaignMetrics(){return {baseOver25:false,maxRawTurnDamage:0,currentRawTurnDamage:0};}
+  function freshCampaignMetrics(){return {baseOver25:false,maxRawTurnDamage:0,currentRawTurnDamage:0,abilityUses:{},abilitySuccesses:{}};}
+  function markCampaignAbilityUse(index,abilityId,amount=1){
+    if(!campaignMode || index==null || players[index]?.campaignTeam!=="hero") return;
+    const key=String(abilityId);
+    campaignMetrics.abilityUses[key]=(campaignMetrics.abilityUses[key]||0)+Math.max(0,amount||0);
+  }
+  function markCampaignAbilitySuccess(index,abilityId,amount=1){
+    if(!campaignMode || index==null || players[index]?.campaignTeam!=="hero") return;
+    const key=String(abilityId);
+    campaignMetrics.abilitySuccesses[key]=(campaignMetrics.abilitySuccesses[key]||0)+Math.max(0,amount||0);
+  }
   let campaignMetrics=freshCampaignMetrics();
   let gameContext={mode:"menu",returnScreen:"menu",profileId:null,encounterId:null};
 
@@ -1771,6 +1829,8 @@
     if(c.type==="finish_hp") return (players[heroIndex]?.hp||0)>=(c.value||0);
     if(c.type==="self_damage_max") return (roundStats[heroIndex]?.selfDamage||0)<=(c.value??0);
     if(c.type==="healed_min") return (roundStats[heroIndex]?.healed||0)>=(c.value||0);
+    if(c.type==="ability_use") return (campaignMetrics.abilityUses?.[String(c.ability)]||0)>=(c.count||1);
+    if(c.type==="ability_success") return (campaignMetrics.abilitySuccesses?.[String(c.ability)]||0)>=(c.count||1);
     return false;
   }
 
@@ -3701,6 +3761,7 @@
     const beforeValue=d.value;
     loadedDiceUsed=true;
     d.value=5;
+    markCampaignAbilityUse(current,18);
 
     const damageResult=applyDamageToPlayer(current,2,"voluntary");
     players[current].voluntaryHpPaidThisTurn=true;
@@ -3726,6 +3787,7 @@
     const group=snakeEyesGroup();
     if(!group) return;
     const rerollIndices=group.indices;
+    markCampaignAbilityUse(current,20);
 
     if(roundStats[current]){
       roundStats[current].snakeEyesUsesThisTurn++;
@@ -4133,6 +4195,7 @@
 
   function rollHighStakes(){
     if(highStakesRolling) return;
+    markCampaignAbilityUse(current,13);
     highStakesRolling=true;
     highStakesDie.disabled=true;
     highStakesSkip.disabled=true;
@@ -4158,6 +4221,7 @@
         addLog(`🎲 High Stakes: ${result}. Angriffsschaden halbiert: ${before} → ${attackDamage}.`);
       }else{
         attackDamage=Math.floor(before*1.5);
+        markCampaignAbilitySuccess(current,13);
         if(roundStats[current]){
           roundStats[current].highStakesWins++;
           if(roundStats[current].highStakesWins>=3) unlockAchievementForPlayer(current,"degenerate_gambler");
@@ -4314,6 +4378,7 @@
     if(!neighbors.length) return;
 
     const damageResult=applyDamageToPlayer(current,3,"voluntary");
+    markCampaignAbilityUse(current,11);
     players[current].voluntaryHpPaidThisTurn=true;
     recordSelfDamage(current,damageResult.lost);
     recordVoluntaryHp(current,damageResult.lost);
@@ -4511,6 +4576,8 @@
       attackerIndex,
       bloodRushActive:consumeBloodRushForCounter(defenderIndex)
     };
+    markCampaignAbilityUse(defenderIndex,21);
+    if(!isBotPlayer(defenderIndex)) document.body.classList.remove("bot-acting");
     counterRolling=false;
     counterHits=0;
     counterFirstRoll=true;
@@ -5284,7 +5351,13 @@
   loadedDiceBtn.onclick=()=>{if(!isBotPlayer(current))useLoadedDice();};
   snakeEyesBtn.onclick=()=>{if(!isBotPlayer(current))useSnakeEyes();};
   insuranceDie.onclick=()=>{if(!isBotPlayer(current))rollInsurance();};
-  counterRollBtn.onclick=()=>{if(!counterContext||!isBotPlayer(counterContext.defenderIndex))rollCounterattack();};
+  counterRollBtn.onclick=()=>{
+    if(!counterContext) return;
+    if(isBotPlayer(counterContext.defenderIndex)) return;
+    document.body.classList.remove("bot-acting");
+    if(!counterRolling) counterRollBtn.disabled=false;
+    rollCounterattack();
+  };
   attackPowerBtn.onclick=()=>{if(!isBotPlayer(current))useAttackPower();};
   bloodLowerBtn.onclick=()=>{if(!isBotPlayer(current))useBloodPrice();};
   bloodHigherBtn.onclick=()=>{if(!isBotPlayer(current))useBloodPrice();};
