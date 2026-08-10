@@ -1,8 +1,8 @@
 {
   "name": "Würfelduell",
-  "version": "20.1",
+  "version": "22.0",
   "saveSchema": 5,
-  "campaignVersion": 7,
+  "campaignVersion": 9,
   "saveKey": "wuerfelduell_save_v1",
   "releaseDate": "2026-08-10"
 }
