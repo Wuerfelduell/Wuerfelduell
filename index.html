@@ -10,7 +10,7 @@
   <link rel="manifest" href="manifest.json" />
   <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png" />
   <link rel="apple-touch-icon" sizes="192x192" href="icon-192.png" />
-  <title>Würfelduell · V22.0</title>
+  <title>Würfelduell · V23.1</title>
   <style>
     * { box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
     :root{
@@ -295,7 +295,39 @@
       --dice-accent:#51e68d;--dice-glow:rgba(81,230,141,.88);
       background:linear-gradient(145deg,#71f0a3,#075b34);color:#f2fff7;border-color:#42d985
     }
+    .die.theme-frost{
+      --dice-accent:#8ee9ff;--dice-glow:rgba(142,233,255,.88);
+      background:linear-gradient(145deg,#e8fbff,#68b9d4);color:#083042;border-color:#9deeff
+    }
+    .die.theme-pearl{
+      --dice-accent:#ffd8ef;--dice-glow:rgba(255,216,239,.86);
+      background:linear-gradient(145deg,#fffdf8,#e7cddd);color:#3a2332;border-color:#f5d7e8
+    }
+    .die.theme-neon{
+      --dice-accent:#49fff0;--dice-glow:rgba(73,255,240,.90);
+      background:linear-gradient(145deg,#ff4bd8,#2b1173);color:#ffffff;border-color:#43f4e9
+    }
+    .die.theme-void{
+      --dice-accent:#9a70ff;--dice-glow:rgba(154,112,255,.92);
+      background:linear-gradient(145deg,#171322,#020205);color:#d7c5ff;border-color:#6c49bb
+    }
+    .die.theme-sapphire{
+      --dice-accent:#5ba8ff;--dice-glow:rgba(91,168,255,.90);
+      background:linear-gradient(145deg,#2f80ed,#08234f);color:#eef7ff;border-color:#4f9df3
+    }
 
+
+    /* Würfeldesigns gelten auch für Spezialwürfel (High Stakes, Insurance, Gambling usw.). */
+    :is(.special-big-die,.gambling-die).theme-obsidian{background:linear-gradient(145deg,#303746,#090b10);color:#f7f8fb;border-color:#4b5568}
+    :is(.special-big-die,.gambling-die).theme-gold{background:linear-gradient(145deg,#ffe38a,#c58b18);color:#2a1b00;border-color:#f8c84e}
+    :is(.special-big-die,.gambling-die).theme-blood{background:linear-gradient(145deg,#ff6673,#6f0713);color:#fff3f4;border-color:#d42c3d}
+    :is(.special-big-die,.gambling-die).theme-arcane{background:linear-gradient(145deg,#b991ff,#35176d);color:#fff;border-color:#9f78ff}
+    :is(.special-big-die,.gambling-die).theme-emerald{background:linear-gradient(145deg,#71f0a3,#075b34);color:#f2fff7;border-color:#42d985}
+    :is(.special-big-die,.gambling-die).theme-frost{background:linear-gradient(145deg,#e8fbff,#68b9d4);color:#083042;border-color:#9deeff}
+    :is(.special-big-die,.gambling-die).theme-pearl{background:linear-gradient(145deg,#fffdf8,#e7cddd);color:#3a2332;border-color:#f5d7e8}
+    :is(.special-big-die,.gambling-die).theme-neon{background:linear-gradient(145deg,#ff4bd8,#2b1173);color:#fff;border-color:#43f4e9}
+    :is(.special-big-die,.gambling-die).theme-void{background:linear-gradient(145deg,#171322,#020205);color:#d7c5ff;border-color:#6c49bb}
+    :is(.special-big-die,.gambling-die).theme-sapphire{background:linear-gradient(145deg,#2f80ed,#08234f);color:#eef7ff;border-color:#4f9df3}
     .die.selected{
       border-color:#ffffff !important;
       outline:4px solid var(--dice-accent);
@@ -340,13 +372,13 @@
         0 0 12px rgba(255,200,87,.24),
         0 7px 14px rgba(0,0,0,.2) !important;
     }
-    .die.rolling{animation:diceRoll .42s cubic-bezier(.2,.8,.35,1)}
+    .die.rolling{animation:diceRoll .42s linear;will-change:filter;backface-visibility:hidden}
     @keyframes diceRoll{
-      0%{transform:rotate(0deg) scale(1)}
-      22%{transform:rotate(95deg) scale(.86)}
-      48%{transform:rotate(205deg) scale(1.10)}
-      72%{transform:rotate(305deg) scale(.91)}
-      100%{transform:rotate(360deg) scale(1)}
+      0%{filter:brightness(1)}
+      25%{filter:brightness(1.22)}
+      50%{filter:brightness(.88)}
+      75%{filter:brightness(1.18)}
+      100%{filter:brightness(1)}
     }
 
     .controls{display:flex;gap:8px;flex-wrap:wrap}
@@ -441,7 +473,7 @@
     }
     .round-stats-grid{
       display:grid;
-      grid-template-columns:repeat(2,minmax(0,1fr));
+      grid-template-columns:repeat(3,minmax(0,1fr));
       gap:7px;
       margin-top:7px;
     }
@@ -465,6 +497,7 @@
       overflow:hidden;
       text-overflow:ellipsis;
     }
+    @media (max-width:560px){.round-stats-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
     .round-score-row{
       background:#111722;
       border:1px solid var(--border);
@@ -933,6 +966,19 @@
       min-height:100dvh!important;
       overflow:visible!important;
     }
+    body.playing .app{
+      /* Reserviert Platz für den fixierten Hauptmenü-Button. */
+      padding-top:52px!important;
+    }
+    body.playing .dice{
+      align-items:center;
+      grid-auto-rows:1fr;
+      contain:layout style;
+    }
+    body.playing .die{
+      width:100%;
+      transform-box:border-box;
+    }
     body.playing .game-menu-btn{
       position:fixed;
       top:max(8px,env(safe-area-inset-top));
@@ -959,6 +1005,18 @@
       margin-top:auto;
       margin-bottom:auto;
     }
+
+    /* V23.1: Spezialwürfel übernehmen das gewählte Profildesign ebenfalls. */
+    :is(.special-big-die,.gambling-die).theme-obsidian{background:linear-gradient(145deg,#303746,#090b10)!important;color:#f7f8fb!important;border-color:#4b5568!important}
+    :is(.special-big-die,.gambling-die).theme-gold{background:linear-gradient(145deg,#ffe38a,#c58b18)!important;color:#2a1b00!important;border-color:#f8c84e!important}
+    :is(.special-big-die,.gambling-die).theme-blood{background:linear-gradient(145deg,#ff6673,#6f0713)!important;color:#fff3f4!important;border-color:#d42c3d!important}
+    :is(.special-big-die,.gambling-die).theme-arcane{background:linear-gradient(145deg,#b991ff,#35176d)!important;color:#fff!important;border-color:#9f78ff!important}
+    :is(.special-big-die,.gambling-die).theme-emerald{background:linear-gradient(145deg,#71f0a3,#075b34)!important;color:#f2fff7!important;border-color:#42d985!important}
+    :is(.special-big-die,.gambling-die).theme-frost{background:linear-gradient(145deg,#e8fbff,#68b9d4)!important;color:#083042!important;border-color:#9deeff!important}
+    :is(.special-big-die,.gambling-die).theme-pearl{background:linear-gradient(145deg,#fffdf8,#e7cddd)!important;color:#3a2332!important;border-color:#f5d7e8!important}
+    :is(.special-big-die,.gambling-die).theme-neon{background:linear-gradient(145deg,#ff4bd8,#2b1173)!important;color:#fff!important;border-color:#43f4e9!important}
+    :is(.special-big-die,.gambling-die).theme-void{background:linear-gradient(145deg,#171322,#020205)!important;color:#d7c5ff!important;border-color:#6c49bb!important}
+    :is(.special-big-die,.gambling-die).theme-sapphire{background:linear-gradient(145deg,#2f80ed,#08234f)!important;color:#eef7ff!important;border-color:#4f9df3!important}
 
   </style>
 </head>
@@ -1089,7 +1147,7 @@
       <button id="menuRulesBtn"><span class="menu-icon">📖</span> Regeln</button>
       <button id="menuChangelogBtn"><span class="menu-icon">📝</span> Changelog</button>
     </div>
-    <div class="version-footer">WÜRFELDUELL · VERSION 22.0</div>
+    <div class="version-footer">WÜRFELDUELL · VERSION 23.1</div>
   </section>
 
 
@@ -1208,6 +1266,8 @@
   <section id="changelogScreen" class="card screen-card hidden">
     <div class="screen-topbar"><button class="menuBackBtn">←</button><h2 class="screen-title">📝 Changelog</h2></div>
     <div class="screen-subtitle">Die großen Versionssprünge, ohne jeden Mini-Hotfix.</div>
+    <div class="changelog-entry"><div class="changelog-version">V23.1</div><ul><li>Kampagnenkämpfe zeigen keinen lokalen Sieg-Tracker mehr</li><li>Stabileres Würfelfeld: Würfel-DOM bleibt während Animationen stehen und die Roll-Animation verändert die Würfelgröße nicht mehr</li><li>Rundenende mit sechster Spaß-Statistik „Schadensmagnet“</li><li>Hauptmenü-Button erhält einen festen Safe-Bereich und überlappt keine Spieler-/Pokal-Anzeige mehr</li><li>5 neue Würfeldesigns und 6 zusätzliche Achievements</li></ul></div>
+    <div class="changelog-entry"><div class="changelog-version">V23.0</div><ul><li>Neue Solo-Welt 5 · Paradox Circuit mit 15 Encountern</li><li>Neue Duo-Welt 3 · Mirror Pact und Duo-Welt 4 · Omega Pact mit je 15 Encountern</li><li>Neue Challenge-Muster: Angriffsziel-Sequenzen, Zielwechsel, alle Ziele vor dem ersten Kill markieren, alternierende Duo-Angriffe, Fokus-Pässe und spielerspezifische Finisher</li><li>75 Solo-Encounter und 60 Duo-Encounter insgesamt; bestehende Saves bleiben kompatibel</li></ul></div>
     <div class="changelog-entry"><div class="changelog-version">V22.0</div><ul><li>Neue Solo-Welt 4 · Abyss Circuit mit 15 Endgame-Encountern</li><li>Duo-Kampagne in zwei echte Welten aufgeteilt; neue Welt 2 · Fracture Pact mit 15 Encountern</li><li>Neue Challenge-Typen für Duo: jeder Spieler muss selbst heilen/Eigenschaden nehmen/HP bezahlen, gemeinsame Zielüberschneidung, beidseitige Fähigkeitserfolge und Clutch-Finale</li><li>Bestehender V21-Fortschritt bleibt erhalten; Save-Schema unverändert</li></ul></div>
     <div class="changelog-entry"><div class="changelog-version">V21.0</div><ul><li>Neue Solo-Welt 3 · Zero Circuit mit 15 Prestige-Encountern und abwechslungsreichen Challenge-Typen</li><li>Duo-Kampagne von 5 auf 15 Encounter erweitert</li><li>Manuelle Gegner-Zielwahl ausschließlich in Solo- und Duo-Kampagnen; Battle-Modi bleiben unverändert</li><li>Neue Challenge-Metriken: Mindest-Eigenschaden, freiwillige HP-Kosten, Fähigkeitstrigger, Trefferanzahl, Zielverteilung, Kill-Reihenfolge und Duo-Koordination</li></ul></div>
     <div class="changelog-entry"><div class="changelog-version">V20.1</div><ul><li>Duo-Kampagne: Spieler 2 verwendet denselben freigeschalteten Kampagnen-Fähigkeitspool wie Spieler 1</li><li>Beide Spieler wählen weiterhin ihre eigene aktive Hauptfähigkeit aus diesem gemeinsamen Pool</li><li>Auch die Zweitfähigkeits-Auswahl bei ≤12 HP verwendet für beide Spieler den Pool von Spieler 1</li></ul></div>
@@ -1252,7 +1312,7 @@
       <div class="matchbar">
         <span>Runde <strong id="roundNumber">1</strong></span>
         <div class="matchbar-actions">
-          <span>🏆 Sieg-Tracker</span>
+          <span id="winTrackerLabel">🏆 Sieg-Tracker</span>
           <button id="gameMenuBtn" class="game-menu-btn">☰ Hauptmenü</button>
         </div>
       </div>
@@ -1341,10 +1401,10 @@
   let localModeId="classic";
   function localModeRules(){return LOCAL_MODES[localModeId]||LOCAL_MODES.classic;}
 
-  const GAME_VERSION="22.0";
+  const GAME_VERSION="23.1";
   const SAVE_KEY="wuerfelduell_save_v1"; // absichtlich stabil: Updates lesen denselben Browser-Save
   const SAVE_SCHEMA_VERSION=5;
-  const CAMPAIGN_VERSION=9;
+  const CAMPAIGN_VERSION=10;
 
   const ACHIEVEMENTS={
     grande:{name:"GRANDE!",desc:"Beende einen Angriff mit allen 5 Würfeln als Treffer.",rewardDice:"gold"},
@@ -1352,19 +1412,25 @@
     blood_money:{name:"Blood Money",desc:"Bezahle in einer Runde insgesamt 9 HP freiwillig mit Loaded Dice oder Blutpreis.",rewardDice:"blood"},
     dual_wielding:{name:"Dual Wielding",desc:"Gewinne eine Runde mit aktiver Zweitfähigkeit.",rewardDice:"arcane"},
     back_from_dead:{name:"Back From The Dead",desc:"Heile in einer einzigen Runde insgesamt mindestens 8 HP.",rewardDice:"emerald"},
-    snake_charmer:{name:"Snake Charmer",desc:"Benutze Snake Eyes mindestens zweimal im selben Basiszug."},
+    snake_charmer:{name:"Snake Charmer",desc:"Benutze Snake Eyes mindestens zweimal im selben Basiszug.",rewardDice:"frost"},
     one_hp_wonder:{name:"One HP Wonder",desc:"Gewinne eine Runde mit exakt 1 HP."},
-    untouchable:{name:"Untouchable",desc:"Gewinne eine Runde mit vollen 25 HP."},
-    degenerate_gambler:{name:"Degenerate Gambler",desc:"Gewinne in einer Runde dreimal High Stakes mit einem Ergebnis von 4–6."},
+    untouchable:{name:"Untouchable",desc:"Gewinne eine Runde mit vollen Maximal-HP.",rewardDice:"pearl"},
+    degenerate_gambler:{name:"Degenerate Gambler",desc:"Gewinne in einer Runde dreimal High Stakes mit einem Ergebnis von 4–6.",rewardDice:"neon"},
     double_trouble:{name:"Double Trouble",desc:"Schalte einen Spieler mit dem Double-Tap-Bonus aus."},
     twelve_x3:{name:"12 · 12 · 12",desc:"Triggere die Fähigkeit 12 dreimal in einer Runde."},
     no_blood_left:{name:"No Blood Left",desc:"Bezahle in einer Runde insgesamt 12 HP freiwillig."},
-    overkill:{name:"Overkill",desc:"Verursache mit einem Angriff mindestens 10 Schaden mehr, als dein Ziel noch HP hatte."},
-    hat_trick:{name:"Hat Trick",desc:"Gewinne drei Runden hintereinander."},
-    dice_goblin:{name:"Dice Goblin",desc:"Schalte alle fünf zusätzlichen Würfeldesigns frei."}
+    overkill:{name:"Overkill",desc:"Verursache mit einem Angriff mindestens 10 Schaden mehr, als dein Ziel noch HP hatte.",rewardDice:"void"},
+    hat_trick:{name:"Hat Trick",desc:"Gewinne drei Runden hintereinander.",rewardDice:"sapphire"},
+    dice_goblin:{name:"Dice Goblin",desc:"Schalte die fünf ursprünglichen zusätzlichen Würfeldesigns frei."},
+    damage_magnet:{name:"Damage Magnet",desc:"Gewinne eine Runde, obwohl du mindestens 25 HP gegnerischen Schaden kassiert hast."},
+    clean_sheet:{name:"Clean Sheet",desc:"Gewinne eine Runde ohne Eigenschaden und ohne freiwillig HP für Fähigkeiten zu bezahlen."},
+    heavy_hitter:{name:"Delete Button",desc:"Verursache mindestens 20 Schaden in einem einzigen eigenen Zug."},
+    executioner:{name:"Executioner",desc:"Schalte in einer Runde mindestens 3 Gegner aus."},
+    six_storm:{name:"Sixstorm",desc:"Würfle in einer Runde insgesamt mindestens 15 Sechser."},
+    chromatic_menace:{name:"Chromatic Menace",desc:"Schalte alle zehn zusätzlichen Würfeldesigns frei."}
   };
 
-  const DICE_UNLOCK_ACHIEVEMENT={gold:"grande",obsidian:"not_today",blood:"blood_money",arcane:"dual_wielding",emerald:"back_from_dead"};
+  const DICE_UNLOCK_ACHIEVEMENT={gold:"grande",obsidian:"not_today",blood:"blood_money",arcane:"dual_wielding",emerald:"back_from_dead",frost:"snake_charmer",pearl:"untouchable",neon:"degenerate_gambler",void:"overkill",sapphire:"hat_trick"};
 
   const CAMPAIGN_START_ABILITIES=[3];
   const CAMPAIGN_SECONDARY_ONLY_ABILITY_IDS=[7];
@@ -1373,7 +1439,8 @@
     {id:"house",name:"Welt 1 · House Circuit",shortName:"House Circuit",desc:"Die ursprüngliche Kampagne. 15 Encounter vom Rookie bis Royal Flush.",unlockRequires:[],finalEncounterId:"royal_flush",lockedText:""},
     {id:"rift",name:"Welt 2 · Rift Circuit",shortName:"Rift Circuit",desc:"Der alternative Prestige-Pfad mit 15 Encountern. Wird freigeschaltet, sobald Black Table (Encounter 10) geschafft ist.",unlockRequires:["black_table"],finalEncounterId:"rift_eclipse",lockedText:"🔒 Nach Black Table"},
     {id:"zero",name:"Welt 3 · Zero Circuit",shortName:"Zero Circuit",desc:"Prestige-Endgame mit 15 Encountern. Weniger stumpfe Schadenschecks, mehr Risiko, Fähigkeits-Meisterung, Zielwahl und Kill-Reihenfolgen. Wird freigeschaltet, sobald House Circuit UND Rift Circuit abgeschlossen sind.",unlockRequires:["royal_flush","rift_eclipse"],finalEncounterId:"zero_regent",lockedText:"🔒 Nach House + Rift"},
-    {id:"abyss",name:"Welt 4 · Abyss Circuit",shortName:"Abyss Circuit",desc:"Meisterschafts-Welt mit 15 Encountern. Hier werden bekannte Mechaniken härter kombiniert: hohe Eigenkosten, mehrfacher Fähigkeits-Einsatz, Mehrzielplanung, Comebacks und exakte Kill-Orders. Wird nach Zero Regent freigeschaltet.",unlockRequires:["zero_regent"],finalEncounterId:"abyss_throne",lockedText:"🔒 Nach Zero Regent"}
+    {id:"abyss",name:"Welt 4 · Abyss Circuit",shortName:"Abyss Circuit",desc:"Meisterschafts-Welt mit 15 Encountern. Hier werden bekannte Mechaniken härter kombiniert: hohe Eigenkosten, mehrfacher Fähigkeits-Einsatz, Mehrzielplanung, Comebacks und exakte Kill-Orders. Wird nach Zero Regent freigeschaltet.",unlockRequires:["zero_regent"],finalEncounterId:"abyss_throne",lockedText:"🔒 Nach Zero Regent"},
+    {id:"paradox",name:"Welt 5 · Paradox Circuit",shortName:"Paradox Circuit",desc:"15 Endgame-Encounter rund um bewusste Zielwahl, Angriffsrouten und kontrolliertes Chaos. Nicht bloß höhere Zahlen: Du musst Gegner markieren, Ziele wechseln, bestimmte Angriffspfade einhalten und bekannte Fähigkeiten unter neuen Bedingungen meistern. Wird nach dem Abyss Throne freigeschaltet.",unlockRequires:["abyss_throne"],finalEncounterId:"paradox_crown",lockedText:"🔒 Nach Abyss Throne"}
   ];
   const CAMPAIGN_ENCOUNTERS=[
     {id:"first_blood",world:"house",requires:[],title:"1 · First Blood",subtitle:"Der Rookie",desc:"Ein sauberer Einstieg gegen einen leichten Gegner. Kein Trick – erst einmal überleben und gewinnen.",challenge:{type:"win",text:"Gewinne den Kampf."},rewardAbility:4,enemies:[{name:"Rookie",level:"easy",ability:0}]},
@@ -1443,12 +1510,30 @@
     {id:"abyss_six_machine",world:"abyss",requires:["abyss_clean_sweep"],title:"13 · Six Machine",subtitle:"12 · vier Trigger",desc:"Die Maschine läuft nur auf Doppel-Sechsen. Vier Trigger der Fähigkeit 12 sind ein echter Langzeit-Würfeltest.",challenge:{type:"twelve_triggers_min",value:4,text:"Triggere die Fähigkeit 12 mindestens 4-mal und gewinne."},enemies:[{name:"Six Machine",level:"hard",hp:64,ability:22,secondAbility:14}]},
     {id:"abyss_four_keys",world:"abyss",requires:["abyss_six_machine"],title:"14 · Four Keys",subtitle:"1 gegen 4 · exakte Reihenfolge",desc:"Die vier Schlüssel öffnen das Tor nur in einer Reihenfolge. Zielwahl und Finisher müssen perfekt koordiniert sein.",challenge:{type:"kill_sequence_names",names:["Ember","Tide","Stone","Void"],text:"Eliminiere exakt in der Reihenfolge Ember → Tide → Stone → Void."},enemies:[{name:"Stone",level:"hard",hp:30,ability:21,secondAbility:19},{name:"Void",level:"hard",hp:36,ability:14,secondAbility:13},{name:"Ember",level:"normal",hp:24,ability:17,secondAbility:24},{name:"Tide",level:"normal",hp:26,ability:10,secondAbility:2}]},
     {id:"abyss_throne",world:"abyss",requires:["abyss_four_keys"],title:"15 · Abyss Throne",subtitle:"Welt-Boss · 1 gegen 4",desc:"Der Abyss King wartet hinter drei Exarchen. Der finale Clear verlangt drei Dinge: den King bis zuletzt stehen lassen, zweistelligen Eigenschaden akzeptieren und die 12-HP-Zweitfähigkeit wirklich freischalten.",challenge:{type:"all",rules:[{type:"kill_last_name",name:"Abyss King"},{type:"self_damage_min",value:12},{type:"secondary_unlocked"}],text:"Eliminiere Abyss King als letzten Gegner, nimm mindestens 12 Eigenschaden UND schalte deine Zweitfähigkeit bei ≤12 HP frei."},enemies:[{name:"Abyss King",level:"hard",hp:70,ability:22,secondAbility:14},{name:"Exarch Red",level:"hard",hp:32,ability:21,secondAbility:24},{name:"Exarch Pale",level:"hard",hp:30,ability:19,secondAbility:8},{name:"Exarch Black",level:"hard",hp:34,ability:13,secondAbility:17}]}
+,
+    {id:"paradox_opening_route",world:"paradox",requires:["abyss_throne"],title:"1 · Opening Route",subtitle:"Drei Ziele · feste Angriffseröffnung",desc:"Paradox beginnt mit Zielwahl statt Schadensrennen. Deine ersten drei eigenen Angriffe müssen drei verschiedene Wächter in einer festgelegten Reihenfolge treffen.",challenge:{type:"attack_target_sequence_names",names:["Red Clock","Blue Clock","Black Clock"],text:"Deine ersten 3 Angriffe müssen Red Clock → Blue Clock → Black Clock als Ziel wählen."},enemies:[{name:"Red Clock",level:"hard",hp:26,ability:10},{name:"Blue Clock",level:"hard",hp:26,ability:19},{name:"Black Clock",level:"hard",hp:28,ability:21}]},
+    {id:"paradox_no_favorite",world:"paradox",requires:["paradox_opening_route"],title:"2 · No Favorite",subtitle:"Ziele ständig wechseln",desc:"Der Switchboard bestraft Tunnelvision. Du darfst natürlich wieder auf alte Ziele zurückkehren – aber du musst während des Encounters mehrfach bewusst umschalten.",challenge:{type:"target_switches_min",value:5,text:"Wechsle zwischen deinen Angriffen mindestens 5-mal das Angriffsziel."},enemies:[{name:"North",level:"hard",hp:28,ability:17},{name:"South",level:"hard",hp:28,ability:24},{name:"Switchboard",level:"hard",hp:34,ability:13}]},
+    {id:"paradox_mark_before_kill",world:"paradox",requires:["paradox_no_favorite"],title:"3 · Mark Before Kill",subtitle:"1 gegen 4 · niemand darf früh fallen",desc:"Vier Sigils müssen zuerst alle aktiviert werden. Der erste Kill darf erst passieren, nachdem jeder Gegner mindestens einmal Rohschaden bekommen hat.",challenge:{type:"first_kill_after_targets_min",value:4,text:"Füge allen 4 Gegnern Rohschaden zu, bevor du den ersten Gegner eliminierst."},enemies:[{name:"Sigil Ash",level:"normal",hp:22,ability:10},{name:"Sigil Glass",level:"normal",hp:22,ability:17},{name:"Sigil Iron",level:"hard",hp:24,ability:21},{name:"Sigil Void",level:"hard",hp:24,ability:19}]},
+    {id:"paradox_serpent_debt",world:"paradox",requires:["paradox_mark_before_kill"],title:"4 · Serpent Debt",subtitle:"Snake Eyes + freiwilliger Preis",desc:"Die Schlange verlangt nicht nur Würfelglück. Du musst Snake Eyes mehrfach erzeugen und trotzdem genug Risiko nehmen, um dir selbst spürbaren Schaden einzuhandeln.",challenge:{type:"all",rules:[{type:"ability_use",ability:20,count:2},{type:"self_damage_min",value:6}],text:"Benutze Snake Eyes mindestens 2-mal UND nimm im Encounter mindestens 6 selbst verursachten Schaden."},enemies:[{name:"Debt Serpent",level:"hard",hp:54,ability:20,secondAbility:18}]},
+    {id:"paradox_perfect_pressure",world:"paradox",requires:["paradox_serpent_debt"],title:"5 · Perfect Pressure",subtitle:"Perfect 25 unter Dauerfeuer",desc:"Ein Perfect-25-Versuch reicht nicht; der Erfolg muss in einen längeren offensiven Kampf eingebettet sein.",challenge:{type:"all",rules:[{type:"ability_success",ability:15,count:1},{type:"hero_attacks_min",value:4}],text:"Erhalte mit Perfect 25 mindestens einmal den Angriff UND starte insgesamt mindestens 4 eigene Angriffe."},enemies:[{name:"Twenty-Five",level:"hard",hp:62,ability:15,secondAbility:8}]},
+    {id:"paradox_counter_economy",world:"paradox",requires:["paradox_perfect_pressure"],title:"6 · Counter Economy",subtitle:"Gegenschläge finanzieren den Sieg",desc:"Der Auditor schlägt hart. Nutze den Druck aktiv: mehrere Counterattacks reichen nicht, du musst daneben selbst offensiv genug bleiben und normale Angriffe starten.",challenge:{type:"all",rules:[{type:"ability_use",ability:21,count:2},{type:"hero_attacks_min",value:3}],text:"Löse Counterattack mindestens 2-mal aus UND starte zusätzlich mindestens 3 normale eigene Angriffe."},enemies:[{name:"Auditor",level:"hard",hp:64,ability:8,secondAbility:24}]},
+    {id:"paradox_loaded_discipline",world:"paradox",requires:["paradox_counter_economy"],title:"7 · Loaded Discipline",subtitle:"Bezahle exakt kontrolliert",desc:"Loaded Dice ist stark, aber Paradox will keine Blutorgie. Nutze es mehrfach und halte deinen gesamten selbst verursachten Schaden trotzdem niedrig.",challenge:{type:"all",rules:[{type:"ability_use",ability:18,count:2},{type:"voluntary_hp_min",value:4},{type:"self_damage_max",value:6}],text:"Benutze Loaded Dice mindestens 2-mal, bezahle damit mindestens 4 HP und bleibe insgesamt bei höchstens 6 Eigenschaden."},enemies:[{name:"Loaded Judge",level:"hard",hp:58,ability:18,secondAbility:19}]},
+    {id:"paradox_high_recovery",world:"paradox",requires:["paradox_loaded_discipline"],title:"8 · House Recovery",subtitle:"Gewinnen trotz Eigenrisiko",desc:"Der Croupier zwingt lange Gambles. Zwei erfolgreiche High-Stakes-Würfe müssen mit bewusst akzeptiertem Eigenschaden kombiniert werden.",challenge:{type:"all",rules:[{type:"ability_success",ability:13,count:2},{type:"self_damage_min",value:5}],text:"Gewinne mindestens 2 High-Stakes-Würfe mit 4–6 UND nimm im Encounter mindestens 5 selbst verursachten Schaden."},enemies:[{name:"Paradox Croupier",level:"hard",hp:66,ability:13,secondAbility:22}]},
+    {id:"paradox_precision_route",world:"paradox",requires:["paradox_high_recovery"],title:"9 · Precision Route",subtitle:"Präzise, aber nicht tunneln",desc:"Präzision soll nicht einfach auf ein einziges Ziel gespammt werden. Zwei Einsätze und Schaden an drei verschiedenen Gegnern sind Pflicht.",challenge:{type:"all",rules:[{type:"ability_use",ability:8,count:2},{type:"damage_targets_min",value:3}],text:"Benutze Präzision mindestens 2-mal UND füge allen 3 Gegnern Rohschaden zu."},enemies:[{name:"Needle",level:"hard",hp:28,ability:8},{name:"Thread",level:"hard",hp:30,ability:19},{name:"Eye",level:"hard",hp:34,ability:21}]},
+    {id:"paradox_blood_circuit",world:"paradox",requires:["paradox_precision_route"],title:"10 · Blood Circuit",subtitle:"Drei Preise · drei Ziele",desc:"Blutpreis gibt dir Kontrolle über Trefferzahlen. Beweise sie nicht nur gegen einen Sack HP, sondern verteilt über mehrere Ziele.",challenge:{type:"all",rules:[{type:"ability_use",ability:11,count:3},{type:"damage_targets_min",value:3}],text:"Benutze Blutpreis mindestens 3-mal UND füge 3 verschiedenen Gegnern Rohschaden zu."},enemies:[{name:"Vein A",level:"hard",hp:30,ability:11},{name:"Vein B",level:"hard",hp:30,ability:23},{name:"Vein C",level:"hard",hp:32,ability:14}]},
+    {id:"paradox_second_marathon",world:"paradox",requires:["paradox_blood_circuit"],title:"11 · No Roll Dies",subtitle:"Zweite Chance · langer Fight",desc:"Zweite Chance soll hier nicht nur einen schlechten Wurf retten. Du musst die Fähigkeit wiederholt nutzen und den Kampf offensiv am Laufen halten.",challenge:{type:"all",rules:[{type:"ability_use",ability:4,count:3},{type:"hero_attacks_min",value:5}],text:"Benutze Zweite Chance mindestens 3-mal UND starte mindestens 5 eigene Angriffe."},enemies:[{name:"Retry",level:"hard",hp:68,ability:4,secondAbility:10}]},
+    {id:"paradox_pair_matrix",world:"paradox",requires:["paradox_second_marathon"],title:"12 · Pair Matrix",subtitle:"Double Tap mit Zielwechsel",desc:"Drei Double-Tap-Auslösungen reichen nur, wenn du sie nicht als Tunnel-Combo spielst. Der Matrixkern verlangt mehrere Zielwechsel.",challenge:{type:"all",rules:[{type:"ability_success",ability:24,count:3},{type:"target_switches_min",value:3}],text:"Triggere Double Tap mindestens 3-mal UND wechsle mindestens 3-mal dein Angriffsziel."},enemies:[{name:"Pair One",level:"hard",hp:34,ability:24},{name:"Pair Two",level:"hard",hp:34,ability:19},{name:"Matrix",level:"hard",hp:40,ability:21}]},
+    {id:"paradox_six_signal",world:"paradox",requires:["paradox_pair_matrix"],title:"13 · Six Signal",subtitle:"12 + Grande",desc:"Doppel-Sechsen halten dich am Leben; ein Grande beendet die Gleichung. Beides muss im selben Encounter passieren.",challenge:{type:"all",rules:[{type:"twelve_triggers_min",value:4},{type:"attack_hits_min",value:5}],text:"Triggere Fähigkeit 12 mindestens 4-mal UND schaffe mindestens einen Angriff mit 5 Treffern."},enemies:[{name:"Signal Six",level:"hard",hp:72,ability:22,secondAbility:14}]},
+    {id:"paradox_last_march",world:"paradox",requires:["paradox_six_signal"],title:"14 · March After Death",subtitle:"Last Stand · danach weiter angreifen",desc:"Last Stand ist nicht das Ziel, sondern der Wendepunkt. Nach dem Trigger musst du den Fight weiter aktiv spielen und mehrere Angriffe zustande bringen.",challenge:{type:"all",rules:[{type:"ability_use",ability:14,count:1},{type:"hero_attacks_min",value:6}],text:"Löse Last Stand aus UND starte im Encounter insgesamt mindestens 6 eigene Angriffe."},enemies:[{name:"Death Clock",level:"hard",hp:74,ability:1,secondAbility:24}]},
+    {id:"paradox_crown",world:"paradox",requires:["paradox_last_march"],title:"15 · Paradox Crown",subtitle:"Welt-Boss · alle markieren, dann exakte Zeitlinie",desc:"Vier Zeitfragmente schützen die Crown. Du musst zuerst jeden Gegner markieren; erst danach darf der erste fallen. Anschließend gilt eine exakte Kill-Zeitlinie bis zum Boss.",challenge:{type:"all",rules:[{type:"first_kill_after_targets_min",value:4},{type:"kill_sequence_names",names:["Past","Present","Future","Paradox Crown"]}],text:"Füge zuerst ALLEN 4 Gegnern Rohschaden zu, bevor jemand stirbt; eliminiere danach exakt Past → Present → Future → Paradox Crown."},enemies:[{name:"Paradox Crown",level:"hard",hp:76,ability:22,secondAbility:14},{name:"Past",level:"hard",hp:30,ability:19,secondAbility:8},{name:"Present",level:"hard",hp:32,ability:21,secondAbility:24},{name:"Future",level:"hard",hp:34,ability:13,secondAbility:17}]}
   ];
   const CAMPAIGN_FINAL_ENCOUNTER_IDS=CAMPAIGN_WORLDS.map(w=>w.finalEncounterId);
 
   const DUO_CAMPAIGN_WORLDS=[
     {id:"covenant",name:"Duo-Welt 1 · Covenant",shortName:"Covenant",desc:"Die ursprüngliche Duo-Kampagne mit 15 Encountern. Fokus auf Rollenverteilung, gemeinsame Ressourcen und koordinierte Finisher.",unlockRequires:[],finalEncounterId:"duo_covenant_zero",lockedText:""},
-    {id:"fracture",name:"Duo-Welt 2 · Fracture Pact",shortName:"Fracture Pact",desc:"15 neue Endgame-Duo-Encounter. Beide Spieler müssen häufiger dieselbe Mechanik selbst meistern, Risiko aufteilen und gezielt Clutch-Situationen erzeugen. Wird nach Covenant Zero freigeschaltet.",unlockRequires:["duo_covenant_zero"],finalEncounterId:"duo_fracture_monarch",lockedText:"🔒 Nach Covenant Zero"}
+    {id:"fracture",name:"Duo-Welt 2 · Fracture Pact",shortName:"Fracture Pact",desc:"15 neue Endgame-Duo-Encounter. Beide Spieler müssen häufiger dieselbe Mechanik selbst meistern, Risiko aufteilen und gezielt Clutch-Situationen erzeugen. Wird nach Covenant Zero freigeschaltet.",unlockRequires:["duo_covenant_zero"],finalEncounterId:"duo_fracture_monarch",lockedText:"🔒 Nach Covenant Zero"},
+    {id:"mirror",name:"Duo-Welt 3 · Mirror Pact",shortName:"Mirror Pact",desc:"15 Encounter über echtes Zusammenspiel: abwechselnde Angriffe, Fokus-Pässe auf dasselbe Ziel, spielerspezifische Finisher und härtere Versionen bereits gelernter Duo-Prüfungen. Wird nach Fracture Monarch freigeschaltet.",unlockRequires:["duo_fracture_monarch"],finalEncounterId:"duo_mirror_heart",lockedText:"🔒 Nach Fracture Monarch"},
+    {id:"omega",name:"Duo-Welt 4 · Omega Pact",shortName:"Omega Pact",desc:"Der finale aktuelle Duo-Pfad. 15 Encounter mit langen Koordinationsketten, Rollenmustern, Grande-Prüfungen und Bossen, die bewusste Zielwahl von beiden Spielern verlangen. Wird nach Mirror Heart freigeschaltet.",unlockRequires:["duo_mirror_heart"],finalEncounterId:"duo_omega_throne",lockedText:"🔒 Nach Mirror Heart"}
   ];
 
   const DUO_CAMPAIGN_ENCOUNTERS=[
@@ -1483,6 +1568,38 @@
     {id:"duo_fracture_double_pair",world:"fracture",requires:["duo_fracture_blood_rush"],title:"13 · Four Pairs",subtitle:"Double Tap · 2 pro Spieler",desc:"Vier saubere Paar-Angriffe sind nötig: jeweils zwei Double-Tap-Trigger von jedem Duo-Spieler.",challenge:{type:"each_hero_ability_success",ability:24,count:2,text:"Jeder Spieler muss Double Tap mindestens 2-mal auslösen."},enemies:[{name:"Pair A",level:"hard",hp:44,ability:24,secondAbility:14},{name:"Pair B",level:"hard",hp:44,ability:24,secondAbility:19}]},
     {id:"duo_fracture_second_chances",world:"fracture",requires:["duo_fracture_double_pair"],title:"14 · No Roll Wasted",subtitle:"Zweite Chance · zweimal pro Spieler",desc:"Beide Spieler müssen schlechte Angriffswürfe aktiv retten. Zwei Einsätze pro Kopf – kein Carry möglich.",challenge:{type:"each_hero_ability_use",ability:4,count:2,text:"Jeder Spieler muss Zweite Chance mindestens 2-mal benutzen."},enemies:[{name:"Null A",level:"hard",hp:42,ability:8,secondAbility:18},{name:"Null B",level:"hard",hp:42,ability:21,secondAbility:24}]},
     {id:"duo_fracture_monarch",world:"fracture",requires:["duo_fracture_second_chances"],title:"15 · Fracture Monarch",subtitle:"Duo-Weltboss · kontrollierter Clutch",desc:"Der Monarch zwingt beide unter die 12-HP-Schwelle. Für den finalen Clear müssen beide ihre Zweitfähigkeit freigeschaltet haben – aber nur einer darf den Kampf lebend beenden und den Clutch setzen.",challenge:{type:"all",rules:[{type:"all_heroes_secondary_unlocked"},{type:"exactly_one_hero_survives"}],text:"Beide Spieler müssen ihre Zweitfähigkeit freischalten UND beim Sieg darf exakt 1 Duo-Spieler noch leben."},enemies:[{name:"Fracture Monarch",level:"hard",hp:72,ability:22,secondAbility:14},{name:"Left Hand",level:"hard",hp:36,ability:21,secondAbility:24},{name:"Right Hand",level:"hard",hp:36,ability:13,secondAbility:17}]}
+,
+    {id:"duo_mirror_pass",world:"mirror",requires:["duo_fracture_monarch"],title:"1 · Pass the Blade",subtitle:"Fokus-Pass",desc:"Mirror Pact startet mit einer neuen Teammechanik: Ein Spieler eröffnet auf ein Ziel, der andere übernimmt direkt dasselbe Ziel im nächsten eigenen Angriff.",challenge:{type:"focus_passes_min",value:1,text:"Erzeugt mindestens 1 Fokus-Pass: zwei aufeinanderfolgende Duo-Angriffe von verschiedenen Spielern müssen dasselbe Ziel wählen."},enemies:[{name:"Mirror A",level:"hard",hp:32,ability:19},{name:"Mirror B",level:"hard",hp:32,ability:21}]},
+    {id:"duo_mirror_metronome",world:"mirror",requires:["duo_mirror_pass"],title:"2 · Metronome",subtitle:"Sechs Angriffe strikt abwechseln",desc:"Nicht nur Kills, sondern das Angriffstempo selbst muss geteilt werden. Die ersten sechs Duo-Angriffe dürfen nie zweimal hintereinander vom selben Spieler kommen.",challenge:{type:"attack_heroes_alternate_min",value:6,text:"Die ersten 6 Duo-Angriffe müssen strikt zwischen Spieler 1 und Spieler 2 abwechseln."},enemies:[{name:"Tick",level:"hard",hp:36,ability:10},{name:"Tock",level:"hard",hp:36,ability:24},{name:"Beat",level:"hard",hp:34,ability:17}]},
+    {id:"duo_mirror_three_marks",world:"mirror",requires:["duo_mirror_metronome"],title:"3 · Shared Map",subtitle:"Beide markieren drei Ziele",desc:"Getrennte Duelle sind verboten. Jeder von euch muss alle drei Gegner persönlich als Angriffsziel gehabt haben.",challenge:{type:"each_hero_targets_min",value:3,text:"Jeder Spieler muss mindestens 3 verschiedene Gegner aktiv angreifen."},enemies:[{name:"Map Red",level:"hard",hp:28,ability:19},{name:"Map Blue",level:"hard",hp:28,ability:17},{name:"Map Black",level:"hard",hp:30,ability:21}]},
+    {id:"duo_mirror_serpent_three",world:"mirror",requires:["duo_mirror_three_marks"],title:"4 · Serpent Reflection",subtitle:"Snake Eyes · 3 pro Spieler",desc:"Fracture verlangte zwei. Mirror erhöht die echte Würfelprüfung: Beide Spieler brauchen drei Snake-Eyes-Einsätze.",challenge:{type:"each_hero_ability_use",ability:20,count:3,text:"Jeder Spieler muss Snake Eyes mindestens 3-mal benutzen."},enemies:[{name:"Mirror Coil L",level:"hard",hp:40,ability:20,secondAbility:8},{name:"Mirror Coil R",level:"hard",hp:40,ability:20,secondAbility:19}]},
+    {id:"duo_mirror_double_bet",world:"mirror",requires:["duo_mirror_serpent_three"],title:"5 · Double Bet",subtitle:"High Stakes · 2 Siege pro Spieler",desc:"Beide Spieler müssen nicht nur gambeln, sondern jeweils zwei erfolgreiche 4–6-Ergebnisse liefern.",challenge:{type:"each_hero_ability_success",ability:13,count:2,text:"Jeder Spieler muss mindestens 2 High-Stakes-Würfe mit 4–6 gewinnen."},enemies:[{name:"Dealer Mirror L",level:"hard",hp:44,ability:13,secondAbility:12},{name:"Dealer Mirror R",level:"hard",hp:44,ability:13,secondAbility:17}]},
+    {id:"duo_mirror_counter_three",world:"mirror",requires:["duo_mirror_double_bet"],title:"6 · Echo Counter",subtitle:"3 Counterattacks pro Spieler",desc:"Die Hammer Mirrors erzeugen genug Druck für echte Gegenschlagketten. Jeder Spieler muss dreimal selbst zurückschlagen.",challenge:{type:"each_hero_ability_use",ability:21,count:3,text:"Jeder Spieler muss Counterattack mindestens 3-mal auslösen."},enemies:[{name:"Hammer Mirror L",level:"hard",hp:48,ability:8,secondAbility:24},{name:"Hammer Mirror R",level:"hard",hp:48,ability:1,secondAbility:10}]},
+    {id:"duo_mirror_blood_nine",world:"mirror",requires:["duo_mirror_counter_three"],title:"7 · Equal Invoice",subtitle:"9 HP freiwillig pro Spieler",desc:"Der Pact akzeptiert keine Team-Summe. Jeder bezahlt seine eigene Rechnung.",challenge:{type:"each_hero_voluntary_hp_min",value:9,text:"Jeder Spieler muss mindestens 9 HP freiwillig für Fähigkeiten bezahlen."},enemies:[{name:"Invoice Mirror A",level:"hard",hp:42,ability:18,secondAbility:23},{name:"Invoice Mirror B",level:"hard",hp:42,ability:11,secondAbility:19}]},
+    {id:"duo_mirror_heal_six",world:"mirror",requires:["duo_mirror_blood_nine"],title:"8 · Symmetric Recovery",subtitle:"6 Heilung pro Spieler",desc:"Jeder muss seinen eigenen Sustain erzeugen. Ein einzelner Heiler kann die Challenge nicht carrien.",challenge:{type:"each_hero_healed_min",value:6,text:"Jeder Spieler muss im Encounter mindestens 6 HP heilen."},enemies:[{name:"Drain A",level:"hard",hp:44,ability:2,secondAbility:9},{name:"Drain B",level:"hard",hp:44,ability:22,secondAbility:14}]},
+    {id:"duo_mirror_shared_three",world:"mirror",requires:["duo_mirror_heal_six"],title:"9 · Same Three",subtitle:"Drei gemeinsame Ziele",desc:"Vier Gegner stehen auf dem Feld, aber drei davon müssen nachweislich von beiden Spielern angegriffen worden sein.",challenge:{type:"shared_targets_min",value:3,text:"Mindestens 3 verschiedene Gegner müssen von BEIDEN Spielern angegriffen werden."},enemies:[{name:"Shared One",level:"hard",hp:26,ability:19},{name:"Shared Two",level:"hard",hp:26,ability:17},{name:"Shared Three",level:"hard",hp:26,ability:21},{name:"Spare",level:"normal",hp:22,ability:10}]},
+    {id:"duo_mirror_five_kills",world:"mirror",requires:["duo_mirror_shared_three"],title:"10 · Five-Step Relay",subtitle:"5 Kills strikt alternierend",desc:"Fünf kleine Ziele machen den Kill-Relay länger als je zuvor. Kein Spieler darf zwei aufeinanderfolgende Finisher setzen.",challenge:{type:"alternating_hero_kills",value:5,text:"Die ersten 5 Gegner-Kills müssen strikt zwischen den beiden Spielern abwechseln."},enemies:[{name:"Relay I",level:"normal",hp:18,ability:10},{name:"Relay II",level:"normal",hp:18,ability:19},{name:"Relay III",level:"normal",hp:18,ability:17},{name:"Relay IV",level:"normal",hp:18,ability:24},{name:"Relay V",level:"hard",hp:22,ability:21}]},
+    {id:"duo_mirror_roles",world:"mirror",requires:["duo_mirror_five_kills"],title:"11 · Assigned Blades",subtitle:"Feste Finisher-Rollen",desc:"Die Zielwahl wird zur Rollenverteilung: Spieler 1 muss Anchor beenden, Spieler 2 muss Reflection beenden.",challenge:{type:"all",rules:[{type:"hero_kill_name",hero:1,name:"Anchor"},{type:"hero_kill_name",hero:2,name:"Reflection"}],text:"Spieler 1 muss Anchor eliminieren UND Spieler 2 muss Reflection eliminieren."},enemies:[{name:"Anchor",level:"hard",hp:40,ability:21,secondAbility:19},{name:"Reflection",level:"hard",hp:40,ability:14,secondAbility:24},{name:"Witness",level:"hard",hp:28,ability:17}]},
+    {id:"duo_mirror_touch_crown",world:"mirror",requires:["duo_mirror_roles"],title:"12 · Touch the Crown",subtitle:"Beide müssen den Boss markieren",desc:"Ihr dürft die Leibwachen zuerst töten, aber der Mirror Crown muss von beiden Spielern mindestens einmal bewusst angegriffen worden sein und am Ende zuletzt fallen.",challenge:{type:"all",rules:[{type:"each_hero_attacked_name",name:"Mirror Crown"},{type:"kill_last_name",name:"Mirror Crown"}],text:"Beide Spieler müssen Mirror Crown mindestens einmal angreifen UND Mirror Crown muss als letzter Gegner sterben."},enemies:[{name:"Mirror Crown",level:"hard",hp:62,ability:22,secondAbility:14},{name:"Guard Left",level:"hard",hp:32,ability:21},{name:"Guard Right",level:"hard",hp:32,ability:13}]},
+    {id:"duo_mirror_pattern",world:"mirror",requires:["duo_mirror_touch_crown"],title:"13 · 1-2-2-1",subtitle:"Finisher-Muster",desc:"Nicht einfach alternieren: Vier Ziele müssen in einem exakten Spieler-Muster fallen.",challenge:{type:"kill_hero_pattern",pattern:[1,2,2,1],text:"Die ersten 4 Kills müssen von Spieler 1 → Spieler 2 → Spieler 2 → Spieler 1 erzielt werden."},enemies:[{name:"Pattern A",level:"hard",hp:24,ability:19},{name:"Pattern B",level:"hard",hp:24,ability:17},{name:"Pattern C",level:"hard",hp:24,ability:10},{name:"Pattern D",level:"hard",hp:26,ability:21}]},
+    {id:"duo_mirror_deep_rhythm",world:"mirror",requires:["duo_mirror_pattern"],title:"14 · Deep Rhythm",subtitle:"Beide unter 12 + Angriffstakt",desc:"Beide müssen ihre Zweitfähigkeit freischalten; gleichzeitig dürfen die ersten vier Teamangriffe nicht aus dem Rhythmus geraten.",challenge:{type:"all",rules:[{type:"all_heroes_secondary_unlocked"},{type:"attack_heroes_alternate_min",value:4}],text:"Beide Spieler müssen ihre Zweitfähigkeit freischalten UND die ersten 4 Duo-Angriffe müssen alternieren."},enemies:[{name:"Depth",level:"hard",hp:52,ability:8,secondAbility:24},{name:"Rhythm",level:"hard",hp:46,ability:21,secondAbility:13}]},
+    {id:"duo_mirror_heart",world:"mirror",requires:["duo_mirror_deep_rhythm"],title:"15 · Mirror Heart",subtitle:"Duo-Weltboss · Fokus-Pässe",desc:"Das Heart wird von zwei Shards gespiegelt. Der Boss muss zuletzt fallen; bis dahin müsst ihr mehrfach dasselbe Ziel direkt aneinander übergeben und beide einen Finisher setzen.",challenge:{type:"all",rules:[{type:"focus_passes_min",value:4},{type:"each_hero_kill_min",value:1},{type:"kill_last_name",name:"Mirror Heart"}],text:"Erzeugt mindestens 4 Fokus-Pässe, jeder Spieler braucht mindestens 1 Kill UND Mirror Heart muss als letzter Gegner sterben."},enemies:[{name:"Mirror Heart",level:"hard",hp:78,ability:22,secondAbility:14},{name:"Shard Left",level:"hard",hp:36,ability:21,secondAbility:24},{name:"Shard Right",level:"hard",hp:36,ability:13,secondAbility:17}]},
+
+    {id:"duo_omega_chain",world:"omega",requires:["duo_mirror_heart"],title:"1 · Omega Chain",subtitle:"Acht Angriffe im Wechsel",desc:"Omega beginnt mit einer langen Rhythmuskette. Acht aufeinanderfolgende Teamangriffe müssen sauber zwischen euch wechseln.",challenge:{type:"attack_heroes_alternate_min",value:8,text:"Die ersten 8 Duo-Angriffe müssen strikt zwischen beiden Spielern abwechseln."},enemies:[{name:"Chain Alpha",level:"hard",hp:46,ability:10},{name:"Chain Beta",level:"hard",hp:46,ability:24},{name:"Chain Lock",level:"hard",hp:38,ability:21}]},
+    {id:"duo_omega_focus_web",world:"omega",requires:["duo_omega_chain"],title:"2 · Focus Web",subtitle:"3 Fokus-Pässe + breite Zielwahl",desc:"Ihr müsst Ziele gemeinsam übernehmen, dürft euch aber trotzdem nicht auf einen einzigen Gegner einschießen.",challenge:{type:"all",rules:[{type:"focus_passes_min",value:3},{type:"each_hero_targets_min",value:2}],text:"Erzeugt mindestens 3 Fokus-Pässe UND jeder Spieler muss mindestens 2 verschiedene Gegner angreifen."},enemies:[{name:"Web One",level:"hard",hp:34,ability:19},{name:"Web Two",level:"hard",hp:34,ability:17},{name:"Web Core",level:"hard",hp:42,ability:21}]},
+    {id:"duo_omega_retry_three",world:"omega",requires:["duo_omega_focus_web"],title:"3 · No Bad Roll",subtitle:"Zweite Chance · 3 pro Spieler",desc:"Fracture verlangte zwei Rettungen. Omega verlangt drei von jedem Spieler.",challenge:{type:"each_hero_ability_use",ability:4,count:3,text:"Jeder Spieler muss Zweite Chance mindestens 3-mal benutzen."},enemies:[{name:"Null Roll A",level:"hard",hp:48,ability:8,secondAbility:18},{name:"Null Roll B",level:"hard",hp:48,ability:21,secondAbility:24}]},
+    {id:"duo_omega_pairs_three",world:"omega",requires:["duo_omega_retry_three"],title:"4 · Six Pairs",subtitle:"Double Tap · 3 pro Spieler",desc:"Sechs saubere Paar-Angriffe insgesamt: drei pro Spieler.",challenge:{type:"each_hero_ability_success",ability:24,count:3,text:"Jeder Spieler muss Double Tap mindestens 3-mal auslösen."},enemies:[{name:"Pair Omega A",level:"hard",hp:50,ability:24,secondAbility:14},{name:"Pair Omega B",level:"hard",hp:50,ability:24,secondAbility:19}]},
+    {id:"duo_omega_rush_three",world:"omega",requires:["duo_omega_pairs_three"],title:"5 · Twin Overdrive",subtitle:"Blood Rush · 3 pro Spieler",desc:"Beide Spieler müssen Schaden oder freiwillige Kosten dreimal in echte Blood-Rush-Angriffe umwandeln.",challenge:{type:"each_hero_ability_use",ability:23,count:3,text:"Jeder Spieler muss Blood Rush mindestens 3-mal in einem Angriff aktivieren."},enemies:[{name:"Overdrive A",level:"hard",hp:50,ability:23,secondAbility:18},{name:"Overdrive B",level:"hard",hp:50,ability:10,secondAbility:1}]},
+    {id:"duo_omega_perfect_twins",world:"omega",requires:["duo_omega_rush_three"],title:"6 · Perfect Twins",subtitle:"Perfect 25 bei beiden",desc:"Zum ersten Mal verlangt eine Duo-Prüfung denselben seltenen Perfect-25-Erfolg von beiden Spielern.",challenge:{type:"each_hero_ability_success",ability:15,count:1,text:"Beide Spieler müssen mit Perfect 25 mindestens einmal den Angriff erhalten."},enemies:[{name:"Twenty Five A",level:"hard",hp:54,ability:15,secondAbility:8},{name:"Twenty Five B",level:"hard",hp:54,ability:15,secondAbility:19}]},
+    {id:"duo_omega_precision_twins",world:"omega",requires:["duo_omega_perfect_twins"],title:"7 · Twin Surgery",subtitle:"Präzision · 2 pro Spieler",desc:"Beide Spieler müssen ihre Treffer selbst chirurgisch korrigieren.",challenge:{type:"each_hero_ability_use",ability:8,count:2,text:"Jeder Spieler muss Präzision mindestens 2-mal benutzen."},enemies:[{name:"Scalpel A",level:"hard",hp:46,ability:8,secondAbility:24},{name:"Scalpel B",level:"hard",hp:46,ability:8,secondAbility:21}]},
+    {id:"duo_omega_six_twins",world:"omega",requires:["duo_omega_precision_twins"],title:"8 · Twelve Choir",subtitle:"Fähigkeit 12 · 3 Trigger pro Spieler",desc:"Doppel-Sechsen müssen bei beiden Spielern mehrfach auftauchen. Ein Würfelmonster kann den anderen nicht carrien.",challenge:{type:"each_hero_ability_use",ability:22,count:3,text:"Jeder Spieler muss Fähigkeit 12 mindestens 3-mal triggern."},enemies:[{name:"Choir A",level:"hard",hp:52,ability:22,secondAbility:14},{name:"Choir B",level:"hard",hp:52,ability:22,secondAbility:19}]},
+    {id:"duo_omega_touch_all",world:"omega",requires:["duo_omega_six_twins"],title:"9 · Full Contact",subtitle:"Beide markieren alle vier",desc:"Vier Gegner, acht persönliche Markierungen: Jeder Spieler muss jeden Gegner mindestens einmal aktiv angreifen.",challenge:{type:"each_hero_targets_min",value:4,text:"Jeder Spieler muss alle 4 Gegner mindestens einmal aktiv angreifen."},enemies:[{name:"Contact I",level:"hard",hp:26,ability:19},{name:"Contact II",level:"hard",hp:26,ability:17},{name:"Contact III",level:"hard",hp:26,ability:24},{name:"Contact IV",level:"hard",hp:28,ability:21}]},
+    {id:"duo_omega_roles_two",world:"omega",requires:["duo_omega_touch_all"],title:"10 · Crown Split",subtitle:"Zwei feste Finisher pro Spieler",desc:"Vier Wächter sind paarweise zugeordnet. Ihr müsst eure Finisher-Rollen exakt erfüllen.",challenge:{type:"all",rules:[{type:"hero_kill_name",hero:1,name:"Alpha Seal"},{type:"hero_kill_name",hero:1,name:"Gamma Seal"},{type:"hero_kill_name",hero:2,name:"Beta Seal"},{type:"hero_kill_name",hero:2,name:"Delta Seal"}],text:"Spieler 1 eliminiert Alpha + Gamma Seal; Spieler 2 eliminiert Beta + Delta Seal."},enemies:[{name:"Alpha Seal",level:"hard",hp:28,ability:19},{name:"Beta Seal",level:"hard",hp:28,ability:17},{name:"Gamma Seal",level:"hard",hp:30,ability:21},{name:"Delta Seal",level:"hard",hp:30,ability:24}]},
+    {id:"duo_omega_pattern_five",world:"omega",requires:["duo_omega_roles_two"],title:"11 · Omega Pattern",subtitle:"2-1-1-2-1",desc:"Fünf Finisher folgen diesmal keinem einfachen Wechsel, sondern einer vorgegebenen Rollenfolge.",challenge:{type:"kill_hero_pattern",pattern:[2,1,1,2,1],text:"Die ersten 5 Kills müssen von Spieler 2 → 1 → 1 → 2 → 1 erzielt werden."},enemies:[{name:"Glyph I",level:"normal",hp:20,ability:10},{name:"Glyph II",level:"normal",hp:20,ability:19},{name:"Glyph III",level:"normal",hp:20,ability:17},{name:"Glyph IV",level:"normal",hp:20,ability:24},{name:"Glyph V",level:"hard",hp:24,ability:21}]},
+    {id:"duo_omega_grande_twins",world:"omega",requires:["duo_omega_pattern_five"],title:"12 · Double Grande",subtitle:"5 Treffer bei beiden",desc:"Ein GRANDE ist stark. Omega verlangt einen von jedem Spieler im selben Encounter.",challenge:{type:"each_hero_attack_hits_min",value:5,text:"Jeder Spieler muss mindestens einen Angriff mit 5 Treffern schaffen."},enemies:[{name:"Grande Wall A",level:"hard",hp:58,ability:19,secondAbility:14},{name:"Grande Wall B",level:"hard",hp:58,ability:21,secondAbility:13}]},
+    {id:"duo_omega_crown_touch",world:"omega",requires:["duo_omega_grande_twins"],title:"13 · Before the Guards Fall",subtitle:"Boss zuerst markieren",desc:"Bevor ihr die Wachen abräumt, muss der Omega Crown bereits von beiden persönlich angegriffen worden sein. Danach darf er trotzdem erst zuletzt sterben.",challenge:{type:"all",rules:[{type:"each_hero_attacked_name",name:"Omega Crown"},{type:"kill_last_name",name:"Omega Crown"}],text:"Beide Spieler müssen Omega Crown angreifen UND Omega Crown muss als letzter Gegner sterben."},enemies:[{name:"Omega Crown",level:"hard",hp:82,ability:22,secondAbility:14},{name:"Guard A",level:"hard",hp:34,ability:21},{name:"Guard B",level:"hard",hp:34,ability:13},{name:"Guard C",level:"hard",hp:30,ability:17}]},
+    {id:"duo_omega_last_relay",world:"omega",requires:["duo_omega_crown_touch"],title:"14 · Final Relay",subtitle:"6 Fokus-Pässe",desc:"Der letzte Vorboss ist eine reine Übergabeprüfung. Ihr müsst sechs Mal ein Ziel direkt an den Partner weiterreichen.",challenge:{type:"focus_passes_min",value:6,text:"Erzeugt mindestens 6 Fokus-Pässe im selben Encounter."},enemies:[{name:"Relay Core",level:"hard",hp:70,ability:22,secondAbility:21},{name:"Relay Wing L",level:"hard",hp:38,ability:24},{name:"Relay Wing R",level:"hard",hp:38,ability:13}]},
+    {id:"duo_omega_throne",world:"omega",requires:["duo_omega_last_relay"],title:"15 · Omega Throne",subtitle:"Duo-Finalboss · 2 gegen 4",desc:"Der Omega Sovereign steht hinter drei Thrones. Für den Clear braucht jeder einen GRANDE, die drei Throne müssen in alternierenden Finishern fallen und der Sovereign darf erst ganz am Ende sterben.",challenge:{type:"all",rules:[{type:"each_hero_attack_hits_min",value:5},{type:"alternating_hero_kills",value:3},{type:"kill_last_name",name:"Omega Sovereign"}],text:"Jeder Spieler braucht einen 5-Treffer-Angriff, die ersten 3 Kills müssen zwischen euch alternieren UND Omega Sovereign muss zuletzt sterben."},enemies:[{name:"Omega Sovereign",level:"hard",hp:90,ability:22,secondAbility:14},{name:"Throne Red",level:"hard",hp:36,ability:21,secondAbility:24},{name:"Throne White",level:"hard",hp:36,ability:13,secondAbility:17},{name:"Throne Black",level:"hard",hp:38,ability:19,secondAbility:8}]}
   ];
 
   function defaultDuoProgress(profile1Id,profile2Id){
@@ -1583,8 +1700,17 @@
     p.name=String(p.name||"Spieler").slice(0,24);
     p.tagNumber=String(p.tagNumber??generateTagNumber()).padStart(4,"0").slice(-4);
     p.unlockedDice=Array.isArray(p.unlockedDice)?[...new Set(["classic",...p.unlockedDice])]:["classic"];
-    p.selectedDice=p.unlockedDice.includes(p.selectedDice)?p.selectedDice:"classic";
     p.achievements=(p.achievements&&typeof p.achievements==="object")?p.achievements:{};
+    // Neue Würfel-Rewards gelten rückwirkend: Wer das Achievement schon hatte,
+    // bekommt das zugehörige Design beim ersten Start nach dem Update automatisch.
+    Object.entries(ACHIEVEMENTS).forEach(([id,a])=>{
+      if(p.achievements[id] && a.rewardDice && !p.unlockedDice.includes(a.rewardDice)) p.unlockedDice.push(a.rewardDice);
+    });
+    const originalDiceSet=["obsidian","gold","blood","arcane","emerald"];
+    if(originalDiceSet.every(k=>p.unlockedDice.includes(k)) && !p.achievements.dice_goblin) p.achievements.dice_goblin=Date.now();
+    const allDiceSet=Object.keys(DICE_DESIGNS).filter(k=>k!=="classic");
+    if(allDiceSet.every(k=>p.unlockedDice.includes(k)) && !p.achievements.chromatic_menace) p.achievements.chromatic_menace=Date.now();
+    p.selectedDice=p.unlockedDice.includes(p.selectedDice)?p.selectedDice:"classic";
 
     const rawCampaign=(p.campaign&&typeof p.campaign==="object")?p.campaign:{};
     p.campaign={...defaultCampaignProgress(),...rawCampaign};
@@ -1726,7 +1852,12 @@
     gold:{name:"Gold",className:"theme-gold"},
     blood:{name:"Blood",className:"theme-blood"},
     arcane:{name:"Arcane",className:"theme-arcane"},
-    emerald:{name:"Emerald",className:"theme-emerald"}
+    emerald:{name:"Emerald",className:"theme-emerald"},
+    frost:{name:"Frost",className:"theme-frost"},
+    pearl:{name:"Pearl",className:"theme-pearl"},
+    neon:{name:"Neon",className:"theme-neon"},
+    void:{name:"Void",className:"theme-void"},
+    sapphire:{name:"Sapphire",className:"theme-sapphire"}
   };
 
   const BOT_LEVELS = {
@@ -1766,6 +1897,7 @@
   const attackPowerBtn=$("attackPowerBtn"), bloodLowerBtn=$("bloodLowerBtn"), bloodHigherBtn=$("bloodHigherBtn"), resolveAttackBtn=$("resolveAttackBtn");
   const nextBtn=$("nextBtn"), logEl=$("log"), winnerBox=$("winnerBox");
   const winnerText=$("winnerText"), roundResultText=$("roundResultText"), roundStandings=$("roundStandings"), roundStatsBox=$("roundStatsBox"), rollAbilitiesBtn=$("rollAbilities");
+  const winTrackerLabel=$("winTrackerLabel");
   const startGameBtn=$("startGame"), setupStatus=$("setupStatus"), roundNumberEl=$("roundNumber");
   const nextRoundPrepBtn=$("nextRoundPrepBtn"), nextRoundBox=$("nextRoundBox"), nextRoundTitle=$("nextRoundTitle"), restartBtn=$("restartBtn");
   const nextRoundInfo=$("nextRoundInfo"), nextRoundAbilities=$("nextRoundAbilities"), startNextRoundBtn=$("startNextRoundBtn");
@@ -1813,7 +1945,7 @@
   let profileScreenOrigin="menu";
   let campaignMode=false, duoCampaignMode=false, campaignEncounterId=null, campaignProfileId=null, campaignWorldId="house";
   let duoCampaignEncounterId=null, duoProfile1Id=null, duoProfile2Id=null, duoWorldId="covenant";
-  function freshCampaignMetrics(){return {baseOver25:false,maxRawTurnDamage:0,currentRawTurnDamage:0,abilityUses:{},abilitySuccesses:{},abilityUsesByHero:{},abilitySuccessesByHero:{},heroAttacks:{},attackTargetsByHero:{},rawDamageByHero:{},rawDamageByTarget:{},currentRawTurnDamageByHero:{},maxRawTurnDamageByHero:{},maxAttackHits:0,maxAttackHitsByHero:{},killOrder:[],killHeroes:[],killsByHero:{}};}
+  function freshCampaignMetrics(){return {baseOver25:false,maxRawTurnDamage:0,currentRawTurnDamage:0,abilityUses:{},abilitySuccesses:{},abilityUsesByHero:{},abilitySuccessesByHero:{},heroAttacks:{},attackTargetsByHero:{},attackSequence:[],rawDamageByHero:{},rawDamageByTarget:{},currentRawTurnDamageByHero:{},maxRawTurnDamageByHero:{},maxAttackHits:0,maxAttackHitsByHero:{},firstKillDistinctTargets:0,killOrder:[],killHeroes:[],killsByHero:{}};}
   function markCampaignAbilityUse(index,abilityId,amount=1){
     if(!campaignMode || index==null || players[index]?.campaignTeam!=="hero") return;
     const key=String(abilityId),heroKey=String(index),inc=Math.max(0,amount||0);
@@ -2138,7 +2270,7 @@
     duoCampaignBanner.classList.add("hidden");
     if(!baseUnlocked){duoCampaignBanner.classList.remove("hidden");duoCampaignBanner.innerHTML=`🔒 <strong>Duo-Kampagne gesperrt.</strong> Spieler 1 muss Solo Encounter 10 · Black Table abgeschlossen haben; sein Fähigkeitspool gilt für das ganze Duo.`;}
     else if(!worldUnlocked){duoCampaignBanner.classList.remove("hidden");duoCampaignBanner.innerHTML=`🔒 <strong>${escapeHtml(world.name)} gesperrt.</strong> ${escapeHtml(world.lockedText||"Vorherige Duo-Welt abschließen")}.`;}
-    else if(worldComplete){duoCampaignBanner.classList.remove("hidden");duoCampaignBanner.innerHTML=allComplete?`🏆 <strong>Alle aktuellen Duo-Welten abgeschlossen.</strong> Diese Profil-Paarung hat auch den Fracture Monarch besiegt.`:`🏆 <strong>${escapeHtml(world.shortName)} abgeschlossen.</strong> Über die Welt-Auswahl könnt ihr jederzeit zurückwechseln.`;}
+    else if(worldComplete){duoCampaignBanner.classList.remove("hidden");duoCampaignBanner.innerHTML=allComplete?`🏆 <strong>Alle aktuellen Duo-Welten abgeschlossen.</strong> Diese Profil-Paarung hat alle aktuell verfügbaren Duo-Welten abgeschlossen.`:`🏆 <strong>${escapeHtml(world.shortName)} abgeschlossen.</strong> Über die Welt-Auswahl könnt ihr jederzeit zurückwechseln.`;}
 
     const sharedDuoAbilityPool=p1?campaignUnlockedAbilities(p1):[];
     const fillAbilities=(select,ids)=>{const old=+select.value;select.innerHTML="";ids.forEach(id=>{const o=document.createElement("option");o.value=id;o.textContent=`${id} · ${ABILITIES[id].name}`;select.appendChild(o);});if(ids.includes(old))select.value=String(old);};
@@ -2256,6 +2388,16 @@
     if(c.type==="each_hero_attack_hits_min"){const ids=players.map((p,i)=>p.campaignTeam==="hero"?i:null).filter(i=>i!=null);return ids.length>=2&&ids.every(i=>(campaignMetrics.maxAttackHitsByHero?.[String(i)]||0)>=(c.value||0));}
     if(c.type==="each_hero_kill_min"){const ids=players.map((p,i)=>p.campaignTeam==="hero"?i:null).filter(i=>i!=null);return ids.length>=2&&ids.every(i=>(campaignMetrics.killsByHero?.[String(i)]||0)>=(c.value||0));}
     if(c.type==="alternating_hero_kills"){const need=c.value||2,heroes=(campaignMetrics.killHeroes||[]).slice(0,need);return heroes.length>=need&&heroes.every((h,i)=>i===0||h!==heroes[i-1]);}
+    if(c.type==="hero_attacks_min") return (campaignMetrics.heroAttacks?.[String(heroIndex)]||0)>=(c.value||0);
+    if(c.type==="each_hero_attacks_min"){const ids=players.map((p,i)=>p.campaignTeam==="hero"?i:null).filter(i=>i!=null);return ids.length>=2&&ids.every(i=>(campaignMetrics.heroAttacks?.[String(i)]||0)>=(c.value||0));}
+    if(c.type==="first_kill_after_targets_min") return (campaignMetrics.firstKillDistinctTargets||0)>=(c.value||0);
+    if(c.type==="attack_target_sequence_names"){const seq=(campaignMetrics.attackSequence||[]).filter(a=>String(a.hero)===String(heroIndex));return Array.isArray(c.names)&&seq.length>=c.names.length&&c.names.every((name,i)=>seq[i]?.name===name);}
+    if(c.type==="target_switches_min"){const seq=(campaignMetrics.attackSequence||[]).filter(a=>String(a.hero)===String(heroIndex));let n=0;for(let i=1;i<seq.length;i++)if(seq[i].target!==seq[i-1].target)n++;return n>=(c.value||0);}
+    if(c.type==="attack_heroes_alternate_min"){const need=c.value||2,seq=(campaignMetrics.attackSequence||[]).slice(0,need);return seq.length>=need&&seq.every((a,i)=>i===0||a.hero!==seq[i-1].hero);}
+    if(c.type==="focus_passes_min"){const seq=campaignMetrics.attackSequence||[];let n=0;for(let i=1;i<seq.length;i++)if(seq[i].hero!==seq[i-1].hero&&seq[i].target===seq[i-1].target)n++;return n>=(c.value||0);}
+    if(c.type==="hero_kill_name"){const ids=players.map((p,i)=>p.campaignTeam==="hero"?String(i):null).filter(Boolean),wanted=ids[(c.hero||1)-1];if(!wanted)return false;return (campaignMetrics.killOrder||[]).some((name,i)=>name===c.name&&String(campaignMetrics.killHeroes?.[i])===wanted);}
+    if(c.type==="kill_hero_pattern"){const ids=players.map((p,i)=>p.campaignTeam==="hero"?String(i):null).filter(Boolean),pat=Array.isArray(c.pattern)?c.pattern:[],kills=(campaignMetrics.killHeroes||[]).slice(0,pat.length).map(h=>ids.indexOf(String(h))+1);return pat.length>0&&kills.length>=pat.length&&pat.every((v,i)=>kills[i]===v);}
+    if(c.type==="each_hero_attacked_name"){const ids=players.map((p,i)=>p.campaignTeam==="hero"?String(i):null).filter(Boolean),seq=campaignMetrics.attackSequence||[];return ids.length>=2&&ids.every(id=>seq.some(a=>String(a.hero)===id&&a.name===c.name));}
     return false;
   }
 
@@ -2323,8 +2465,10 @@
     const encounterWorld=encounter.world||"covenant";duoWorldId=encounterWorld;
     if(newlyCompleted){const next=defaultDuoEncounter(p1,p2,encounterWorld);if(next)duoCampaignEncounterId=next.id;}
     const world=duoWorldById(encounterWorld),complete=!!world&&progress.completedEncounters.includes(world.finalEncounterId);
-    const nextWorldUnlocked=newlyCompleted&&encounter.id==="duo_covenant_zero"&&duoWorldUnlocked(p1,p2,"fracture");
-    if(heroWon&&challengeMet){queueEventPopup(complete?"Duo-Welt geschafft!":"Duo-Encounter geschafft!","win");winnerText.innerHTML=complete?"🏆 DUO-WELT GESCHAFFT!":"🤝 Duo-Encounter geschafft!";roundResultText.innerHTML=`✅ Gegnerteam besiegt.<br>✅ Challenge erfüllt: <strong>${escapeHtml(encounter.challenge.text)}</strong>${newlyCompleted?"<br>Der nächste Duo-Encounter wurde freigeschaltet.":"<br>Dieser Duo-Encounter war bereits abgeschlossen."}${nextWorldUnlocked?"<br>🩸 <strong>Duo-Welt 2 · Fracture Pact wurde freigeschaltet!</strong>":""}`;}
+    const worldIndex=DUO_CAMPAIGN_WORLDS.findIndex(w=>w.id===encounterWorld),nextWorld=worldIndex>=0?DUO_CAMPAIGN_WORLDS[worldIndex+1]:null;
+    const nextWorldUnlocked=!!(newlyCompleted&&nextWorld&&duoWorldUnlocked(p1,p2,nextWorld));
+    const nextWorldText=nextWorldUnlocked?`<br>🌐 <strong>${escapeHtml(nextWorld.name)} wurde freigeschaltet!</strong>`:"";
+    if(heroWon&&challengeMet){queueEventPopup(complete?"Duo-Welt geschafft!":"Duo-Encounter geschafft!","win");winnerText.innerHTML=complete?"🏆 DUO-WELT GESCHAFFT!":"🤝 Duo-Encounter geschafft!";roundResultText.innerHTML=`✅ Gegnerteam besiegt.<br>✅ Challenge erfüllt: <strong>${escapeHtml(encounter.challenge.text)}</strong>${newlyCompleted?"<br>Der nächste Duo-Encounter wurde freigeschaltet.":"<br>Dieser Duo-Encounter war bereits abgeschlossen."}${nextWorldText}`;}
     else if(heroWon){queueEventPopup("Challenge verfehlt","survive");winnerText.textContent="⚠️ Sieg – aber Challenge verfehlt";roundResultText.innerHTML=`Ihr habt das Gegnerteam besiegt, aber die Pflichtaufgabe fehlt:<br><strong>${escapeHtml(encounter.challenge.text)}</strong><br>Der nächste Duo-Encounter bleibt gesperrt.`;}
     else{queueEventPopup("Duo-Encounter verloren","death");winnerText.textContent="💀 Duo-Encounter verloren";roundResultText.innerHTML=`Das Gegnerteam hat beide Spieler ausgeschaltet. Euer Teamfortschritt bleibt gespeichert.`;}
     roundStandings.innerHTML=players.map((p,i)=>`<div class="round-score-row${p.campaignTeam==="hero"&&heroWon?" winner-row":""}"><div class="round-score-name">${escapeHtml(p.name)}${p.battleTag?` <span class="battle-tag">${escapeHtml(p.battleTag)}</span>`:""}</div><div class="round-score-meta">${p.campaignTeam==="hero"?"🤝 Duo-Spieler":"🤖 Gegner"} · ${Math.max(0,p.hp)} HP</div></div>`).join("");
@@ -2423,7 +2567,8 @@
       const secondaryRewardText=secondaryRewardUnlocked?`<br>🍀 <strong>${escapeHtml(ABILITIES[encounter.rewardSecondaryAbility].name)} freigeschaltet:</strong> ausschließlich als Zweitfähigkeit ab ≤12 HP.`:"";
       const trophyText=trophiesEarned?`<br>🏆 <strong>+${trophiesEarned} Prestige-Trophäe</strong> · Gesamt: ${progress?.trophies||0}`:"";
       const prestigeText=(rewardUnlocked && campaignHasAllMainAbilities(profile))?"<br>✨ <strong>PRESTIGE AKTIV:</strong> Ab jetzt bringt jeder erfolgreiche Encounter-Clear 1 Trophäe.":"";
-      const worldUnlockText=(newlyCompleted && encounter.id==="black_table")?"<br>🌌 <strong>Welt 2 · Rift Circuit wurde freigeschaltet!</strong>":(newlyCompleted && ["royal_flush","rift_eclipse"].includes(encounter.id) && campaignWorldUnlocked(profile,"zero"))?"<br>⚫ <strong>Welt 3 · Zero Circuit wurde freigeschaltet!</strong>":(newlyCompleted && encounter.id==="zero_regent" && campaignWorldUnlocked(profile,"abyss"))?"<br>🕳️ <strong>Welt 4 · Abyss Circuit wurde freigeschaltet!</strong>":"";
+      const unlockedWorlds=CAMPAIGN_WORLDS.filter(w=>w.id!==encounter.world && (w.unlockRequires||[]).includes(encounter.id) && campaignWorldUnlocked(profile,w));
+      const worldUnlockText=newlyCompleted&&unlockedWorlds.length?unlockedWorlds.map(w=>`<br>🌐 <strong>${escapeHtml(w.name)} wurde freigeschaltet!</strong>`).join(""):"";
       roundResultText.innerHTML=`✅ Gegner besiegt.<br>✅ Challenge erfüllt: <strong>${escapeHtml(encounter.challenge.text)}</strong>${rewardText}${secondaryRewardText}${trophyText}${prestigeText}${newlyCompleted?"<br>Der nächste Encounter wurde freigeschaltet.":"<br>Dieser Encounter war bereits abgeschlossen und bleibt spielbar."}${worldUnlockText}`;
     }else if(heroWon){
       queueEventPopup("Challenge verfehlt","survive");
@@ -2829,9 +2974,13 @@
     enqueueAchievementToast(profile,achievement);
     renderAchievements();
 
-    const allExtra=["obsidian","gold","blood","arcane","emerald"].every(k=>profile.unlockedDice.includes(k));
-    if(allExtra && id!=="dice_goblin" && !profile.achievements.dice_goblin){
+    const originalExtra=["obsidian","gold","blood","arcane","emerald"].every(k=>profile.unlockedDice.includes(k));
+    if(originalExtra && id!=="dice_goblin" && !profile.achievements.dice_goblin){
       setTimeout(()=>unlockAchievementForPlayer(index,"dice_goblin"),40);
+    }
+    const allExtra=Object.keys(DICE_DESIGNS).filter(k=>k!=="classic").every(k=>profile.unlockedDice.includes(k));
+    if(allExtra && id!=="chromatic_menace" && !profile.achievements.chromatic_menace){
+      setTimeout(()=>unlockAchievementForPlayer(index,"chromatic_menace"),80);
     }
     return true;
   }
@@ -2890,6 +3039,12 @@
     if(p.hp===1) unlockAchievementForPlayer(winnerIndex,"one_hp_wonder");
     if(p.hp===maxHpForPlayer(p)) unlockAchievementForPlayer(winnerIndex,"untouchable");
     if(p.secondAbility!=null) unlockAchievementForPlayer(winnerIndex,"dual_wielding");
+    const rs=roundStats[winnerIndex]||{};
+    if((rs.damageTaken||0)>=25) unlockAchievementForPlayer(winnerIndex,"damage_magnet");
+    if((rs.selfDamage||0)===0 && (rs.voluntaryHp||0)===0) unlockAchievementForPlayer(winnerIndex,"clean_sheet");
+    if((rs.maxTurnDamage||0)>=20) unlockAchievementForPlayer(winnerIndex,"heavy_hitter");
+    if((rs.kills||0)>=3) unlockAchievementForPlayer(winnerIndex,"executioner");
+    if((rs.sixes||0)>=15) unlockAchievementForPlayer(winnerIndex,"six_storm");
   }
   function randAbilityRoll(){ return Math.floor(Math.random()*25)+1; }
   function randD4(){ return Math.floor(Math.random()*4)+1; }
@@ -3048,6 +3203,7 @@
   }
   function recordCampaignKill(killerIndex,targetIndex){
     if(!campaignMode || players[killerIndex]?.campaignTeam!=="hero" || players[targetIndex]?.campaignTeam!=="enemy") return;
+    if(!campaignMetrics.killOrder.length) campaignMetrics.firstKillDistinctTargets=Object.values(campaignMetrics.rawDamageByTarget||{}).filter(v=>(Number(v)||0)>0).length;
     campaignMetrics.killOrder.push(players[targetIndex].name);
     campaignMetrics.killHeroes.push(String(killerIndex));
     const key=String(killerIndex);campaignMetrics.killsByHero[key]=(campaignMetrics.killsByHero[key]||0)+1;
@@ -3076,6 +3232,7 @@
     const sixes=statLeader("sixes");
     const healed=statLeader("healed");
     const selfDamage=statLeader("selfDamage");
+    const damageTaken=statLeader("damageTaken");
 
     roundStatsBox.innerHTML=`
       <div class="round-stat">
@@ -3097,6 +3254,10 @@
       <div class="round-stat">
         <div class="round-stat-label">🤡 Eigentor</div>
         <div class="round-stat-value">${escapeHtml(selfDamage.names)} · ${selfDamage.value} HP selbst</div>
+      </div>
+      <div class="round-stat">
+        <div class="round-stat-label">🧲 Schadensmagnet</div>
+        <div class="round-stat-value">${escapeHtml(damageTaken.names)} · ${damageTaken.value} HP kassiert</div>
       </div>
     `;
   }
@@ -3921,7 +4082,7 @@
           <span>⚅ ${roundStats[i]?.sixes||0}</span>
           <span>🤡 ${roundStats[i]?.selfDamage||0}</span>
         </div>
-        <div class="score-badge">🏆 ${p.wins||0} Sieg${(p.wins||0)===1?"":"e"}</div>`;
+        ${campaignMode?"":`<div class="score-badge">🏆 ${p.wins||0} Sieg${(p.wins||0)===1?"":"e"}</div>`}`;
       playersEl.appendChild(el);
     });
   }
@@ -3981,9 +4142,18 @@
   function totalAttackDamage(){ return attackDamage; }
 
   function renderDice(){
-    diceEl.innerHTML="";
-    dice.forEach((d,idx)=>{
+    // Die fünf Würfel bleiben als dieselben DOM-Nodes bestehen. Früher wurden sie
+    // während der Animation alle 55 ms neu erzeugt, was auf Mobile Layout-Jitter
+    // und ein sichtbar wanderndes Würfelfeld verursachen konnte.
+    while(diceEl.children.length<dice.length){
       const el=document.createElement("div");
+      el.className="die";
+      diceEl.appendChild(el);
+    }
+    while(diceEl.children.length>dice.length) diceEl.lastElementChild.remove();
+
+    dice.forEach((d,idx)=>{
+      const el=diceEl.children[idx];
       let cls="die";
       if(phase==="base_select"&&!d.locked) cls+=" selectable";
       if(d.selected) cls+=" selected";
@@ -3993,11 +4163,11 @@
       cls+=" "+(DICE_DESIGNS[designKey]?.className||"theme-classic");
       el.className=cls;
       el.textContent=dieSymbol(d.value);
+      el.onclick=null;
 
       if(phase==="base_select"&&!d.locked&&!isAnimating&&!isBotPlayer(current)){
         el.onclick=()=>{ d.selected=!d.selected; renderDice(); updateButtons(); };
       }
-      diceEl.appendChild(el);
     });
     sumEl.textContent=phase.startsWith("attack")
       ? `${attackHits} Treffer / ${totalAttackDamage()} Schaden`
@@ -4291,7 +4461,11 @@
 
   function renderAll(){
     roundNumberEl.textContent=roundNumber;
-    renderPlayers(); renderDice(); updateHeader(); updateButtons(); applySeatRotation();
+    if(winTrackerLabel) winTrackerLabel.classList.toggle("hidden",!!campaignMode);
+    renderPlayers(); renderDice(); updateHeader(); updateButtons();
+    // Während eines Würfelwurfs bleibt die Board-Geometrie eingefroren.
+    // Dadurch springt/zoomt das Würfelfeld nicht zwischen den Animationstakten.
+    if(!isAnimating) applySeatRotation();
     flushPendingFx();
     scheduleBotAction();
   }
@@ -4615,6 +4789,7 @@
       campaignMetrics.heroAttacks[key]=(campaignMetrics.heroAttacks[key]||0)+1;
       if(!campaignMetrics.attackTargetsByHero[key]) campaignMetrics.attackTargetsByHero[key]={};
       campaignMetrics.attackTargetsByHero[key][targetKey]=(campaignMetrics.attackTargetsByHero[key][targetKey]||0)+1;
+      campaignMetrics.attackSequence.push({hero:key,target:targetKey,name:players[attackTarget]?.name||""});
     }
 
     attackHits=0;attackDamage=0;firstAttackRoll=true;currentAttackRollNewHits=0;
