@@ -10,7 +10,7 @@
   <link rel="manifest" href="manifest.json" />
   <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png" />
   <link rel="apple-touch-icon" sizes="192x192" href="icon-192.png" />
-  <title>Würfelduell · V19.0</title>
+  <title>Würfelduell · V20.0</title>
   <style>
     * { box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
     :root{
@@ -871,6 +871,7 @@
 
     /* V17 – Solo-Kampagne */
     .menu-actions button.menu-campaign{grid-column:1/-1;justify-content:center;text-align:center;background:linear-gradient(135deg,#b88cff,#ff6f91);color:#170c19;border:0;font-weight:1000}
+    .menu-actions button.menu-duo-campaign{grid-column:1/-1;justify-content:center;text-align:center;background:linear-gradient(135deg,#68a7ff,#b88cff);color:#0b1020;border:0;font-weight:1000}
     .campaign-world-tabs{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin:0 0 8px}
     .campaign-world-btn{min-height:52px;padding:9px 10px;border-radius:14px;border:1px solid var(--border);background:#121925;color:var(--text);text-align:left}
     .campaign-world-btn.active{border-color:rgba(104,167,255,.72);box-shadow:0 0 0 2px rgba(104,167,255,.12);background:linear-gradient(145deg,rgba(104,167,255,.10),#121925)}
@@ -1071,6 +1072,7 @@
     <div class="menu-actions">
       <button id="menuPlayBtn" class="menu-play"><span class="menu-icon">▶</span> Spielen</button>
       <button id="menuCampaignBtn" class="menu-campaign"><span class="menu-icon">🗺️</span> Solo-Kampagne</button>
+      <button id="menuDuoCampaignBtn" class="menu-duo-campaign"><span class="menu-icon">🤝</span> Duo-Kampagne</button>
       <button id="menuTutorialBtn" class="menu-tutorial"><span class="menu-icon">🎓</span> Tutorial</button>
       <button id="menuProfilesBtn" class="menu-profile"><span class="menu-icon">👤</span> Profile</button>
       <button id="menuAchievementsBtn" class="menu-achievements"><span class="menu-icon">🏆</span> Achievements</button>
@@ -1079,7 +1081,7 @@
       <button id="menuRulesBtn"><span class="menu-icon">📖</span> Regeln</button>
       <button id="menuChangelogBtn"><span class="menu-icon">📝</span> Changelog</button>
     </div>
-    <div class="version-footer">WÜRFELDUELL · VERSION 19.0</div>
+    <div class="version-footer">WÜRFELDUELL · VERSION 20.0</div>
   </section>
 
 
@@ -1108,6 +1110,28 @@
       <div class="campaign-label">Kampagnen-Fähigkeiten</div>
       <div id="campaignAbilityGrid" class="campaign-unlock-grid"></div>
     </div>
+  </section>
+
+  <section id="duoCampaignScreen" class="card screen-card hidden">
+    <div class="screen-topbar"><button id="duoCampaignBackBtn">←</button><h2 class="screen-title">🤝 Duo-Kampagne</h2></div>
+    <div class="screen-subtitle">Zwei echte Spielerprofile kämpfen gemeinsam gegen feste Gegnerteams. Der Fortschritt gehört genau dieser Profil-Paarung. Stirbt ein Spieler, darf der andere den Encounter alleine zu Ende kämpfen.</div>
+    <div id="duoCampaignBanner" class="campaign-complete hidden"></div>
+    <div class="campaign-top">
+      <div class="menu-info-card"><div class="campaign-label">Team</div><div id="duoTeamSummary" class="campaign-value">2 Profile erforderlich</div></div>
+      <div class="menu-info-card"><div class="campaign-label">Fortschritt</div><div id="duoProgressSummary" class="campaign-value">0 / 5 Encounter</div></div>
+      <div class="menu-info-card"><div class="campaign-label">Freischaltung</div><div id="duoUnlockSummary" class="campaign-value">🔒 Solo Encounter 10</div></div>
+    </div>
+    <div class="campaign-controls">
+      <label>Spieler 1<select id="duoProfile1Select"></select></label>
+      <label>Fähigkeit Spieler 1<select id="duoAbility1Select"></select></label>
+      <label>Spieler 2<select id="duoProfile2Select"></select></label>
+      <label>Fähigkeit Spieler 2<select id="duoAbility2Select"></select></label>
+    </div>
+    <div class="campaign-start-row">
+      <button id="duoCampaignStartBtn" class="good">🤝 Duo-Encounter starten</button>
+      <button id="duoCampaignProfilesBtn" class="secondary">👤 Profile</button>
+    </div>
+    <div id="duoCampaignPath" class="campaign-path"></div>
   </section>
 
   <section id="profilesScreen" class="card screen-card hidden">
@@ -1174,6 +1198,7 @@
   <section id="changelogScreen" class="card screen-card hidden">
     <div class="screen-topbar"><button class="menuBackBtn">←</button><h2 class="screen-title">📝 Changelog</h2></div>
     <div class="screen-subtitle">Die großen Versionssprünge, ohne jeden Mini-Hotfix.</div>
+    <div class="changelog-entry"><div class="changelog-version">V20.0</div><ul><li>Neue Duo-Kampagne für genau zwei lokale Spielerprofile</li><li>Eigener Fortschritt pro Profil-Paar mit 5 kooperativen Encountern</li><li>Duo wird freigeschaltet, sobald mindestens eines der beiden Profile Solo-Encounter 10 abgeschlossen hat</li><li>Wenn ein Spieler stirbt, kann der Partner den Encounter alleine zu Ende spielen</li><li>Kooperative Challenges: beide überleben, beide angreifen, Team-Heilung und Team-Schadensziele</li></ul></div>
     <div class="changelog-entry"><div class="changelog-version">V19.0</div><ul><li>Zwei neue reine Local-Modi: Endurance (50 HP) und Overload (75 HP)</li><li>Endurance: 2 zufällige Startfähigkeiten und 3. Fähigkeit bei ≤30 HP</li><li>Overload: 3 zufällige Startfähigkeiten; Letztplatzierter wählt nur 1 davon frei</li><li>Neue Modi sind auf 2–4 menschliche Spieler begrenzt und enthalten keine Bots</li><li>Mehrfachfähigkeiten werden in Kampf-UI, Statistiken und Rundenwechsel vollständig unterstützt</li></ul></div>
     <div class="changelog-entry"><div class="changelog-version">V18.4</div><ul><li>Prestige-System mit profilgebundenen Trophäen eingeführt</li><li>Royal Flush und Rift Sovereign sind als Boss-Fights wiederholt für Trophäen farmbar</li><li>Rift Sovereign: Challenge auf 10 HP Heilung geändert; erster Clear schaltet Glück (BETA) nur für die Zweitfähigkeit ab ≤12 HP frei</li><li>Rift Circuit auf 15 Encounter erweitert</li><li>Serpent's Law schaltet Angriffsvorsprung frei; danach startet der Prestige-Trophäenmodus</li><li>Homescreen-/PWA-Icon, Manifest und App-Metadaten ergänzt</li></ul></div>
     <div class="changelog-entry"><div class="changelog-version">V18.3</div><ul><li>Mobile Scroll-Safety erweitert; der Menü-Button bleibt während des Kampfes erreichbar und Overlays können selbst scrollen</li><li>Counterattack-Button für menschliche Spieler gegen hängen gebliebenen Bot-Input-State abgesichert</li><li>Royal Flush: 8-HP-Restleben-Bedingung entfernt; nur noch die 14-Schaden-Challenge zählt</li><li>Rift Circuit auf 10 Encounter erweitert</li><li>Neue Fähigkeits-Challenges: Snake Eyes, Loaded Dice, Blutpreis, High Stakes und Counterattack müssen aktiv eingesetzt werden</li></ul></div>
@@ -1298,10 +1323,10 @@
   let localModeId="classic";
   function localModeRules(){return LOCAL_MODES[localModeId]||LOCAL_MODES.classic;}
 
-  const GAME_VERSION="19.0";
+  const GAME_VERSION="20.0";
   const SAVE_KEY="wuerfelduell_save_v1"; // absichtlich stabil: Updates lesen denselben Browser-Save
-  const SAVE_SCHEMA_VERSION=4;
-  const CAMPAIGN_VERSION=6;
+  const SAVE_SCHEMA_VERSION=5;
+  const CAMPAIGN_VERSION=7;
 
   const ACHIEVEMENTS={
     grande:{name:"GRANDE!",desc:"Beende einen Angriff mit allen 5 Würfeln als Treffer.",rewardDice:"gold"},
@@ -1369,6 +1394,18 @@
   ];
   const CAMPAIGN_FINAL_ENCOUNTER_IDS=CAMPAIGN_WORLDS.map(w=>w.finalEncounterId);
 
+  const DUO_CAMPAIGN_ENCOUNTERS=[
+    {id:"duo_first_contract",requires:[],title:"1 · First Contract",subtitle:"2 gegen 2 · Gemeinsam rein",desc:"Der erste Duo-Test. Zwei Gegner mit überschaubarem Druck – aber beide Spieler müssen den Kampf lebend beenden.",challenge:{type:"all_heroes_survive",text:"Gewinnt den Encounter und beide Spieler müssen überleben."},enemies:[{name:"House Twin A",level:"easy",hp:20,ability:3},{name:"House Twin B",level:"normal",hp:20,ability:10}]},
+    {id:"duo_crossed_blades",requires:["duo_first_contract"],title:"2 · Crossed Blades",subtitle:"2 gegen 3 · Beide müssen liefern",desc:"Drei kleinere Gegner verteilen konstant Druck. Ein Spieler allein kann den Clear schaffen, aber für die Challenge müssen beide aktiv angreifen.",challenge:{type:"each_hero_attack",text:"Beide Spieler müssen mindestens einen Angriff starten und ihr müsst gewinnen."},enemies:[{name:"Rush",level:"normal",hp:15,ability:10},{name:"Tap",level:"normal",hp:15,ability:24},{name:"Shield",level:"normal",hp:15,ability:19}]},
+    {id:"duo_shared_blood",requires:["duo_crossed_blades"],title:"3 · Shared Blood",subtitle:"2 gegen 2 · Sustain Check",desc:"Leech und Broker wollen den Kampf lang ziehen. Mindestens einer von euch sollte bewusst auf Heilung spielen.",challenge:{type:"team_healed_min",value:8,text:"Heilt als Team insgesamt mindestens 8 HP und gewinnt."},enemies:[{name:"Leech Prime",level:"hard",hp:32,ability:2,secondAbility:9},{name:"Broker",level:"hard",hp:26,ability:11,secondAbility:18}]},
+    {id:"duo_split_pressure",requires:["duo_shared_blood"],title:"4 · Split Pressure",subtitle:"2 gegen 3 · Kein Carry erlaubt",desc:"Dieser Encounter zwingt beide Spieler zu einem starken eigenen Zug. Einer kann den anderen retten – aber die Challenge verlangt Leistung von beiden.",challenge:{type:"each_hero_turn_damage",value:8,text:"Jeder Spieler muss in einem eigenen Zug mindestens 8 Rohschaden erzeugen und ihr müsst gewinnen."},enemies:[{name:"Red Hand",level:"hard",hp:18,ability:8},{name:"Blue Hand",level:"normal",hp:18,ability:17},{name:"Gold Hand",level:"normal",hp:18,ability:24}]},
+    {id:"duo_twin_thrones",requires:["duo_split_pressure"],title:"5 · Twin Thrones",subtitle:"Duo-Boss · 2 gegen 2",desc:"King Null und Queen Echo sind als echtes Boss-Duo gebaut. Einer kontert harte Treffer, der andere verweigert den Tod und erzeugt Chaos.",challenge:{type:"all",rules:[{type:"all_heroes_survive"},{type:"team_raw_damage",value:30}],text:"Beide Spieler müssen überleben UND als Team mindestens 30 Rohschaden verursachen."},enemies:[{name:"King Null",level:"hard",hp:55,ability:21,secondAbility:13},{name:"Queen Echo",level:"hard",hp:40,ability:14,secondAbility:17}]}
+  ];
+
+  function defaultDuoProgress(profile1Id,profile2Id){
+    return {campaignVersion:CAMPAIGN_VERSION,profileIds:[profile1Id,profile2Id].filter(Boolean).sort(),completedEncounters:[],wins:0,losses:0};
+  }
+
   function defaultCampaignProgress(){
     return {campaignVersion:CAMPAIGN_VERSION,completedEncounters:[],unlockedAbilities:[...CAMPAIGN_START_ABILITIES],unlockedSecondaryAbilities:[],trophies:0,wins:0,losses:0};
   }
@@ -1377,7 +1414,7 @@
   function emptyAbilityStat(){return {equipped:0,primary:0,secondary:0,chosen:0,wins:0};}
   function emptyProfileStats(){return {rounds:0,wins:0,kills:0,damageDealt:0,damageTaken:0,selfDamage:0,healed:0,ones:0,sixes:0,maxTurnDamage:0,currentWinStreak:0,bestWinStreak:0,abilities:{}};}
   function createDefaultSave(){
-    return {schemaVersion:SAVE_SCHEMA_VERSION,campaignVersion:CAMPAIGN_VERSION,lastGameVersion:GAME_VERSION,settings:{animation:"normal",botSpeed:"normal"},global:{completedRounds:0},profiles:[]};
+    return {schemaVersion:SAVE_SCHEMA_VERSION,campaignVersion:CAMPAIGN_VERSION,lastGameVersion:GAME_VERSION,settings:{animation:"normal",botSpeed:"normal"},global:{completedRounds:0},profiles:[],duoCampaigns:{}};
   }
 
   let storageAvailable=true;
@@ -1445,6 +1482,12 @@
       version=4;
     }
 
+    // V4 -> V5: Teamgebundener Fortschritt für die Duo-Kampagne.
+    if(version<5){
+      if(!migrated.duoCampaigns || typeof migrated.duoCampaigns!=="object" || Array.isArray(migrated.duoCampaigns)) migrated.duoCampaigns={};
+      version=5;
+    }
+
     migrated.schemaVersion=Math.max(version,SAVE_SCHEMA_VERSION);
     migrated.campaignVersion=Number(migrated.campaignVersion)||CAMPAIGN_VERSION;
     migrated.lastGameVersion=GAME_VERSION;
@@ -1503,6 +1546,7 @@
     next.lastGameVersion=GAME_VERSION;
     next.settings={...createDefaultSave().settings,...(migrated.settings||{})};
     next.global={...createDefaultSave().global,...(migrated.global||{})};
+    next.duoCampaigns=(migrated.duoCampaigns&&typeof migrated.duoCampaigns==="object"&&!Array.isArray(migrated.duoCampaigns))?{...migrated.duoCampaigns}:{};
     const rawProfiles=Array.isArray(migrated.profiles)?migrated.profiles:[];
     next.profiles=[];
     saveData=next; // normalizeProfile nutzt die bereits aufgebauten Profile für eindeutige Tags.
@@ -1619,7 +1663,7 @@
   };
 
   const $ = id => document.getElementById(id);
-  const mainMenu=$("mainMenu"), campaignScreen=$("campaignScreen"), setup=$("setup"), game=$("game"), nameInputs=$("nameInputs");
+  const mainMenu=$("mainMenu"), campaignScreen=$("campaignScreen"), duoCampaignScreen=$("duoCampaignScreen"), setup=$("setup"), game=$("game"), nameInputs=$("nameInputs");
   const tutorialModal=$("tutorialModal"), tutorialTitle=$("tutorialTitle"), tutorialText=$("tutorialText"), tutorialProgress=$("tutorialProgress"), tutorialContinueBtn=$("tutorialContinueBtn");
   const quitModal=$("quitModal"), quitCancelBtn=$("quitCancelBtn"), quitConfirmBtn=$("quitConfirmBtn"), gameMenuBtn=$("gameMenuBtn");
   const profilesScreen=$("profilesScreen"), achievementsScreen=$("achievementsScreen"), statsScreen=$("statsScreen"), settingsScreen=$("settingsScreen"), rulesScreen=$("rulesScreen"), changelogScreen=$("changelogScreen"), abilitiesScreen=$("abilitiesScreen");
@@ -1655,6 +1699,8 @@
   const campaignBackBtn=$("campaignBackBtn"), campaignProfileSelect=$("campaignProfileSelect"), campaignAbilitySelect=$("campaignAbilitySelect"), campaignStartBtn=$("campaignStartBtn"), campaignProfilesBtn=$("campaignProfilesBtn");
   const campaignPath=$("campaignPath"), campaignProfileSummary=$("campaignProfileSummary"), campaignProgressSummary=$("campaignProgressSummary"), campaignTrophySummary=$("campaignTrophySummary"), campaignAbilityGrid=$("campaignAbilityGrid"), campaignCompleteBanner=$("campaignCompleteBanner");
   const campaignWorldTabs=$("campaignWorldTabs"), campaignWorldDesc=$("campaignWorldDesc");
+  const duoCampaignBackBtn=$("duoCampaignBackBtn"), duoCampaignBanner=$("duoCampaignBanner"), duoTeamSummary=$("duoTeamSummary"), duoProgressSummary=$("duoProgressSummary"), duoUnlockSummary=$("duoUnlockSummary");
+  const duoProfile1Select=$("duoProfile1Select"), duoProfile2Select=$("duoProfile2Select"), duoAbility1Select=$("duoAbility1Select"), duoAbility2Select=$("duoAbility2Select"), duoCampaignStartBtn=$("duoCampaignStartBtn"), duoCampaignProfilesBtn=$("duoCampaignProfilesBtn"), duoCampaignPath=$("duoCampaignPath");
 
   let players=[], setupAbilityRolls=[], current=0, dice=[], phase="idle", isAnimating=false;
   let attackFace=null, attackTarget=null, attackHits=0, attackDamage=0, firstAttackRoll=true, currentAttackRollNewHits=0;
@@ -1681,8 +1727,9 @@
   let tutorialMode=false, tutorialOpen=false, tutorialSeen=new Set(), tutorialQueue=[], tutorialStepCount=0;
   let achievementToastQueue=[], achievementToastBusy=false;
   let profileScreenOrigin="menu";
-  let campaignMode=false, campaignEncounterId=null, campaignProfileId=null, campaignWorldId="house";
-  function freshCampaignMetrics(){return {baseOver25:false,maxRawTurnDamage:0,currentRawTurnDamage:0,abilityUses:{},abilitySuccesses:{}};}
+  let campaignMode=false, duoCampaignMode=false, campaignEncounterId=null, campaignProfileId=null, campaignWorldId="house";
+  let duoCampaignEncounterId=null, duoProfile1Id=null, duoProfile2Id=null;
+  function freshCampaignMetrics(){return {baseOver25:false,maxRawTurnDamage:0,currentRawTurnDamage:0,abilityUses:{},abilitySuccesses:{},heroAttacks:{},rawDamageByHero:{},currentRawTurnDamageByHero:{},maxRawTurnDamageByHero:{}};}
   function markCampaignAbilityUse(index,abilityId,amount=1){
     if(!campaignMode || index==null || players[index]?.campaignTeam!=="hero") return;
     const key=String(abilityId);
@@ -1696,6 +1743,52 @@
   let campaignMetrics=freshCampaignMetrics();
   let gameContext={mode:"menu",returnScreen:"menu",profileId:null,encounterId:null};
 
+
+  function duoTeamKey(profile1OrId,profile2OrId){
+    const a=typeof profile1OrId==="string"?profile1OrId:profile1OrId?.id;
+    const b=typeof profile2OrId==="string"?profile2OrId:profile2OrId?.id;
+    if(!a||!b||a===b) return null;
+    return [String(a),String(b)].sort().join("::");
+  }
+
+  function duoCampaignProgress(profile1,profile2,create=true){
+    const key=duoTeamKey(profile1,profile2);
+    if(!key) return null;
+    if(!saveData.duoCampaigns || typeof saveData.duoCampaigns!=="object" || Array.isArray(saveData.duoCampaigns)) saveData.duoCampaigns={};
+    let progress=saveData.duoCampaigns[key];
+    if(!progress && create){progress=defaultDuoProgress(profile1.id,profile2.id);saveData.duoCampaigns[key]=progress;}
+    if(!progress) return null;
+    progress.profileIds=[profile1.id,profile2.id].sort();
+    progress.completedEncounters=Array.isArray(progress.completedEncounters)?[...new Set(progress.completedEncounters.map(String).filter(Boolean))]:[];
+    progress.wins=Math.max(0,Math.floor(Number(progress.wins)||0));
+    progress.losses=Math.max(0,Math.floor(Number(progress.losses)||0));
+    progress.campaignVersion=Math.max(Number(progress.campaignVersion)||1,CAMPAIGN_VERSION);
+    return progress;
+  }
+
+  function profileUnlocksDuo(profile){
+    return !!campaignProgress(profile)?.completedEncounters?.includes("black_table");
+  }
+
+  function duoCampaignUnlocked(profile1,profile2){
+    return !!profile1 && !!profile2 && profile1.id!==profile2.id && (profileUnlocksDuo(profile1)||profileUnlocksDuo(profile2));
+  }
+
+  function duoEncounterById(id){return DUO_CAMPAIGN_ENCOUNTERS.find(e=>e.id===id)||null;}
+
+  function duoEncounterAvailable(profile1,profile2,encounter){
+    if(!duoCampaignUnlocked(profile1,profile2)||!encounter) return false;
+    const progress=duoCampaignProgress(profile1,profile2);
+    if(progress.completedEncounters.includes(encounter.id)) return true;
+    return (encounter.requires||[]).every(id=>progress.completedEncounters.includes(id));
+  }
+
+  function defaultDuoEncounter(profile1,profile2){
+    const progress=duoCampaignProgress(profile1,profile2,false);
+    if(!progress) return DUO_CAMPAIGN_ENCOUNTERS[0]||null;
+    return DUO_CAMPAIGN_ENCOUNTERS.find(e=>!progress.completedEncounters.includes(e.id)&&duoEncounterAvailable(profile1,profile2,e))
+      || (progress.completedEncounters.includes(DUO_CAMPAIGN_ENCOUNTERS.at(-1)?.id)?DUO_CAMPAIGN_ENCOUNTERS.at(-1):DUO_CAMPAIGN_ENCOUNTERS[0]);
+  }
 
   function campaignProgress(profile){
     if(!profile) return null;
@@ -1898,6 +1991,81 @@
     campaignStartBtn.disabled=!profile || !campaignEncounterById(campaignEncounterId) || !unlocked.length;
   }
 
+  function renderDuoCampaign(){
+    const profiles=saveData.profiles||[];
+    const old1=duoProfile1Select.value||duoProfile1Id||profiles[0]?.id||"";
+    const old2=duoProfile2Select.value||duoProfile2Id||profiles.find(p=>p.id!==old1)?.id||"";
+    const fillProfiles=(select,preferred)=>{
+      select.innerHTML="";
+      if(!profiles.length){const o=document.createElement("option");o.value="";o.textContent="Kein Profil vorhanden";select.appendChild(o);return;}
+      profiles.forEach(p=>{const o=document.createElement("option");o.value=p.id;o.textContent=`${p.name} #${p.tagNumber}`;select.appendChild(o);});
+      select.value=getProfile(preferred)?preferred:profiles[0].id;
+    };
+    fillProfiles(duoProfile1Select,old1);
+    fillProfiles(duoProfile2Select,old2);
+    if(duoProfile2Select.value===duoProfile1Select.value){
+      const alt=profiles.find(p=>p.id!==duoProfile1Select.value);
+      if(alt) duoProfile2Select.value=alt.id;
+    }
+
+    const p1=getProfile(duoProfile1Select.value), p2=getProfile(duoProfile2Select.value);
+    duoProfile1Id=p1?.id||null;duoProfile2Id=p2?.id||null;
+    const validPair=!!p1&&!!p2&&p1.id!==p2.id;
+    const unlocked=validPair&&duoCampaignUnlocked(p1,p2);
+    const progress=validPair?duoCampaignProgress(p1,p2):null;
+    const completed=progress?DUO_CAMPAIGN_ENCOUNTERS.filter(e=>progress.completedEncounters.includes(e.id)).length:0;
+    const complete=!!progress?.completedEncounters?.includes(DUO_CAMPAIGN_ENCOUNTERS.at(-1)?.id);
+
+    duoTeamSummary.textContent=validPair?`${p1.name} + ${p2.name}`:(profiles.length<2?"2 Profile erforderlich":"Zwei verschiedene Profile wählen");
+    duoProgressSummary.textContent=`${completed} / ${DUO_CAMPAIGN_ENCOUNTERS.length} Encounter`;
+    duoUnlockSummary.textContent=unlocked?"✅ Freigeschaltet":"🔒 Einer braucht Solo Encounter 10";
+    duoCampaignBanner.classList.toggle("hidden",!complete && unlocked);
+    if(!unlocked){duoCampaignBanner.classList.remove("hidden");duoCampaignBanner.innerHTML=`🔒 <strong>Duo-Kampagne gesperrt.</strong> Mindestens eines der beiden gewählten Profile muss Solo Encounter 10 · Black Table abgeschlossen haben.`;}
+    else if(complete){duoCampaignBanner.classList.remove("hidden");duoCampaignBanner.innerHTML=`🏆 <strong>Duo-Kampagne abgeschlossen.</strong> Diese Profil-Paarung hat Twin Thrones besiegt.`;}
+
+    const fillAbilities=(select,profile)=>{
+      const old=+select.value;select.innerHTML="";
+      const ids=profile?campaignUnlockedAbilities(profile):[];
+      ids.forEach(id=>{const o=document.createElement("option");o.value=id;o.textContent=`${id} · ${ABILITIES[id].name}`;select.appendChild(o);});
+      if(ids.includes(old)) select.value=String(old);
+    };
+    fillAbilities(duoAbility1Select,p1);fillAbilities(duoAbility2Select,p2);
+
+    let encounter=duoEncounterById(duoCampaignEncounterId);
+    if(!encounter || !validPair || !duoEncounterAvailable(p1,p2,encounter)){encounter=validPair&&unlocked?defaultDuoEncounter(p1,p2):DUO_CAMPAIGN_ENCOUNTERS[0];duoCampaignEncounterId=encounter?.id||null;}
+
+    duoCampaignPath.innerHTML=DUO_CAMPAIGN_ENCOUNTERS.map(e=>{
+      const done=!!progress?.completedEncounters?.includes(e.id);
+      const available=validPair&&duoEncounterAvailable(p1,p2,e);
+      const current=available&&e.id===duoCampaignEncounterId;
+      const state=done?"✓ Geschafft":current?"▶ Ausgewählt":available?"Offen":"🔒 Gesperrt";
+      const reward=e.id===DUO_CAMPAIGN_ENCOUNTERS.at(-1)?.id?"Duo-Kampagne abschließen":"Nächsten Duo-Encounter freischalten";
+      return `<button type="button" class="campaign-encounter${done?" done":""}${current?" current":""}${available?"":" locked"}" data-duo-campaign-id="${e.id}" ${available?"":"disabled"}>
+        <div class="campaign-encounter-head"><div><div class="campaign-encounter-title">${escapeHtml(e.title)}</div><div class="campaign-label">${escapeHtml(e.subtitle)}</div></div><div class="campaign-state">${state}</div></div>
+        <div class="campaign-desc">${escapeHtml(e.desc)}</div>
+        <div class="campaign-challenge">🎯 <strong>Challenge:</strong> ${escapeHtml(e.challenge.text)}</div>
+        <div class="campaign-reward">🤝 <strong>Belohnung:</strong> ${escapeHtml(reward)}</div>
+      </button>`;
+    }).join("");
+    duoCampaignPath.querySelectorAll("[data-duo-campaign-id]").forEach(btn=>btn.onclick=()=>{duoCampaignEncounterId=btn.dataset.duoCampaignId;renderDuoCampaign();});
+    duoCampaignStartBtn.disabled=!unlocked||!encounter||!duoEncounterAvailable(p1,p2,encounter)||!duoAbility1Select.value||!duoAbility2Select.value;
+  }
+
+  function openDuoCampaignScreen(){
+    clearBotAutomation();tutorialMode=false;campaignMode=false;duoCampaignMode=false;campaignMetrics=freshCampaignMetrics();
+    document.body.classList.remove("playing","bot-acting");game.classList.add("hidden");winnerBox.classList.add("hidden");nextRoundBox.classList.add("hidden");
+    gameContext={mode:"duo-campaign-map",returnScreen:"duo",profileIds:[duoProfile1Id,duoProfile2Id].filter(Boolean),encounterId:duoCampaignEncounterId};
+    renderDuoCampaign();openFrontScreen(duoCampaignScreen);
+  }
+
+  function returnToDuoCampaignMap(){
+    clearBotAutomation();tutorialMode=false;campaignMode=false;duoCampaignMode=false;campaignMetrics=freshCampaignMetrics();isAnimating=false;
+    eventPopupQueue=[];eventPopupBusy=false;eventPopup.classList.remove("active","death","win","survive");quitModal.classList.add("hidden");winnerBox.classList.add("hidden");nextRoundBox.classList.add("hidden");
+    document.body.classList.remove("playing","bot-acting");game.classList.add("hidden");rotatingBoard.style.transform="rotate(0deg) scale(1)";restartBtn.disabled=false;
+    gameContext={mode:"duo-campaign-map",returnScreen:"duo",profileIds:[duoProfile1Id,duoProfile2Id].filter(Boolean),encounterId:duoCampaignEncounterId};
+    renderDuoCampaign();hideFrontScreens();duoCampaignScreen.classList.remove("hidden");window.scrollTo?.(0,0);
+  }
+
   function returnToCampaignMap(){
     // Der Ergebnis-Button darf nicht von einem alten Bot-/Modal-/Game-State abhängen.
     // Profil und Encounter zuerst sichern, danach den Kampfzustand verlassen.
@@ -1908,6 +2076,7 @@
     clearBotAutomation();
     tutorialMode=false;
     campaignMode=false;
+    duoCampaignMode=false;
     campaignMetrics=freshCampaignMetrics();
     isAnimating=false;
     eventPopupQueue=[];eventPopupBusy=false;
@@ -1948,6 +2117,11 @@
     if(c.type==="healed_min") return (roundStats[heroIndex]?.healed||0)>=(c.value||0);
     if(c.type==="ability_use") return (campaignMetrics.abilityUses?.[String(c.ability)]||0)>=(c.count||1);
     if(c.type==="ability_success") return (campaignMetrics.abilitySuccesses?.[String(c.ability)]||0)>=(c.count||1);
+    if(c.type==="all_heroes_survive"){const heroes=players.filter(p=>p.campaignTeam==="hero");return heroes.length>=2&&heroes.every(p=>p.hp>0);}
+    if(c.type==="each_hero_attack"){const ids=players.map((p,i)=>p.campaignTeam==="hero"?i:null).filter(i=>i!=null);return ids.length>=2&&ids.every(i=>(campaignMetrics.heroAttacks?.[String(i)]||0)>=1);}
+    if(c.type==="team_healed_min"){return players.reduce((sum,p,i)=>sum+(p.campaignTeam==="hero"?(roundStats[i]?.healed||0):0),0)>=(c.value||0);}
+    if(c.type==="each_hero_turn_damage"){const ids=players.map((p,i)=>p.campaignTeam==="hero"?i:null).filter(i=>i!=null);return ids.length>=2&&ids.every(i=>(campaignMetrics.maxRawTurnDamageByHero?.[String(i)]||0)>=(c.value||0));}
+    if(c.type==="team_raw_damage"){return Object.values(campaignMetrics.rawDamageByHero||{}).reduce((a,b)=>a+(Number(b)||0),0)>=(c.value||0);}
     return false;
   }
 
@@ -1982,6 +2156,42 @@
     return 1;
   }
 
+  function startDuoCampaignEncounter(){
+    const p1=getProfile(duoProfile1Select.value),p2=getProfile(duoProfile2Select.value),encounter=duoEncounterById(duoCampaignEncounterId);
+    if(!p1||!p2||p1.id===p2.id||!encounter||!duoEncounterAvailable(p1,p2,encounter)) return;
+    const u1=campaignUnlockedAbilities(p1),u2=campaignUnlockedAbilities(p2);
+    let a1=+duoAbility1Select.value,a2=+duoAbility2Select.value;if(!u1.includes(a1))a1=u1[0]||3;if(!u2.includes(a2))a2=u2[0]||3;
+    clearBotAutomation();resetTutorialUi();tutorialMode=false;campaignMode=true;duoCampaignMode=true;campaignProfileId=null;duoProfile1Id=p1.id;duoProfile2Id=p2.id;
+    gameContext={mode:"duo-campaign-game",returnScreen:"duo",profileIds:[p1.id,p2.id],encounterId:encounter.id};campaignMetrics=freshCampaignMetrics();
+    const makeHero=(profile,ability)=>({name:profile.name,battleTag:`#${profile.tagNumber}`,profileId:profile.id,botLevel:"human",campaignTeam:"hero",hp:START_HP,maxHp:START_HP,ability,secondAbility:null,thirdAbility:null,secondAbilityUnlocked:campaignUnlockedSecondAbilities(profile).length<2,thirdAbilityUnlocked:false,rolledAbility:"DUO",primaryWasChosen:true,seat:0,diceDesign:profile.selectedDice||"classic",wins:0,momentumStreak:0,lastStandUsed:false,roundLastStandTriggered:false,damageSinceLastOwnTurn:false,bloodRushPrimed:false,voluntaryHpPaidThisTurn:false,botBloodUsesThisAttack:0});
+    const heroes=[makeHero(p1,a1),makeHero(p2,a2)];
+    const enemies=encounter.enemies.map(enemy=>({name:enemy.name,battleTag:"",profileId:null,botLevel:enemy.level||"normal",campaignTeam:"enemy",hp:Number(enemy.hp)||START_HP,maxHp:Number(enemy.hp)||START_HP,ability:Number(enemy.ability)||0,secondAbility:enemy.secondAbility!=null?Number(enemy.secondAbility):null,thirdAbility:null,secondAbilityUnlocked:true,thirdAbilityUnlocked:true,rolledAbility:"DUO",primaryWasChosen:false,seat:0,diceDesign:"classic",wins:0,momentumStreak:0,lastStandUsed:false,roundLastStandTriggered:false,damageSinceLastOwnTurn:false,bloodRushPrimed:false,voluntaryHpPaidThisTurn:false,botBloodUsesThisAttack:0}));
+    players=[];
+    const max=Math.max(heroes.length,enemies.length);for(let i=0;i<max;i++){if(heroes[i])players.push(heroes[i]);if(enemies[i])players.push(enemies[i]);}
+    resetRoundStats();current=0;prepareBloodRushForTurn(current);dice=freshDice();phase="idle";isAnimating=false;attackFace=null;attackTarget=null;attackHits=0;attackDamage=0;firstAttackRoll=true;currentAttackRollNewHits=0;
+    baseRerollUsed=false;loadedDiceUsed=false;lastBaseRollIndices=[];attackPowerUsed=false;precisionUses=0;momentumBonus=0;bloodPriceNeighbors=[];bloodRushActiveThisAttack=false;doubleTapApplied=false;pendingDamage=null;pendingHeal=null;pendingExtraDamageFx=[];pendingExtraHealFx=[];
+    roundNumber=Math.max(1,DUO_CAMPAIGN_ENCOUNTERS.findIndex(e=>e.id===encounter.id)+1);roundEliminationOrder=[];lastPlaceIndex=null;roundWinnerHandled=false;roundWinnerIndex=null;nextRoundAbilityRolls=[];eventPopupQueue=[];eventPopupBusy=false;secondAbilityDraftBusy=false;secondAbilityDraftIndex=null;deferredBaseAdvance=false;
+    gamblingRolling=false;gamblingBaseTotal=null;gamblingModal.classList.add("hidden");highStakesRolling=false;highStakesDecisionThisAttack=false;highStakesModal.classList.add("hidden");perfect25Rolling=false;perfect25D4Rolling=false;perfect25BaseTotal=null;pendingPerfect25Total=null;perfect25Modal.classList.add("hidden");perfect25D4Modal.classList.add("hidden");insuranceRolling=false;insuranceContext=null;insuranceModal.classList.add("hidden");counterRolling=false;counterContext=null;counterDiceState=[];counterHits=0;counterFirstRoll=true;pendingCounterattack=null;deferredAttackFinish=false;counterModal.classList.add("hidden");wildcardFace=null;secondAbilityDraftQueue=[];secondAbilityModal.classList.add("hidden");
+    logEl.innerHTML="";winnerBox.classList.add("hidden");nextRoundBox.classList.add("hidden");nextRoundPrepBtn.classList.add("hidden");restartBtn.textContent="Zur Duo-Kampagne";hideFrontScreens();game.classList.remove("hidden");document.body.classList.add("playing");
+    addLog(`🤝 Duo-Kampagne: ${encounter.title} – ${encounter.subtitle}. Challenge: ${encounter.challenge.text}`);addLog(`⚡ ${p1.name}: ${ABILITIES[a1].name} · ${p2.name}: ${ABILITIES[a2].name}.`);addLog(`💀 Fällt einer von euch, läuft der Encounter weiter, solange der andere noch lebt.`);renderAll();
+  }
+
+  function finishDuoCampaignEncounter(heroWon){
+    if(roundWinnerHandled) return true;roundWinnerHandled=true;
+    const encounter=duoEncounterById(duoCampaignEncounterId),p1=getProfile(duoProfile1Id),p2=getProfile(duoProfile2Id),progress=duoCampaignProgress(p1,p2);
+    const heroIndices=players.map((p,i)=>p.campaignTeam==="hero"?i:null).filter(i=>i!=null);
+    const challengeMet=heroWon&&campaignChallengeMet(encounter,heroIndices[0]??0);roundWinnerIndex=heroWon?(heroIndices.find(i=>players[i].hp>0)??heroIndices[0]):players.findIndex(p=>p.hp>0&&p.campaignTeam==="enemy");
+    if(heroWon){progress.wins++;heroIndices.filter(i=>players[i].hp>0).forEach(i=>{players[i].wins=(players[i].wins||0)+1;checkRoundWinnerAchievements(i);});}else progress.losses++;
+    let newlyCompleted=false;if(heroWon&&challengeMet&&!progress.completedEncounters.includes(encounter.id)){progress.completedEncounters.push(encounter.id);newlyCompleted=true;}progress.campaignVersion=Math.max(Number(progress.campaignVersion)||1,CAMPAIGN_VERSION);saveGameData();
+    if(newlyCompleted){const next=defaultDuoEncounter(p1,p2);if(next)duoCampaignEncounterId=next.id;}
+    const complete=progress.completedEncounters.includes(DUO_CAMPAIGN_ENCOUNTERS.at(-1)?.id);
+    if(heroWon&&challengeMet){queueEventPopup(complete?"Duo-Kampagne geschafft!":"Duo-Encounter geschafft!","win");winnerText.innerHTML=complete?"🏆 DUO-KAMPAGNE GESCHAFFT!":"🤝 Duo-Encounter geschafft!";roundResultText.innerHTML=`✅ Gegnerteam besiegt.<br>✅ Challenge erfüllt: <strong>${escapeHtml(encounter.challenge.text)}</strong>${newlyCompleted?"<br>Der nächste Duo-Encounter wurde freigeschaltet.":"<br>Dieser Duo-Encounter war bereits abgeschlossen."}`;}
+    else if(heroWon){queueEventPopup("Challenge verfehlt","survive");winnerText.textContent="⚠️ Sieg – aber Challenge verfehlt";roundResultText.innerHTML=`Ihr habt das Gegnerteam besiegt, aber die Pflichtaufgabe fehlt:<br><strong>${escapeHtml(encounter.challenge.text)}</strong><br>Der nächste Duo-Encounter bleibt gesperrt.`;}
+    else{queueEventPopup("Duo-Encounter verloren","death");winnerText.textContent="💀 Duo-Encounter verloren";roundResultText.innerHTML=`Das Gegnerteam hat beide Spieler ausgeschaltet. Euer Teamfortschritt bleibt gespeichert.`;}
+    roundStandings.innerHTML=players.map((p,i)=>`<div class="round-score-row${p.campaignTeam==="hero"&&heroWon?" winner-row":""}"><div class="round-score-name">${escapeHtml(p.name)}${p.battleTag?` <span class="battle-tag">${escapeHtml(p.battleTag)}</span>`:""}</div><div class="round-score-meta">${p.campaignTeam==="hero"?"🤝 Duo-Spieler":"🤖 Gegner"} · ${Math.max(0,p.hp)} HP</div></div>`).join("");
+    renderRoundStats();clearBotAutomation();winnerBox.classList.remove("hidden");nextRoundBox.classList.add("hidden");nextRoundPrepBtn.classList.add("hidden");restartBtn.textContent="Zur Duo-Kampagne";restartBtn.disabled=false;gameContext.returnScreen="duo";gameContext.encounterId=duoCampaignEncounterId;turnLine.textContent="Duo-Encounter beendet";statusEl.textContent="";abilityState.innerHTML="";hideAllControls();renderPlayers();roundNumberEl.textContent=roundNumber;return true;
+  }
+
   function startCampaignEncounter(){
     const profile=getProfile(campaignProfileSelect.value);
     const encounter=campaignEncounterById(campaignEncounterId);
@@ -1996,6 +2206,7 @@
     resetTutorialUi();
     tutorialMode=false;
     campaignMode=true;
+    duoCampaignMode=false;
     campaignProfileId=profile.id;
     gameContext={mode:"campaign-game",returnScreen:"campaign",profileId:profile.id,encounterId:encounter.id};
     campaignMetrics=freshCampaignMetrics();
@@ -2099,6 +2310,11 @@
     if(!campaignMode) return false;
     const heroAlive=players.some(p=>p.campaignTeam==="hero" && p.hp>0);
     const enemyAlive=players.some(p=>p.campaignTeam==="enemy" && p.hp>0);
+    if(duoCampaignMode){
+      if(!heroAlive) return finishDuoCampaignEncounter(false);
+      if(!enemyAlive) return finishDuoCampaignEncounter(true);
+      return false;
+    }
     if(!heroAlive) return finishCampaignEncounter(false);
     if(!enemyAlive) return finishCampaignEncounter(true);
     return false;
@@ -2676,6 +2892,10 @@
     if(players[index]?.campaignTeam!=="hero") return;
     campaignMetrics.currentRawTurnDamage=(campaignMetrics.currentRawTurnDamage||0)+amount;
     campaignMetrics.maxRawTurnDamage=Math.max(campaignMetrics.maxRawTurnDamage||0,campaignMetrics.currentRawTurnDamage);
+    const key=String(index);
+    campaignMetrics.rawDamageByHero[key]=(campaignMetrics.rawDamageByHero[key]||0)+amount;
+    campaignMetrics.currentRawTurnDamageByHero[key]=(campaignMetrics.currentRawTurnDamageByHero[key]||0)+amount;
+    campaignMetrics.maxRawTurnDamageByHero[key]=Math.max(campaignMetrics.maxRawTurnDamageByHero[key]||0,campaignMetrics.currentRawTurnDamageByHero[key]);
   }
 
   function recordHealing(index,amount){
@@ -4018,7 +4238,7 @@
   function randomSecondAbilityChoices(index){
     const owned=new Set(playerAbilities(index));
     const allowed=(campaignMode && players[index]?.campaignTeam==="hero")
-      ? campaignUnlockedSecondAbilities(getProfile(campaignProfileId))
+      ? campaignUnlockedSecondAbilities(getProfile(players[index]?.profileId)||getProfile(campaignProfileId))
       : REAL_ABILITY_IDS;
     const pool=allowed.filter(a=>!owned.has(a));
 
@@ -4188,6 +4408,7 @@
 
 
   function beginAttackWithFace(face,total,source="normal"){
+    if(campaignMode && players[current]?.campaignTeam==="hero"){const key=String(current);campaignMetrics.heroAttacks[key]=(campaignMetrics.heroAttacks[key]||0)+1;}
     attackFace=face;
     attackTarget=nextAttackTarget(current);
     if(attackTarget===-1){checkWinner();return;}
@@ -5069,7 +5290,7 @@
     const n=nextAlive(current);
     if(n===-1){checkWinner();return;}
     current=n;
-    if(campaignMode && players[current]?.campaignTeam==="hero") campaignMetrics.currentRawTurnDamage=0;
+    if(campaignMode && players[current]?.campaignTeam==="hero"){campaignMetrics.currentRawTurnDamage=0;campaignMetrics.currentRawTurnDamageByHero[String(current)]=0;}
     prepareBloodRushForTurn(current);
     if(turnDamageThisTurn[current]!=null) turnDamageThisTurn[current]=0;
     if(roundStats[current]) roundStats[current].snakeEyesUsesThisTurn=0;
@@ -5348,13 +5569,14 @@
   }
 
   function hideFrontScreens(){
-    [mainMenu,campaignScreen,setup,profilesScreen,achievementsScreen,statsScreen,settingsScreen,rulesScreen,changelogScreen,abilitiesScreen].forEach(el=>el?.classList.add("hidden"));
+    [mainMenu,campaignScreen,duoCampaignScreen,setup,profilesScreen,achievementsScreen,statsScreen,settingsScreen,rulesScreen,changelogScreen,abilitiesScreen].forEach(el=>el?.classList.add("hidden"));
   }
 
   function openMainMenu(){
     clearBotAutomation();
     tutorialMode=false;
     campaignMode=false;
+    duoCampaignMode=false;
     campaignEncounterId=null;
     campaignProfileId=null;
     campaignMetrics=freshCampaignMetrics();
@@ -5382,6 +5604,7 @@
   }
 
   $("menuCampaignBtn").onclick=()=>{openCampaignScreen();};
+  $("menuDuoCampaignBtn").onclick=()=>{openDuoCampaignScreen();};
   $("menuPlayBtn").onclick=()=>{
     tutorialMode=false;
     resetTutorialUi();
@@ -5392,6 +5615,12 @@
   };
   $("menuTutorialBtn").onclick=startTutorial;
   campaignBackBtn.onclick=openMainMenu;
+  duoCampaignBackBtn.onclick=openMainMenu;
+  duoProfile1Select.onchange=()=>{duoProfile1Id=duoProfile1Select.value||null;duoCampaignEncounterId=null;renderDuoCampaign();};
+  duoProfile2Select.onchange=()=>{duoProfile2Id=duoProfile2Select.value||null;duoCampaignEncounterId=null;renderDuoCampaign();};
+  duoAbility1Select.onchange=()=>{};duoAbility2Select.onchange=()=>{};
+  duoCampaignStartBtn.onclick=startDuoCampaignEncounter;
+  duoCampaignProfilesBtn.onclick=()=>{profileScreenOrigin="duo";renderProfiles();openFrontScreen(profilesScreen);};
   campaignProfileSelect.onchange=()=>{campaignProfileId=campaignProfileSelect.value||null;campaignEncounterId=null;gameContext.profileId=campaignProfileId;gameContext.encounterId=null;renderCampaign();};
   campaignAbilitySelect.onchange=()=>{};
   campaignStartBtn.onclick=startCampaignEncounter;
@@ -5417,6 +5646,7 @@
 
   quitConfirmBtn.onclick=()=>{
     quitModal.classList.add("hidden");
+    if(gameContext.returnScreen==="duo" || duoCampaignMode){returnToDuoCampaignMap();return;}
     if(campaignMode || gameContext.returnScreen==="campaign"){openCampaignScreen();return;}
     openMainMenu();
   };
@@ -5443,13 +5673,14 @@
   profilesBackBtn.onclick=()=>{
     if(profileScreenOrigin==="setup"){makeNameFields();openFrontScreen(setup);}
     else if(profileScreenOrigin==="campaign"){openCampaignScreen();}
+    else if(profileScreenOrigin==="duo"){openDuoCampaignScreen();}
     else openMainMenu();
   };
 
   $("setupProfilesBtn").onclick=()=>{profileScreenOrigin="setup";renderProfiles();openFrontScreen(profilesScreen);};
 
   function refreshPersistentUi(){
-    applyStoredSettings();renderProfiles();renderAchievements();renderStats();makeNameFields();renderCampaign();
+    applyStoredSettings();renderProfiles();renderAchievements();renderStats();makeNameFields();renderCampaign();renderDuoCampaign();
   }
 
   function exportSave(){
@@ -5581,6 +5812,7 @@
   startNextRoundBtn.onclick=startNextRound;
 
   restartBtn.onclick=()=>{
+    if(duoCampaignMode || gameContext.returnScreen==="duo" || restartBtn.textContent==="Zur Duo-Kampagne"){returnToDuoCampaignMap();return;}
     if(campaignMode || gameContext.returnScreen==="campaign" || restartBtn.textContent==="Zur Kampagne"){
       returnToCampaignMap();
       return;
@@ -5615,6 +5847,7 @@
   renderStats();
   applyLocalModeSetup();
   renderCampaign();
+  renderDuoCampaign();
   openMainMenu();
 })();
 </script>
