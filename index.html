@@ -10,7 +10,7 @@
   <link rel="manifest" href="manifest.json" />
   <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png" />
   <link rel="apple-touch-icon" sizes="192x192" href="icon-192.png" />
-  <title>Würfelduell · V20.0</title>
+  <title>Würfelduell · V20.1</title>
   <style>
     * { box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
     :root{
@@ -1081,7 +1081,7 @@
       <button id="menuRulesBtn"><span class="menu-icon">📖</span> Regeln</button>
       <button id="menuChangelogBtn"><span class="menu-icon">📝</span> Changelog</button>
     </div>
-    <div class="version-footer">WÜRFELDUELL · VERSION 20.0</div>
+    <div class="version-footer">WÜRFELDUELL · VERSION 20.1</div>
   </section>
 
 
@@ -1114,7 +1114,7 @@
 
   <section id="duoCampaignScreen" class="card screen-card hidden">
     <div class="screen-topbar"><button id="duoCampaignBackBtn">←</button><h2 class="screen-title">🤝 Duo-Kampagne</h2></div>
-    <div class="screen-subtitle">Zwei echte Spielerprofile kämpfen gemeinsam gegen feste Gegnerteams. Der Fortschritt gehört genau dieser Profil-Paarung. Stirbt ein Spieler, darf der andere den Encounter alleine zu Ende kämpfen.</div>
+    <div class="screen-subtitle">Zwei echte Spielerprofile kämpfen gemeinsam gegen feste Gegnerteams. Spieler 1 bestimmt den gemeinsamen freigeschalteten Fähigkeitspool; beide wählen daraus ihre eigene aktive Fähigkeit. Der Fortschritt gehört genau dieser Profil-Paarung. Stirbt ein Spieler, darf der andere den Encounter alleine zu Ende kämpfen.</div>
     <div id="duoCampaignBanner" class="campaign-complete hidden"></div>
     <div class="campaign-top">
       <div class="menu-info-card"><div class="campaign-label">Team</div><div id="duoTeamSummary" class="campaign-value">2 Profile erforderlich</div></div>
@@ -1125,7 +1125,7 @@
       <label>Spieler 1<select id="duoProfile1Select"></select></label>
       <label>Fähigkeit Spieler 1<select id="duoAbility1Select"></select></label>
       <label>Spieler 2<select id="duoProfile2Select"></select></label>
-      <label>Fähigkeit Spieler 2<select id="duoAbility2Select"></select></label>
+      <label>Fähigkeit Spieler 2 · Pool von Spieler 1<select id="duoAbility2Select"></select></label>
     </div>
     <div class="campaign-start-row">
       <button id="duoCampaignStartBtn" class="good">🤝 Duo-Encounter starten</button>
@@ -1198,6 +1198,7 @@
   <section id="changelogScreen" class="card screen-card hidden">
     <div class="screen-topbar"><button class="menuBackBtn">←</button><h2 class="screen-title">📝 Changelog</h2></div>
     <div class="screen-subtitle">Die großen Versionssprünge, ohne jeden Mini-Hotfix.</div>
+    <div class="changelog-entry"><div class="changelog-version">V20.1</div><ul><li>Duo-Kampagne: Spieler 2 verwendet denselben freigeschalteten Kampagnen-Fähigkeitspool wie Spieler 1</li><li>Beide Spieler wählen weiterhin ihre eigene aktive Hauptfähigkeit aus diesem gemeinsamen Pool</li><li>Auch die Zweitfähigkeits-Auswahl bei ≤12 HP verwendet für beide Spieler den Pool von Spieler 1</li></ul></div>
     <div class="changelog-entry"><div class="changelog-version">V20.0</div><ul><li>Neue Duo-Kampagne für genau zwei lokale Spielerprofile</li><li>Eigener Fortschritt pro Profil-Paar mit 5 kooperativen Encountern</li><li>Duo wird freigeschaltet, sobald mindestens eines der beiden Profile Solo-Encounter 10 abgeschlossen hat</li><li>Wenn ein Spieler stirbt, kann der Partner den Encounter alleine zu Ende spielen</li><li>Kooperative Challenges: beide überleben, beide angreifen, Team-Heilung und Team-Schadensziele</li></ul></div>
     <div class="changelog-entry"><div class="changelog-version">V19.0</div><ul><li>Zwei neue reine Local-Modi: Endurance (50 HP) und Overload (75 HP)</li><li>Endurance: 2 zufällige Startfähigkeiten und 3. Fähigkeit bei ≤30 HP</li><li>Overload: 3 zufällige Startfähigkeiten; Letztplatzierter wählt nur 1 davon frei</li><li>Neue Modi sind auf 2–4 menschliche Spieler begrenzt und enthalten keine Bots</li><li>Mehrfachfähigkeiten werden in Kampf-UI, Statistiken und Rundenwechsel vollständig unterstützt</li></ul></div>
     <div class="changelog-entry"><div class="changelog-version">V18.4</div><ul><li>Prestige-System mit profilgebundenen Trophäen eingeführt</li><li>Royal Flush und Rift Sovereign sind als Boss-Fights wiederholt für Trophäen farmbar</li><li>Rift Sovereign: Challenge auf 10 HP Heilung geändert; erster Clear schaltet Glück (BETA) nur für die Zweitfähigkeit ab ≤12 HP frei</li><li>Rift Circuit auf 15 Encounter erweitert</li><li>Serpent's Law schaltet Angriffsvorsprung frei; danach startet der Prestige-Trophäenmodus</li><li>Homescreen-/PWA-Icon, Manifest und App-Metadaten ergänzt</li></ul></div>
@@ -1323,7 +1324,7 @@
   let localModeId="classic";
   function localModeRules(){return LOCAL_MODES[localModeId]||LOCAL_MODES.classic;}
 
-  const GAME_VERSION="20.0";
+  const GAME_VERSION="20.1";
   const SAVE_KEY="wuerfelduell_save_v1"; // absichtlich stabil: Updates lesen denselben Browser-Save
   const SAVE_SCHEMA_VERSION=5;
   const CAMPAIGN_VERSION=7;
@@ -2023,13 +2024,14 @@
     if(!unlocked){duoCampaignBanner.classList.remove("hidden");duoCampaignBanner.innerHTML=`🔒 <strong>Duo-Kampagne gesperrt.</strong> Mindestens eines der beiden gewählten Profile muss Solo Encounter 10 · Black Table abgeschlossen haben.`;}
     else if(complete){duoCampaignBanner.classList.remove("hidden");duoCampaignBanner.innerHTML=`🏆 <strong>Duo-Kampagne abgeschlossen.</strong> Diese Profil-Paarung hat Twin Thrones besiegt.`;}
 
-    const fillAbilities=(select,profile)=>{
+    const sharedDuoAbilityPool=p1?campaignUnlockedAbilities(p1):[];
+    const fillAbilities=(select,ids)=>{
       const old=+select.value;select.innerHTML="";
-      const ids=profile?campaignUnlockedAbilities(profile):[];
       ids.forEach(id=>{const o=document.createElement("option");o.value=id;o.textContent=`${id} · ${ABILITIES[id].name}`;select.appendChild(o);});
       if(ids.includes(old)) select.value=String(old);
     };
-    fillAbilities(duoAbility1Select,p1);fillAbilities(duoAbility2Select,p2);
+    fillAbilities(duoAbility1Select,sharedDuoAbilityPool);
+    fillAbilities(duoAbility2Select,sharedDuoAbilityPool);
 
     let encounter=duoEncounterById(duoCampaignEncounterId);
     if(!encounter || !validPair || !duoEncounterAvailable(p1,p2,encounter)){encounter=validPair&&unlocked?defaultDuoEncounter(p1,p2):DUO_CAMPAIGN_ENCOUNTERS[0];duoCampaignEncounterId=encounter?.id||null;}
@@ -2159,11 +2161,14 @@
   function startDuoCampaignEncounter(){
     const p1=getProfile(duoProfile1Select.value),p2=getProfile(duoProfile2Select.value),encounter=duoEncounterById(duoCampaignEncounterId);
     if(!p1||!p2||p1.id===p2.id||!encounter||!duoEncounterAvailable(p1,p2,encounter)) return;
-    const u1=campaignUnlockedAbilities(p1),u2=campaignUnlockedAbilities(p2);
-    let a1=+duoAbility1Select.value,a2=+duoAbility2Select.value;if(!u1.includes(a1))a1=u1[0]||3;if(!u2.includes(a2))a2=u2[0]||3;
+    const sharedDuoAbilityPool=campaignUnlockedAbilities(p1);
+    let a1=+duoAbility1Select.value,a2=+duoAbility2Select.value;
+    if(!sharedDuoAbilityPool.includes(a1)) a1=sharedDuoAbilityPool[0]||3;
+    if(!sharedDuoAbilityPool.includes(a2)) a2=sharedDuoAbilityPool[0]||3;
     clearBotAutomation();resetTutorialUi();tutorialMode=false;campaignMode=true;duoCampaignMode=true;campaignProfileId=null;duoProfile1Id=p1.id;duoProfile2Id=p2.id;
     gameContext={mode:"duo-campaign-game",returnScreen:"duo",profileIds:[p1.id,p2.id],encounterId:encounter.id};campaignMetrics=freshCampaignMetrics();
-    const makeHero=(profile,ability)=>({name:profile.name,battleTag:`#${profile.tagNumber}`,profileId:profile.id,botLevel:"human",campaignTeam:"hero",hp:START_HP,maxHp:START_HP,ability,secondAbility:null,thirdAbility:null,secondAbilityUnlocked:campaignUnlockedSecondAbilities(profile).length<2,thirdAbilityUnlocked:false,rolledAbility:"DUO",primaryWasChosen:true,seat:0,diceDesign:profile.selectedDice||"classic",wins:0,momentumStreak:0,lastStandUsed:false,roundLastStandTriggered:false,damageSinceLastOwnTurn:false,bloodRushPrimed:false,voluntaryHpPaidThisTurn:false,botBloodUsesThisAttack:0});
+    const sharedDuoSecondPool=campaignUnlockedSecondAbilities(p1);
+    const makeHero=(profile,ability)=>({name:profile.name,battleTag:`#${profile.tagNumber}`,profileId:profile.id,botLevel:"human",campaignTeam:"hero",hp:START_HP,maxHp:START_HP,ability,secondAbility:null,thirdAbility:null,secondAbilityUnlocked:sharedDuoSecondPool.length<2,thirdAbilityUnlocked:false,rolledAbility:"DUO",primaryWasChosen:true,seat:0,diceDesign:profile.selectedDice||"classic",wins:0,momentumStreak:0,lastStandUsed:false,roundLastStandTriggered:false,damageSinceLastOwnTurn:false,bloodRushPrimed:false,voluntaryHpPaidThisTurn:false,botBloodUsesThisAttack:0});
     const heroes=[makeHero(p1,a1),makeHero(p2,a2)];
     const enemies=encounter.enemies.map(enemy=>({name:enemy.name,battleTag:"",profileId:null,botLevel:enemy.level||"normal",campaignTeam:"enemy",hp:Number(enemy.hp)||START_HP,maxHp:Number(enemy.hp)||START_HP,ability:Number(enemy.ability)||0,secondAbility:enemy.secondAbility!=null?Number(enemy.secondAbility):null,thirdAbility:null,secondAbilityUnlocked:true,thirdAbilityUnlocked:true,rolledAbility:"DUO",primaryWasChosen:false,seat:0,diceDesign:"classic",wins:0,momentumStreak:0,lastStandUsed:false,roundLastStandTriggered:false,damageSinceLastOwnTurn:false,bloodRushPrimed:false,voluntaryHpPaidThisTurn:false,botBloodUsesThisAttack:0}));
     players=[];
@@ -2173,7 +2178,7 @@
     roundNumber=Math.max(1,DUO_CAMPAIGN_ENCOUNTERS.findIndex(e=>e.id===encounter.id)+1);roundEliminationOrder=[];lastPlaceIndex=null;roundWinnerHandled=false;roundWinnerIndex=null;nextRoundAbilityRolls=[];eventPopupQueue=[];eventPopupBusy=false;secondAbilityDraftBusy=false;secondAbilityDraftIndex=null;deferredBaseAdvance=false;
     gamblingRolling=false;gamblingBaseTotal=null;gamblingModal.classList.add("hidden");highStakesRolling=false;highStakesDecisionThisAttack=false;highStakesModal.classList.add("hidden");perfect25Rolling=false;perfect25D4Rolling=false;perfect25BaseTotal=null;pendingPerfect25Total=null;perfect25Modal.classList.add("hidden");perfect25D4Modal.classList.add("hidden");insuranceRolling=false;insuranceContext=null;insuranceModal.classList.add("hidden");counterRolling=false;counterContext=null;counterDiceState=[];counterHits=0;counterFirstRoll=true;pendingCounterattack=null;deferredAttackFinish=false;counterModal.classList.add("hidden");wildcardFace=null;secondAbilityDraftQueue=[];secondAbilityModal.classList.add("hidden");
     logEl.innerHTML="";winnerBox.classList.add("hidden");nextRoundBox.classList.add("hidden");nextRoundPrepBtn.classList.add("hidden");restartBtn.textContent="Zur Duo-Kampagne";hideFrontScreens();game.classList.remove("hidden");document.body.classList.add("playing");
-    addLog(`🤝 Duo-Kampagne: ${encounter.title} – ${encounter.subtitle}. Challenge: ${encounter.challenge.text}`);addLog(`⚡ ${p1.name}: ${ABILITIES[a1].name} · ${p2.name}: ${ABILITIES[a2].name}.`);addLog(`💀 Fällt einer von euch, läuft der Encounter weiter, solange der andere noch lebt.`);renderAll();
+    addLog(`🤝 Duo-Kampagne: ${encounter.title} – ${encounter.subtitle}. Challenge: ${encounter.challenge.text}`);addLog(`⚡ Gemeinsamer Fähigkeitspool von ${p1.name}. ${p1.name}: ${ABILITIES[a1].name} · ${p2.name}: ${ABILITIES[a2].name}.`);addLog(`💀 Fällt einer von euch, läuft der Encounter weiter, solange der andere noch lebt.`);renderAll();
   }
 
   function finishDuoCampaignEncounter(heroWon){
@@ -4237,9 +4242,11 @@
 
   function randomSecondAbilityChoices(index){
     const owned=new Set(playerAbilities(index));
-    const allowed=(campaignMode && players[index]?.campaignTeam==="hero")
-      ? campaignUnlockedSecondAbilities(getProfile(players[index]?.profileId)||getProfile(campaignProfileId))
-      : REAL_ABILITY_IDS;
+    const allowed=(duoCampaignMode && players[index]?.campaignTeam==="hero")
+      ? campaignUnlockedSecondAbilities(getProfile(duoProfile1Id))
+      : (campaignMode && players[index]?.campaignTeam==="hero")
+        ? campaignUnlockedSecondAbilities(getProfile(players[index]?.profileId)||getProfile(campaignProfileId))
+        : REAL_ABILITY_IDS;
     const pool=allowed.filter(a=>!owned.has(a));
 
     for(let i=pool.length-1;i>0;i--){
