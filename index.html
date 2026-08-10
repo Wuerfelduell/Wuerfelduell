@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <meta name="theme-color" content="#0d1016" />
-  <title>Würfelduell · V18.0</title>
+  <title>Würfelduell · V18.1</title>
   <style>
     * { box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
     :root{
@@ -115,22 +115,28 @@
     .setup-profile{width:100%}
     .setup-dice-readonly{font-size:12px;color:#9da7b8;padding:10px 11px;border-radius:11px;border:1px solid var(--border);background:#0e131c;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
     @media (max-width:540px){.profile-actions{grid-template-columns:1fr 1fr}.profile-delete{grid-column:1/-1}.stats-grid{grid-template-columns:1fr 1fr}.ability-stat-row{grid-template-columns:minmax(0,1.4fr) .5fr .5fr .5fr .65fr;font-size:10px;padding:7px 6px}}
-    /* Während einer Partie bleibt der eigentliche Spielscreen komplett im Viewport. */
+    /* V18.1: Kampf darf auf kleinen Displays vertikal scrollen.
+       Lange Fähigkeitstexte können so nie wieder die Controls unter den Viewport sperren. */
     body.playing{
-      height:100dvh;
-      overflow:hidden;
+      min-height:100dvh;
+      height:auto;
+      overflow-x:hidden;
+      overflow-y:auto;
+      overscroll-behavior-y:contain;
+      -webkit-overflow-scrolling:touch;
     }
     body.playing .app{
-      height:100dvh;
-      padding:7px 8px;
-      overflow:hidden;
+      min-height:100dvh;
+      height:auto;
+      padding:7px 8px 28px;
+      overflow:visible;
     }
     body.playing #game:not(.hidden){
-      height:100%;
-      min-height:0;
+      min-height:100dvh;
+      height:auto;
       display:flex;
       flex-direction:column;
-      overflow:hidden;
+      overflow:visible;
     }
     body.playing #game > .card:first-child{
       flex:0 0 auto;
@@ -1013,7 +1019,7 @@
       <button id="menuRulesBtn"><span class="menu-icon">📖</span> Regeln</button>
       <button id="menuChangelogBtn"><span class="menu-icon">📝</span> Changelog</button>
     </div>
-    <div class="version-footer">WÜRFELDUELL · VERSION 18.0</div>
+    <div class="version-footer">WÜRFELDUELL · VERSION 18.1</div>
   </section>
 
 
@@ -1103,6 +1109,7 @@
   <section id="changelogScreen" class="card screen-card hidden">
     <div class="screen-topbar"><button class="menuBackBtn">←</button><h2 class="screen-title">📝 Changelog</h2></div>
     <div class="screen-subtitle">Die großen Versionssprünge, ohne jeden Mini-Hotfix.</div>
+    <div class="changelog-entry"><div class="changelog-version">V18.1</div><ul><li>Vertikales Scrollen im Kampf wieder aktiviert – lange Fähigkeitstexte blockieren keine Controls mehr</li><li>Kampagne auf 15 Encounter erweitert</li><li>Neue Kämpfe: Vampire's Cut, No Safety Net, Chaos Room, Three of a Kind und Royal Flush</li><li>Neue kombinierte Kampagnen-Challenges und Heilungs-Challenge</li><li>Three of a Kind als echter 1-gegen-3-Kampf</li><li>Royal Flush als neuer Kapitel-Boss im 2-gegen-1</li></ul></div>
     <div class="changelog-entry"><div class="changelog-version">V18.0</div><ul><li>Kampagne auf 10 Encounter erweitert</li><li>Neue Kämpfe: Snake Pit, Mirror Chamber, Double Trouble, Blood Bank und Black Table</li><li>Mirror-Gegner übernimmt dynamisch deine gewählte Hauptfähigkeit</li><li>Kampagnengegner können eigene HP und eine Zweitfähigkeit besitzen</li><li>Neuer Kapitel-Boss mit 40 HP</li><li>„Zur Kampagne“ vollständig vom Kampfzustand entkoppelt und robust zurückgesetzt</li></ul></div>
     <div class="changelog-entry"><div class="changelog-version">V17.1</div><ul><li>Zukunftssichere Save-Migrationen und getrennte Spiel-/Save-/Kampagnenversion</li><li>Encounter-Freischaltung über stabile IDs und explizite Voraussetzungen statt Level-Anzahl</li><li>Unbekannte Encounter-IDs bleiben beim Laden erhalten</li><li>Save Export/Import als JSON</li><li>„Zur Kampagne“ nutzt einen stabilen Navigationskontext statt nur campaignMode</li></ul></div>
     <div class="changelog-entry"><div class="changelog-version">V17.0</div><ul><li>Modulare Solo-Kampagne mit persistentem Profilfortschritt</li><li>Fähigkeiten werden kampagnenintern schrittweise freigeschaltet</li><li>Encounter-Challenges sperren den nächsten Kampf bis Sieg + Aufgabe</li><li>Team-Zielsystem für echte 2-gegen-1-Kämpfe</li><li>Finale: 2 gegen 1 mit 10-Schaden-in-einem-Zug-Challenge</li></ul></div>
@@ -1205,10 +1212,10 @@
   const CHOOSABLE_ABILITY_IDS = REAL_ABILITY_IDS.filter(id=>id!==7);
 
 
-  const GAME_VERSION="18.0";
+  const GAME_VERSION="18.1";
   const SAVE_KEY="wuerfelduell_save_v1"; // absichtlich stabil: Updates lesen denselben Browser-Save
   const SAVE_SCHEMA_VERSION=3;
-  const CAMPAIGN_VERSION=2;
+  const CAMPAIGN_VERSION=3;
 
   const ACHIEVEMENTS={
     grande:{name:"GRANDE!",desc:"Beende einen Angriff mit allen 5 Würfeln als Treffer.",rewardDice:"gold"},
@@ -1242,9 +1249,15 @@
     {id:"mirror_chamber",requires:["snake_pit"],title:"7 · Mirror Chamber",subtitle:"Du gegen dich selbst",desc:"Der Spiegel übernimmt exakt deine gewählte Hauptfähigkeit. Deine stärkste Option kann damit plötzlich gegen dich arbeiten.",challenge:{type:"finish_hp",value:12,text:"Besiege dein Spiegelbild mit mindestens 12 HP Restleben."},rewardAbility:23,enemies:[{name:"Mirror",level:"hard",ability:"mirror"}]},
     {id:"double_trouble_campaign",requires:["mirror_chamber"],title:"8 · Double Trouble",subtitle:"2 gegen 1 · Druck ohne Pause",desc:"Zwei abgestimmte Gegner: Einer baut Momentum auf, der andere bestraft exakt zwei Treffer. Du bist wieder allein.",challenge:{type:"turn_damage",value:10,text:"Verursache mindestens 10 Schaden in einem eigenen Zug."},rewardAbility:24,enemies:[{name:"Runner",level:"normal",ability:10},{name:"Trigger",level:"normal",ability:24}]},
     {id:"blood_bank",requires:["double_trouble_campaign"],title:"9 · Blood Bank",subtitle:"Der Leech · 32 HP",desc:"Der Leech startet mit mehr Leben und heilt sich über seinen verursachten Schaden zurück. Lange Kämpfe spielen ihm in die Hände.",challenge:{type:"finish_hp",value:8,text:"Gewinne mit mindestens 8 HP Restleben."},rewardAbility:2,enemies:[{name:"The Leech",level:"hard",hp:32,ability:2,secondAbility:9}]},
-    {id:"black_table",requires:["blood_bank"],title:"10 · Black Table",subtitle:"Kapitel-Boss · 40 HP",desc:"Der Pit Boss hat 40 HP, Counterattack und High Stakes. Große Treffer können ihn beenden – oder sofort einen brutalen Gegenschlag auslösen.",challenge:{type:"turn_damage",value:12,text:"Final-Challenge: Verursache mindestens 12 Schaden in einem eigenen Zug."},rewardAbility:21,enemies:[{name:"Pit Boss",level:"hard",hp:40,ability:21,secondAbility:13}]}
+    {id:"black_table",requires:["blood_bank"],title:"10 · Black Table",subtitle:"Kapitel-Boss · 40 HP",desc:"Der Pit Boss hat 40 HP, Counterattack und High Stakes. Große Treffer können ihn beenden – oder sofort einen brutalen Gegenschlag auslösen.",challenge:{type:"turn_damage",value:12,text:"Final-Challenge: Verursache mindestens 12 Schaden in einem eigenen Zug."},rewardAbility:21,enemies:[{name:"Pit Boss",level:"hard",hp:40,ability:21,secondAbility:13}]},
+
+    {id:"vampires_cut",requires:["black_table"],title:"11 · Vampire's Cut",subtitle:"Der Collector · 30 HP",desc:"Der Collector lebt von langen Kämpfen: 30 HP, Lifesteal und Rache. Diesmal reicht Überleben nicht – du musst selbst Leben zurückholen.",challenge:{type:"healed_min",value:4,text:"Heile während des Kampfes mindestens 4 HP und gewinne."},rewardAbility:9,enemies:[{name:"Collector",level:"hard",hp:30,ability:2,secondAbility:9}]},
+    {id:"no_safety_net",requires:["vampires_cut"],title:"12 · No Safety Net",subtitle:"Der Marksman",desc:"Präzision plus Loaded Dice macht jeden kleinen Fehler teuer. Spiele kontrolliert und bezahle nicht dauernd mit deinem eigenen Leben.",challenge:{type:"self_damage_max",value:3,text:"Gewinne mit höchstens 3 selbst verursachtem Schaden."},rewardAbility:8,enemies:[{name:"Marksman",level:"hard",ability:8,secondAbility:18}]},
+    {id:"chaos_room",requires:["no_safety_net"],title:"13 · Chaos Room",subtitle:"Der Joker · 28 HP",desc:"Wildcard und Gambling Man machen seine Angriffe schwer lesbar. Du musst selbst offensiv bleiben, ohne am Ende zerlegt dazustehen.",challenge:{type:"all",rules:[{type:"base_over_25"},{type:"finish_hp",value:10}],text:"Beende mindestens einen Basiswurf über 25 und gewinne mit mindestens 10 HP."},rewardAbility:17,enemies:[{name:"Joker",level:"hard",hp:28,ability:17,secondAbility:12}]},
+    {id:"three_of_a_kind",requires:["chaos_room"],title:"14 · Three of a Kind",subtitle:"1 gegen 3",desc:"Drei kleinere Gegner teilen sich den Tisch. Jeder hat nur 15 HP, aber Momentum, Double Tap und Insurance erzeugen konstanten Druck.",challenge:{type:"turn_damage",value:12,text:"Verursache mindestens 12 Schaden in einem eigenen Zug."},rewardAbility:25,enemies:[{name:"Rush",level:"normal",hp:15,ability:10},{name:"Tap",level:"normal",hp:15,ability:24},{name:"Shield",level:"normal",hp:15,ability:19}]},
+    {id:"royal_flush",requires:["three_of_a_kind"],title:"15 · Royal Flush",subtitle:"Kapitel-Boss · 2 gegen 1",desc:"Der King spielt mit Präzision und Wildcard, sein Ace mit Brutalen Einsen und Underdog. Zusammen kontrollieren sie fast jede Angriffszahl.",challenge:{type:"all",rules:[{type:"turn_damage",value:14},{type:"finish_hp",value:8}],text:"Boss-Challenge: Verursache mindestens 14 Schaden in einem Zug und gewinne mit mindestens 8 HP."},rewardAbility:15,enemies:[{name:"The King",level:"hard",hp:42,ability:8,secondAbility:17},{name:"Ace",level:"hard",hp:20,ability:1,secondAbility:25}]}
   ];
-  const CAMPAIGN_FINAL_ENCOUNTER_IDS=["black_table"];
+  const CAMPAIGN_FINAL_ENCOUNTER_IDS=["royal_flush"];
 
   function defaultCampaignProgress(){
     return {campaignVersion:CAMPAIGN_VERSION,completedEncounters:[],unlockedAbilities:[...CAMPAIGN_START_ABILITIES],wins:0,losses:0};
@@ -1673,15 +1686,20 @@
     returnToCampaignMap();
   }
 
-  function campaignChallengeMet(encounter,heroIndex){
-    const c=encounter?.challenge;
+  function campaignChallengeRuleMet(c,heroIndex){
     if(!c) return true;
+    if(c.type==="all") return Array.isArray(c.rules) && c.rules.every(rule=>campaignChallengeRuleMet(rule,heroIndex));
     if(c.type==="win") return true;
     if(c.type==="base_over_25") return !!campaignMetrics.baseOver25;
     if(c.type==="turn_damage") return (roundStats[heroIndex]?.maxTurnDamage||0)>=(c.value||0);
     if(c.type==="finish_hp") return (players[heroIndex]?.hp||0)>=(c.value||0);
     if(c.type==="self_damage_max") return (roundStats[heroIndex]?.selfDamage||0)<=(c.value??0);
+    if(c.type==="healed_min") return (roundStats[heroIndex]?.healed||0)>=(c.value||0);
     return false;
+  }
+
+  function campaignChallengeMet(encounter,heroIndex){
+    return campaignChallengeRuleMet(encounter?.challenge,heroIndex);
   }
 
   function unlockCampaignReward(profile,encounter){
