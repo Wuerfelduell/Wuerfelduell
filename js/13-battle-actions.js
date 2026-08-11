@@ -143,7 +143,10 @@
   function bonusAbilityRuleFor(index){
     const p=players[index];
     if(!p) return null;
-    if(campaignMode) return {threshold:SECOND_ABILITY_HP,slot:2,label:"2. Fähigkeit"};
+    if(campaignMode){
+      const threshold=(!duoCampaignMode&&p.campaignTeam==="hero")?soloCampaignHpBonusThreshold(currentEncounterObject()):SECOND_ABILITY_HP;
+      return {threshold,slot:2,label:"2. Fähigkeit"};
+    }
     if(localModeId==="classic") return {threshold:SECOND_ABILITY_HP,slot:2,label:"2. Fähigkeit"};
     if(localModeId==="endurance50") return {threshold:30,slot:3,label:"3. Fähigkeit"};
     return null;
@@ -164,25 +167,26 @@
     return false;
   }
 
-  function openSecondAbilityDraft(index){
+  function openAbilityDraftForSlot(index,slot,label,reasonText=""){
     const p=players[index];
-    const rule=bonusAbilityRuleFor(index);
-    if(!p || !rule || p.hp<=0) return;
-    if(rule.slot===2 && p.secondAbility!=null) return;
-    if(rule.slot===3 && p.thirdAbility!=null) return;
+    if(!p || p.hp<=0 || ![2,3].includes(slot)) return;
+    if(slot===2 && p.secondAbility!=null) return;
+    if(slot===3 && p.thirdAbility!=null) return;
 
+    const queued={index,slot,label,reasonText};
     if(secondAbilityDraftBusy){
-      if(!secondAbilityDraftQueue.includes(index)) secondAbilityDraftQueue.push(index);
+      const exists=secondAbilityDraftQueue.some(item=>typeof item==="object"&&item.index===index&&item.slot===slot);
+      if(!exists) secondAbilityDraftQueue.push(queued);
       return;
     }
 
     secondAbilityDraftBusy=true;
     secondAbilityDraftIndex=index;
-    secondAbilityDraftSlot=rule.slot;
+    secondAbilityDraftSlot=slot;
     const options=randomSecondAbilityChoices(index);
     secondAbilityDraftChoices=[...options];
 
-    secondAbilityTitle.textContent=`${p.name}: Wähle deine ${rule.label}`;
+    secondAbilityTitle.textContent=`${p.name}: Wähle deine ${label}`;
     secondAbilityOptions.innerHTML="";
 
     options.forEach(id=>{
@@ -194,8 +198,16 @@
     });
 
     secondAbilityModal.classList.remove("hidden");
-    addLog(`✨ ${p.name} ist auf ${p.hp} HP gefallen und darf zwischen zwei zufälligen Optionen für die ${rule.label} wählen.`);
+    addLog(reasonText||`✨ ${p.name} darf zwischen zwei zufälligen Optionen für die ${label} wählen.`);
     scheduleBotAction(120);
+  }
+
+  function openSecondAbilityDraft(index){
+    const p=players[index];
+    const rule=bonusAbilityRuleFor(index);
+    if(!p || !rule || p.hp<=0) return;
+    const reason=`✨ ${p.name} ist auf ${p.hp} HP gefallen und darf zwischen zwei zufälligen Optionen für die ${rule.label} wählen.`;
+    openAbilityDraftForSlot(index,rule.slot,rule.label,reason);
   }
 
   function chooseSecondAbility(id){
@@ -222,7 +234,10 @@
 
     if(secondAbilityDraftQueue.length){
       const nextDraft=secondAbilityDraftQueue.shift();
-      setTimeout(()=>openSecondAbilityDraft(nextDraft),120);
+      setTimeout(()=>{
+        if(typeof nextDraft==="object") openAbilityDraftForSlot(nextDraft.index,nextDraft.slot,nextDraft.label,nextDraft.reasonText||"");
+        else openSecondAbilityDraft(nextDraft);
+      },120);
       return;
     }
 

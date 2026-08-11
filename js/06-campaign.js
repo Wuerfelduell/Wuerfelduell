@@ -3,6 +3,11 @@
   function encounterRuleActive(id){return !!campaignMode && (encounterRuntime.ruleIds.includes(id)||encounterRuntime.phaseRuleIds.includes(id));}
   function encounterRuleText(encounter){const ids=ENCOUNTER_SPECIAL_RULES[encounter?.id]||[];return ids.map(id=>SPECIAL_RULES[id]).filter(Boolean);}
   function bossPhaseFor(encounter){return BOSS_PHASES[encounter?.id]||null;}
+  function soloCampaignHpBonusThreshold(encounter){
+    const worldId=encounter?.world||"house";
+    const worldIndex=CAMPAIGN_WORLDS.findIndex(w=>w.id===worldId);
+    return worldIndex>=1?15:SECOND_ABILITY_HP;
+  }
   function profileCosmeticTitle(profile){const id=profile?.prestigeCosmetics?.selectedTitle;const item=PRESTIGE_SHOP_ITEMS.find(x=>x.id===id&&x.type==="title");return item?.value||"";}
   function profileCosmeticFrame(profile){const id=profile?.prestigeCosmetics?.selectedFrame;const item=PRESTIGE_SHOP_ITEMS.find(x=>x.id===id&&x.type==="frame");return item?.value||"";}
   function playerCosmeticsFromProfile(profile){return {cosmeticTitle:profileCosmeticTitle(profile),cosmeticFrame:profileCosmeticFrame(profile)};}
@@ -118,18 +123,32 @@
   }
 
   function checkBossPhase(targetIndex,beforeHp,afterHp){
-    if(!campaignMode||encounterRuntime.phaseTriggered||afterHp<=0) return false;
+    if(!campaignMode||encounterRuntime.phaseTriggered) return false;
     const enc=currentEncounterObject(),phase=bossPhaseFor(enc),target=players[targetIndex];
     if(!phase||!target||target.campaignTeam!=="enemy"||target.name!==phase.boss) return false;
     const threshold=Math.floor(maxHpForPlayer(target)*(phase.threshold||.5));
     if(beforeHp>threshold && afterHp<=threshold){
       encounterRuntime.phaseTriggered=true;
+
+      // Ein ausreichend großer Treffer darf eine Bossphase nicht überspringen.
+      // Fällt der Boss beim Threshold-Treffer auf 0, steht er für die Phase zunächst mit 1 HP wieder auf.
+      if(target.hp<=0) target.hp=1;
+
       if(phase.rule&&!encounterRuntime.phaseRuleIds.includes(phase.rule)) encounterRuntime.phaseRuleIds.push(phase.rule);
       if(phase.ability!=null) target.ability=phase.ability;
       if(phase.secondAbility!=null) target.secondAbility=phase.secondAbility;
       if(phase.heal){const before=target.hp;target.hp=Math.min(maxHpForPlayer(target),target.hp+phase.heal);const healed=target.hp-before;if(healed>0) pendingExtraHealFx.push({target:targetIndex,amount:healed});}
       queueEventPopup(`PHASE II · ${phase.title}`,"death");
       addLog(`👹 PHASE II – ${phase.title}: ${phase.desc}`);
+
+      if(phase.heroBonusDraft){
+        const heroIndex=campaignHeroIndices().find(i=>players[i]?.hp>0);
+        if(heroIndex!=null){
+          players[heroIndex].thirdAbilityUnlocked=true;
+          openAbilityDraftForSlot(heroIndex,3,"3. Fähigkeit","👹 RIFT COLLAPSE: Wähle eine zusätzliche Fähigkeit als Gegenwehr.");
+        }
+      }
+
       renderEncounterRuleBanner();renderPlayers();
       return true;
     }
@@ -337,7 +356,7 @@
     }
     if(encounter.rewardSecondaryAbility){
       const already=!!progress?.unlockedSecondaryAbilities?.includes(encounter.rewardSecondaryAbility);
-      parts.push(`${already?"✓":"🍀"} ${ABILITIES[encounter.rewardSecondaryAbility]?.name||`Fähigkeit ${encounter.rewardSecondaryAbility}`} · nur Zweitfähigkeit ≤12 HP`);
+      parts.push(`${already?"✓":"🍀"} ${ABILITIES[encounter.rewardSecondaryAbility]?.name||`Fähigkeit ${encounter.rewardSecondaryAbility}`} · nur Zweitfähigkeit ≤${soloCampaignHpBonusThreshold(encounter)} HP`);
     }
     if(encounter.farmTrophy){
       parts.push("🏆 1 Trophäe pro erfolgreichem Clear");
@@ -425,7 +444,7 @@
     campaignAbilityGrid.innerHTML=REAL_ABILITY_IDS.map(id=>{
       const secondOnly=CAMPAIGN_SECONDARY_ONLY_ABILITY_IDS.includes(id);
       const on=secondOnly?secondaryUnlocked.has(id):unlocked.includes(id);
-      const suffix=secondOnly?" · nur Zweitfähigkeit ≤12 HP":"";
+      const suffix=secondOnly?` · nur Zweitfähigkeit ≤${soloCampaignHpBonusThreshold(selectedEncounter)} HP`:"";
       return `<span class="campaign-ability-chip${on?"":" locked"}">${on?(secondOnly?"✦":"✓"):"🔒"} ${id} · ${escapeHtml(ABILITIES[id].name)}${suffix}</span>`;
     }).join("");
 
@@ -747,6 +766,7 @@
     encounterRuleText(encounter).forEach(r=>addLog(`⚙ Sonderregel ${r.name}: ${r.desc}`));
     if(bossPhaseFor(encounter)) addLog(`👹 Bossphase vorbereitet: ${bossPhaseFor(encounter).title} bei ${Math.round((bossPhaseFor(encounter).threshold||.5)*100)} % Boss-HP.`);
     addLog(`⚡ ${profile.name} startet mit ${ABILITIES[heroAbility].name}. In der Kampagne stehen nur bereits freigeschaltete Fähigkeiten zur Verfügung.`);
+    if(!encounter.startSecondAbilityDraft) addLog(`✨ HP-Bonus: Die 2. Fähigkeit wird in diesem Encounter bei ≤${soloCampaignHpBonusThreshold(encounter)} HP freigeschaltet.`);
     if(grantedThirdAbility!=null) addLog(`🎁 Encounter-Fähigkeit: ${ABILITIES[grantedThirdAbility].name} wird für diesen Kampf als 3. Fähigkeit bereitgestellt.`);
     if(enemies.length>1) addLog(`⚠️ 2 gegen 1: ${enemies.map(e=>e.name).join(" & ")} spielen als Team und greifen nur dich an.`);
     renderAll();
@@ -797,7 +817,7 @@
       queueEventPopup(campaignComplete?"Kampagne geschafft!":"Encounter geschafft!","win");
       winnerText.innerHTML=campaignComplete?"🏆 KAMPAGNE GESCHAFFT!":"🗺️ Encounter geschafft!";
       const rewardText=rewardUnlocked?`<br><strong>Neue Hauptfähigkeit:</strong> ${encounter.rewardAbility} · ${escapeHtml(ABILITIES[encounter.rewardAbility].name)}`:"";
-      const secondaryRewardText=secondaryRewardUnlocked?`<br>🍀 <strong>${escapeHtml(ABILITIES[encounter.rewardSecondaryAbility].name)} freigeschaltet:</strong> ausschließlich als Zweitfähigkeit ab ≤12 HP.`:"";
+      const secondaryRewardText=secondaryRewardUnlocked?`<br>🍀 <strong>${escapeHtml(ABILITIES[encounter.rewardSecondaryAbility].name)} freigeschaltet:</strong> ausschließlich als Zweitfähigkeit über den HP-Bonus (hier ≤${soloCampaignHpBonusThreshold(encounter)} HP).`:"";
       const trophyText=trophiesEarned?`<br>🏆 <strong>+${trophiesEarned} Prestige-Trophäe</strong> · Gesamt: ${progress?.trophies||0}`:"";
       const prestigeText=(rewardUnlocked && campaignHasAllMainAbilities(profile))?"<br>✨ <strong>PRESTIGE AKTIV:</strong> Ab jetzt bringt jeder erfolgreiche Encounter-Clear 1 Trophäe.":"";
       const unlockedWorlds=CAMPAIGN_WORLDS.filter(w=>w.id!==encounter.world && (w.unlockRequires||[]).includes(encounter.id) && campaignWorldUnlocked(profile,w));

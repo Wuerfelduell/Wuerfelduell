@@ -13,10 +13,10 @@
   let localModeId="classic";
   function localModeRules(){return LOCAL_MODES[localModeId]||LOCAL_MODES.classic;}
 
-  const GAME_VERSION="25.3";
+  const GAME_VERSION="25.4";
   const SAVE_KEY="wuerfelduell_save_v1"; // absichtlich stabil: Updates lesen denselben Browser-Save
   const SAVE_SCHEMA_VERSION=6;
-  const CAMPAIGN_VERSION=14;
+  const CAMPAIGN_VERSION=15;
 
   const ACHIEVEMENTS={
     grande:{name:"GRANDE!",desc:"Beende einen Angriff mit allen 5 Würfeln als Treffer.",rewardDice:"gold"},
@@ -84,7 +84,7 @@
   };
 
   const BOSS_PHASES={
-    rift_eclipse:{boss:"Eclipse",threshold:.5,title:"RIFT COLLAPSE",desc:"Eclipse stabilisiert den Riss: 6 HP Heilung, High Stakes + Counterattack und Overcharge für den Rest des Kampfes.",heal:6,ability:13,secondAbility:21,rule:"overcharge"},
+    rift_eclipse:{boss:"Eclipse",threshold:.5,title:"RIFT COLLAPSE",desc:"Eclipse stabilisiert den Riss: 6 HP Heilung, High Stakes + Counterattack und Overcharge für den Rest des Kampfes. Beim Phasenwechsel erhältst du zusätzlich einen Bonus-Draft für deine 3. Fähigkeit.",heal:6,ability:13,secondAbility:21,rule:"overcharge",heroBonusDraft:true},
     zero_perfect_crime:{boss:"The Alibi",threshold:.5,title:"FALSE ALIBI",desc:"The Alibi wirft den Plan weg: 5 HP Heilung, Perfect 25 + Wildcard und Casino Floor.",heal:5,ability:15,secondAbility:17,rule:"casino_floor"},
     zero_regent:{boss:"Zero Regent",threshold:.5,title:"ZERO DECREE",desc:"Der Regent wechselt auf Counterattack + High Stakes, heilt 8 HP und legt Armor Shell auf den Tisch.",heal:8,ability:21,secondAbility:13,rule:"armor_shell"},
     abyss_double_triad:{boss:"Pairmaster",threshold:.5,title:"PAIR OVERDRIVE",desc:"Pairmaster heilt 6 HP, ergänzt Momentum und der erste Heldenangriff erhält First Strike.",heal:6,ability:24,secondAbility:10,rule:"first_strike"},
