@@ -13,7 +13,7 @@
   let localModeId="classic";
   function localModeRules(){return LOCAL_MODES[localModeId]||LOCAL_MODES.classic;}
 
-  const GAME_VERSION="25.0";
+  const GAME_VERSION="25.1";
   const SAVE_KEY="wuerfelduell_save_v1"; // absichtlich stabil: Updates lesen denselben Browser-Save
   const SAVE_SCHEMA_VERSION=6;
   const CAMPAIGN_VERSION=12;

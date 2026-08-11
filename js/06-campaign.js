@@ -581,7 +581,7 @@
 
     const hero={
       name:profile.name,battleTag:`#${profile.tagNumber}`,profileId:profile.id,botLevel:"human",campaignTeam:"hero",hp:START_HP,maxHp:START_HP,
-      ability:heroAbility,secondAbility:null,secondAbilityUnlocked:unlocked.length<2,rolledAbility:"CAMPAIGN",primaryWasChosen:true,
+      ability:heroAbility,secondAbility:null,secondAbilityUnlocked:encounter.startSecondAbilityDraft?true:unlocked.length<2,rolledAbility:"CAMPAIGN",primaryWasChosen:true,
       seat:0,diceDesign:profile.selectedDice||"classic",...playerCosmeticsFromProfile(profile),wins:0,momentumStreak:0,lastStandUsed:false,roundLastStandTriggered:false,
       damageSinceLastOwnTurn:false,bloodRushPrimed:false,voluntaryHpPaidThisTurn:false,botBloodUsesThisAttack:0
     };
@@ -608,6 +608,10 @@
     addLog(`⚡ ${profile.name} startet mit ${ABILITIES[heroAbility].name}. In der Kampagne stehen nur bereits freigeschaltete Fähigkeiten zur Verfügung.`);
     if(enemies.length>1) addLog(`⚠️ 2 gegen 1: ${enemies.map(e=>e.name).join(" & ")} spielen als Team und greifen nur dich an.`);
     renderAll();
+    if(encounter.startSecondAbilityDraft){
+      addLog(`✨ Boss-Vorteil: ${profile.name} darf direkt zu Beginn die 2. Fähigkeit wählen.`);
+      setTimeout(()=>openSecondAbilityDraft(0),120);
+    }
   }
 
   function finishCampaignEncounter(heroWon){
