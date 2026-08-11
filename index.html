@@ -10,7 +10,7 @@
   <link rel="manifest" href="manifest.json" />
   <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png" />
   <link rel="apple-touch-icon" sizes="192x192" href="icon-192.png" />
-  <title>Würfelduell · V25.1</title>
+  <title>Würfelduell · V25.2</title>
     <link rel="stylesheet" href="css/01-base-ui.css" />
   <link rel="stylesheet" href="css/02-battle.css" />
   <link rel="stylesheet" href="css/03-campaign.css" />
@@ -145,7 +145,7 @@
       <button id="menuRulesBtn"><span class="menu-icon">📖</span> Regeln</button>
       <button id="menuChangelogBtn"><span class="menu-icon">📝</span> Changelog</button>
     </div>
-    <div class="version-footer">WÜRFELDUELL · VERSION 25.1</div>
+    <div class="version-footer">WÜRFELDUELL · VERSION 25.2</div>
   </section>
 
 
@@ -179,7 +179,7 @@
 
   <section id="duoCampaignScreen" class="card screen-card hidden">
     <div class="screen-topbar"><button id="duoCampaignBackBtn">←</button><h2 class="screen-title">🤝 Duo-Kampagne</h2></div>
-    <div class="screen-subtitle">Zwei echte Spielerprofile kämpfen gemeinsam durch mehrere Duo-Welten. Spieler 1 bestimmt den gemeinsamen freigeschalteten Fähigkeitspool; beide wählen daraus ihre eigene aktive Fähigkeit. Der Fortschritt gehört genau dieser Profil-Paarung. Stirbt ein Spieler, darf der andere den Encounter alleine zu Ende kämpfen.</div>
+    <div class="screen-subtitle">Zwei echte Spielerprofile kämpfen gemeinsam durch mehrere Duo-Welten. In Duo sind alle regulären Hauptfähigkeiten direkt verfügbar; beide wählen ihre eigene aktive Fähigkeit. Zweitfähigkeits-Drafts nutzen ebenfalls den kompletten Pool inklusive Glück (BETA). Erfolgreiche Clears bringen beiden Profilen Trophäen. Der Fortschritt gehört genau dieser Profil-Paarung.</div>
     <div id="duoCampaignBanner" class="campaign-complete hidden"></div>
     <div id="duoCampaignWorldTabs" class="campaign-world-tabs duo-world-tabs"></div>
     <div id="duoCampaignWorldDesc" class="campaign-world-desc"></div>
@@ -278,6 +278,7 @@
   <section id="changelogScreen" class="card screen-card hidden">
     <div class="screen-topbar"><button class="menuBackBtn">←</button><h2 class="screen-title">📝 Changelog</h2></div>
     <div class="screen-subtitle">Die großen Versionssprünge, ohne jeden Mini-Hotfix.</div>
+    <div class="changelog-entry"><div class="changelog-version">V25.2</div><ul><li>Neue echte 3D-Würfel im Kampf und in Counterattack; alle bestehenden Würfelfarben und Trophy-Shop-Designs bleiben erhalten</li><li>Glückswurf: Ein neu gewürfelter 1er kann nicht erneut eine 1 werden</li><li>Der ≤12-HP-Zweitfähigkeits-Trigger reagiert jetzt zuverlässig auf jede Schadensquelle, inklusive Void Clock und Overcharge</li><li>Duo-Kampagne: Alle regulären Hauptfähigkeiten sind direkt verfügbar; Zweitfähigkeits-Drafts nutzen den kompletten Pool inklusive Glück (BETA)</li><li>Duo-Kampagne: Jeder neue erfolgreiche Encounter-Clear gibt beiden Profilen +1 Trophäe; Weltbosse auf Encounter 15 bleiben für Trophäen farmbar</li><li>Neue kompakte Live-Anzeige für den Fortschritt der aktuellen Kampagnen-Aufgabe</li></ul></div>
     <div class="changelog-entry"><div class="changelog-version">V25.1</div><ul><li>Rift Circuit Encounter 10 · Rift Sovereign: Der Spieler erhält direkt beim Kampfbeginn den normalen Draft für seine 2. Fähigkeit</li><li>Der spätere ≤12-HP-Trigger vergibt in diesem Encounter keine weitere Fähigkeit</li></ul></div>
     <div class="changelog-entry"><div class="changelog-version">V25.0</div><ul><li>Technik-Update: Würfelduell wurde aus der riesigen Single-File-App in getrennte CSS- und JavaScript-Dateien zerlegt</li><li>Solo- und Duo-Kampagnendaten, Save-System, Bots, Kampf-UI, Kampfaktionen, Stats und App-Navigation sind jetzt separat wartbar</li><li>Keine Gameplay- oder Balanceänderungen gegenüber V24.2; Save-Schema und Campaign-Version bleiben unverändert</li></ul></div>
     <div class="changelog-entry"><div class="changelog-version">V24.2</div><ul><li>Campaign-Overheal: Solo- und Duo-Helden können durch Heilung über ihre normalen Max-HP hinausgehen</li><li>Lifesteal und Fähigkeit 12 erzeugen dadurch auch bei vollen HP echte Heilung und zählen natürlich für Heilungs-Challenges</li><li>Local Battle und Kampagnen-Gegner behalten ihre normalen Max-HP-Caps</li></ul></div>
@@ -344,6 +345,7 @@
           <div id="turnLine" class="turnline"></div>
           <div id="status" class="status"></div>
           <div id="abilityState" class="ability-state"></div>
+          <div id="campaignTaskProgress" class="campaign-task-progress hidden"></div>
 
           <div id="dice" class="dice"></div>
 
