@@ -10,7 +10,7 @@
   <link rel="manifest" href="manifest.json" />
   <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png" />
   <link rel="apple-touch-icon" sizes="192x192" href="icon-192.png" />
-  <title>Würfelduell · V23.2</title>
+  <title>Würfelduell · V24.0</title>
   <style>
     * { box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
     :root{
@@ -1019,6 +1019,51 @@
     :is(.special-big-die,.gambling-die).theme-void{background:linear-gradient(145deg,#171322,#020205)!important;color:#d7c5ff!important;border-color:#6c49bb!important}
     :is(.special-big-die,.gambling-die).theme-sapphire{background:linear-gradient(145deg,#2f80ed,#08234f)!important;color:#eef7ff!important;border-color:#4f9df3!important}
 
+  
+
+    /* V24 – Prestige Shop, Node Maps, Boss Rules */
+    .menu-actions button.menu-prestige{background:linear-gradient(135deg,#3a2f17,#231b39);color:#ffe6a1;border:1px solid rgba(255,200,87,.32)}
+    .prestige-shop-head{display:grid;grid-template-columns:1fr minmax(120px,170px);gap:10px;align-items:end;margin-bottom:10px}
+    .prestige-shop-head label{display:grid;gap:6px}.prestige-shop-head select{width:100%}
+    .prestige-wallet{padding:10px 12px;border-radius:14px;border:1px solid rgba(255,200,87,.28);background:linear-gradient(145deg,#231d12,#131923);display:flex;justify-content:space-between;align-items:center;gap:8px}
+    .prestige-wallet span{color:var(--muted);font-size:11px;font-weight:900;text-transform:uppercase}.prestige-wallet strong{color:var(--gold);font-size:20px}
+    .prestige-equipped{padding:10px 12px;margin-bottom:12px;border:1px solid var(--border);background:#101620;border-radius:14px;color:#c8d2e0;font-size:12px;line-height:1.5}
+    .prestige-shop-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
+    .prestige-item{padding:12px;border:1px solid var(--border);border-radius:15px;background:linear-gradient(155deg,#171e29,#0f141d);min-width:0}
+    .prestige-item.owned{border-color:rgba(77,209,125,.35)}.prestige-item.expensive{box-shadow:inset 0 0 0 1px rgba(255,200,87,.12)}
+    .prestige-item-kicker{color:var(--gold);font-size:10px;font-weight:1000;letter-spacing:.09em;text-transform:uppercase}.prestige-item-name{font-size:17px;font-weight:1000;margin-top:3px}
+    .prestige-item-desc{color:var(--muted);font-size:11px;line-height:1.4;margin:6px 0 10px;min-height:46px}.prestige-item button{width:100%;font-size:13px;padding:9px 10px}
+    .prestige-reset-row{display:flex;gap:7px;flex-wrap:wrap;margin-top:7px}.prestige-reset-row button{font-size:11px;padding:7px 9px}
+
+    .campaign-node-map{display:grid!important;grid-template-columns:repeat(5,minmax(48px,1fr));gap:16px 8px!important;padding:18px 8px!important;margin-top:12px!important;border:1px solid rgba(104,167,255,.14);border-radius:20px;background:radial-gradient(circle at 50% 0%,rgba(104,167,255,.08),transparent 50%),#0d131c;overflow:visible!important}
+    .campaign-node{position:relative;aspect-ratio:1/1;width:min(64px,100%);justify-self:center;border-radius:50%;padding:0!important;display:flex;align-items:center;justify-content:center;background:#1b2431!important;color:#aeb9c9!important;border:2px solid #354154!important;box-shadow:0 6px 16px rgba(0,0,0,.25)!important;font-size:17px!important;font-weight:1000!important;z-index:1}
+    .campaign-node::after{content:"";position:absolute;left:100%;top:50%;width:calc(100% + 10px);height:2px;background:#2e3949;z-index:-1;pointer-events:none}
+    .campaign-node:nth-child(5n)::after{display:none}.campaign-node.done{background:#15301f!important;border-color:#4dd17d!important;color:#8ff0ae!important}.campaign-node.current{border-color:#ffc857!important;color:#ffc857!important;box-shadow:0 0 0 3px rgba(255,200,87,.12),0 0 22px rgba(255,200,87,.22)!important;animation:nodePulse 1.8s ease-in-out infinite}.campaign-node.locked{opacity:.34}.campaign-node.boss{border-radius:18px;transform:rotate(45deg)}.campaign-node.boss span{transform:rotate(-45deg)}.campaign-node.world-boss{background:linear-gradient(145deg,#35250d,#1c1428)!important;border-color:#ffc857!important}.campaign-node .node-mark{position:absolute;right:-4px;top:-7px;font-size:14px;transform:none!important}.campaign-node.boss .node-mark{transform:rotate(-45deg)!important;right:-9px;top:-8px}
+    @keyframes nodePulse{0%,100%{box-shadow:0 0 0 2px rgba(255,200,87,.08),0 0 12px rgba(255,200,87,.12)}50%{box-shadow:0 0 0 5px rgba(255,200,87,.15),0 0 25px rgba(255,200,87,.28)}}
+    .campaign-node-detail{margin-top:10px;padding:13px 14px;border:1px solid var(--border);border-radius:16px;background:linear-gradient(150deg,#171e29,#10151e);min-height:132px}
+    .node-detail-head{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}.node-detail-title{font-size:19px;font-weight:1000}.node-detail-state{font-size:10px;font-weight:1000;padding:4px 7px;border-radius:999px;background:#202a38;color:#bdc8d8;white-space:nowrap}
+    .node-detail-sub{color:var(--gold);font-size:11px;font-weight:900;margin-top:2px}.node-detail-desc{color:var(--muted);font-size:12px;line-height:1.45;margin-top:8px}.node-detail-row{margin-top:8px;padding:8px 9px;border-radius:11px;background:#111923;border:1px solid rgba(255,255,255,.06);font-size:11px;line-height:1.45}.node-detail-rule{border-color:rgba(184,140,255,.22);color:#d7c7f4}.node-detail-phase{border-color:rgba(255,95,109,.25);color:#ffc0c6}
+
+    .encounter-rule-banner{margin:0 0 7px;padding:8px 10px;border-radius:12px;border:1px solid rgba(184,140,255,.25);background:linear-gradient(135deg,rgba(184,140,255,.10),rgba(255,95,109,.06));font-size:11px;line-height:1.35;color:#d7c9ee}
+    .encounter-rule-banner strong{color:#fff}.encounter-rule-banner .phase-live{color:#ff9eaa;font-weight:1000}
+
+    .profile-title-badge{display:inline-flex;margin-top:3px;padding:2px 6px;border-radius:999px;font-size:9px;font-weight:1000;letter-spacing:.06em;text-transform:uppercase;background:rgba(255,200,87,.10);border:1px solid rgba(255,200,87,.22);color:#ffd77e}
+    .player.frame-brass,.profile-card.frame-brass{border-color:#b99154;box-shadow:inset 0 0 0 1px rgba(255,207,126,.18),0 0 14px rgba(185,145,84,.14)}
+    .player.frame-rift,.profile-card.frame-rift{border-color:#8c6cff;box-shadow:inset 0 0 0 1px rgba(184,140,255,.24),0 0 18px rgba(140,108,255,.22)}
+    .player.frame-void,.profile-card.frame-void{border-color:#7956a8;box-shadow:inset 0 0 0 1px rgba(161,104,220,.20),0 0 20px rgba(90,49,142,.28)}
+    .player.frame-crown,.profile-card.frame-crown{border-color:#ffc857;box-shadow:inset 0 0 0 2px rgba(255,224,140,.22),0 0 24px rgba(255,200,87,.25)}
+
+    .die.theme-sunset,.gambling-die.theme-sunset,.special-big-die.theme-sunset{background:linear-gradient(145deg,#ffcc70,#ff6b8a)!important;color:#3b1322!important;border-color:#ffd89a!important}
+    .die.theme-toxic,.gambling-die.theme-toxic,.special-big-die.theme-toxic{background:linear-gradient(145deg,#d7ff4f,#47e38b)!important;color:#0c2919!important;border-color:#b9ff75!important}
+    .die.theme-rose,.gambling-die.theme-rose,.special-big-die.theme-rose{background:linear-gradient(145deg,#ffd7e5,#e864a1)!important;color:#3a1024!important;border-color:#ffc0d9!important}
+    .die.theme-galaxy,.gambling-die.theme-galaxy,.special-big-die.theme-galaxy{background:radial-gradient(circle at 25% 20%,#f3a8ff,#5b62db 42%,#17172e 78%)!important;color:#fff!important;border-color:#aab1ff!important;text-shadow:0 0 8px rgba(255,255,255,.4)}
+    .die.theme-prestige,.gambling-die.theme-prestige,.special-big-die.theme-prestige{background:linear-gradient(135deg,#fff3a8,#b68cff 34%,#6ee7ff 66%,#fff3a8)!important;color:#171320!important;border-color:#fff1a1!important;box-shadow:inset 0 -5px 0 rgba(0,0,0,.12),0 0 18px rgba(255,220,120,.35)!important}
+
+    /* V24.0: Button bewusst tiefer im normalen Dokumentfluss, damit Mobile-Browser-Chrome ihn nicht anschneidet. */
+    body.playing .game-menu-btn{margin-top:5px!important}
+    body.playing .matchbar{align-items:flex-start;min-height:38px}
+    @media(max-width:540px){.prestige-shop-list{grid-template-columns:1fr}.prestige-shop-head{grid-template-columns:1fr}.campaign-node-map{gap:14px 5px!important;padding:15px 5px!important}.campaign-node{width:min(58px,100%);font-size:15px!important}}
+
   </style>
 </head>
 <body>
@@ -1143,12 +1188,13 @@
       <button id="menuTutorialBtn" class="menu-tutorial"><span class="menu-icon">🎓</span> Tutorial</button>
       <button id="menuProfilesBtn" class="menu-profile"><span class="menu-icon">👤</span> Profile</button>
       <button id="menuAchievementsBtn" class="menu-achievements"><span class="menu-icon">🏆</span> Achievements</button>
+      <button id="menuPrestigeShopBtn" class="menu-prestige"><span class="menu-icon">👑</span> Trophy Shop</button>
       <button id="menuStatsBtn"><span class="menu-icon">📊</span> Statistiken</button>
       <button id="menuSettingsBtn"><span class="menu-icon">⚙</span> Einstellungen</button>
       <button id="menuRulesBtn"><span class="menu-icon">📖</span> Regeln</button>
       <button id="menuChangelogBtn"><span class="menu-icon">📝</span> Changelog</button>
     </div>
-    <div class="version-footer">WÜRFELDUELL · VERSION 23.2</div>
+    <div class="version-footer">WÜRFELDUELL · VERSION 24.0</div>
   </section>
 
 
@@ -1172,7 +1218,8 @@
       <button id="campaignStartBtn" class="good">⚔️ Encounter starten</button>
       <button id="campaignProfilesBtn" class="secondary">👤 Profile</button>
     </div>
-    <div id="campaignPath" class="campaign-path"></div>
+    <div id="campaignPath" class="campaign-path campaign-node-map"></div>
+    <div id="campaignEncounterDetail" class="campaign-node-detail"></div>
     <div class="campaign-unlocks">
       <div class="campaign-label">Kampagnen-Fähigkeiten</div>
       <div id="campaignAbilityGrid" class="campaign-unlock-grid"></div>
@@ -1200,7 +1247,20 @@
       <button id="duoCampaignStartBtn" class="good">🤝 Duo-Encounter starten</button>
       <button id="duoCampaignProfilesBtn" class="secondary">👤 Profile</button>
     </div>
-    <div id="duoCampaignPath" class="campaign-path"></div>
+    <div id="duoCampaignPath" class="campaign-path campaign-node-map duo-node-map"></div>
+    <div id="duoCampaignEncounterDetail" class="campaign-node-detail"></div>
+  </section>
+
+
+  <section id="prestigeShopScreen" class="card screen-card hidden">
+    <div class="screen-topbar"><button id="prestigeShopBackBtn">←</button><h2 class="screen-title">👑 Trophy Shop</h2></div>
+    <div class="screen-subtitle">Prestige-Trophäen werden nur für Cosmetics ausgegeben. Keine gekaufte Belohnung verändert Schaden, HP oder Würfelchancen.</div>
+    <div class="prestige-shop-head">
+      <label>Profil<select id="prestigeShopProfileSelect"></select></label>
+      <div class="prestige-wallet"><span>Verfügbar</span><strong id="prestigeShopTrophies">🏆 0</strong></div>
+    </div>
+    <div class="prestige-equipped" id="prestigeEquipped"></div>
+    <div id="prestigeShopList" class="prestige-shop-list"></div>
   </section>
 
   <section id="profilesScreen" class="card screen-card hidden">
@@ -1267,6 +1327,7 @@
   <section id="changelogScreen" class="card screen-card hidden">
     <div class="screen-topbar"><button class="menuBackBtn">←</button><h2 class="screen-title">📝 Changelog</h2></div>
     <div class="screen-subtitle">Die großen Versionssprünge, ohne jeden Mini-Hotfix.</div>
+    <div class="changelog-entry"><div class="changelog-version">V24.0</div><ul><li>Trophy Shop mit kosmetischen Prestige-Rewards bis maximal 30 Trophäen</li><li>Solo- und Duo-Kampagnen als kompakte Node-Maps statt Encounter-Listen</li><li>Rückwirkende Encounter-Sonderregeln und echte Boss-Phasen im späteren Campaign-Verlauf</li><li>Hauptmenü-Button auf Mobile tiefer gesetzt; Würfelrotation bleibt erhalten</li></ul></div>
     <div class="changelog-entry"><div class="changelog-version">V23.2</div><ul><li>Die ursprüngliche Würfel-Dreh-/Scale-Animation ist wieder aktiv</li><li>Kampagnen-Board nutzt keine dynamische Shell-Skalierung mehr: 5-px-Abstand oberhalb des Zugfensters bleibt während Würfen konstant</li><li>Hauptmenü-Button sitzt wieder im Matchbar und überlagert keine Spielernamen</li><li>Rift Circuit Encounter 9 „Double or Nothing“ schaltet Momentum frei; bereits abgeschlossene Saves erhalten den Reward rückwirkend beim Laden</li></ul></div>
     <div class="changelog-entry"><div class="changelog-version">V23.1</div><ul><li>Kampagnenkämpfe zeigen keinen lokalen Sieg-Tracker mehr</li><li>Stabileres Würfelfeld: Würfel-DOM bleibt während Animationen stehen und die Roll-Animation verändert die Würfelgröße nicht mehr</li><li>Rundenende mit sechster Spaß-Statistik „Schadensmagnet“</li><li>Hauptmenü-Button erhält einen festen Safe-Bereich und überlappt keine Spieler-/Pokal-Anzeige mehr</li><li>5 neue Würfeldesigns und 6 zusätzliche Achievements</li></ul></div>
     <div class="changelog-entry"><div class="changelog-version">V23.0</div><ul><li>Neue Solo-Welt 5 · Paradox Circuit mit 15 Encountern</li><li>Neue Duo-Welt 3 · Mirror Pact und Duo-Welt 4 · Omega Pact mit je 15 Encountern</li><li>Neue Challenge-Muster: Angriffsziel-Sequenzen, Zielwechsel, alle Ziele vor dem ersten Kill markieren, alternierende Duo-Angriffe, Fokus-Pässe und spielerspezifische Finisher</li><li>75 Solo-Encounter und 60 Duo-Encounter insgesamt; bestehende Saves bleiben kompatibel</li></ul></div>
@@ -1318,6 +1379,7 @@
           <button id="gameMenuBtn" class="game-menu-btn">☰ Hauptmenü</button>
         </div>
       </div>
+      <div id="encounterRuleBanner" class="encounter-rule-banner hidden"></div>
       <div id="players" class="players"></div>
     </div>
 
@@ -1403,10 +1465,10 @@
   let localModeId="classic";
   function localModeRules(){return LOCAL_MODES[localModeId]||LOCAL_MODES.classic;}
 
-  const GAME_VERSION="23.2";
+  const GAME_VERSION="24.0";
   const SAVE_KEY="wuerfelduell_save_v1"; // absichtlich stabil: Updates lesen denselben Browser-Save
-  const SAVE_SCHEMA_VERSION=5;
-  const CAMPAIGN_VERSION=10;
+  const SAVE_SCHEMA_VERSION=6;
+  const CAMPAIGN_VERSION=11;
 
   const ACHIEVEMENTS={
     grande:{name:"GRANDE!",desc:"Beende einen Angriff mit allen 5 Würfeln als Treffer.",rewardDice:"gold"},
@@ -1433,6 +1495,60 @@
   };
 
   const DICE_UNLOCK_ACHIEVEMENT={gold:"grande",obsidian:"not_today",blood:"blood_money",arcane:"dual_wielding",emerald:"back_from_dead",frost:"snake_charmer",pearl:"untouchable",neon:"degenerate_gambler",void:"overkill",sapphire:"hat_trick"};
+
+  const PRESTIGE_SHOP_ITEMS=[
+    {id:"title_high_roller",type:"title",name:"High Roller",value:"High Roller",cost:5,desc:"Kleiner Prestige-Titel unter deinem Namen."},
+    {id:"title_housebreaker",type:"title",name:"Housebreaker",value:"Housebreaker",cost:8,desc:"Für Profile, die dem House schon lange entwachsen sind."},
+    {id:"title_riftwalker",type:"title",name:"Riftwalker",value:"Riftwalker",cost:10,desc:"Ein Titel aus dem Rift Circuit."},
+    {id:"title_worldeater",type:"title",name:"World Eater",value:"World Eater",cost:15,desc:"Endgame-Titel für Kampagnenmonster."},
+    {id:"frame_brass",type:"frame",name:"Brass Frame",value:"brass",cost:8,desc:"Warmer Metallrahmen für deine Spielerkarte."},
+    {id:"frame_rift",type:"frame",name:"Rift Frame",value:"rift",cost:14,desc:"Violetter Rift-Glow um deine Spielerkarte."},
+    {id:"frame_void",type:"frame",name:"Void Frame",value:"void",cost:20,desc:"Dunkler Endgame-Rahmen mit Void-Glow."},
+    {id:"frame_crown",type:"frame",name:"Crown Frame",value:"crown",cost:30,desc:"Der teuerste Profilrahmen. Reiner Flex."},
+    {id:"dice_sunset",type:"dice",name:"Sunset Dice",value:"sunset",cost:10,desc:"Gold-zu-Pink Verlauf."},
+    {id:"dice_toxic",type:"dice",name:"Toxic Dice",value:"toxic",cost:12,desc:"Leuchtendes Giftgrün."},
+    {id:"dice_rose",type:"dice",name:"Rose Dice",value:"rose",cost:15,desc:"Helles Rosé mit dunklen Pips."},
+    {id:"dice_galaxy",type:"dice",name:"Galaxy Dice",value:"galaxy",cost:20,desc:"Violett-blauer Weltraum-Look."},
+    {id:"dice_prestige",type:"dice",name:"Prestige Dice",value:"prestige",cost:30,desc:"Teuerstes Würfelset im Shop. Maximalpreis 30 🏆."}
+  ];
+
+  const SPECIAL_RULES={
+    first_strike:{name:"First Strike",desc:"Der erste erfolgreiche Hauptangriff jedes Helden verursacht +2 Rohschaden."},
+    blood_moon:{name:"Blood Moon",desc:"Jedes echte Heilereignis heilt +1 zusätzlichen HP."},
+    armor_shell:{name:"Armor Shell",desc:"Der erste Hauptangriff gegen jeden Gegner wird um 2 Rohschaden reduziert."},
+    void_clock:{name:"Void Clock",desc:"Ab dem zweiten eigenen Zug verliert jeder Held beim Zugstart 1 HP; der Effekt kann nicht unter 1 HP töten."},
+    overcharge:{name:"Overcharge",desc:"Jeder erfolgreiche Hauptangriff eines Helden verursacht +2 Rohschaden; danach verliert der Angreifer 1 HP, nie unter 1."},
+    casino_floor:{name:"Casino Floor",desc:"High Stakes gilt in diesem Encounter für alle Teilnehmer, auch ohne ausgerüstete Fähigkeit."},
+    serpent_floor:{name:"Serpent Floor",desc:"Snake Eyes darf bereits bei mindestens 2 gleichen Würfeln aus demselben Basiswurf benutzt werden."},
+    blood_tax:{name:"Blood Tax",desc:"Loaded Dice und Blutpreis kosten in diesem Encounter jeweils 1 zusätzlichen HP."}
+  };
+
+  const ENCOUNTER_SPECIAL_RULES={
+    snake_pit:["serpent_floor"],double_trouble_campaign:["first_strike"],vampires_cut:["blood_moon"],chaos_room:["casino_floor"],
+    house_of_chance_rift:["casino_floor"],rift_crown:["first_strike"],blood_oath_rift:["blood_tax"],lucky_break_rift:["void_clock"],dead_mans_hand_rift:["overcharge"],
+    zero_loaded_debt:["blood_tax"],zero_grand_design:["first_strike"],zero_three_doors:["armor_shell"],zero_precision_surgery:["serpent_floor"],zero_blood_rush_relay:["blood_moon"],
+    abyss_loaded_ledger:["overcharge"],abyss_precision_doctrine:["armor_shell"],abyss_four_marks:["void_clock"],abyss_counter_cathedral:["casino_floor"],abyss_six_machine:["blood_moon"],
+    paradox_no_favorite:["armor_shell"],paradox_serpent_debt:["serpent_floor"],paradox_counter_economy:["first_strike"],paradox_high_recovery:["void_clock"],paradox_second_marathon:["overcharge"],paradox_six_signal:["casino_floor"],
+    duo_split_pressure:["first_strike"],duo_blood_pact:["blood_moon"],duo_counter_pair:["armor_shell"],duo_relay_kills:["void_clock"],
+    duo_fracture_bettors:["casino_floor"],duo_fracture_shared_marks:["blood_moon"],duo_fracture_last_stands:["first_strike"],duo_fracture_clean_team:["void_clock"],duo_fracture_double_pair:["overcharge"],
+    duo_mirror_metronome:["first_strike"],duo_mirror_double_bet:["casino_floor"],duo_mirror_heal_six:["blood_moon"],duo_mirror_roles:["armor_shell"],duo_mirror_pattern:["blood_tax"],
+    duo_omega_focus_web:["armor_shell"],duo_omega_rush_three:["void_clock"],duo_omega_six_twins:["blood_moon"],duo_omega_pattern_five:["overcharge"],duo_omega_crown_touch:["first_strike"]
+  };
+
+  const BOSS_PHASES={
+    rift_eclipse:{boss:"Eclipse",threshold:.5,title:"RIFT COLLAPSE",desc:"Eclipse stabilisiert den Riss: 6 HP Heilung, High Stakes + Counterattack und Overcharge für den Rest des Kampfes.",heal:6,ability:13,secondAbility:21,rule:"overcharge"},
+    zero_perfect_crime:{boss:"The Alibi",threshold:.5,title:"FALSE ALIBI",desc:"The Alibi wirft den Plan weg: 5 HP Heilung, Perfect 25 + Wildcard und Casino Floor.",heal:5,ability:15,secondAbility:17,rule:"casino_floor"},
+    zero_regent:{boss:"Zero Regent",threshold:.5,title:"ZERO DECREE",desc:"Der Regent wechselt auf Counterattack + High Stakes, heilt 8 HP und legt Armor Shell auf den Tisch.",heal:8,ability:21,secondAbility:13,rule:"armor_shell"},
+    abyss_double_triad:{boss:"Pairmaster",threshold:.5,title:"PAIR OVERDRIVE",desc:"Pairmaster heilt 6 HP, ergänzt Momentum und der erste Heldenangriff erhält First Strike.",heal:6,ability:24,secondAbility:10,rule:"first_strike"},
+    abyss_throne:{boss:"Abyss King",threshold:.5,title:"THE THRONE OPENS",desc:"Abyss King heilt 10 HP, wechselt auf High Stakes + Counterattack und aktiviert Void Clock.",heal:10,ability:13,secondAbility:21,rule:"void_clock"},
+    paradox_blood_circuit:{boss:"Vein C",threshold:.5,title:"HEMORRHAGE PROTOCOL",desc:"Vein C heilt 6 HP, übernimmt Blood Rush + Blutpreis und erhöht mit Blood Tax alle freiwilligen Kosten.",heal:6,ability:23,secondAbility:11,rule:"blood_tax"},
+    paradox_crown:{boss:"Paradox Crown",threshold:.5,title:"TIMELINE BREAK",desc:"Paradox Crown heilt 12 HP, schaltet High Stakes zusätzlich frei und verwandelt den Tisch in einen Casino Floor.",heal:12,ability:22,secondAbility:13,rule:"casino_floor"},
+    duo_fracture_monarch:{boss:"Fracture Monarch",threshold:.5,title:"FRACTURE II",desc:"Der Monarch heilt 10 HP, erhält Counterattack + High Stakes und setzt Overcharge auf beide Helden.",heal:10,ability:21,secondAbility:13,rule:"overcharge"},
+    duo_mirror_five_kills:{boss:"Relay V",threshold:.5,title:"RELAY ASCENSION",desc:"Relay V heilt 7 HP, erhält Counterattack + Momentum und aktiviert First Strike.",heal:7,ability:21,secondAbility:10,rule:"first_strike"},
+    duo_mirror_heart:{boss:"Mirror Heart",threshold:.5,title:"HEART REFLECTION",desc:"Mirror Heart heilt 12 HP, übernimmt High Stakes + Counterattack und legt Armor Shell auf alle Gegner.",heal:12,ability:13,secondAbility:21,rule:"armor_shell"},
+    duo_omega_roles_two:{boss:"Delta Seal",threshold:.5,title:"BROKEN SEAL",desc:"Delta Seal heilt 8 HP, erhält Counterattack + High Stakes und aktiviert Blood Tax.",heal:8,ability:21,secondAbility:13,rule:"blood_tax"},
+    duo_omega_throne:{boss:"Omega Sovereign",threshold:.5,title:"OMEGA PHASE",desc:"Omega Sovereign heilt 15 HP, wechselt auf High Stakes + Counterattack und startet die Void Clock.",heal:15,ability:13,secondAbility:21,rule:"void_clock"}
+  };
 
   const CAMPAIGN_START_ABILITIES=[3];
   const CAMPAIGN_SECONDARY_ONLY_ABILITY_IDS=[7];
@@ -1690,6 +1806,19 @@
       version=5;
     }
 
+    // V5 -> V6: Prestige-Shop / kosmetische Profil-Ausrüstung.
+    if(version<6){
+      if(Array.isArray(migrated.profiles)){
+        migrated.profiles=migrated.profiles.map(profile=>{
+          if(!profile || typeof profile!=="object") return profile;
+          const next={...profile};
+          if(!next.prestigeCosmetics || typeof next.prestigeCosmetics!=="object") next.prestigeCosmetics={owned:[],selectedTitle:null,selectedFrame:null};
+          return next;
+        });
+      }
+      version=6;
+    }
+
     migrated.schemaVersion=Math.max(version,SAVE_SCHEMA_VERSION);
     migrated.campaignVersion=Number(migrated.campaignVersion)||CAMPAIGN_VERSION;
     migrated.lastGameVersion=GAME_VERSION;
@@ -1710,9 +1839,18 @@
     });
     const originalDiceSet=["obsidian","gold","blood","arcane","emerald"];
     if(originalDiceSet.every(k=>p.unlockedDice.includes(k)) && !p.achievements.dice_goblin) p.achievements.dice_goblin=Date.now();
-    const allDiceSet=Object.keys(DICE_DESIGNS).filter(k=>k!=="classic");
+    const allDiceSet=Object.keys(DICE_UNLOCK_ACHIEVEMENT);
     if(allDiceSet.every(k=>p.unlockedDice.includes(k)) && !p.achievements.chromatic_menace) p.achievements.chromatic_menace=Date.now();
     p.selectedDice=p.unlockedDice.includes(p.selectedDice)?p.selectedDice:"classic";
+    const rawCosmetics=(p.prestigeCosmetics&&typeof p.prestigeCosmetics==="object")?p.prestigeCosmetics:{};
+    p.prestigeCosmetics={
+      owned:Array.isArray(rawCosmetics.owned)?[...new Set(rawCosmetics.owned.map(String))]:[],
+      selectedTitle:rawCosmetics.selectedTitle?String(rawCosmetics.selectedTitle):null,
+      selectedFrame:rawCosmetics.selectedFrame?String(rawCosmetics.selectedFrame):null
+    };
+    const ownedIds=new Set(p.prestigeCosmetics.owned);
+    if(p.prestigeCosmetics.selectedTitle&&!ownedIds.has(p.prestigeCosmetics.selectedTitle)) p.prestigeCosmetics.selectedTitle=null;
+    if(p.prestigeCosmetics.selectedFrame&&!ownedIds.has(p.prestigeCosmetics.selectedFrame)) p.prestigeCosmetics.selectedFrame=null;
 
     const rawCampaign=(p.campaign&&typeof p.campaign==="object")?p.campaign:{};
     p.campaign={...defaultCampaignProgress(),...rawCampaign};
@@ -1859,7 +1997,12 @@
     pearl:{name:"Pearl",className:"theme-pearl"},
     neon:{name:"Neon",className:"theme-neon"},
     void:{name:"Void",className:"theme-void"},
-    sapphire:{name:"Sapphire",className:"theme-sapphire"}
+    sapphire:{name:"Sapphire",className:"theme-sapphire"},
+    sunset:{name:"Sunset",className:"theme-sunset"},
+    toxic:{name:"Toxic",className:"theme-toxic"},
+    rose:{name:"Rose",className:"theme-rose"},
+    galaxy:{name:"Galaxy",className:"theme-galaxy"},
+    prestige:{name:"Prestige",className:"theme-prestige"}
   };
 
   const BOT_LEVELS = {
@@ -1882,7 +2025,8 @@
   const mainMenu=$("mainMenu"), campaignScreen=$("campaignScreen"), duoCampaignScreen=$("duoCampaignScreen"), setup=$("setup"), game=$("game"), nameInputs=$("nameInputs");
   const tutorialModal=$("tutorialModal"), tutorialTitle=$("tutorialTitle"), tutorialText=$("tutorialText"), tutorialProgress=$("tutorialProgress"), tutorialContinueBtn=$("tutorialContinueBtn");
   const quitModal=$("quitModal"), quitCancelBtn=$("quitCancelBtn"), quitConfirmBtn=$("quitConfirmBtn"), gameMenuBtn=$("gameMenuBtn");
-  const profilesScreen=$("profilesScreen"), achievementsScreen=$("achievementsScreen"), statsScreen=$("statsScreen"), settingsScreen=$("settingsScreen"), rulesScreen=$("rulesScreen"), changelogScreen=$("changelogScreen"), abilitiesScreen=$("abilitiesScreen");
+  const profilesScreen=$("profilesScreen"), prestigeShopScreen=$("prestigeShopScreen"), achievementsScreen=$("achievementsScreen"), statsScreen=$("statsScreen"), settingsScreen=$("settingsScreen"), rulesScreen=$("rulesScreen"), changelogScreen=$("changelogScreen"), abilitiesScreen=$("abilitiesScreen");
+  const prestigeShopBackBtn=$("prestigeShopBackBtn"), prestigeShopProfileSelect=$("prestigeShopProfileSelect"), prestigeShopTrophies=$("prestigeShopTrophies"), prestigeEquipped=$("prestigeEquipped"), prestigeShopList=$("prestigeShopList");
   const animationSetting=$("animationSetting"), botSpeedSetting=$("botSpeedSetting"), resetStorageBtn=$("resetStorageBtn");
   const exportSaveBtn=$("exportSaveBtn"), importSaveBtn=$("importSaveBtn"), importSaveInput=$("importSaveInput");
   const newProfileName=$("newProfileName"), createProfileBtn=$("createProfileBtn"), profileList=$("profileList");
@@ -1915,10 +2059,11 @@
   const insuranceModal=$("insuranceModal"), insuranceDie=$("insuranceDie"), insuranceResult=$("insuranceResult"), insuranceSub=$("insuranceSub");
   const counterModal=$("counterModal"), counterTitle=$("counterTitle"), counterDiceEl=$("counterDice"), counterResult=$("counterResult"), counterRollBtn=$("counterRollBtn");
   const campaignBackBtn=$("campaignBackBtn"), campaignProfileSelect=$("campaignProfileSelect"), campaignAbilitySelect=$("campaignAbilitySelect"), campaignStartBtn=$("campaignStartBtn"), campaignProfilesBtn=$("campaignProfilesBtn");
-  const campaignPath=$("campaignPath"), campaignProfileSummary=$("campaignProfileSummary"), campaignProgressSummary=$("campaignProgressSummary"), campaignTrophySummary=$("campaignTrophySummary"), campaignAbilityGrid=$("campaignAbilityGrid"), campaignCompleteBanner=$("campaignCompleteBanner");
+  const campaignPath=$("campaignPath"), campaignEncounterDetail=$("campaignEncounterDetail"), campaignProfileSummary=$("campaignProfileSummary"), campaignProgressSummary=$("campaignProgressSummary"), campaignTrophySummary=$("campaignTrophySummary"), campaignAbilityGrid=$("campaignAbilityGrid"), campaignCompleteBanner=$("campaignCompleteBanner");
   const campaignWorldTabs=$("campaignWorldTabs"), campaignWorldDesc=$("campaignWorldDesc");
   const duoCampaignBackBtn=$("duoCampaignBackBtn"), duoCampaignBanner=$("duoCampaignBanner"), duoCampaignWorldTabs=$("duoCampaignWorldTabs"), duoCampaignWorldDesc=$("duoCampaignWorldDesc"), duoTeamSummary=$("duoTeamSummary"), duoProgressSummary=$("duoProgressSummary"), duoUnlockSummary=$("duoUnlockSummary");
-  const duoProfile1Select=$("duoProfile1Select"), duoProfile2Select=$("duoProfile2Select"), duoAbility1Select=$("duoAbility1Select"), duoAbility2Select=$("duoAbility2Select"), duoCampaignStartBtn=$("duoCampaignStartBtn"), duoCampaignProfilesBtn=$("duoCampaignProfilesBtn"), duoCampaignPath=$("duoCampaignPath");
+  const duoProfile1Select=$("duoProfile1Select"), duoProfile2Select=$("duoProfile2Select"), duoAbility1Select=$("duoAbility1Select"), duoAbility2Select=$("duoAbility2Select"), duoCampaignStartBtn=$("duoCampaignStartBtn"), duoCampaignProfilesBtn=$("duoCampaignProfilesBtn"), duoCampaignPath=$("duoCampaignPath"), duoCampaignEncounterDetail=$("duoCampaignEncounterDetail");
+  const encounterRuleBanner=$("encounterRuleBanner");
 
   let players=[], setupAbilityRolls=[], current=0, dice=[], phase="idle", isAnimating=false;
   let attackFace=null, attackTarget=null, attackHits=0, attackDamage=0, firstAttackRoll=true, currentAttackRollNewHits=0;
@@ -1946,7 +2091,52 @@
   let achievementToastQueue=[], achievementToastBusy=false;
   let profileScreenOrigin="menu";
   let campaignMode=false, duoCampaignMode=false, campaignEncounterId=null, campaignProfileId=null, campaignWorldId="house";
+  let encounterRuntime={ruleIds:[],phaseRuleIds:[],phaseTriggered:false,firstStrikeUsed:new Set(),armorUsed:new Set(),turnStarts:{}};
   let duoCampaignEncounterId=null, duoProfile1Id=null, duoProfile2Id=null, duoWorldId="covenant";
+  function currentEncounterObject(){return duoCampaignMode?duoEncounterById(duoCampaignEncounterId):campaignEncounterById(campaignEncounterId);}
+  function resetEncounterRuntime(encounter){encounterRuntime={ruleIds:[...(ENCOUNTER_SPECIAL_RULES[encounter?.id]||[])],phaseRuleIds:[],phaseTriggered:false,firstStrikeUsed:new Set(),armorUsed:new Set(),turnStarts:{}};}
+  function encounterRuleActive(id){return !!campaignMode && (encounterRuntime.ruleIds.includes(id)||encounterRuntime.phaseRuleIds.includes(id));}
+  function encounterRuleText(encounter){const ids=ENCOUNTER_SPECIAL_RULES[encounter?.id]||[];return ids.map(id=>SPECIAL_RULES[id]).filter(Boolean);}
+  function bossPhaseFor(encounter){return BOSS_PHASES[encounter?.id]||null;}
+  function profileCosmeticTitle(profile){const id=profile?.prestigeCosmetics?.selectedTitle;const item=PRESTIGE_SHOP_ITEMS.find(x=>x.id===id&&x.type==="title");return item?.value||"";}
+  function profileCosmeticFrame(profile){const id=profile?.prestigeCosmetics?.selectedFrame;const item=PRESTIGE_SHOP_ITEMS.find(x=>x.id===id&&x.type==="frame");return item?.value||"";}
+  function playerCosmeticsFromProfile(profile){return {cosmeticTitle:profileCosmeticTitle(profile),cosmeticFrame:profileCosmeticFrame(profile)};}
+  function encounterVoluntaryCost(base){return Math.max(0,base+(encounterRuleActive("blood_tax")?1:0));}
+  function encounterHealAmount(index,base){return Math.max(0,base+(campaignMode&&encounterRuleActive("blood_moon")?1:0));}
+  function renderEncounterRuleBanner(){
+    if(!encounterRuleBanner) return;
+    if(!campaignMode){encounterRuleBanner.classList.add("hidden");encounterRuleBanner.innerHTML="";return;}
+    const enc=currentEncounterObject(),staticRules=encounterRuleText(enc),phase=bossPhaseFor(enc);
+    const parts=staticRules.map(r=>`<strong>⚙ ${escapeHtml(r.name)}:</strong> ${escapeHtml(r.desc)}`);
+    if(phase) parts.push(encounterRuntime.phaseTriggered?`<span class="phase-live">👹 PHASE II AKTIV · ${escapeHtml(phase.title)}</span>`:`👹 Phase II bei ${Math.round((phase.threshold||.5)*100)} % Boss-HP · ${escapeHtml(phase.title)}`);
+    encounterRuleBanner.classList.toggle("hidden",parts.length===0);encounterRuleBanner.innerHTML=parts.join("<br>");
+  }
+  function checkBossPhase(targetIndex,beforeHp,afterHp){
+    if(!campaignMode||encounterRuntime.phaseTriggered||afterHp<=0) return false;
+    const enc=currentEncounterObject(),phase=bossPhaseFor(enc),target=players[targetIndex];
+    if(!phase||!target||target.campaignTeam!=="enemy"||target.name!==phase.boss) return false;
+    const threshold=Math.floor(maxHpForPlayer(target)*(phase.threshold||.5));
+    if(beforeHp>threshold && afterHp<=threshold){
+      encounterRuntime.phaseTriggered=true;
+      if(phase.rule&&!encounterRuntime.phaseRuleIds.includes(phase.rule)) encounterRuntime.phaseRuleIds.push(phase.rule);
+      if(phase.ability!=null) target.ability=phase.ability;
+      if(phase.secondAbility!=null) target.secondAbility=phase.secondAbility;
+      if(phase.heal){const before=target.hp;target.hp=Math.min(maxHpForPlayer(target),target.hp+phase.heal);const healed=target.hp-before;if(healed>0) pendingExtraHealFx.push({target:targetIndex,amount:healed});}
+      queueEventPopup(`PHASE II · ${phase.title}`,"death");
+      addLog(`👹 PHASE II – ${phase.title}: ${phase.desc}`);
+      renderEncounterRuleBanner();renderPlayers();
+      return true;
+    }
+    return false;
+  }
+  function applyEncounterTurnStartRule(index){
+    if(!campaignMode||players[index]?.campaignTeam!=="hero"||!encounterRuleActive("void_clock")) return;
+    const key=String(index),count=(encounterRuntime.turnStarts[key]||0)+1;encounterRuntime.turnStarts[key]=count;
+    if(count<2||players[index].hp<=1) return;
+    const before=players[index].hp;players[index].hp=Math.max(1,players[index].hp-1);const lost=before-players[index].hp;
+    if(lost>0){recordSelfDamage(index,lost);players[index].damageSinceLastOwnTurn=true;pendingDamage={target:index,amount:lost};addLog(`⌛ Void Clock: ${players[index].name} verliert beim Zugstart ${lost} HP.`);}
+  }
+
   function freshCampaignMetrics(){return {baseOver25:false,maxRawTurnDamage:0,currentRawTurnDamage:0,abilityUses:{},abilitySuccesses:{},abilityUsesByHero:{},abilitySuccessesByHero:{},heroAttacks:{},attackTargetsByHero:{},attackSequence:[],rawDamageByHero:{},rawDamageByTarget:{},currentRawTurnDamageByHero:{},maxRawTurnDamageByHero:{},maxAttackHits:0,maxAttackHitsByHero:{},firstKillDistinctTargets:0,killOrder:[],killHeroes:[],killsByHero:{}};}
   function markCampaignAbilityUse(index,abilityId,amount=1){
     if(!campaignMode || index==null || players[index]?.campaignTeam!=="hero") return;
@@ -2200,23 +2390,13 @@
     gameContext.profileId=profile?.id||gameContext.profileId;
     gameContext.encounterId=campaignEncounterId||gameContext.encounterId;
 
-    campaignPath.innerHTML=worldEncounters.map(e=>{
-      const done=!!progress?.completedEncounters?.includes(e.id);
-      const available=!!profile && campaignEncounterAvailable(profile,e);
-      const current=available && e.id===campaignEncounterId;
-      const reward=campaignRewardLabel(profile,e);
-      const state=done?(e.farmTrophy?"🏆 Farmbar":"✓ Geschafft"):current?"▶ Ausgewählt":available?"Offen":"🔒 Gesperrt";
-      return `<button type="button" class="campaign-encounter${done?" done":""}${current?" current":""}${available?"":" locked"}" data-campaign-id="${e.id}" ${available?"":"disabled"}>
-        <div class="campaign-encounter-head"><div><div class="campaign-encounter-title">${escapeHtml(e.title)}</div><div class="campaign-label">${escapeHtml(e.subtitle)}</div></div><div class="campaign-state">${state}</div></div>
-        <div class="campaign-desc">${escapeHtml(e.desc)}</div>
-        <div class="campaign-challenge">🎯 <strong>Challenge:</strong> ${escapeHtml(e.challenge.text)}</div>
-        <div class="campaign-reward">🎁 <strong>Belohnung:</strong> ${escapeHtml(reward)}</div>
-      </button>`;
+    campaignPath.innerHTML=worldEncounters.map((e,i)=>{
+      const done=!!progress?.completedEncounters?.includes(e.id),available=!!profile&&campaignEncounterAvailable(profile,e),current=available&&e.id===campaignEncounterId;
+      const num=i+1,isBoss=num===10||num===15,isWorldBoss=num===15,mark=done?(e.farmTrophy?"🏆":"✓"):available?(current?"▶":""):"🔒";
+      return `<button type="button" class="campaign-node${done?" done":""}${current?" current":""}${available?"":" locked"}${isBoss?" boss":""}${isWorldBoss?" world-boss":""}" data-campaign-id="${e.id}" ${available?"":"disabled"}><span>${num}</span>${mark?`<span class="node-mark">${mark}</span>`:""}</button>`;
     }).join("");
-
-    campaignPath.querySelectorAll("[data-campaign-id]").forEach(btn=>{
-      btn.onclick=()=>{campaignEncounterId=btn.dataset.campaignId;gameContext.encounterId=campaignEncounterId;renderCampaign();};
-    });
+    campaignPath.querySelectorAll("[data-campaign-id]").forEach(btn=>btn.onclick=()=>{campaignEncounterId=btn.dataset.campaignId;gameContext.encounterId=campaignEncounterId;renderCampaign();});
+    if(selectedEncounter){const done=!!progress?.completedEncounters?.includes(selectedEncounter.id),available=!!profile&&campaignEncounterAvailable(profile,selectedEncounter),reward=campaignRewardLabel(profile,selectedEncounter),rules=encounterRuleText(selectedEncounter),phase=bossPhaseFor(selectedEncounter);campaignEncounterDetail.innerHTML=`<div class="node-detail-head"><div><div class="node-detail-title">${escapeHtml(selectedEncounter.title)}</div><div class="node-detail-sub">${escapeHtml(selectedEncounter.subtitle)}</div></div><div class="node-detail-state">${done?(selectedEncounter.farmTrophy?"🏆 FARM":"✓ GESCHAFFT"):available?"OFFEN":"🔒 GESPERRT"}</div></div><div class="node-detail-desc">${escapeHtml(selectedEncounter.desc)}</div><div class="node-detail-row">🎯 <strong>Challenge:</strong> ${escapeHtml(selectedEncounter.challenge.text)}</div><div class="node-detail-row">🎁 <strong>Belohnung:</strong> ${escapeHtml(reward)}</div>${rules.map(r=>`<div class="node-detail-row node-detail-rule">⚙ <strong>${escapeHtml(r.name)}:</strong> ${escapeHtml(r.desc)}</div>`).join("")}${phase?`<div class="node-detail-row node-detail-phase">👹 <strong>Boss-Phase bei ${Math.round((phase.threshold||.5)*100)} %:</strong> ${escapeHtml(phase.title)} · ${escapeHtml(phase.desc)}</div>`:""}`;}else campaignEncounterDetail.innerHTML="";
 
     const secondaryUnlocked=new Set(progress?.unlockedSecondaryAbilities||[]);
     campaignAbilityGrid.innerHTML=REAL_ABILITY_IDS.map(id=>{
@@ -2281,16 +2461,13 @@
     let encounter=duoEncounterById(duoCampaignEncounterId);
     if(!encounter||(encounter.world||"covenant")!==world.id||!validPair||!duoEncounterAvailable(p1,p2,encounter)){encounter=validPair&&worldUnlocked?defaultDuoEncounter(p1,p2,world.id):worldEncounters[0];duoCampaignEncounterId=encounter?.id||null;}
 
-    duoCampaignPath.innerHTML=worldEncounters.map(e=>{
+    duoCampaignPath.innerHTML=worldEncounters.map((e,i)=>{
       const done=!!progress?.completedEncounters?.includes(e.id),available=validPair&&duoEncounterAvailable(p1,p2,e),current=available&&e.id===duoCampaignEncounterId;
-      const state=done?"✓ Geschafft":current?"▶ Ausgewählt":available?"Offen":"🔒 Gesperrt";
-      const reward=e.id===world.finalEncounterId?"Duo-Welt abschließen":"Nächsten Duo-Encounter freischalten";
-      return `<button type="button" class="campaign-encounter${done?" done":""}${current?" current":""}${available?"":" locked"}" data-duo-campaign-id="${e.id}" ${available?"":"disabled"}>
-        <div class="campaign-encounter-head"><div><div class="campaign-encounter-title">${escapeHtml(e.title)}</div><div class="campaign-label">${escapeHtml(e.subtitle)}</div></div><div class="campaign-state">${state}</div></div>
-        <div class="campaign-desc">${escapeHtml(e.desc)}</div><div class="campaign-challenge">🎯 <strong>Challenge:</strong> ${escapeHtml(e.challenge.text)}</div><div class="campaign-reward">🤝 <strong>Belohnung:</strong> ${escapeHtml(reward)}</div>
-      </button>`;
+      const num=i+1,isBoss=num===10||num===15,isWorldBoss=num===15,mark=done?"✓":available?(current?"▶":""):"🔒";
+      return `<button type="button" class="campaign-node${done?" done":""}${current?" current":""}${available?"":" locked"}${isBoss?" boss":""}${isWorldBoss?" world-boss":""}" data-duo-campaign-id="${e.id}" ${available?"":"disabled"}><span>${num}</span>${mark?`<span class="node-mark">${mark}</span>`:""}</button>`;
     }).join("");
     duoCampaignPath.querySelectorAll("[data-duo-campaign-id]").forEach(btn=>btn.onclick=()=>{duoCampaignEncounterId=btn.dataset.duoCampaignId;duoWorldId=duoEncounterById(duoCampaignEncounterId)?.world||"covenant";renderDuoCampaign();});
+    if(encounter){const done=!!progress?.completedEncounters?.includes(encounter.id),available=validPair&&duoEncounterAvailable(p1,p2,encounter),reward=encounter.id===world.finalEncounterId?"Duo-Welt abschließen":"Nächsten Duo-Encounter freischalten",rules=encounterRuleText(encounter),phase=bossPhaseFor(encounter);duoCampaignEncounterDetail.innerHTML=`<div class="node-detail-head"><div><div class="node-detail-title">${escapeHtml(encounter.title)}</div><div class="node-detail-sub">${escapeHtml(encounter.subtitle)}</div></div><div class="node-detail-state">${done?"✓ GESCHAFFT":available?"OFFEN":"🔒 GESPERRT"}</div></div><div class="node-detail-desc">${escapeHtml(encounter.desc)}</div><div class="node-detail-row">🎯 <strong>Challenge:</strong> ${escapeHtml(encounter.challenge.text)}</div><div class="node-detail-row">🤝 <strong>Belohnung:</strong> ${escapeHtml(reward)}</div>${rules.map(r=>`<div class="node-detail-row node-detail-rule">⚙ <strong>${escapeHtml(r.name)}:</strong> ${escapeHtml(r.desc)}</div>`).join("")}${phase?`<div class="node-detail-row node-detail-phase">👹 <strong>Boss-Phase bei ${Math.round((phase.threshold||.5)*100)} %:</strong> ${escapeHtml(phase.title)} · ${escapeHtml(phase.desc)}</div>`:""}`;}else duoCampaignEncounterDetail.innerHTML="";
     duoCampaignStartBtn.disabled=!baseUnlocked||!worldUnlocked||!encounter||!duoEncounterAvailable(p1,p2,encounter)||!duoAbility1Select.value||!duoAbility2Select.value;
   }
 
@@ -2442,19 +2619,19 @@
     if(!sharedDuoAbilityPool.includes(a1)) a1=sharedDuoAbilityPool[0]||3;
     if(!sharedDuoAbilityPool.includes(a2)) a2=sharedDuoAbilityPool[0]||3;
     clearBotAutomation();resetTutorialUi();tutorialMode=false;campaignMode=true;duoCampaignMode=true;campaignProfileId=null;duoProfile1Id=p1.id;duoProfile2Id=p2.id;
-    gameContext={mode:"duo-campaign-game",returnScreen:"duo",profileIds:[p1.id,p2.id],encounterId:encounter.id};campaignMetrics=freshCampaignMetrics();
+    gameContext={mode:"duo-campaign-game",returnScreen:"duo",profileIds:[p1.id,p2.id],encounterId:encounter.id};campaignMetrics=freshCampaignMetrics();resetEncounterRuntime(encounter);
     const sharedDuoSecondPool=campaignUnlockedSecondAbilities(p1);
-    const makeHero=(profile,ability)=>({name:profile.name,battleTag:`#${profile.tagNumber}`,profileId:profile.id,botLevel:"human",campaignTeam:"hero",hp:START_HP,maxHp:START_HP,ability,secondAbility:null,thirdAbility:null,secondAbilityUnlocked:sharedDuoSecondPool.length<2,thirdAbilityUnlocked:false,rolledAbility:"DUO",primaryWasChosen:true,seat:0,diceDesign:profile.selectedDice||"classic",wins:0,momentumStreak:0,lastStandUsed:false,roundLastStandTriggered:false,damageSinceLastOwnTurn:false,bloodRushPrimed:false,voluntaryHpPaidThisTurn:false,botBloodUsesThisAttack:0});
+    const makeHero=(profile,ability)=>({name:profile.name,battleTag:`#${profile.tagNumber}`,profileId:profile.id,botLevel:"human",campaignTeam:"hero",hp:START_HP,maxHp:START_HP,ability,secondAbility:null,thirdAbility:null,secondAbilityUnlocked:sharedDuoSecondPool.length<2,thirdAbilityUnlocked:false,rolledAbility:"DUO",primaryWasChosen:true,seat:0,diceDesign:profile.selectedDice||"classic",...playerCosmeticsFromProfile(profile),wins:0,momentumStreak:0,lastStandUsed:false,roundLastStandTriggered:false,damageSinceLastOwnTurn:false,bloodRushPrimed:false,voluntaryHpPaidThisTurn:false,botBloodUsesThisAttack:0});
     const heroes=[makeHero(p1,a1),makeHero(p2,a2)];
     const enemies=encounter.enemies.map(enemy=>({name:enemy.name,battleTag:"",profileId:null,botLevel:enemy.level||"normal",campaignTeam:"enemy",hp:Number(enemy.hp)||START_HP,maxHp:Number(enemy.hp)||START_HP,ability:Number(enemy.ability)||0,secondAbility:enemy.secondAbility!=null?Number(enemy.secondAbility):null,thirdAbility:null,secondAbilityUnlocked:true,thirdAbilityUnlocked:true,rolledAbility:"DUO",primaryWasChosen:false,seat:0,diceDesign:"classic",wins:0,momentumStreak:0,lastStandUsed:false,roundLastStandTriggered:false,damageSinceLastOwnTurn:false,bloodRushPrimed:false,voluntaryHpPaidThisTurn:false,botBloodUsesThisAttack:0}));
     players=[];
     const max=Math.max(heroes.length,enemies.length);for(let i=0;i<max;i++){if(heroes[i])players.push(heroes[i]);if(enemies[i])players.push(enemies[i]);}
-    resetRoundStats();current=0;prepareBloodRushForTurn(current);dice=freshDice();phase="idle";isAnimating=false;attackFace=null;attackTarget=null;pendingCampaignAttackStart=null;attackHits=0;attackDamage=0;firstAttackRoll=true;currentAttackRollNewHits=0;
+    resetRoundStats();current=0;prepareBloodRushForTurn(current);applyEncounterTurnStartRule(current);dice=freshDice();phase="idle";isAnimating=false;attackFace=null;attackTarget=null;pendingCampaignAttackStart=null;attackHits=0;attackDamage=0;firstAttackRoll=true;currentAttackRollNewHits=0;
     baseRerollUsed=false;loadedDiceUsed=false;lastBaseRollIndices=[];attackPowerUsed=false;precisionUses=0;momentumBonus=0;bloodPriceNeighbors=[];bloodRushActiveThisAttack=false;doubleTapApplied=false;pendingDamage=null;pendingHeal=null;pendingExtraDamageFx=[];pendingExtraHealFx=[];
     roundNumber=Math.max(1,duoEncountersForWorld(encounter.world||"covenant").findIndex(e=>e.id===encounter.id)+1);roundEliminationOrder=[];lastPlaceIndex=null;roundWinnerHandled=false;roundWinnerIndex=null;nextRoundAbilityRolls=[];eventPopupQueue=[];eventPopupBusy=false;secondAbilityDraftBusy=false;secondAbilityDraftIndex=null;deferredBaseAdvance=false;
     gamblingRolling=false;gamblingBaseTotal=null;gamblingModal.classList.add("hidden");highStakesRolling=false;highStakesDecisionThisAttack=false;highStakesModal.classList.add("hidden");perfect25Rolling=false;perfect25D4Rolling=false;perfect25BaseTotal=null;pendingPerfect25Total=null;perfect25Modal.classList.add("hidden");perfect25D4Modal.classList.add("hidden");insuranceRolling=false;insuranceContext=null;insuranceModal.classList.add("hidden");counterRolling=false;counterContext=null;counterDiceState=[];counterHits=0;counterFirstRoll=true;pendingCounterattack=null;deferredAttackFinish=false;counterModal.classList.add("hidden");wildcardFace=null;secondAbilityDraftQueue=[];secondAbilityModal.classList.add("hidden");
-    logEl.innerHTML="";winnerBox.classList.add("hidden");nextRoundBox.classList.add("hidden");nextRoundPrepBtn.classList.add("hidden");restartBtn.textContent="Zur Duo-Kampagne";hideFrontScreens();game.classList.remove("hidden");document.body.classList.add("playing");
-    addLog(`🤝 Duo-Kampagne: ${encounter.title} – ${encounter.subtitle}. Challenge: ${encounter.challenge.text}`);addLog(`⚡ Gemeinsamer Fähigkeitspool von ${p1.name}. ${p1.name}: ${ABILITIES[a1].name} · ${p2.name}: ${ABILITIES[a2].name}.`);addLog(`💀 Fällt einer von euch, läuft der Encounter weiter, solange der andere noch lebt.`);renderAll();
+    logEl.innerHTML="";winnerBox.classList.add("hidden");nextRoundBox.classList.add("hidden");nextRoundPrepBtn.classList.add("hidden");restartBtn.textContent="Zur Duo-Kampagne";hideFrontScreens();game.classList.remove("hidden");document.body.classList.add("playing");window.scrollTo?.(0,0);
+    addLog(`🤝 Duo-Kampagne: ${encounter.title} – ${encounter.subtitle}. Challenge: ${encounter.challenge.text}`);encounterRuleText(encounter).forEach(r=>addLog(`⚙ Sonderregel ${r.name}: ${r.desc}`));if(bossPhaseFor(encounter))addLog(`👹 Bossphase vorbereitet: ${bossPhaseFor(encounter).title} bei ${Math.round((bossPhaseFor(encounter).threshold||.5)*100)} % Boss-HP.`);addLog(`⚡ Gemeinsamer Fähigkeitspool von ${p1.name}. ${p1.name}: ${ABILITIES[a1].name} · ${p2.name}: ${ABILITIES[a2].name}.`);addLog(`💀 Fällt einer von euch, läuft der Encounter weiter, solange der andere noch lebt.`);renderAll();
   }
 
   function finishDuoCampaignEncounter(heroWon){
@@ -2495,11 +2672,12 @@
     campaignProfileId=profile.id;
     gameContext={mode:"campaign-game",returnScreen:"campaign",profileId:profile.id,encounterId:encounter.id};
     campaignMetrics=freshCampaignMetrics();
+    resetEncounterRuntime(encounter);
 
     const hero={
       name:profile.name,battleTag:`#${profile.tagNumber}`,profileId:profile.id,botLevel:"human",campaignTeam:"hero",hp:START_HP,maxHp:START_HP,
       ability:heroAbility,secondAbility:null,secondAbilityUnlocked:unlocked.length<2,rolledAbility:"CAMPAIGN",primaryWasChosen:true,
-      seat:0,diceDesign:profile.selectedDice||"classic",wins:0,momentumStreak:0,lastStandUsed:false,roundLastStandTriggered:false,
+      seat:0,diceDesign:profile.selectedDice||"classic",...playerCosmeticsFromProfile(profile),wins:0,momentumStreak:0,lastStandUsed:false,roundLastStandTriggered:false,
       damageSinceLastOwnTurn:false,bloodRushPrimed:false,voluntaryHpPaidThisTurn:false,botBloodUsesThisAttack:0
     };
     const enemies=encounter.enemies.map((enemy,i)=>({
@@ -2511,15 +2689,17 @@
     players=[hero,...enemies];
 
     resetRoundStats();
-    current=0;prepareBloodRushForTurn(current);dice=freshDice();phase="idle";isAnimating=false;
+    current=0;prepareBloodRushForTurn(current);applyEncounterTurnStartRule(current);dice=freshDice();phase="idle";isAnimating=false;
     attackFace=null;attackTarget=null;pendingCampaignAttackStart=null;attackHits=0;attackDamage=0;firstAttackRoll=true;currentAttackRollNewHits=0;
     baseRerollUsed=false;loadedDiceUsed=false;lastBaseRollIndices=[];attackPowerUsed=false;precisionUses=0;momentumBonus=0;bloodPriceNeighbors=[];bloodRushActiveThisAttack=false;doubleTapApplied=false;pendingDamage=null;pendingHeal=null;pendingExtraDamageFx=[];pendingExtraHealFx=[];
     roundNumber=Math.max(1,campaignEncountersForWorld(encounter.world||"house").findIndex(e=>e.id===encounter.id)+1);roundEliminationOrder=[];lastPlaceIndex=null;roundWinnerHandled=false;roundWinnerIndex=null;nextRoundAbilityRolls=[];eventPopupQueue=[];eventPopupBusy=false;secondAbilityDraftBusy=false;secondAbilityDraftIndex=null;deferredBaseAdvance=false;
     gamblingRolling=false;gamblingBaseTotal=null;gamblingModal.classList.add("hidden");highStakesRolling=false;highStakesDecisionThisAttack=false;highStakesModal.classList.add("hidden");perfect25Rolling=false;perfect25D4Rolling=false;perfect25BaseTotal=null;pendingPerfect25Total=null;perfect25Modal.classList.add("hidden");perfect25D4Modal.classList.add("hidden");insuranceRolling=false;insuranceContext=null;insuranceModal.classList.add("hidden");counterRolling=false;counterContext=null;counterDiceState=[];counterHits=0;counterFirstRoll=true;pendingCounterattack=null;deferredAttackFinish=false;counterModal.classList.add("hidden");wildcardFace=null;secondAbilityDraftQueue=[];secondAbilityModal.classList.add("hidden");
     logEl.innerHTML="";winnerBox.classList.add("hidden");nextRoundBox.classList.add("hidden");nextRoundPrepBtn.classList.add("hidden");restartBtn.textContent="Zur Kampagne";
-    hideFrontScreens();game.classList.remove("hidden");document.body.classList.add("playing");
+    hideFrontScreens();game.classList.remove("hidden");document.body.classList.add("playing");window.scrollTo?.(0,0);
 
     addLog(`🗺️ Kampagne: ${encounter.title} – ${encounter.subtitle}. Challenge: ${encounter.challenge.text}`);
+    encounterRuleText(encounter).forEach(r=>addLog(`⚙ Sonderregel ${r.name}: ${r.desc}`));
+    if(bossPhaseFor(encounter)) addLog(`👹 Bossphase vorbereitet: ${bossPhaseFor(encounter).title} bei ${Math.round((bossPhaseFor(encounter).threshold||.5)*100)} % Boss-HP.`);
     addLog(`⚡ ${profile.name} startet mit ${ABILITIES[heroAbility].name}. In der Kampagne stehen nur bereits freigeschaltete Fähigkeiten zur Verfügung.`);
     if(enemies.length>1) addLog(`⚠️ 2 gegen 1: ${enemies.map(e=>e.name).join(" & ")} spielen als Team und greifen nur dich an.`);
     renderAll();
@@ -2858,6 +3038,31 @@
   }
 
 
+  function prestigeItemOwned(profile,item){
+    if(!profile||!item) return false;
+    if(item.type==="dice") return profile.unlockedDice.includes(item.value);
+    return profile.prestigeCosmetics?.owned?.includes(item.id);
+  }
+  function prestigeItemEquipped(profile,item){
+    if(!profile||!item) return false;
+    if(item.type==="dice") return profile.selectedDice===item.value;
+    if(item.type==="title") return profile.prestigeCosmetics?.selectedTitle===item.id;
+    if(item.type==="frame") return profile.prestigeCosmetics?.selectedFrame===item.id;
+    return false;
+  }
+  function renderPrestigeShop(){
+    const profiles=saveData.profiles||[],old=prestigeShopProfileSelect.value||profiles[0]?.id||"";prestigeShopProfileSelect.innerHTML="";
+    if(!profiles.length){const o=document.createElement("option");o.value="";o.textContent="Kein Profil vorhanden";prestigeShopProfileSelect.appendChild(o);prestigeShopTrophies.textContent="🏆 0";prestigeEquipped.textContent="Erstelle zuerst ein Profil.";prestigeShopList.innerHTML="";return;}
+    profiles.forEach(p=>{const o=document.createElement("option");o.value=p.id;o.textContent=`${p.name} #${p.tagNumber}`;prestigeShopProfileSelect.appendChild(o);});prestigeShopProfileSelect.value=getProfile(old)?old:profiles[0].id;
+    const profile=getProfile(prestigeShopProfileSelect.value),trophies=Math.max(0,profile?.campaign?.trophies||0);prestigeShopTrophies.textContent=`🏆 ${trophies}`;
+    const title=profileCosmeticTitle(profile)||"Kein Titel",frame=profileCosmeticFrame(profile)||"Standard",dice=DICE_DESIGNS[profile.selectedDice]?.name||"Classic";
+    prestigeEquipped.innerHTML=`<strong>Aktiv:</strong> 🏷 ${escapeHtml(title)} · 🖼 ${escapeHtml(frame)} · 🎲 ${escapeHtml(dice)}<div class="prestige-reset-row"><button type="button" class="secondary" data-reset-cosmetic="title">Titel entfernen</button><button type="button" class="secondary" data-reset-cosmetic="frame">Rahmen entfernen</button></div>`;
+    prestigeShopList.innerHTML=PRESTIGE_SHOP_ITEMS.map(item=>{const owned=prestigeItemOwned(profile,item),equipped=prestigeItemEquipped(profile,item),afford=trophies>=item.cost;const typeName=item.type==="dice"?"Würfel":item.type==="frame"?"Rahmen":"Titel";const button=equipped?`<button disabled>✓ Aktiv</button>`:owned?`<button class="good" data-shop-equip="${item.id}">Ausrüsten</button>`:`<button class="gold" data-shop-buy="${item.id}" ${afford?"":"disabled"}>🏆 ${item.cost} · Kaufen</button>`;return `<div class="prestige-item${owned?" owned":""}${item.cost>=25?" expensive":""}"><div class="prestige-item-kicker">${typeName} · 🏆 ${item.cost}</div><div class="prestige-item-name">${escapeHtml(item.name)}</div><div class="prestige-item-desc">${escapeHtml(item.desc)}</div>${button}</div>`;}).join("");
+    prestigeShopList.querySelectorAll("[data-shop-buy]").forEach(btn=>btn.onclick=()=>{const item=PRESTIGE_SHOP_ITEMS.find(x=>x.id===btn.dataset.shopBuy),p=getProfile(prestigeShopProfileSelect.value);if(!p||!item||prestigeItemOwned(p,item)||(p.campaign.trophies||0)<item.cost)return;p.campaign.trophies-=item.cost;if(!p.prestigeCosmetics)p.prestigeCosmetics={owned:[],selectedTitle:null,selectedFrame:null};if(!p.prestigeCosmetics.owned.includes(item.id))p.prestigeCosmetics.owned.push(item.id);if(item.type==="dice"&&!p.unlockedDice.includes(item.value))p.unlockedDice.push(item.value);saveGameData();renderPrestigeShop();renderProfiles();});
+    prestigeShopList.querySelectorAll("[data-shop-equip]").forEach(btn=>btn.onclick=()=>{const item=PRESTIGE_SHOP_ITEMS.find(x=>x.id===btn.dataset.shopEquip),p=getProfile(prestigeShopProfileSelect.value);if(!p||!item||!prestigeItemOwned(p,item))return;if(item.type==="dice")p.selectedDice=item.value;if(item.type==="title")p.prestigeCosmetics.selectedTitle=item.id;if(item.type==="frame")p.prestigeCosmetics.selectedFrame=item.id;saveGameData();renderPrestigeShop();renderProfiles();});
+    prestigeEquipped.querySelectorAll("[data-reset-cosmetic]").forEach(btn=>btn.onclick=()=>{const p=getProfile(prestigeShopProfileSelect.value);if(!p)return;if(btn.dataset.resetCosmetic==="title")p.prestigeCosmetics.selectedTitle=null;else p.prestigeCosmetics.selectedFrame=null;saveGameData();renderPrestigeShop();renderProfiles();});
+  }
+
   function renderProfiles(){
     if(!saveData.profiles.length){
       profileList.innerHTML=`<div class="profile-empty">Noch kein Profil. Erstelle dein erstes Profil – Classic ist sofort freigeschaltet.</div>`;
@@ -2865,11 +3070,11 @@
     }
 
     profileList.innerHTML=saveData.profiles.map(p=>{
-      const unlocked=Object.entries(DICE_DESIGNS).map(([key,d])=>{const unlockedNow=p.unlockedDice.includes(key);const req=DICE_UNLOCK_ACHIEVEMENT[key]?ACHIEVEMENTS[DICE_UNLOCK_ACHIEVEMENT[key]]?.name:"";return `<span class="unlock-chip${unlockedNow?"":" locked"}">${unlockedNow?"✓":"🔒"} ${escapeHtml(d.name)}${!unlockedNow&&req?` · ${escapeHtml(req)}`:""}</span>`;}).join("");
+      const unlocked=Object.entries(DICE_DESIGNS).map(([key,d])=>{const unlockedNow=p.unlockedDice.includes(key);const shopItem=PRESTIGE_SHOP_ITEMS.find(x=>x.type==="dice"&&x.value===key);const req=DICE_UNLOCK_ACHIEVEMENT[key]?ACHIEVEMENTS[DICE_UNLOCK_ACHIEVEMENT[key]]?.name:(shopItem?`Trophy Shop · ${shopItem.cost} 🏆`:"");return `<span class="unlock-chip${unlockedNow?"":" locked"}">${unlockedNow?"✓":"🔒"} ${escapeHtml(d.name)}${!unlockedNow&&req?` · ${escapeHtml(req)}`:""}</span>`;}).join("");
       const diceOptions=p.unlockedDice.filter(k=>DICE_DESIGNS[k]).map(k=>`<option value="${k}"${p.selectedDice===k?" selected":""}>🎲 ${escapeHtml(DICE_DESIGNS[k].name)}</option>`).join("");
       const winrate=p.stats.rounds?Math.round((p.stats.wins/p.stats.rounds)*100):0;
-      return `<div class="profile-card" data-profile-id="${escapeHtml(p.id)}">
-        <div class="profile-card-top"><div class="profile-identity"><div class="profile-name-line">${escapeHtml(p.name)} <span class="battle-tag">#${escapeHtml(p.tagNumber)}</span></div><div class="profile-mini">${p.stats.rounds} Runden · ${p.stats.wins} Siege · ${winrate}% Winrate · ${Object.keys(p.achievements).length} Achievements</div></div></div>
+      return `<div class="profile-card${profileCosmeticFrame(p)?` frame-${profileCosmeticFrame(p)}`:""}" data-profile-id="${escapeHtml(p.id)}">
+        <div class="profile-card-top"><div class="profile-identity"><div class="profile-name-line">${escapeHtml(p.name)} <span class="battle-tag">#${escapeHtml(p.tagNumber)}</span></div>${profileCosmeticTitle(p)?`<div class="profile-title-badge">${escapeHtml(profileCosmeticTitle(p))}</div>`:""}<div class="profile-mini">${p.stats.rounds} Runden · ${p.stats.wins} Siege · ${winrate}% Winrate · ${Object.keys(p.achievements).length} Achievements · 🏆 ${p.campaign?.trophies||0}</div></div></div>
         <div class="profile-actions"><div><label>Name</label><input class="profile-name-edit" maxlength="24" value="${escapeHtml(p.name)}"></div><div><label>Würfeldesign</label><select class="profile-dice-edit">${diceOptions}</select></div><button class="profile-delete">Löschen</button></div>
         <div class="unlock-strip">${unlocked}</div>
       </div>`;
@@ -2980,7 +3185,7 @@
     if(originalExtra && id!=="dice_goblin" && !profile.achievements.dice_goblin){
       setTimeout(()=>unlockAchievementForPlayer(index,"dice_goblin"),40);
     }
-    const allExtra=Object.keys(DICE_DESIGNS).filter(k=>k!=="classic").every(k=>profile.unlockedDice.includes(k));
+    const allExtra=Object.keys(DICE_UNLOCK_ACHIEVEMENT).every(k=>profile.unlockedDice.includes(k));
     if(allExtra && id!=="chromatic_menace" && !profile.achievements.chromatic_menace){
       setTimeout(()=>unlockAchievementForPlayer(index,"chromatic_menace"),80);
     }
@@ -3099,7 +3304,8 @@
 
     const p=players[index];
     const before=p.hp;
-    p.hp=Math.min(maxHpForPlayer(p),p.hp+1);
+    const healAmount=encounterHealAmount(index,1);
+    p.hp=Math.min(maxHpForPlayer(p),p.hp+healAmount);
     const healed=p.hp-before;
 
     if(healed>0){
@@ -3763,7 +3969,8 @@
       if(!groups.has(d.value)) groups.set(d.value,[]);
       groups.get(d.value).push(i);
     });
-    const eligible=[...groups.entries()].filter(([,indices])=>indices.length>=3).sort((a,b)=>b[1].length-a[1].length || a[0]-b[0]);
+    const snakeNeed=encounterRuleActive("serpent_floor")?2:3;
+    const eligible=[...groups.entries()].filter(([,indices])=>indices.length>=snakeNeed).sort((a,b)=>b[1].length-a[1].length || a[0]-b[0]);
     if(!eligible.length) return null;
     return {face:eligible[0][0],indices:eligible[0][1]};
   }
@@ -4058,6 +4265,7 @@
   }
 
   function hasAbility(id,index=current){
+    if(id===13 && campaignMode && encounterRuleActive("casino_floor")) return true;
     return playerAbilities(index).includes(id);
   }
 
@@ -4070,8 +4278,8 @@
     players.forEach((p,i)=>{
       const el=document.createElement("div");
       el.id="playerCard"+i;
-      el.className="player"+(i===current&&p.hp>0?" active":"")+(p.hp<=0?" dead":"");
-      el.innerHTML=`<div class="player-name">${escapeHtml(p.name)}${p.battleTag?` <span class="battle-tag">${escapeHtml(p.battleTag)}</span>`:""}</div>
+      el.className="player"+(p.cosmeticFrame?` frame-${p.cosmeticFrame}`:"")+(i===current&&p.hp>0?" active":"")+(p.hp<=0?" dead":"");
+      el.innerHTML=`<div class="player-name">${escapeHtml(p.name)}${p.battleTag?` <span class="battle-tag">${escapeHtml(p.battleTag)}</span>`:""}</div>${p.cosmeticTitle?`<div class="profile-title-badge">${escapeHtml(p.cosmeticTitle)}</div>`:""}
         ${p.botLevel&&p.botLevel!=="human"?`<div class="bot-tag">🤖 ${escapeHtml(BOT_LEVELS[p.botLevel]?.name.replace("Bot · ","")||"Bot")}</div>`:""}
         <div class="hp">❤️ <strong>${Math.max(0,p.hp)}</strong> / ${maxHpForPlayer(p)}</div>
         <div class="ability-tag">⚡ ${escapeHtml(ABILITIES[p.ability].name)}</div>
@@ -4473,7 +4681,7 @@
   function renderAll(){
     roundNumberEl.textContent=roundNumber;
     if(winTrackerLabel) winTrackerLabel.classList.toggle("hidden",!!campaignMode);
-    renderPlayers(); renderDice(); updateHeader(); updateButtons();
+    renderPlayers(); renderDice(); updateHeader(); updateButtons(); renderEncounterRuleBanner();
     // Während eines Würfelwurfs bleibt die Board-Geometrie eingefroren.
     // Die Würfel selbst dürfen rotieren/skalieren; nur die äußere Board-Geometrie bleibt konstant.
     if(!isAnimating) applySeatRotation();
@@ -4530,7 +4738,7 @@
 
 
   function useLoadedDice(){
-    if(!hasAbility(18) || loadedDiceUsed || isAnimating || phase!=="base_select" || players[current].hp<=2) return;
+    if(!hasAbility(18) || loadedDiceUsed || isAnimating || phase!=="base_select" || players[current].hp<=encounterVoluntaryCost(2)) return;
 
     const eligible=dice
       .map((d,i)=>({d,i}))
@@ -4544,7 +4752,8 @@
     d.value=5;
     markCampaignAbilityUse(current,18);
 
-    const damageResult=applyDamageToPlayer(current,2,"voluntary");
+    const loadedCost=encounterVoluntaryCost(2);
+    const damageResult=applyDamageToPlayer(current,loadedCost,"voluntary");
     players[current].voluntaryHpPaidThisTurn=true;
     recordSelfDamage(current,damageResult.lost);
     recordVoluntaryHp(current,damageResult.lost);
@@ -5181,14 +5390,15 @@
   function useBloodPrice(){
     if(!hasAbility(11) || isAnimating || bloodPriceNeighbors.length) return;
     if(phase!=="attack_ready" && phase!=="attack_continue") return;
-    if(players[current].hp<=3) return;
+    if(players[current].hp<=encounterVoluntaryCost(3)) return;
 
     const neighbors=[];
     if(attackFace>1) neighbors.push(attackFace-1);
     if(attackFace<6) neighbors.push(attackFace+1);
     if(!neighbors.length) return;
 
-    const damageResult=applyDamageToPlayer(current,3,"voluntary");
+    const bloodCost=encounterVoluntaryCost(3);
+    const damageResult=applyDamageToPlayer(current,bloodCost,"voluntary");
     markCampaignAbilityUse(current,11);
     players[current].voluntaryHpPaidThisTurn=true;
     recordSelfDamage(current,damageResult.lost);
@@ -5199,7 +5409,7 @@
     // Blood Rush darf durch Blutpreis auch mitten im laufenden Angriff zünden.
     activateBloodRushMidAttackIfEligible(current);
 
-    addLog(`🩸 ${players[current].name} zahlt 3 HP für Blutpreis: ${[attackFace,...neighbors].sort((a,b)=>a-b).join(", ")} treffen im nächsten Angriffswurf.`);
+    addLog(`🩸 ${players[current].name} zahlt ${damageResult.lost} HP für Blutpreis: ${[attackFace,...neighbors].sort((a,b)=>a-b).join(", ")} treffen im nächsten Angriffswurf.`);
     renderAll();
   }
 
@@ -5437,6 +5647,7 @@
       if(rawCounterDamage>=attackerHpBefore+10) unlockAchievementForPlayer(defenderIndex,"overkill");
       recordCampaignAttackResult(defenderIndex,counterHits);
       const result=applyDamageToPlayer(attackerIndex,rawCounterDamage,"opponent");
+      checkBossPhase(attackerIndex,attackerHpBefore,attacker.hp);
       actualDamage=result.lost;
       recordDamageDealt(defenderIndex,actualDamage,false);
       if(actualDamage>0) pendingExtraDamageFx.push({target:attackerIndex,amount:actualDamage});
@@ -5447,7 +5658,7 @@
       addLog(`⚔️ Counterattack endet: ${counterFormula} = ${actualDamage} Schaden an ${attacker.name}.`);
 
       if(hasAbility(2,defenderIndex) && actualDamage>0){
-        const heal=Math.floor(actualDamage/2);
+        const heal=encounterHealAmount(defenderIndex,Math.floor(actualDamage/2));
         const before=defender.hp;
         defender.hp=Math.min(maxHpForPlayer(defender),defender.hp+heal);
         const actualHeal=defender.hp-before;
@@ -5576,15 +5787,19 @@
   }
 
   function finalizeAttackDamage(){
-    const rawDamage=totalAttackDamage();
+    let rawDamage=totalAttackDamage();
     recordCampaignAttackResult(current,attackHits);
     const aliveSnapshot=players.map((p,i)=>p.hp>0?i:null).filter(i=>i!=null);
     const target=players[attackTarget];
     const targetHpBefore=target?.hp||0;
+    if(campaignMode&&players[current]?.campaignTeam==="hero"&&rawDamage>0&&encounterRuleActive("first_strike")&&!encounterRuntime.firstStrikeUsed.has(String(current))){rawDamage+=2;encounterRuntime.firstStrikeUsed.add(String(current));addLog(`⚡ First Strike: +2 Rohschaden.`);}
+    if(campaignMode&&players[current]?.campaignTeam==="hero"&&rawDamage>0&&encounterRuleActive("overcharge")){rawDamage+=2;addLog(`⚡ Overcharge: +2 Rohschaden.`);}
+    if(campaignMode&&players[current]?.campaignTeam==="hero"&&rawDamage>0&&encounterRuleActive("armor_shell")&&!encounterRuntime.armorUsed.has(String(attackTarget))){rawDamage=Math.max(0,rawDamage-2);encounterRuntime.armorUsed.add(String(attackTarget));addLog(`🛡 Armor Shell: der erste Angriff auf ${target.name} verliert 2 Rohschaden.`);}
     if(rawDamage>=targetHpBefore+10) unlockAchievementForPlayer(current,"overkill");
 
     recordCampaignRawDamage(current,rawDamage);
     const mainResult=applyDamageToPlayer(attackTarget,rawDamage,"opponent");
+    checkBossPhase(attackTarget,targetHpBefore,target.hp);
     const actualDamage=mainResult.lost;
     recordDamageDealt(current,actualDamage,true);
     pendingDamage={target:attackTarget,amount:actualDamage};
@@ -5608,7 +5823,9 @@
       if(ricochetTarget!==-1){
         const ricochetDamage=attackHits;
         recordCampaignRawDamage(current,ricochetDamage,ricochetTarget);
+        const ricBefore=players[ricochetTarget]?.hp||0;
         const ricResult=applyDamageToPlayer(ricochetTarget,ricochetDamage,"opponent");
+        checkBossPhase(ricochetTarget,ricBefore,players[ricochetTarget]?.hp||0);
         ricochetActual=ricResult.lost;
         recordDamageDealt(current,ricochetActual,true);
         if(ricochetActual>0) pendingExtraDamageFx.push({target:ricochetTarget,amount:ricochetActual});
@@ -5623,7 +5840,7 @@
     }
 
     if(hasAbility(2) && (actualDamage+ricochetActual)>0){
-      const heal=Math.floor((actualDamage+ricochetActual)/2);
+      const heal=encounterHealAmount(current,Math.floor((actualDamage+ricochetActual)/2));
       const before=players[current].hp;
       players[current].hp=Math.min(maxHpForPlayer(players[current]),players[current].hp+heal);
       const actualHeal=players[current].hp-before;
@@ -5631,6 +5848,8 @@
       if(actualHeal>0) pendingHeal={target:current,amount:actualHeal};
       addLog(`🩸 Lifesteal: ${players[current].name} heilt ${actualHeal} Leben${actualHeal<heal?" (Maximalleben erreicht).":"."}`);
     }
+
+    if(campaignMode&&players[current]?.campaignTeam==="hero"&&rawDamage>0&&encounterRuleActive("overcharge")&&players[current].hp>1){const before=players[current].hp;players[current].hp=Math.max(1,players[current].hp-1);const lost=before-players[current].hp;if(lost>0){recordSelfDamage(current,lost);players[current].damageSinceLastOwnTurn=true;pendingExtraDamageFx.push({target:current,amount:lost});addLog(`⚡ Overcharge-Rückstoß: ${players[current].name} verliert ${lost} HP.`);}}
 
     // Counterattack prüft den rohen Hauptangriffsschaden, damit auch Last Stand + Counterattack funktioniert.
     // Ricochet-Schaden zählt NICHT als Auslöser.
@@ -5679,6 +5898,7 @@
     current=n;
     if(campaignMode && players[current]?.campaignTeam==="hero"){campaignMetrics.currentRawTurnDamage=0;campaignMetrics.currentRawTurnDamageByHero[String(current)]=0;}
     prepareBloodRushForTurn(current);
+    applyEncounterTurnStartRule(current);
     if(turnDamageThisTurn[current]!=null) turnDamageThisTurn[current]=0;
     if(roundStats[current]) roundStats[current].snakeEyesUsesThisTurn=0;
     dice=freshDice();phase="idle";
@@ -5956,7 +6176,7 @@
   }
 
   function hideFrontScreens(){
-    [mainMenu,campaignScreen,duoCampaignScreen,setup,profilesScreen,achievementsScreen,statsScreen,settingsScreen,rulesScreen,changelogScreen,abilitiesScreen].forEach(el=>el?.classList.add("hidden"));
+    [mainMenu,campaignScreen,duoCampaignScreen,setup,profilesScreen,prestigeShopScreen,achievementsScreen,statsScreen,settingsScreen,rulesScreen,changelogScreen,abilitiesScreen].forEach(el=>el?.classList.add("hidden"));
   }
 
   function openMainMenu(){
@@ -6014,6 +6234,9 @@
   campaignProfilesBtn.onclick=()=>{profileScreenOrigin="campaign";renderProfiles();openFrontScreen(profilesScreen);};
   $("menuProfilesBtn").onclick=()=>{profileScreenOrigin="menu";renderProfiles();openFrontScreen(profilesScreen);};
   $("menuAchievementsBtn").onclick=()=>{renderAchievements();openFrontScreen(achievementsScreen);};
+  $("menuPrestigeShopBtn").onclick=()=>{renderPrestigeShop();openFrontScreen(prestigeShopScreen);};
+  prestigeShopBackBtn.onclick=openMainMenu;
+  prestigeShopProfileSelect.onchange=renderPrestigeShop;
   $("menuStatsBtn").onclick=()=>{renderStats();openFrontScreen(statsScreen);};
   $("menuSettingsBtn").onclick=()=>openFrontScreen(settingsScreen);
   $("menuRulesBtn").onclick=()=>openFrontScreen(rulesScreen);
@@ -6067,7 +6290,7 @@
   $("setupProfilesBtn").onclick=()=>{profileScreenOrigin="setup";renderProfiles();openFrontScreen(profilesScreen);};
 
   function refreshPersistentUi(){
-    applyStoredSettings();renderProfiles();renderAchievements();renderStats();makeNameFields();renderCampaign();renderDuoCampaign();
+    applyStoredSettings();renderProfiles();renderAchievements();renderStats();makeNameFields();renderCampaign();renderDuoCampaign();if(prestigeShopScreen&&!prestigeShopScreen.classList.contains("hidden"))renderPrestigeShop();
   }
 
   function exportSave(){
@@ -6144,7 +6367,7 @@
         hp:rules.startHp,maxHp:rules.startHp,ability:abilities[0]??1,secondAbility:abilities[1]??null,thirdAbility:abilities[2]??null,
         secondAbilityUnlocked:rules.startAbilityCount>=2,thirdAbilityUnlocked:rules.startAbilityCount>=3,rolledAbility:rolled,
         primaryWasChosen:rules.id==="classic"&&rolled===6,secondAbilityWasChosen:false,thirdAbilityWasChosen:false,
-        seat:seats[i],diceDesign:profile?.selectedDice||"classic",wins:0,momentumStreak:0,lastStandUsed:false,roundLastStandTriggered:false,damageSinceLastOwnTurn:false,bloodRushPrimed:false,voluntaryHpPaidThisTurn:false,botBloodUsesThisAttack:0
+        seat:seats[i],diceDesign:profile?.selectedDice||"classic",...(profile?playerCosmeticsFromProfile(profile):{}),wins:0,momentumStreak:0,lastStandUsed:false,roundLastStandTriggered:false,damageSinceLastOwnTurn:false,bloodRushPrimed:false,voluntaryHpPaidThisTurn:false,botBloodUsesThisAttack:0
       };
     });
 
@@ -6152,7 +6375,7 @@
     attackFace=null;attackTarget=null;pendingCampaignAttackStart=null;attackHits=0;attackDamage=0;firstAttackRoll=true;currentAttackRollNewHits=0;
     baseRerollUsed=false;loadedDiceUsed=false;lastBaseRollIndices=[];attackPowerUsed=false;precisionUses=0;momentumBonus=0;bloodPriceNeighbors=[];bloodRushActiveThisAttack=false;doubleTapApplied=false;pendingDamage=null;pendingHeal=null;
     roundNumber=1;roundEliminationOrder=[];lastPlaceIndex=null;roundWinnerHandled=false;roundWinnerIndex=null;nextRoundAbilityRolls=[];eventPopupQueue=[];eventPopupBusy=false;secondAbilityDraftBusy=false;secondAbilityDraftIndex=null;secondAbilityDraftSlot=2;deferredBaseAdvance=false;gamblingRolling=false;gamblingBaseTotal=null;gamblingModal.classList.add("hidden");highStakesRolling=false;highStakesDecisionThisAttack=false;highStakesModal.classList.add("hidden");perfect25Rolling=false;perfect25D4Rolling=false;perfect25BaseTotal=null;pendingPerfect25Total=null;perfect25Modal.classList.add("hidden");perfect25D4Modal.classList.add("hidden");insuranceRolling=false;insuranceContext=null;insuranceModal.classList.add("hidden");counterRolling=false;counterContext=null;counterDiceState=[];counterHits=0;counterFirstRoll=true;pendingCounterattack=null;deferredAttackFinish=false;counterModal.classList.add("hidden");wildcardFace=null;secondAbilityDraftQueue=[];secondAbilityModal.classList.add("hidden");
-    logEl.innerHTML="";winnerBox.classList.add("hidden");nextRoundBox.classList.add("hidden");hideFrontScreens();game.classList.remove("hidden");document.body.classList.add("playing");
+    logEl.innerHTML="";winnerBox.classList.add("hidden");nextRoundBox.classList.add("hidden");hideFrontScreens();game.classList.remove("hidden");document.body.classList.add("playing");window.scrollTo?.(0,0);
 
     if(rules.id==="classic") addLog(`Classic gestartet mit ${n} Teilnehmern. Jeder startet mit ${rules.startHp} Leben.`);
     else addLog(`${rules.name} gestartet: ${n} lokale Spieler · ${rules.startHp} HP · ${rules.startAbilityCount} Startfähigkeiten · keine Bots.`);
