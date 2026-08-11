@@ -39,10 +39,48 @@
     .encounter-rule-banner strong{color:#fff}.encounter-rule-banner .phase-live{color:#ff9eaa;font-weight:1000}
 
     .profile-title-badge{display:inline-flex;margin-top:3px;padding:2px 6px;border-radius:999px;font-size:9px;font-weight:1000;letter-spacing:.06em;text-transform:uppercase;background:rgba(255,200,87,.10);border:1px solid rgba(255,200,87,.22);color:#ffd77e}
-    .player.frame-brass,.profile-card.frame-brass{border-color:#b99154;box-shadow:inset 0 0 0 1px rgba(255,207,126,.18),0 0 14px rgba(185,145,84,.14)}
-    .player.frame-rift,.profile-card.frame-rift{border-color:#8c6cff;box-shadow:inset 0 0 0 1px rgba(184,140,255,.24),0 0 18px rgba(140,108,255,.22)}
-    .player.frame-void,.profile-card.frame-void{border-color:#7956a8;box-shadow:inset 0 0 0 1px rgba(161,104,220,.20),0 0 20px rgba(90,49,142,.28)}
-    .player.frame-crown,.profile-card.frame-crown{border-color:#ffc857;box-shadow:inset 0 0 0 2px rgba(255,224,140,.22),0 0 24px rgba(255,200,87,.25)}
+
+    /* V25.6 – Prestige-Rahmen: bewusst sichtbarer als die alten 1px-Borders. */
+    :is(.player,.profile-card).frame-brass,
+    :is(.player,.profile-card).frame-rift,
+    :is(.player,.profile-card).frame-void,
+    :is(.player,.profile-card).frame-crown{position:relative;isolation:isolate;overflow:visible;border-width:2px}
+    :is(.player,.profile-card).frame-brass::before,
+    :is(.player,.profile-card).frame-rift::before,
+    :is(.player,.profile-card).frame-void::before,
+    :is(.player,.profile-card).frame-crown::before{content:"";position:absolute;inset:-5px;border-radius:calc(1em + 4px);pointer-events:none;z-index:-1;opacity:.9}
+
+    .player.frame-brass,.profile-card.frame-brass{
+      border-color:#e2a94d;
+      background-image:linear-gradient(145deg,rgba(255,193,91,.055),transparent 36%);
+      box-shadow:inset 0 0 0 1px rgba(255,225,168,.38),inset 0 0 16px rgba(197,116,28,.10),0 0 0 1px rgba(126,72,19,.72),0 0 12px 2px rgba(226,169,77,.32),0 0 28px 4px rgba(164,91,23,.20)}
+    :is(.player,.profile-card).frame-brass::before{background:linear-gradient(135deg,rgba(255,205,111,.24),transparent 35%,rgba(125,68,15,.14));filter:blur(7px)}
+
+    .player.frame-rift,.profile-card.frame-rift{
+      border-color:#a88cff;
+      background-image:radial-gradient(circle at 12% 0%,rgba(115,225,255,.075),transparent 34%),radial-gradient(circle at 92% 100%,rgba(190,105,255,.10),transparent 38%);
+      box-shadow:inset 0 0 0 1px rgba(214,198,255,.42),inset 0 0 18px rgba(120,83,255,.12),0 0 0 1px rgba(103,74,205,.78),0 0 14px 3px rgba(126,92,255,.52),0 0 34px 7px rgba(93,68,235,.28),0 0 46px rgba(75,213,255,.12);
+      animation:frameRiftGlow 2.35s ease-in-out infinite}
+    :is(.player,.profile-card).frame-rift::before{background:conic-gradient(from 25deg,rgba(77,225,255,.28),rgba(151,91,255,.40),rgba(255,91,218,.20),rgba(77,225,255,.28));filter:blur(10px);opacity:.72}
+
+    .player.frame-void,.profile-card.frame-void{
+      border-color:#9a6bdf;
+      background-image:radial-gradient(circle at 50% 115%,rgba(139,75,219,.14),transparent 48%);
+      box-shadow:inset 0 0 0 1px rgba(210,171,255,.26),inset 0 0 25px rgba(68,18,115,.34),0 0 0 1px rgba(44,20,72,.94),0 0 16px 4px rgba(130,66,202,.48),0 0 38px 8px rgba(77,24,142,.36),0 0 58px rgba(148,83,255,.16);
+      animation:frameVoidGlow 3s ease-in-out infinite}
+    :is(.player,.profile-card).frame-void::before{background:radial-gradient(ellipse at center,rgba(162,92,255,.42),rgba(72,23,122,.20) 48%,transparent 72%);filter:blur(12px);opacity:.8}
+
+    .player.frame-crown,.profile-card.frame-crown{
+      border-color:#ffd66f;
+      background-image:linear-gradient(135deg,rgba(255,239,168,.09),transparent 34%,rgba(255,180,45,.055));
+      box-shadow:inset 0 0 0 1px rgba(255,250,210,.72),inset 0 0 18px rgba(255,196,58,.13),0 0 0 1px rgba(178,113,18,.88),0 0 14px 3px rgba(255,207,91,.62),0 0 34px 7px rgba(255,174,31,.34),0 0 58px rgba(255,231,138,.20);
+      animation:frameCrownGlow 1.85s ease-in-out infinite}
+    :is(.player,.profile-card).frame-crown::before{background:conic-gradient(from 0deg,rgba(255,241,169,.58),rgba(255,174,28,.18),rgba(255,250,219,.68),rgba(255,174,28,.18),rgba(255,241,169,.58));filter:blur(9px);opacity:.72}
+
+    @keyframes frameRiftGlow{0%,100%{filter:drop-shadow(0 0 2px rgba(126,92,255,.25))}50%{filter:drop-shadow(0 0 8px rgba(103,184,255,.58))}}
+    @keyframes frameVoidGlow{0%,100%{filter:drop-shadow(0 0 3px rgba(118,61,185,.35))}50%{filter:drop-shadow(0 0 10px rgba(164,85,255,.52))}}
+    @keyframes frameCrownGlow{0%,100%{filter:drop-shadow(0 0 3px rgba(255,198,63,.34))}50%{filter:drop-shadow(0 0 10px rgba(255,225,135,.66))}}
+    @media (prefers-reduced-motion:reduce){.player.frame-rift,.profile-card.frame-rift,.player.frame-void,.profile-card.frame-void,.player.frame-crown,.profile-card.frame-crown{animation:none}}
 
     .die.theme-sunset,.gambling-die.theme-sunset,.special-big-die.theme-sunset{background:linear-gradient(145deg,#ffcc70,#ff6b8a)!important;color:#3b1322!important;border-color:#ffd89a!important}
     .die.theme-toxic,.gambling-die.theme-toxic,.special-big-die.theme-toxic{background:linear-gradient(145deg,#d7ff4f,#47e38b)!important;color:#0c2919!important;border-color:#b9ff75!important}

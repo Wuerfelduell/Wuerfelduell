@@ -884,21 +884,35 @@
     .die[data-value=""] .die-pips{display:none}
     .die[data-value=""] .die-question{display:block}
 
-    .die.rolling{animation:die3dShell .42s cubic-bezier(.2,.8,.35,1)}
-    .die.rolling .die-cube{animation:die3dSpin .42s cubic-bezier(.18,.75,.28,1) both;will-change:transform}
+    .die.rolling{animation:die3dShell .42s linear;transform:translateZ(0);will-change:transform}
+    .die.rolling .die-cube{animation:die3dSpin .42s linear both;will-change:transform;transform-origin:50% 50%;backface-visibility:visible}
     @keyframes die3dShell{
-      0%,100%{transform:scale(1)}
-      24%{transform:scale(.88)}
-      52%{transform:scale(1.08)}
-      78%{transform:scale(.94)}
+      0%{transform:translateZ(0) scale(1)}
+      12%{transform:translateZ(0) scale(.965)}
+      24%{transform:translateZ(0) scale(.93)}
+      36%{transform:translateZ(0) scale(.955)}
+      48%{transform:translateZ(0) scale(1.015)}
+      60%{transform:translateZ(0) scale(1.045)}
+      72%{transform:translateZ(0) scale(1.02)}
+      84%{transform:translateZ(0) scale(.985)}
+      92%{transform:translateZ(0) scale(.995)}
+      100%{transform:translateZ(0) scale(1)}
     }
     @keyframes die3dSpin{
       0%{transform:rotateX(var(--die-rx)) rotateY(var(--die-ry)) rotateZ(0deg)}
-      28%{transform:rotateX(calc(var(--die-rx) + 190deg)) rotateY(calc(var(--die-ry) + 250deg)) rotateZ(80deg)}
-      58%{transform:rotateX(calc(var(--die-rx) + 430deg)) rotateY(calc(var(--die-ry) + 470deg)) rotateZ(190deg)}
-      82%{transform:rotateX(calc(var(--die-rx) + 620deg)) rotateY(calc(var(--die-ry) + 650deg)) rotateZ(300deg)}
+      10%{transform:rotateX(calc(var(--die-rx) + 72deg)) rotateY(calc(var(--die-ry) + 92deg)) rotateZ(28deg)}
+      20%{transform:rotateX(calc(var(--die-rx) + 150deg)) rotateY(calc(var(--die-ry) + 182deg)) rotateZ(62deg)}
+      30%{transform:rotateX(calc(var(--die-rx) + 228deg)) rotateY(calc(var(--die-ry) + 274deg)) rotateZ(96deg)}
+      40%{transform:rotateX(calc(var(--die-rx) + 308deg)) rotateY(calc(var(--die-ry) + 360deg)) rotateZ(132deg)}
+      50%{transform:rotateX(calc(var(--die-rx) + 390deg)) rotateY(calc(var(--die-ry) + 446deg)) rotateZ(170deg)}
+      60%{transform:rotateX(calc(var(--die-rx) + 470deg)) rotateY(calc(var(--die-ry) + 528deg)) rotateZ(208deg)}
+      70%{transform:rotateX(calc(var(--die-rx) + 548deg)) rotateY(calc(var(--die-ry) + 604deg)) rotateZ(246deg)}
+      80%{transform:rotateX(calc(var(--die-rx) + 620deg)) rotateY(calc(var(--die-ry) + 664deg)) rotateZ(286deg)}
+      90%{transform:rotateX(calc(var(--die-rx) + 676deg)) rotateY(calc(var(--die-ry) + 704deg)) rotateZ(326deg)}
       100%{transform:rotateX(calc(var(--die-rx) + 720deg)) rotateY(calc(var(--die-ry) + 720deg)) rotateZ(360deg)}
     }
+    body.fast-animations .die.rolling .die-cube{animation-duration:.24s}
+
 
     /* Theme-Farben werden auf alle sechs Flächen übertragen. */
     .die.theme-classic{--die-bg:linear-gradient(145deg,#ffffff,#dfe4eb);--die-pip:#111827;--die-edge:#c9d0da;background:transparent!important}
