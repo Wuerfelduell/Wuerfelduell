@@ -111,6 +111,58 @@
   }
 
   function dieSymbol(v){ return v==null?"?":["⚀","⚁","⚂","⚃","⚄","⚅"][v-1]; }
+
+  const DIE_3D_ROTATION={
+    1:["0deg","0deg"],
+    2:["-90deg","0deg"],
+    3:["0deg","-90deg"],
+    4:["0deg","90deg"],
+    5:["90deg","0deg"],
+    6:["0deg","180deg"]
+  };
+
+  const DIE_PIP_POSITIONS={
+    1:[5],2:[1,9],3:[1,5,9],4:[1,3,7,9],5:[1,3,5,7,9],6:[1,3,4,6,7,9]
+  };
+
+  function ensure3DDieStructure(el){
+    let cube=el.querySelector(":scope > .die-cube");
+    if(cube) return cube;
+    cube=document.createElement("div");
+    cube.className="die-cube";
+    for(let face=1;face<=6;face++){
+      const side=document.createElement("div");
+      side.className=`die-face die-face-${face}`;
+      side.dataset.face=String(face);
+      const grid=document.createElement("div");
+      grid.className="die-pips";
+      const active=new Set(DIE_PIP_POSITIONS[face]);
+      for(let pos=1;pos<=9;pos++){
+        const pip=document.createElement("span");
+        pip.className="die-pip"+(active.has(pos)?" active":"");
+        grid.appendChild(pip);
+      }
+      const question=document.createElement("div");
+      question.className="die-question";
+      question.textContent="?";
+      side.append(grid,question);
+      cube.appendChild(side);
+    }
+    el.replaceChildren(cube);
+    return cube;
+  }
+
+  function render3DDieNode(el,value){
+    ensure3DDieStructure(el);
+    const rotation=DIE_3D_ROTATION[value]||DIE_3D_ROTATION[1];
+    if(!el.classList.contains("rolling")){
+      el.style.setProperty("--die-rx",rotation[0]);
+      el.style.setProperty("--die-ry",rotation[1]);
+    }
+    el.dataset.value=value==null?"":String(value);
+    el.setAttribute("aria-label",value==null?"Würfel bereit":`Würfel ${value}`);
+  }
+
   function currentSum(){ return dice.reduce((s,d)=>s+(d.value||0),0); }
   function stackingDamageBonus(){
     let bonus=0;
@@ -158,7 +210,7 @@
       const designKey=players[current]?.diceDesign||"classic";
       cls+=" "+(DICE_DESIGNS[designKey]?.className||"theme-classic");
       el.className=cls;
-      el.textContent=dieSymbol(d.value);
+      render3DDieNode(el,d.value);
       el.onclick=null;
 
       if(phase==="base_select"&&!d.locked&&!isAnimating&&!isBotPlayer(current)){
@@ -458,7 +510,7 @@
   function renderAll(){
     roundNumberEl.textContent=roundNumber;
     if(winTrackerLabel) winTrackerLabel.classList.toggle("hidden",!!campaignMode);
-    renderPlayers(); renderDice(); updateHeader(); updateButtons(); renderEncounterRuleBanner();
+    renderPlayers(); renderDice(); updateHeader(); updateButtons(); renderEncounterRuleBanner(); renderCampaignTaskProgress();
     // Während eines Würfelwurfs bleibt die Board-Geometrie eingefroren.
     // Die Würfel selbst dürfen rotieren/skalieren; nur die äußere Board-Geometrie bleibt konstant.
     if(!isAnimating) applySeatRotation();

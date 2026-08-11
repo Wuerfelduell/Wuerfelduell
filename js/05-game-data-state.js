@@ -1,8 +1,8 @@
   const ABILITIES = {
     0:{name:"Keine Fähigkeit",desc:"Im Tutorial spielt dieser Teilnehmer ohne Fähigkeit."},
     1:{name:"Brutale Einsen",desc:"Wenn du auf 1er angreifst, zählen 1er UND 2er als Treffer. Beide verursachen 3 Grundschaden pro Treffer. Bei einem normalen Angriff auf 2er gilt dieser Effekt nicht."},
-    2:{name:"Lifesteal",desc:"Du heilst die Hälfte des tatsächlich verursachten Angriffsschadens, abgerundet. Maximal bis zu deinem aktuellen Maximalleben."},
-    3:{name:"Glückswurf",desc:"Einmal pro Zug darfst du einen nicht eingeloggten 1er eines Basiswurfs neu würfeln."},
+    2:{name:"Lifesteal",desc:"Du heilst die Hälfte des tatsächlich verursachten Angriffsschadens, abgerundet. Im Local Battle bis zum Maximalleben; Kampagnenhelden dürfen darüber hinaus überheilen."},
+    3:{name:"Glückswurf",desc:"Einmal pro Zug darfst du einen nicht eingeloggten 1er eines Basiswurfs neu würfeln. Der neu gewürfelte Würfel kann dabei nicht wieder eine 1 werden."},
     4:{name:"Zweite Chance",desc:"Einmal pro Zug darfst du nach einem beliebigen Angriffswurf alle Nicht-Treffer noch einmal würfeln. Du bestimmst den Zeitpunkt."},
     5:{name:"Angriffsvorsprung",desc:"Du greifst schon bei 25 auf 1er an; 26→2er, 27→3er, 28→4er, 29→5er, 30→6er."},
     7:{name:"Glück (BETA)",desc:"Deine Chance auf eine 6 ist um 6 Prozentpunkte erhöht: 22,67 % statt 16,67 %. Das gilt auch im Angriff und macht dadurch die Ergebnisse 1–5 jeweils etwas seltener."},
@@ -20,7 +20,7 @@
     19:{name:"Insurance",desc:"Endet dein Basiswurf unter 25, würfelst du vor dem Eigenschaden einen D6. Bei 5–6 wird der Eigenschaden halbiert und abgerundet."},
     20:{name:"Snake Eyes",desc:"Würfelst du in einem einzelnen Basiswurf mindestens 3 gleiche Zahlen gleichzeitig, darfst du alle Würfel dieser Zahl aus genau diesem Wurf gratis neu würfeln. Gilt für 1er bis 6er und hat kein Limit: Entsteht danach erneut mindestens ein Drilling, darfst du Snake Eyes wieder benutzen."},
     21:{name:"Counterattack",desc:"Erhältst du durch den Hauptangriff eines Gegners mindestens 5 Schaden und überlebst, startest du sofort einen normalen Angriff auf 1er mit 5 Würfeln: 1er werden gelockt und die übrigen Würfel weitergewürfelt, bis ein Wurf keinen neuen Treffer bringt."},
-    22:{name:"12",desc:"Immer wenn du in einem einzelnen Würfelwurf mindestens zwei 6er gleichzeitig würfelst, heilst du 1 HP. Kein Limit pro Zug oder Runde; maximal bis zu deinem aktuellen Maximalleben. Gilt auch für Angriffswürfe und Counterattack."},
+    22:{name:"12",desc:"Immer wenn du in einem einzelnen Würfelwurf mindestens zwei 6er gleichzeitig würfelst, heilst du 1 HP. Kein Limit pro Zug oder Runde. Kampagnenhelden dürfen damit über ihr Maximalleben hinaus heilen. Gilt auch für Angriffswürfe und Counterattack."},
     23:{name:"Blood Rush",desc:"Wenn du seit deinem letzten eigenen Zug durch einen Gegner HP verloren hast oder in diesem Zug freiwillig HP für Loaded Dice/Blutpreis bezahlt hast, verursacht dein nächster Angriff +1 Schaden pro Treffer. Danach ist der Effekt verbraucht."},
     24:{name:"Double Tap",desc:"Endet dein Angriff mit exakt 2 Würfeltreffern, erhalten beide Treffer +2 Schaden. Das sind insgesamt +4 Schaden vor High Stakes."},
     25:{name:"Underdog",desc:"Solange du allein die wenigsten HP aller lebenden Spieler hast, verursachen deine Angriffstreffer +1 Schaden."}
@@ -110,7 +110,7 @@
   const campaignWorldTabs=$("campaignWorldTabs"), campaignWorldDesc=$("campaignWorldDesc");
   const duoCampaignBackBtn=$("duoCampaignBackBtn"), duoCampaignBanner=$("duoCampaignBanner"), duoCampaignWorldTabs=$("duoCampaignWorldTabs"), duoCampaignWorldDesc=$("duoCampaignWorldDesc"), duoTeamSummary=$("duoTeamSummary"), duoProgressSummary=$("duoProgressSummary"), duoUnlockSummary=$("duoUnlockSummary");
   const duoProfile1Select=$("duoProfile1Select"), duoProfile2Select=$("duoProfile2Select"), duoAbility1Select=$("duoAbility1Select"), duoAbility2Select=$("duoAbility2Select"), duoCampaignStartBtn=$("duoCampaignStartBtn"), duoCampaignProfilesBtn=$("duoCampaignProfilesBtn"), duoCampaignPath=$("duoCampaignPath"), duoCampaignEncounterDetail=$("duoCampaignEncounterDetail");
-  const encounterRuleBanner=$("encounterRuleBanner");
+  const encounterRuleBanner=$("encounterRuleBanner"), campaignTaskProgress=$("campaignTaskProgress");
 
   let players=[], setupAbilityRolls=[], current=0, dice=[], phase="idle", isAnimating=false;
   let attackFace=null, attackTarget=null, attackHits=0, attackDamage=0, firstAttackRoll=true, currentAttackRollNewHits=0;

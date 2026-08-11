@@ -16,6 +16,107 @@
     if(phase) parts.push(encounterRuntime.phaseTriggered?`<span class="phase-live">👹 PHASE II AKTIV · ${escapeHtml(phase.title)}</span>`:`👹 Phase II bei ${Math.round((phase.threshold||.5)*100)} % Boss-HP · ${escapeHtml(phase.title)}`);
     encounterRuleBanner.classList.toggle("hidden",parts.length===0);encounterRuleBanner.innerHTML=parts.join("<br>");
   }
+  function campaignHeroIndices(){
+    return players.map((p,i)=>p?.campaignTeam==="hero"?i:null).filter(i=>i!=null);
+  }
+
+  function campaignAttackSwitchesFor(heroIndex){
+    const seq=(campaignMetrics.attackSequence||[]).filter(a=>String(a.hero)===String(heroIndex));
+    let n=0;for(let i=1;i<seq.length;i++) if(seq[i].target!==seq[i-1].target) n++;
+    return n;
+  }
+
+  function campaignFocusPasses(){
+    const seq=campaignMetrics.attackSequence||[];let n=0;
+    for(let i=1;i<seq.length;i++) if(seq[i].hero!==seq[i-1].hero&&seq[i].target===seq[i-1].target)n++;
+    return n;
+  }
+
+  function campaignSharedTargetsCount(){
+    const ids=campaignHeroIndices();if(ids.length<2)return 0;
+    const sets=ids.map(i=>new Set(Object.keys(campaignMetrics.attackTargetsByHero?.[String(i)]||{})));
+    return [...sets[0]].filter(k=>sets.slice(1).every(set=>set.has(k))).length;
+  }
+
+  function campaignMatchedPrefix(actual,expected){
+    let n=0;while(n<actual.length&&n<expected.length&&actual[n]===expected[n])n++;return n;
+  }
+
+  function campaignChallengeProgressInfo(c,heroIndex){
+    const heroes=campaignHeroIndices(),heroPos=i=>Math.max(0,heroes.indexOf(i))+1;
+    const stat=i=>roundStats[i]||{};
+    const need=n=>Math.max(0,Number(n)||0);
+    const abilityName=id=>ABILITIES[id]?.name||`Fähigkeit ${id}`;
+    let label=c?.text||c?.type||"Aufgabe",value="",failed=false;
+    if(!c)return {label:"Aufgabe",value:"–",failed:false};
+    switch(c.type){
+      case "win": label="Encounter gewinnen";value="am Ende";break;
+      case "base_over_25": label="Basiswurf über 25";value=campaignMetrics.baseOver25?"geschafft":"offen";break;
+      case "turn_damage": label="Rohschaden in einem Zug";value=`${campaignMetrics.maxRawTurnDamage||0} / ${need(c.value)}`;break;
+      case "finish_hp": label="HP beim Sieg";value=`aktuell ${Math.max(0,players[heroIndex]?.hp||0)} · Ziel ≥${need(c.value)}`;break;
+      case "self_damage_max": {const v=stat(heroIndex).selfDamage||0;label="Eigenschaden maximal";value=`${v} / ${need(c.value)}`;failed=v>need(c.value);break;}
+      case "self_damage_min": label="Eigenschaden";value=`${stat(heroIndex).selfDamage||0} / ${need(c.value)}`;break;
+      case "voluntary_hp_min": label="Freiwillig bezahlte HP";value=`${stat(heroIndex).voluntaryHp||0} / ${need(c.value)}`;break;
+      case "healed_min": label="Geheilte HP";value=`${stat(heroIndex).healed||0} / ${need(c.value)}`;break;
+      case "twelve_triggers_min": label="12-Trigger";value=`${stat(heroIndex).twelveTriggers||0} / ${need(c.value)}`;break;
+      case "attack_hits_min": label="Bester Angriff · Treffer";value=`${campaignMetrics.maxAttackHits||0} / ${need(c.value)}`;break;
+      case "damage_targets_min": {const v=Object.values(campaignMetrics.rawDamageByTarget||{}).filter(x=>(Number(x)||0)>0).length;label="Verschiedene Ziele beschädigt";value=`${v} / ${need(c.value)}`;break;}
+      case "kill_first_name": {const first=campaignMetrics.killOrder?.[0];label=`Erster Kill: ${c.name}`;value=first||"offen";failed=!!first&&first!==c.name;break;}
+      case "kill_last_name": {const last=campaignMetrics.killOrder?.at(-1);label=`Letzter Kill: ${c.name}`;value=last?`aktuell ${last}`:"offen";break;}
+      case "kill_sequence_names": {const actual=campaignMetrics.killOrder||[],expected=c.names||[],m=campaignMatchedPrefix(actual,expected);label="Kill-Reihenfolge";value=`${m} / ${expected.length}`;failed=actual.length>m;break;}
+      case "active_ability_uses_max": {const ids=[3,4,11,13,18,20],v=ids.reduce((sum,id)=>sum+(campaignMetrics.abilityUses?.[String(id)]||0),0);label="Aktive Fähigkeiten maximal";value=`${v} / ${need(c.value)}`;failed=v>need(c.value);break;}
+      case "ability_use": label=`${abilityName(c.ability)} benutzt`;value=`${campaignMetrics.abilityUses?.[String(c.ability)]||0} / ${need(c.count||1)}`;break;
+      case "ability_success": label=`${abilityName(c.ability)} erfolgreich`;value=`${campaignMetrics.abilitySuccesses?.[String(c.ability)]||0} / ${need(c.count||1)}`;break;
+      case "secondary_unlocked": label="2. Fähigkeit freigeschaltet";value=players[heroIndex]?.secondAbilityUnlocked?"ja":"nein";break;
+      case "each_hero_ability_success": label=`${abilityName(c.ability)} je Spieler`;value=heroes.map((i,n)=>`P${n+1} ${campaignMetrics.abilitySuccessesByHero?.[String(i)]?.[String(c.ability)]||0}/${need(c.count||1)}`).join(" · ");break;
+      case "all_heroes_survive": {const alive=heroes.filter(i=>players[i]?.hp>0).length;label="Beide überleben";value=`${alive} / ${heroes.length}`;failed=alive<heroes.length;break;}
+      case "each_hero_attack": label="Jeder greift an";value=heroes.map((i,n)=>`P${n+1} ${(campaignMetrics.heroAttacks?.[String(i)]||0)>0?"✓":"0"}`).join(" · ");break;
+      case "each_hero_ability_use": label=`${abilityName(c.ability)} je Spieler`;value=heroes.map((i,n)=>`P${n+1} ${campaignMetrics.abilityUsesByHero?.[String(i)]?.[String(c.ability)]||0}/${need(c.count||1)}`).join(" · ");break;
+      case "team_healed_min": {const v=heroes.reduce((sum,i)=>sum+(stat(i).healed||0),0);label="Team-Heilung";value=`${v} / ${need(c.value)}`;break;}
+      case "team_self_damage_min": {const v=heroes.reduce((sum,i)=>sum+(stat(i).selfDamage||0),0);label="Team-Eigenschaden";value=`${v} / ${need(c.value)}`;break;}
+      case "each_hero_self_damage_min": label="Eigenschaden je Spieler";value=heroes.map((i,n)=>`P${n+1} ${stat(i).selfDamage||0}/${need(c.value)}`).join(" · ");break;
+      case "each_hero_healed_min": label="Heilung je Spieler";value=heroes.map((i,n)=>`P${n+1} ${stat(i).healed||0}/${need(c.value)}`).join(" · ");break;
+      case "all_heroes_secondary_unlocked": label="2. Fähigkeit bei beiden";value=heroes.map((i,n)=>`P${n+1} ${players[i]?.secondAbilityUnlocked?"✓":"–"}`).join(" · ");break;
+      case "exactly_one_hero_survives": {const alive=heroes.filter(i=>players[i]?.hp>0).length;label="Genau 1 Spieler überlebt";value=`aktuell ${alive}`;break;}
+      case "team_voluntary_hp_min": {const v=heroes.reduce((sum,i)=>sum+(stat(i).voluntaryHp||0),0);label="Freiwillige Team-HP";value=`${v} / ${need(c.value)}`;break;}
+      case "each_hero_voluntary_hp_min": label="Freiwillige HP je Spieler";value=heroes.map((i,n)=>`P${n+1} ${stat(i).voluntaryHp||0}/${need(c.value)}`).join(" · ");break;
+      case "each_hero_turn_damage": label="Zugschaden je Spieler";value=heroes.map((i,n)=>`P${n+1} ${campaignMetrics.maxRawTurnDamageByHero?.[String(i)]||0}/${need(c.value)}`).join(" · ");break;
+      case "team_raw_damage": {const v=Object.values(campaignMetrics.rawDamageByHero||{}).reduce((a,b)=>a+(Number(b)||0),0);label="Team-Rohschaden";value=`${v} / ${need(c.value)}`;break;}
+      case "each_hero_targets_min": label="Ziele je Spieler";value=heroes.map((i,n)=>`P${n+1} ${Object.keys(campaignMetrics.attackTargetsByHero?.[String(i)]||{}).length}/${need(c.value)}`).join(" · ");break;
+      case "shared_targets_min": label="Gemeinsam angegriffene Ziele";value=`${campaignSharedTargetsCount()} / ${need(c.value)}`;break;
+      case "each_hero_attack_hits_min": label="Bester Treffer-Angriff je Spieler";value=heroes.map((i,n)=>`P${n+1} ${campaignMetrics.maxAttackHitsByHero?.[String(i)]||0}/${need(c.value)}`).join(" · ");break;
+      case "each_hero_kill_min": label="Kills je Spieler";value=heroes.map((i,n)=>`P${n+1} ${campaignMetrics.killsByHero?.[String(i)]||0}/${need(c.value)}`).join(" · ");break;
+      case "alternating_hero_kills": {const n=need(c.value||2),seq=(campaignMetrics.killHeroes||[]).slice(0,n),good=seq.every((h,i)=>i===0||h!==seq[i-1]);label="Abwechselnde Kills";value=`${Math.min(seq.length,n)} / ${n}`;failed=seq.length>1&&!good;break;}
+      case "hero_attacks_min": label="Eigene Angriffe";value=`${campaignMetrics.heroAttacks?.[String(heroIndex)]||0} / ${need(c.value)}`;break;
+      case "each_hero_attacks_min": label="Angriffe je Spieler";value=heroes.map((i,n)=>`P${n+1} ${campaignMetrics.heroAttacks?.[String(i)]||0}/${need(c.value)}`).join(" · ");break;
+      case "first_kill_after_targets_min": {const v=campaignMetrics.firstKillDistinctTargets||0;const killed=(campaignMetrics.killOrder||[]).length>0;label="Ziele vor dem ersten Kill";value=`${v} / ${need(c.value)}`;failed=killed&&v<need(c.value);break;}
+      case "attack_target_sequence_names": {const seq=(campaignMetrics.attackSequence||[]).filter(a=>String(a.hero)===String(heroIndex)).map(a=>a.name),expected=c.names||[],m=campaignMatchedPrefix(seq,expected);label="Angriffs-Zielreihenfolge";value=`${m} / ${expected.length}`;failed=seq.length>m;break;}
+      case "target_switches_min": label="Zielwechsel";value=`${campaignAttackSwitchesFor(heroIndex)} / ${need(c.value)}`;break;
+      case "attack_heroes_alternate_min": {const n=need(c.value||2),seq=(campaignMetrics.attackSequence||[]).slice(0,n),good=seq.every((a,i)=>i===0||a.hero!==seq[i-1].hero);label="Abwechselnde Duo-Angriffe";value=`${Math.min(seq.length,n)} / ${n}`;failed=seq.length>1&&!good;break;}
+      case "focus_passes_min": label="Fokus-Pässe";value=`${campaignFocusPasses()} / ${need(c.value)}`;break;
+      case "hero_kill_name": {const wanted=heroes[(c.hero||1)-1],idx=(campaignMetrics.killOrder||[]).indexOf(c.name),killer=idx>=0?campaignMetrics.killHeroes?.[idx]:null;label=`P${c.hero||1} eliminiert ${c.name}`;value=idx<0?"offen":String(killer)===String(wanted)?"geschafft":"falscher Spieler";failed=idx>=0&&String(killer)!==String(wanted);break;}
+      case "kill_hero_pattern": {const pat=c.pattern||[],actual=(campaignMetrics.killHeroes||[]).slice(0,pat.length).map(h=>heroes.indexOf(Number.isInteger(h)?h:+h)+1),m=campaignMatchedPrefix(actual,pat);label="Finisher-Muster";value=`${m} / ${pat.length}`;failed=actual.length>m;break;}
+      case "each_hero_attacked_name": {const seq=campaignMetrics.attackSequence||[];label=`Beide greifen ${c.name} an`;value=heroes.map((i,n)=>`P${n+1} ${seq.some(a=>String(a.hero)===String(i)&&a.name===c.name)?"✓":"–"}`).join(" · ");break;}
+    }
+    return {label,value,failed};
+  }
+
+  function renderCampaignTaskProgress(){
+    if(!campaignTaskProgress)return;
+    if(!campaignMode){campaignTaskProgress.classList.add("hidden");campaignTaskProgress.innerHTML="";return;}
+    const encounter=currentEncounterObject(),heroIndex=campaignHeroIndices()[0];
+    if(!encounter?.challenge||heroIndex==null){campaignTaskProgress.classList.add("hidden");campaignTaskProgress.innerHTML="";return;}
+    const rules=encounter.challenge.type==="all"?(encounter.challenge.rules||[]):[encounter.challenge];
+    const rows=rules.map(rule=>{
+      const met=campaignChallengeRuleMet(rule,heroIndex),info=campaignChallengeProgressInfo(rule,heroIndex),state=met?"done":info.failed?"failed":"";
+      return `<div class="campaign-task-line ${state}"><span class="campaign-task-mark">${met?"✓":info.failed?"✕":"•"}</span><span class="campaign-task-label">${escapeHtml(info.label)}</span><strong>${escapeHtml(info.value||"")}</strong></div>`;
+    }).join("");
+    const overall=campaignChallengeRuleMet(encounter.challenge,heroIndex);
+    campaignTaskProgress.classList.remove("hidden");
+    campaignTaskProgress.title=encounter.challenge.text||"";
+    campaignTaskProgress.innerHTML=`<div class="campaign-task-head"><span>🎯 Aufgabenfortschritt</span><strong>${overall?"ERFÜLLT":"LIVE"}</strong></div>${rows}`;
+  }
+
   function checkBossPhase(targetIndex,beforeHp,afterHp){
     if(!campaignMode||encounterRuntime.phaseTriggered||afterHp<=0) return false;
     const enc=currentEncounterObject(),phase=bossPhaseFor(enc),target=players[targetIndex];
@@ -38,7 +139,7 @@
     if(!campaignMode||players[index]?.campaignTeam!=="hero"||!encounterRuleActive("void_clock")) return;
     const key=String(index),count=(encounterRuntime.turnStarts[key]||0)+1;encounterRuntime.turnStarts[key]=count;
     if(count<2||players[index].hp<=1) return;
-    const before=players[index].hp;players[index].hp=Math.max(1,players[index].hp-1);const lost=before-players[index].hp;
+    const result=applyDamageToPlayer(index,1,"self"),lost=result.lost;
     if(lost>0){recordSelfDamage(index,lost);players[index].damageSinceLastOwnTurn=true;pendingDamage={target:index,amount:lost};addLog(`⌛ Void Clock: ${players[index].name} verliert beim Zugstart ${lost} HP.`);}
   }
 
@@ -355,11 +456,11 @@
     duoProgressSummary.textContent=`${completed} / ${worldEncounters.length} Encounter`;
     duoUnlockSummary.textContent=!baseUnlocked?"🔒 Spieler 1 braucht Black Table":worldUnlocked?"✅ Freigeschaltet":(world.lockedText||"🔒 Gesperrt");
     duoCampaignBanner.classList.add("hidden");
-    if(!baseUnlocked){duoCampaignBanner.classList.remove("hidden");duoCampaignBanner.innerHTML=`🔒 <strong>Duo-Kampagne gesperrt.</strong> Spieler 1 muss Solo Encounter 10 · Black Table abgeschlossen haben; sein Fähigkeitspool gilt für das ganze Duo.`;}
+    if(!baseUnlocked){duoCampaignBanner.classList.remove("hidden");duoCampaignBanner.innerHTML=`🔒 <strong>Duo-Kampagne gesperrt.</strong> Spieler 1 muss Solo Encounter 10 · Black Table abgeschlossen haben. Danach stehen im Duo alle regulären Hauptfähigkeiten direkt zur Verfügung.`;}
     else if(!worldUnlocked){duoCampaignBanner.classList.remove("hidden");duoCampaignBanner.innerHTML=`🔒 <strong>${escapeHtml(world.name)} gesperrt.</strong> ${escapeHtml(world.lockedText||"Vorherige Duo-Welt abschließen")}.`;}
     else if(worldComplete){duoCampaignBanner.classList.remove("hidden");duoCampaignBanner.innerHTML=allComplete?`🏆 <strong>Alle aktuellen Duo-Welten abgeschlossen.</strong> Diese Profil-Paarung hat alle aktuell verfügbaren Duo-Welten abgeschlossen.`:`🏆 <strong>${escapeHtml(world.shortName)} abgeschlossen.</strong> Über die Welt-Auswahl könnt ihr jederzeit zurückwechseln.`;}
 
-    const sharedDuoAbilityPool=p1?campaignUnlockedAbilities(p1):[];
+    const sharedDuoAbilityPool=p1?[...CHOOSABLE_ABILITY_IDS]:[];
     const fillAbilities=(select,ids)=>{const old=+select.value;select.innerHTML="";ids.forEach(id=>{const o=document.createElement("option");o.value=id;o.textContent=`${id} · ${ABILITIES[id].name}`;select.appendChild(o);});if(ids.includes(old))select.value=String(old);};
     fillAbilities(duoAbility1Select,sharedDuoAbilityPool);fillAbilities(duoAbility2Select,sharedDuoAbilityPool);
 
@@ -372,7 +473,7 @@
       return `<button type="button" class="campaign-node${done?" done":""}${current?" current":""}${available?"":" locked"}${isBoss?" boss":""}${isWorldBoss?" world-boss":""}" data-duo-campaign-id="${e.id}" ${available?"":"disabled"}><span>${num}</span>${mark?`<span class="node-mark">${mark}</span>`:""}</button>`;
     }).join("");
     duoCampaignPath.querySelectorAll("[data-duo-campaign-id]").forEach(btn=>btn.onclick=()=>{duoCampaignEncounterId=btn.dataset.duoCampaignId;duoWorldId=duoEncounterById(duoCampaignEncounterId)?.world||"covenant";renderDuoCampaign();});
-    if(encounter){const done=!!progress?.completedEncounters?.includes(encounter.id),available=validPair&&duoEncounterAvailable(p1,p2,encounter),reward=encounter.id===world.finalEncounterId?"Duo-Welt abschließen":"Nächsten Duo-Encounter freischalten",rules=encounterRuleText(encounter),phase=bossPhaseFor(encounter);duoCampaignEncounterDetail.innerHTML=`<div class="node-detail-head"><div><div class="node-detail-title">${escapeHtml(encounter.title)}</div><div class="node-detail-sub">${escapeHtml(encounter.subtitle)}</div></div><div class="node-detail-state">${done?"✓ GESCHAFFT":available?"OFFEN":"🔒 GESPERRT"}</div></div><div class="node-detail-desc">${escapeHtml(encounter.desc)}</div><div class="node-detail-row">🎯 <strong>Challenge:</strong> ${escapeHtml(encounter.challenge.text)}</div><div class="node-detail-row">🤝 <strong>Belohnung:</strong> ${escapeHtml(reward)}</div>${rules.map(r=>`<div class="node-detail-row node-detail-rule">⚙ <strong>${escapeHtml(r.name)}:</strong> ${escapeHtml(r.desc)}</div>`).join("")}${phase?`<div class="node-detail-row node-detail-phase">👹 <strong>Boss-Phase bei ${Math.round((phase.threshold||.5)*100)} %:</strong> ${escapeHtml(phase.title)} · ${escapeHtml(phase.desc)}</div>`:""}`;}else duoCampaignEncounterDetail.innerHTML="";
+    if(encounter){const done=!!progress?.completedEncounters?.includes(encounter.id),available=validPair&&duoEncounterAvailable(p1,p2,encounter),worldBoss=encounter.id===world.finalEncounterId,progression=worldBoss?"Duo-Welt abschließen":"Nächsten Duo-Encounter freischalten",trophy=done?(worldBoss?"🏆 +1 Trophäe je Profil pro erfolgreichem Clear":"Erstclear bereits abgeschlossen"):`🏆 +1 Trophäe je Profil beim Erstclear`,reward=`${trophy} · ${progression}`,rules=encounterRuleText(encounter),phase=bossPhaseFor(encounter);duoCampaignEncounterDetail.innerHTML=`<div class="node-detail-head"><div><div class="node-detail-title">${escapeHtml(encounter.title)}</div><div class="node-detail-sub">${escapeHtml(encounter.subtitle)}</div></div><div class="node-detail-state">${done?"✓ GESCHAFFT":available?"OFFEN":"🔒 GESPERRT"}</div></div><div class="node-detail-desc">${escapeHtml(encounter.desc)}</div><div class="node-detail-row">🎯 <strong>Challenge:</strong> ${escapeHtml(encounter.challenge.text)}</div><div class="node-detail-row">🤝 <strong>Belohnung:</strong> ${escapeHtml(reward)}</div>${rules.map(r=>`<div class="node-detail-row node-detail-rule">⚙ <strong>${escapeHtml(r.name)}:</strong> ${escapeHtml(r.desc)}</div>`).join("")}${phase?`<div class="node-detail-row node-detail-phase">👹 <strong>Boss-Phase bei ${Math.round((phase.threshold||.5)*100)} %:</strong> ${escapeHtml(phase.title)} · ${escapeHtml(phase.desc)}</div>`:""}`;}else duoCampaignEncounterDetail.innerHTML="";
     duoCampaignStartBtn.disabled=!baseUnlocked||!worldUnlocked||!encounter||!duoEncounterAvailable(p1,p2,encounter)||!duoAbility1Select.value||!duoAbility2Select.value;
   }
 
@@ -516,16 +617,30 @@
     return 1;
   }
 
+  function isDuoWorldBossEncounter(encounter){
+    return !!encounter && DUO_CAMPAIGN_WORLDS.some(world=>world.finalEncounterId===encounter.id);
+  }
+
+  function awardDuoCampaignTrophies(profile1,profile2,encounter,newlyCompleted){
+    if(!profile1||!profile2||!encounter) return 0;
+    if(!newlyCompleted && !isDuoWorldBossEncounter(encounter)) return 0;
+    [profile1,profile2].forEach(profile=>{
+      const progress=campaignProgress(profile);
+      progress.trophies=Math.max(0,Math.floor(Number(progress.trophies)||0))+1;
+    });
+    return 1;
+  }
+
   function startDuoCampaignEncounter(){
     const p1=getProfile(duoProfile1Select.value),p2=getProfile(duoProfile2Select.value),encounter=duoEncounterById(duoCampaignEncounterId);
     if(!p1||!p2||p1.id===p2.id||!encounter||!duoEncounterAvailable(p1,p2,encounter)) return;
-    const sharedDuoAbilityPool=campaignUnlockedAbilities(p1);
+    const sharedDuoAbilityPool=[...CHOOSABLE_ABILITY_IDS];
     let a1=+duoAbility1Select.value,a2=+duoAbility2Select.value;
     if(!sharedDuoAbilityPool.includes(a1)) a1=sharedDuoAbilityPool[0]||3;
     if(!sharedDuoAbilityPool.includes(a2)) a2=sharedDuoAbilityPool[0]||3;
     clearBotAutomation();resetTutorialUi();tutorialMode=false;campaignMode=true;duoCampaignMode=true;campaignProfileId=null;duoProfile1Id=p1.id;duoProfile2Id=p2.id;
     gameContext={mode:"duo-campaign-game",returnScreen:"duo",profileIds:[p1.id,p2.id],encounterId:encounter.id};campaignMetrics=freshCampaignMetrics();resetEncounterRuntime(encounter);
-    const sharedDuoSecondPool=campaignUnlockedSecondAbilities(p1);
+    const sharedDuoSecondPool=[...REAL_ABILITY_IDS];
     const makeHero=(profile,ability)=>({name:profile.name,battleTag:`#${profile.tagNumber}`,profileId:profile.id,botLevel:"human",campaignTeam:"hero",hp:START_HP,maxHp:START_HP,ability,secondAbility:null,thirdAbility:null,secondAbilityUnlocked:sharedDuoSecondPool.length<2,thirdAbilityUnlocked:false,rolledAbility:"DUO",primaryWasChosen:true,seat:0,diceDesign:profile.selectedDice||"classic",...playerCosmeticsFromProfile(profile),wins:0,momentumStreak:0,lastStandUsed:false,roundLastStandTriggered:false,damageSinceLastOwnTurn:false,bloodRushPrimed:false,voluntaryHpPaidThisTurn:false,botBloodUsesThisAttack:0});
     const heroes=[makeHero(p1,a1),makeHero(p2,a2)];
     const enemies=encounter.enemies.map(enemy=>({name:enemy.name,battleTag:"",profileId:null,botLevel:enemy.level||"normal",campaignTeam:"enemy",hp:Number(enemy.hp)||START_HP,maxHp:Number(enemy.hp)||START_HP,ability:Number(enemy.ability)||0,secondAbility:enemy.secondAbility!=null?Number(enemy.secondAbility):null,thirdAbility:null,secondAbilityUnlocked:true,thirdAbilityUnlocked:true,rolledAbility:"DUO",primaryWasChosen:false,seat:0,diceDesign:"classic",wins:0,momentumStreak:0,lastStandUsed:false,roundLastStandTriggered:false,damageSinceLastOwnTurn:false,bloodRushPrimed:false,voluntaryHpPaidThisTurn:false,botBloodUsesThisAttack:0}));
@@ -536,7 +651,7 @@
     roundNumber=Math.max(1,duoEncountersForWorld(encounter.world||"covenant").findIndex(e=>e.id===encounter.id)+1);roundEliminationOrder=[];lastPlaceIndex=null;roundWinnerHandled=false;roundWinnerIndex=null;nextRoundAbilityRolls=[];eventPopupQueue=[];eventPopupBusy=false;secondAbilityDraftBusy=false;secondAbilityDraftIndex=null;deferredBaseAdvance=false;
     gamblingRolling=false;gamblingBaseTotal=null;gamblingModal.classList.add("hidden");highStakesRolling=false;highStakesDecisionThisAttack=false;highStakesModal.classList.add("hidden");perfect25Rolling=false;perfect25D4Rolling=false;perfect25BaseTotal=null;pendingPerfect25Total=null;perfect25Modal.classList.add("hidden");perfect25D4Modal.classList.add("hidden");insuranceRolling=false;insuranceContext=null;insuranceModal.classList.add("hidden");counterRolling=false;counterContext=null;counterDiceState=[];counterHits=0;counterFirstRoll=true;pendingCounterattack=null;deferredAttackFinish=false;counterModal.classList.add("hidden");wildcardFace=null;secondAbilityDraftQueue=[];secondAbilityModal.classList.add("hidden");
     logEl.innerHTML="";winnerBox.classList.add("hidden");nextRoundBox.classList.add("hidden");nextRoundPrepBtn.classList.add("hidden");restartBtn.textContent="Zur Duo-Kampagne";hideFrontScreens();game.classList.remove("hidden");document.body.classList.add("playing");window.scrollTo?.(0,0);
-    addLog(`🤝 Duo-Kampagne: ${encounter.title} – ${encounter.subtitle}. Challenge: ${encounter.challenge.text}`);encounterRuleText(encounter).forEach(r=>addLog(`⚙ Sonderregel ${r.name}: ${r.desc}`));if(bossPhaseFor(encounter))addLog(`👹 Bossphase vorbereitet: ${bossPhaseFor(encounter).title} bei ${Math.round((bossPhaseFor(encounter).threshold||.5)*100)} % Boss-HP.`);addLog(`⚡ Gemeinsamer Fähigkeitspool von ${p1.name}. ${p1.name}: ${ABILITIES[a1].name} · ${p2.name}: ${ABILITIES[a2].name}.`);addLog(`💀 Fällt einer von euch, läuft der Encounter weiter, solange der andere noch lebt.`);renderAll();
+    addLog(`🤝 Duo-Kampagne: ${encounter.title} – ${encounter.subtitle}. Challenge: ${encounter.challenge.text}`);encounterRuleText(encounter).forEach(r=>addLog(`⚙ Sonderregel ${r.name}: ${r.desc}`));if(bossPhaseFor(encounter))addLog(`👹 Bossphase vorbereitet: ${bossPhaseFor(encounter).title} bei ${Math.round((bossPhaseFor(encounter).threshold||.5)*100)} % Boss-HP.`);addLog(`⚡ Duo-Vollpool: Alle regulären Hauptfähigkeiten sind verfügbar. ${p1.name}: ${ABILITIES[a1].name} · ${p2.name}: ${ABILITIES[a2].name}.`);addLog(`💀 Fällt einer von euch, läuft der Encounter weiter, solange der andere noch lebt.`);renderAll();
   }
 
   function finishDuoCampaignEncounter(heroWon){
@@ -545,14 +660,14 @@
     const heroIndices=players.map((p,i)=>p.campaignTeam==="hero"?i:null).filter(i=>i!=null);
     const challengeMet=heroWon&&campaignChallengeMet(encounter,heroIndices[0]??0);roundWinnerIndex=heroWon?(heroIndices.find(i=>players[i].hp>0)??heroIndices[0]):players.findIndex(p=>p.hp>0&&p.campaignTeam==="enemy");
     if(heroWon){progress.wins++;heroIndices.filter(i=>players[i].hp>0).forEach(i=>{players[i].wins=(players[i].wins||0)+1;checkRoundWinnerAchievements(i);});}else progress.losses++;
-    let newlyCompleted=false;if(heroWon&&challengeMet&&!progress.completedEncounters.includes(encounter.id)){progress.completedEncounters.push(encounter.id);newlyCompleted=true;}progress.campaignVersion=Math.max(Number(progress.campaignVersion)||1,CAMPAIGN_VERSION);saveGameData();
+    let newlyCompleted=false,trophiesEach=0;if(heroWon&&challengeMet&&!progress.completedEncounters.includes(encounter.id)){progress.completedEncounters.push(encounter.id);newlyCompleted=true;}if(heroWon&&challengeMet)trophiesEach=awardDuoCampaignTrophies(p1,p2,encounter,newlyCompleted);progress.campaignVersion=Math.max(Number(progress.campaignVersion)||1,CAMPAIGN_VERSION);saveGameData();
     const encounterWorld=encounter.world||"covenant";duoWorldId=encounterWorld;
     if(newlyCompleted){const next=defaultDuoEncounter(p1,p2,encounterWorld);if(next)duoCampaignEncounterId=next.id;}
     const world=duoWorldById(encounterWorld),complete=!!world&&progress.completedEncounters.includes(world.finalEncounterId);
     const worldIndex=DUO_CAMPAIGN_WORLDS.findIndex(w=>w.id===encounterWorld),nextWorld=worldIndex>=0?DUO_CAMPAIGN_WORLDS[worldIndex+1]:null;
     const nextWorldUnlocked=!!(newlyCompleted&&nextWorld&&duoWorldUnlocked(p1,p2,nextWorld));
     const nextWorldText=nextWorldUnlocked?`<br>🌐 <strong>${escapeHtml(nextWorld.name)} wurde freigeschaltet!</strong>`:"";
-    if(heroWon&&challengeMet){queueEventPopup(complete?"Duo-Welt geschafft!":"Duo-Encounter geschafft!","win");winnerText.innerHTML=complete?"🏆 DUO-WELT GESCHAFFT!":"🤝 Duo-Encounter geschafft!";roundResultText.innerHTML=`✅ Gegnerteam besiegt.<br>✅ Challenge erfüllt: <strong>${escapeHtml(encounter.challenge.text)}</strong>${newlyCompleted?"<br>Der nächste Duo-Encounter wurde freigeschaltet.":"<br>Dieser Duo-Encounter war bereits abgeschlossen."}${nextWorldText}`;}
+    if(heroWon&&challengeMet){const trophyText=trophiesEach?`<br>🏆 <strong>+${trophiesEach} Trophäe für jedes Profil</strong> · ${escapeHtml(p1.name)}: ${campaignProgress(p1).trophies} · ${escapeHtml(p2.name)}: ${campaignProgress(p2).trophies}`:"";queueEventPopup(complete?"Duo-Welt geschafft!":"Duo-Encounter geschafft!","win");winnerText.innerHTML=complete?"🏆 DUO-WELT GESCHAFFT!":"🤝 Duo-Encounter geschafft!";roundResultText.innerHTML=`✅ Gegnerteam besiegt.<br>✅ Challenge erfüllt: <strong>${escapeHtml(encounter.challenge.text)}</strong>${trophyText}${newlyCompleted?"<br>Der nächste Duo-Encounter wurde freigeschaltet.":"<br>Dieser Duo-Encounter war bereits abgeschlossen."}${nextWorldText}`;}
     else if(heroWon){queueEventPopup("Challenge verfehlt","survive");winnerText.textContent="⚠️ Sieg – aber Challenge verfehlt";roundResultText.innerHTML=`Ihr habt das Gegnerteam besiegt, aber die Pflichtaufgabe fehlt:<br><strong>${escapeHtml(encounter.challenge.text)}</strong><br>Der nächste Duo-Encounter bleibt gesperrt.`;}
     else{queueEventPopup("Duo-Encounter verloren","death");winnerText.textContent="💀 Duo-Encounter verloren";roundResultText.innerHTML=`Das Gegnerteam hat beide Spieler ausgeschaltet. Euer Teamfortschritt bleibt gespeichert.`;}
     roundStandings.innerHTML=players.map((p,i)=>`<div class="round-score-row${p.campaignTeam==="hero"&&heroWon?" winner-row":""}"><div class="round-score-name">${escapeHtml(p.name)}${p.battleTag?` <span class="battle-tag">${escapeHtml(p.battleTag)}</span>`:""}</div><div class="round-score-meta">${p.campaignTeam==="hero"?"🤝 Duo-Spieler":"🤖 Gegner"} · ${Math.max(0,p.hp)} HP</div></div>`).join("");

@@ -36,6 +36,13 @@
     return value;
   }
 
+  function rollTrackedD6Excluding(index=current,excludedValue=1){
+    let value=excludedValue;
+    while(value===excludedValue) value=randDieForPlayer(index);
+    recordD6(index,value);
+    return value;
+  }
+
   function applyTwelveHeal(index,values,source="Wurf"){
     if(!hasAbility(22,index) || !Array.isArray(values)) return 0;
     const sixes=values.filter(v=>v===6).length;

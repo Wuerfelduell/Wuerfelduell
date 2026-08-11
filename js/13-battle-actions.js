@@ -1,19 +1,21 @@
-  function animateIndices(indices,finalizer){
+  function animateIndices(indices,finalizer,rollOptions={}){
     if(!indices.length){finalizer();return;}
+    const previewRoll=typeof rollOptions.preview==="function"?rollOptions.preview:()=>randDie();
+    const finalRoll=typeof rollOptions.final==="function"?rollOptions.final:()=>rollTrackedD6(current);
     isAnimating=true;
     indices.forEach(i=>dice[i].rolling=true);
     renderAll();
 
     let ticks=0;
     const timer=setInterval(()=>{
-      indices.forEach(i=>dice[i].value=randDie());
+      indices.forEach(i=>dice[i].value=previewRoll(i));
       renderDice();
       if(++ticks>=6) clearInterval(timer);
     },55);
 
     setTimeout(()=>{
       clearInterval(timer);
-      indices.forEach(i=>{dice[i].value=rollTrackedD6(current);dice[i].rolling=false;});
+      indices.forEach(i=>{dice[i].value=finalRoll(i);dice[i].rolling=false;});
       applyTwelveHeal(current,indices.map(i=>dice[i].value),phase.startsWith("attack")?"Angriffswurf":"Basiswurf");
       isAnimating=false;
       finalizer();
@@ -40,8 +42,11 @@
     markCampaignAbilityUse(current,3);
     const old=dice[idx].value;
     animateIndices([idx],()=>{
-      addLog(`⚡ ${players[current].name} nutzt Glückswurf: ${old} → ${dice[idx].value}.`);
+      addLog(`⚡ ${players[current].name} nutzt Glückswurf: ${old} → ${dice[idx].value}. Eine neue 1 ist ausgeschlossen.`);
       phase="base_select";renderAll();
+    },{
+      preview:()=>{let value=1;while(value===1)value=randDieForPlayer(current);return value;},
+      final:()=>rollTrackedD6Excluding(current,1)
     });
   }
 
@@ -122,7 +127,7 @@
   function randomSecondAbilityChoices(index){
     const owned=new Set(playerAbilities(index));
     const allowed=(duoCampaignMode && players[index]?.campaignTeam==="hero")
-      ? campaignUnlockedSecondAbilities(getProfile(duoProfile1Id))
+      ? REAL_ABILITY_IDS
       : (campaignMode && players[index]?.campaignTeam==="hero")
         ? campaignUnlockedSecondAbilities(getProfile(players[index]?.profileId)||getProfile(campaignProfileId))
         : REAL_ABILITY_IDS;
@@ -151,7 +156,7 @@
     if(!p || !rule || p.hp<=0) return false;
     const already=rule.slot===3?p.thirdAbilityUnlocked:p.secondAbilityUnlocked;
     if(already) return false;
-    if(oldHp>rule.threshold && newHp<=rule.threshold){
+    if(newHp<=rule.threshold){
       if(rule.slot===3) p.thirdAbilityUnlocked=true; else p.secondAbilityUnlocked=true;
       openSecondAbilityDraft(index);
       return true;
@@ -883,15 +888,19 @@
     const designKey=defender?.diceDesign||"classic";
     const theme=DICE_DESIGNS[designKey]?.className||"theme-classic";
 
-    counterDiceEl.innerHTML="";
-    counterDiceState.forEach(d=>{
+    while(counterDiceEl.children.length<counterDiceState.length){
       const el=document.createElement("div");
+      el.className=`die ${theme}`;
+      counterDiceEl.appendChild(el);
+    }
+    while(counterDiceEl.children.length>counterDiceState.length) counterDiceEl.lastElementChild.remove();
+    counterDiceState.forEach((d,i)=>{
+      const el=counterDiceEl.children[i];
       let cls=`die ${theme}`;
       if(d.locked) cls+=" attack-hit locked";
       if(d.rolling) cls+=" rolling";
       el.className=cls;
-      el.textContent=dieSymbol(d.value);
-      counterDiceEl.appendChild(el);
+      render3DDieNode(el,d.value);
     });
   }
 
@@ -1156,7 +1165,7 @@
       addLog(`🩸 Lifesteal: ${p.name} heilt ${actualHeal} Leben${over}.`);
     }
 
-    if(campaignMode&&players[current]?.campaignTeam==="hero"&&rawDamage>0&&encounterRuleActive("overcharge")&&players[current].hp>1){const before=players[current].hp;players[current].hp=Math.max(1,players[current].hp-1);const lost=before-players[current].hp;if(lost>0){recordSelfDamage(current,lost);players[current].damageSinceLastOwnTurn=true;pendingExtraDamageFx.push({target:current,amount:lost});addLog(`⚡ Overcharge-Rückstoß: ${players[current].name} verliert ${lost} HP.`);}}
+    if(campaignMode&&players[current]?.campaignTeam==="hero"&&rawDamage>0&&encounterRuleActive("overcharge")&&players[current].hp>1){const result=applyDamageToPlayer(current,1,"self");const lost=result.lost;if(lost>0){recordSelfDamage(current,lost);players[current].damageSinceLastOwnTurn=true;pendingExtraDamageFx.push({target:current,amount:lost});addLog(`⚡ Overcharge-Rückstoß: ${players[current].name} verliert ${lost} HP.`);}}
 
     // Counterattack prüft den rohen Hauptangriffsschaden, damit auch Last Stand + Counterattack funktioniert.
     // Ricochet-Schaden zählt NICHT als Auslöser.
@@ -1167,6 +1176,10 @@
       return;
     }
 
+    if(secondAbilityDraftBusy){
+      deferredAttackFinish=true;
+      return;
+    }
     finishAttackAfterCounter();
   }
 
