@@ -132,3 +132,9 @@
     .die.theme-rose{--die-bg:linear-gradient(145deg,#ffd7e5,#e864a1);--die-pip:#3a1024;--die-edge:#ffc0d9;background:transparent!important}
     .die.theme-galaxy{--die-bg:radial-gradient(circle at 25% 20%,#f3a8ff,#5b62db 42%,#17172e 78%);--die-pip:#ffffff;--die-edge:#aab1ff;background:transparent!important;text-shadow:none!important}
     .die.theme-prestige{--die-bg:linear-gradient(135deg,#fff3a8,#b68cff 34%,#6ee7ff 66%,#fff3a8);--die-pip:#171320;--die-edge:#fff1a1;background:transparent!important;box-shadow:none!important}
+
+
+    /* V26 Trio node sizing after generic node rules. */
+    .trio-node-map{grid-template-columns:repeat(5,minmax(0,1fr))!important;gap:8px!important}
+    .trio-node-map .campaign-node{width:min(64px,100%)!important}
+    @media(max-width:540px){.trio-node-map{grid-template-columns:repeat(5,minmax(0,1fr))!important;gap:5px!important}.trio-node-map .campaign-node{width:min(54px,100%)!important}}

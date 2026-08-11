@@ -949,3 +949,15 @@
       .campaign-task-line{grid-template-columns:13px minmax(0,1fr)}
       .campaign-task-line strong{grid-column:2;text-align:left;white-space:normal;color:#dce6f5}
     }
+
+
+    /* V26 – Campaign cards stay above the dice but become compact. */
+    #game.campaign-game > .card:first-child .player{padding:8px 10px;min-height:0}
+    #game.campaign-game > .card:first-child .players{gap:7px}
+    #game.campaign-game .player-name{font-size:16px}
+    #game.campaign-game .player .hp{margin-top:3px}
+    #game.campaign-game .player .hp strong{font-size:20px}
+    #game.campaign-game .player .ability-tag{margin-top:2px;font-size:10px}
+    #game.trio-game > .card:first-child .player{padding:7px 9px}
+    #game.trio-game .player-name{font-size:15px}
+    #game.trio-game .player .hp strong{font-size:19px}
