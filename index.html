@@ -10,7 +10,7 @@
   <link rel="manifest" href="manifest.json" />
   <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png" />
   <link rel="apple-touch-icon" sizes="192x192" href="icon-192.png" />
-  <title>Würfelduell · V23.1</title>
+  <title>Würfelduell · V23.2</title>
   <style>
     * { box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
     :root{
@@ -146,11 +146,12 @@
     }
     body.playing #game > .card:first-child{
       flex:0 0 auto;
+      margin-bottom:5px;
     }
     body.playing .rotation-shell{
       flex:0 0 auto;
       min-height:0;
-      margin:2px 0 0;
+      margin:0;
     }
     body.playing .seat-tag{
       display:none;
@@ -372,13 +373,13 @@
         0 0 12px rgba(255,200,87,.24),
         0 7px 14px rgba(0,0,0,.2) !important;
     }
-    .die.rolling{animation:diceRoll .42s linear;will-change:filter;backface-visibility:hidden}
+    .die.rolling{animation:diceRoll .42s cubic-bezier(.2,.8,.35,1);will-change:transform;backface-visibility:hidden}
     @keyframes diceRoll{
-      0%{filter:brightness(1)}
-      25%{filter:brightness(1.22)}
-      50%{filter:brightness(.88)}
-      75%{filter:brightness(1.18)}
-      100%{filter:brightness(1)}
+      0%{transform:rotate(0deg) scale(1)}
+      22%{transform:rotate(95deg) scale(.86)}
+      48%{transform:rotate(205deg) scale(1.10)}
+      72%{transform:rotate(305deg) scale(.91)}
+      100%{transform:rotate(360deg) scale(1)}
     }
 
     .controls{display:flex;gap:8px;flex-wrap:wrap}
@@ -967,8 +968,8 @@
       overflow:visible!important;
     }
     body.playing .app{
-      /* Reserviert Platz für den fixierten Hauptmenü-Button. */
-      padding-top:52px!important;
+      /* Der Menü-Button bleibt im Matchbar-Layout statt über Spielerkarten zu schweben. */
+      padding-top:7px!important;
     }
     body.playing .dice{
       align-items:center;
@@ -980,10 +981,10 @@
       transform-box:border-box;
     }
     body.playing .game-menu-btn{
-      position:fixed;
-      top:max(8px,env(safe-area-inset-top));
-      right:8px;
-      z-index:850;
+      position:static;
+      flex:0 0 auto;
+      z-index:auto;
+      white-space:nowrap;
     }
     .round-overlay,
     .utility-overlay,
@@ -1147,7 +1148,7 @@
       <button id="menuRulesBtn"><span class="menu-icon">📖</span> Regeln</button>
       <button id="menuChangelogBtn"><span class="menu-icon">📝</span> Changelog</button>
     </div>
-    <div class="version-footer">WÜRFELDUELL · VERSION 23.1</div>
+    <div class="version-footer">WÜRFELDUELL · VERSION 23.2</div>
   </section>
 
 
@@ -1266,6 +1267,7 @@
   <section id="changelogScreen" class="card screen-card hidden">
     <div class="screen-topbar"><button class="menuBackBtn">←</button><h2 class="screen-title">📝 Changelog</h2></div>
     <div class="screen-subtitle">Die großen Versionssprünge, ohne jeden Mini-Hotfix.</div>
+    <div class="changelog-entry"><div class="changelog-version">V23.2</div><ul><li>Die ursprüngliche Würfel-Dreh-/Scale-Animation ist wieder aktiv</li><li>Kampagnen-Board nutzt keine dynamische Shell-Skalierung mehr: 5-px-Abstand oberhalb des Zugfensters bleibt während Würfen konstant</li><li>Hauptmenü-Button sitzt wieder im Matchbar und überlagert keine Spielernamen</li><li>Rift Circuit Encounter 9 „Double or Nothing“ schaltet Momentum frei; bereits abgeschlossene Saves erhalten den Reward rückwirkend beim Laden</li></ul></div>
     <div class="changelog-entry"><div class="changelog-version">V23.1</div><ul><li>Kampagnenkämpfe zeigen keinen lokalen Sieg-Tracker mehr</li><li>Stabileres Würfelfeld: Würfel-DOM bleibt während Animationen stehen und die Roll-Animation verändert die Würfelgröße nicht mehr</li><li>Rundenende mit sechster Spaß-Statistik „Schadensmagnet“</li><li>Hauptmenü-Button erhält einen festen Safe-Bereich und überlappt keine Spieler-/Pokal-Anzeige mehr</li><li>5 neue Würfeldesigns und 6 zusätzliche Achievements</li></ul></div>
     <div class="changelog-entry"><div class="changelog-version">V23.0</div><ul><li>Neue Solo-Welt 5 · Paradox Circuit mit 15 Encountern</li><li>Neue Duo-Welt 3 · Mirror Pact und Duo-Welt 4 · Omega Pact mit je 15 Encountern</li><li>Neue Challenge-Muster: Angriffsziel-Sequenzen, Zielwechsel, alle Ziele vor dem ersten Kill markieren, alternierende Duo-Angriffe, Fokus-Pässe und spielerspezifische Finisher</li><li>75 Solo-Encounter und 60 Duo-Encounter insgesamt; bestehende Saves bleiben kompatibel</li></ul></div>
     <div class="changelog-entry"><div class="changelog-version">V22.0</div><ul><li>Neue Solo-Welt 4 · Abyss Circuit mit 15 Endgame-Encountern</li><li>Duo-Kampagne in zwei echte Welten aufgeteilt; neue Welt 2 · Fracture Pact mit 15 Encountern</li><li>Neue Challenge-Typen für Duo: jeder Spieler muss selbst heilen/Eigenschaden nehmen/HP bezahlen, gemeinsame Zielüberschneidung, beidseitige Fähigkeitserfolge und Clutch-Finale</li><li>Bestehender V21-Fortschritt bleibt erhalten; Save-Schema unverändert</li></ul></div>
@@ -1401,7 +1403,7 @@
   let localModeId="classic";
   function localModeRules(){return LOCAL_MODES[localModeId]||LOCAL_MODES.classic;}
 
-  const GAME_VERSION="23.1";
+  const GAME_VERSION="23.2";
   const SAVE_KEY="wuerfelduell_save_v1"; // absichtlich stabil: Updates lesen denselben Browser-Save
   const SAVE_SCHEMA_VERSION=5;
   const CAMPAIGN_VERSION=10;
@@ -1470,7 +1472,7 @@
     {id:"serpents_law_rift",world:"rift",requires:["rift_crown"],title:"6 · Serpent's Law",subtitle:"Fähigkeitsprüfung · Snake Eyes",desc:"The Coil zwingt dich in einen längeren, kontrollierten Kampf. Diesmal zählt nicht nur der Sieg: Du musst Snake Eyes wirklich zum Einsatz bringen. Der Clear schaltet die letzte reguläre Hauptfähigkeit frei und aktiviert Prestige.",challenge:{type:"ability_use",ability:20,count:1,text:"Nutze Snake Eyes mindestens einmal und gewinne."},rewardAbility:5,enemies:[{name:"The Coil",level:"hard",hp:30,ability:20,secondAbility:8}]},
     {id:"loaded_contract_rift",world:"rift",requires:["serpents_law_rift"],title:"7 · Loaded Contract",subtitle:"Prestige-Prüfung · Loaded Dice",desc:"Der Fixer manipuliert seine Würfe und bestraft Zögern. Ab hier werden Siege zu Prestige-Trophäen, sobald alle regulären Hauptfähigkeiten freigeschaltet sind.",challenge:{type:"ability_use",ability:18,count:1,text:"Benutze Loaded Dice mindestens einmal und gewinne."},enemies:[{name:"The Fixer",level:"hard",hp:34,ability:18,secondAbility:19}]},
     {id:"blood_oath_rift",world:"rift",requires:["loaded_contract_rift"],title:"8 · Blood Oath",subtitle:"Prestige-Prüfung · Blutpreis",desc:"Der Red Broker macht aus Lebenspunkten Währung. Um ihn zu schlagen, musst du selbst mindestens einmal Blutpreis aktiv einsetzen.",challenge:{type:"ability_use",ability:11,count:1,text:"Benutze Blutpreis mindestens einmal und gewinne."},enemies:[{name:"Red Broker",level:"hard",hp:36,ability:11,secondAbility:23}]},
-    {id:"double_or_nothing_rift",world:"rift",requires:["blood_oath_rift"],title:"9 · Double or Nothing",subtitle:"Prestige-Prüfung · High Stakes",desc:"Der Croupier lebt vom Risiko. Ein bloßer Klick auf High Stakes reicht nicht: Mindestens ein Gamble muss mit 4–6 erfolgreich sein.",challenge:{type:"ability_success",ability:13,count:1,text:"Gewinne mindestens einen High-Stakes-Wurf mit 4–6 und besiege den Gegner."},enemies:[{name:"Croupier",level:"hard",hp:38,ability:13,secondAbility:12}]},
+    {id:"double_or_nothing_rift",world:"rift",requires:["blood_oath_rift"],title:"9 · Double or Nothing",subtitle:"Prestige-Prüfung · High Stakes",desc:"Der Croupier lebt vom Risiko. Ein bloßer Klick auf High Stakes reicht nicht: Mindestens ein Gamble muss mit 4–6 erfolgreich sein.",challenge:{type:"ability_success",ability:13,count:1,text:"Gewinne mindestens einen High-Stakes-Wurf mit 4–6 und besiege den Gegner."},rewardAbility:10,enemies:[{name:"Croupier",level:"hard",hp:38,ability:13,secondAbility:12}]},
     {id:"rift_sovereign",world:"rift",requires:["double_or_nothing_rift"],title:"10 · Rift Sovereign",subtitle:"Boss · 2 gegen 1 · Trophy Farm",desc:"Der Sovereign und sein Warden spielen maximal aggressiv. Der Boss bleibt nach dem Clear farmbar. Sein erster erfolgreicher Clear schaltet zusätzlich Glück (BETA) für den Zweitfähigkeits-Pool ab 12 HP frei.",challenge:{type:"healed_min",value:10,text:"Boss-Challenge: Heile während des Kampfes insgesamt mindestens 10 HP und gewinne."},rewardSecondaryAbility:7,farmTrophy:true,enemies:[{name:"Rift Sovereign",level:"hard",hp:48,ability:1,secondAbility:13},{name:"Warden",level:"hard",hp:24,ability:24,secondAbility:17}]},
 
     {id:"lucky_break_rift",world:"rift",requires:["rift_sovereign"],title:"11 · Lucky Break",subtitle:"Prestige · Glückswurf",desc:"Der Hex Dealer lässt dir kaum saubere Würfe. Gewinne, nachdem du Glückswurf bewusst mindestens einmal eingesetzt hast.",challenge:{type:"ability_use",ability:3,count:1,text:"Benutze Glückswurf mindestens einmal und gewinne."},enemies:[{name:"Hex Dealer",level:"hard",hp:36,ability:17,secondAbility:19}]},
@@ -4090,6 +4092,15 @@
   function applySeatRotation(){
     if(!players[current] || game.classList.contains("hidden")) return;
 
+    // Kampagnen laufen vollständig scrollbar und alle Teilnehmer nutzen Sitz 0.
+    // Keine dynamische Shell-Höhe/Skalierung: so bleibt die Oberkante des Würfelfensters
+    // auch während Würfelanimationen pixelstabil. Local Battle behält die Sitzrotation.
+    if(campaignMode){
+      rotatingBoard.style.transform="rotate(0deg) scale(1)";
+      rotationShell.style.height="auto";
+      return;
+    }
+
     const seat=SEATS[players[current].seat];
     const sideways=Math.abs(seat.angle)%180===90;
 
@@ -4464,7 +4475,7 @@
     if(winTrackerLabel) winTrackerLabel.classList.toggle("hidden",!!campaignMode);
     renderPlayers(); renderDice(); updateHeader(); updateButtons();
     // Während eines Würfelwurfs bleibt die Board-Geometrie eingefroren.
-    // Dadurch springt/zoomt das Würfelfeld nicht zwischen den Animationstakten.
+    // Die Würfel selbst dürfen rotieren/skalieren; nur die äußere Board-Geometrie bleibt konstant.
     if(!isAnimating) applySeatRotation();
     flushPendingFx();
     scheduleBotAction();
