@@ -13,10 +13,10 @@
   let localModeId="classic";
   function localModeRules(){return LOCAL_MODES[localModeId]||LOCAL_MODES.classic;}
 
-  const GAME_VERSION="25.4";
+  const GAME_VERSION="25.6";
   const SAVE_KEY="wuerfelduell_save_v1"; // absichtlich stabil: Updates lesen denselben Browser-Save
   const SAVE_SCHEMA_VERSION=6;
-  const CAMPAIGN_VERSION=15;
+  const CAMPAIGN_VERSION=17;
 
   const ACHIEVEMENTS={
     grande:{name:"GRANDE!",desc:"Beende einen Angriff mit allen 5 Würfeln als Treffer.",rewardDice:"gold"},

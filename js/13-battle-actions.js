@@ -6,15 +6,10 @@
     indices.forEach(i=>dice[i].rolling=true);
     renderAll();
 
-    let ticks=0;
-    const timer=setInterval(()=>{
-      indices.forEach(i=>dice[i].value=previewRoll(i));
-      renderDice();
-      if(++ticks>=6) clearInterval(timer);
-    },55);
-
+    // V25.6: Der 3D-Cube zeigt beim Spin ohnehin alle sechs Seiten.
+    // Keine 55-ms-DOM-Neurenders mehr während der Animation: der Browser kann
+    // den Transform jetzt durchgehend auf der Compositor-Thread animieren.
     setTimeout(()=>{
-      clearInterval(timer);
       indices.forEach(i=>{dice[i].value=finalRoll(i);dice[i].rolling=false;});
       applyTwelveHeal(current,indices.map(i=>dice[i].value),phase.startsWith("attack")?"Angriffswurf":"Basiswurf");
       isAnimating=false;
@@ -144,7 +139,8 @@
     const p=players[index];
     if(!p) return null;
     if(campaignMode){
-      const threshold=(!duoCampaignMode&&p.campaignTeam==="hero")?soloCampaignHpBonusThreshold(currentEncounterObject()):SECOND_ABILITY_HP;
+      let threshold=SECOND_ABILITY_HP;
+      if(p.campaignTeam==="hero") threshold=duoCampaignMode?duoCampaignHpBonusThreshold(currentEncounterObject()):soloCampaignHpBonusThreshold(currentEncounterObject());
       return {threshold,slot:2,label:"2. Fähigkeit"};
     }
     if(localModeId==="classic") return {threshold:SECOND_ABILITY_HP,slot:2,label:"2. Fähigkeit"};
@@ -1052,16 +1048,9 @@
     renderCounterDice();
     counterResult.textContent="...";
 
-    let ticks=0;
-    const timer=setInterval(()=>{
-      rollIndices.forEach(i=>counterDiceState[i].value=randDieForPlayer(defenderIndex));
-      renderCounterDice();
-      if(++ticks>=7) clearInterval(timer);
-    },55);
-
+    // V25.6: Wie beim normalen Wurf keine Zwischen-Renderloops mehr.
+    // Die echten 3D-Seiten liefern die sichtbaren Zwischenframes.
     setTimeout(()=>{
-      clearInterval(timer);
-
       let newHits=0;
       rollIndices.forEach(i=>{
         const d=counterDiceState[i];

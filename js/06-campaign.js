@@ -8,6 +8,13 @@
     const worldIndex=CAMPAIGN_WORLDS.findIndex(w=>w.id===worldId);
     return worldIndex>=1?15:SECOND_ABILITY_HP;
   }
+  function duoCampaignHpBonusThreshold(encounter){
+    const worldId=encounter?.world||"covenant";
+    const worldIndex=DUO_CAMPAIGN_WORLDS.findIndex(w=>w.id===worldId);
+    if(worldIndex>0) return 15;
+    const encounterIndex=duoEncountersForWorld(worldId).findIndex(e=>e.id===encounter?.id);
+    return encounterIndex>=4?15:SECOND_ABILITY_HP;
+  }
   function profileCosmeticTitle(profile){const id=profile?.prestigeCosmetics?.selectedTitle;const item=PRESTIGE_SHOP_ITEMS.find(x=>x.id===id&&x.type==="title");return item?.value||"";}
   function profileCosmeticFrame(profile){const id=profile?.prestigeCosmetics?.selectedFrame;const item=PRESTIGE_SHOP_ITEMS.find(x=>x.id===id&&x.type==="frame");return item?.value||"";}
   function playerCosmeticsFromProfile(profile){return {cosmeticTitle:profileCosmeticTitle(profile),cosmeticFrame:profileCosmeticFrame(profile)};}
@@ -690,7 +697,7 @@
     roundNumber=Math.max(1,duoEncountersForWorld(encounter.world||"covenant").findIndex(e=>e.id===encounter.id)+1);roundEliminationOrder=[];lastPlaceIndex=null;roundWinnerHandled=false;roundWinnerIndex=null;nextRoundAbilityRolls=[];eventPopupQueue=[];eventPopupBusy=false;secondAbilityDraftBusy=false;secondAbilityDraftIndex=null;deferredBaseAdvance=false;
     gamblingRolling=false;gamblingBaseTotal=null;gamblingModal.classList.add("hidden");highStakesRolling=false;highStakesDecisionThisAttack=false;highStakesModal.classList.add("hidden");perfect25Rolling=false;perfect25D4Rolling=false;perfect25BaseTotal=null;pendingPerfect25Total=null;perfect25Modal.classList.add("hidden");perfect25D4Modal.classList.add("hidden");insuranceRolling=false;insuranceContext=null;insuranceModal.classList.add("hidden");counterRolling=false;counterContext=null;counterDiceState=[];counterHits=0;counterFirstRoll=true;pendingCounterattack=null;deferredAttackFinish=false;counterModal.classList.add("hidden");wildcardFace=null;secondAbilityDraftQueue=[];secondAbilityModal.classList.add("hidden");
     logEl.innerHTML="";winnerBox.classList.add("hidden");nextRoundBox.classList.add("hidden");nextRoundPrepBtn.classList.add("hidden");restartBtn.textContent="Zur Duo-Kampagne";hideFrontScreens();game.classList.remove("hidden");document.body.classList.add("playing");window.scrollTo?.(0,0);
-    addLog(`🤝 Duo-Kampagne: ${encounter.title} – ${encounter.subtitle}. Challenge: ${encounter.challenge.text}`);encounterRuleText(encounter).forEach(r=>addLog(`⚙ Sonderregel ${r.name}: ${r.desc}`));if(bossPhaseFor(encounter))addLog(`👹 Bossphase vorbereitet: ${bossPhaseFor(encounter).title} bei ${Math.round((bossPhaseFor(encounter).threshold||.5)*100)} % Boss-HP.`);addLog(`⚡ Duo-Vollpool: Alle regulären Hauptfähigkeiten sind verfügbar. ${p1.name}: ${ABILITIES[a1].name} · ${p2.name}: ${ABILITIES[a2].name}.`);addLog(`💀 Fällt einer von euch, läuft der Encounter weiter, solange der andere noch lebt.`);renderAll();
+    addLog(`🤝 Duo-Kampagne: ${encounter.title} – ${encounter.subtitle}. Challenge: ${encounter.challenge.text}`);addLog(`✨ HP-Bonus: Die 2. Fähigkeit wird in diesem Encounter bei ≤${duoCampaignHpBonusThreshold(encounter)} HP freigeschaltet.`);encounterRuleText(encounter).forEach(r=>addLog(`⚙ Sonderregel ${r.name}: ${r.desc}`));if(bossPhaseFor(encounter))addLog(`👹 Bossphase vorbereitet: ${bossPhaseFor(encounter).title} bei ${Math.round((bossPhaseFor(encounter).threshold||.5)*100)} % Boss-HP.`);addLog(`⚡ Duo-Vollpool: Alle regulären Hauptfähigkeiten sind verfügbar. ${p1.name}: ${ABILITIES[a1].name} · ${p2.name}: ${ABILITIES[a2].name}.`);addLog(`💀 Fällt einer von euch, läuft der Encounter weiter, solange der andere noch lebt.`);renderAll();
   }
 
   function finishDuoCampaignEncounter(heroWon){
