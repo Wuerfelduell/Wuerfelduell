@@ -10,7 +10,7 @@
   <link rel="manifest" href="manifest.json" />
   <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png" />
   <link rel="apple-touch-icon" sizes="192x192" href="icon-192.png" />
-  <title>Würfelduell · V24.0</title>
+  <title>Würfelduell · V24.1</title>
   <style>
     * { box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
     :root{
@@ -1064,6 +1064,38 @@
     body.playing .matchbar{align-items:flex-start;min-height:38px}
     @media(max-width:540px){.prestige-shop-list{grid-template-columns:1fr}.prestige-shop-head{grid-template-columns:1fr}.campaign-node-map{gap:14px 5px!important;padding:15px 5px!important}.campaign-node{width:min(58px,100%);font-size:15px!important}}
 
+
+    /* V24.1 – Mobile Scroll + kompakte Kampf-Fähigkeiten
+       Auf Mobile-Chrome scrollt jetzt das Dokument selbst. Body als eigener
+       Scrollcontainer war in langen Campaign-Kämpfen sporadisch nicht bewegbar. */
+    html{
+      min-height:100%;
+      overflow-x:hidden;
+      overflow-y:auto;
+      -webkit-overflow-scrolling:touch;
+    }
+    body.playing{
+      height:auto!important;
+      min-height:100dvh!important;
+      overflow-x:hidden!important;
+      overflow-y:visible!important;
+      touch-action:pan-y!important;
+      overscroll-behavior-y:auto!important;
+    }
+    body.playing .app,
+    body.playing #game:not(.hidden),
+    body.playing .rotation-shell,
+    body.playing .rotating-board{
+      height:auto!important;
+      max-height:none!important;
+      overflow:visible!important;
+    }
+    body.playing .app{padding-bottom:max(34px,env(safe-area-inset-bottom))!important}
+    .ability-state{padding:7px 9px}
+    .ability-compact-line{font-size:12px;line-height:1.35;color:var(--muted)}
+    .ability-compact-line strong{color:var(--gold);font-weight:1000}
+    .ability-compact-sep{height:1px;background:var(--border);margin:5px 0}
+
   </style>
 </head>
 <body>
@@ -1194,7 +1226,7 @@
       <button id="menuRulesBtn"><span class="menu-icon">📖</span> Regeln</button>
       <button id="menuChangelogBtn"><span class="menu-icon">📝</span> Changelog</button>
     </div>
-    <div class="version-footer">WÜRFELDUELL · VERSION 24.0</div>
+    <div class="version-footer">WÜRFELDUELL · VERSION 24.1</div>
   </section>
 
 
@@ -1327,6 +1359,7 @@
   <section id="changelogScreen" class="card screen-card hidden">
     <div class="screen-topbar"><button class="menuBackBtn">←</button><h2 class="screen-title">📝 Changelog</h2></div>
     <div class="screen-subtitle">Die großen Versionssprünge, ohne jeden Mini-Hotfix.</div>
+    <div class="changelog-entry"><div class="changelog-version">V24.1</div><ul><li>Mobile Scroll-Fix: Kampagnenkämpfe scrollen über das Dokument statt über einen eigenen Body-Scrollcontainer</li><li>Kampf-Fähigkeiten kompakt: nur Name + aktueller Status, keine langen Regeltexte mehr</li><li>Würfelrotation und alle V24-Systeme bleiben unverändert</li></ul></div>
     <div class="changelog-entry"><div class="changelog-version">V24.0</div><ul><li>Trophy Shop mit kosmetischen Prestige-Rewards bis maximal 30 Trophäen</li><li>Solo- und Duo-Kampagnen als kompakte Node-Maps statt Encounter-Listen</li><li>Rückwirkende Encounter-Sonderregeln und echte Boss-Phasen im späteren Campaign-Verlauf</li><li>Hauptmenü-Button auf Mobile tiefer gesetzt; Würfelrotation bleibt erhalten</li></ul></div>
     <div class="changelog-entry"><div class="changelog-version">V23.2</div><ul><li>Die ursprüngliche Würfel-Dreh-/Scale-Animation ist wieder aktiv</li><li>Kampagnen-Board nutzt keine dynamische Shell-Skalierung mehr: 5-px-Abstand oberhalb des Zugfensters bleibt während Würfen konstant</li><li>Hauptmenü-Button sitzt wieder im Matchbar und überlagert keine Spielernamen</li><li>Rift Circuit Encounter 9 „Double or Nothing“ schaltet Momentum frei; bereits abgeschlossene Saves erhalten den Reward rückwirkend beim Laden</li></ul></div>
     <div class="changelog-entry"><div class="changelog-version">V23.1</div><ul><li>Kampagnenkämpfe zeigen keinen lokalen Sieg-Tracker mehr</li><li>Stabileres Würfelfeld: Würfel-DOM bleibt während Animationen stehen und die Roll-Animation verändert die Würfelgröße nicht mehr</li><li>Rundenende mit sechster Spaß-Statistik „Schadensmagnet“</li><li>Hauptmenü-Button erhält einen festen Safe-Bereich und überlappt keine Spieler-/Pokal-Anzeige mehr</li><li>5 neue Würfeldesigns und 6 zusätzliche Achievements</li></ul></div>
@@ -1465,7 +1498,7 @@
   let localModeId="classic";
   function localModeRules(){return LOCAL_MODES[localModeId]||LOCAL_MODES.classic;}
 
-  const GAME_VERSION="24.0";
+  const GAME_VERSION="24.1";
   const SAVE_KEY="wuerfelduell_save_v1"; // absichtlich stabil: Updates lesen denselben Browser-Save
   const SAVE_SCHEMA_VERSION=6;
   const CAMPAIGN_VERSION=11;
@@ -4469,9 +4502,9 @@
       if(a===23) usage=bloodRushActiveThisAttack?"BLOOD RUSH AKTIV: +1 pro Treffer":((players[current].bloodRushPrimed||players[current].voluntaryHpPaidThisTurn)?"für nächsten Angriff bereit":"wartet auf HP-Verlust");
       if(a===24) usage="exakt 2 Treffer = +4 Gesamtschaden";
       if(a===25) usage=isUniqueUnderdog(current)?"UNDERDOG AKTIV: +1 pro Treffer":"nur allein mit niedrigsten HP";
-      return `<div><strong>Fähigkeit ${a}: ${ABILITIES[a].name}</strong> · ${usage}<br>${ABILITIES[a].desc}</div>`;
+      return `<div class="ability-compact-line"><strong>⚡ ${escapeHtml(ABILITIES[a].name)}</strong><span> · ${escapeHtml(usage)}</span></div>`;
     });
-    abilityState.innerHTML=abilityLines.join(`<div style="height:1px;background:var(--border);margin:7px 0"></div>`);
+    abilityState.innerHTML=abilityLines.join(`<div class="ability-compact-sep"></div>`);
   }
 
   function campaignEnemyTargets(from=current){
