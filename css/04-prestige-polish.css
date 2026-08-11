@@ -1,0 +1,90 @@
+    /* V23.1: Spezialwürfel übernehmen das gewählte Profildesign ebenfalls. */
+    :is(.special-big-die,.gambling-die).theme-obsidian{background:linear-gradient(145deg,#303746,#090b10)!important;color:#f7f8fb!important;border-color:#4b5568!important}
+    :is(.special-big-die,.gambling-die).theme-gold{background:linear-gradient(145deg,#ffe38a,#c58b18)!important;color:#2a1b00!important;border-color:#f8c84e!important}
+    :is(.special-big-die,.gambling-die).theme-blood{background:linear-gradient(145deg,#ff6673,#6f0713)!important;color:#fff3f4!important;border-color:#d42c3d!important}
+    :is(.special-big-die,.gambling-die).theme-arcane{background:linear-gradient(145deg,#b991ff,#35176d)!important;color:#fff!important;border-color:#9f78ff!important}
+    :is(.special-big-die,.gambling-die).theme-emerald{background:linear-gradient(145deg,#71f0a3,#075b34)!important;color:#f2fff7!important;border-color:#42d985!important}
+    :is(.special-big-die,.gambling-die).theme-frost{background:linear-gradient(145deg,#e8fbff,#68b9d4)!important;color:#083042!important;border-color:#9deeff!important}
+    :is(.special-big-die,.gambling-die).theme-pearl{background:linear-gradient(145deg,#fffdf8,#e7cddd)!important;color:#3a2332!important;border-color:#f5d7e8!important}
+    :is(.special-big-die,.gambling-die).theme-neon{background:linear-gradient(145deg,#ff4bd8,#2b1173)!important;color:#fff!important;border-color:#43f4e9!important}
+    :is(.special-big-die,.gambling-die).theme-void{background:linear-gradient(145deg,#171322,#020205)!important;color:#d7c5ff!important;border-color:#6c49bb!important}
+    :is(.special-big-die,.gambling-die).theme-sapphire{background:linear-gradient(145deg,#2f80ed,#08234f)!important;color:#eef7ff!important;border-color:#4f9df3!important}
+
+  
+
+    /* V24 – Prestige Shop, Node Maps, Boss Rules */
+    .menu-actions button.menu-prestige{background:linear-gradient(135deg,#3a2f17,#231b39);color:#ffe6a1;border:1px solid rgba(255,200,87,.32)}
+    .prestige-shop-head{display:grid;grid-template-columns:1fr minmax(120px,170px);gap:10px;align-items:end;margin-bottom:10px}
+    .prestige-shop-head label{display:grid;gap:6px}.prestige-shop-head select{width:100%}
+    .prestige-wallet{padding:10px 12px;border-radius:14px;border:1px solid rgba(255,200,87,.28);background:linear-gradient(145deg,#231d12,#131923);display:flex;justify-content:space-between;align-items:center;gap:8px}
+    .prestige-wallet span{color:var(--muted);font-size:11px;font-weight:900;text-transform:uppercase}.prestige-wallet strong{color:var(--gold);font-size:20px}
+    .prestige-equipped{padding:10px 12px;margin-bottom:12px;border:1px solid var(--border);background:#101620;border-radius:14px;color:#c8d2e0;font-size:12px;line-height:1.5}
+    .prestige-shop-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
+    .prestige-item{padding:12px;border:1px solid var(--border);border-radius:15px;background:linear-gradient(155deg,#171e29,#0f141d);min-width:0}
+    .prestige-item.owned{border-color:rgba(77,209,125,.35)}.prestige-item.expensive{box-shadow:inset 0 0 0 1px rgba(255,200,87,.12)}
+    .prestige-item-kicker{color:var(--gold);font-size:10px;font-weight:1000;letter-spacing:.09em;text-transform:uppercase}.prestige-item-name{font-size:17px;font-weight:1000;margin-top:3px}
+    .prestige-item-desc{color:var(--muted);font-size:11px;line-height:1.4;margin:6px 0 10px;min-height:46px}.prestige-item button{width:100%;font-size:13px;padding:9px 10px}
+    .prestige-reset-row{display:flex;gap:7px;flex-wrap:wrap;margin-top:7px}.prestige-reset-row button{font-size:11px;padding:7px 9px}
+
+    .campaign-node-map{display:grid!important;grid-template-columns:repeat(5,minmax(48px,1fr));gap:16px 8px!important;padding:18px 8px!important;margin-top:12px!important;border:1px solid rgba(104,167,255,.14);border-radius:20px;background:radial-gradient(circle at 50% 0%,rgba(104,167,255,.08),transparent 50%),#0d131c;overflow:visible!important}
+    .campaign-node{position:relative;aspect-ratio:1/1;width:min(64px,100%);justify-self:center;border-radius:50%;padding:0!important;display:flex;align-items:center;justify-content:center;background:#1b2431!important;color:#aeb9c9!important;border:2px solid #354154!important;box-shadow:0 6px 16px rgba(0,0,0,.25)!important;font-size:17px!important;font-weight:1000!important;z-index:1}
+    .campaign-node::after{content:"";position:absolute;left:100%;top:50%;width:calc(100% + 10px);height:2px;background:#2e3949;z-index:-1;pointer-events:none}
+    .campaign-node:nth-child(5n)::after{display:none}.campaign-node.done{background:#15301f!important;border-color:#4dd17d!important;color:#8ff0ae!important}.campaign-node.current{border-color:#ffc857!important;color:#ffc857!important;box-shadow:0 0 0 3px rgba(255,200,87,.12),0 0 22px rgba(255,200,87,.22)!important;animation:nodePulse 1.8s ease-in-out infinite}.campaign-node.locked{opacity:.34}.campaign-node.boss{border-radius:18px;transform:rotate(45deg)}.campaign-node.boss span{transform:rotate(-45deg)}.campaign-node.world-boss{background:linear-gradient(145deg,#35250d,#1c1428)!important;border-color:#ffc857!important}.campaign-node .node-mark{position:absolute;right:-4px;top:-7px;font-size:14px;transform:none!important}.campaign-node.boss .node-mark{transform:rotate(-45deg)!important;right:-9px;top:-8px}
+    @keyframes nodePulse{0%,100%{box-shadow:0 0 0 2px rgba(255,200,87,.08),0 0 12px rgba(255,200,87,.12)}50%{box-shadow:0 0 0 5px rgba(255,200,87,.15),0 0 25px rgba(255,200,87,.28)}}
+    .campaign-node-detail{margin-top:10px;padding:13px 14px;border:1px solid var(--border);border-radius:16px;background:linear-gradient(150deg,#171e29,#10151e);min-height:132px}
+    .node-detail-head{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}.node-detail-title{font-size:19px;font-weight:1000}.node-detail-state{font-size:10px;font-weight:1000;padding:4px 7px;border-radius:999px;background:#202a38;color:#bdc8d8;white-space:nowrap}
+    .node-detail-sub{color:var(--gold);font-size:11px;font-weight:900;margin-top:2px}.node-detail-desc{color:var(--muted);font-size:12px;line-height:1.45;margin-top:8px}.node-detail-row{margin-top:8px;padding:8px 9px;border-radius:11px;background:#111923;border:1px solid rgba(255,255,255,.06);font-size:11px;line-height:1.45}.node-detail-rule{border-color:rgba(184,140,255,.22);color:#d7c7f4}.node-detail-phase{border-color:rgba(255,95,109,.25);color:#ffc0c6}
+
+    .encounter-rule-banner{margin:0 0 7px;padding:8px 10px;border-radius:12px;border:1px solid rgba(184,140,255,.25);background:linear-gradient(135deg,rgba(184,140,255,.10),rgba(255,95,109,.06));font-size:11px;line-height:1.35;color:#d7c9ee}
+    .encounter-rule-banner strong{color:#fff}.encounter-rule-banner .phase-live{color:#ff9eaa;font-weight:1000}
+
+    .profile-title-badge{display:inline-flex;margin-top:3px;padding:2px 6px;border-radius:999px;font-size:9px;font-weight:1000;letter-spacing:.06em;text-transform:uppercase;background:rgba(255,200,87,.10);border:1px solid rgba(255,200,87,.22);color:#ffd77e}
+    .player.frame-brass,.profile-card.frame-brass{border-color:#b99154;box-shadow:inset 0 0 0 1px rgba(255,207,126,.18),0 0 14px rgba(185,145,84,.14)}
+    .player.frame-rift,.profile-card.frame-rift{border-color:#8c6cff;box-shadow:inset 0 0 0 1px rgba(184,140,255,.24),0 0 18px rgba(140,108,255,.22)}
+    .player.frame-void,.profile-card.frame-void{border-color:#7956a8;box-shadow:inset 0 0 0 1px rgba(161,104,220,.20),0 0 20px rgba(90,49,142,.28)}
+    .player.frame-crown,.profile-card.frame-crown{border-color:#ffc857;box-shadow:inset 0 0 0 2px rgba(255,224,140,.22),0 0 24px rgba(255,200,87,.25)}
+
+    .die.theme-sunset,.gambling-die.theme-sunset,.special-big-die.theme-sunset{background:linear-gradient(145deg,#ffcc70,#ff6b8a)!important;color:#3b1322!important;border-color:#ffd89a!important}
+    .die.theme-toxic,.gambling-die.theme-toxic,.special-big-die.theme-toxic{background:linear-gradient(145deg,#d7ff4f,#47e38b)!important;color:#0c2919!important;border-color:#b9ff75!important}
+    .die.theme-rose,.gambling-die.theme-rose,.special-big-die.theme-rose{background:linear-gradient(145deg,#ffd7e5,#e864a1)!important;color:#3a1024!important;border-color:#ffc0d9!important}
+    .die.theme-galaxy,.gambling-die.theme-galaxy,.special-big-die.theme-galaxy{background:radial-gradient(circle at 25% 20%,#f3a8ff,#5b62db 42%,#17172e 78%)!important;color:#fff!important;border-color:#aab1ff!important;text-shadow:0 0 8px rgba(255,255,255,.4)}
+    .die.theme-prestige,.gambling-die.theme-prestige,.special-big-die.theme-prestige{background:linear-gradient(135deg,#fff3a8,#b68cff 34%,#6ee7ff 66%,#fff3a8)!important;color:#171320!important;border-color:#fff1a1!important;box-shadow:inset 0 -5px 0 rgba(0,0,0,.12),0 0 18px rgba(255,220,120,.35)!important}
+
+    /* V24.0: Button bewusst tiefer im normalen Dokumentfluss, damit Mobile-Browser-Chrome ihn nicht anschneidet. */
+    body.playing .game-menu-btn{margin-top:5px!important}
+    body.playing .matchbar{align-items:flex-start;min-height:38px}
+    @media(max-width:540px){.prestige-shop-list{grid-template-columns:1fr}.prestige-shop-head{grid-template-columns:1fr}.campaign-node-map{gap:14px 5px!important;padding:15px 5px!important}.campaign-node{width:min(58px,100%);font-size:15px!important}}
+
+
+    /* V24.1 – Mobile Scroll + kompakte Kampf-Fähigkeiten
+       Auf Mobile-Chrome scrollt jetzt das Dokument selbst. Body als eigener
+       Scrollcontainer war in langen Campaign-Kämpfen sporadisch nicht bewegbar. */
+    html{
+      min-height:100%;
+      overflow-x:hidden;
+      overflow-y:auto;
+      -webkit-overflow-scrolling:touch;
+    }
+    body.playing{
+      height:auto!important;
+      min-height:100dvh!important;
+      overflow-x:hidden!important;
+      overflow-y:visible!important;
+      touch-action:pan-y!important;
+      overscroll-behavior-y:auto!important;
+    }
+    body.playing .app,
+    body.playing #game:not(.hidden),
+    body.playing .rotation-shell,
+    body.playing .rotating-board{
+      height:auto!important;
+      max-height:none!important;
+      overflow:visible!important;
+    }
+    body.playing .app{padding-bottom:max(34px,env(safe-area-inset-bottom))!important}
+    .ability-state{padding:7px 9px}
+    .ability-compact-line{font-size:12px;line-height:1.35;color:var(--muted)}
+    .ability-compact-line strong{color:var(--gold);font-weight:1000}
+    .ability-compact-sep{height:1px;background:var(--border);margin:5px 0}
+
+  

@@ -1,0 +1,789 @@
+    /* V18.1: Kampf darf auf kleinen Displays vertikal scrollen.
+       Lange Fähigkeitstexte können so nie wieder die Controls unter den Viewport sperren. */
+    body.playing{
+      min-height:100dvh;
+      height:auto;
+      overflow-x:hidden;
+      overflow-y:auto;
+      overscroll-behavior-y:contain;
+      -webkit-overflow-scrolling:touch;
+    }
+    body.playing .app{
+      min-height:100dvh;
+      height:auto;
+      padding:7px 8px 28px;
+      overflow:visible;
+    }
+    body.playing #game:not(.hidden){
+      min-height:100dvh;
+      height:auto;
+      display:flex;
+      flex-direction:column;
+      overflow:visible;
+    }
+    body.playing #game > .card:first-child{
+      flex:0 0 auto;
+      margin-bottom:5px;
+    }
+    body.playing .rotation-shell{
+      flex:0 0 auto;
+      min-height:0;
+      margin:0;
+    }
+    body.playing .seat-tag{
+      display:none;
+    }
+    h1{font-size:30px;margin:8px 0 4px}
+    .subtitle{color:var(--muted);font-size:14px;margin-bottom:14px}
+    .card{
+      background:rgba(23,27,36,.97);border:1px solid var(--border);
+      border-radius:18px;padding:14px;box-shadow:var(--shadow);margin-bottom:12px;
+    }
+    .setup-row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+    label{color:var(--muted);font-size:14px}
+    input,select{
+      background:var(--card2);color:var(--text);border:1px solid var(--border);
+      border-radius:12px;padding:11px 12px;font-size:16px;outline:none;
+    }
+    input{width:100%} select{min-width:88px}
+    button{
+      border:0;border-radius:13px;padding:12px 15px;font-size:16px;font-weight:800;
+      cursor:pointer;background:var(--blue);color:#08111f;box-shadow:0 5px 14px rgba(0,0,0,.18);
+    }
+    button.secondary{background:#313949;color:var(--text)}
+    button.good{background:var(--good);color:#07160d}
+    button.gold{background:var(--gold);color:#201500}
+    button.purple{background:var(--purple);color:#160b24}
+    button.blood{background:linear-gradient(145deg,#b62d45,#68111f);color:#fff}
+    button:disabled{opacity:.38;filter:grayscale(.4);cursor:not-allowed}
+    .hidden{display:none!important}
+
+    .setup-player{
+      margin-top:10px;background:#111722;border:1px solid var(--border);
+      border-radius:14px;padding:11px;
+    }
+    .setup-grid{display:grid;grid-template-columns:1.2fr 1fr 1fr 1fr;gap:8px}
+    #setup.local-human-only .setup-grid{grid-template-columns:1.2fr 1fr 1fr}
+    .local-mode-card{margin-bottom:12px;padding:12px;border:1px solid rgba(104,167,255,.24);border-radius:14px;background:linear-gradient(145deg,rgba(104,167,255,.08),rgba(184,140,255,.05))}
+    .local-mode-card label{display:grid;gap:6px;font-weight:900;color:var(--text)}
+    .local-mode-card select{width:100%}
+    .local-mode-info{margin-top:8px;color:var(--muted);font-size:12px;line-height:1.45}
+    .bot-choice{width:100%}
+    .bot-tag{
+      display:inline-flex;align-items:center;gap:4px;
+      margin-top:4px;padding:2px 6px;border-radius:999px;
+      border:1px solid rgba(104,167,255,.28);
+      background:rgba(104,167,255,.08);
+      color:#9fc4ff;font-size:10px;font-weight:900;
+    }
+    body.bot-acting #game .die.selectable{pointer-events:none}
+    body.bot-acting #game .controls button{pointer-events:none}
+    body.bot-acting .special-roll-modal button,
+    body.bot-acting #gamblingModal button,
+    body.bot-acting #secondAbilityModal button{pointer-events:none}
+    .ability-roll,.seat-box{
+      margin-top:8px;padding:9px 10px;border-radius:11px;border:1px solid var(--border);
+      background:#0e131c;font-size:14px;line-height:1.4;
+    }
+    .ability-roll strong,.seat-box strong{color:var(--gold)}
+    .ability-desc{font-size:12px;color:var(--muted);line-height:1.4;margin-top:5px}
+    .ability-choice,.seat-choice,.dice-choice{width:100%;margin-top:8px}
+    .setup-status{font-size:13px;color:var(--muted);margin-top:10px}
+    .setup-status.error{color:var(--bad)}
+
+    .players{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+    .player{
+      background:var(--card2);border:1px solid var(--border);border-radius:14px;
+      padding:10px 12px;position:relative;overflow:visible;
+    }
+    .player.active{outline:2px solid var(--blue)}
+    .player.dead{opacity:.42}
+    .player-name{font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .hp{font-size:14px;color:var(--muted);margin-top:4px}
+    .hp strong{color:var(--text);font-size:18px}
+    .ability-tag{font-size:11px;color:var(--gold);margin-top:4px;line-height:1.2}
+    .seat-tag{font-size:10px;color:var(--muted);margin-top:3px}
+
+    .rotation-shell{
+      position:relative;
+      width:100%;
+      min-height:0;
+      height:auto;
+      margin:4px 0 7px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      overflow:visible;
+      transition:height .32s ease;
+    }
+    .rotating-board{
+      width:100%;
+      transform-origin:center center;
+      transition:transform .45s cubic-bezier(.2,.8,.3,1);
+      will-change:transform;
+    }
+    .turn-card{margin:0;padding:10px 12px}
+    .turnline{font-size:18px;font-weight:800;margin-bottom:2px}
+    .status{color:var(--muted);line-height:1.3;min-height:32px}
+    .ability-state{
+      margin-top:5px;border:1px solid var(--border);background:#111722;
+      border-radius:11px;padding:6px 8px;font-size:12px;line-height:1.3;color:var(--muted);
+    }
+    .ability-state strong{color:var(--gold)}
+
+    .dice{
+      display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin:10px 0 8px;
+    }
+    .die{
+      --dice-accent:#68a7ff;
+      --dice-glow:rgba(104,167,255,.85);
+      aspect-ratio:1/1;min-width:0;border-radius:17px;background:#f5f6f8;color:#111827;
+      display:flex;align-items:center;justify-content:center;font-size:clamp(48px,12vw,76px);
+      line-height:1;font-weight:900;border:3px solid transparent;user-select:none;
+      box-shadow:inset 0 -4px 0 rgba(0,0,0,.13),0 7px 14px rgba(0,0,0,.2);
+      transition:transform .09s ease,border-color .09s ease,opacity .09s ease,box-shadow .09s ease;
+      transform-origin:center;
+      position:relative;
+    }
+    .die:active{transform:scale(.96)}
+    .die.selectable{cursor:pointer}
+
+    /* Player-selectable dice designs + matching selection accent */
+    .die.theme-classic{
+      --dice-accent:#68a7ff;--dice-glow:rgba(104,167,255,.88);
+      background:linear-gradient(145deg,#ffffff,#dfe4eb);color:#111827
+    }
+    .die.theme-obsidian{
+      --dice-accent:#aeb9cb;--dice-glow:rgba(174,185,203,.82);
+      background:linear-gradient(145deg,#303746,#090b10);color:#f7f8fb;border-color:#4b5568
+    }
+    .die.theme-gold{
+      --dice-accent:#ffd45f;--dice-glow:rgba(255,212,95,.88);
+      background:linear-gradient(145deg,#ffe38a,#c58b18);color:#2a1b00;border-color:#f8c84e
+    }
+    .die.theme-blood{
+      --dice-accent:#ff5367;--dice-glow:rgba(255,83,103,.88);
+      background:linear-gradient(145deg,#ff6673,#6f0713);color:#fff3f4;border-color:#d42c3d
+    }
+    .die.theme-arcane{
+      --dice-accent:#b991ff;--dice-glow:rgba(185,145,255,.90);
+      background:linear-gradient(145deg,#b991ff,#35176d);color:#ffffff;border-color:#9f78ff
+    }
+    .die.theme-emerald{
+      --dice-accent:#51e68d;--dice-glow:rgba(81,230,141,.88);
+      background:linear-gradient(145deg,#71f0a3,#075b34);color:#f2fff7;border-color:#42d985
+    }
+    .die.theme-frost{
+      --dice-accent:#8ee9ff;--dice-glow:rgba(142,233,255,.88);
+      background:linear-gradient(145deg,#e8fbff,#68b9d4);color:#083042;border-color:#9deeff
+    }
+    .die.theme-pearl{
+      --dice-accent:#ffd8ef;--dice-glow:rgba(255,216,239,.86);
+      background:linear-gradient(145deg,#fffdf8,#e7cddd);color:#3a2332;border-color:#f5d7e8
+    }
+    .die.theme-neon{
+      --dice-accent:#49fff0;--dice-glow:rgba(73,255,240,.90);
+      background:linear-gradient(145deg,#ff4bd8,#2b1173);color:#ffffff;border-color:#43f4e9
+    }
+    .die.theme-void{
+      --dice-accent:#9a70ff;--dice-glow:rgba(154,112,255,.92);
+      background:linear-gradient(145deg,#171322,#020205);color:#d7c5ff;border-color:#6c49bb
+    }
+    .die.theme-sapphire{
+      --dice-accent:#5ba8ff;--dice-glow:rgba(91,168,255,.90);
+      background:linear-gradient(145deg,#2f80ed,#08234f);color:#eef7ff;border-color:#4f9df3
+    }
+
+
+    /* Würfeldesigns gelten auch für Spezialwürfel (High Stakes, Insurance, Gambling usw.). */
+    :is(.special-big-die,.gambling-die).theme-obsidian{background:linear-gradient(145deg,#303746,#090b10);color:#f7f8fb;border-color:#4b5568}
+    :is(.special-big-die,.gambling-die).theme-gold{background:linear-gradient(145deg,#ffe38a,#c58b18);color:#2a1b00;border-color:#f8c84e}
+    :is(.special-big-die,.gambling-die).theme-blood{background:linear-gradient(145deg,#ff6673,#6f0713);color:#fff3f4;border-color:#d42c3d}
+    :is(.special-big-die,.gambling-die).theme-arcane{background:linear-gradient(145deg,#b991ff,#35176d);color:#fff;border-color:#9f78ff}
+    :is(.special-big-die,.gambling-die).theme-emerald{background:linear-gradient(145deg,#71f0a3,#075b34);color:#f2fff7;border-color:#42d985}
+    :is(.special-big-die,.gambling-die).theme-frost{background:linear-gradient(145deg,#e8fbff,#68b9d4);color:#083042;border-color:#9deeff}
+    :is(.special-big-die,.gambling-die).theme-pearl{background:linear-gradient(145deg,#fffdf8,#e7cddd);color:#3a2332;border-color:#f5d7e8}
+    :is(.special-big-die,.gambling-die).theme-neon{background:linear-gradient(145deg,#ff4bd8,#2b1173);color:#fff;border-color:#43f4e9}
+    :is(.special-big-die,.gambling-die).theme-void{background:linear-gradient(145deg,#171322,#020205);color:#d7c5ff;border-color:#6c49bb}
+    :is(.special-big-die,.gambling-die).theme-sapphire{background:linear-gradient(145deg,#2f80ed,#08234f);color:#eef7ff;border-color:#4f9df3}
+    .die.selected{
+      border-color:#ffffff !important;
+      outline:4px solid var(--dice-accent);
+      outline-offset:2px;
+      transform:translateY(-8px) scale(1.07) !important;
+      box-shadow:
+        0 0 0 4px var(--dice-glow),
+        0 0 26px var(--dice-glow),
+        inset 0 0 0 3px rgba(255,255,255,.72),
+        inset 0 -4px 0 rgba(0,0,0,.15),
+        0 8px 16px rgba(0,0,0,.28) !important;
+      z-index:4;
+    }
+
+    /* Locked dice stay in their theme, but are easier to spot */
+    .die.locked{
+      border-color:#72efa0 !important;
+      outline:2px solid rgba(114,239,160,.58);
+      outline-offset:1px;
+      opacity:.96;
+      box-shadow:
+        inset 0 0 0 2px rgba(114,239,160,.24),
+        inset 0 -4px 0 rgba(0,0,0,.13),
+        0 0 12px rgba(77,209,125,.24),
+        0 7px 14px rgba(0,0,0,.2) !important;
+    }
+    .die.locked::after{
+      content:"✓";
+      position:absolute;
+      top:3px;right:6px;
+      font-size:16px;line-height:1;
+      color:#8affb2;
+      text-shadow:0 1px 4px rgba(0,0,0,.75);
+      font-weight:1000;
+    }
+    .die.attack-hit{
+      border-color:#ffe073 !important;
+      outline-color:rgba(255,224,115,.65);
+      box-shadow:
+        inset 0 0 0 2px rgba(255,224,115,.22),
+        inset 0 -4px 0 rgba(0,0,0,.13),
+        0 0 12px rgba(255,200,87,.24),
+        0 7px 14px rgba(0,0,0,.2) !important;
+    }
+    .die.rolling{animation:diceRoll .42s cubic-bezier(.2,.8,.35,1);will-change:transform;backface-visibility:hidden}
+    @keyframes diceRoll{
+      0%{transform:rotate(0deg) scale(1)}
+      22%{transform:rotate(95deg) scale(.86)}
+      48%{transform:rotate(205deg) scale(1.10)}
+      72%{transform:rotate(305deg) scale(.91)}
+      100%{transform:rotate(360deg) scale(1)}
+    }
+
+    .controls{display:flex;gap:8px;flex-wrap:wrap}
+    .controls button{flex:1;min-width:130px}
+    .campaign-target-box{margin-top:10px;padding:10px;border:1px solid rgba(184,140,255,.28);border-radius:13px;background:rgba(184,140,255,.07)}
+    .campaign-target-title{font-size:11px;font-weight:1000;color:#d7c3ff;text-transform:uppercase;letter-spacing:.08em;margin-bottom:7px}
+    .campaign-target-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}
+    .campaign-target-btn{min-width:0!important;width:100%;padding:10px 9px;background:#242d3c;color:var(--text);border:1px solid #3a465a;box-shadow:none}
+    .campaign-target-btn strong{display:block;font-size:13px}
+    .campaign-target-btn span{display:block;margin-top:2px;color:var(--muted);font-size:10px}
+    @media (max-width:440px){.campaign-target-list{grid-template-columns:1fr}}
+    .sumline{
+      display:flex;justify-content:space-between;gap:8px;align-items:center;
+      border-top:1px solid var(--border);padding-top:7px;margin-top:2px;color:var(--muted)
+    }
+    .sumline strong{color:var(--text);font-size:20px;text-align:right}
+
+    .winner{text-align:center;font-size:26px;font-weight:900;color:var(--gold);padding:10px 0}
+    .matchbar{display:flex;justify-content:space-between;gap:8px;align-items:center;margin-bottom:6px;color:var(--muted);font-size:13px}
+    .matchbar strong{color:var(--text)}
+    .matchbar-actions{display:flex;align-items:center;justify-content:flex-end;gap:7px;min-width:0}
+    .game-menu-btn{min-width:auto;padding:5px 8px;border-radius:9px;background:#2a3240;color:var(--text);font-size:12px;box-shadow:none;border:1px solid var(--border)}
+    .score-badge{display:inline-flex;align-items:center;gap:4px;margin-top:5px;padding:3px 7px;border-radius:999px;background:#10151e;border:1px solid var(--border);font-size:11px;color:var(--text)}
+    .round-prep-player{margin-top:9px;padding:10px;border:1px solid var(--border);background:#111722;border-radius:12px}
+    .round-prep-player strong{color:var(--gold)}
+    .round-prep-player select{width:100%;margin-top:7px}
+    .round-note{color:var(--muted);font-size:13px;line-height:1.4;margin-top:6px}
+    .last-place-note{color:var(--gold);font-weight:800}
+
+
+
+    #game > .card:first-child{padding:9px 11px;margin-bottom:7px}
+    #game > .card:first-child .players{gap:6px}
+    #game > .card:first-child .player{padding:7px 9px}
+    .turn-card .controls{margin-top:7px !important}
+
+
+
+    /* Rundenende / Rundenwechsel als echtes Zwischenmenü */
+    .round-overlay{
+      position:fixed;
+      inset:0;
+      z-index:10010;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding:16px;
+      background:rgba(4,7,12,.88);
+      backdrop-filter:blur(8px);
+    }
+    .round-overlay-panel{
+      width:min(94vw,620px);
+      max-height:92dvh;
+      overflow:hidden;
+      background:linear-gradient(160deg,#202735,#0e131c);
+      border:2px solid #ffc857;
+      border-radius:24px;
+      padding:18px;
+      box-shadow:0 24px 85px rgba(0,0,0,.72),0 0 32px rgba(255,200,87,.14);
+    }
+    .round-overlay-kicker{
+      color:var(--gold);
+      font-size:12px;
+      font-weight:1000;
+      letter-spacing:.14em;
+      text-transform:uppercase;
+      text-align:center;
+    }
+    .round-overlay .winner{
+      font-size:clamp(28px,8vw,44px);
+      padding:5px 0 3px;
+    }
+    .round-overlay .round-note{
+      text-align:center;
+      font-size:14px;
+      line-height:1.45;
+    }
+    .round-scoreboard{
+      display:grid;
+      grid-template-columns:repeat(2,minmax(0,1fr));
+      gap:7px;
+      margin:13px 0 5px;
+    }
+    .round-stats-title{
+      margin-top:12px;
+      font-size:12px;
+      font-weight:1000;
+      letter-spacing:.12em;
+      text-transform:uppercase;
+      color:#9eb0c7;
+      text-align:center;
+    }
+    .round-stats-grid{
+      display:grid;
+      grid-template-columns:repeat(3,minmax(0,1fr));
+      gap:7px;
+      margin-top:7px;
+    }
+    .round-stat{
+      background:#0d131c;
+      border:1px solid var(--border);
+      border-radius:12px;
+      padding:8px 9px;
+      min-width:0;
+    }
+    .round-stat-label{
+      color:var(--muted);
+      font-size:11px;
+      font-weight:800;
+      margin-bottom:2px;
+    }
+    .round-stat-value{
+      font-size:14px;
+      font-weight:1000;
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+    }
+    @media (max-width:560px){.round-stats-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+    .round-score-row{
+      background:#111722;
+      border:1px solid var(--border);
+      border-radius:12px;
+      padding:8px 9px;
+      min-width:0;
+    }
+    .round-score-row.winner-row{
+      border-color:#e5b84d;
+      box-shadow:0 0 14px rgba(255,200,87,.12);
+    }
+    .round-score-row.last-row{
+      border-color:#8d5360;
+    }
+    .round-score-name{
+      font-weight:900;
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+    }
+    .round-score-meta{
+      color:var(--muted);
+      font-size:12px;
+      margin-top:2px;
+    }
+    .round-overlay .controls{
+      margin-top:14px!important;
+    }
+    .round-prep-panel{
+      display:flex;
+      flex-direction:column;
+    }
+    #nextRoundAbilities{
+      overflow-y:auto;
+      overscroll-behavior:contain;
+      max-height:58dvh;
+      padding-right:2px;
+    }
+    #nextRoundInfo{
+      flex:0 0 auto;
+      margin-bottom:3px;
+    }
+    #startNextRoundBtn{
+      flex:0 0 auto;
+    }
+    @media (max-height:700px){
+      .round-overlay-panel{padding:13px}
+      #nextRoundAbilities{max-height:50dvh}
+      .round-scoreboard{margin:8px 0 3px}
+    }
+
+    /* High Stakes + Perfect 25 */
+    .special-roll-modal{
+      position:fixed;inset:0;z-index:10055;
+      display:flex;align-items:center;justify-content:center;
+      padding:18px;background:rgba(3,6,12,.86);backdrop-filter:blur(6px);
+    }
+    .special-roll-panel{
+      width:min(92vw,530px);text-align:center;
+      background:linear-gradient(160deg,#1c2330,#0d1118);
+      border:2px solid #ffc857;border-radius:24px;padding:20px 18px 18px;
+      box-shadow:0 24px 80px rgba(0,0,0,.7),0 0 34px rgba(255,200,87,.15);
+    }
+    .special-roll-kicker{color:#ffc857;font-size:13px;font-weight:1000;letter-spacing:.13em;text-transform:uppercase}
+    .special-roll-title{font-size:clamp(25px,8vw,40px);font-weight:1000;margin:5px 0}
+    .special-roll-sub{color:var(--muted);font-size:13px;line-height:1.4;margin-bottom:13px}
+    .special-big-die{
+      width:min(43vw,175px);aspect-ratio:1/1;margin:0 auto 10px;padding:0;
+      display:flex;align-items:center;justify-content:center;border-radius:25px;
+      font-size:clamp(82px,26vw,140px);line-height:1;
+      background:linear-gradient(145deg,#fff,#dfe4eb);color:#111827;
+      border:5px solid #ffc857;
+      box-shadow:inset 0 -7px 0 rgba(0,0,0,.14),0 0 28px rgba(255,200,87,.30),0 15px 30px rgba(0,0,0,.35);
+    }
+    .special-big-die.rolling{animation:gamblingRoll .55s cubic-bezier(.2,.8,.35,1) infinite}
+    .special-big-die.d4{
+      border-radius:18px;
+      clip-path:polygon(50% 3%,97% 88%,3% 88%);
+      padding-top:26px;
+      font-size:clamp(70px,22vw,120px);
+    }
+    .special-result{min-height:24px;color:#ffc857;font-weight:900;font-size:16px;margin-bottom:8px}
+    .special-actions{display:flex;gap:8px;flex-wrap:wrap}
+    .special-actions button{flex:1;min-width:140px}
+
+
+    /* Insurance + Counterattack */
+
+    /* 12-HP secondary ability draft */
+
+    .utility-overlay{
+      position:fixed;
+      inset:0;
+      z-index:900;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding:18px;
+      background:rgba(5,8,13,.82);
+      backdrop-filter:blur(8px);
+    }
+    .utility-panel{
+      width:min(92vw,520px);
+      border-radius:22px;
+      border:1px solid rgba(255,255,255,.13);
+      background:linear-gradient(160deg,#202838,#101620 72%);
+      box-shadow:0 28px 90px rgba(0,0,0,.55);
+      padding:20px;
+    }
+    .utility-kicker{
+      color:var(--gold);
+      font-size:11px;
+      font-weight:1000;
+      letter-spacing:.14em;
+      text-transform:uppercase;
+      margin-bottom:7px;
+    }
+    .utility-title{
+      font-size:25px;
+      font-weight:1000;
+      line-height:1.05;
+      margin-bottom:9px;
+    }
+    .utility-text{
+      color:#c2cad7;
+      font-size:14px;
+      line-height:1.55;
+    }
+    .utility-text strong{color:#fff}
+    .utility-actions{
+      display:flex;
+      gap:8px;
+      margin-top:17px;
+    }
+    .utility-actions button{flex:1}
+    .tutorial-progress{
+      margin-top:12px;
+      color:#768398;
+      font-size:11px;
+      font-weight:800;
+    }
+    #secondAbilityModal{
+      position:fixed;inset:0;z-index:10040;
+      display:flex;align-items:center;justify-content:center;
+      padding:18px;
+      background:rgba(3,6,12,.82);
+      backdrop-filter:blur(5px);
+    }
+    .second-ability-panel{
+      width:min(92vw,560px);
+      background:linear-gradient(160deg,#1f2633,#0f131b);
+      border:2px solid #68a7ff;
+      border-radius:22px;
+      padding:18px;
+      box-shadow:0 20px 70px rgba(0,0,0,.65),0 0 32px rgba(104,167,255,.18);
+      text-align:center;
+    }
+    .second-ability-kicker{
+      color:#68a7ff;font-size:13px;font-weight:900;letter-spacing:.12em;text-transform:uppercase
+    }
+    .second-ability-title{
+      font-size:clamp(24px,7vw,38px);font-weight:1000;margin:5px 0 6px
+    }
+    .second-ability-sub{
+      color:var(--muted);font-size:13px;line-height:1.4;margin-bottom:12px
+    }
+    .second-ability-options{
+      display:grid;grid-template-columns:1fr 1fr;gap:10px
+    }
+    .second-ability-card{
+      background:#171d28;color:var(--text);
+      border:2px solid #344052;border-radius:16px;
+      padding:13px 11px;min-height:140px;
+      display:flex;flex-direction:column;justify-content:center;align-items:center;
+      box-shadow:none;
+    }
+    .second-ability-card:active{transform:scale(.98)}
+    .second-ability-card .num{
+      width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;
+      background:#273247;color:#9fc4ff;font-weight:1000;margin-bottom:6px
+    }
+    .second-ability-card .name{font-size:17px;font-weight:1000;margin-bottom:5px}
+    .second-ability-card .desc{font-size:11px;line-height:1.35;color:var(--muted);font-weight:600}
+    .second-ability-card.luck{
+      border-color:#b991ff;
+      box-shadow:0 0 22px rgba(185,145,255,.15)
+    }
+    .second-ability-card.luck .num{background:#3f246f;color:#e2d2ff}
+    .ability-tag.second,.ability-tag.third{
+      color:#9fc4ff;
+      margin-top:2px;
+    }
+    .live-stats{
+      display:flex;
+      flex-wrap:wrap;
+      gap:3px 7px;
+      margin-top:4px;
+      padding-top:4px;
+      border-top:1px solid rgba(255,255,255,.07);
+      color:#9aa8ba;
+      font-size:10px;
+      font-weight:800;
+      line-height:1.15;
+    }
+    .live-stats span{
+      white-space:nowrap;
+    }
+    @media (max-width:430px){
+      .second-ability-options{grid-template-columns:1fr}
+      .second-ability-card{min-height:108px}
+      .setup-grid{grid-template-columns:1fr 1fr}
+    }
+
+
+    /* Gambling Man */
+    #gamblingModal{
+      position:fixed;inset:0;z-index:10050;
+      display:flex;align-items:center;justify-content:center;
+      padding:18px;
+      background:rgba(3,6,12,.84);
+      backdrop-filter:blur(6px);
+    }
+    .gambling-panel{
+      width:min(92vw,520px);
+      text-align:center;
+      background:linear-gradient(160deg,#1b2230,#0d1118);
+      border:2px solid #ffc857;
+      border-radius:24px;
+      padding:20px 18px 18px;
+      box-shadow:0 24px 80px rgba(0,0,0,.7),0 0 34px rgba(255,200,87,.15);
+    }
+    .gambling-kicker{
+      color:#ffc857;font-size:13px;font-weight:1000;letter-spacing:.13em;text-transform:uppercase
+    }
+    .gambling-title{font-size:clamp(26px,8vw,42px);font-weight:1000;margin:5px 0}
+    .gambling-sub{color:var(--muted);font-size:13px;line-height:1.4;margin-bottom:14px}
+    .gambling-die{
+      --dice-accent:#ffc857;
+      width:min(46vw,190px);
+      aspect-ratio:1/1;
+      margin:0 auto 10px;
+      padding:0;
+      display:flex;align-items:center;justify-content:center;
+      border-radius:27px;
+      font-size:clamp(90px,28vw,150px);
+      line-height:1;
+      background:linear-gradient(145deg,#fff,#dfe4eb);
+      color:#111827;
+      border:5px solid #ffc857;
+      box-shadow:inset 0 -7px 0 rgba(0,0,0,.14),0 0 30px rgba(255,200,87,.32),0 15px 30px rgba(0,0,0,.35);
+      cursor:pointer;
+      user-select:none;
+    }
+    .gambling-die.rolling{
+      animation:gamblingRoll .55s cubic-bezier(.2,.8,.35,1) infinite;
+    }
+    @keyframes gamblingRoll{
+      0%{transform:rotate(0deg) scale(1)}
+      25%{transform:rotate(100deg) scale(.88)}
+      55%{transform:rotate(230deg) scale(1.08)}
+      80%{transform:rotate(315deg) scale(.93)}
+      100%{transform:rotate(360deg) scale(1)}
+    }
+    .gambling-result{
+      min-height:24px;color:#ffc857;font-weight:900;font-size:16px
+    }
+
+    /* Damage FX */
+    #damageTint{
+      position:fixed;inset:0;pointer-events:none;z-index:9998;
+      background:rgba(255,25,48,0);
+    }
+    #damageTint.active{animation:damageFlash .58s ease-out}
+    @keyframes damageFlash{
+      0%{background:rgba(255,25,48,0)}
+      18%{background:rgba(255,25,48,.28)}
+      45%{background:rgba(255,25,48,.10)}
+      100%{background:rgba(255,25,48,0)}
+    }
+    #damageFx{
+      position:fixed;left:50%;top:42%;z-index:9999;pointer-events:none;
+      transform:translate(-50%,-50%) scale(.7);
+      opacity:0;font-size:clamp(42px,13vw,78px);font-weight:1000;
+      color:#ff4d61;text-shadow:0 5px 20px rgba(0,0,0,.65);
+      white-space:nowrap;
+    }
+    #damageFx.active{animation:damageFloat .85s cubic-bezier(.2,.8,.3,1)}
+    @keyframes damageFloat{
+      0%{opacity:0;transform:translate(-50%,-20%) scale(.65)}
+      18%{opacity:1;transform:translate(-50%,-50%) scale(1.18)}
+      55%{opacity:1;transform:translate(-50%,-75%) scale(1)}
+      100%{opacity:0;transform:translate(-50%,-120%) scale(.92)}
+    }
+    .damage-shake{animation:targetShake .55s ease}
+    @keyframes targetShake{
+      0%,100%{transform:translateX(0)}
+      12%{transform:translateX(-8px) rotate(-1deg)}
+      25%{transform:translateX(8px) rotate(1deg)}
+      38%{transform:translateX(-6px)}
+      52%{transform:translateX(6px)}
+      70%{transform:translateX(-3px)}
+      86%{transform:translateX(3px)}
+    }
+    .damage-pop{
+      position:absolute;left:50%;top:-10px;z-index:30;
+      transform:translateX(-50%);
+      font-size:24px;font-weight:1000;color:#ff5f6d;
+      text-shadow:0 3px 10px rgba(0,0,0,.8);
+      animation:localDamage .9s ease-out forwards;
+      pointer-events:none;white-space:nowrap;
+    }
+    @keyframes localDamage{
+      0%{opacity:0;transform:translate(-50%,8px) scale(.7)}
+      18%{opacity:1;transform:translate(-50%,-4px) scale(1.15)}
+      100%{opacity:0;transform:translate(-50%,-48px) scale(.9)}
+    }
+
+    /* Heal / Lifesteal FX */
+    #healTint{
+      position:fixed;inset:0;pointer-events:none;z-index:9996;
+      background:rgba(60,255,135,0);
+    }
+    #healTint.active{animation:healFlash .72s ease-out}
+    @keyframes healFlash{
+      0%{background:rgba(60,255,135,0)}
+      20%{background:rgba(60,255,135,.22)}
+      50%{background:rgba(60,255,135,.08)}
+      100%{background:rgba(60,255,135,0)}
+    }
+    #healFx{
+      position:fixed;left:50%;top:42%;z-index:9997;pointer-events:none;
+      transform:translate(-50%,-50%) scale(.7);opacity:0;
+      font-size:clamp(42px,13vw,78px);font-weight:1000;color:#57ef8b;
+      text-shadow:0 5px 20px rgba(0,0,0,.65);white-space:nowrap;
+    }
+    #healFx.active{animation:healFloat .95s cubic-bezier(.2,.8,.3,1)}
+    @keyframes healFloat{
+      0%{opacity:0;transform:translate(-50%,-10%) scale(.65)}
+      18%{opacity:1;transform:translate(-50%,-50%) scale(1.18)}
+      58%{opacity:1;transform:translate(-50%,-78%) scale(1)}
+      100%{opacity:0;transform:translate(-50%,-128%) scale(.92)}
+    }
+    .heal-pulse{animation:healPulse .8s ease}
+    @keyframes healPulse{
+      0%,100%{box-shadow:0 0 0 rgba(77,209,125,0)}
+      35%{box-shadow:0 0 0 4px rgba(77,209,125,.45),0 0 28px rgba(77,209,125,.45)}
+    }
+    .heal-pop{
+      position:absolute;left:50%;top:-10px;z-index:30;transform:translateX(-50%);
+      font-size:24px;font-weight:1000;color:#57ef8b;text-shadow:0 3px 10px rgba(0,0,0,.8);
+      animation:localHeal 1s ease-out forwards;pointer-events:none;white-space:nowrap;
+    }
+    @keyframes localHeal{
+      0%{opacity:0;transform:translate(-50%,8px) scale(.7)}
+      18%{opacity:1;transform:translate(-50%,-4px) scale(1.15)}
+      100%{opacity:0;transform:translate(-50%,-52px) scale(.9)}
+    }
+
+
+    /* Elimination / round-win popups */
+    #eventPopup{
+      position:fixed;inset:0;z-index:10020;pointer-events:none;
+      display:flex;align-items:center;justify-content:center;
+      opacity:0;
+    }
+    #eventPopup .event-panel{
+      min-width:min(88vw,520px);max-width:90vw;
+      padding:24px 28px;border-radius:22px;text-align:center;
+      font-size:clamp(30px,9vw,58px);font-weight:1000;line-height:1.05;
+      color:white;text-shadow:0 4px 18px rgba(0,0,0,.7);
+      box-shadow:0 18px 55px rgba(0,0,0,.55);
+      transform:scale(.62);
+    }
+    #eventPopup.death{background:rgba(60,0,8,.28)}
+    #eventPopup.death .event-panel{
+      background:linear-gradient(145deg,#d91931,#5d020d);
+      border:2px solid #ff6a79;
+    }
+    #eventPopup.win{background:rgba(85,58,0,.24)}
+    #eventPopup.win .event-panel{
+      background:linear-gradient(145deg,#ffd86a,#9d6500);
+      border:2px solid #ffe8a4;color:#fff9e5;
+    }
+    #eventPopup.survive{background:rgba(0,49,85,.25)}
+    #eventPopup.survive .event-panel{
+      background:linear-gradient(145deg,#3a9eff,#123b78);
+      border:2px solid #91caff;color:#f3f9ff;
+    }
+    #eventPopup.active{animation:eventBackdrop 1.05s ease both}
+    #eventPopup.active .event-panel{animation:eventPanel 1.05s cubic-bezier(.2,.85,.3,1) both}
+    @keyframes eventBackdrop{
+      0%{opacity:0} 14%{opacity:1} 76%{opacity:1} 100%{opacity:0}
+    }
+    @keyframes eventPanel{
+      0%{transform:scale(.62) rotate(-3deg)}
+      18%{transform:scale(1.12) rotate(1deg)}
+      34%{transform:scale(.98)}
+      76%{transform:scale(1)}
+      100%{transform:scale(.82)}
+    }
+
+    @media (max-width:520px){
+      .players{grid-template-columns:1fr 1fr}
+      .setup-grid{grid-template-columns:1fr 1fr}
+      .die{font-size:clamp(46px,13vw,62px);border-radius:14px}
+      .dice{gap:5px}
+      button{font-size:15px}
+      .rotation-shell{min-height:0}
+    }
+
+

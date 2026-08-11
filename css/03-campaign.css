@@ -1,0 +1,97 @@
+    /* V17 – Solo-Kampagne */
+    .menu-actions button.menu-campaign{grid-column:1/-1;justify-content:center;text-align:center;background:linear-gradient(135deg,#b88cff,#ff6f91);color:#170c19;border:0;font-weight:1000}
+    .menu-actions button.menu-duo-campaign{grid-column:1/-1;justify-content:center;text-align:center;background:linear-gradient(135deg,#68a7ff,#b88cff);color:#0b1020;border:0;font-weight:1000}
+    .campaign-world-tabs{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin:0 0 8px}
+    .duo-world-tabs{grid-template-columns:repeat(2,minmax(0,1fr))}
+    .campaign-world-btn{min-height:52px;padding:9px 10px;border-radius:14px;border:1px solid var(--border);background:#121925;color:var(--text);text-align:left}
+    .campaign-world-btn.active{border-color:rgba(104,167,255,.72);box-shadow:0 0 0 2px rgba(104,167,255,.12);background:linear-gradient(145deg,rgba(104,167,255,.10),#121925)}
+    .campaign-world-btn.done{border-color:rgba(77,209,125,.42)}
+    .campaign-world-btn:disabled{opacity:.42;filter:saturate(.45)}
+    .campaign-world-name{display:block;font-size:13px;font-weight:1000}
+    .campaign-world-state{display:block;margin-top:3px;color:var(--muted);font-size:9px;font-weight:900;text-transform:uppercase;letter-spacing:.05em}
+    .campaign-world-desc{margin:0 0 12px;padding:9px 10px;border-radius:12px;background:#101620;border:1px solid rgba(255,255,255,.06);color:var(--muted);font-size:11px;line-height:1.45}
+    .campaign-top{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px;margin-bottom:12px}
+    .campaign-top .menu-info-card{min-width:0}
+    .campaign-label{color:var(--muted);font-size:10px;font-weight:1000;text-transform:uppercase;letter-spacing:.08em;margin-bottom:5px}
+    .campaign-value{font-size:15px;font-weight:1000;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+    .campaign-controls{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-bottom:12px}
+    .campaign-controls label{display:grid;gap:5px;color:var(--muted);font-size:10px;font-weight:900;text-transform:uppercase;letter-spacing:.05em}
+    .campaign-controls select{width:100%;min-width:0}
+    .campaign-start-row{display:grid;grid-template-columns:1fr auto;gap:8px;margin-bottom:14px}
+    .campaign-start-row button{min-height:48px}
+    .campaign-start-row .secondary{min-width:auto}
+    .campaign-path{display:grid;gap:9px}
+    .campaign-encounter{position:relative;width:100%;display:block;text-align:left;padding:13px 13px 12px;border-radius:16px;border:1px solid var(--border);background:#101620;color:var(--text);box-shadow:none;overflow:hidden}
+    .campaign-encounter.current{border-color:rgba(184,140,255,.68);box-shadow:0 0 0 2px rgba(184,140,255,.12)}
+    .campaign-encounter.done{border-color:rgba(77,209,125,.35);background:linear-gradient(145deg,rgba(77,209,125,.07),#101620 55%)}
+    .campaign-encounter.locked{filter:saturate(.55)}
+    .campaign-encounter:disabled{opacity:.52}
+    .campaign-encounter-head{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}
+    .campaign-encounter-title{font-size:16px;font-weight:1000}
+    .campaign-state{flex:0 0 auto;font-size:10px;font-weight:1000;padding:4px 7px;border-radius:999px;background:#202a38;color:#b8c3d5}
+    .campaign-encounter.done .campaign-state{background:rgba(77,209,125,.12);color:#8ce7ad}
+    .campaign-encounter.current .campaign-state{background:rgba(184,140,255,.14);color:#d7c3ff}
+    .campaign-desc{color:var(--muted);font-size:12px;line-height:1.45;margin-top:5px}
+    .campaign-challenge{margin-top:8px;padding:8px 9px;border-radius:11px;background:#161e2a;border:1px solid rgba(255,200,87,.16);font-size:11px;line-height:1.4}
+    .campaign-reward{margin-top:6px;color:#92e9b0;font-size:11px;font-weight:900}
+    .campaign-unlocks{margin-top:13px;padding-top:12px;border-top:1px solid rgba(255,255,255,.07)}
+    .campaign-unlock-grid{display:flex;flex-wrap:wrap;gap:5px;margin-top:7px}
+    .campaign-ability-chip{font-size:10px;font-weight:900;padding:4px 7px;border-radius:999px;border:1px solid #334055;background:#18212e;color:#c9d4e4}
+    .campaign-ability-chip.locked{opacity:.34}
+    .campaign-complete{margin:0 0 12px;padding:11px 12px;border-radius:14px;border:1px solid rgba(255,200,87,.32);background:linear-gradient(135deg,rgba(255,200,87,.10),rgba(184,140,255,.08));font-size:12px;line-height:1.45}
+    @media (max-width:540px){.campaign-world-tabs,.duo-world-tabs{grid-template-columns:1fr}.campaign-top,.campaign-controls{grid-template-columns:1fr}.campaign-start-row{grid-template-columns:1fr}.campaign-start-row .secondary{width:100%}}
+  
+    /* V18.3 mobile safety: the match may always scroll vertically.
+       Fixed dialogs scroll themselves instead of trapping content outside the viewport. */
+    body.playing{
+      touch-action:pan-y;
+      overflow-y:auto!important;
+      height:auto!important;
+      min-height:100dvh!important;
+    }
+    body.playing .app,
+    body.playing #game:not(.hidden){
+      height:auto!important;
+      min-height:100dvh!important;
+      overflow:visible!important;
+    }
+    body.playing .app{
+      /* Der Menü-Button bleibt im Matchbar-Layout statt über Spielerkarten zu schweben. */
+      padding-top:7px!important;
+    }
+    body.playing .dice{
+      align-items:center;
+      grid-auto-rows:1fr;
+      contain:layout style;
+    }
+    body.playing .die{
+      width:100%;
+      transform-box:border-box;
+    }
+    body.playing .game-menu-btn{
+      position:static;
+      flex:0 0 auto;
+      z-index:auto;
+      white-space:nowrap;
+    }
+    .round-overlay,
+    .utility-overlay,
+    #secondAbilityModal,
+    #gamblingModal,
+    .special-roll-modal{
+      overflow-y:auto!important;
+      -webkit-overflow-scrolling:touch;
+      overscroll-behavior-y:contain;
+      align-items:flex-start!important;
+    }
+    .round-overlay-panel,
+    .utility-panel,
+    .second-ability-panel,
+    .gambling-panel,
+    .special-roll-panel{
+      max-height:none!important;
+      overflow:visible!important;
+      margin-top:auto;
+      margin-bottom:auto;
+    }
+
