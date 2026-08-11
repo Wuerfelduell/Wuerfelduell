@@ -61,7 +61,7 @@
   duoCampaignStartBtn.onclick=startDuoCampaignEncounter;
   duoCampaignProfilesBtn.onclick=()=>{profileScreenOrigin="duo";renderProfiles();openFrontScreen(profilesScreen);};
   campaignProfileSelect.onchange=()=>{campaignProfileId=campaignProfileSelect.value||null;campaignEncounterId=null;gameContext.profileId=campaignProfileId;gameContext.encounterId=null;renderCampaign();};
-  campaignAbilitySelect.onchange=()=>{};
+  campaignAbilitySelect.onchange=()=>renderCampaign();
   campaignStartBtn.onclick=startCampaignEncounter;
   campaignProfilesBtn.onclick=()=>{profileScreenOrigin="campaign";renderProfiles();openFrontScreen(profilesScreen);};
   $("menuProfilesBtn").onclick=()=>{profileScreenOrigin="menu";renderProfiles();openFrontScreen(profilesScreen);};
