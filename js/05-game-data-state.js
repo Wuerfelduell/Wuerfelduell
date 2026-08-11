@@ -69,9 +69,10 @@
   };
 
   const $ = id => document.getElementById(id);
-  const mainMenu=$("mainMenu"), campaignScreen=$("campaignScreen"), duoCampaignScreen=$("duoCampaignScreen"), setup=$("setup"), game=$("game"), nameInputs=$("nameInputs");
+  const mainMenu=$("mainMenu"), campaignScreen=$("campaignScreen"), duoCampaignScreen=$("duoCampaignScreen"), trioCampaignScreen=$("trioCampaignScreen"), setup=$("setup"), game=$("game"), nameInputs=$("nameInputs");
   const tutorialModal=$("tutorialModal"), tutorialTitle=$("tutorialTitle"), tutorialText=$("tutorialText"), tutorialProgress=$("tutorialProgress"), tutorialContinueBtn=$("tutorialContinueBtn");
   const quitModal=$("quitModal"), quitCancelBtn=$("quitCancelBtn"), quitConfirmBtn=$("quitConfirmBtn"), gameMenuBtn=$("gameMenuBtn");
+  const campaignModePicker=$("campaignModePicker"), campaignModePickerClose=$("campaignModePickerClose"), campaignModeSoloBtn=$("campaignModeSoloBtn"), campaignModeDuoBtn=$("campaignModeDuoBtn"), campaignModeTrioBtn=$("campaignModeTrioBtn");
   const profilesScreen=$("profilesScreen"), prestigeShopScreen=$("prestigeShopScreen"), achievementsScreen=$("achievementsScreen"), statsScreen=$("statsScreen"), settingsScreen=$("settingsScreen"), rulesScreen=$("rulesScreen"), changelogScreen=$("changelogScreen"), abilitiesScreen=$("abilitiesScreen");
   const prestigeShopBackBtn=$("prestigeShopBackBtn"), prestigeShopProfileSelect=$("prestigeShopProfileSelect"), prestigeShopTrophies=$("prestigeShopTrophies"), prestigeEquipped=$("prestigeEquipped"), prestigeShopList=$("prestigeShopList");
   const animationSetting=$("animationSetting"), botSpeedSetting=$("botSpeedSetting"), resetStorageBtn=$("resetStorageBtn");
@@ -110,6 +111,8 @@
   const campaignWorldTabs=$("campaignWorldTabs"), campaignWorldDesc=$("campaignWorldDesc");
   const duoCampaignBackBtn=$("duoCampaignBackBtn"), duoCampaignBanner=$("duoCampaignBanner"), duoCampaignWorldTabs=$("duoCampaignWorldTabs"), duoCampaignWorldDesc=$("duoCampaignWorldDesc"), duoTeamSummary=$("duoTeamSummary"), duoProgressSummary=$("duoProgressSummary"), duoUnlockSummary=$("duoUnlockSummary");
   const duoProfile1Select=$("duoProfile1Select"), duoProfile2Select=$("duoProfile2Select"), duoAbility1Select=$("duoAbility1Select"), duoAbility2Select=$("duoAbility2Select"), duoCampaignStartBtn=$("duoCampaignStartBtn"), duoCampaignProfilesBtn=$("duoCampaignProfilesBtn"), duoCampaignPath=$("duoCampaignPath"), duoCampaignEncounterDetail=$("duoCampaignEncounterDetail");
+  const trioCampaignBackBtn=$("trioCampaignBackBtn"), trioCampaignBanner=$("trioCampaignBanner"), trioTeamSummary=$("trioTeamSummary"), trioProgressSummary=$("trioProgressSummary"), trioTrophySummary=$("trioTrophySummary"), trioCampaignPath=$("trioCampaignPath"), trioCampaignEncounterDetail=$("trioCampaignEncounterDetail");
+  const trioProfile1Select=$("trioProfile1Select"), trioProfile2Select=$("trioProfile2Select"), trioProfile3Select=$("trioProfile3Select"), trioAbility1Select=$("trioAbility1Select"), trioAbility2Select=$("trioAbility2Select"), trioAbility3Select=$("trioAbility3Select"), trioCampaignStartBtn=$("trioCampaignStartBtn"), trioCampaignProfilesBtn=$("trioCampaignProfilesBtn");
   const encounterRuleBanner=$("encounterRuleBanner"), campaignTaskProgress=$("campaignTaskProgress");
 
   let players=[], setupAbilityRolls=[], current=0, dice=[], phase="idle", isAnimating=false;
@@ -137,6 +140,7 @@
   let tutorialMode=false, tutorialOpen=false, tutorialSeen=new Set(), tutorialQueue=[], tutorialStepCount=0;
   let achievementToastQueue=[], achievementToastBusy=false;
   let profileScreenOrigin="menu";
-  let campaignMode=false, duoCampaignMode=false, campaignEncounterId=null, campaignProfileId=null, campaignWorldId="house";
+  let campaignMode=false, duoCampaignMode=false, trioCampaignMode=false, campaignEncounterId=null, campaignProfileId=null, campaignWorldId="house";
   let encounterRuntime={ruleIds:[],phaseRuleIds:[],phaseTriggered:false,firstStrikeUsed:new Set(),armorUsed:new Set(),turnStarts:{}};
   let duoCampaignEncounterId=null, duoProfile1Id=null, duoProfile2Id=null, duoWorldId="covenant";
+  let trioCampaignEncounterId=null, trioProfile1Id=null, trioProfile2Id=null, trioProfile3Id=null;

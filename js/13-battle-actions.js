@@ -121,7 +121,7 @@
 
   function randomSecondAbilityChoices(index){
     const owned=new Set(playerAbilities(index));
-    const allowed=(duoCampaignMode && players[index]?.campaignTeam==="hero")
+    const allowed=((duoCampaignMode||trioCampaignMode) && players[index]?.campaignTeam==="hero")
       ? REAL_ABILITY_IDS
       : (campaignMode && players[index]?.campaignTeam==="hero")
         ? campaignUnlockedSecondAbilities(getProfile(players[index]?.profileId)||getProfile(campaignProfileId))
@@ -140,7 +140,7 @@
     if(!p) return null;
     if(campaignMode){
       let threshold=SECOND_ABILITY_HP;
-      if(p.campaignTeam==="hero") threshold=duoCampaignMode?duoCampaignHpBonusThreshold(currentEncounterObject()):soloCampaignHpBonusThreshold(currentEncounterObject());
+      if(p.campaignTeam==="hero") threshold=trioCampaignMode?trioCampaignHpBonusThreshold(currentEncounterObject()):(duoCampaignMode?duoCampaignHpBonusThreshold(currentEncounterObject()):soloCampaignHpBonusThreshold(currentEncounterObject()));
       return {threshold,slot:2,label:"2. Fähigkeit"};
     }
     if(localModeId==="classic") return {threshold:SECOND_ABILITY_HP,slot:2,label:"2. Fähigkeit"};

@@ -8,7 +8,7 @@
   }
 
   function hideFrontScreens(){
-    [mainMenu,campaignScreen,duoCampaignScreen,setup,profilesScreen,prestigeShopScreen,achievementsScreen,statsScreen,settingsScreen,rulesScreen,changelogScreen,abilitiesScreen].forEach(el=>el?.classList.add("hidden"));
+    [mainMenu,campaignScreen,duoCampaignScreen,trioCampaignScreen,setup,profilesScreen,prestigeShopScreen,achievementsScreen,statsScreen,settingsScreen,rulesScreen,changelogScreen,abilitiesScreen].forEach(el=>el?.classList.add("hidden"));
   }
 
   function openMainMenu(){
@@ -16,17 +16,20 @@
     tutorialMode=false;
     campaignMode=false;
     duoCampaignMode=false;
+    trioCampaignMode=false;
     campaignEncounterId=null;
     campaignProfileId=null;
     campaignMetrics=freshCampaignMetrics();
     gameContext={mode:"menu",returnScreen:"menu",profileId:null,encounterId:null};
     resetTutorialUi();
     quitModal.classList.add("hidden");
+    campaignModePicker?.classList.add("hidden");
     nextRoundPrepBtn.classList.remove("hidden");
     restartBtn.textContent="Neue Partie";
     rotatingBoard.style.transform="rotate(0deg) scale(1)";
     document.body.classList.remove("playing","bot-acting");
     game.classList.add("hidden");
+    game.classList.remove("campaign-game","trio-game");
     winnerBox.classList.add("hidden");
     nextRoundBox.classList.add("hidden");
     hideFrontScreens();
@@ -42,8 +45,12 @@
     window.scrollTo?.(0,0);
   }
 
-  $("menuCampaignBtn").onclick=()=>{openCampaignScreen();};
-  $("menuDuoCampaignBtn").onclick=()=>{openDuoCampaignScreen();};
+  $("menuCampaignBtn").onclick=()=>{campaignModePicker.classList.remove("hidden");};
+  campaignModePickerClose.onclick=()=>campaignModePicker.classList.add("hidden");
+  campaignModePicker.onclick=e=>{if(e.target===campaignModePicker)campaignModePicker.classList.add("hidden");};
+  campaignModeSoloBtn.onclick=()=>{campaignModePicker.classList.add("hidden");openCampaignScreen();};
+  campaignModeDuoBtn.onclick=()=>{campaignModePicker.classList.add("hidden");openDuoCampaignScreen();};
+  campaignModeTrioBtn.onclick=()=>{campaignModePicker.classList.add("hidden");openTrioCampaignScreen();};
   $("menuPlayBtn").onclick=()=>{
     tutorialMode=false;
     resetTutorialUi();
@@ -55,11 +62,18 @@
   $("menuTutorialBtn").onclick=startTutorial;
   campaignBackBtn.onclick=openMainMenu;
   duoCampaignBackBtn.onclick=openMainMenu;
+  trioCampaignBackBtn.onclick=openMainMenu;
   duoProfile1Select.onchange=()=>{duoProfile1Id=duoProfile1Select.value||null;duoCampaignEncounterId=null;renderDuoCampaign();};
   duoProfile2Select.onchange=()=>{duoProfile2Id=duoProfile2Select.value||null;duoCampaignEncounterId=null;renderDuoCampaign();};
   duoAbility1Select.onchange=()=>{};duoAbility2Select.onchange=()=>{};
   duoCampaignStartBtn.onclick=startDuoCampaignEncounter;
   duoCampaignProfilesBtn.onclick=()=>{profileScreenOrigin="duo";renderProfiles();openFrontScreen(profilesScreen);};
+  trioProfile1Select.onchange=()=>{trioProfile1Id=trioProfile1Select.value||null;trioCampaignEncounterId=null;renderTrioCampaign();};
+  trioProfile2Select.onchange=()=>{trioProfile2Id=trioProfile2Select.value||null;trioCampaignEncounterId=null;renderTrioCampaign();};
+  trioProfile3Select.onchange=()=>{trioProfile3Id=trioProfile3Select.value||null;trioCampaignEncounterId=null;renderTrioCampaign();};
+  trioAbility1Select.onchange=renderTrioCampaign;trioAbility2Select.onchange=renderTrioCampaign;trioAbility3Select.onchange=renderTrioCampaign;
+  trioCampaignStartBtn.onclick=startTrioCampaignEncounter;
+  trioCampaignProfilesBtn.onclick=()=>{profileScreenOrigin="trio";renderProfiles();openFrontScreen(profilesScreen);};
   campaignProfileSelect.onchange=()=>{campaignProfileId=campaignProfileSelect.value||null;campaignEncounterId=null;gameContext.profileId=campaignProfileId;gameContext.encounterId=null;renderCampaign();};
   campaignAbilitySelect.onchange=()=>renderCampaign();
   campaignStartBtn.onclick=startCampaignEncounter;
@@ -88,6 +102,7 @@
 
   quitConfirmBtn.onclick=()=>{
     quitModal.classList.add("hidden");
+    if(gameContext.returnScreen==="trio" || trioCampaignMode){returnToTrioCampaignMap();return;}
     if(gameContext.returnScreen==="duo" || duoCampaignMode){returnToDuoCampaignMap();return;}
     if(campaignMode || gameContext.returnScreen==="campaign"){openCampaignScreen();return;}
     openMainMenu();
@@ -116,13 +131,14 @@
     if(profileScreenOrigin==="setup"){makeNameFields();openFrontScreen(setup);}
     else if(profileScreenOrigin==="campaign"){openCampaignScreen();}
     else if(profileScreenOrigin==="duo"){openDuoCampaignScreen();}
+    else if(profileScreenOrigin==="trio"){openTrioCampaignScreen();}
     else openMainMenu();
   };
 
   $("setupProfilesBtn").onclick=()=>{profileScreenOrigin="setup";renderProfiles();openFrontScreen(profilesScreen);};
 
   function refreshPersistentUi(){
-    applyStoredSettings();renderProfiles();renderAchievements();renderStats();makeNameFields();renderCampaign();renderDuoCampaign();if(prestigeShopScreen&&!prestigeShopScreen.classList.contains("hidden"))renderPrestigeShop();
+    applyStoredSettings();renderProfiles();renderAchievements();renderStats();makeNameFields();renderCampaign();renderDuoCampaign();renderTrioCampaign();if(prestigeShopScreen&&!prestigeShopScreen.classList.contains("hidden"))renderPrestigeShop();
   }
 
   function exportSave(){
@@ -180,7 +196,7 @@
   rollAbilitiesBtn.onclick=rollSetupAbilities;
 
   startGameBtn.onclick=()=>{
-    tutorialMode=false;campaignMode=false;
+    tutorialMode=false;campaignMode=false;duoCampaignMode=false;trioCampaignMode=false;
     const rules=localModeRules();
     gameContext={mode:`local-${rules.id}`,returnScreen:"setup",profileId:null,encounterId:null};
     resetTutorialUi();nextRoundPrepBtn.classList.remove("hidden");restartBtn.textContent="Neue Partie";
@@ -207,7 +223,7 @@
     attackFace=null;attackTarget=null;pendingCampaignAttackStart=null;attackHits=0;attackDamage=0;firstAttackRoll=true;currentAttackRollNewHits=0;
     baseRerollUsed=false;loadedDiceUsed=false;lastBaseRollIndices=[];attackPowerUsed=false;precisionUses=0;momentumBonus=0;bloodPriceNeighbors=[];bloodRushActiveThisAttack=false;doubleTapApplied=false;pendingDamage=null;pendingHeal=null;
     roundNumber=1;roundEliminationOrder=[];lastPlaceIndex=null;roundWinnerHandled=false;roundWinnerIndex=null;nextRoundAbilityRolls=[];eventPopupQueue=[];eventPopupBusy=false;secondAbilityDraftBusy=false;secondAbilityDraftIndex=null;secondAbilityDraftSlot=2;deferredBaseAdvance=false;gamblingRolling=false;gamblingBaseTotal=null;gamblingModal.classList.add("hidden");highStakesRolling=false;highStakesDecisionThisAttack=false;highStakesModal.classList.add("hidden");perfect25Rolling=false;perfect25D4Rolling=false;perfect25BaseTotal=null;pendingPerfect25Total=null;perfect25Modal.classList.add("hidden");perfect25D4Modal.classList.add("hidden");insuranceRolling=false;insuranceContext=null;insuranceModal.classList.add("hidden");counterRolling=false;counterContext=null;counterDiceState=[];counterHits=0;counterFirstRoll=true;pendingCounterattack=null;deferredAttackFinish=false;counterModal.classList.add("hidden");wildcardFace=null;secondAbilityDraftQueue=[];secondAbilityModal.classList.add("hidden");
-    logEl.innerHTML="";winnerBox.classList.add("hidden");nextRoundBox.classList.add("hidden");hideFrontScreens();game.classList.remove("hidden");document.body.classList.add("playing");window.scrollTo?.(0,0);
+    logEl.innerHTML="";winnerBox.classList.add("hidden");nextRoundBox.classList.add("hidden");hideFrontScreens();game.classList.remove("hidden","campaign-game","trio-game");document.body.classList.add("playing");window.scrollTo?.(0,0);
 
     if(rules.id==="classic") addLog(`Classic gestartet mit ${n} Teilnehmern. Jeder startet mit ${rules.startHp} Leben.`);
     else addLog(`${rules.name} gestartet: ${n} lokale Spieler · ${rules.startHp} HP · ${rules.startAbilityCount} Startfähigkeiten · keine Bots.`);
@@ -254,6 +270,7 @@
   startNextRoundBtn.onclick=startNextRound;
 
   restartBtn.onclick=()=>{
+    if(trioCampaignMode || gameContext.returnScreen==="trio" || restartBtn.textContent==="Zur Trio-Kampagne"){returnToTrioCampaignMap();return;}
     if(duoCampaignMode || gameContext.returnScreen==="duo" || restartBtn.textContent==="Zur Duo-Kampagne"){returnToDuoCampaignMap();return;}
     if(campaignMode || gameContext.returnScreen==="campaign" || restartBtn.textContent==="Zur Kampagne"){
       returnToCampaignMap();
@@ -290,4 +307,5 @@
   applyLocalModeSetup();
   renderCampaign();
   renderDuoCampaign();
+  renderTrioCampaign();
   openMainMenu();

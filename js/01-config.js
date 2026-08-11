@@ -13,10 +13,10 @@
   let localModeId="classic";
   function localModeRules(){return LOCAL_MODES[localModeId]||LOCAL_MODES.classic;}
 
-  const GAME_VERSION="25.6";
+  const GAME_VERSION="26.0";
   const SAVE_KEY="wuerfelduell_save_v1"; // absichtlich stabil: Updates lesen denselben Browser-Save
-  const SAVE_SCHEMA_VERSION=6;
-  const CAMPAIGN_VERSION=17;
+  const SAVE_SCHEMA_VERSION=7;
+  const CAMPAIGN_VERSION=18;
 
   const ACHIEVEMENTS={
     grande:{name:"GRANDE!",desc:"Beende einen Angriff mit allen 5 Würfeln als Treffer.",rewardDice:"gold"},
@@ -80,7 +80,8 @@
     duo_split_pressure:["first_strike"],duo_blood_pact:["blood_moon"],duo_counter_pair:["armor_shell"],duo_relay_kills:["void_clock"],
     duo_fracture_bettors:["casino_floor"],duo_fracture_shared_marks:["blood_moon"],duo_fracture_last_stands:["first_strike"],duo_fracture_clean_team:["void_clock"],duo_fracture_double_pair:["overcharge"],
     duo_mirror_metronome:["first_strike"],duo_mirror_double_bet:["casino_floor"],duo_mirror_heal_six:["blood_moon"],duo_mirror_roles:["armor_shell"],duo_mirror_pattern:["blood_tax"],
-    duo_omega_focus_web:["armor_shell"],duo_omega_rush_three:["void_clock"],duo_omega_six_twins:["blood_moon"],duo_omega_pattern_five:["overcharge"],duo_omega_crown_touch:["first_strike"]
+    duo_omega_focus_web:["armor_shell"],duo_omega_rush_three:["void_clock"],duo_omega_six_twins:["blood_moon"],duo_omega_pattern_five:["overcharge"],duo_omega_crown_touch:["first_strike"],
+    trio_three_tools:["casino_floor"],trio_relay_protocol:["first_strike"],trio_blood_kitchen:["blood_moon"],trio_threefold_verdict:["armor_shell"]
   };
 
   const BOSS_PHASES={

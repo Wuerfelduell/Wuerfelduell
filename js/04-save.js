@@ -2,6 +2,10 @@
     return {campaignVersion:CAMPAIGN_VERSION,profileIds:[profile1Id,profile2Id].filter(Boolean).sort(),completedEncounters:[],wins:0,losses:0};
   }
 
+  function defaultTrioProgress(profile1Id,profile2Id,profile3Id){
+    return {campaignVersion:CAMPAIGN_VERSION,profileIds:[profile1Id,profile2Id,profile3Id].filter(Boolean).sort(),completedEncounters:[],wins:0,losses:0};
+  }
+
   function defaultCampaignProgress(){
     return {campaignVersion:CAMPAIGN_VERSION,completedEncounters:[],unlockedAbilities:[...CAMPAIGN_START_ABILITIES],unlockedSecondaryAbilities:[],trophies:0,wins:0,losses:0};
   }
@@ -10,7 +14,7 @@
   function emptyAbilityStat(){return {equipped:0,primary:0,secondary:0,chosen:0,wins:0};}
   function emptyProfileStats(){return {rounds:0,wins:0,kills:0,damageDealt:0,damageTaken:0,selfDamage:0,healed:0,ones:0,sixes:0,maxTurnDamage:0,currentWinStreak:0,bestWinStreak:0,abilities:{}};}
   function createDefaultSave(){
-    return {schemaVersion:SAVE_SCHEMA_VERSION,campaignVersion:CAMPAIGN_VERSION,lastGameVersion:GAME_VERSION,settings:{animation:"normal",botSpeed:"normal"},global:{completedRounds:0},profiles:[],duoCampaigns:{}};
+    return {schemaVersion:SAVE_SCHEMA_VERSION,campaignVersion:CAMPAIGN_VERSION,lastGameVersion:GAME_VERSION,settings:{animation:"normal",botSpeed:"normal"},global:{completedRounds:0},profiles:[],duoCampaigns:{},trioCampaigns:{}};
   }
 
   let storageAvailable=true;
@@ -97,6 +101,12 @@
       version=6;
     }
 
+    // V6 -> V7: Teamgebundener Fortschritt für die Trio-Kampagne.
+    if(version<7){
+      if(!migrated.trioCampaigns || typeof migrated.trioCampaigns!=="object" || Array.isArray(migrated.trioCampaigns)) migrated.trioCampaigns={};
+      version=7;
+    }
+
     migrated.schemaVersion=Math.max(version,SAVE_SCHEMA_VERSION);
     migrated.campaignVersion=Number(migrated.campaignVersion)||CAMPAIGN_VERSION;
     migrated.lastGameVersion=GAME_VERSION;
@@ -174,6 +184,7 @@
     next.settings={...createDefaultSave().settings,...(migrated.settings||{})};
     next.global={...createDefaultSave().global,...(migrated.global||{})};
     next.duoCampaigns=(migrated.duoCampaigns&&typeof migrated.duoCampaigns==="object"&&!Array.isArray(migrated.duoCampaigns))?{...migrated.duoCampaigns}:{};
+    next.trioCampaigns=(migrated.trioCampaigns&&typeof migrated.trioCampaigns==="object"&&!Array.isArray(migrated.trioCampaigns))?{...migrated.trioCampaigns}:{};
     const rawProfiles=Array.isArray(migrated.profiles)?migrated.profiles:[];
     next.profiles=[];
     saveData=next; // normalizeProfile nutzt die bereits aufgebauten Profile für eindeutige Tags.

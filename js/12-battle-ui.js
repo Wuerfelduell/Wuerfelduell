@@ -56,19 +56,20 @@
       const el=document.createElement("div");
       el.id="playerCard"+i;
       el.className="player"+(p.cosmeticFrame?` frame-${p.cosmeticFrame}`:"")+(i===current&&p.hp>0?" active":"")+(p.hp<=0?" dead":"");
+      const campaignCompact=campaignMode;
       el.innerHTML=`<div class="player-name">${escapeHtml(p.name)}${p.battleTag?` <span class="battle-tag">${escapeHtml(p.battleTag)}</span>`:""}</div>${p.cosmeticTitle?`<div class="profile-title-badge">${escapeHtml(p.cosmeticTitle)}</div>`:""}
-        ${p.botLevel&&p.botLevel!=="human"?`<div class="bot-tag">🤖 ${escapeHtml(BOT_LEVELS[p.botLevel]?.name.replace("Bot · ","")||"Bot")}</div>`:""}
+        ${!campaignCompact&&p.botLevel&&p.botLevel!=="human"?`<div class="bot-tag">🤖 ${escapeHtml(BOT_LEVELS[p.botLevel]?.name.replace("Bot · ","")||"Bot")}</div>`:""}
         <div class="hp">❤️ <strong>${Math.max(0,p.hp)}</strong> / ${maxHpForPlayer(p)}</div>
         <div class="ability-tag">⚡ ${escapeHtml(ABILITIES[p.ability].name)}</div>
         ${p.secondAbility!=null ? `<div class="ability-tag second">✦ ${escapeHtml(ABILITIES[p.secondAbility].name)}</div>` : ""}
         ${p.thirdAbility!=null ? `<div class="ability-tag third">✦ ${escapeHtml(ABILITIES[p.thirdAbility].name)}</div>` : ""}
-        <div class="seat-tag">💺 ${escapeHtml(SEATS[p.seat].name)} · 🎲 ${escapeHtml(DICE_DESIGNS[p.diceDesign]?.name||"Classic")}</div>
+        ${campaignCompact?"":`<div class="seat-tag">💺 ${escapeHtml(SEATS[p.seat].name)} · 🎲 ${escapeHtml(DICE_DESIGNS[p.diceDesign]?.name||"Classic")}</div>
         <div class="live-stats">
           <span>⚔ ${roundStats[i]?.damage||0}</span>
           <span>⚀ ${roundStats[i]?.ones||0}</span>
           <span>⚅ ${roundStats[i]?.sixes||0}</span>
           <span>🤡 ${roundStats[i]?.selfDamage||0}</span>
-        </div>
+        </div>`}
         ${campaignMode?"":`<div class="score-badge">🏆 ${p.wins||0} Sieg${(p.wins||0)===1?"":"e"}</div>`}`;
       playersEl.appendChild(el);
     });
