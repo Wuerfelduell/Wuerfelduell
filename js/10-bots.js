@@ -137,6 +137,11 @@
       return isBotPlayer(secondAbilityDraftIndex) ? secondAbilityDraftIndex : -1;
     }
 
+    // V26.1.2 Safety: Ein vorgemerkter Counterattack wartet nach einem
+    // Fähigkeitsdraft auf seine Auflösung. Der aktive Bot darf in diesem
+    // Zwischenzustand niemals den alten Angriff weiterführen.
+    if(pendingCounterattack) return -1;
+
     if(phase==="counterattack" && counterContext){
       return isBotPlayer(counterContext.defenderIndex) ? counterContext.defenderIndex : -1;
     }

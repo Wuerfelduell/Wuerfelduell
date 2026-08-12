@@ -237,6 +237,17 @@
       return;
     }
 
+    // V26.1.2: Wenn eingehender Schaden gleichzeitig den HP-Fähigkeitsdraft
+    // UND Counterattack auslöst, muss der vorgemerkte Gegenangriff zuerst
+    // abgearbeitet werden. Sonst würde der Bot seinen bereits ausgewerteten
+    // Hauptangriff nach dem Draft weiterwürfeln und Schaden doppelt anwenden.
+    if(pendingCounterattack){
+      const ctx=pendingCounterattack;
+      pendingCounterattack=null;
+      setTimeout(()=>openCounterattack(ctx.defenderIndex,ctx.attackerIndex),120);
+      return;
+    }
+
     if(pendingPerfect25Total!=null){
       const total=pendingPerfect25Total;
       pendingPerfect25Total=null;
