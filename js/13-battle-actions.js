@@ -139,9 +139,12 @@
     const p=players[index];
     if(!p) return null;
     if(campaignMode){
-      let threshold=SECOND_ABILITY_HP;
-      if(p.campaignTeam==="hero") threshold=trioCampaignMode?trioCampaignHpBonusThreshold(currentEncounterObject()):(duoCampaignMode?duoCampaignHpBonusThreshold(currentEncounterObject()):soloCampaignHpBonusThreshold(currentEncounterObject()));
-      return {threshold,slot:2,label:"2. Fähigkeit"};
+      let threshold=SECOND_ABILITY_HP,slot=2;
+      if(p.campaignTeam==="hero"){
+        threshold=trioCampaignMode?trioCampaignHpBonusThreshold(currentEncounterObject()):(duoCampaignMode?duoCampaignHpBonusThreshold(currentEncounterObject()):soloCampaignHpBonusThreshold(currentEncounterObject()));
+        if(!duoCampaignMode&&!trioCampaignMode) slot=soloCampaignHpBonusSlot(currentEncounterObject());
+      }
+      return {threshold,slot,label:slot===3?"3. Fähigkeit":"2. Fähigkeit"};
     }
     if(localModeId==="classic") return {threshold:SECOND_ABILITY_HP,slot:2,label:"2. Fähigkeit"};
     if(localModeId==="endurance50") return {threshold:30,slot:3,label:"3. Fähigkeit"};
@@ -810,6 +813,17 @@
 
   function resolveCurrentAttackRoll(){
     if(isAnimating||phase!=="attack_after_roll") return;
+
+    // Double Tap QoL: Bei exakt 2 Treffern darf der Spieler den Angriff bewusst
+    // sofort beenden, statt einen bereits perfekten Double-Tap-Stand weiterwürfeln
+    // zu müssen. Der Bonus wird anschließend ganz normal in dealAttackDamage() gesetzt.
+    if(hasAbility(24) && attackHits===2 && currentAttackRollNewHits>0){
+      firstAttackRoll=false;
+      wildcardFace=null;
+      addLog(`🔫 Double Tap gesichert: Angriff wird bewusst bei exakt 2 Treffern beendet.`);
+      dealAttackDamage();
+      return;
+    }
 
     if(currentAttackRollNewHits===0){
       // Präzision ist die LETZTE Rettung eines Angriffswurfs:
