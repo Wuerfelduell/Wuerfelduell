@@ -209,6 +209,29 @@
     openAbilityDraftForSlot(index,rule.slot,rule.label,reason);
   }
 
+  // Encounter-Hook: Bestimmte Solo-Kämpfe belohnen jeden Kill mit einem
+  // Fähigkeits-Draft. Die Slots werden sofort reserviert, damit auch zwei
+  // Eliminierungen im selben Angriff (z. B. durch Ricochet) sauber Slot 2
+  // und danach Slot 3 in die Draft-Queue legen können.
+  function maybeTriggerCampaignKillAbilityDraft(index){
+    if(!campaignMode || duoCampaignMode || trioCampaignMode) return false;
+    const encounter=currentEncounterObject();
+    const p=players[index];
+    if(!encounter?.draftAfterKill || !p || p.campaignTeam!=="hero" || p.hp<=0) return false;
+
+    let slot=null;
+    if(p.secondAbility==null && !p.secondAbilityUnlocked) slot=2;
+    else if(p.thirdAbility==null && !p.thirdAbilityUnlocked) slot=3;
+    else return false;
+
+    if(slot===2) p.secondAbilityUnlocked=true;
+    else p.thirdAbilityUnlocked=true;
+
+    const label=slot===3?"3. Fähigkeit":"2. Fähigkeit";
+    openAbilityDraftForSlot(index,slot,label,`💀 Kill-Bonus: ${p.name} darf nach der Eliminierung eine ${label} wählen.`);
+    return true;
+  }
+
   function chooseSecondAbility(id){
     const index=secondAbilityDraftIndex;
     const p=players[index];
@@ -1155,6 +1178,7 @@
       if(roundStats[current]) roundStats[current].kills++;
       if(doubleTapApplied) unlockAchievementForPlayer(current,"double_trouble");
       recordCampaignKill(current,attackTarget);
+      maybeTriggerCampaignKillAbilityDraft(current);
       markEliminated(attackTarget);
       addLog(`💀 ${target.name} ist ausgeschieden.`);
     }
@@ -1178,6 +1202,7 @@
         if(players[ricochetTarget].hp<=0){
           if(roundStats[current]) roundStats[current].kills++;
           recordCampaignKill(current,ricochetTarget);
+          maybeTriggerCampaignKillAbilityDraft(current);
           markEliminated(ricochetTarget);
           addLog(`💀 ${players[ricochetTarget].name} ist ausgeschieden.`);
         }

@@ -1,7 +1,7 @@
 (() => {
   "use strict";
 
-  // Würfelduell Audio Layer · V26.1.6
+  // Würfelduell Audio Layer · V26.1.7
   // Absichtlich vollständig isoliert vom Spielstand und von der Battle-/Campaign-Logik.
   const AUDIO_KEY = "wuerfelduell_audio_v1";
   const DEFAULTS = { enabled: true, volume: 0.24 };
@@ -42,11 +42,11 @@
       arp: [0, 2, 4, 2, 5, 3, 4, 1, 0, 3, 5, 4, 6, 5, 3, 2],
       bass: [0, null, 0, 3, 5, null, 3, null, 0, null, 5, 3, 6, null, 5, null],
       chords: [[0, 3, 7], [1, 5, 8], [3, 7, 10], [0, 5, 8]],
-      leadType: "square",
-      bassType: "triangle",
-      leadGain: 0.025,
-      bassGain: 0.055,
-      padGain: 0.012,
+      leadType: "triangle",
+      bassType: "sine",
+      leadGain: 0.021,
+      bassGain: 0.043,
+      padGain: 0.010,
       percussion: true
     },
     boss: {
@@ -56,11 +56,11 @@
       arp: [0, 3, 1, 4, 2, 5, 3, 6, 0, 4, 1, 5, 2, 6, 4, 3],
       bass: [0, 0, null, 3, 6, null, 1, null, 0, null, 6, 3, 7, null, 6, 1],
       chords: [[0, 3, 6], [1, 6, 8], [3, 7, 10], [0, 6, 10]],
-      leadType: "sawtooth",
-      bassType: "square",
-      leadGain: 0.022,
-      bassGain: 0.06,
-      padGain: 0.011,
+      leadType: "triangle",
+      bassType: "triangle",
+      leadGain: 0.019,
+      bassGain: 0.045,
+      padGain: 0.009,
       percussion: true,
       heavy: true
     }
@@ -70,6 +70,7 @@
   let ctx = null;
   let master = null;
   let compressor = null;
+  let masterFilter = null;
   let noiseBuffer = null;
   let scheduler = null;
   let nextNoteTime = 0;
@@ -101,16 +102,22 @@
     const AudioCtor = window.AudioContext || window.webkitAudioContext;
     if (!AudioCtor) return null;
 
-    ctx = new AudioCtor();
+    try { ctx = new AudioCtor({ latencyHint: "playback" }); }
+    catch (_) { ctx = new AudioCtor(); }
     master = ctx.createGain();
+    masterFilter = ctx.createBiquadFilter();
+    masterFilter.type = "lowpass";
+    masterFilter.frequency.value = 5200;
+    masterFilter.Q.value = 0.35;
     compressor = ctx.createDynamicsCompressor();
-    compressor.threshold.value = -18;
-    compressor.knee.value = 18;
-    compressor.ratio.value = 4;
-    compressor.attack.value = 0.01;
-    compressor.release.value = 0.22;
+    compressor.threshold.value = -16;
+    compressor.knee.value = 24;
+    compressor.ratio.value = 2.5;
+    compressor.attack.value = 0.018;
+    compressor.release.value = 0.28;
     master.gain.value = 0;
-    master.connect(compressor);
+    master.connect(masterFilter);
+    masterFilter.connect(compressor);
     compressor.connect(ctx.destination);
     noiseBuffer = createNoiseBuffer();
     applyVolume(true);
@@ -157,7 +164,7 @@
 
   function startScheduler() {
     if (scheduler) return;
-    scheduler = setInterval(tick, 80);
+    scheduler = setInterval(tick, 70);
   }
 
   function stepDuration(sceneName) {
@@ -174,7 +181,7 @@
       nextNoteTime = ctx.currentTime + 0.08;
     }
 
-    const lookAhead = ctx.currentTime + 0.35;
+    const lookAhead = ctx.currentTime + 0.24;
     while (nextNoteTime < lookAhead) {
       scheduleStep(scene, step, nextNoteTime);
       nextNoteTime += stepDuration(scene);
@@ -203,13 +210,12 @@
     // Sehr dezentes Pad am Beginn jedes 8er-Blocks.
     if (idx % 8 === 0) {
       const chord = cfg.chords[Math.floor(absoluteStep / 8) % cfg.chords.length];
-      chord.forEach((semi, i) => tone(cfg.root + 12 + semi, time, dur * 7.1, cfg.padGain, "sine", (i - 1) * 4, 1400));
+      chord.slice(0,2).forEach((semi, i) => tone(cfg.root + 12 + semi, time, dur * 6.8, cfg.padGain, "sine", (i - 0.5) * 4, 1250));
     }
 
     if (cfg.percussion) {
-      if (idx % 4 === 0) kick(time, cfg.heavy ? 0.055 : 0.042);
-      if (idx % 8 === 4) noiseHit(time, cfg.heavy ? 0.027 : 0.020, 0.10, 1200);
-      if (idx % 2 === 1) noiseHit(time, cfg.heavy ? 0.009 : 0.006, 0.035, 4800);
+      if (idx % 4 === 0) kick(time, cfg.heavy ? 0.040 : 0.032);
+      if (idx % 8 === 4) noiseHit(time, cfg.heavy ? 0.012 : 0.009, 0.085, 1800);
     }
   }
 
@@ -225,8 +231,8 @@
     osc.frequency.setValueAtTime(midiToHz(midi), start);
     osc.detune.setValueAtTime(detune, start);
 
-    const attack = Math.min(0.025, duration * 0.15);
-    const release = Math.min(0.09, duration * 0.35);
+    const attack = Math.min(0.045, Math.max(0.012, duration * 0.18));
+    const release = Math.min(0.14, Math.max(0.045, duration * 0.38));
     gain.gain.setValueAtTime(0.0001, start);
     gain.gain.exponentialRampToValueAtTime(Math.max(0.0002, gainValue), start + attack);
     gain.gain.setValueAtTime(Math.max(0.0002, gainValue * 0.78), Math.max(start + attack, start + duration - release));
@@ -246,12 +252,13 @@
     osc.type = "sine";
     osc.frequency.setValueAtTime(110, start);
     osc.frequency.exponentialRampToValueAtTime(48, start + 0.11);
-    gain.gain.setValueAtTime(gainValue, start);
-    gain.gain.exponentialRampToValueAtTime(0.0001, start + 0.13);
+    gain.gain.setValueAtTime(0.0001, start);
+    gain.gain.linearRampToValueAtTime(gainValue, start + 0.008);
+    gain.gain.exponentialRampToValueAtTime(0.0001, start + 0.14);
     osc.connect(gain);
     gain.connect(master);
     osc.start(start);
-    osc.stop(start + 0.14);
+    osc.stop(start + 0.155);
   }
 
   function noiseHit(start, gainValue, duration, cutoff) {
@@ -262,7 +269,8 @@
     src.buffer = noiseBuffer;
     filter.type = "highpass";
     filter.frequency.setValueAtTime(cutoff, start);
-    gain.gain.setValueAtTime(gainValue, start);
+    gain.gain.setValueAtTime(0.0001, start);
+    gain.gain.linearRampToValueAtTime(gainValue, start + Math.min(0.008, duration * 0.22));
     gain.gain.exponentialRampToValueAtTime(0.0001, start + duration);
     src.connect(filter);
     filter.connect(gain);
