@@ -797,8 +797,8 @@
       --die-bg:linear-gradient(145deg,#ffffff,#dfe4eb);
       --die-pip:#111827;
       --die-edge:#c9d0da;
-      container-type:inline-size;
       perspective:520px;
+      -webkit-perspective:520px;
       background:transparent!important;
       color:var(--die-pip)!important;
       box-shadow:none;
@@ -809,6 +809,7 @@
       position:absolute;
       inset:3px;
       transform-style:preserve-3d;
+      -webkit-transform-style:preserve-3d;
       transform:rotateX(var(--die-rx)) rotateY(var(--die-ry));
       transition:transform .16s cubic-bezier(.2,.8,.3,1);
       pointer-events:none;
@@ -829,6 +830,7 @@
         inset 0 -4px 0 rgba(0,0,0,.12),
         0 5px 12px rgba(0,0,0,.18);
       backface-visibility:hidden;
+      -webkit-backface-visibility:hidden;
       overflow:hidden;
     }
     .die-face::after{
@@ -845,14 +847,6 @@
     .die-face-4{transform:rotateY(-90deg) translateZ(var(--die-half))}
     .die-face-2{transform:rotateX(90deg) translateZ(var(--die-half))}
     .die-face-5{transform:rotateX(-90deg) translateZ(var(--die-half))}
-    @supports (width:1cqw){
-      .die-face-1{transform:translateZ(calc(50cqw - 3px))}
-      .die-face-6{transform:rotateY(180deg) translateZ(calc(50cqw - 3px))}
-      .die-face-3{transform:rotateY(90deg) translateZ(calc(50cqw - 3px))}
-      .die-face-4{transform:rotateY(-90deg) translateZ(calc(50cqw - 3px))}
-      .die-face-2{transform:rotateX(90deg) translateZ(calc(50cqw - 3px))}
-      .die-face-5{transform:rotateX(-90deg) translateZ(calc(50cqw - 3px))}
-    }
     .die-pips{
       position:absolute;
       inset:16%;
@@ -864,7 +858,7 @@
       z-index:2;
     }
     .die-pip{
-      width:clamp(5px,17cqw,15px);
+      width:var(--die-pip-size,10px);
       aspect-ratio:1/1;
       border-radius:50%;
       background:transparent;
@@ -877,7 +871,7 @@
       display:none;
       position:relative;
       z-index:2;
-      font-size:clamp(30px,58cqw,68px);
+      font-size:var(--die-question-size,40px);
       line-height:1;
       font-weight:1000;
     }
@@ -912,6 +906,30 @@
       100%{transform:rotateX(calc(var(--die-rx) + 720deg)) rotateY(calc(var(--die-ry) + 720deg)) rotateZ(360deg)}
     }
     body.fast-animations .die.rolling .die-cube{animation-duration:.24s}
+
+    /* V26.1.9 – Galaxy A50 safe fallback: gleiche Themes/Pips, aber ohne problematisches preserve-3d. */
+    html.legacy-flat-dice .die{
+      perspective:none!important;
+      -webkit-perspective:none!important;
+      overflow:hidden;
+    }
+    html.legacy-flat-dice .die-cube{
+      transform:none!important;
+      -webkit-transform:none!important;
+      transform-style:flat!important;
+      -webkit-transform-style:flat!important;
+    }
+    html.legacy-flat-dice .die-face{display:none;transform:none!important;-webkit-transform:none!important;backface-visibility:visible;-webkit-backface-visibility:visible}
+    html.legacy-flat-dice .die[data-value="1"] .die-face-1,
+    html.legacy-flat-dice .die[data-value="2"] .die-face-2,
+    html.legacy-flat-dice .die[data-value="3"] .die-face-3,
+    html.legacy-flat-dice .die[data-value="4"] .die-face-4,
+    html.legacy-flat-dice .die[data-value="5"] .die-face-5,
+    html.legacy-flat-dice .die[data-value="6"] .die-face-6,
+    html.legacy-flat-dice .die[data-value=""] .die-face-1{display:flex}
+    html.legacy-flat-dice .die.rolling .die-cube{animation:legacyFlatDiceSpin .42s linear both!important}
+    @keyframes legacyFlatDiceSpin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
+    html.legacy-flat-dice body.fast-animations .die.rolling .die-cube{animation-duration:.24s!important}
 
 
     /* Theme-Farben werden auf alle sechs Flächen übertragen. */
