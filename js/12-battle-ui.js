@@ -225,9 +225,8 @@
 
   function updateHeader(){
     if(aliveCount()<=1) return;
-    const seat=SEATS[players[current].seat];
-    const botText=isBotPlayer(current)?` · 🤖 ${BOT_LEVELS[players[current].botLevel].name.replace("Bot · ","")}`:"";
-    turnLine.innerHTML=`${escapeHtml(players[current].name)}${players[current].battleTag?` <span class="battle-tag">${escapeHtml(players[current].battleTag)}</span>`:""} ist dran · 💺 ${escapeHtml(seat.name)}${botText}`;
+    const botText=isBotPlayer(current)&&!campaignMode?` · 🤖 ${BOT_LEVELS[players[current].botLevel].name.replace("Bot · ","")}`:"";
+    turnLine.innerHTML=`${escapeHtml(players[current].name)}${players[current].battleTag?` <span class="battle-tag">${escapeHtml(players[current].battleTag)}</span>`:""} ist dran${botText}`;
 
     if(phase==="idle"){statusEl.textContent="Starte deinen Basiswurf mit 5 Würfeln.";sumLabel.textContent="Summe";}
     else if(phase==="base_select"){statusEl.textContent="Tippe mindestens einen Würfel an und locke ihn ein.";sumLabel.textContent="Aktuelle Summe";}

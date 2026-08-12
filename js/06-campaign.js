@@ -282,6 +282,13 @@
     return CAMPAIGN_WORLDS.find(w=>w.id===id)||null;
   }
 
+  function campaignWorldNodeName(world){
+    return String(world?.shortName||world?.name||"Welt")
+      .replace(/\s+(Circuit|Pact)$/i,"")
+      .replace(/^Duo-Welt\s+\d+\s*·\s*/i,"")
+      .replace(/^Welt\s+\d+\s*·\s*/i,"");
+  }
+
   function campaignEncountersForWorld(worldId){
     return CAMPAIGN_ENCOUNTERS.filter(e=>(e.world||"house")===worldId);
   }
@@ -417,12 +424,14 @@
     const worldComplete=profile?isCampaignWorldComplete(profile,world.id):false;
     const campaignComplete=profile?isCampaignComplete(profile):false;
 
-    campaignWorldTabs.innerHTML=CAMPAIGN_WORLDS.map(w=>{
+    campaignWorldTabs.innerHTML=CAMPAIGN_WORLDS.map((w,wi)=>{
       const unlocked=!!profile && campaignWorldUnlocked(profile,w);
       const done=unlocked && isCampaignWorldComplete(profile,w.id);
       const active=w.id===world.id;
-      let state=unlocked?(done?"✓ Abgeschlossen":`${campaignCurrentCompletedCount(profile,w.id)} / ${campaignEncountersForWorld(w.id).length}`):(w.lockedText||"🔒 Gesperrt");
-      return `<button type="button" class="campaign-world-btn${active?" active":""}${done?" done":""}" data-world-id="${w.id}" ${unlocked?"":"disabled"}><span class="campaign-world-name">${escapeHtml(w.name)}</span><span class="campaign-world-state">${escapeHtml(state)}</span></button>`;
+      const count=unlocked?campaignCurrentCompletedCount(profile,w.id):0;
+      const total=campaignEncountersForWorld(w.id).length;
+      const state=unlocked?(done?"✓":`${count}/${total}`):"🔒";
+      return `<button type="button" class="campaign-world-btn${active?" active":""}${done?" done":""}" data-world-id="${w.id}" ${unlocked?"":"disabled"}><span class="campaign-world-kicker">W${wi+1}</span><span class="campaign-world-name">${escapeHtml(campaignWorldNodeName(w))}</span><span class="campaign-world-state">${escapeHtml(state)}</span></button>`;
     }).join("");
     campaignWorldTabs.querySelectorAll("[data-world-id]").forEach(btn=>{
       btn.onclick=()=>{campaignWorldId=btn.dataset.worldId;campaignEncounterId=null;renderCampaign();};
@@ -434,12 +443,8 @@
     const prestige=!!profile && campaignHasAllMainAbilities(profile);
     campaignTrophySummary.textContent=profile?`🏆 ${Math.max(0,progress?.trophies||0)}${prestige?" · PRESTIGE":""}`:"🏆 0";
 
-    campaignCompleteBanner.classList.toggle("hidden",!worldComplete);
-    if(worldComplete){
-      campaignCompleteBanner.innerHTML=campaignComplete
-        ? `🏆 <strong>Alle aktuellen Welten abgeschlossen.</strong> Dein Fortschritt bleibt für spätere Erweiterungen erhalten.`
-        : `🏆 <strong>${escapeHtml(world.shortName)} abgeschlossen.</strong> Du kannst über die Welt-Auswahl jederzeit zwischen den freigeschalteten Welten wechseln.`;
-    }
+    campaignCompleteBanner.classList.add("hidden");
+    campaignCompleteBanner.innerHTML="";
 
     const unlocked=campaignUnlockedAbilities(profile);
     const oldAbility=+campaignAbilitySelect.value;
@@ -508,10 +513,12 @@
     const worldComplete=validPair&&isDuoWorldComplete(p1,p2,world.id);
     const allComplete=validPair&&DUO_CAMPAIGN_WORLDS.every(w=>duoWorldUnlocked(p1,p2,w)&&isDuoWorldComplete(p1,p2,w.id));
 
-    duoCampaignWorldTabs.innerHTML=DUO_CAMPAIGN_WORLDS.map(w=>{
+    duoCampaignWorldTabs.innerHTML=DUO_CAMPAIGN_WORLDS.map((w,wi)=>{
       const unlocked=validPair&&duoWorldUnlocked(p1,p2,w),done=unlocked&&isDuoWorldComplete(p1,p2,w.id),active=w.id===world.id;
-      const state=unlocked?(done?"✓ Abgeschlossen":`${duoEncountersForWorld(w.id).filter(e=>progress?.completedEncounters?.includes(e.id)).length} / ${duoEncountersForWorld(w.id).length}`):(w.lockedText||"🔒 Gesperrt");
-      return `<button type="button" class="campaign-world-btn${active?" active":""}${done?" done":""}" data-duo-world-id="${w.id}" ${unlocked?"":"disabled"}><span class="campaign-world-name">${escapeHtml(w.name)}</span><span class="campaign-world-state">${escapeHtml(state)}</span></button>`;
+      const count=unlocked?duoEncountersForWorld(w.id).filter(e=>progress?.completedEncounters?.includes(e.id)).length:0;
+      const total=duoEncountersForWorld(w.id).length;
+      const state=unlocked?(done?"✓":`${count}/${total}`):"🔒";
+      return `<button type="button" class="campaign-world-btn${active?" active":""}${done?" done":""}" data-duo-world-id="${w.id}" ${unlocked?"":"disabled"}><span class="campaign-world-kicker">W${wi+1}</span><span class="campaign-world-name">${escapeHtml(campaignWorldNodeName(w))}</span><span class="campaign-world-state">${escapeHtml(state)}</span></button>`;
     }).join("");
     duoCampaignWorldTabs.querySelectorAll("[data-duo-world-id]").forEach(btn=>btn.onclick=()=>{duoWorldId=btn.dataset.duoWorldId;duoCampaignEncounterId=null;renderDuoCampaign();});
     duoCampaignWorldDesc.textContent=world.desc;
@@ -520,9 +527,9 @@
     duoProgressSummary.textContent=`${completed} / ${worldEncounters.length} Encounter`;
     duoUnlockSummary.textContent=!baseUnlocked?"🔒 Spieler 1 braucht Black Table":worldUnlocked?"✅ Freigeschaltet":(world.lockedText||"🔒 Gesperrt");
     duoCampaignBanner.classList.add("hidden");
-    if(!baseUnlocked){duoCampaignBanner.classList.remove("hidden");duoCampaignBanner.innerHTML=`🔒 <strong>Duo-Kampagne gesperrt.</strong> Spieler 1 muss Solo Encounter 10 · Black Table abgeschlossen haben. Danach stehen im Duo alle regulären Hauptfähigkeiten direkt zur Verfügung.`;}
-    else if(!worldUnlocked){duoCampaignBanner.classList.remove("hidden");duoCampaignBanner.innerHTML=`🔒 <strong>${escapeHtml(world.name)} gesperrt.</strong> ${escapeHtml(world.lockedText||"Vorherige Duo-Welt abschließen")}.`;}
-    else if(worldComplete){duoCampaignBanner.classList.remove("hidden");duoCampaignBanner.innerHTML=allComplete?`🏆 <strong>Alle aktuellen Duo-Welten abgeschlossen.</strong> Diese Profil-Paarung hat alle aktuell verfügbaren Duo-Welten abgeschlossen.`:`🏆 <strong>${escapeHtml(world.shortName)} abgeschlossen.</strong> Über die Welt-Auswahl könnt ihr jederzeit zurückwechseln.`;}
+    duoCampaignBanner.innerHTML="";
+    if(!baseUnlocked){duoCampaignBanner.classList.remove("hidden");duoCampaignBanner.innerHTML=`🔒 <strong>Duo gesperrt:</strong> Spieler 1 braucht Black Table.`;}
+    else if(!worldUnlocked){duoCampaignBanner.classList.remove("hidden");duoCampaignBanner.innerHTML=`🔒 <strong>${escapeHtml(campaignWorldNodeName(world))} gesperrt:</strong> ${escapeHtml(world.lockedText||"Vorherige Welt abschließen")}.`;}
 
     const sharedDuoAbilityPool=p1?[...CHOOSABLE_ABILITY_IDS]:[];
     const fillAbilities=(select,ids)=>{const old=+select.value;select.innerHTML="";ids.forEach(id=>{const o=document.createElement("option");o.value=id;o.textContent=`${id} · ${ABILITIES[id].name}`;select.appendChild(o);});if(ids.includes(old))select.value=String(old);};
@@ -546,7 +553,7 @@
     const chosen=[];selects.forEach((select,idx)=>{const preferred=select.value||stored[idx]||profiles.find(p=>!chosen.includes(p.id))?.id||profiles[idx]?.id||"";select.innerHTML="";if(!profiles.length){const o=document.createElement("option");o.value="";o.textContent="Kein Profil vorhanden";select.appendChild(o);return;}profiles.forEach(p=>{const o=document.createElement("option");o.value=p.id;o.textContent=`${p.name} #${p.tagNumber}`;select.appendChild(o);});const valid=getProfile(preferred)&&!chosen.includes(preferred)?preferred:profiles.find(p=>!chosen.includes(p.id))?.id||profiles[0].id;select.value=valid;chosen.push(valid);});
     const ids=selects.map(x=>x.value);for(let i=1;i<ids.length;i++){if(ids.slice(0,i).includes(ids[i])){const alt=profiles.find(p=>!ids.slice(0,i).includes(p.id));if(alt){selects[i].value=alt.id;ids[i]=alt.id;}}}
     const [p1,p2,p3]=selects.map(x=>getProfile(x.value));trioProfile1Id=p1?.id||null;trioProfile2Id=p2?.id||null;trioProfile3Id=p3?.id||null;const validTeam=!!p1&&!!p2&&!!p3&&new Set([p1.id,p2.id,p3.id]).size===3;const progress=validTeam?trioCampaignProgress(p1,p2,p3):null;
-    const completed=progress?TRIO_CAMPAIGN_ENCOUNTERS.filter(e=>progress.completedEncounters.includes(e.id)).length:0,complete=!!progress?.completedEncounters?.includes(TRIO_CAMPAIGN_WORLD.finalEncounterId);trioTeamSummary.textContent=validTeam?`${p1.name} + ${p2.name} + ${p3.name}`:(profiles.length<3?"3 Profile erforderlich":"Drei verschiedene Profile wählen");trioProgressSummary.textContent=`${completed} / ${TRIO_CAMPAIGN_ENCOUNTERS.length} Encounter`;trioTrophySummary.textContent="🏆 +1 je Profil / Erstclear";trioCampaignBanner.classList.toggle("hidden",validTeam&&!complete);if(!validTeam)trioCampaignBanner.innerHTML=`🔒 <strong>Trio braucht drei verschiedene Profile.</strong> Die fünf Beta-Encounter sind danach direkt spielbar.`;else if(complete)trioCampaignBanner.innerHTML=`🏆 <strong>Trinity Protocol abgeschlossen.</strong> Das Finale bleibt als Trophy-Farm offen.`;
+    const completed=progress?TRIO_CAMPAIGN_ENCOUNTERS.filter(e=>progress.completedEncounters.includes(e.id)).length:0,complete=!!progress?.completedEncounters?.includes(TRIO_CAMPAIGN_WORLD.finalEncounterId);trioTeamSummary.textContent=validTeam?`${p1.name} + ${p2.name} + ${p3.name}`:(profiles.length<3?"3 Profile erforderlich":"Drei verschiedene Profile wählen");trioProgressSummary.textContent=`${completed} / ${TRIO_CAMPAIGN_ENCOUNTERS.length} Encounter`;trioTrophySummary.textContent="🏆 +1 je Profil / Clear";trioCampaignBanner.classList.toggle("hidden",validTeam);trioCampaignBanner.innerHTML=!validTeam?`🔒 <strong>Trio braucht drei verschiedene Profile.</strong>`:"";
     const fillAbility=select=>{const old=+select.value;select.innerHTML="";CHOOSABLE_ABILITY_IDS.forEach(id=>{const o=document.createElement("option");o.value=id;o.textContent=`${id} · ${ABILITIES[id].name}`;select.appendChild(o);});if(CHOOSABLE_ABILITY_IDS.includes(old))select.value=String(old);};[trioAbility1Select,trioAbility2Select,trioAbility3Select].forEach(fillAbility);
     let encounter=trioEncounterById(trioCampaignEncounterId);if(!encounter||!validTeam||!trioEncounterAvailable(p1,p2,p3,encounter)){encounter=validTeam?defaultTrioEncounter(p1,p2,p3):TRIO_CAMPAIGN_ENCOUNTERS[0];trioCampaignEncounterId=encounter?.id||null;}
     trioCampaignPath.innerHTML=TRIO_CAMPAIGN_ENCOUNTERS.map((e,i)=>{const done=!!progress?.completedEncounters?.includes(e.id),available=validTeam&&trioEncounterAvailable(p1,p2,p3,e),current=available&&e.id===trioCampaignEncounterId,mark=done?(e.farmTrophy?"🏆":"✓"):available?(current?"▶":""):"🔒";return `<button type="button" class="campaign-node${done?" done":""}${current?" current":""}${available?"":" locked"}${i===TRIO_CAMPAIGN_ENCOUNTERS.length-1?" world-boss":""}" data-trio-campaign-id="${e.id}" ${available?"":"disabled"}><span>${i+1}</span>${mark?`<span class="node-mark">${mark}</span>`:""}</button>`;}).join("");trioCampaignPath.querySelectorAll("[data-trio-campaign-id]").forEach(btn=>btn.onclick=()=>{trioCampaignEncounterId=btn.dataset.trioCampaignId;renderTrioCampaign();});
