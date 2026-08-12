@@ -138,3 +138,27 @@
     .trio-node-map{grid-template-columns:repeat(5,minmax(0,1fr))!important;gap:8px!important}
     .trio-node-map .campaign-node{width:min(64px,100%)!important}
     @media(max-width:540px){.trio-node-map{grid-template-columns:repeat(5,minmax(0,1fr))!important;gap:5px!important}.trio-node-map .campaign-node{width:min(54px,100%)!important}}
+
+
+    /* V26.1 – Encounter-Nodes kompakter + hochwertiger */
+    .campaign-node-map{
+      gap:12px 6px!important;padding:14px 7px!important;margin-top:9px!important;
+      background:radial-gradient(circle at 50% -10%,rgba(104,167,255,.12),transparent 46%),linear-gradient(180deg,#0d141e,#0a1018)!important;
+      box-shadow:inset 0 1px 0 rgba(255,255,255,.025)!important;
+    }
+    .campaign-node{
+      width:min(58px,100%)!important;
+      background:linear-gradient(145deg,#222e3f,#111822)!important;
+      border-color:#3c4a60!important;
+      box-shadow:inset 0 1px 0 rgba(255,255,255,.07),inset 0 -5px 12px rgba(0,0,0,.18),0 5px 14px rgba(0,0,0,.24)!important;
+    }
+    .campaign-node.done{
+      background:linear-gradient(145deg,#183d28,#10251a)!important;
+      box-shadow:0 0 14px rgba(77,209,125,.12),inset 0 1px 0 rgba(255,255,255,.05)!important;
+    }
+    .campaign-node.current{
+      background:linear-gradient(145deg,#392b16,#181824)!important;
+      box-shadow:0 0 0 3px rgba(255,200,87,.13),0 0 25px rgba(255,200,87,.26),inset 0 1px 0 rgba(255,255,255,.08)!important;
+    }
+    .campaign-node-detail{margin-top:8px!important}
+    @media(max-width:540px){.campaign-node-map{gap:10px 4px!important;padding:12px 4px!important}.campaign-node{width:min(52px,100%)!important}}

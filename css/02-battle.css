@@ -961,3 +961,26 @@
     #game.trio-game > .card:first-child .player{padding:7px 9px}
     #game.trio-game .player-name{font-size:15px}
     #game.trio-game .player .hp strong{font-size:19px}
+
+
+    /* V26.1 – kompakte Zug-Kopfzeile */
+    .turn-head{display:flex;align-items:baseline;justify-content:space-between;gap:12px;min-width:0}
+    .turn-head .turnline{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;margin:0}
+    .turn-total{flex:0 0 auto;font-size:22px;line-height:1;font-weight:1000;color:var(--text);white-space:nowrap;text-align:right}
+    #game .status{display:none!important}
+    .turn-card{padding-top:9px!important}
+    .sumline{display:none!important}
+    #game.campaign-game .players{gap:6px}
+    #game.campaign-game .player{padding:8px 10px;border-radius:13px}
+    #game.campaign-game .player-name{font-size:15px;line-height:1.1}
+    #game.campaign-game .hp{margin-top:3px;font-size:12px}
+    #game.campaign-game .hp strong{font-size:17px}
+    #game.campaign-game .ability-tag{margin-top:2px;font-size:10px;line-height:1.15}
+    #game.campaign-game .ability-state{margin-top:5px}
+    #game.campaign-game .campaign-task-progress{margin-top:6px}
+    @media(max-width:540px){
+      .turn-head{gap:8px}
+      .turn-head .turnline{font-size:17px}
+      .turn-total{font-size:19px}
+      #game.campaign-game .player{padding:7px 8px}
+    }
