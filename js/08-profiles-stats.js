@@ -278,7 +278,7 @@
       if(p.primaryWasChosen) primary.chosen++;
       if(win) primary.wins++;
 
-      [[p.secondAbility,p.secondAbilityWasChosen],[p.thirdAbility,p.thirdAbilityWasChosen]].forEach(([id,wasChosen])=>{
+      [[p.secondAbility,p.secondAbilityWasChosen],[p.thirdAbility,p.thirdAbilityWasChosen],[p.fourthAbility,p.fourthAbilityWasChosen]].forEach(([id,wasChosen])=>{
         if(id==null) return;
         const secondary=abilityStatFor(profile,id);
         secondary.equipped++;secondary.secondary++;

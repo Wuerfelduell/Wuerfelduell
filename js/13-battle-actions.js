@@ -168,9 +168,10 @@
 
   function openAbilityDraftForSlot(index,slot,label,reasonText=""){
     const p=players[index];
-    if(!p || p.hp<=0 || ![2,3].includes(slot)) return;
+    if(!p || p.hp<=0 || ![2,3,4].includes(slot)) return;
     if(slot===2 && p.secondAbility!=null) return;
     if(slot===3 && p.thirdAbility!=null) return;
+    if(slot===4 && p.fourthAbility!=null) return;
 
     const queued={index,slot,label,reasonText};
     if(secondAbilityDraftBusy){
@@ -210,24 +211,27 @@
   }
 
   // Encounter-Hook: Bestimmte Solo-Kämpfe belohnen jeden Kill mit einem
-  // Fähigkeits-Draft. Die Slots werden sofort reserviert, damit auch zwei
-  // Eliminierungen im selben Angriff (z. B. durch Ricochet) sauber Slot 2
-  // und danach Slot 3 in die Draft-Queue legen können.
+  // Fähigkeits-Draft. Die Slots werden sofort reserviert, damit auch mehrere
+  // Eliminierungen im selben Angriff (z. B. durch Ricochet) sauber bis zum
+  // encounter-spezifischen Slot-Limit in die Draft-Queue gelegt werden können.
   function maybeTriggerCampaignKillAbilityDraft(index){
     if(!campaignMode || duoCampaignMode || trioCampaignMode) return false;
     const encounter=currentEncounterObject();
     const p=players[index];
     if(!encounter?.draftAfterKill || !p || p.campaignTeam!=="hero" || p.hp<=0) return false;
 
+    const maxSlots=Math.max(2,Math.min(4,Number(encounter.maxAbilitySlots)||3));
     let slot=null;
-    if(p.secondAbility==null && !p.secondAbilityUnlocked) slot=2;
-    else if(p.thirdAbility==null && !p.thirdAbilityUnlocked) slot=3;
+    if(maxSlots>=2 && p.secondAbility==null && !p.secondAbilityUnlocked) slot=2;
+    else if(maxSlots>=3 && p.thirdAbility==null && !p.thirdAbilityUnlocked) slot=3;
+    else if(maxSlots>=4 && p.fourthAbility==null && !p.fourthAbilityUnlocked) slot=4;
     else return false;
 
     if(slot===2) p.secondAbilityUnlocked=true;
-    else p.thirdAbilityUnlocked=true;
+    else if(slot===3) p.thirdAbilityUnlocked=true;
+    else p.fourthAbilityUnlocked=true;
 
-    const label=slot===3?"3. Fähigkeit":"2. Fähigkeit";
+    const label=`${slot}. Fähigkeit`;
     openAbilityDraftForSlot(index,slot,label,`💀 Kill-Bonus: ${p.name} darf nach der Eliminierung eine ${label} wählen.`);
     return true;
   }
@@ -238,7 +242,8 @@
     if(!p || !REAL_ABILITY_IDS.includes(id)) return;
 
     const slot=secondAbilityDraftSlot;
-    if(slot===3){p.thirdAbility=id;p.thirdAbilityWasChosen=true;}
+    if(slot===4){p.fourthAbility=id;p.fourthAbilityWasChosen=true;}
+    else if(slot===3){p.thirdAbility=id;p.thirdAbilityWasChosen=true;}
     else{p.secondAbility=id;p.secondAbilityWasChosen=true;}
     secondAbilityModal.classList.add("hidden");
     secondAbilityDraftBusy=false;
@@ -246,7 +251,7 @@
     secondAbilityDraftChoices=[];
     secondAbilityDraftSlot=2;
 
-    addLog(`✨ ${p.name} wählt als ${slot===3?"3.":"2."} Fähigkeit: ${ABILITIES[id].name}.`);
+    addLog(`✨ ${p.name} wählt als ${slot}. Fähigkeit: ${ABILITIES[id].name}.`);
 
     if(id===23 && index===current && (phase.startsWith("attack") || phase==="counterattack")){
       activateBloodRushMidAttackIfEligible(index);

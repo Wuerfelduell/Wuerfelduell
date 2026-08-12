@@ -38,7 +38,7 @@
   function playerAbilities(index=current){
     const p=players[index];
     if(!p) return [];
-    return [p.ability,p.secondAbility,p.thirdAbility].filter(a=>a!=null);
+    return [p.ability,p.secondAbility,p.thirdAbility,p.fourthAbility].filter(a=>a!=null);
   }
 
   function hasAbility(id,index=current){
@@ -63,6 +63,7 @@
         <div class="ability-tag">⚡ ${escapeHtml(ABILITIES[p.ability].name)}</div>
         ${p.secondAbility!=null ? `<div class="ability-tag second">✦ ${escapeHtml(ABILITIES[p.secondAbility].name)}</div>` : ""}
         ${p.thirdAbility!=null ? `<div class="ability-tag third">✦ ${escapeHtml(ABILITIES[p.thirdAbility].name)}</div>` : ""}
+        ${p.fourthAbility!=null ? `<div class="ability-tag fourth">✦ ${escapeHtml(ABILITIES[p.fourthAbility].name)}</div>` : ""}
         ${campaignCompact?"":`<div class="seat-tag">💺 ${escapeHtml(SEATS[p.seat].name)} · 🎲 ${escapeHtml(DICE_DESIGNS[p.diceDesign]?.name||"Classic")}</div>
         <div class="live-stats">
           <span>⚔ ${roundStats[i]?.damage||0}</span>

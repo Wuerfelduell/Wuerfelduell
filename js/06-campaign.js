@@ -829,7 +829,7 @@
     const heroStartHp=Math.max(1,Number(encounter.playerHp)||START_HP);
     const hero={
       name:profile.name,battleTag:`#${profile.tagNumber}`,profileId:profile.id,botLevel:"human",campaignTeam:"hero",hp:heroStartHp,maxHp:heroStartHp,
-      ability:heroAbility,secondAbility:grantedSecondAbility,thirdAbility:grantedThirdAbility,secondAbilityUnlocked:grantedSecondAbility!=null?true:(encounter.startSecondAbilityDraft?true:unlocked.length<2),thirdAbilityUnlocked:grantedThirdAbility!=null,rolledAbility:"CAMPAIGN",primaryWasChosen:true,secondAbilityWasChosen:false,thirdAbilityWasChosen:false,
+      ability:heroAbility,secondAbility:grantedSecondAbility,thirdAbility:grantedThirdAbility,fourthAbility:null,secondAbilityUnlocked:grantedSecondAbility!=null?true:(encounter.startSecondAbilityDraft?true:unlocked.length<2),thirdAbilityUnlocked:grantedThirdAbility!=null,fourthAbilityUnlocked:false,rolledAbility:"CAMPAIGN",primaryWasChosen:true,secondAbilityWasChosen:false,thirdAbilityWasChosen:false,fourthAbilityWasChosen:false,
       seat:0,diceDesign:profile.selectedDice||"classic",...playerCosmeticsFromProfile(profile),wins:0,momentumStreak:0,lastStandUsed:false,roundLastStandTriggered:false,
       damageSinceLastOwnTurn:false,bloodRushPrimed:false,voluntaryHpPaidThisTurn:false,botBloodUsesThisAttack:0
     };
@@ -862,7 +862,8 @@
     renderAll();
     if(encounter.startSecondAbilityDraft){
       addLog(`✨ Boss-Vorteil: ${profile.name} darf direkt zu Beginn die 2. Fähigkeit wählen.`);
-      setTimeout(()=>openSecondAbilityDraft(0),120);
+      if(Number(encounter.maxAbilitySlots)>=4) addLog(`🔥 Finale-Regel: Nach Gegner-Kills wächst dein Build bis maximal 4 Fähigkeiten.`);
+      setTimeout(()=>openAbilityDraftForSlot(0,2,"2. Fähigkeit",`✨ Boss-Vorteil: ${profile.name} wählt direkt zu Beginn die 2. Fähigkeit.`),120);
     }
   }
 
