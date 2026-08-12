@@ -657,8 +657,15 @@
     }
 
     if(players[current].hp<=0){
+      if(campaignMode && players[current]?.campaignTeam==="enemy"){
+        recordCampaignEnemyElimination(current,null);
+        const heroIndex=campaignHeroIndices().find(i=>players[i]?.hp>0);
+        if(heroIndex!=null) maybeTriggerCampaignKillAbilityDraft(heroIndex);
+        addLog(`💀 ${players[current].name} scheidet durch eigenen Basisschaden aus – die Eliminierung zählt für die Kampagnen-Reihenfolge.`);
+      }else{
+        addLog(`💀 ${players[current].name} ist ausgeschieden.`);
+      }
       markEliminated(current);
-      addLog(`💀 ${players[current].name} ist ausgeschieden.`);
       finishBaseTurn(950);
       return;
     }

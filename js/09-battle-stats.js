@@ -160,12 +160,17 @@
     campaignMetrics.maxAttackHits=Math.max(campaignMetrics.maxAttackHits||0,h);
     campaignMetrics.maxAttackHitsByHero[key]=Math.max(campaignMetrics.maxAttackHitsByHero[key]||0,h);
   }
-  function recordCampaignKill(killerIndex,targetIndex){
-    if(!campaignMode || players[killerIndex]?.campaignTeam!=="hero" || players[targetIndex]?.campaignTeam!=="enemy") return;
+  function recordCampaignEnemyElimination(targetIndex,killerIndex=null){
+    if(!campaignMode || players[targetIndex]?.campaignTeam!=="enemy") return;
     if(!campaignMetrics.killOrder.length) campaignMetrics.firstKillDistinctTargets=Object.values(campaignMetrics.rawDamageByTarget||{}).filter(v=>(Number(v)||0)>0).length;
     campaignMetrics.killOrder.push(players[targetIndex].name);
-    campaignMetrics.killHeroes.push(String(killerIndex));
-    const key=String(killerIndex);campaignMetrics.killsByHero[key]=(campaignMetrics.killsByHero[key]||0)+1;
+    const heroKill=killerIndex!=null && players[killerIndex]?.campaignTeam==="hero";
+    campaignMetrics.killHeroes.push(heroKill?String(killerIndex):null);
+    if(heroKill){const key=String(killerIndex);campaignMetrics.killsByHero[key]=(campaignMetrics.killsByHero[key]||0)+1;}
+  }
+  function recordCampaignKill(killerIndex,targetIndex){
+    if(!campaignMode || players[killerIndex]?.campaignTeam!=="hero" || players[targetIndex]?.campaignTeam!=="enemy") return;
+    recordCampaignEnemyElimination(targetIndex,killerIndex);
   }
 
   function recordHealing(index,amount){
