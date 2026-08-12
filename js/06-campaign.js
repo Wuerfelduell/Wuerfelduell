@@ -825,8 +825,9 @@
     campaignMetrics=freshCampaignMetrics();
     resetEncounterRuntime(encounter);
 
+    const heroStartHp=Math.max(1,Number(encounter.playerHp)||START_HP);
     const hero={
-      name:profile.name,battleTag:`#${profile.tagNumber}`,profileId:profile.id,botLevel:"human",campaignTeam:"hero",hp:START_HP,maxHp:START_HP,
+      name:profile.name,battleTag:`#${profile.tagNumber}`,profileId:profile.id,botLevel:"human",campaignTeam:"hero",hp:heroStartHp,maxHp:heroStartHp,
       ability:heroAbility,secondAbility:grantedSecondAbility,thirdAbility:grantedThirdAbility,secondAbilityUnlocked:grantedSecondAbility!=null?true:(encounter.startSecondAbilityDraft?true:unlocked.length<2),thirdAbilityUnlocked:grantedThirdAbility!=null,rolledAbility:"CAMPAIGN",primaryWasChosen:true,secondAbilityWasChosen:false,thirdAbilityWasChosen:false,
       seat:0,diceDesign:profile.selectedDice||"classic",...playerCosmeticsFromProfile(profile),wins:0,momentumStreak:0,lastStandUsed:false,roundLastStandTriggered:false,
       damageSinceLastOwnTurn:false,bloodRushPrimed:false,voluntaryHpPaidThisTurn:false,botBloodUsesThisAttack:0
@@ -852,6 +853,7 @@
     encounterRuleText(encounter).forEach(r=>addLog(`⚙ Sonderregel ${r.name}: ${r.desc}`));
     if(bossPhaseFor(encounter)) addLog(`👹 Bossphase vorbereitet: ${bossPhaseFor(encounter).title} bei ${Math.round((bossPhaseFor(encounter).threshold||.5)*100)} % Boss-HP.`);
     addLog(`⚡ ${profile.name} startet mit ${ABILITIES[heroAbility].name}. In der Kampagne stehen nur bereits freigeschaltete Fähigkeiten zur Verfügung.`);
+    if(heroStartHp!==START_HP) addLog(`❤️ Encounter-Bonus: ${profile.name} startet mit ${heroStartHp} HP.`);
     if(grantedSecondAbility!=null) addLog(`🩸 Encounter-Fähigkeit: ${ABILITIES[grantedSecondAbility].name} ist direkt als 2. Fähigkeit aktiv.`);
     if(!encounter.startSecondAbilityDraft){const bonusSlot=soloCampaignHpBonusSlot(encounter);addLog(`✨ HP-Bonus: Die ${bonusSlot}. Fähigkeit wird in diesem Encounter bei ≤${soloCampaignHpBonusThreshold(encounter)} HP freigeschaltet.`);}
     if(grantedThirdAbility!=null) addLog(`🎁 Encounter-Fähigkeit: ${ABILITIES[grantedThirdAbility].name} wird für diesen Kampf als 3. Fähigkeit bereitgestellt.`);

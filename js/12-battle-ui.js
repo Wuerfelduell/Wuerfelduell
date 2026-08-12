@@ -113,6 +113,10 @@
 
   function dieSymbol(v){ return v==null?"?":["⚀","⚁","⚂","⚃","⚄","⚅"][v-1]; }
 
+  // Galaxy A50 / older Mali WebView compositing can flatten CSS preserve-3d dice into thin strips.
+  // Only those devices get a safe flat renderer; modern devices keep the full 3D dice.
+  if(/SM-A505/i.test(navigator.userAgent||"")) document.documentElement.classList.add("legacy-flat-dice");
+
   const DIE_3D_ROTATION={
     1:["0deg","0deg"],
     2:["-90deg","0deg"],
@@ -155,6 +159,12 @@
 
   function render3DDieNode(el,value){
     ensure3DDieStructure(el);
+    const dieWidth=el.getBoundingClientRect().width;
+    if(dieWidth>0){
+      el.style.setProperty("--die-half",`${Math.max(14,(dieWidth-6)/2)}px`);
+      el.style.setProperty("--die-pip-size",`${Math.max(5,Math.min(15,dieWidth*.16))}px`);
+      el.style.setProperty("--die-question-size",`${Math.max(30,Math.min(68,dieWidth*.58))}px`);
+    }
     const rotation=DIE_3D_ROTATION[value]||DIE_3D_ROTATION[1];
     if(!el.classList.contains("rolling")){
       el.style.setProperty("--die-rx",rotation[0]);
@@ -388,7 +398,10 @@
       // Erst nach Einsatz der Fähigkeit erscheint "Angriff beenden".
       if(currentAttackRollNewHits>0 || !secondChanceAvailable){
         resolveAttackBtn.classList.remove("hidden");
-        resolveAttackBtn.textContent=currentAttackRollNewHits===0?"Angriff beenden":"Angriff fortsetzen";
+        const doubleTapCashOut=hasAbility(24) && attackHits===2 && currentAttackRollNewHits>0;
+        resolveAttackBtn.textContent=doubleTapCashOut
+          ? "🔫 Angriff beenden · Double Tap"
+          : (currentAttackRollNewHits===0?"Angriff beenden":"Angriff fortsetzen");
       }
     }
     if(phase==="turn_done") nextBtn.classList.remove("hidden");
