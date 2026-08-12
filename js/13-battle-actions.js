@@ -1030,6 +1030,7 @@
     }
 
     let actualDamage=0;
+    let counterKillDraftHeroIndex=null;
 
     if(rawCounterDamage>0 && attacker?.hp>0){
       const attackerHpBefore=attacker.hp;
@@ -1060,6 +1061,7 @@
         if(roundStats[defenderIndex]) roundStats[defenderIndex].kills++;
         if(counterDoubleTapBonus>0) unlockAchievementForPlayer(defenderIndex,"double_trouble");
         recordCampaignKill(defenderIndex,attackerIndex);
+        if(campaignMode && players[defenderIndex]?.campaignTeam==="hero") counterKillDraftHeroIndex=defenderIndex;
         markEliminated(attackerIndex);
         addLog(`💀 ${attacker.name} ist durch Counterattack ausgeschieden.`);
       }
@@ -1077,6 +1079,12 @@
       counterContext=null;
       counterDiceState=[];
       counterHits=0;
+
+      if(counterKillDraftHeroIndex!=null){
+        deferredAttackFinish=true;
+        if(maybeTriggerCampaignKillAbilityDraft(counterKillDraftHeroIndex)) return;
+        deferredAttackFinish=false;
+      }
 
       if(secondAbilityDraftBusy){
         deferredAttackFinish=true;

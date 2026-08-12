@@ -68,7 +68,7 @@
     let label=c?.text||c?.type||"Aufgabe",value="",failed=false;
     if(!c)return {label:"Aufgabe",value:"–",failed:false};
     switch(c.type){
-      case "win": label="Encounter gewinnen";value="am Ende";break;
+      case "win": label=c.progressLabel||"Encounter gewinnen";value="am Ende";break;
       case "base_over_25": label="Basiswurf über 25";value=campaignMetrics.baseOver25?"geschafft":"offen";break;
       case "turn_damage": label="Rohschaden in einem Zug";value=`${campaignMetrics.maxRawTurnDamage||0} / ${need(c.value)}`;break;
       case "finish_hp": label="HP beim Sieg";value=`aktuell ${Math.max(0,players[heroIndex]?.hp||0)} · Ziel ≥${need(c.value)}`;break;
