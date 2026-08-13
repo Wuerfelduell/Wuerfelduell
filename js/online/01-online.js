@@ -36,6 +36,8 @@ let roomUnsubscribe=null;
 let disconnectOp=null;
 let authReady=false;
 let busy=false;
+let matchStartBusy=false;
+let enteredMatchId=null;
 
 function escapeHtml(value){return String(value??"").replace(/[&<>'"]/g,ch=>({"&":"&amp;","<":"&lt;",">":"&gt;","'":"&#39;",'"':"&quot;"}[ch]));}
 function normalizeCode(value){return String(value||"").toUpperCase().replace(/[^A-Z2-9]/g,"").slice(0,6);}
@@ -142,6 +144,76 @@ async function enterRoom(code,isHost){
   });
 }
 
+function randomOnlineAbility(){
+  const rolled=Math.floor(Math.random()*25)+1;
+  if(rolled!==6) return {rolledAbility:rolled,ability:rolled};
+  const pool=Array.isArray(window.WDOnlineBridge?.getOnlineChoicePool?.())?window.WDOnlineBridge.getOnlineChoicePool():null;
+  const choices=pool?.length?pool:[1,2,3,4,5,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25];
+  return {rolledAbility:6,ability:choices[Math.floor(Math.random()*choices.length)]};
+}
+function buildMatch(players){
+  const ordered=[...players];
+  if(Math.random()<0.5) ordered.reverse();
+  const matchId=`${Date.now().toString(36)}-${Math.random().toString(36).slice(2,8)}`;
+  return {
+    id:matchId,
+    roomCode:currentRoomCode,
+    createdAt:Date.now(),
+    rules:"classic-1v1",
+    startHp:25,
+    players:ordered.map(p=>{
+      const rolled=randomOnlineAbility();
+      return {
+        uid:p.uid,
+        name:p.name,
+        tagNumber:p.tagNumber,
+        diceDesign:p.diceDesign||"classic",
+        cosmeticTitle:p.cosmeticTitle||"",
+        cosmeticFrame:p.cosmeticFrame||"",
+        rolledAbility:rolled.rolledAbility,
+        ability:rolled.ability
+      };
+    })
+  };
+}
+async function startMatchIfReady(players){
+  if(matchStartBusy||!currentRoomCode||!uid||currentRoom?.meta?.hostUid!==uid||currentRoom?.meta?.status!=="lobby") return;
+  if(players.length!==2||!players.every(p=>p.ready===true)) return;
+  matchStartBusy=true;
+  onlineReadyBtn.disabled=true;
+  onlineLobbyHint.textContent="⚡ Beide bereit – Match wird gestartet …";
+  try{
+    const candidate=buildMatch(players);
+    const result=await runTransaction(roomRef(),room=>{
+      if(!room||room.meta?.status!=="lobby") return;
+      const livePlayers=Object.entries(room.players||{}).map(([id,p])=>({uid:id,...p}));
+      if(livePlayers.length!==2||!livePlayers.every(p=>p.ready===true)) return;
+      room.meta={...(room.meta||{}),status:"playing",startedAt:Date.now(),matchId:candidate.id};
+      room.match=candidate;
+      return room;
+    },{applyLocally:false});
+    if(!result.committed && currentRoom?.meta?.status==="lobby") throw new Error("MATCH_START_ABORTED");
+  }catch(err){
+    console.error("Start online match",err);
+    setNotice("Matchstart fehlgeschlagen. Beide kurz Bereit zurücknehmen und erneut versuchen.","error");
+    matchStartBusy=false;
+    setBusy(false);
+  }
+}
+function enterStartedMatch(){
+  const match=currentRoom?.match;
+  const matchId=String(match?.id||currentRoom?.meta?.matchId||"");
+  if(!match||!matchId||enteredMatchId===matchId) return;
+  const localProfile=selectedProfile();
+  const started=bridge?.startMatch?.(match,uid,localProfile?.id||null);
+  if(!started){
+    setNotice("Online-Match konnte lokal nicht initialisiert werden.","error");
+    return;
+  }
+  enteredMatchId=matchId;
+  matchStartBusy=false;
+}
+
 function renderLobby(){
   if(!currentRoom||!uid) return;
   const players=Object.entries(currentRoom.players||{}).map(([id,p])=>({uid:id,...p})).sort((a,b)=>(a.joinedOrder||0)-(b.joinedOrder||0));
@@ -161,11 +233,17 @@ function renderLobby(){
   onlineReadyBtn.textContent=me?.ready?"Bereit zurücknehmen":"✓ Bereit";
   onlineReadyBtn.classList.toggle("secondary",!!me?.ready);
   onlineReadyBtn.classList.toggle("good",!me?.ready);
+  if(currentRoom.meta?.status==="playing"){
+    onlineLobbyHint.textContent="⚔️ Match startet …";
+    enterStartedMatch();
+    return;
+  }
   onlineLobbyHint.textContent=allReady
-    ? "✅ Beide Spieler sind bereit. Die Firebase-Lobby synchronisiert korrekt – als Nächstes hängen wir den Match-Adapter an die bestehende Battle-Engine."
+    ? "⚡ Beide Spieler sind bereit. Match startet automatisch …"
     : players.length<2
       ? "Teile den Raumcode. Die Lobby wartet auf Spieler 2."
-      : "Beide Spieler drücken Bereit. Dieser erste Online-Patch testet bewusst nur Lobby, Profile und Live-Synchronisierung.";
+      : "Sobald beide Bereit sind, werden Startfähigkeiten und Startspieler automatisch bestimmt und das Match beginnt.";
+  if(allReady&&isHost) startMatchIfReady(players);
 }
 
 async function createRoom(){
@@ -177,8 +255,8 @@ async function createRoom(){
     for(let attempt=0;attempt<12&&!code;attempt++){
       const candidate=makeCode();
       const initial={
-        meta:{hostUid:uid,status:"lobby",version:bridge?.getVersion?.()||"27.2.1",createdAt:Date.now(),maxPlayers:2},
-        players:{[uid]:{name:profile.name,tagNumber:profile.tagNumber,diceDesign:profile.selectedDice||"classic",ready:false,joinedAt:Date.now(),joinedOrder:0}}
+        meta:{hostUid:uid,status:"lobby",version:bridge?.getVersion?.()||"27.2.2",createdAt:Date.now(),maxPlayers:2},
+        players:{[uid]:{name:profile.name,tagNumber:profile.tagNumber,diceDesign:profile.selectedDice||"classic",cosmeticTitle:profile.cosmeticTitle||"",cosmeticFrame:profile.cosmeticFrame||"",ready:false,joinedAt:Date.now(),joinedOrder:0}}
       };
       const result=await runTransaction(roomRef(candidate),current=>current===null?initial:undefined,{applyLocally:false});
       if(result.committed) code=candidate;
@@ -213,6 +291,8 @@ async function joinRoom(){
       name:profile.name,
       tagNumber:profile.tagNumber,
       diceDesign:profile.selectedDice||"classic",
+      cosmeticTitle:profile.cosmeticTitle||"",
+      cosmeticFrame:profile.cosmeticFrame||"",
       ready:false,
       joinedAt:Date.now()
     };
