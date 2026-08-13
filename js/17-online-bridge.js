@@ -804,7 +804,7 @@
       addLog(`${p.name}: ${abilityText} · 🎲 ${DICE_DESIGNS[p.diceDesign]?.name||"Classic"} · ✨ ${ATTACK_FX_STYLES[p.attackFx]?.name||"Arc Shot"}.`);
     });
     renderAll();enforceOnlineControls();
-    addLog(`🌐 V27.5.1: Smooth Online · 2–4 Spieler · profilgebundene Combat-FX.`);
+    addLog(`🌐 V27.5.2: Smooth Online · 2–4 Spieler · profilgebundene Combat-FX.`);
     return true;
   }
 
