@@ -5,6 +5,8 @@ import {
   onDisconnect, runTransaction, serverTimestamp
 } from "https://www.gstatic.com/firebasejs/12.17.1/firebase-database.js";
 
+// Firebase bleibt in V27.4.0 bewusst nur Transport + Raum-/Presence-Layer.
+// Die eigentliche Würfelduell-Engine läuft weiterhin auf dem Host-Gerät.
 const firebaseConfig={
   apiKey:"AIzaSyDWVildqD4Hx8JpuY87blbcdJYawluDJ5Y",
   authDomain:"wuerfelduell-35558.firebaseapp.com",
@@ -19,27 +21,45 @@ const app=initializeApp(firebaseConfig);
 const auth=getAuth(app);
 const db=getDatabase(app);
 const bridge=window.WDOnlineBridge;
-
 const $=id=>document.getElementById(id);
+
 const mainMenu=$("mainMenu"),onlineScreen=$("onlineScreen"),menuOnlineBtn=$("menuOnlineBtn"),onlineBackBtn=$("onlineBackBtn");
 const onlineStatus=$("onlineStatus"),onlineStatusDot=$("onlineStatusDot"),onlineProfileSelect=$("onlineProfileSelect");
 const onlineCreateBtn=$("onlineCreateBtn"),onlineJoinCode=$("onlineJoinCode"),onlineJoinBtn=$("onlineJoinBtn");
 const onlineHome=$("onlineHome"),onlineLobby=$("onlineLobby"),onlineRoomCode=$("onlineRoomCode"),onlineCopyCodeBtn=$("onlineCopyCodeBtn");
 const onlineLobbyState=$("onlineLobbyState"),onlinePlayerList=$("onlinePlayerList"),onlineReadyBtn=$("onlineReadyBtn"),onlineLeaveBtn=$("onlineLeaveBtn");
-const onlineNotice=$("onlineNotice"),onlineLobbyHint=$("onlineLobbyHint");
+const onlineNotice=$("onlineNotice"),onlineLobbyHint=$("onlineLobbyHint"),quitConfirmBtn=$("quitConfirmBtn");
 
 let uid=null;
 let currentRoomCode=null;
 let currentRoom=null;
 let currentIsHost=false;
-let roomUnsubscribe=null;
-let disconnectOp=null;
+let currentHostUid="";
+let currentMatchId="";
 let authReady=false;
+let firebaseConnected=false;
 let busy=false;
 let matchStartBusy=false;
 let enteredMatchId=null;
+let disconnectOp=null;
+
+// Lobby und Match benutzen ab jetzt getrennte Listener. Damit zieht ein Würfelwurf
+// nicht mehr jedes Mal die komplette Lobby + Match-Struktur über Firebase.
+let roomUnsubscribe=null;
+let metaUnsubscribe=null;
+let stateUnsubscribe=null;
+let playersUnsubscribe=null;
+let actionUnsubscribe=null;
+let visualUnsubscribe=null;
+let ackUnsubscribe=null;
+let connectedUnsubscribe=null;
+
 let processingActionId=null;
-let lastAppliedStateSeq=0;
+let lastProcessedActionId="";
+let lastVisualId="";
+let hostStateSeq=0;
+let localStateSeq=0;
+let localProfileId=null;
 
 function escapeHtml(value){return String(value??"").replace(/[&<>'"]/g,ch=>({"&":"&amp;","<":"&lt;",">":"&gt;","'":"&#39;",'"':"&quot;"}[ch]));}
 function normalizeCode(value){return String(value||"").toUpperCase().replace(/[^A-Z2-9]/g,"").slice(0,6);}
@@ -52,6 +72,7 @@ function makeCode(){
   for(const b of bytes) out+=chars[b%chars.length];
   return out;
 }
+function requestId(){return `${String(uid||"anon").slice(0,8)}-${Date.now().toString(36)}-${Math.random().toString(36).slice(2,7)}`;}
 function selectedProfile(){
   const profiles=bridge?.getProfiles?.()||[];
   return profiles.find(p=>p.id===onlineProfileSelect.value)||profiles[0]||null;
@@ -66,9 +87,9 @@ function setConnection(label,state="pending"){
 }
 function setBusy(value){
   busy=!!value;
-  onlineCreateBtn.disabled=busy||!authReady||!selectedProfile();
-  onlineJoinBtn.disabled=busy||!authReady||!selectedProfile()||normalizeCode(onlineJoinCode.value).length!==6;
-  if(currentRoomCode) onlineReadyBtn.disabled=busy;
+  onlineCreateBtn.disabled=busy||!authReady||!firebaseConnected||!selectedProfile();
+  onlineJoinBtn.disabled=busy||!authReady||!firebaseConnected||!selectedProfile()||normalizeCode(onlineJoinCode.value).length!==6;
+  if(currentRoomCode&&currentRoom?.meta?.status==="lobby") onlineReadyBtn.disabled=busy;
 }
 function refreshProfiles(){
   const profiles=bridge?.getProfiles?.()||[];
@@ -105,20 +126,32 @@ function openOnline(){
   window.scrollTo?.(0,0);
 }
 async function closeOnline(){
-  if(currentRoomCode) await leaveRoom();
+  if(currentRoomCode) await leaveRoom({showHome:false});
   onlineScreen.classList.add("hidden");
   mainMenu.classList.remove("hidden");
   window.scrollTo?.(0,0);
 }
+
 function roomRef(code=currentRoomCode){return ref(db,`rooms/${code}`);}
+function metaRef(code=currentRoomCode){return ref(db,`rooms/${code}/meta`);}
 function playerRef(code=currentRoomCode,userUid=uid){return ref(db,`rooms/${code}/players/${userUid}`);}
 function matchRef(code=currentRoomCode){return ref(db,`rooms/${code}/match`);}
+function stateRef(code=currentRoomCode){return ref(db,`rooms/${code}/match/state`);}
+function actionRef(code=currentRoomCode){return ref(db,`rooms/${code}/match/action`);}
+function visualRef(code=currentRoomCode){return ref(db,`rooms/${code}/match/visual`);}
+function ackRef(code=currentRoomCode,userUid=uid){return ref(db,`rooms/${code}/match/acks/${userUid}`);}
+
+function detachLobbyListener(){if(roomUnsubscribe){roomUnsubscribe();roomUnsubscribe=null;}}
+function detachMatchListeners(){
+  [metaUnsubscribe,stateUnsubscribe,playersUnsubscribe,actionUnsubscribe,visualUnsubscribe,ackUnsubscribe].forEach(unsub=>{try{unsub?.();}catch(_){}});
+  metaUnsubscribe=stateUnsubscribe=playersUnsubscribe=actionUnsubscribe=visualUnsubscribe=ackUnsubscribe=null;
+}
 
 async function prepareDisconnect(code,isHost){
-  if(disconnectOp){try{await disconnectOp.cancel();}catch(_){}}
+  if(disconnectOp){try{await disconnectOp.cancel();}catch(_){} disconnectOp=null;}
   disconnectOp=onDisconnect(isHost?roomRef(code):playerRef(code));
-  if(isHost) await disconnectOp.remove();
-  else await disconnectOp.remove();
+  // V27.4: Lobby/Match ist weiter hostgebunden. Host weg = Raum weg; Gast weg = Gast weg.
+  await disconnectOp.remove();
 }
 
 async function enterRoom(code,isHost){
@@ -129,7 +162,7 @@ async function enterRoom(code,isHost){
   onlineRoomCode.textContent=code;
   setNotice("");
   await prepareDisconnect(code,isHost);
-  if(roomUnsubscribe) roomUnsubscribe();
+  detachLobbyListener();
   roomUnsubscribe=onValue(roomRef(code),snapshot=>{
     if(!snapshot.exists()){
       if(currentRoomCode===code){
@@ -168,26 +201,19 @@ function buildMatch(players){
     firstPlayerUid,
     currentPlayerUid:firstPlayerUid,
     turnNumber:1,
-    syncSchema:4,
+    syncSchema:5,
     state:{
-      seq:0,
-      phase:"idle",
-      currentPlayerUid:firstPlayerUid,
-      interactionOwnerUid:firstPlayerUid,
+      schema:5,seq:0,phase:"idle",actionId:"",actionType:"",
+      currentPlayerUid:firstPlayerUid,interactionOwnerUid:firstPlayerUid,
       dice:Array.from({length:5},()=>({value:null,locked:false,selected:false})),
-      players:ordered.map(p=>({uid:p.uid,hp:25}))
+      players:ordered.map(p=>({uid:p.uid,onlineUid:p.uid,hp:25}))
     },
     players:ordered.map(p=>{
       const rolled=randomOnlineAbility();
       return {
-        uid:p.uid,
-        name:p.name,
-        tagNumber:p.tagNumber,
-        diceDesign:p.diceDesign||"classic",
-        cosmeticTitle:p.cosmeticTitle||"",
-        cosmeticFrame:p.cosmeticFrame||"",
-        rolledAbility:rolled.rolledAbility,
-        ability:rolled.ability
+        uid:p.uid,name:p.name,tagNumber:p.tagNumber,diceDesign:p.diceDesign||"classic",
+        cosmeticTitle:p.cosmeticTitle||"",cosmeticFrame:p.cosmeticFrame||"",
+        rolledAbility:rolled.rolledAbility,ability:rolled.ability
       };
     })
   };
@@ -204,109 +230,161 @@ async function startMatchIfReady(players){
       if(!room||room.meta?.status!=="lobby") return;
       const livePlayers=Object.entries(room.players||{}).map(([id,p])=>({uid:id,...p}));
       if(livePlayers.length!==2||!livePlayers.every(p=>p.ready===true)) return;
-      room.meta={...(room.meta||{}),status:"playing",startedAt:Date.now(),matchId:candidate.id};
+      room.meta={...(room.meta||{}),status:"playing",startedAt:Date.now(),matchId:candidate.id,syncSchema:5};
       room.match=candidate;
       return room;
     },{applyLocally:false});
-    if(!result.committed && currentRoom?.meta?.status==="lobby") throw new Error("MATCH_START_ABORTED");
+    if(!result.committed&&currentRoom?.meta?.status==="lobby") throw new Error("MATCH_START_ABORTED");
   }catch(err){
     console.error("Start online match",err);
     setNotice("Matchstart fehlgeschlagen. Beide kurz Bereit zurücknehmen und erneut versuchen.","error");
-    matchStartBusy=false;
-    setBusy(false);
+    matchStartBusy=false;setBusy(false);
   }
 }
-function enterStartedMatch(){
-  const match=currentRoom?.match;
-  const matchId=String(match?.id||currentRoom?.meta?.matchId||"");
-  if(!match||!matchId||enteredMatchId===matchId) return;
-  const localProfile=selectedProfile();
-  const started=bridge?.startMatch?.(match,uid,localProfile?.id||null,currentRoom?.meta?.hostUid===uid);
-  if(!started){
-    setNotice("Online-Match konnte lokal nicht initialisiert werden.","error");
+
+function publishVisual(request){
+  if(!currentRoomCode||!request?.id) return;
+  const visual={id:String(request.id),type:String(request.type||""),actorUid:String(request.actorUid||""),baseSeq:Number(request.baseSeq)||0,startedAt:Date.now()};
+  // Kleine Fire-and-forget-Nachricht: Gegner startet Animation sofort, während der
+  // Host die echte Engine berechnet. Kein Warten auf diesen Write.
+  set(visualRef(),visual).catch(err=>console.warn("Online visual",err));
+}
+
+async function publishHostState(rawState,request){
+  if(!rawState||!currentRoomCode) throw new Error("EMPTY_HOST_STATE");
+  const seq=++hostStateSeq;
+  const state={...rawState,schema:5,seq,actionId:String(request?.id||rawState.actionId||""),actionType:String(request?.type||rawState.actionType||""),updatedAt:Date.now()};
+  const nextUid=String(state.currentPlayerUid||"");
+  // Nur zwei kleine Match-Pfade aktualisieren, nicht mehr den kompletten Raum.
+  await update(matchRef(),{state,currentPlayerUid:nextUid,turnNumber:Number(state?.battle?.roundNumber)||1,lastStateAt:serverTimestamp()});
+  localStateSeq=seq;
+  // Der Host überspringt sein Firebase-Echo im Listener; einmal direkt an die
+  // Bridge geben, damit Pending/Seq sauber quittiert werden – ohne Re-Render.
+  if(currentIsHost) bridge?.applyState?.(state);
+  return state;
+}
+
+async function rejectHostAction(request,reason){
+  console.warn("Online action rejected",request?.type,reason);
+  const actor=String(request?.actorUid||"");
+  if(actor&&actor!==uid){
+    await set(ackRef(currentRoomCode,actor),{id:String(request?.id||""),status:"error",reason:String(reason?.message||reason||"ACTION_REJECTED"),at:serverTimestamp()}).catch(()=>{});
+  }else{
+    bridge?.rejectAction?.(String(request?.id||""),"🌐 Aktion konnte nicht ausgeführt werden.");
+  }
+}
+
+async function processHostAction(request,{fromFirebase=false}={}){
+  if(!request?.id||processingActionId||!enteredMatchId||!currentIsHost) return;
+  if(String(request.id)===lastProcessedActionId) return;
+  const actor=String(request.actorUid||"");
+  if(!actor||!currentRoom?.players?.[actor]){
+    if(fromFirebase) await remove(actionRef()).catch(()=>{});
     return;
   }
-  enteredMatchId=matchId;
-  lastAppliedStateSeq=Number(match?.state?.seq)||0;
-  matchStartBusy=false;
-}
-
-
-async function requestAction(type,payload={},baseSeq=0){
-  if(!currentRoomCode||!uid||currentRoom?.meta?.status!=="playing") throw new Error("NO_ONLINE_MATCH");
-  const actionType=String(type||"");
-  if(!actionType) throw new Error("EMPTY_ACTION");
-  const requestId=`${uid.slice(0,8)}-${Date.now().toString(36)}-${Math.random().toString(36).slice(2,7)}`;
-  const result=await runTransaction(matchRef(),match=>{
-    if(!match) return;
-    const state=match.state||{};
-    const owner=String(state.interactionOwnerUid||state.currentPlayerUid||match.currentPlayerUid||"");
-    if(owner!==String(uid)) return;
-    if(match.actionRequest) return;
-    const liveSeq=Number(state.seq)||0;
-    if(Number(baseSeq)>0 && liveSeq!==Number(baseSeq)) return;
-    match.actionRequest={
-      id:requestId,
-      type:actionType,
-      payload:payload&&typeof payload==="object"?payload:{},
-      actorUid:uid,
-      baseSeq:liveSeq,
-      requestedAt:Date.now()
-    };
-    return match;
-  },{applyLocally:false});
-  if(!result.committed) throw new Error("ACTION_REJECTED");
-  return {requestId};
-}
-
-window.WDOnlineTransport=Object.freeze({requestAction});
-
-async function processHostActionIfNeeded(){
-  if(processingActionId||!currentRoomCode||!uid||currentRoom?.meta?.hostUid!==uid||currentRoom?.meta?.status!=="playing") return;
-  const request=currentRoom?.match?.actionRequest;
-  if(!request?.id) return;
   processingActionId=String(request.id);
+  lastProcessedActionId=String(request.id);
   try{
+    const baseSeq=Number(request.baseSeq)||0;
+    if(baseSeq!==hostStateSeq) throw new Error(`STALE_STATE_${baseSeq}_${hostStateSeq}`);
+    publishVisual(request);
+    // hostExecuteAction startet die bestehende Engine synchron; dadurch sieht der
+    // Host seinen Klick ohne Firebase-Roundtrip sofort. Promise wartet nur auf den
+    // stabilen Endzustand der Animation/Timer.
     const state=await bridge?.hostExecuteAction?.(request);
     if(!state) throw new Error("HOST_STATE_EMPTY");
-    const result=await runTransaction(matchRef(),match=>{
-      if(!match||String(match.actionRequest?.id||"")!==String(request.id)) return;
-      const previousSeq=Number(match.state?.seq)||0;
-      const nextCurrentUid=String(state.currentPlayerUid||match.currentPlayerUid||"");
-      match.state={...state,seq:previousSeq+1,currentPlayerUid:nextCurrentUid};
-      match.currentPlayerUid=nextCurrentUid;
-      match.turnNumber=Number(state?.battle?.roundNumber)||Number(match.turnNumber)||1;
-      match.actionRequest=null;
-      return match;
-    },{applyLocally:false});
-    if(!result.committed) throw new Error("HOST_PUBLISH_ABORTED");
+    await publishHostState(state,request);
   }catch(err){
     console.error("Host execute online action",err);
-    // Request freigeben, damit der aktive Spieler nach einem Fehler erneut versuchen kann.
-    await runTransaction(matchRef(),match=>{
-      if(!match||String(match.actionRequest?.id||"")!==String(request.id)) return match;
-      match.actionRequest=null;
-      return match;
-    },{applyLocally:false}).catch(()=>{});
+    await rejectHostAction(request,err);
   }finally{
+    if(fromFirebase) await remove(actionRef()).catch(()=>{});
     processingActionId=null;
   }
 }
 
-function applyMatchStateIfNeeded(){
-  if(!enteredMatchId||!currentRoom?.match?.state) return;
-  const state=currentRoom.match.state;
-  const seq=Number(state.seq)||0;
-  if(seq<=lastAppliedStateSeq) return;
-  lastAppliedStateSeq=seq;
-  bridge?.applyState?.(state);
+function attachMatchListeners(match){
+  detachMatchListeners();
+  hostStateSeq=Number(match?.state?.seq)||0;
+  localStateSeq=hostStateSeq;
+
+  metaUnsubscribe=onValue(metaRef(),snap=>{
+    if(!snap.exists()){
+      // Match einfrieren statt auf lokalen Modus zurückzufallen. Sonst könnten nach
+      // Host-Verlust plötzlich die normalen Offline-onclick-Handler weiterlaufen.
+      bridge?.setConnected?.(false);
+      setNotice("Online-Raum wurde geschlossen. Verlasse das Match über das Menü.","warn");
+      return;
+    }
+    const meta=snap.val()||{};
+    currentHostUid=String(meta.hostUid||currentHostUid||"");
+    if(meta.status&&meta.status!=="playing") console.warn("Online room status",meta.status);
+  });
+
+  playersUnsubscribe=onValue(ref(db,`rooms/${currentRoomCode}/players`),snap=>{
+    const livePlayers=snap.exists()?snap.val()||{}:{};
+    if(currentRoom) currentRoom.players=livePlayers;
+    if(enteredMatchId && Object.keys(livePlayers).length<2){
+      bridge?.setConnected?.(false);
+      setNotice("Der andere Spieler hat das Match verlassen.","warn");
+    }
+  });
+
+  stateUnsubscribe=onValue(stateRef(),snap=>{
+    if(!snap.exists()) return;
+    const state=snap.val();
+    const seq=Number(state?.seq)||0;
+    if(seq<=localStateSeq) return;
+    localStateSeq=seq;
+    if(currentIsHost) hostStateSeq=Math.max(hostStateSeq,seq);
+    bridge?.applyState?.(state);
+  },err=>{console.error("Match state listener",err);bridge?.setConnected?.(false);});
+
+  visualUnsubscribe=onValue(visualRef(),snap=>{
+    if(!snap.exists()) return;
+    const visual=snap.val();
+    const id=String(visual?.id||"");
+    const visualBase=Number(visual?.baseSeq)||0;
+    if(!id||id===lastVisualId||visualBase<localStateSeq) return;
+    lastVisualId=id;
+    bridge?.previewAction?.(visual);
+  });
+
+  ackUnsubscribe=onValue(ackRef(),snap=>{
+    if(!snap.exists()) return;
+    const ack=snap.val()||{};
+    if(ack.status==="error") bridge?.rejectAction?.(String(ack.id||""),"🌐 Aktion war nicht mehr gültig. Zustand wurde neu synchronisiert.");
+  });
+
+  if(currentIsHost){
+    actionUnsubscribe=onValue(actionRef(),snap=>{
+      if(!snap.exists()) return;
+      const request=snap.val();
+      if(!request?.id||String(request.id)===lastProcessedActionId) return;
+      processHostAction(request,{fromFirebase:true});
+    },err=>console.error("Action listener",err));
+  }
 }
 
-function handlePlayingMatch(){
-  enterStartedMatch();
-  if(!enteredMatchId) return;
-  applyMatchStateIfNeeded();
-  processHostActionIfNeeded();
+function enterStartedMatch(room){
+  const match=room?.match;
+  const matchId=String(match?.id||room?.meta?.matchId||"");
+  if(!match||!matchId||enteredMatchId===matchId) return;
+  const profile=selectedProfile();
+  localProfileId=profile?.id||null;
+  currentHostUid=String(room?.meta?.hostUid||"");
+  currentIsHost=currentHostUid===String(uid||"");
+  const started=bridge?.startMatch?.(match,uid,localProfileId,currentIsHost);
+  if(!started){setNotice("Online-Match konnte lokal nicht initialisiert werden.","error");return;}
+  enteredMatchId=matchId;
+  currentMatchId=matchId;
+  hostStateSeq=Number(match?.state?.seq)||0;
+  localStateSeq=hostStateSeq;
+  matchStartBusy=false;
+
+  // Ab Matchstart kein full-room onValue mehr: Lobby-Daten sind statisch genug.
+  detachLobbyListener();
+  attachMatchListeners(match);
 }
 
 function renderLobby(){
@@ -316,41 +394,58 @@ function renderLobby(){
   const hostUid=currentRoom.meta?.hostUid;
   const isHost=hostUid===uid;
   const allReady=players.length===2&&players.every(p=>p.ready===true);
+  currentHostUid=String(hostUid||"");
+  currentIsHost=isHost;
   onlineLobbyState.textContent=`${players.length}/2 Spieler · ${isHost?"Du bist Host":"Gast"}`;
   onlinePlayerList.innerHTML=players.map(p=>{
-    const host=p.uid===hostUid;
-    const mine=p.uid===uid;
-    return `<div class="online-player${p.ready?" ready":""}">
-      <div class="online-player-main"><strong>${escapeHtml(p.name)} <span>#${escapeHtml(p.tagNumber||"0000")}</span></strong><small>${host?"👑 Host":"🎮 Gast"}${mine?" · Du":""}</small></div>
-      <div class="online-ready-chip">${p.ready?"✓ Bereit":"Wartet"}</div>
-    </div>`;
+    const host=p.uid===hostUid,mine=p.uid===uid;
+    return `<div class="online-player${p.ready?" ready":""}"><div class="online-player-main"><strong>${escapeHtml(p.name)} <span>#${escapeHtml(p.tagNumber||"0000")}</span></strong><small>${host?"👑 Host":"🎮 Gast"}${mine?" · Du":""}</small></div><div class="online-ready-chip">${p.ready?"✓ Bereit":"Wartet"}</div></div>`;
   }).join("");
   onlineReadyBtn.textContent=me?.ready?"Bereit zurücknehmen":"✓ Bereit";
   onlineReadyBtn.classList.toggle("secondary",!!me?.ready);
   onlineReadyBtn.classList.toggle("good",!me?.ready);
   if(currentRoom.meta?.status==="playing"){
     onlineLobbyHint.textContent="⚔️ Match läuft …";
-    handlePlayingMatch();
+    enterStartedMatch(currentRoom);
     return;
   }
-  onlineLobbyHint.textContent=allReady
-    ? "⚡ Beide Spieler sind bereit. Match startet automatisch …"
-    : players.length<2
-      ? "Teile den Raumcode. Die Lobby wartet auf Spieler 2."
-      : "Sobald beide Bereit sind, werden Startfähigkeiten und Startspieler automatisch bestimmt und das Match beginnt.";
+  onlineLobbyHint.textContent=allReady?"⚡ Beide Spieler sind bereit. Match startet automatisch …":players.length<2?"Teile den Raumcode. Die Lobby wartet auf Spieler 2.":"Sobald beide Bereit sind, werden Startfähigkeiten und Startspieler automatisch bestimmt und das Match beginnt.";
   if(allReady&&isHost) startMatchIfReady(players);
 }
 
+async function requestAction(type,payload={},baseSeq=0){
+  if(!currentRoomCode||!uid||!enteredMatchId||!firebaseConnected) throw new Error("NO_ONLINE_MATCH");
+  const actionType=String(type||"");
+  if(!actionType) throw new Error("EMPTY_ACTION");
+  const id=requestId();
+  const request={id,type:actionType,payload:payload&&typeof payload==="object"?payload:{},actorUid:uid,baseSeq:Number(baseSeq)||localStateSeq,requestedAt:Date.now()};
+
+  if(currentIsHost){
+    // Fast path: kein Upload/Download vor dem eigenen Klick. Engine startet jetzt.
+    processHostAction(request,{fromFirebase:false});
+    return {requestId:id,fastPath:true};
+  }
+
+  // Gast schreibt nur ~200 Bytes auf einen dedizierten Action-Pfad. Kein Transaction
+  // über den kompletten Match-State mehr. Fehler werden separat an die Bridge gemeldet.
+  set(actionRef(),request).catch(err=>{
+    console.error("Action write",err);
+    bridge?.rejectAction?.(id,"🌐 Aktion konnte Firebase nicht erreichen.");
+  });
+  return {requestId:id,fastPath:false};
+}
+window.WDOnlineTransport=Object.freeze({requestAction});
+
 async function createRoom(){
   const profile=selectedProfile();
-  if(!uid||!profile||busy) return;
+  if(!uid||!profile||busy||!firebaseConnected) return;
   setBusy(true);setNotice("Lobby wird erstellt …");
   try{
     let code=null;
     for(let attempt=0;attempt<12&&!code;attempt++){
       const candidate=makeCode();
       const initial={
-        meta:{hostUid:uid,status:"lobby",version:bridge?.getVersion?.()||"27.3.0",createdAt:Date.now(),maxPlayers:2},
+        meta:{hostUid:uid,status:"lobby",version:bridge?.getVersion?.()||"27.4.0",createdAt:Date.now(),maxPlayers:2,syncSchema:5},
         players:{[uid]:{name:profile.name,tagNumber:profile.tagNumber,diceDesign:profile.selectedDice||"classic",cosmeticTitle:profile.cosmeticTitle||"",cosmeticFrame:profile.cosmeticFrame||"",ready:false,joinedAt:Date.now(),joinedOrder:0}}
       };
       const result=await runTransaction(roomRef(candidate),current=>current===null?initial:undefined,{applyLocally:false});
@@ -358,90 +453,42 @@ async function createRoom(){
     }
     if(!code) throw new Error("Kein freier Raumcode gefunden");
     await enterRoom(code,true);
-  }catch(err){
-    console.error("Create room",err);
-    setNotice("Lobby konnte nicht erstellt werden. Prüfe Internet/Firebase und versuche es erneut.","error");
-  }finally{setBusy(false);}
+  }catch(err){console.error("Create room",err);setNotice("Lobby konnte nicht erstellt werden. Prüfe Internet/Firebase und versuche es erneut.","error");}
+  finally{setBusy(false);}
 }
 
 async function joinRoom(){
   const profile=selectedProfile();
   const code=normalizeCode(onlineJoinCode.value);
-  if(!uid||!profile||code.length!==6||busy) return;
+  if(!uid||!profile||code.length!==6||busy||!firebaseConnected) return;
   setBusy(true);setNotice("Lobby wird gesucht …");
   try{
-    // Erst den echten Serverzustand laden. Eine Realtime-Database-Transaction kann
-    // auf einem frischen Gastgerät zunächst mit lokalem `null` starten; wenn wir
-    // dieses `null` als "Raum fehlt" behandeln, wird eine gültige Lobby abgebrochen.
     const roomSnapshot=await get(roomRef(code));
     if(!roomSnapshot.exists()) throw new Error("ROOM_NOT_FOUND");
-
     const room=roomSnapshot.val();
     if(room?.meta?.status!=="lobby") throw new Error("ROOM_STARTED");
-
     const existingPlayers=room.players||{};
     if(!existingPlayers[uid]&&Object.keys(existingPlayers).length>=2) throw new Error("ROOM_FULL");
 
-    const playerData={
-      name:profile.name,
-      tagNumber:profile.tagNumber,
-      diceDesign:profile.selectedDice||"classic",
-      cosmeticTitle:profile.cosmeticTitle||"",
-      cosmeticFrame:profile.cosmeticFrame||"",
-      ready:false,
-      joinedAt:Date.now()
-    };
-
-    // Nur die Spielerliste transaktional ändern. Falls die Transaction lokal mit
-    // `null` beginnt, darf sie einen Kandidaten erzeugen; Firebase gleicht ihn
-    // anschließend mit dem Serverzustand ab und wiederholt bei einem Konflikt.
-    const playersRef=ref(db,`rooms/${code}/players`);
-    const result=await runTransaction(playersRef,players=>{
-      const nextPlayers=players||{};
-      const ids=Object.keys(nextPlayers);
-      if(!nextPlayers[uid]&&ids.length>=2) return;
-      const joinedOrder=nextPlayers[uid]?.joinedOrder ?? ids.length;
-      nextPlayers[uid]={...playerData,joinedOrder};
-      return nextPlayers;
-    },{applyLocally:false});
-
-    if(!result.committed){
-      const latest=await get(roomRef(code));
-      if(!latest.exists()) throw new Error("ROOM_NOT_FOUND");
-      const latestRoom=latest.val();
-      if(latestRoom.meta?.status!=="lobby") throw new Error("ROOM_STARTED");
-      if(!latestRoom.players?.[uid]&&Object.keys(latestRoom.players||{}).length>=2) throw new Error("ROOM_FULL");
-      throw new Error("JOIN_ABORTED");
-    }
-
-    // Race-Schutz: Falls der Host die Lobby genau während des Joins beendet hat,
-    // keinen verwaisten Gast-Eintrag stehen lassen.
+    const joinedOrder=existingPlayers[uid]?.joinedOrder??Object.keys(existingPlayers).length;
+    const playerData={name:profile.name,tagNumber:profile.tagNumber,diceDesign:profile.selectedDice||"classic",cosmeticTitle:profile.cosmeticTitle||"",cosmeticFrame:profile.cosmeticFrame||"",ready:false,joinedAt:Date.now(),joinedOrder};
+    // Nur den eigenen UID-Knoten schreiben. Das passt zu den sicheren Firebase-Rules
+    // und verhindert, dass ein Gast jemals die Daten des Hosts überschreibt.
+    await set(playerRef(code,uid),playerData);
     const finalSnapshot=await get(roomRef(code));
-    if(!finalSnapshot.exists()){
-      await remove(playerRef(code,uid)).catch(()=>{});
-      throw new Error("ROOM_NOT_FOUND");
-    }
-    if(finalSnapshot.val()?.meta?.status!=="lobby"){
-      await remove(playerRef(code,uid)).catch(()=>{});
-      throw new Error("ROOM_STARTED");
-    }
-
+    if(!finalSnapshot.exists()){await remove(playerRef(code,uid)).catch(()=>{});throw new Error("ROOM_NOT_FOUND");}
+    if(finalSnapshot.val()?.meta?.status!=="lobby"){await remove(playerRef(code,uid)).catch(()=>{});throw new Error("ROOM_STARTED");}
     await enterRoom(code,false);
   }catch(err){
     console.error("Join room",err);
     const codeText=String(err?.code||"").toLowerCase();
-    const msg=
-      err?.message==="ROOM_NOT_FOUND"?"Raumcode nicht gefunden.":
-      err?.message==="ROOM_FULL"?"Diese Lobby ist bereits voll.":
-      err?.message==="ROOM_STARTED"?"Diese Lobby ist nicht mehr offen.":
-      codeText.includes("permission")?"Firebase verweigert den Schreibzugriff. Prüfe die Realtime-Database-Regeln.":
-      "Beitreten fehlgeschlagen. Prüfe Verbindung und versuche es erneut.";
+    const msg=err?.message==="ROOM_NOT_FOUND"?"Raumcode nicht gefunden.":err?.message==="ROOM_FULL"?"Diese Lobby ist bereits voll.":err?.message==="ROOM_STARTED"?"Diese Lobby ist nicht mehr offen.":codeText.includes("permission")?"Firebase verweigert den Schreibzugriff. Prüfe die Realtime-Database-Regeln.":"Beitreten fehlgeschlagen. Prüfe Verbindung und versuche es erneut.";
     setNotice(msg,"error");
   }finally{setBusy(false);}
 }
 
 async function toggleReady(){
-  if(!currentRoomCode||!uid||busy) return;
+  if(!currentRoomCode||!uid||busy||currentRoom?.meta?.status!=="lobby") return;
   const me=currentRoom?.players?.[uid];
   if(!me) return;
   setBusy(true);
@@ -451,22 +498,23 @@ async function toggleReady(){
 }
 
 function resetRoomState(){
-  if(roomUnsubscribe){roomUnsubscribe();roomUnsubscribe=null;}
+  detachLobbyListener();detachMatchListeners();
   if(disconnectOp){disconnectOp.cancel().catch(()=>{});disconnectOp=null;}
-  currentRoomCode=null;currentRoom=null;currentIsHost=false;
-  processingActionId=null;lastAppliedStateSeq=0;enteredMatchId=null;
+  bridge?.stopMatch?.();
+  currentRoomCode=null;currentRoom=null;currentIsHost=false;currentHostUid="";currentMatchId="";enteredMatchId=null;
+  processingActionId=null;lastProcessedActionId="";lastVisualId="";hostStateSeq=0;localStateSeq=0;localProfileId=null;matchStartBusy=false;
 }
-async function leaveRoom(){
-  if(!currentRoomCode||!uid){resetRoomState();return;}
+async function leaveRoom({showHome=true}={}){
+  if(!currentRoomCode||!uid){resetRoomState();if(showHome)showOnlineHome();return;}
   const code=currentRoomCode;
-  const isHost=currentIsHost||currentRoom?.meta?.hostUid===uid;
+  const isHost=currentIsHost||currentHostUid===uid;
   try{
     if(disconnectOp){await disconnectOp.cancel().catch(()=>{});disconnectOp=null;}
     if(isHost) await remove(roomRef(code));
     else await remove(playerRef(code));
   }catch(err){console.warn("Leave room",err);}
   resetRoomState();
-  showOnlineHome();
+  if(showHome) showOnlineHome();
 }
 
 menuOnlineBtn?.addEventListener("click",openOnline);
@@ -474,23 +522,24 @@ onlineBackBtn?.addEventListener("click",closeOnline);
 onlineCreateBtn?.addEventListener("click",createRoom);
 onlineJoinBtn?.addEventListener("click",joinRoom);
 onlineReadyBtn?.addEventListener("click",toggleReady);
-onlineLeaveBtn?.addEventListener("click",leaveRoom);
+onlineLeaveBtn?.addEventListener("click",()=>leaveRoom({showHome:true}));
 onlineProfileSelect?.addEventListener("change",()=>setBusy(false));
 onlineJoinCode?.addEventListener("input",()=>{onlineJoinCode.value=normalizeCode(onlineJoinCode.value);setBusy(false);});
-onlineJoinCode?.addEventListener("keydown",e=>{if(e.key==="Enter"&&!onlineJoinBtn.disabled) joinRoom();});
+onlineJoinCode?.addEventListener("keydown",e=>{if(e.key==="Enter"&&!onlineJoinBtn.disabled)joinRoom();});
 onlineCopyCodeBtn?.addEventListener("click",async()=>{
-  if(!currentRoomCode) return;
+  if(!currentRoomCode)return;
   try{await navigator.clipboard.writeText(currentRoomCode);onlineCopyCodeBtn.textContent="✓ Kopiert";setTimeout(()=>onlineCopyCodeBtn.textContent="Code kopieren",1200);}
   catch(_){setNotice(`Raumcode: ${currentRoomCode}`);}
 });
 
-window.addEventListener("online",()=>{if(authReady)setConnection("Firebase verbunden","online");});
-window.addEventListener("offline",()=>setConnection("Keine Internetverbindung","offline"));
+// Wenn man im laufenden Online-Fight über das bestehende Spielmenü quittet, wird
+// der Firebase-Raum jetzt ebenfalls sauber beendet statt als Zombie-Lobby zu bleiben.
+quitConfirmBtn?.addEventListener("click",()=>{
+  if(enteredMatchId) leaveRoom({showHome:false}).catch(err=>console.warn("Online quit",err));
+},true);
 
 onAuthStateChanged(auth,user=>{
-  if(user){
-    uid=user.uid;authReady=true;setConnection("Firebase verbunden","online");setBusy(false);
-  }
+  if(user){uid=user.uid;authReady=true;setBusy(false);}
 });
 
 setConnection("Firebase verbindet …","pending");
@@ -501,3 +550,15 @@ signInAnonymously(auth).catch(err=>{
   setNotice("Anonymous Authentication konnte nicht gestartet werden. Prüfe in Firebase, ob „Anonym“ aktiviert ist.","error");
   setBusy(false);
 });
+
+// .info/connected ist genauer als nur navigator.onLine: Es zeigt, ob die echte
+// Realtime-Database-Verbindung steht. Im Match sperrt die Bridge Eingaben sofort,
+// statt Aktionen in einem unbekannten Zustand weiterlaufen zu lassen.
+connectedUnsubscribe=onValue(ref(db,".info/connected"),snap=>{
+  firebaseConnected=snap.val()===true;
+  if(firebaseConnected){setConnection("Firebase verbunden","online");bridge?.setConnected?.(true);}
+  else{setConnection("Firebase getrennt","offline");bridge?.setConnected?.(false);}
+  setBusy(false);
+});
+
+window.addEventListener("beforeunload",()=>{try{connectedUnsubscribe?.();}catch(_){}});
