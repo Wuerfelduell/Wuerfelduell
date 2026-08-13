@@ -1,11 +1,11 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.17.1/firebase-app.js";
 import { getAuth, onAuthStateChanged, signInAnonymously } from "https://www.gstatic.com/firebasejs/12.17.1/firebase-auth.js";
 import {
-  getDatabase, ref, get, set, update, remove, onValue,
+  getDatabase, ref, get, set, update, remove, onValue, onChildAdded,
   onDisconnect, runTransaction, serverTimestamp
 } from "https://www.gstatic.com/firebasejs/12.17.1/firebase-database.js";
 
-// Firebase bleibt in V27.4.0 bewusst nur Transport + Raum-/Presence-Layer.
+// Firebase bleibt bewusst nur Transport + Raum-/Presence-Layer.
 // Die eigentliche Würfelduell-Engine läuft weiterhin auf dem Host-Gerät.
 const firebaseConfig={
   apiKey:"AIzaSyDWVildqD4Hx8JpuY87blbcdJYawluDJ5Y",
@@ -57,6 +57,10 @@ let connectedUnsubscribe=null;
 let processingActionId=null;
 let lastProcessedActionId="";
 let lastVisualId="";
+let hostActionQueue=[];
+let hostEngineDraining=false;
+let hostQueuedActionIds=new Set();
+let hostPublishChain=Promise.resolve();
 let hostStateSeq=0;
 let localStateSeq=0;
 let localProfileId=null;
@@ -137,7 +141,8 @@ function metaRef(code=currentRoomCode){return ref(db,`rooms/${code}/meta`);}
 function playerRef(code=currentRoomCode,userUid=uid){return ref(db,`rooms/${code}/players/${userUid}`);}
 function matchRef(code=currentRoomCode){return ref(db,`rooms/${code}/match`);}
 function stateRef(code=currentRoomCode){return ref(db,`rooms/${code}/match/state`);}
-function actionRef(code=currentRoomCode){return ref(db,`rooms/${code}/match/action`);}
+function actionsRef(code=currentRoomCode){return ref(db,`rooms/${code}/match/actions`);}
+function actionItemRef(id,code=currentRoomCode){return ref(db,`rooms/${code}/match/actions/${id}`);}
 function visualRef(code=currentRoomCode){return ref(db,`rooms/${code}/match/visual`);}
 function ackRef(code=currentRoomCode,userUid=uid){return ref(db,`rooms/${code}/match/acks/${userUid}`);}
 
@@ -250,17 +255,25 @@ function publishVisual(request){
   set(visualRef(),visual).catch(err=>console.warn("Online visual",err));
 }
 
-async function publishHostState(rawState,request){
+function stageHostState(rawState,request){
   if(!rawState||!currentRoomCode) throw new Error("EMPTY_HOST_STATE");
+  // Die logische Sequenz wird SOFORT vergeben, sobald die Host-Engine stabil ist.
+  // Firebase-Publishing läuft danach seriell im Hintergrund. Dadurch hängt kein
+  // lokaler Folgebutton mehr an Netzwerklatenz.
   const seq=++hostStateSeq;
   const state={...rawState,schema:5,seq,actionId:String(request?.id||rawState.actionId||""),actionType:String(request?.type||rawState.actionType||""),updatedAt:Date.now()};
   const nextUid=String(state.currentPlayerUid||"");
-  // Nur zwei kleine Match-Pfade aktualisieren, nicht mehr den kompletten Raum.
-  await update(matchRef(),{state,currentPlayerUid:nextUid,turnNumber:Number(state?.battle?.roundNumber)||1,lastStateAt:serverTimestamp()});
   localStateSeq=seq;
-  // Der Host überspringt sein Firebase-Echo im Listener; einmal direkt an die
-  // Bridge geben, damit Pending/Seq sauber quittiert werden – ohne Re-Render.
   if(currentIsHost) bridge?.applyState?.(state);
+
+  hostPublishChain=hostPublishChain.then(async()=>{
+    if(!currentRoomCode||!enteredMatchId) return;
+    await update(matchRef(),{state,currentPlayerUid:nextUid,turnNumber:Number(state?.battle?.roundNumber)||1,lastStateAt:serverTimestamp()});
+  }).catch(err=>{
+    console.error("Host state publish",err);
+    bridge?.setConnected?.(false);
+    setNotice("Match-State konnte nicht zu Firebase gesendet werden. Match wurde eingefroren.","error");
+  });
   return state;
 }
 
@@ -274,32 +287,56 @@ async function rejectHostAction(request,reason){
   }
 }
 
-async function processHostAction(request,{fromFirebase=false}={}){
-  if(!request?.id||processingActionId||!enteredMatchId||!currentIsHost) return;
-  if(String(request.id)===lastProcessedActionId) return;
+function enqueueHostAction(request,{fromFirebase=false,actionKey=""}={}){
+  if(!request?.id||!enteredMatchId||!currentIsHost) return false;
+  const id=String(request.id);
+  if(id===lastProcessedActionId||hostQueuedActionIds.has(id)) return false;
   const actor=String(request.actorUid||"");
   if(!actor||!currentRoom?.players?.[actor]){
-    if(fromFirebase) await remove(actionRef()).catch(()=>{});
-    return;
+    if(fromFirebase) remove(actionItemRef(actionKey||id)).catch(()=>{});
+    return false;
   }
-  processingActionId=String(request.id);
-  lastProcessedActionId=String(request.id);
+  hostQueuedActionIds.add(id);
+  hostActionQueue.push({request,fromFirebase,actionKey:String(actionKey||id)});
+
+  // Jede Gast-Aktion besitzt ihren eigenen Firebase-Knoten. Dadurch können schnelle
+  // Folgeaktionen niemals eine noch nicht gelöschte Vorgängeraktion überschreiben.
+  if(fromFirebase) remove(actionItemRef(actionKey||id)).catch(err=>console.warn("Action cleanup",err));
+  drainHostActionQueue();
+  return true;
+}
+
+async function drainHostActionQueue(){
+  if(hostEngineDraining||!currentIsHost||!enteredMatchId) return;
+  hostEngineDraining=true;
   try{
-    const baseSeq=Number(request.baseSeq)||0;
-    if(baseSeq!==hostStateSeq) throw new Error(`STALE_STATE_${baseSeq}_${hostStateSeq}`);
-    publishVisual(request);
-    // hostExecuteAction startet die bestehende Engine synchron; dadurch sieht der
-    // Host seinen Klick ohne Firebase-Roundtrip sofort. Promise wartet nur auf den
-    // stabilen Endzustand der Animation/Timer.
-    const state=await bridge?.hostExecuteAction?.(request);
-    if(!state) throw new Error("HOST_STATE_EMPTY");
-    await publishHostState(state,request);
-  }catch(err){
-    console.error("Host execute online action",err);
-    await rejectHostAction(request,err);
+    while(hostActionQueue.length&&currentIsHost&&enteredMatchId){
+      const item=hostActionQueue.shift();
+      const request=item.request;
+      const id=String(request?.id||"");
+      processingActionId=id;
+      try{
+        const baseSeq=Number(request.baseSeq)||0;
+        // Gäste dürfen nur auf genau dem State handeln, den sie zuletzt bestätigt
+        // bekommen haben. Lokale Host-Aktionen dürfen dagegen bereits auf einem neu
+        // entstandenen Modal klicken, während dessen Snapshot noch zu Firebase fließt.
+        if(item.fromFirebase && baseSeq!==hostStateSeq) throw new Error(`STALE_STATE_${baseSeq}_${hostStateSeq}`);
+        publishVisual(request);
+        const rawState=await bridge?.hostExecuteAction?.(request);
+        if(!rawState) throw new Error("HOST_STATE_EMPTY");
+        stageHostState(rawState,request);
+        lastProcessedActionId=id;
+      }catch(err){
+        console.error("Host execute online action",err);
+        await rejectHostAction(request,err);
+      }finally{
+        hostQueuedActionIds.delete(id);
+        processingActionId=null;
+      }
+    }
   }finally{
-    if(fromFirebase) await remove(actionRef()).catch(()=>{});
-    processingActionId=null;
+    hostEngineDraining=false;
+    if(hostActionQueue.length&&currentIsHost&&enteredMatchId) queueMicrotask(drainHostActionQueue);
   }
 }
 
@@ -357,11 +394,11 @@ function attachMatchListeners(match){
   });
 
   if(currentIsHost){
-    actionUnsubscribe=onValue(actionRef(),snap=>{
+    actionUnsubscribe=onChildAdded(actionsRef(),snap=>{
       if(!snap.exists()) return;
       const request=snap.val();
       if(!request?.id||String(request.id)===lastProcessedActionId) return;
-      processHostAction(request,{fromFirebase:true});
+      enqueueHostAction(request,{fromFirebase:true,actionKey:snap.key||request.id});
     },err=>console.error("Action listener",err));
   }
 }
@@ -421,14 +458,15 @@ async function requestAction(type,payload={},baseSeq=0){
   const request={id,type:actionType,payload:payload&&typeof payload==="object"?payload:{},actorUid:uid,baseSeq:Number(baseSeq)||localStateSeq,requestedAt:Date.now()};
 
   if(currentIsHost){
-    // Fast path: kein Upload/Download vor dem eigenen Klick. Engine startet jetzt.
-    processHostAction(request,{fromFirebase:false});
+    // Fast path: Host-Aktion geht direkt in die lokale Engine-Queue. Der nächste
+    // Spezialbutton darf schon reagieren, während ältere States seriell publishen.
+    if(!enqueueHostAction(request,{fromFirebase:false})) throw new Error("HOST_ACTION_QUEUE_REJECTED");
     return {requestId:id,fastPath:true};
   }
 
   // Gast schreibt nur ~200 Bytes auf einen dedizierten Action-Pfad. Kein Transaction
   // über den kompletten Match-State mehr. Fehler werden separat an die Bridge gemeldet.
-  set(actionRef(),request).catch(err=>{
+  set(actionItemRef(id),request).catch(err=>{
     console.error("Action write",err);
     bridge?.rejectAction?.(id,"🌐 Aktion konnte Firebase nicht erreichen.");
   });
@@ -445,7 +483,7 @@ async function createRoom(){
     for(let attempt=0;attempt<12&&!code;attempt++){
       const candidate=makeCode();
       const initial={
-        meta:{hostUid:uid,status:"lobby",version:bridge?.getVersion?.()||"27.4.0",createdAt:Date.now(),maxPlayers:2,syncSchema:5},
+        meta:{hostUid:uid,status:"lobby",version:bridge?.getVersion?.()||"27.4.2",createdAt:Date.now(),maxPlayers:2,syncSchema:5},
         players:{[uid]:{name:profile.name,tagNumber:profile.tagNumber,diceDesign:profile.selectedDice||"classic",cosmeticTitle:profile.cosmeticTitle||"",cosmeticFrame:profile.cosmeticFrame||"",ready:false,joinedAt:Date.now(),joinedOrder:0}}
       };
       const result=await runTransaction(roomRef(candidate),current=>current===null?initial:undefined,{applyLocally:false});
@@ -503,6 +541,7 @@ function resetRoomState(){
   bridge?.stopMatch?.();
   currentRoomCode=null;currentRoom=null;currentIsHost=false;currentHostUid="";currentMatchId="";enteredMatchId=null;
   processingActionId=null;lastProcessedActionId="";lastVisualId="";hostStateSeq=0;localStateSeq=0;localProfileId=null;matchStartBusy=false;
+  hostActionQueue=[];hostEngineDraining=false;hostQueuedActionIds.clear();hostPublishChain=Promise.resolve();
 }
 async function leaveRoom({showHome=true}={}){
   if(!currentRoomCode||!uid){resetRoomState();if(showHome)showOnlineHome();return;}
