@@ -1,0 +1,92 @@
+/* V27.5.1 – Achievement expansion, selectable profile attack FX. */
+
+/* Profile cosmetics: attack FX lives next to name + dice and is saved per profile. */
+.profile-actions{grid-template-columns:minmax(0,1fr) minmax(0,1fr) minmax(0,1fr) auto}
+.unlock-strip-title{margin-top:10px;color:#7f8da2;font-size:9px;font-weight:1000;letter-spacing:.11em;text-transform:uppercase}
+.unlock-chip.fx{border-color:rgba(115,198,255,.24);background:rgba(44,92,128,.12)}
+@media(max-width:720px){.profile-actions{grid-template-columns:1fr 1fr}.profile-delete{grid-column:1/-1}}
+@media(max-width:430px){.profile-actions{grid-template-columns:1fr}.profile-delete{grid-column:auto}}
+
+/* Shared projectile tuning. */
+.attack-fx-beam,.attack-fx-lightning,.attack-fx-impact,.attack-fx-particle,.attack-fx-burst,.attack-fx-ring{pointer-events:none}
+.attack-fx-particle,.attack-fx-burst{position:absolute;display:block;z-index:2;will-change:transform,opacity}
+.attack-fx-particle{width:8px;height:8px;margin:-4px 0 0 -4px;border-radius:50%;opacity:0;animation:wdFxTrail .6s ease-out var(--fx-delay,0ms) forwards}
+@keyframes wdFxTrail{0%{opacity:0;transform:translate(0,0) scale(.5)}22%{opacity:1}100%{opacity:0;transform:translate(var(--fx-dx,0),var(--fx-dy,-18px)) scale(.1)}}
+.attack-fx-burst{margin:-6px 0 0 -6px;min-width:12px;min-height:12px;font-size:15px;font-weight:1000;line-height:12px;text-align:center;opacity:0;animation:wdFxBurst .72s cubic-bezier(.13,.72,.24,1) var(--fx-delay,0ms) forwards}
+@keyframes wdFxBurst{0%{opacity:0;transform:translate(0,0) rotate(0) scale(.35)}15%{opacity:1}100%{opacity:0;transform:translate(var(--fx-x,0),var(--fx-y,0)) rotate(var(--fx-r,120deg)) scale(.8)}}
+.attack-fx-ring{position:absolute;width:24px;height:24px;margin:-12px 0 0 -12px;border-radius:50%;opacity:0;animation:wdFxRing .65s ease-out forwards}
+@keyframes wdFxRing{0%{opacity:0;transform:scale(.3)}15%{opacity:1}100%{opacity:0;transform:scale(4.8)}}
+
+/* THUNDERBOLT */
+.attack-fx-lightning.fx-lightning{filter:drop-shadow(0 0 5px #bdf7ff) drop-shadow(0 0 16px #28bfff)}
+.attack-fx-lightning.fx-lightning polyline{stroke:#efffff;stroke-width:4.2}
+.attack-fx-impact.fx-lightning{border-color:#dffcff;box-shadow:0 0 12px #a8f7ff,0 0 34px rgba(40,173,255,.95)}
+.attack-fx-burst.fx-lightning{width:6px;height:14px;background:#bdf8ff;border-radius:80% 20%;box-shadow:0 0 9px #46cfff;color:transparent}
+
+/* HELLFIRE */
+.attack-fx-beam.fx-flame{height:8px;background:linear-gradient(90deg,transparent,#ffdf72 14%,#ff782d 44%,#f02824 72%,transparent);box-shadow:0 0 7px #ffb52f,0 0 24px rgba(255,67,31,.95),0 0 42px rgba(170,18,8,.72);animation-duration:.48s}
+.attack-fx-particle.fx-flame{background:radial-gradient(circle,#fff4a1 0 18%,#ff922f 36%,#e92f1e 72%,transparent 74%);box-shadow:0 0 9px #ff6d24}
+.attack-fx-burst.fx-flame{width:12px;height:12px;border-radius:50%;background:radial-gradient(circle,#fff8b5,#ff7a25 44%,#ce2119 70%,transparent 72%);color:transparent;box-shadow:0 0 11px #ff6527}
+.attack-fx-impact.fx-flame{border-color:#ffb13e;box-shadow:0 0 12px #ffbe45,0 0 36px rgba(255,50,25,.92)}
+
+/* VENOM */
+.attack-fx-beam.fx-venom{height:6px;background:linear-gradient(90deg,transparent,#d7ff62 18%,#62ff5a 45%,#16b93f 72%,transparent);box-shadow:0 0 7px #8cff5c,0 0 24px rgba(45,255,89,.8)}
+.attack-fx-particle.fx-venom{background:#7eff5c;box-shadow:0 0 8px #2aff53}
+.attack-fx-burst.fx-venom{width:13px;height:13px;border-radius:50% 45% 58% 42%;background:radial-gradient(circle,#d8ff65,#4dde45 50%,#0a6b29 75%);color:transparent;filter:blur(.3px)}
+.attack-fx-impact.fx-venom{border-color:#7cff63;box-shadow:0 0 10px #7cff63,0 0 32px rgba(33,200,75,.88)}
+
+/* BLOOD SLASH */
+.attack-fx-beam.fx-blood{height:5px;background:linear-gradient(90deg,transparent,#ff8b8b 18%,#d61636 44%,#6e071c 80%,transparent);box-shadow:0 0 7px #ff526d,0 0 21px rgba(173,10,44,.95)}
+.attack-fx-burst.fx-blood{width:7px;height:15px;border-radius:70% 40% 65% 35%;background:#c71232;color:transparent;box-shadow:0 0 5px rgba(255,45,79,.8)}
+.attack-fx-impact.fx-blood{border-color:#ff4966;box-shadow:0 0 11px #ff4966,0 0 30px rgba(129,7,35,.95)}
+
+/* ROYAL BURST */
+.attack-fx-beam.fx-jackpot{height:6px;background:linear-gradient(90deg,transparent,#fff7bd 15%,#ffc93f 40%,#fff 56%,#ffcf48 76%,transparent);box-shadow:0 0 8px #ffe86a,0 0 25px rgba(255,199,54,.92)}
+.attack-fx-burst.fx-jackpot{color:#ffe166;text-shadow:0 0 7px #ffb21f,0 2px 2px #5d2600}
+.attack-fx-burst.fx-jackpot:nth-of-type(4n+2){color:#ff566d}
+.attack-fx-impact.fx-jackpot{border-color:#ffe66b;box-shadow:0 0 12px #fff3a7,0 0 34px rgba(255,183,32,.9)}
+
+/* VOID RIFT */
+.attack-fx-beam.fx-void{height:7px;background:linear-gradient(90deg,transparent,#c084ff 15%,#6c30d7 38%,#19052f 58%,#a05cff 78%,transparent);box-shadow:0 0 8px #b56eff,0 0 28px rgba(116,44,232,.95),0 0 46px rgba(41,8,79,.9)}
+.attack-fx-ring.fx-void{border:3px solid #a863ff;box-shadow:0 0 15px #9b4dff,0 0 35px rgba(90,32,155,.9)}
+.attack-fx-burst.fx-void{width:9px;height:9px;border-radius:50%;background:#ba74ff;color:transparent;box-shadow:0 0 10px #8f40ef}
+.attack-fx-impact.fx-void{border-color:#b26cff;box-shadow:0 0 11px #b26cff,0 0 36px rgba(84,29,165,.96)}
+
+/* CONFETTI CANNON */
+.attack-fx-beam.fx-confetti{height:4px;background:linear-gradient(90deg,transparent,#ffec68,#7cf7ff,#ff76cf,#9cff72,#fff,transparent);box-shadow:0 0 10px rgba(255,255,255,.8)}
+.attack-fx-burst.fx-confetti{color:#ffdf55;text-shadow:0 0 4px rgba(255,255,255,.8)}
+.attack-fx-burst.fx-confetti:nth-of-type(4n+1){color:#62eaff}.attack-fx-burst.fx-confetti:nth-of-type(4n+2){color:#ff69c9}.attack-fx-burst.fx-confetti:nth-of-type(4n+3){color:#8eff69}
+.attack-fx-impact.fx-confetti{border-color:#fff18b;box-shadow:0 0 11px #fff,0 0 30px rgba(255,102,213,.75)}
+
+/* FROST LANCE */
+.attack-fx-beam.fx-frost{height:7px;background:linear-gradient(90deg,transparent,#f4ffff 15%,#a7f2ff 38%,#52bde8 65%,#eaffff 83%,transparent);box-shadow:0 0 8px #d8ffff,0 0 25px rgba(89,206,255,.9)}
+.attack-fx-burst.fx-frost{color:#dffcff;text-shadow:0 0 8px #54d4ff}
+.attack-fx-impact.fx-frost{border-color:#c7f8ff;box-shadow:0 0 12px #dfffff,0 0 34px rgba(72,185,242,.92)}
+
+/* RIFT TEAR */
+.attack-fx-lightning.fx-rift{filter:drop-shadow(0 0 5px #d08cff) drop-shadow(0 0 15px #5fd9ff)}
+.attack-fx-lightning.fx-rift polyline{stroke:#d9b0ff;stroke-width:4}
+.attack-fx-ring.fx-rift{border:3px solid #9d61ff;box-shadow:0 0 13px #8250ff,0 0 28px #37c8e9}
+.attack-fx-burst.fx-rift{width:8px;height:8px;border-radius:2px;background:#9e72ff;color:transparent;box-shadow:0 0 8px #62d9ff}
+.attack-fx-impact.fx-rift{border-color:#a87cff;box-shadow:0 0 11px #a87cff,0 0 34px rgba(60,191,224,.85)}
+
+/* CROWNFALL */
+.attack-fx-lightning.fx-crown{filter:drop-shadow(0 0 5px #fff1a0) drop-shadow(0 0 16px #ffb420)}
+.attack-fx-lightning.fx-crown polyline{stroke:#fff3ad;stroke-width:4.4}
+.attack-fx-burst.fx-crown{color:#ffe272;text-shadow:0 0 9px #ffbb22,0 2px 2px #704000}
+.attack-fx-impact.fx-crown{border-color:#ffe379;box-shadow:0 0 12px #fff0a4,0 0 38px rgba(255,177,27,.95)}
+
+/* Source glow follows the equipped effect roughly, without touching card frames. */
+.player.attack-source-flash.fx-flame{animation-name:wdAttackSourceFlame}.player.attack-source-flash.fx-venom{animation-name:wdAttackSourceVenom}.player.attack-source-flash.fx-blood{animation-name:wdAttackSourceBlood}.player.attack-source-flash.fx-void,.player.attack-source-flash.fx-rift{animation-name:wdAttackSourceVoid}.player.attack-source-flash.fx-crown,.player.attack-source-flash.fx-jackpot{animation-name:wdAttackSourceGold}
+@keyframes wdAttackSourceFlame{0%{box-shadow:0 0 0 rgba(255,86,30,0)}35%{box-shadow:0 0 31px rgba(255,86,30,.95)}100%{box-shadow:0 0 0 rgba(255,86,30,0)}}
+@keyframes wdAttackSourceVenom{0%{box-shadow:0 0 0 rgba(71,255,87,0)}35%{box-shadow:0 0 31px rgba(71,255,87,.9)}100%{box-shadow:0 0 0 rgba(71,255,87,0)}}
+@keyframes wdAttackSourceBlood{0%{box-shadow:0 0 0 rgba(222,23,56,0)}35%{box-shadow:0 0 31px rgba(222,23,56,.92)}100%{box-shadow:0 0 0 rgba(222,23,56,0)}}
+@keyframes wdAttackSourceVoid{0%{box-shadow:0 0 0 rgba(145,77,255,0)}35%{box-shadow:0 0 31px rgba(145,77,255,.92)}100%{box-shadow:0 0 0 rgba(145,77,255,0)}}
+@keyframes wdAttackSourceGold{0%{box-shadow:0 0 0 rgba(255,201,59,0)}35%{box-shadow:0 0 31px rgba(255,201,59,.92)}100%{box-shadow:0 0 0 rgba(255,201,59,0)}}
+
+/* Old Android compatibility: preserve the effect identity, drop particle/filter load. */
+html.legacy-flat-dice .attack-fx-particle,html.legacy-flat-dice .attack-fx-burst{display:none!important}
+html.legacy-flat-dice .attack-fx-lightning{filter:none!important}
+html.legacy-flat-dice .attack-fx-beam{filter:none!important}
+
+@media(prefers-reduced-motion:reduce){.attack-fx-particle,.attack-fx-burst,.attack-fx-ring{animation-duration:.01ms!important;animation-iteration-count:1!important}}
