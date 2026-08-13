@@ -1,6 +1,162 @@
 (function(){
   "use strict";
 
+  let onlineSession={active:false,uid:"",roomCode:"",isHost:false,lastStateSeq:0,actionPending:false};
+  let originalPrimaryHandler=null;
+  let onlineInputHooksInstalled=false;
+
+  function isOnlineMatch(){
+    return onlineSession.active && gameContext?.mode==="online-1v1";
+  }
+
+  function localIsCurrentPlayer(){
+    return isOnlineMatch() && String(players[current]?.onlineUid||"")===String(onlineSession.uid||"");
+  }
+
+  function enforceOnlineControls(message=""){
+    if(!isOnlineMatch()) return;
+    const myTurn=localIsCurrentPlayer();
+    const canBaseRoll=myTurn && phase==="idle" && !isAnimating && !onlineSession.actionPending;
+
+    // V27.2.5 synchronisiert bewusst zuerst nur den Basiswurf. Alle weiteren
+    // Battle-Aktionen bleiben gesperrt, bis ihr jeweiliger Online-Adapter folgt.
+    primaryBtn.disabled=!canBaseRoll;
+    [lockBtn,baseRerollBtn,loadedDiceBtn,snakeEyesBtn,attackPowerBtn,bloodLowerBtn,bloodHigherBtn,resolveAttackBtn,nextBtn].forEach(btn=>{
+      if(btn) btn.disabled=true;
+    });
+
+    if(message){statusEl.textContent=message;return;}
+    if(onlineSession.actionPending){
+      statusEl.textContent="🌐 Wurf an Host gesendet …";
+    }else if(phase==="idle"){
+      statusEl.textContent=myTurn
+        ? "🌐 Du bist dran · Basiswurf ist online freigegeben."
+        : `🌐 ${players[current]?.name||"Gegner"} ist dran · warte auf den Basiswurf.`;
+    }else if(phase==="base_select"){
+      statusEl.textContent="🌐 Basiswurf synchronisiert ✓ · Lock-/Restwurf-Sync folgt als nächster Schritt.";
+    }else{
+      statusEl.textContent="🌐 Online-State synchronisiert · diese Aktion ist in der Beta noch gesperrt.";
+    }
+  }
+
+  function installOnlineInputHooks(){
+    if(onlineInputHooksInstalled) return;
+    onlineInputHooksInstalled=true;
+    originalPrimaryHandler=primaryBtn.onclick;
+    primaryBtn.onclick=(event)=>{
+      if(!isOnlineMatch()){
+        if(typeof originalPrimaryHandler==="function") originalPrimaryHandler.call(primaryBtn,event);
+        return;
+      }
+      if(phase!=="idle" || !localIsCurrentPlayer() || onlineSession.actionPending || isAnimating) return;
+      onlineSession.actionPending=true;
+      enforceOnlineControls();
+      const sent=window.WDOnlineTransport?.requestBaseRoll?.();
+      if(sent && typeof sent.catch==="function"){
+        sent.catch(err=>{
+          console.error("Online base-roll request",err);
+          onlineSession.actionPending=false;
+          enforceOnlineControls("🌐 Basiswurf konnte nicht gesendet werden. Bitte erneut versuchen.");
+        });
+      }
+    };
+
+    // Auswahl/Locken ist noch nicht synchronisiert. Verhindert, dass nach dem
+    // ersten gemeinsamen Wurf ein Gerät lokal Würfel markiert und auseinanderläuft.
+    diceEl?.addEventListener("click",event=>{
+      if(!isOnlineMatch()) return;
+      event.preventDefault();
+      event.stopImmediatePropagation();
+    },true);
+  }
+
+  function exportOnlineState(actionId=""){
+    return {
+      seq:onlineSession.lastStateSeq+1,
+      actionId:String(actionId||""),
+      phase:String(phase||"idle"),
+      currentPlayerUid:String(players[current]?.onlineUid||""),
+      dice:dice.map(d=>({value:d.value==null?null:Number(d.value),locked:!!d.locked,selected:!!d.selected})),
+      players:players.map(p=>({uid:String(p.onlineUid||""),hp:Number(p.hp)||0})),
+      updatedAt:Date.now()
+    };
+  }
+
+  function applyPlayerHp(statePlayers){
+    if(!Array.isArray(statePlayers)) return;
+    statePlayers.forEach(entry=>{
+      const idx=players.findIndex(p=>String(p?.onlineUid||"")===String(entry?.uid||""));
+      if(idx>=0 && Number.isFinite(Number(entry?.hp))) players[idx].hp=Number(entry.hp);
+    });
+  }
+
+  function applyAuthoritativeState(state){
+    if(!isOnlineMatch() || !state) return false;
+    const seq=Number(state.seq)||0;
+    if(seq<=onlineSession.lastStateSeq) return false;
+    onlineSession.lastStateSeq=seq;
+    onlineSession.actionPending=false;
+
+    const turnUid=String(state.currentPlayerUid||"");
+    const turnIndex=players.findIndex(p=>String(p?.onlineUid||"")===turnUid);
+    if(turnIndex>=0) current=turnIndex;
+    applyPlayerHp(state.players);
+
+    const incomingDice=Array.isArray(state.dice)?state.dice:[];
+    const shouldAnimate=!onlineSession.isHost && phase==="idle" && state.phase==="base_select" && incomingDice.length===dice.length;
+
+    if(shouldAnimate){
+      isAnimating=true;
+      dice.forEach((d,i)=>{if(incomingDice[i]?.value!=null)d.rolling=true;});
+      renderAll();
+      enforceOnlineControls("🌐 Gemeinsamer Basiswurf …");
+      setTimeout(()=>{
+        dice=dice.map((d,i)=>({
+          ...d,
+          value:incomingDice[i]?.value==null?null:Number(incomingDice[i].value),
+          locked:!!incomingDice[i]?.locked,
+          selected:!!incomingDice[i]?.selected,
+          rolling:false
+        }));
+        phase=String(state.phase||"base_select");
+        isAnimating=false;
+        renderAll();
+        enforceOnlineControls();
+      },ROLL_ANIM_MS);
+      return true;
+    }
+
+    if(incomingDice.length===dice.length){
+      dice=dice.map((d,i)=>({
+        ...d,
+        value:incomingDice[i]?.value==null?null:Number(incomingDice[i].value),
+        locked:!!incomingDice[i]?.locked,
+        selected:!!incomingDice[i]?.selected,
+        rolling:false
+      }));
+    }
+    phase=String(state.phase||phase);
+    isAnimating=false;
+    renderAll();
+    enforceOnlineControls();
+    return true;
+  }
+
+  async function hostExecuteAction(request){
+    if(!isOnlineMatch() || !onlineSession.isHost || !request) throw new Error("ONLINE_NOT_HOST");
+    const actorUid=String(request.actorUid||"");
+    if(String(players[current]?.onlineUid||"")!==actorUid) throw new Error("WRONG_TURN");
+    if(request.type!=="base_roll" || phase!=="idle") throw new Error("UNSUPPORTED_ACTION");
+
+    // Bestehende Battle-Engine bleibt die Recheninstanz: der Host führt exakt den
+    // normalen rollBase()-Pfad aus und veröffentlicht erst danach den Zustand.
+    rollBase();
+    await new Promise(resolve=>setTimeout(resolve,ROLL_ANIM_MS+40));
+    if(phase!=="base_select") throw new Error("BASE_ROLL_DID_NOT_FINISH");
+    enforceOnlineControls();
+    return exportOnlineState(request.id);
+  }
+
   function publicProfile(profile){
     if(!profile) return null;
     let cosmeticTitle="",cosmeticFrame="";
@@ -66,8 +222,17 @@
     };
   }
 
-  function startOnlineMatch(match,localUid,localProfileId){
+  function startOnlineMatch(match,localUid,localProfileId,isHost=false){
     const matchPlayers=Array.isArray(match?.players)?match.players:[];
+    onlineSession={
+      active:true,
+      uid:String(localUid||""),
+      roomCode:String(match?.roomCode||""),
+      isHost:!!isHost,
+      lastStateSeq:Number(match?.state?.seq)||0,
+      actionPending:false
+    };
+    installOnlineInputHooks();
     if(matchPlayers.length!==2 || !localUid) return false;
     if(!matchPlayers.some(p=>String(p?.uid||"")===String(localUid))) return false;
 
@@ -124,12 +289,9 @@
       addLog(`${p.name}: ${abilityText} · 🎲 ${DICE_DESIGNS[p.diceDesign]?.name||"Classic"}.`);
     });
     renderAll();
-    // V27.2.4: Der Startspieler wird per Firebase-UID autoritativ auf beiden Geräten identisch gesetzt.
-    // Aktionen bleiben bis zum Action-Sync weiterhin gesperrt.
-    // Bis der Action-Sync folgt, verhindern wir lokale Würfe, die die Geräte auseinanderlaufen lassen würden.
-    primaryBtn.disabled=true;
-    statusEl.textContent=`🌐 ${players[current].name} ist serverseitig als Startspieler gesetzt · Aktionen noch gesperrt bis zum Action-Sync.`;
-    addLog(`🧪 Turn-Identity-Sync aktiv: Firebase sagt, ${players[current].name} ist dran. Würfel und Aktionen bleiben bis zum Action-Sync gesperrt.`);
+    enforceOnlineControls();
+    addLog(`🌐 Turn-Sync aktiv: Firebase sagt, ${players[current].name} ist dran.`);
+    addLog(`🧪 V27.2.5: Der Basiswurf läuft jetzt host-autoritativ über Firebase; Locken und Folgeaktionen bleiben vorerst gesperrt.`);
     return true;
   }
 
@@ -142,6 +304,9 @@
       try{return String(GAME_VERSION||"");}
       catch(_){return "";}
     },
-    startMatch:startOnlineMatch
+    startMatch:startOnlineMatch,
+    hostExecuteAction,
+    applyState:applyAuthoritativeState,
+    enforceControls:enforceOnlineControls
   });
 })();
