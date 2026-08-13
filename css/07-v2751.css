@@ -1,4 +1,4 @@
-/* V27.5.1 – Achievement expansion, selectable profile attack FX. */
+/* V27.5.2 – Achievement expansion, selectable profile attack FX. */
 
 /* Profile cosmetics: attack FX lives next to name + dice and is saved per profile. */
 .profile-actions{grid-template-columns:minmax(0,1fr) minmax(0,1fr) minmax(0,1fr) auto}
