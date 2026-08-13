@@ -89,7 +89,9 @@
 
     players=matchPlayers.map(entry=>onlinePlayerFromMatch(entry,localUid,localProfileId));
     resetRoundStats();
-    current=0;
+    const authoritativeTurnUid=String(match?.currentPlayerUid||match?.firstPlayerUid||matchPlayers[0]?.uid||"");
+    const authoritativeIndex=players.findIndex(p=>String(p?.onlineUid||"")===authoritativeTurnUid);
+    current=authoritativeIndex>=0?authoritativeIndex:0;
     prepareBloodRushForTurn(current);
     dice=freshDice();
     phase="idle";
@@ -115,18 +117,19 @@
     document.body.classList.remove("bot-acting");
     window.scrollTo?.(0,0);
 
-    addLog(`🌐 Online 1v1 gestartet. ${players[0].name} beginnt.`);
+    addLog(`🌐 Online 1v1 gestartet. ${players[current].name} beginnt.`);
     players.forEach(p=>{
       const roll=p.rolledAbility;
       const abilityText=roll===6?`W25 = 6 → automatische freie Wahl → ${ABILITIES[p.ability].name}`:`W25 = ${roll} → ${ABILITIES[p.ability].name}`;
       addLog(`${p.name}: ${abilityText} · 🎲 ${DICE_DESIGNS[p.diceDesign]?.name||"Classic"}.`);
     });
     renderAll();
-    // V27.2.2 synchronisiert absichtlich nur den gemeinsamen Matchstart.
+    // V27.2.3: Der Startspieler wird per Firebase-UID autoritativ auf beiden Geräten identisch gesetzt.
+    // Aktionen bleiben bis zum Action-Sync weiterhin gesperrt.
     // Bis der Action-Sync folgt, verhindern wir lokale Würfe, die die Geräte auseinanderlaufen lassen würden.
     primaryBtn.disabled=true;
-    statusEl.textContent="🌐 Matchstart synchronisiert · Würfel- und Zugsync folgt im nächsten Online-Patch.";
-    addLog("🧪 Matchstart-Sync aktiv. Würfel und Aktionen sind in V27.2.2 noch gesperrt, damit beide Geräte denselben Zustand behalten.");
+    statusEl.textContent=`🌐 ${players[current].name} ist serverseitig als Startspieler gesetzt · Aktionen noch gesperrt bis zum Action-Sync.`;
+    addLog(`🧪 Turn-Identity-Sync aktiv: Firebase sagt, ${players[current].name} ist dran. Würfel und Aktionen bleiben bis zum Action-Sync gesperrt.`);
     return true;
   }
 
