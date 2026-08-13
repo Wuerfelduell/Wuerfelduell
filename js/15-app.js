@@ -248,6 +248,7 @@
     if(isBotPlayer(current)) return;
     if(phase==="idle"||phase==="base_ready") rollBase();
     else if(phase==="attack_ready"||phase==="attack_continue") rollAttack();
+    else if(phase==="attack_after_roll"&&hasAbility(24)&&attackHits===2&&currentAttackRollNewHits>0) continueDoubleTapAttack();
   };
   lockBtn.onclick=()=>{if(!isBotPlayer(current))lockSelected();};
   baseRerollBtn.onclick=()=>{if(!isBotPlayer(current))useBaseReroll();};

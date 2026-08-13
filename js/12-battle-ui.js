@@ -274,9 +274,12 @@
     }
     else if(phase==="attack_after_roll"){
       const secondChanceForced=currentAttackRollNewHits===0&&hasAbility(4)&&!attackPowerUsed&&dice.some(d=>!d.locked);
-      statusEl.textContent=secondChanceForced
-        ? `0 neue Treffer. Zweite Chance ist noch verfügbar – würfle zuerst alle Nicht-Treffer erneut.`
-        : `${currentAttackRollNewHits} neuer Treffer in diesem Wurf. Du kannst auswerten oder ggf. Fähigkeit 4 jetzt einsetzen.`;
+      const doubleTapChoice=hasAbility(24)&&attackHits===2&&currentAttackRollNewHits>0;
+      statusEl.textContent=doubleTapChoice
+        ? `Double Tap bereit: Sichere jetzt exakt 2 Treffer oder würfle bewusst mit den übrigen Würfeln weiter.`
+        : (secondChanceForced
+          ? `0 neue Treffer. Zweite Chance ist noch verfügbar – würfle zuerst alle Nicht-Treffer erneut.`
+          : `${currentAttackRollNewHits} neuer Treffer in diesem Wurf. Du kannst auswerten oder ggf. Fähigkeit 4 jetzt einsetzen.`);
       sumLabel.textContent="Angriff";
     }
     else if(phase==="attack_continue"){
@@ -389,20 +392,27 @@
     }
     if(phase==="attack_after_roll"){
       const secondChanceAvailable=hasAbility(4)&&!attackPowerUsed&&dice.some(d=>!d.locked);
+      const doubleTapChoice=hasAbility(24)&&attackHits===2&&currentAttackRollNewHits>0;
 
       if(secondChanceAvailable){
         attackPowerBtn.classList.remove("hidden");
       }
 
+      // Double Tap ist eine echte Entscheidung: exakt 2 Treffer sichern ODER
+      // bewusst weiterwürfeln. Das Weiterwürfeln liegt auf dem normalen Hauptbutton,
+      // der Cash-out auf dem Auswerten-Button.
+      if(doubleTapChoice){
+        primaryBtn.classList.remove("hidden");
+        primaryBtn.textContent="🎲 Mit 2 Treffern weiterwürfeln";
+        resolveAttackBtn.classList.remove("hidden");
+        resolveAttackBtn.textContent="🔫 2 Treffer sichern · Double Tap";
+      }
       // QoL: Wenn der Angriff gerade an 0 neuen Treffern scheitern würde und
       // Zweite Chance noch verfügbar ist, darf man nicht versehentlich beenden.
       // Erst nach Einsatz der Fähigkeit erscheint "Angriff beenden".
-      if(currentAttackRollNewHits>0 || !secondChanceAvailable){
+      else if(currentAttackRollNewHits>0 || !secondChanceAvailable){
         resolveAttackBtn.classList.remove("hidden");
-        const doubleTapCashOut=hasAbility(24) && attackHits===2 && currentAttackRollNewHits>0;
-        resolveAttackBtn.textContent=doubleTapCashOut
-          ? "🔫 Angriff beenden · Double Tap"
-          : (currentAttackRollNewHits===0?"Angriff beenden":"Angriff fortsetzen");
+        resolveAttackBtn.textContent=currentAttackRollNewHits===0?"Angriff beenden":"Angriff fortsetzen";
       }
     }
     if(phase==="turn_done") nextBtn.classList.remove("hidden");

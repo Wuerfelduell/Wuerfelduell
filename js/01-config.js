@@ -13,10 +13,10 @@
   let localModeId="classic";
   function localModeRules(){return LOCAL_MODES[localModeId]||LOCAL_MODES.classic;}
 
-  const GAME_VERSION="26.1.12";
+  const GAME_VERSION="27.0";
   const SAVE_KEY="wuerfelduell_save_v1"; // absichtlich stabil: Updates lesen denselben Browser-Save
   const SAVE_SCHEMA_VERSION=7;
-  const CAMPAIGN_VERSION=27;
+  const CAMPAIGN_VERSION=28;
 
   const ACHIEVEMENTS={
     grande:{name:"GRANDE!",desc:"Beende einen Angriff mit allen 5 Würfeln als Treffer.",rewardDice:"gold"},
@@ -81,7 +81,9 @@
     duo_fracture_bettors:["casino_floor"],duo_fracture_shared_marks:["blood_moon"],duo_fracture_last_stands:["first_strike"],duo_fracture_clean_team:["void_clock"],duo_fracture_double_pair:["overcharge"],
     duo_mirror_metronome:["first_strike"],duo_mirror_double_bet:["casino_floor"],duo_mirror_heal_six:["blood_moon"],duo_mirror_roles:["armor_shell"],duo_mirror_pattern:["blood_tax"],
     duo_omega_focus_web:["armor_shell"],duo_omega_rush_three:["void_clock"],duo_omega_six_twins:["blood_moon"],duo_omega_pattern_five:["overcharge"],duo_omega_crown_touch:["first_strike"],
-    trio_three_tools:["casino_floor"],trio_relay_protocol:["first_strike"],trio_blood_kitchen:["blood_moon"],trio_threefold_verdict:["armor_shell"]
+    trio_three_tools:["casino_floor"],trio_relay_protocol:["first_strike"],trio_blood_kitchen:["blood_moon"],trio_threefold_verdict:["armor_shell"],
+    trio_crossfire_ledger:["armor_shell"],trio_blood_communion:["blood_moon"],trio_focus_chain:["first_strike"],trio_cerberus_gate:["armor_shell"],
+    trio_blood_debt:["blood_moon"],trio_four_before_one:["void_clock"],trio_last_light:["void_clock"],trio_singularity:["armor_shell"]
   };
 
   const BOSS_PHASES={
@@ -96,6 +98,8 @@
     duo_mirror_five_kills:{boss:"Relay V",threshold:.5,title:"RELAY ASCENSION",desc:"Relay V heilt 7 HP, erhält Counterattack + Momentum und aktiviert First Strike.",heal:7,ability:21,secondAbility:10,rule:"first_strike"},
     duo_mirror_heart:{boss:"Mirror Heart",threshold:.5,title:"HEART REFLECTION",desc:"Mirror Heart heilt 12 HP, übernimmt High Stakes + Counterattack und legt Armor Shell auf alle Gegner.",heal:12,ability:13,secondAbility:21,rule:"armor_shell"},
     duo_omega_roles_two:{boss:"Delta Seal",threshold:.5,title:"BROKEN SEAL",desc:"Delta Seal heilt 8 HP, erhält Counterattack + High Stakes und aktiviert Blood Tax.",heal:8,ability:21,secondAbility:13,rule:"blood_tax"},
-    duo_omega_throne:{boss:"Omega Sovereign",threshold:.5,title:"OMEGA PHASE",desc:"Omega Sovereign heilt 15 HP, wechselt auf High Stakes + Counterattack und startet die Void Clock.",heal:15,ability:13,secondAbility:21,rule:"void_clock"}
+    duo_omega_throne:{boss:"Omega Sovereign",threshold:.5,title:"OMEGA PHASE",desc:"Omega Sovereign heilt 15 HP, wechselt auf High Stakes + Counterattack und startet die Void Clock.",heal:15,ability:13,secondAbility:21,rule:"void_clock"},
+    trio_cerberus_gate:{boss:"Cerberus Core",threshold:.5,title:"THREE HEADS, ONE CORE",desc:"Der Core heilt 8 HP, wechselt auf Counterattack + High Stakes und zieht den ganzen Tisch auf Casino Floor.",heal:8,ability:21,secondAbility:13,rule:"casino_floor"},
+    trio_singularity:{boss:"Trinity Singularity",threshold:.5,title:"SINGULARITY OPEN",desc:"Die Singularity heilt 10 HP, wechselt auf High Stakes + Counterattack und aktiviert Overcharge für alle Helden: +2 Rohschaden, danach 1 HP Rückstoß.",heal:10,ability:13,secondAbility:21,rule:"overcharge"}
   };
 

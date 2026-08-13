@@ -846,6 +846,18 @@
     });
   }
 
+  function continueDoubleTapAttack(){
+    if(isAnimating||phase!=="attack_after_roll") return;
+    if(!(hasAbility(24)&&attackHits===2&&currentAttackRollNewHits>0)) return;
+
+    firstAttackRoll=false;
+    wildcardFace=null;
+    addLog(`🔫 Double Tap nicht gesichert: ${players[current].name} würfelt mit den übrigen Würfeln weiter.`);
+    phase="attack_continue";
+    renderAll();
+    rollAttack();
+  }
+
   function resolveCurrentAttackRoll(){
     if(isAnimating||phase!=="attack_after_roll") return;
 
