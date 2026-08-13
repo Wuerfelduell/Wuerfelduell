@@ -114,9 +114,18 @@
 
   function dieSymbol(v){ return v==null?"?":["⚀","⚁","⚂","⚃","⚄","⚅"][v-1]; }
 
-  // Galaxy A50 / older Mali WebView compositing can flatten CSS preserve-3d dice into thin strips.
-  // Only those devices get a safe flat renderer; modern devices keep the full 3D dice.
-  if(/SM-A505/i.test(navigator.userAgent||"")) document.documentElement.classList.add("legacy-flat-dice");
+  // V27.1.3 – versteckter Kompatibilitätscode für problematische ältere Android-GPUs.
+  // Sobald ein echtes Spielerprofil „GalaxyA50“ heißt (Leerzeichen/Bindestriche egal),
+  // nutzt dieses Gerät für ALLE Würfel der Partie den stabilen 2D-Würfelrenderer. Ohne diesen Profilcode bleibt alles 3D.
+  function galaxyA50CompatibilityMode(){
+    const enabled=Array.isArray(players) && players.some(p=>{
+      if(!p?.profileId) return false;
+      const code=String(p.name||"").trim().toLowerCase().replace(/[\s_-]+/g,"");
+      return code==="galaxya50";
+    });
+    document.documentElement.classList.toggle("legacy-flat-dice",enabled);
+    return enabled;
+  }
 
   const DIE_3D_ROTATION={
     1:["0deg","0deg"],
@@ -159,6 +168,10 @@
   }
 
   function render3DDieNode(el,value){
+    if(galaxyA50CompatibilityMode()){
+      renderFlatDieNode(el,value);
+      return;
+    }
     ensure3DDieStructure(el);
     const dieWidth=el.getBoundingClientRect().width;
     if(dieWidth>0){
@@ -171,6 +184,37 @@
       el.style.setProperty("--die-rx",rotation[0]);
       el.style.setProperty("--die-ry",rotation[1]);
     }
+    el.dataset.value=value==null?"":String(value);
+    el.setAttribute("aria-label",value==null?"Würfel bereit":`Würfel ${value}`);
+  }
+
+  function ensureFlatDieStructure(el){
+    let face=el.querySelector(".die-flat-face");
+    if(face) return face;
+    face=document.createElement("div");
+    face.className="die-flat-face";
+    const grid=document.createElement("div");
+    grid.className="die-flat-pips";
+    for(let pos=1;pos<=9;pos++){
+      const pip=document.createElement("span");
+      pip.className="die-flat-pip";
+      pip.dataset.pos=String(pos);
+      grid.appendChild(pip);
+    }
+    const question=document.createElement("div");
+    question.className="die-flat-question";
+    question.textContent="?";
+    face.append(grid,question);
+    el.replaceChildren(face);
+    return face;
+  }
+
+  function renderFlatDieNode(el,value){
+    const face=ensureFlatDieStructure(el);
+    const active=new Set(DIE_PIP_POSITIONS[value]||[]);
+    face.querySelectorAll(".die-flat-pip").forEach(pip=>pip.classList.toggle("active",active.has(Number(pip.dataset.pos))));
+    face.querySelector(".die-flat-pips").classList.toggle("hidden",value==null);
+    face.querySelector(".die-flat-question").classList.toggle("hidden",value!=null);
     el.dataset.value=value==null?"":String(value);
     el.setAttribute("aria-label",value==null?"Würfel bereit":`Würfel ${value}`);
   }
