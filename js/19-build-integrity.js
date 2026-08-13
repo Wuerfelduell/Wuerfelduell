@@ -1,5 +1,5 @@
 (() => {
-  const EXPECTED = "27.5.2";
+  const EXPECTED = "27.5.3";
   const checks = {
     config: (typeof GAME_VERSION !== "undefined" && GAME_VERSION === EXPECTED),
     saveSchema: (typeof SAVE_SCHEMA_VERSION !== "undefined" && Number(SAVE_SCHEMA_VERSION) >= 8),
@@ -10,7 +10,7 @@
       !!ACHIEVEMENTS.perfectly_useless),
     attackFxConfig: (typeof ATTACK_FX_STYLES !== "undefined" &&
       !!ATTACK_FX_STYLES.classic &&
-      !!ATTACK_FX_STYLES.hellfire &&
+      !!ATTACK_FX_STYLES.flame &&
       !!ATTACK_FX_STYLES.venom &&
       !!ATTACK_FX_STYLES.crown),
     attackFxEngine: !!window.WDAttackFx
