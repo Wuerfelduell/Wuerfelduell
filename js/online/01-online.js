@@ -177,7 +177,7 @@ async function createRoom(){
     for(let attempt=0;attempt<12&&!code;attempt++){
       const candidate=makeCode();
       const initial={
-        meta:{hostUid:uid,status:"lobby",version:bridge?.getVersion?.()||"27.2.0",createdAt:Date.now(),maxPlayers:2},
+        meta:{hostUid:uid,status:"lobby",version:bridge?.getVersion?.()||"27.2.1",createdAt:Date.now(),maxPlayers:2},
         players:{[uid]:{name:profile.name,tagNumber:profile.tagNumber,diceDesign:profile.selectedDice||"classic",ready:false,joinedAt:Date.now(),joinedOrder:0}}
       };
       const result=await runTransaction(roomRef(candidate),current=>current===null?initial:undefined,{applyLocally:false});
@@ -197,28 +197,70 @@ async function joinRoom(){
   if(!uid||!profile||code.length!==6||busy) return;
   setBusy(true);setNotice("Lobby wird gesucht …");
   try{
-    const playerData={name:profile.name,tagNumber:profile.tagNumber,diceDesign:profile.selectedDice||"classic",ready:false,joinedAt:Date.now()};
-    const result=await runTransaction(roomRef(code),room=>{
-      if(room===null||room?.meta?.status!=="lobby") return;
-      room.players=room.players||{};
-      const ids=Object.keys(room.players);
-      if(!room.players[uid]&&ids.length>=2) return;
-      const joinedOrder=room.players[uid]?.joinedOrder ?? ids.length;
-      room.players[uid]={...playerData,joinedOrder};
-      return room;
+    // Erst den echten Serverzustand laden. Eine Realtime-Database-Transaction kann
+    // auf einem frischen Gastgerät zunächst mit lokalem `null` starten; wenn wir
+    // dieses `null` als "Raum fehlt" behandeln, wird eine gültige Lobby abgebrochen.
+    const roomSnapshot=await get(roomRef(code));
+    if(!roomSnapshot.exists()) throw new Error("ROOM_NOT_FOUND");
+
+    const room=roomSnapshot.val();
+    if(room?.meta?.status!=="lobby") throw new Error("ROOM_STARTED");
+
+    const existingPlayers=room.players||{};
+    if(!existingPlayers[uid]&&Object.keys(existingPlayers).length>=2) throw new Error("ROOM_FULL");
+
+    const playerData={
+      name:profile.name,
+      tagNumber:profile.tagNumber,
+      diceDesign:profile.selectedDice||"classic",
+      ready:false,
+      joinedAt:Date.now()
+    };
+
+    // Nur die Spielerliste transaktional ändern. Falls die Transaction lokal mit
+    // `null` beginnt, darf sie einen Kandidaten erzeugen; Firebase gleicht ihn
+    // anschließend mit dem Serverzustand ab und wiederholt bei einem Konflikt.
+    const playersRef=ref(db,`rooms/${code}/players`);
+    const result=await runTransaction(playersRef,players=>{
+      const nextPlayers=players||{};
+      const ids=Object.keys(nextPlayers);
+      if(!nextPlayers[uid]&&ids.length>=2) return;
+      const joinedOrder=nextPlayers[uid]?.joinedOrder ?? ids.length;
+      nextPlayers[uid]={...playerData,joinedOrder};
+      return nextPlayers;
     },{applyLocally:false});
+
     if(!result.committed){
       const latest=await get(roomRef(code));
       if(!latest.exists()) throw new Error("ROOM_NOT_FOUND");
       const latestRoom=latest.val();
       if(latestRoom.meta?.status!=="lobby") throw new Error("ROOM_STARTED");
-      if(Object.keys(latestRoom.players||{}).length>=2) throw new Error("ROOM_FULL");
+      if(!latestRoom.players?.[uid]&&Object.keys(latestRoom.players||{}).length>=2) throw new Error("ROOM_FULL");
       throw new Error("JOIN_ABORTED");
     }
+
+    // Race-Schutz: Falls der Host die Lobby genau während des Joins beendet hat,
+    // keinen verwaisten Gast-Eintrag stehen lassen.
+    const finalSnapshot=await get(roomRef(code));
+    if(!finalSnapshot.exists()){
+      await remove(playerRef(code,uid)).catch(()=>{});
+      throw new Error("ROOM_NOT_FOUND");
+    }
+    if(finalSnapshot.val()?.meta?.status!=="lobby"){
+      await remove(playerRef(code,uid)).catch(()=>{});
+      throw new Error("ROOM_STARTED");
+    }
+
     await enterRoom(code,false);
   }catch(err){
     console.error("Join room",err);
-    const msg=err?.message==="ROOM_NOT_FOUND"?"Raumcode nicht gefunden.":err?.message==="ROOM_FULL"?"Diese Lobby ist bereits voll.":err?.message==="ROOM_STARTED"?"Diese Lobby ist nicht mehr offen.":"Beitreten fehlgeschlagen. Prüfe Code und Verbindung.";
+    const codeText=String(err?.code||"").toLowerCase();
+    const msg=
+      err?.message==="ROOM_NOT_FOUND"?"Raumcode nicht gefunden.":
+      err?.message==="ROOM_FULL"?"Diese Lobby ist bereits voll.":
+      err?.message==="ROOM_STARTED"?"Diese Lobby ist nicht mehr offen.":
+      codeText.includes("permission")?"Firebase verweigert den Schreibzugriff. Prüfe die Realtime-Database-Regeln.":
+      "Beitreten fehlgeschlagen. Prüfe Verbindung und versuche es erneut.";
     setNotice(msg,"error");
   }finally{setBusy(false);}
 }
