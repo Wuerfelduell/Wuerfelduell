@@ -1,0 +1,29 @@
+/* V27.2.0 – isolierter Online-Lobby-Layer. Keine Battle-Styles werden überschrieben. */
+.menu-actions button.menu-online{
+  grid-column:1/-1;justify-content:center;text-align:center;
+  background:linear-gradient(135deg,#203c67,#193c35);border-color:rgba(104,167,255,.35);
+  color:#dcecff;
+}
+.online-shell{display:grid;gap:12px}
+.online-connection{display:flex;align-items:center;gap:8px;padding:10px 12px;border:1px solid var(--border);border-radius:13px;background:#101620;color:var(--muted);font-size:12px;font-weight:900}
+.online-status-dot{width:10px;height:10px;border-radius:50%;background:#ffc857;box-shadow:0 0 12px rgba(255,200,87,.45)}
+.online-status-dot[data-state="online"]{background:var(--good);box-shadow:0 0 14px rgba(77,209,125,.55)}
+.online-status-dot[data-state="offline"]{background:var(--bad);box-shadow:0 0 14px rgba(255,95,109,.5)}
+.online-card{padding:14px;border:1px solid var(--border);border-radius:17px;background:#101620}
+.online-card-title{font-size:16px;font-weight:1000;margin-bottom:5px}.online-card-sub{color:var(--muted);font-size:12px;line-height:1.45;margin-bottom:11px}
+.online-card label{display:grid;gap:6px;font-weight:900;color:var(--text)}.online-card select{width:100%}
+.online-actions{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:11px}.online-actions button{width:100%;min-width:0}
+.online-divider{display:flex;align-items:center;gap:9px;margin:13px 0;color:#657186;font-size:10px;font-weight:1000;text-transform:uppercase;letter-spacing:.12em}
+.online-divider::before,.online-divider::after{content:"";height:1px;background:var(--border);flex:1}
+.online-join-row{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px}.online-join-row input{text-transform:uppercase;letter-spacing:.22em;font-weight:1000;text-align:center}
+.online-notice{padding:10px 11px;border-radius:12px;border:1px solid rgba(104,167,255,.22);background:rgba(104,167,255,.06);color:#b7c9e2;font-size:12px;line-height:1.4}
+.online-notice.warn{border-color:rgba(255,200,87,.28);background:rgba(255,200,87,.07);color:#f1d996}.online-notice.error{border-color:rgba(255,95,109,.3);background:rgba(255,95,109,.07);color:#ffb4bc}
+.online-room-head{display:flex;justify-content:space-between;align-items:center;gap:10px}.online-room-kicker{color:var(--muted);font-size:10px;font-weight:1000;letter-spacing:.1em;text-transform:uppercase}
+.online-room-code{font-size:clamp(31px,10vw,46px);font-weight:1000;letter-spacing:.14em;color:var(--gold);line-height:1;margin-top:4px}.online-room-state{color:var(--muted);font-size:11px;margin-top:6px}
+.online-copy{font-size:12px;padding:9px 11px;white-space:nowrap;background:#2a3240;color:var(--text)}
+.online-player-list{display:grid;gap:8px;margin:12px 0}.online-player{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:11px 12px;border:1px solid var(--border);border-radius:13px;background:#0d131c}
+.online-player.ready{border-color:rgba(77,209,125,.35);background:rgba(77,209,125,.06)}.online-player-main{min-width:0}.online-player-main strong{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.online-player-main strong span{color:#78879b;font-size:.72em}.online-player-main small{display:block;color:var(--muted);margin-top:3px}
+.online-ready-chip{flex:0 0 auto;font-size:10px;font-weight:1000;padding:4px 7px;border-radius:999px;background:#202938;color:#8e9aad}.online-player.ready .online-ready-chip{background:rgba(77,209,125,.16);color:#9cf0ba}
+.online-lobby-hint{padding:10px 11px;border-radius:12px;background:#151d28;color:#9da7b8;font-size:11px;line-height:1.45;margin-bottom:10px}
+.online-beta-badge{display:inline-flex;align-items:center;gap:5px;padding:3px 7px;border-radius:999px;background:rgba(184,140,255,.12);border:1px solid rgba(184,140,255,.24);color:#c9a9ff;font-size:9px;font-weight:1000;letter-spacing:.08em;vertical-align:middle;margin-left:5px}
+@media(max-width:480px){.online-actions{grid-template-columns:1fr}.online-room-head{align-items:flex-start;flex-direction:column}.online-copy{width:100%}}
