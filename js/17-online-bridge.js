@@ -26,6 +26,28 @@
 
   const MAIN_ROLL_ACTIONS=new Set(["primary","base_reroll","snake_eyes","attack_power"]);
   const SPECIAL_ROLL_ACTIONS=new Set(["gambling_roll","perfect25_roll","perfect25_d4_roll","high_stakes_roll","insurance_roll","counter_roll"]);
+  const ONLINE_ROLL_VISUAL_ACTIONS=new Set([...MAIN_ROLL_ACTIONS,...SPECIAL_ROLL_ACTIONS]);
+
+  function isOnlineRollVisual(type){
+    return ONLINE_ROLL_VISUAL_ACTIONS.has(String(type||""));
+  }
+
+  function beginOnlineRollWindow(type,{remote=false}={}){
+    if(!isOnlineRollVisual(type)) return false;
+    document.body.classList.add("online-roll-window");
+    if(remote) document.body.classList.add("online-remote-roll-preview");
+    return true;
+  }
+
+  function prepareOnlineRollCommit(){
+    document.body.classList.remove("online-remote-roll-preview");
+    document.body.classList.add("online-dice-snap");
+  }
+
+  function finishOnlineRollWindow(){
+    document.body.classList.remove("online-remote-roll-preview","online-roll-window");
+    requestAnimationFrame(()=>requestAnimationFrame(()=>document.body.classList.remove("online-dice-snap")));
+  }
 
   function isOnlineMatch(){
     return onlineSession.active && gameContext?.mode==="online-1v1";
@@ -128,6 +150,7 @@
   function beginActionPreview(type,actionId=""){
     if(onlineSession.isHost) return;
     const actionType=String(type||"");
+    beginOnlineRollWindow(actionType,{remote:true});
     if(MAIN_ROLL_ACTIONS.has(actionType)) previewMainRoll(actionType);
     else if(SPECIAL_ROLL_ACTIONS.has(actionType)) previewSpecialRoll(actionType);
     onlineSession.previewActionId=String(actionId||onlineSession.previewActionId||"");
@@ -147,9 +170,11 @@
 
   function transportActionRejected(actionId,message="🌐 Aktion wurde vom Host verworfen."){
     if(actionId && onlineSession.pendingActionId && String(actionId)!==String(onlineSession.pendingActionId)) return;
+    prepareOnlineRollCommit();
     if(isAnimating){dice.forEach(d=>{if(d)d.rolling=false;});isAnimating=false;renderDice();}
     if(counterRolling){counterRolling=false;counterDiceState.forEach(d=>{if(d)d.rolling=false;});renderCounterDice();}
     clearPendingAction();
+    finishOnlineRollWindow();
     enforceOnlineControls(message);
   }
 
@@ -220,6 +245,7 @@
       if(onlineSession.lastHostActionType===actionType && now-onlineSession.lastHostActionAt<90) return;
       onlineSession.lastHostActionType=actionType;
       onlineSession.lastHostActionAt=now;
+      beginOnlineRollWindow(actionType,{remote:false});
       const promise=transport(actionType,finalPayload,onlineSession.lastStateSeq);
       if(promise&&typeof promise.catch==="function") promise.catch(err=>{
         console.error("Online host action",actionType,err);
@@ -520,6 +546,9 @@
   }
 
   function applyStateNow(state,previousHp){
+    const settlingRoll=isOnlineRollVisual(state?.actionType||onlineSession.previewType||onlineSession.pendingActionType);
+    if(settlingRoll) prepareOnlineRollCommit();
+
     const turnUid=String(state.currentPlayerUid||"");
     const turnIndex=players.findIndex(p=>String(p?.onlineUid||"")===turnUid);
     if(turnIndex>=0) current=turnIndex;
@@ -530,6 +559,7 @@
 
     renderAll();
     restoreUiSnapshot(state.ui||{});
+    if(settlingRoll) finishOnlineRollWindow();
 
     // HP-FX auf Spiegelclients aus der Differenz des autoritativen Snapshots ableiten.
     if(previousHp){
@@ -642,10 +672,15 @@
   async function hostExecuteAction(request){
     if(!isOnlineMatch() || !onlineSession.isHost || !request) throw new Error("ONLINE_NOT_HOST");
     if(!actionOwnerMatches(request)) throw new Error("WRONG_INTERACTION_OWNER");
-    executeOnlineAction(request);
-    await waitForEngineSettled(String(request.type||""));
-    enforceOnlineControls();
-    return exportOnlineState(request.id,request.type);
+    const rollVisual=isOnlineRollVisual(request.type);
+    try{
+      executeOnlineAction(request);
+      await waitForEngineSettled(String(request.type||""));
+      enforceOnlineControls();
+      return exportOnlineState(request.id,request.type);
+    }finally{
+      if(rollVisual) finishOnlineRollWindow();
+    }
   }
 
   function publicProfile(profile){
@@ -740,7 +775,7 @@
       addLog(`${p.name}: ${abilityText} · 🎲 ${DICE_DESIGNS[p.diceDesign]?.name||"Classic"}.`);
     });
     renderAll();enforceOnlineControls();
-    addLog(`🌐 V27.4.2: Smooth Online Core · Host-Pipeline + Spezialfähigkeiten synchron.`);
+    addLog(`🌐 V27.4.3: Smooth Online · durchgehende Rollanimation ohne zweiten Settle-Dreh.`);
     return true;
   }
 
@@ -749,6 +784,7 @@
     onlineSession.active=false;
     onlineSession.transportConnected=false;
     clearPendingAction();
+    document.body.classList.remove("online-roll-window","online-remote-roll-preview","online-dice-snap");
     isAnimating=false;
     dice.forEach(d=>{if(d)d.rolling=false;});
     if(counterDiceState?.length) counterDiceState.forEach(d=>{if(d)d.rolling=false;});
