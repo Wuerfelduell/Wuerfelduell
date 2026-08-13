@@ -1,0 +1,27 @@
+{
+  "rules": {
+    ".read": false,
+    ".write": false,
+    "rooms": {
+      "$room": {
+        ".read": "auth != null",
+        ".write": "auth != null && ((!data.exists() && newData.child('meta').child('hostUid').val() === auth.uid) || (data.exists() && data.child('meta').child('hostUid').val() === auth.uid))",
+        "players": {
+          "$uid": {
+            ".write": "auth != null && auth.uid === $uid && (!newData.exists() || root.child('rooms').child($room).child('meta').child('status').val() === 'lobby')"
+          }
+        },
+        "match": {
+          "action": {
+            ".write": "auth != null && (root.child('rooms').child($room).child('meta').child('hostUid').val() === auth.uid || (newData.exists() && !data.exists() && newData.child('actorUid').val() === auth.uid && root.child('rooms').child($room).child('players').child(auth.uid).exists() && root.child('rooms').child($room).child('meta').child('status').val() === 'playing' && root.child('rooms').child($room).child('match').child('state').child('interactionOwnerUid').val() === auth.uid && newData.child('baseSeq').val() === root.child('rooms').child($room).child('match').child('state').child('seq').val()))"
+          },
+          "acks": {
+            "$uid": {
+              ".write": "auth != null && root.child('rooms').child($room).child('meta').child('hostUid').val() === auth.uid"
+            }
+          }
+        }
+      }
+    }
+  }
+}
