@@ -151,9 +151,9 @@
       ]
     },
     {
-      id:"trio_last_light",world:"trinity",requires:["trio_counter_choir"],title:"14 · Last Light Relay",subtitle:"Unter 15 · Rhythmus halten",
-      desc:"Der letzte Vorraum zieht das komplette Trio in den roten Bereich. Alle drei müssen ihren normalen ≤15-HP-Draft freischalten, während die ersten sechs Helden-Angriffe ohne Doppelzug desselben Spielers alternieren.",
-      challenge:{type:"all",rules:[{type:"all_heroes_secondary_unlocked"},{type:"attack_heroes_alternate_min",value:6}],text:"Alle drei Spieler müssen ihre 2. Fähigkeit bei ≤15 HP freischalten UND die ersten 6 Helden-Angriffe müssen zwischen verschiedenen Spielern alternieren."},
+      id:"trio_last_light",world:"trinity",requires:["trio_counter_choir"],title:"14 · Last Light Relay",subtitle:"Drei Bonus-Drafts · Rhythmus halten",
+      desc:"Der letzte Vorraum verlangt von allen drei Spielern ihren normalen Kampagnen-Bonus-Draft. Er kommt durch den ersten eigenen Gegner-Kill oder durch ≤15 HP – was zuerst passiert – während die ersten sechs Helden-Angriffe ohne Doppelzug desselben Spielers alternieren.",
+      challenge:{type:"all",rules:[{type:"all_heroes_secondary_unlocked"},{type:"attack_heroes_alternate_min",value:6}],text:"Alle drei Spieler müssen ihren Bonus-Draft durch eigenen Kill oder ≤15 HP auslösen UND die ersten 6 Helden-Angriffe müssen zwischen verschiedenen Spielern alternieren."},
       enemies:[
         {name:"Dusk",level:"hard",hp:46,ability:21,secondAbility:13},
         {name:"Afterglow",level:"hard",hp:44,ability:17,secondAbility:24},

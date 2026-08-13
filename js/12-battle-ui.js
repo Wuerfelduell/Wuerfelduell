@@ -114,9 +114,21 @@
 
   function dieSymbol(v){ return v==null?"?":["⚀","⚁","⚂","⚃","⚄","⚅"][v-1]; }
 
-  // Galaxy A50 / older Mali WebView compositing can flatten CSS preserve-3d dice into thin strips.
-  // Only those devices get a safe flat renderer; modern devices keep the full 3D dice.
-  if(/SM-A505/i.test(navigator.userAgent||"")) document.documentElement.classList.add("legacy-flat-dice");
+  // Galaxy A50 / ältere Samsung-Android-Renderer können preserve-3d zu dünnen Streifen zerlegen.
+  // V27.1 nutzt dort einen echten 2D-Renderer statt nur CSS-3D "flachzudrücken".
+  const legacyFlatDiceDevice=(()=>{
+    const ua=navigator.userAgent||"";
+    if(/SM-A505|SM-A507|Galaxy A50/i.test(ua)) return true;
+    const android=ua.match(/Android\s+(\d+)/i);
+    const androidMajor=android?Number(android[1]):null;
+    const smallScreen=typeof window.matchMedia==="function"?window.matchMedia("(max-width: 600px)").matches:(window.innerWidth||0)<=600;
+    const oldSamsungBrowser=/SamsungBrowser/i.test(ua)&&smallScreen&&(androidMajor==null||androidMajor<=11);
+    // Chrome reduziert die Modellkennung inzwischen teils auf "K". Der A50 endet offiziell auf Android 11,
+    // deshalb erzwingen wir auf kleinen Android-8–11-Geräten unabhängig vom Browser den echten 2D-Pfad.
+    const reducedLegacyAndroid=/Android/i.test(ua)&&androidMajor!=null&&androidMajor<=11&&smallScreen;
+    return oldSamsungBrowser||reducedLegacyAndroid;
+  })();
+  if(legacyFlatDiceDevice) document.documentElement.classList.add("legacy-flat-dice");
 
   const DIE_3D_ROTATION={
     1:["0deg","0deg"],
@@ -132,7 +144,7 @@
   };
 
   function ensure3DDieStructure(el){
-    let cube=el.querySelector(":scope > .die-cube");
+    let cube=el.querySelector(".die-cube");
     if(cube) return cube;
     cube=document.createElement("div");
     cube.className="die-cube";
@@ -173,6 +185,35 @@
     }
     el.dataset.value=value==null?"":String(value);
     el.setAttribute("aria-label",value==null?"Würfel bereit":`Würfel ${value}`);
+  }
+
+  function ensureFlatDieStructure(el){
+    let face=el.querySelector(".die-flat-face");
+    if(face) return face;
+    face=document.createElement("div");
+    face.className="die-flat-face";
+    const grid=document.createElement("div");
+    grid.className="die-flat-pips";
+    for(let pos=1;pos<=9;pos++){const pip=document.createElement("span");pip.className="die-flat-pip";pip.dataset.pos=String(pos);grid.appendChild(pip);}
+    const question=document.createElement("div");question.className="die-flat-question";question.textContent="?";
+    face.append(grid,question);
+    el.replaceChildren(face);
+    return face;
+  }
+
+  function renderFlatDieNode(el,value){
+    const face=ensureFlatDieStructure(el);
+    const active=new Set(DIE_PIP_POSITIONS[value]||[]);
+    face.querySelectorAll(".die-flat-pip").forEach(pip=>pip.classList.toggle("active",active.has(Number(pip.dataset.pos))));
+    face.querySelector(".die-flat-pips").classList.toggle("hidden",value==null);
+    face.querySelector(".die-flat-question").classList.toggle("hidden",value!=null);
+    el.dataset.value=value==null?"":String(value);
+    el.setAttribute("aria-label",value==null?"Würfel bereit":`Würfel ${value}`);
+  }
+
+  function renderDieNode(el,value){
+    if(legacyFlatDiceDevice) renderFlatDieNode(el,value);
+    else render3DDieNode(el,value);
   }
 
   function currentSum(){ return dice.reduce((s,d)=>s+(d.value||0),0); }
@@ -222,7 +263,7 @@
       const designKey=players[current]?.diceDesign||"classic";
       cls+=" "+(DICE_DESIGNS[designKey]?.className||"theme-classic");
       el.className=cls;
-      render3DDieNode(el,d.value);
+      renderDieNode(el,d.value);
       el.onclick=null;
 
       if(phase==="base_select"&&!d.locked&&!isAnimating&&!isBotPlayer(current)){

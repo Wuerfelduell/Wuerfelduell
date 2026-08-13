@@ -135,16 +135,42 @@
     return pool.slice(0,2);
   }
 
+  function campaignBonusDraftSlot(index){
+    const p=players[index];
+    if(!p || !campaignMode || p.campaignTeam!=="hero") return null;
+    const encounter=currentEncounterObject();
+    const maxSlots=Math.max(2,Math.min(4,Number(encounter?.maxAbilitySlots)||3));
+    if(maxSlots>=2 && p.secondAbility==null && !p.secondAbilityUnlocked) return 2;
+    if(maxSlots>=3 && p.thirdAbility==null && !p.thirdAbilityUnlocked) return 3;
+    if(maxSlots>=4 && p.fourthAbility==null && !p.fourthAbilityUnlocked) return 4;
+    return null;
+  }
+
+  function maybeTriggerCampaignStandardBonusDraft(index,trigger="hp"){
+    const p=players[index];
+    if(!campaignMode || !p || p.campaignTeam!=="hero" || p.hp<=0 || p.campaignBonusDraftUsed) return false;
+    const slot=campaignBonusDraftSlot(index);
+    if(slot==null) return false;
+    p.campaignBonusDraftUsed=true;
+    if(slot===2) p.secondAbilityUnlocked=true;
+    else if(slot===3) p.thirdAbilityUnlocked=true;
+    else p.fourthAbilityUnlocked=true;
+    const label=`${slot}. Fähigkeit`;
+    const reason=trigger==="kill"
+      ? `💀 Kill-Bonus: ${p.name} erzielt den ersten eigenen Gegner-Kill und darf die ${label} wählen.`
+      : `❤️ HP-Bonus: ${p.name} fällt auf ${p.hp} HP und darf die ${label} wählen.`;
+    openAbilityDraftForSlot(index,slot,label,reason);
+    return true;
+  }
+
   function bonusAbilityRuleFor(index){
     const p=players[index];
     if(!p) return null;
     if(campaignMode){
-      let threshold=SECOND_ABILITY_HP,slot=2;
-      if(p.campaignTeam==="hero"){
-        threshold=trioCampaignMode?trioCampaignHpBonusThreshold(currentEncounterObject()):(duoCampaignMode?duoCampaignHpBonusThreshold(currentEncounterObject()):soloCampaignHpBonusThreshold(currentEncounterObject()));
-        if(!duoCampaignMode&&!trioCampaignMode) slot=soloCampaignHpBonusSlot(currentEncounterObject());
-      }
-      return {threshold,slot,label:slot===3?"3. Fähigkeit":"2. Fähigkeit"};
+      if(p.campaignTeam!=="hero") return null;
+      const threshold=15;
+      const slot=campaignBonusDraftSlot(index)||2;
+      return {threshold,slot,label:`${slot}. Fähigkeit`};
     }
     if(localModeId==="classic") return {threshold:SECOND_ABILITY_HP,slot:2,label:"2. Fähigkeit"};
     if(localModeId==="endurance50") return {threshold:30,slot:3,label:"3. Fähigkeit"};
@@ -154,8 +180,13 @@
   function maybeTriggerSecondAbility(index,oldHp,newHp){
     if(tutorialMode) return false;
     const p=players[index];
+    if(!p || p.hp<=0) return false;
+    if(campaignMode && p.campaignTeam==="hero"){
+      if(newHp<=15) return maybeTriggerCampaignStandardBonusDraft(index,"hp");
+      return false;
+    }
     const rule=bonusAbilityRuleFor(index);
-    if(!p || !rule || p.hp<=0) return false;
+    if(!rule) return false;
     const already=rule.slot===3?p.thirdAbilityUnlocked:p.secondAbilityUnlocked;
     if(already) return false;
     if(newHp<=rule.threshold){
@@ -983,7 +1014,7 @@
       if(d.locked) cls+=" attack-hit locked";
       if(d.rolling) cls+=" rolling";
       el.className=cls;
-      render3DDieNode(el,d.value);
+      renderDieNode(el,d.value);
     });
   }
 
@@ -1094,7 +1125,7 @@
 
       if(counterKillDraftHeroIndex!=null){
         deferredAttackFinish=true;
-        if(maybeTriggerCampaignKillAbilityDraft(counterKillDraftHeroIndex)) return;
+        if(maybeTriggerCampaignStandardBonusDraft(counterKillDraftHeroIndex,"kill") || maybeTriggerCampaignKillAbilityDraft(counterKillDraftHeroIndex)) return;
         deferredAttackFinish=false;
       }
 
@@ -1210,7 +1241,7 @@
       if(roundStats[current]) roundStats[current].kills++;
       if(doubleTapApplied) unlockAchievementForPlayer(current,"double_trouble");
       recordCampaignKill(current,attackTarget);
-      maybeTriggerCampaignKillAbilityDraft(current);
+      if(!maybeTriggerCampaignStandardBonusDraft(current,"kill")) maybeTriggerCampaignKillAbilityDraft(current);
       markEliminated(attackTarget);
       addLog(`💀 ${target.name} ist ausgeschieden.`);
     }
@@ -1234,7 +1265,7 @@
         if(players[ricochetTarget].hp<=0){
           if(roundStats[current]) roundStats[current].kills++;
           recordCampaignKill(current,ricochetTarget);
-          maybeTriggerCampaignKillAbilityDraft(current);
+          if(!maybeTriggerCampaignStandardBonusDraft(current,"kill")) maybeTriggerCampaignKillAbilityDraft(current);
           markEliminated(ricochetTarget);
           addLog(`💀 ${players[ricochetTarget].name} ist ausgeschieden.`);
         }
