@@ -171,10 +171,13 @@
 
   function enforceOnlineControls(message=""){
     if(!isOnlineMatch()) return;
-    const canInteract=localOwnsInteraction() && onlineSession.transportConnected && !onlineSession.actionPending && !isAnimating;
+    const canInteract=localOwnsInteraction() && onlineSession.transportConnected && (!onlineSession.actionPending || onlineSession.isHost) && !isAnimating;
 
     // renderAll()/updateButtons entscheidet weiterhin, WELCHE Controls regeltechnisch
-    // sichtbar bzw. deaktiviert sind. Online ergänzt nur die Besitz-/Pending-Sperre.
+    // sichtbar bzw. deaktiviert sind. Für Gäste ergänzt Online Besitz/Pending.
+    // Beim Host darf actionPending die gerade von der Engine neu erzeugten Controls
+    // NICHT auf disabled festnageln: requestOnlineAction blockt Doppelklicks ohnehin,
+    // bis der autoritative State in Firebase veröffentlicht wurde.
     const controls=[primaryBtn,lockBtn,baseRerollBtn,loadedDiceBtn,snakeEyesBtn,attackPowerBtn,bloodLowerBtn,bloodHigherBtn,resolveAttackBtn,nextBtn];
     controls.forEach(btn=>{
       if(!btn || btn.classList.contains("hidden")) return;
@@ -703,7 +706,7 @@
       addLog(`${p.name}: ${abilityText} · 🎲 ${DICE_DESIGNS[p.diceDesign]?.name||"Classic"}.`);
     });
     renderAll();enforceOnlineControls();
-    addLog(`🌐 V27.4.0: Smooth Online Core aktiv · lokale Sofortreaktion + host-autoritärer Firebase-State.`);
+    addLog(`🌐 V27.4.1: Smooth Online Core aktiv · lokale Sofortreaktion + host-autoritärer Firebase-State.`);
     return true;
   }
 
