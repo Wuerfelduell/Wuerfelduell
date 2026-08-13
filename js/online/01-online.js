@@ -231,7 +231,7 @@ function buildMatch(players){
     players:ordered.map(p=>{
       const rolled=randomOnlineAbility();
       return {
-        uid:p.uid,name:p.name,tagNumber:p.tagNumber,diceDesign:p.diceDesign||"classic",
+        uid:p.uid,name:p.name,tagNumber:p.tagNumber,diceDesign:p.diceDesign||"classic",attackFx:p.attackFx||"classic",
         cosmeticTitle:p.cosmeticTitle||"",cosmeticFrame:p.cosmeticFrame||"",
         rolledAbility:rolled.rolledAbility,ability:rolled.ability
       };
@@ -610,7 +610,7 @@ function renderLobby(){
   onlinePlayerList.classList.toggle("four-player",expected===4);
   onlinePlayerList.innerHTML=players.map(p=>{
     const host=p.uid===hostUid,mine=p.uid===uid;
-    return `<div class="online-player${p.ready?" ready":""}"><div class="online-player-main"><strong>${escapeHtml(p.name)} <span>#${escapeHtml(p.tagNumber||"0000")}</span></strong><small>${host?"👑 Host":"🎮 Gast"}${mine?" · Du":""}</small></div><div class="online-ready-chip">${p.ready?"✓ Bereit":"Wartet"}</div></div>`;
+    const fxName=bridge?.getAttackFxName?.(p.attackFx||"classic")||"Arc Shot";return `<div class="online-player${p.ready?" ready":""}"><div class="online-player-main"><strong>${escapeHtml(p.name)} <span>#${escapeHtml(p.tagNumber||"0000")}</span></strong><small>${host?"👑 Host":"🎮 Gast"}${mine?" · Du":""} · ✨ ${escapeHtml(fxName)}</small></div><div class="online-ready-chip">${p.ready?"✓ Bereit":"Wartet"}</div></div>`;
   }).join("");
   onlineReadyBtn.textContent=me?.ready?"Bereit zurücknehmen":"✓ Bereit";
   onlineReadyBtn.classList.toggle("secondary",!!me?.ready);
@@ -658,8 +658,8 @@ async function createRoom(){
     for(let attempt=0;attempt<12&&!code;attempt++){
       const candidate=makeCode();
       const initial={
-        meta:{hostUid:uid,status:"lobby",version:bridge?.getVersion?.()||"27.5.0",createdAt:Date.now(),maxPlayers,syncSchema:6},
-        players:{[uid]:{name:profile.name,tagNumber:profile.tagNumber,diceDesign:profile.selectedDice||"classic",cosmeticTitle:profile.cosmeticTitle||"",cosmeticFrame:profile.cosmeticFrame||"",ready:false,joinedAt:Date.now(),joinedOrder:0}}
+        meta:{hostUid:uid,status:"lobby",version:bridge?.getVersion?.()||"27.5.1",createdAt:Date.now(),maxPlayers,syncSchema:6},
+        players:{[uid]:{name:profile.name,tagNumber:profile.tagNumber,diceDesign:profile.selectedDice||"classic",attackFx:profile.selectedAttackFx||"classic",cosmeticTitle:profile.cosmeticTitle||"",cosmeticFrame:profile.cosmeticFrame||"",ready:false,joinedAt:Date.now(),joinedOrder:0}}
       };
       const result=await runTransaction(roomRef(candidate),current=>current===null?initial:undefined,{applyLocally:false});
       if(result.committed) code=candidate;
@@ -685,7 +685,7 @@ async function joinRoom(){
     if(!existingPlayers[uid]&&Object.keys(existingPlayers).length>=maxPlayers) throw new Error("ROOM_FULL");
 
     const joinedOrder=existingPlayers[uid]?.joinedOrder??Object.keys(existingPlayers).length;
-    const playerData={name:profile.name,tagNumber:profile.tagNumber,diceDesign:profile.selectedDice||"classic",cosmeticTitle:profile.cosmeticTitle||"",cosmeticFrame:profile.cosmeticFrame||"",ready:false,joinedAt:Date.now(),joinedOrder};
+    const playerData={name:profile.name,tagNumber:profile.tagNumber,diceDesign:profile.selectedDice||"classic",attackFx:profile.selectedAttackFx||"classic",cosmeticTitle:profile.cosmeticTitle||"",cosmeticFrame:profile.cosmeticFrame||"",ready:false,joinedAt:Date.now(),joinedOrder};
     // Nur den eigenen UID-Knoten schreiben. Das passt zu den sicheren Firebase-Rules
     // und verhindert, dass ein Gast jemals die Daten des Hosts überschreibt.
     await set(playerRef(code,uid),playerData);
