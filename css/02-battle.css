@@ -96,7 +96,52 @@
       background:var(--card2);border:1px solid var(--border);border-radius:14px;
       padding:10px 12px;position:relative;overflow:visible;
     }
-    .player.active{outline:2px solid var(--blue)}
+    .player.active{outline:1px solid rgba(104,167,255,.38);outline-offset:1px}
+    /* V27.1.2 – lebendige Spielerrahmen: UI-only, keine Battle-Logik. */
+    .player::after{
+      content:"";position:absolute;inset:-3px;border-radius:17px;
+      border:2px solid transparent;box-shadow:0 0 0 rgba(104,167,255,0);
+      opacity:0;pointer-events:none;z-index:24;
+    }
+    .player.active::after{
+      opacity:1;
+      animation:activePlayerFrame 1.8s ease-in-out infinite;
+    }
+    @keyframes activePlayerFrame{
+      0%,100%{
+        border-color:rgba(104,167,255,.46);
+        box-shadow:0 0 0 1px rgba(104,167,255,.12),0 0 9px rgba(104,167,255,.24),inset 0 0 9px rgba(104,167,255,.05);
+      }
+      50%{
+        border-color:rgba(132,224,255,.96);
+        box-shadow:0 0 0 1px rgba(180,236,255,.22),0 0 18px rgba(104,190,255,.58),0 0 28px rgba(104,167,255,.18),inset 0 0 13px rgba(132,224,255,.10);
+      }
+    }
+    .player.damage-shake::after{
+      opacity:1;
+      animation:damageFrameBurst .58s ease-out !important;
+    }
+    @keyframes damageFrameBurst{
+      0%{border-color:rgba(255,75,96,.15);box-shadow:0 0 0 rgba(255,75,96,0)}
+      20%{border-color:rgba(255,96,112,1);box-shadow:0 0 0 2px rgba(255,64,84,.30),0 0 27px rgba(255,55,75,.78),inset 0 0 16px rgba(255,55,75,.16)}
+      55%{border-color:rgba(255,88,105,.72);box-shadow:0 0 16px rgba(255,55,75,.42),inset 0 0 9px rgba(255,55,75,.08)}
+      100%{border-color:rgba(255,75,96,0);box-shadow:0 0 0 rgba(255,75,96,0)}
+    }
+    .player.heal-pulse::after{
+      opacity:1;
+      animation:healFrameBurst .82s ease-out !important;
+    }
+    @keyframes healFrameBurst{
+      0%{border-color:rgba(87,239,139,.10);box-shadow:0 0 0 rgba(87,239,139,0)}
+      25%{border-color:rgba(101,255,157,1);box-shadow:0 0 0 2px rgba(87,239,139,.25),0 0 26px rgba(87,239,139,.62),inset 0 0 16px rgba(87,239,139,.13)}
+      60%{border-color:rgba(87,239,139,.72);box-shadow:0 0 17px rgba(87,239,139,.34),inset 0 0 9px rgba(87,239,139,.07)}
+      100%{border-color:rgba(87,239,139,0);box-shadow:0 0 0 rgba(87,239,139,0)}
+    }
+    body.fast-animations .player.active::after{animation-duration:1.35s}
+    @media (prefers-reduced-motion:reduce){
+      .player.active::after{animation:none;border-color:rgba(104,167,255,.78);box-shadow:0 0 10px rgba(104,167,255,.28)}
+      .player.damage-shake::after,.player.heal-pulse::after{animation:none}
+    }
     .player.dead{opacity:.42}
     .player-name{font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
     .hp{font-size:14px;color:var(--muted);margin-top:4px}
