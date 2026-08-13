@@ -10,11 +10,11 @@
   <link rel="manifest" href="manifest.json" />
   <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png" />
   <link rel="apple-touch-icon" sizes="192x192" href="icon-192.png" />
-  <title>Würfelduell · V26.0</title>
-    <link rel="stylesheet" href="css/01-base-ui.css" />
-  <link rel="stylesheet" href="css/02-battle.css" />
-  <link rel="stylesheet" href="css/03-campaign.css" />
-  <link rel="stylesheet" href="css/04-prestige-polish.css" />
+  <title>Würfelduell · V27.0</title>
+    <link rel="stylesheet" href="css/01-base-ui.css?v=27.0" />
+  <link rel="stylesheet" href="css/02-battle.css?v=27.0" />
+  <link rel="stylesheet" href="css/03-campaign.css?v=27.0" />
+  <link rel="stylesheet" href="css/04-prestige-polish.css?v=27.0" />
 
 </head>
 <body>
@@ -131,7 +131,7 @@
     <div class="campaign-mode-grid">
       <button id="campaignModeSoloBtn" class="campaign-mode-choice solo"><strong>🗺️ Solo</strong><span>1 Spieler · 5 Welten</span></button>
       <button id="campaignModeDuoBtn" class="campaign-mode-choice duo"><strong>🤝 Duo</strong><span>2 Spieler · Team-Fortschritt</span></button>
-      <button id="campaignModeTrioBtn" class="campaign-mode-choice trio"><strong>💪 Trio</strong><span>3 Spieler · 5 Testkämpfe</span></button>
+      <button id="campaignModeTrioBtn" class="campaign-mode-choice trio"><strong>💪 Trio</strong><span>3 Spieler · 15 Encounter</span></button>
     </div>
     <div class="utility-actions"><button id="campaignModePickerClose" class="secondary">Abbrechen</button></div>
   </div>
@@ -156,7 +156,7 @@
       <button id="menuRulesBtn"><span class="menu-icon">📖</span> Regeln</button>
       <button id="menuChangelogBtn"><span class="menu-icon">📝</span> Changelog</button>
     </div>
-    <div class="version-footer">WÜRFELDUELL · VERSION 26.1.12</div>
+    <div class="version-footer">WÜRFELDUELL · VERSION 27.0</div>
   </section>
 
 
@@ -215,8 +215,8 @@
 
 
   <section id="trioCampaignScreen" class="card screen-card campaign-hub hidden">
-    <div class="screen-topbar"><button id="trioCampaignBackBtn">←</button><h2 class="screen-title">💪 Trio-Kampagne · Beta</h2></div>
-    <div class="screen-subtitle">Drei echte Spielerprofile gegen koordinierte Gegnerteams. V26 startet bewusst nur mit fünf Test-Encountern. Alle regulären Hauptfähigkeiten sind verfügbar; der Fortschritt gehört genau dieser Dreiergruppe.</div>
+    <div class="screen-topbar"><button id="trioCampaignBackBtn">←</button><h2 class="screen-title">💪 Trio-Kampagne</h2></div>
+    <div class="screen-subtitle">Drei echte Spielerprofile gegen koordinierte Gegnerteams. 15 Encounter testen Rollen, Fokus-Pässe, gemeinsame Builds und Bossmechaniken. Alle regulären Hauptfähigkeiten sind verfügbar; der Fortschritt gehört genau dieser Dreiergruppe.</div>
     <div id="trioCampaignBanner" class="campaign-complete hidden"></div>
     <div class="campaign-world-desc">🧪 <strong>Trinity Protocol:</strong> Fähigkeitskombos, Angriffsmuster, Heilung und koordinierte Finisher.</div>
     <div class="campaign-top">
@@ -315,6 +315,7 @@
   <section id="changelogScreen" class="card screen-card hidden">
     <div class="screen-topbar"><button class="menuBackBtn">←</button><h2 class="screen-title">📝 Changelog</h2></div>
     <div class="screen-subtitle">Die großen Versionssprünge, ohne jeden Mini-Hotfix.</div>
+    <div class="changelog-entry"><div class="changelog-version">V27.0</div><ul><li>Trio-Kampagne von 5 auf 15 Encounter erweitert; Trinity Protocol ist jetzt eine vollständige Kampagne</li><li>10 neue Trio-Level mit Crossfire-, Fokus-Pass-, Healing-, Finisher-, Counterattack- und Markierungs-Challenges</li><li>Neue Trio-Bosse auf Level 10 und 15 mit eigenen Phase-II-Mechaniken; beide sind Trophy Farms</li><li>Double Tap ist jetzt eine echte Wahl: bei exakt 2 Treffern entweder den Bonus sofort sichern oder mit den übrigen Würfeln weiterwürfeln</li><li>JS/CSS erhalten Versionsparameter, damit GitHub-Pages-/Browser-Cache nach Releases nicht mehr alte Gameplay-Dateien mit neuer Versionsanzeige mischt</li></ul></div>
     <div class="changelog-entry"><div class="changelog-version">V26.1.12</div><ul><li>Zero Circuit 15 · Zero Regent deutlich entschärft: Spieler 30 HP, Regent 52 HP, Warden Zero 28 HP, Proxy 24 HP</li><li>Pflichtaufgabe vereinfacht auf „Don't die.“; Eigenschaden- und Letzter-Kill-Bedingung entfernt</li><li>Counterattack-Kills durch den Kampagnen-Helden lösen jetzt zuverlässig den Encounter-Kill-Draft aus</li><li>Counterattack + Lifesteal geprüft: Lifesteal heilt weiterhin die Hälfte des tatsächlich verursachten Counter-Schadens</li></ul></div>
     <div class="changelog-entry"><div class="changelog-version">V26.1.11</div><ul><li>Zero Circuit 15 · Zero Regent: Start-Draft für Fähigkeit 2; nach den ersten zwei Gegner-Kills weitere Drafts für Fähigkeit 3 und 4</li><li>Neuer Encounter-Sondercap: exakt in diesem Finale sind bis zu 4 gleichzeitig aktive Fähigkeiten möglich; global bleibt das normale Limit unverändert</li></ul></div>
     <div class="changelog-entry"><div class="changelog-version">V26.1.10</div><ul><li>Zero Circuit 14 · Order of Zero: 30 Start-HP und Gegner-Selbsteliminierungen zählen korrekt für Key → Lock → Crown sowie die Kill-Drafts</li><li>Duo Covenant 9 · Counter Pair: beide Spieler starten mit 35 HP</li></ul></div>
@@ -460,22 +461,22 @@
   </div>
 </div>
 
-<script src="js/01-config.js"></script>
-<script src="js/02-campaign-solo-data.js"></script>
-<script src="js/03-campaign-duo-data.js"></script>
-<script src="js/03b-campaign-trio-data.js"></script>
-<script src="js/04-save.js"></script>
-<script src="js/05-game-data-state.js"></script>
-<script src="js/06-campaign.js"></script>
-<script src="js/07-tutorial.js"></script>
-<script src="js/08-profiles-stats.js"></script>
-<script src="js/09-battle-stats.js"></script>
-<script src="js/10-bots.js"></script>
-<script src="js/11-setup.js"></script>
-<script src="js/12-battle-ui.js"></script>
-<script src="js/13-battle-actions.js"></script>
-<script src="js/14-round-flow.js"></script>
-<script src="js/15-app.js"></script>
-<script src="js/16-audio.js"></script>
+<script src="js/01-config.js?v=27.0"></script>
+<script src="js/02-campaign-solo-data.js?v=27.0"></script>
+<script src="js/03-campaign-duo-data.js?v=27.0"></script>
+<script src="js/03b-campaign-trio-data.js?v=27.0"></script>
+<script src="js/04-save.js?v=27.0"></script>
+<script src="js/05-game-data-state.js?v=27.0"></script>
+<script src="js/06-campaign.js?v=27.0"></script>
+<script src="js/07-tutorial.js?v=27.0"></script>
+<script src="js/08-profiles-stats.js?v=27.0"></script>
+<script src="js/09-battle-stats.js?v=27.0"></script>
+<script src="js/10-bots.js?v=27.0"></script>
+<script src="js/11-setup.js?v=27.0"></script>
+<script src="js/12-battle-ui.js?v=27.0"></script>
+<script src="js/13-battle-actions.js?v=27.0"></script>
+<script src="js/14-round-flow.js?v=27.0"></script>
+<script src="js/15-app.js?v=27.0"></script>
+<script src="js/16-audio.js?v=27.0"></script>
 </body>
 </html>
