@@ -38,6 +38,8 @@ let authReady=false;
 let busy=false;
 let matchStartBusy=false;
 let enteredMatchId=null;
+let processingActionId=null;
+let lastAppliedStateSeq=0;
 
 function escapeHtml(value){return String(value??"").replace(/[&<>'"]/g,ch=>({"&":"&amp;","<":"&lt;",">":"&gt;","'":"&#39;",'"':"&quot;"}[ch]));}
 function normalizeCode(value){return String(value||"").toUpperCase().replace(/[^A-Z2-9]/g,"").slice(0,6);}
@@ -110,6 +112,7 @@ async function closeOnline(){
 }
 function roomRef(code=currentRoomCode){return ref(db,`rooms/${code}`);}
 function playerRef(code=currentRoomCode,userUid=uid){return ref(db,`rooms/${code}/players/${userUid}`);}
+function matchRef(code=currentRoomCode){return ref(db,`rooms/${code}/match`);}
 
 async function prepareDisconnect(code,isHost){
   if(disconnectOp){try{await disconnectOp.cancel();}catch(_){}}
@@ -165,7 +168,14 @@ function buildMatch(players){
     firstPlayerUid,
     currentPlayerUid:firstPlayerUid,
     turnNumber:1,
-    syncSchema:2,
+    syncSchema:3,
+    state:{
+      seq:0,
+      phase:"idle",
+      currentPlayerUid:firstPlayerUid,
+      dice:Array.from({length:5},()=>({value:null,locked:false,selected:false})),
+      players:ordered.map(p=>({uid:p.uid,hp:25}))
+    },
     players:ordered.map(p=>{
       const rolled=randomOnlineAbility();
       return {
@@ -210,13 +220,78 @@ function enterStartedMatch(){
   const matchId=String(match?.id||currentRoom?.meta?.matchId||"");
   if(!match||!matchId||enteredMatchId===matchId) return;
   const localProfile=selectedProfile();
-  const started=bridge?.startMatch?.(match,uid,localProfile?.id||null);
+  const started=bridge?.startMatch?.(match,uid,localProfile?.id||null,currentRoom?.meta?.hostUid===uid);
   if(!started){
     setNotice("Online-Match konnte lokal nicht initialisiert werden.","error");
     return;
   }
   enteredMatchId=matchId;
+  lastAppliedStateSeq=Number(match?.state?.seq)||0;
   matchStartBusy=false;
+}
+
+
+async function requestBaseRoll(){
+  if(!currentRoomCode||!uid||currentRoom?.meta?.status!=="playing") throw new Error("NO_ONLINE_MATCH");
+  const requestId=`${uid.slice(0,8)}-${Date.now().toString(36)}-${Math.random().toString(36).slice(2,7)}`;
+  const result=await runTransaction(matchRef(),match=>{
+    if(!match) return;
+    const state=match.state||{};
+    if(String(match.currentPlayerUid||state.currentPlayerUid||"")!==String(uid)) return;
+    if(String(state.phase||"idle")!=="idle") return;
+    if(match.actionRequest) return;
+    match.actionRequest={id:requestId,type:"base_roll",actorUid:uid,requestedAt:Date.now()};
+    return match;
+  },{applyLocally:false});
+  if(!result.committed) throw new Error("ACTION_REJECTED");
+  return true;
+}
+
+window.WDOnlineTransport=Object.freeze({requestBaseRoll});
+
+async function processHostActionIfNeeded(){
+  if(processingActionId||!currentRoomCode||!uid||currentRoom?.meta?.hostUid!==uid||currentRoom?.meta?.status!=="playing") return;
+  const request=currentRoom?.match?.actionRequest;
+  if(!request?.id) return;
+  processingActionId=String(request.id);
+  try{
+    const state=await bridge?.hostExecuteAction?.(request);
+    if(!state) throw new Error("HOST_STATE_EMPTY");
+    const result=await runTransaction(matchRef(),match=>{
+      if(!match||String(match.actionRequest?.id||"")!==String(request.id)) return;
+      const previousSeq=Number(match.state?.seq)||0;
+      match.state={...state,seq:previousSeq+1,currentPlayerUid:String(match.currentPlayerUid||state.currentPlayerUid||"")};
+      match.actionRequest=null;
+      return match;
+    },{applyLocally:false});
+    if(!result.committed) throw new Error("HOST_PUBLISH_ABORTED");
+  }catch(err){
+    console.error("Host execute online action",err);
+    // Request freigeben, damit der aktive Spieler nach einem Fehler erneut versuchen kann.
+    await runTransaction(matchRef(),match=>{
+      if(!match||String(match.actionRequest?.id||"")!==String(request.id)) return match;
+      match.actionRequest=null;
+      return match;
+    },{applyLocally:false}).catch(()=>{});
+  }finally{
+    processingActionId=null;
+  }
+}
+
+function applyMatchStateIfNeeded(){
+  if(!enteredMatchId||!currentRoom?.match?.state) return;
+  const state=currentRoom.match.state;
+  const seq=Number(state.seq)||0;
+  if(seq<=lastAppliedStateSeq) return;
+  lastAppliedStateSeq=seq;
+  bridge?.applyState?.(state);
+}
+
+function handlePlayingMatch(){
+  enterStartedMatch();
+  if(!enteredMatchId) return;
+  applyMatchStateIfNeeded();
+  processHostActionIfNeeded();
 }
 
 function renderLobby(){
@@ -239,8 +314,8 @@ function renderLobby(){
   onlineReadyBtn.classList.toggle("secondary",!!me?.ready);
   onlineReadyBtn.classList.toggle("good",!me?.ready);
   if(currentRoom.meta?.status==="playing"){
-    onlineLobbyHint.textContent="⚔️ Match startet …";
-    enterStartedMatch();
+    onlineLobbyHint.textContent="⚔️ Match läuft …";
+    handlePlayingMatch();
     return;
   }
   onlineLobbyHint.textContent=allReady
@@ -260,7 +335,7 @@ async function createRoom(){
     for(let attempt=0;attempt<12&&!code;attempt++){
       const candidate=makeCode();
       const initial={
-        meta:{hostUid:uid,status:"lobby",version:bridge?.getVersion?.()||"27.2.4",createdAt:Date.now(),maxPlayers:2},
+        meta:{hostUid:uid,status:"lobby",version:bridge?.getVersion?.()||"27.2.5",createdAt:Date.now(),maxPlayers:2},
         players:{[uid]:{name:profile.name,tagNumber:profile.tagNumber,diceDesign:profile.selectedDice||"classic",cosmeticTitle:profile.cosmeticTitle||"",cosmeticFrame:profile.cosmeticFrame||"",ready:false,joinedAt:Date.now(),joinedOrder:0}}
       };
       const result=await runTransaction(roomRef(candidate),current=>current===null?initial:undefined,{applyLocally:false});
@@ -364,6 +439,7 @@ function resetRoomState(){
   if(roomUnsubscribe){roomUnsubscribe();roomUnsubscribe=null;}
   if(disconnectOp){disconnectOp.cancel().catch(()=>{});disconnectOp=null;}
   currentRoomCode=null;currentRoom=null;currentIsHost=false;
+  processingActionId=null;lastAppliedStateSeq=0;enteredMatchId=null;
 }
 async function leaveRoom(){
   if(!currentRoomCode||!uid){resetRoomState();return;}
