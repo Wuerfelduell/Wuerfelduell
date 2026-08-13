@@ -124,7 +124,7 @@
       addLog(`${p.name}: ${abilityText} · 🎲 ${DICE_DESIGNS[p.diceDesign]?.name||"Classic"}.`);
     });
     renderAll();
-    // V27.2.3: Der Startspieler wird per Firebase-UID autoritativ auf beiden Geräten identisch gesetzt.
+    // V27.2.4: Der Startspieler wird per Firebase-UID autoritativ auf beiden Geräten identisch gesetzt.
     // Aktionen bleiben bis zum Action-Sync weiterhin gesperrt.
     // Bis der Action-Sync folgt, verhindern wir lokale Würfe, die die Geräte auseinanderlaufen lassen würden.
     primaryBtn.disabled=true;

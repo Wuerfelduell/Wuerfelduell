@@ -13,8 +13,11 @@
   let localModeId="classic";
   function localModeRules(){return LOCAL_MODES[localModeId]||LOCAL_MODES.classic;}
 
-  const GAME_VERSION="27.2.3";
+  const GAME_VERSION="27.2.4";
   const SAVE_KEY="wuerfelduell_save_v1"; // absichtlich stabil: Updates lesen denselben Browser-Save
+  // Versionsanzeige immer aus derselben Quelle ziehen, damit Titel/Footer nicht mehr hinterherhinken.
+  document.title=`Würfelduell · V${GAME_VERSION}`;
+  queueMicrotask(()=>{const footer=document.querySelector(".version-footer");if(footer)footer.textContent=`WÜRFELDUELL · VERSION ${GAME_VERSION}`;});
   const SAVE_SCHEMA_VERSION=7;
   const CAMPAIGN_VERSION=29;
 

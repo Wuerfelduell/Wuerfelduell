@@ -148,6 +148,8 @@
 
   function maybeTriggerCampaignStandardBonusDraft(index,trigger="hp"){
     const p=players[index];
+    const encounter=currentEncounterObject();
+    if(encounter?.disableBonusDraft) return false;
     if(!campaignMode || !p || p.campaignTeam!=="hero" || p.hp<=0 || p.campaignBonusDraftUsed) return false;
     const slot=campaignBonusDraftSlot(index);
     if(slot==null) return false;

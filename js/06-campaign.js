@@ -483,6 +483,7 @@
       const opt=document.createElement("option");opt.value=id;opt.textContent=`${id} · ${ABILITIES[id].name}`;campaignAbilitySelect.appendChild(opt);
     });
     if(unlocked.includes(oldAbility)) campaignAbilitySelect.value=String(oldAbility);
+    campaignAbilitySelect.disabled=false;
 
     let selectedEncounter=campaignEncounterById(campaignEncounterId);
     if(!selectedEncounter || selectedEncounter.world!==world.id || !profile || !campaignEncounterAvailable(profile,selectedEncounter)){
@@ -491,6 +492,12 @@
     }
     gameContext.profileId=profile?.id||gameContext.profileId;
     gameContext.encounterId=campaignEncounterId||gameContext.encounterId;
+
+    const forcedHeroAbilityForSelected=Number(selectedEncounter?.forcedHeroAbility);
+    if(REAL_ABILITY_IDS.includes(forcedHeroAbilityForSelected)){
+      campaignAbilitySelect.value=String(forcedHeroAbilityForSelected);
+      campaignAbilitySelect.disabled=true;
+    }
 
     const grantedSecondForSelected=campaignGrantedSecondAbility(selectedEncounter);
     if(grantedSecondForSelected!=null){
@@ -524,7 +531,7 @@
       return `<button type="button" class="campaign-node${done?" done":""}${current?" current":""}${available?"":" locked"}${isBoss?" boss":""}${isWorldBoss?" world-boss":""}" data-campaign-id="${e.id}" ${available?"":"disabled"}><span>${num}</span>${mark?`<span class="node-mark">${mark}</span>`:""}</button>`;
     }).join("");
     campaignPath.querySelectorAll("[data-campaign-id]").forEach(btn=>btn.onclick=()=>{campaignEncounterId=btn.dataset.campaignId;gameContext.encounterId=campaignEncounterId;renderCampaign();});
-    if(selectedEncounter){const done=!!progress?.completedEncounters?.includes(selectedEncounter.id),available=!!profile&&campaignEncounterAvailable(profile,selectedEncounter),reward=campaignRewardLabel(profile,selectedEncounter),rules=encounterRuleText(selectedEncounter),phase=bossPhaseFor(selectedEncounter),assistText=campaignAssistText(selectedEncounter),grantedSecond=campaignGrantedSecondAbility(selectedEncounter),bonusSlot=soloCampaignHpBonusSlot(selectedEncounter),grantedText=grantedSecond!=null?`${ABILITIES[grantedSecond]?.name||grantedSecond} startet fest als 2. Fähigkeit; erster eigener Kill ODER ≤15 HP öffnet danach den nächsten freien Draft.`:"",challengeGear=campaignChallengeGrantedAbility(selectedEncounter,[grantedSecond].filter(x=>x!=null)),challengeGearText=challengeGear!=null?`${ABILITIES[challengeGear]?.name||challengeGear} wird zusätzlich zu deiner Hauptfähigkeit gestellt.`:"";campaignEncounterDetail.innerHTML=`<div class="node-detail-head"><div><div class="node-detail-title">${escapeHtml(selectedEncounter.title)}</div><div class="node-detail-sub">${escapeHtml(selectedEncounter.subtitle)}</div></div><div class="node-detail-state">${done?(selectedEncounter.farmTrophy?"🏆 FARM":"✓ GESCHAFFT"):available?"OFFEN":"🔒 GESPERRT"}</div></div><div class="node-detail-desc">${escapeHtml(selectedEncounter.desc)}</div><div class="node-detail-row">🎯 <strong>Challenge:</strong> ${escapeHtml(selectedEncounter.challenge.text)}</div><div class="node-detail-row">🎁 <strong>Belohnung:</strong> ${escapeHtml(reward)}</div>${assistText?`<div class="node-detail-row node-detail-phase">⚡ <strong>Encounter-Fähigkeit:</strong> ${escapeHtml(assistText)}</div>`:""}${grantedText?`<div class="node-detail-row node-detail-phase">🩸 <strong>Encounter-Fähigkeit:</strong> ${escapeHtml(grantedText)}</div>`:""}${challengeGearText?`<div class="node-detail-row node-detail-phase">🎯 <strong>Challenge-Ausrüstung:</strong> ${escapeHtml(challengeGearText)}</div>`:""}<div class="node-detail-row node-detail-phase">✨ <strong>Bonus-Draft:</strong> erster eigener Gegner-Kill oder ≤15 HP – was zuerst passiert.</div>${rules.map(r=>`<div class="node-detail-row node-detail-rule">⚙ <strong>${escapeHtml(r.name)}:</strong> ${escapeHtml(r.desc)}</div>`).join("")}${phase?`<div class="node-detail-row node-detail-phase">👹 <strong>Boss-Phase bei ${Math.round((phase.threshold||.5)*100)} %:</strong> ${escapeHtml(phase.title)} · ${escapeHtml(phase.desc)}</div>`:""}`;}else campaignEncounterDetail.innerHTML="";
+    if(selectedEncounter){const done=!!progress?.completedEncounters?.includes(selectedEncounter.id),available=!!profile&&campaignEncounterAvailable(profile,selectedEncounter),reward=campaignRewardLabel(profile,selectedEncounter),rules=encounterRuleText(selectedEncounter),phase=bossPhaseFor(selectedEncounter),assistText=campaignAssistText(selectedEncounter),grantedSecond=campaignGrantedSecondAbility(selectedEncounter),bonusSlot=soloCampaignHpBonusSlot(selectedEncounter),grantedText=grantedSecond!=null?`${ABILITIES[grantedSecond]?.name||grantedSecond} startet fest als 2. Fähigkeit; erster eigener Kill ODER ≤15 HP öffnet danach den nächsten freien Draft.`:"",challengeGear=campaignChallengeGrantedAbility(selectedEncounter,[grantedSecond].filter(x=>x!=null)),challengeGearText=challengeGear!=null?`${ABILITIES[challengeGear]?.name||challengeGear} wird zusätzlich zu deiner Hauptfähigkeit gestellt.`:"";campaignEncounterDetail.innerHTML=`<div class="node-detail-head"><div><div class="node-detail-title">${escapeHtml(selectedEncounter.title)}</div><div class="node-detail-sub">${escapeHtml(selectedEncounter.subtitle)}</div></div><div class="node-detail-state">${done?(selectedEncounter.farmTrophy?"🏆 FARM":"✓ GESCHAFFT"):available?"OFFEN":"🔒 GESPERRT"}</div></div><div class="node-detail-desc">${escapeHtml(selectedEncounter.desc)}</div><div class="node-detail-row">🎯 <strong>Challenge:</strong> ${escapeHtml(selectedEncounter.challenge.text)}</div><div class="node-detail-row">🎁 <strong>Belohnung:</strong> ${escapeHtml(reward)}</div>${assistText?`<div class="node-detail-row node-detail-phase">⚡ <strong>Encounter-Fähigkeit:</strong> ${escapeHtml(assistText)}</div>`:""}${grantedText?`<div class="node-detail-row node-detail-phase">🩸 <strong>Encounter-Fähigkeit:</strong> ${escapeHtml(grantedText)}</div>`:""}${challengeGearText?`<div class="node-detail-row node-detail-phase">🎯 <strong>Challenge-Ausrüstung:</strong> ${escapeHtml(challengeGearText)}</div>`:""}${REAL_ABILITY_IDS.includes(Number(selectedEncounter.forcedHeroAbility))?`<div class="node-detail-row node-detail-phase">⚡ <strong>Startfähigkeit:</strong> ${escapeHtml(ABILITIES[Number(selectedEncounter.forcedHeroAbility)]?.name||String(selectedEncounter.forcedHeroAbility))} ist fest vorgegeben.</div>`:""}${selectedEncounter.disableBonusDraft?`<div class="node-detail-row node-detail-rule">🚫 <strong>Fähigkeits-Drafts:</strong> In diesem Encounter deaktiviert.</div>`:`<div class="node-detail-row node-detail-phase">✨ <strong>Bonus-Draft:</strong> erster eigener Gegner-Kill oder ≤15 HP – was zuerst passiert.</div>`}${rules.map(r=>`<div class="node-detail-row node-detail-rule">⚙ <strong>${escapeHtml(r.name)}:</strong> ${escapeHtml(r.desc)}</div>`).join("")}${phase?`<div class="node-detail-row node-detail-phase">👹 <strong>Boss-Phase bei ${Math.round((phase.threshold||.5)*100)} %:</strong> ${escapeHtml(phase.title)} · ${escapeHtml(phase.desc)}</div>`:""}`;}else campaignEncounterDetail.innerHTML="";
 
     const secondaryUnlocked=new Set(progress?.unlockedSecondaryAbilities||[]);
     campaignAbilityGrid.innerHTML=REAL_ABILITY_IDS.map(id=>{
@@ -850,6 +857,8 @@
     const unlocked=campaignUnlockedAbilities(profile);
     let heroAbility=+campaignAbilitySelect.value;
     if(!unlocked.includes(heroAbility)) heroAbility=unlocked[0]||3;
+    const forcedHeroAbility=Number(encounter.forcedHeroAbility);
+    if(REAL_ABILITY_IDS.includes(forcedHeroAbility)) heroAbility=forcedHeroAbility;
     const assistPair=campaignAssistAbilityPair(encounter);
     const challengeStandard=campaignChallengeDefaultAbility(encounter);
     if(challengeStandard!=null && heroAbility===challengeStandard && !assistPair?.includes(challengeStandard)){
@@ -917,7 +926,8 @@
     if(grantedSecondAbility!=null) addLog(`🩸 Encounter-Fähigkeit: ${ABILITIES[grantedSecondAbility].name} ist direkt aktiv.`);
     if(grantedThirdAbility!=null) addLog(`🎁 Encounter-Fähigkeit: ${ABILITIES[grantedThirdAbility].name} wird für diesen Kampf bereitgestellt.`);
     if(challengeGrantedAbility!=null) addLog(`🎯 Challenge-Ausrüstung: ${ABILITIES[challengeGrantedAbility].name} ist für diesen Encounter automatisch dabei.`);
-    addLog(`✨ Bonus-Draft: Der erste eigene Gegner-Kill ODER ≤15 HP löst die nächste Fähigkeitswahl aus – was zuerst passiert.`);
+    if(encounter.disableBonusDraft) addLog(`🚫 Encounter-Regel: Keine zusätzlichen Fähigkeits-Drafts. ${profile.name} bleibt bei der Startfähigkeit.`);
+    else addLog(`✨ Bonus-Draft: Der erste eigene Gegner-Kill ODER ≤15 HP löst die nächste Fähigkeitswahl aus – was zuerst passiert.`);
     if(enemies.length>1) addLog(`⚠️ 2 gegen 1: ${enemies.map(e=>e.name).join(" & ")} spielen als Team und greifen nur dich an.`);
     renderAll();
     if(encounter.startSecondAbilityDraft){
