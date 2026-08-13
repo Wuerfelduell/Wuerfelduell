@@ -126,7 +126,7 @@
         p.secondAbility=null;p.thirdAbility=null;p.secondAbilityUnlocked=false;p.thirdAbilityUnlocked=false;p.secondAbilityWasChosen=false;p.thirdAbilityWasChosen=false;
       }
       p.hp=special?rules.startHp:START_HP;p.maxHp=special?rules.startHp:START_HP;
-      p.momentumStreak=0;p.lastStandUsed=false;p.roundLastStandTriggered=false;p.damageSinceLastOwnTurn=false;p.bloodRushPrimed=false;p.voluntaryHpPaidThisTurn=false;p.botBloodUsesThisAttack=0;
+      p.momentumStreak=0;p.firstClassStreak=0;p.perfect25AttackArmed=false;p.lastStandUsed=false;p.roundLastStandTriggered=false;p.damageSinceLastOwnTurn=false;p.bloodRushPrimed=false;p.voluntaryHpPaidThisTurn=false;p.botBloodUsesThisAttack=0;
     });
 
     roundNumber++;roundEliminationOrder=[];lastPlaceIndex=null;roundWinnerHandled=false;roundWinnerIndex=null;nextRoundAbilityRolls=[];

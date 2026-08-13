@@ -13,12 +13,12 @@
   let localModeId="classic";
   function localModeRules(){return LOCAL_MODES[localModeId]||LOCAL_MODES.classic;}
 
-  const GAME_VERSION="27.5.0";
+  const GAME_VERSION="27.5.1";
   const SAVE_KEY="wuerfelduell_save_v1"; // absichtlich stabil: Updates lesen denselben Browser-Save
   // Versionsanzeige immer aus derselben Quelle ziehen, damit Titel/Footer nicht mehr hinterherhinken.
   document.title=`Würfelduell · V${GAME_VERSION}`;
   queueMicrotask(()=>{const footer=document.querySelector(".version-footer");if(footer)footer.textContent=`WÜRFELDUELL · VERSION ${GAME_VERSION}`;});
-  const SAVE_SCHEMA_VERSION=7;
+  const SAVE_SCHEMA_VERSION=8;
   const CAMPAIGN_VERSION=29;
 
   const ACHIEVEMENTS={
@@ -48,10 +48,46 @@
     laser_guided:{name:"Laser Guided",desc:"Triff im allerersten Angriffswurf mit allen fünf Würfeln exakt die Zielzahl.",rewardDice:"storm"},
     technically_a_win:{name:"Technically A Win",desc:"Gewinne eine Runde, ohne selbst auch nur 1 Schaden verursacht zu haben."},
     party_crasher:{name:"Party Crasher",desc:"Gewinne ein Online-Match mit vier Spielern.",rewardDice:"circuit"},
-    chromatic_menace:{name:"Chromatic Menace",desc:"Schalte alle Achievement-Würfeldesigns frei."}
+    straight:{name:"Straight",desc:"Locke in einem Basiszug gleichzeitig genau die Zahlen 1, 2, 3, 4 und 5 ein."},
+    backstab:{name:"Backstab",desc:"Verursache mit einer einzigen Counterattack mindestens 15 tatsächlichen Schaden.",rewardFx:"venom"},
+    momentum_mori:{name:"Momentum Mori",desc:"Erreiche mit Momentum eine Angriffserie von 5 aufeinanderfolgenden eigenen Angriffen.",rewardFx:"lightning"},
+    loaded_question:{name:"Loaded Dice?",desc:"Drehe in einer Runde dreimal eine gewürfelte 6 mit Loaded Dice auf eine 5."},
+    critical_hit:{name:"Critical Hit",desc:"Verursache mit einem einzigen Hauptangriff exakt 21 tatsächlichen Schaden.",rewardFx:"flame"},
+    nat20_nat1:{name:"Nat 20... oh wait, Nat 1",desc:"Beende den Basiswurf exakt auf 20 und würfle beim anschließenden Insurance-Wurf eine 1."},
+    vampiric_touch:{name:"Vampiric Touch",desc:"Heile dich durch Lifesteal aus einer Counterattack.",rewardFx:"blood"},
+    royal_flush_attack:{name:"Royal Flush?",desc:"Würfle in einem einzelnen 5W6-Angriffswurf genau 1, 2, 3, 4 und 5.",rewardFx:"jackpot"},
+    one_or_three:{name:"1er oder 3er?",desc:"Verursache mit einem Angriff auf 1er mindestens 15 tatsächlichen Schaden."},
+    first_class:{name:"First Class",desc:"Triggere drei eigene Angriffe hintereinander und verursache dabei jedes Mal 0 Schaden."},
+    insurance_fraud:{name:"Insurance Fraud",desc:"Beende den Basiswurf auf 24 und lass Insurance den 1 Eigenschaden auf 0 reduzieren."},
+    collateral_damage:{name:"Collateral Damage",desc:"Eliminiere Hauptziel und Ricochet-Ziel mit demselben Angriff.",rewardFx:"void"},
+    blood_bank:{name:"Blood Bank",desc:"Heile dich durch einen einzigen Lifesteal-Effekt um mindestens 10 HP."},
+    full_house_attack:{name:"Full House",desc:"Würfle in einem einzelnen 5W6-Angriffswurf ein echtes Full House: 3 gleiche + 2 gleiche."},
+    snake_oil:{name:"Snake Oil",desc:"Benutze Snake Eyes viermal im selben Basiszug."},
+    perfectly_useless:{name:"Perfectly Useless",desc:"Perfect 25 gibt dir einen Angriff, aber dieser Angriff verursacht 0 Schaden.",rewardFx:"confetti"},
+    house_always_wins:{name:"The House Always Wins",desc:"Verliere in einer Runde mindestens dreimal High Stakes mit 1–3 und gewinne die Runde trotzdem."},
+    chromatic_menace:{name:"Chromatic Menace",desc:"Schalte alle Achievement-Würfeldesigns frei."},
+    special_effects_department:{name:"Special Effects Department",desc:"Schalte alle Achievement-Angriffseffekte frei."}
   };
 
   const DICE_UNLOCK_ACHIEVEMENT={gold:"grande",obsidian:"not_today",blood:"blood_money",arcane:"dual_wielding",emerald:"back_from_dead",frost:"snake_charmer",pearl:"untouchable",neon:"degenerate_gambler",void:"overkill",sapphire:"hat_trick",chrome:"machine",storm:"laser_guided",circuit:"party_crasher"};
+
+  const ATTACK_FX_STYLES={
+    classic:{name:"Arc Shot",desc:"Der klassische adaptive Laser/Blitz aus V27.5."},
+    lightning:{name:"Thunderbolt",desc:"Ein harter elektrischer Blitz direkt ins Ziel."},
+    flame:{name:"Hellfire",desc:"Ein brennender Feuerstrahl mit Glutspur."},
+    venom:{name:"Venom",desc:"Giftgrüner Treffer mit toxischer Wolke."},
+    blood:{name:"Blood Slash",desc:"Dunkelroter Schnitt mit Blutspritzern."},
+    jackpot:{name:"Royal Burst",desc:"Goldener Casino-Schuss mit Kartenfarben."},
+    void:{name:"Void Rift",desc:"Violetter Riss, der am Ziel kollabiert."},
+    confetti:{name:"Confetti Cannon",desc:"Völlig unnötig. Völlig korrekt. Konfetti."},
+    frost:{name:"Frost Lance",desc:"Eislanze mit Splittern am Einschlag."},
+    rift:{name:"Rift Tear",desc:"Prestige-Riss mit violett-cyanem Nachglühen."},
+    crown:{name:"Crownfall",desc:"Goldener Endgame-Effekt. Reiner Flex."}
+  };
+  const ATTACK_FX_UNLOCK_ACHIEVEMENT={
+    lightning:"momentum_mori",flame:"critical_hit",venom:"backstab",blood:"vampiric_touch",
+    jackpot:"royal_flush_attack",void:"collateral_damage",confetti:"perfectly_useless"
+  };
 
   const PRESTIGE_SHOP_ITEMS=[
     {id:"title_high_roller",type:"title",name:"High Roller",value:"High Roller",cost:5,desc:"Kleiner Prestige-Titel unter deinem Namen."},
@@ -66,7 +102,10 @@
     {id:"dice_toxic",type:"dice",name:"Toxic Dice",value:"toxic",cost:12,desc:"Leuchtendes Giftgrün."},
     {id:"dice_rose",type:"dice",name:"Rose Dice",value:"rose",cost:15,desc:"Helles Rosé mit dunklen Pips."},
     {id:"dice_galaxy",type:"dice",name:"Galaxy Dice",value:"galaxy",cost:20,desc:"Violett-blauer Weltraum-Look."},
-    {id:"dice_prestige",type:"dice",name:"Prestige Dice",value:"prestige",cost:30,desc:"Teuerstes Würfelset im Shop. Maximalpreis 30 🏆."}
+    {id:"dice_prestige",type:"dice",name:"Prestige Dice",value:"prestige",cost:30,desc:"Teuerstes Würfelset im Shop. Maximalpreis 30 🏆."},
+    {id:"fx_frost",type:"attackfx",name:"Frost Lance",value:"frost",cost:10,desc:"Eisiger Projektil-Effekt mit Splitter-Einschlag."},
+    {id:"fx_rift",type:"attackfx",name:"Rift Tear",value:"rift",cost:18,desc:"Violett-cyaner Riss als Angriffseffekt."},
+    {id:"fx_crown",type:"attackfx",name:"Crownfall",value:"crown",cost:28,desc:"Goldener Endgame-Angriffseffekt. Reiner Prestige-Flex."}
   ];
 
   const SPECIAL_RULES={

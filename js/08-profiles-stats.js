@@ -94,6 +94,7 @@
   function prestigeItemOwned(profile,item){
     if(!profile||!item) return false;
     if(item.type==="dice") return profile.unlockedDice.includes(item.value);
+    if(item.type==="attackfx") return profile.unlockedAttackFx?.includes(item.value);
     return profile.prestigeCosmetics?.owned?.includes(item.id);
   }
   function prestigeItemEquipped(profile,item){
@@ -101,6 +102,7 @@
     if(item.type==="dice") return profile.selectedDice===item.value;
     if(item.type==="title") return profile.prestigeCosmetics?.selectedTitle===item.id;
     if(item.type==="frame") return profile.prestigeCosmetics?.selectedFrame===item.id;
+    if(item.type==="attackfx") return profile.selectedAttackFx===item.value;
     return false;
   }
   function renderPrestigeShop(){
@@ -108,12 +110,12 @@
     if(!profiles.length){const o=document.createElement("option");o.value="";o.textContent="Kein Profil vorhanden";prestigeShopProfileSelect.appendChild(o);prestigeShopTrophies.textContent="🏆 0";prestigeEquipped.textContent="Erstelle zuerst ein Profil.";prestigeShopList.innerHTML="";return;}
     profiles.forEach(p=>{const o=document.createElement("option");o.value=p.id;o.textContent=`${p.name} #${p.tagNumber}`;prestigeShopProfileSelect.appendChild(o);});prestigeShopProfileSelect.value=getProfile(old)?old:profiles[0].id;
     const profile=getProfile(prestigeShopProfileSelect.value),trophies=Math.max(0,profile?.campaign?.trophies||0);prestigeShopTrophies.textContent=`🏆 ${trophies}`;
-    const title=profileCosmeticTitle(profile)||"Kein Titel",frame=profileCosmeticFrame(profile)||"Standard",dice=DICE_DESIGNS[profile.selectedDice]?.name||"Classic";
-    prestigeEquipped.innerHTML=`<strong>Aktiv:</strong> 🏷 ${escapeHtml(title)} · 🖼 ${escapeHtml(frame)} · 🎲 ${escapeHtml(dice)}<div class="prestige-reset-row"><button type="button" class="secondary" data-reset-cosmetic="title">Titel entfernen</button><button type="button" class="secondary" data-reset-cosmetic="frame">Rahmen entfernen</button></div>`;
-    prestigeShopList.innerHTML=PRESTIGE_SHOP_ITEMS.map(item=>{const owned=prestigeItemOwned(profile,item),equipped=prestigeItemEquipped(profile,item),afford=trophies>=item.cost;const typeName=item.type==="dice"?"Würfel":item.type==="frame"?"Rahmen":"Titel";const button=equipped?`<button disabled>✓ Aktiv</button>`:owned?`<button class="good" data-shop-equip="${item.id}">Ausrüsten</button>`:`<button class="gold" data-shop-buy="${item.id}" ${afford?"":"disabled"}>🏆 ${item.cost} · Kaufen</button>`;return `<div class="prestige-item${owned?" owned":""}${item.cost>=25?" expensive":""}"><div class="prestige-item-kicker">${typeName} · 🏆 ${item.cost}</div><div class="prestige-item-name">${escapeHtml(item.name)}</div><div class="prestige-item-desc">${escapeHtml(item.desc)}</div>${button}</div>`;}).join("");
-    prestigeShopList.querySelectorAll("[data-shop-buy]").forEach(btn=>btn.onclick=()=>{const item=PRESTIGE_SHOP_ITEMS.find(x=>x.id===btn.dataset.shopBuy),p=getProfile(prestigeShopProfileSelect.value);if(!p||!item||prestigeItemOwned(p,item)||(p.campaign.trophies||0)<item.cost)return;p.campaign.trophies-=item.cost;if(!p.prestigeCosmetics)p.prestigeCosmetics={owned:[],selectedTitle:null,selectedFrame:null};if(!p.prestigeCosmetics.owned.includes(item.id))p.prestigeCosmetics.owned.push(item.id);if(item.type==="dice"&&!p.unlockedDice.includes(item.value))p.unlockedDice.push(item.value);saveGameData();renderPrestigeShop();renderProfiles();});
-    prestigeShopList.querySelectorAll("[data-shop-equip]").forEach(btn=>btn.onclick=()=>{const item=PRESTIGE_SHOP_ITEMS.find(x=>x.id===btn.dataset.shopEquip),p=getProfile(prestigeShopProfileSelect.value);if(!p||!item||!prestigeItemOwned(p,item))return;if(item.type==="dice")p.selectedDice=item.value;if(item.type==="title")p.prestigeCosmetics.selectedTitle=item.id;if(item.type==="frame")p.prestigeCosmetics.selectedFrame=item.id;saveGameData();renderPrestigeShop();renderProfiles();});
-    prestigeEquipped.querySelectorAll("[data-reset-cosmetic]").forEach(btn=>btn.onclick=()=>{const p=getProfile(prestigeShopProfileSelect.value);if(!p)return;if(btn.dataset.resetCosmetic==="title")p.prestigeCosmetics.selectedTitle=null;else p.prestigeCosmetics.selectedFrame=null;saveGameData();renderPrestigeShop();renderProfiles();});
+    const title=profileCosmeticTitle(profile)||"Kein Titel",frame=profileCosmeticFrame(profile)||"Standard",dice=DICE_DESIGNS[profile.selectedDice]?.name||"Classic",fx=ATTACK_FX_STYLES[profile.selectedAttackFx]?.name||"Arc Shot";
+    prestigeEquipped.innerHTML=`<strong>Aktiv:</strong> 🏷 ${escapeHtml(title)} · 🖼 ${escapeHtml(frame)} · 🎲 ${escapeHtml(dice)} · ✨ ${escapeHtml(fx)}<div class="prestige-reset-row"><button type="button" class="secondary" data-reset-cosmetic="title">Titel entfernen</button><button type="button" class="secondary" data-reset-cosmetic="frame">Rahmen entfernen</button><button type="button" class="secondary" data-reset-cosmetic="attackfx">Effekt auf Arc Shot</button></div>`;
+    prestigeShopList.innerHTML=PRESTIGE_SHOP_ITEMS.map(item=>{const owned=prestigeItemOwned(profile,item),equipped=prestigeItemEquipped(profile,item),afford=trophies>=item.cost;const typeName=item.type==="dice"?"Würfel":item.type==="frame"?"Rahmen":item.type==="attackfx"?"Angriffseffekt":"Titel";const button=equipped?`<button disabled>✓ Aktiv</button>`:owned?`<button class="good" data-shop-equip="${item.id}">Ausrüsten</button>`:`<button class="gold" data-shop-buy="${item.id}" ${afford?"":"disabled"}>🏆 ${item.cost} · Kaufen</button>`;return `<div class="prestige-item${owned?" owned":""}${item.cost>=25?" expensive":""}"><div class="prestige-item-kicker">${typeName} · 🏆 ${item.cost}</div><div class="prestige-item-name">${escapeHtml(item.name)}</div><div class="prestige-item-desc">${escapeHtml(item.desc)}</div>${button}</div>`;}).join("");
+    prestigeShopList.querySelectorAll("[data-shop-buy]").forEach(btn=>btn.onclick=()=>{const item=PRESTIGE_SHOP_ITEMS.find(x=>x.id===btn.dataset.shopBuy),p=getProfile(prestigeShopProfileSelect.value);if(!p||!item||prestigeItemOwned(p,item)||(p.campaign.trophies||0)<item.cost)return;p.campaign.trophies-=item.cost;if(!p.prestigeCosmetics)p.prestigeCosmetics={owned:[],selectedTitle:null,selectedFrame:null};if(!p.prestigeCosmetics.owned.includes(item.id))p.prestigeCosmetics.owned.push(item.id);if(item.type==="dice"&&!p.unlockedDice.includes(item.value))p.unlockedDice.push(item.value);if(item.type==="attackfx"&&!p.unlockedAttackFx.includes(item.value))p.unlockedAttackFx.push(item.value);saveGameData();renderPrestigeShop();renderProfiles();});
+    prestigeShopList.querySelectorAll("[data-shop-equip]").forEach(btn=>btn.onclick=()=>{const item=PRESTIGE_SHOP_ITEMS.find(x=>x.id===btn.dataset.shopEquip),p=getProfile(prestigeShopProfileSelect.value);if(!p||!item||!prestigeItemOwned(p,item))return;if(item.type==="dice")p.selectedDice=item.value;if(item.type==="title")p.prestigeCosmetics.selectedTitle=item.id;if(item.type==="frame")p.prestigeCosmetics.selectedFrame=item.id;if(item.type==="attackfx")p.selectedAttackFx=item.value;saveGameData();renderPrestigeShop();renderProfiles();});
+    prestigeEquipped.querySelectorAll("[data-reset-cosmetic]").forEach(btn=>btn.onclick=()=>{const p=getProfile(prestigeShopProfileSelect.value);if(!p)return;if(btn.dataset.resetCosmetic==="title")p.prestigeCosmetics.selectedTitle=null;else if(btn.dataset.resetCosmetic==="frame")p.prestigeCosmetics.selectedFrame=null;else if(btn.dataset.resetCosmetic==="attackfx")p.selectedAttackFx="classic";saveGameData();renderPrestigeShop();renderProfiles();});
   }
 
   function renderProfiles(){
@@ -125,11 +127,14 @@
     profileList.innerHTML=saveData.profiles.map(p=>{
       const unlocked=Object.entries(DICE_DESIGNS).map(([key,d])=>{const unlockedNow=p.unlockedDice.includes(key);const shopItem=PRESTIGE_SHOP_ITEMS.find(x=>x.type==="dice"&&x.value===key);const req=DICE_UNLOCK_ACHIEVEMENT[key]?ACHIEVEMENTS[DICE_UNLOCK_ACHIEVEMENT[key]]?.name:(shopItem?`Trophy Shop · ${shopItem.cost} 🏆`:"");return `<span class="unlock-chip${unlockedNow?"":" locked"}">${unlockedNow?"✓":"🔒"} ${escapeHtml(d.name)}${!unlockedNow&&req?` · ${escapeHtml(req)}`:""}</span>`;}).join("");
       const diceOptions=p.unlockedDice.filter(k=>DICE_DESIGNS[k]).map(k=>`<option value="${k}"${p.selectedDice===k?" selected":""}>🎲 ${escapeHtml(DICE_DESIGNS[k].name)}</option>`).join("");
+      const fxOptions=(p.unlockedAttackFx||["classic"]).filter(k=>ATTACK_FX_STYLES[k]).map(k=>`<option value="${k}"${p.selectedAttackFx===k?" selected":""}>✨ ${escapeHtml(ATTACK_FX_STYLES[k].name)}</option>`).join("");
+      const fxUnlocked=Object.entries(ATTACK_FX_STYLES).map(([key,fx])=>{const unlockedNow=(p.unlockedAttackFx||[]).includes(key);const shopItem=PRESTIGE_SHOP_ITEMS.find(x=>x.type==="attackfx"&&x.value===key);const req=ATTACK_FX_UNLOCK_ACHIEVEMENT[key]?ACHIEVEMENTS[ATTACK_FX_UNLOCK_ACHIEVEMENT[key]]?.name:(shopItem?`Trophy Shop · ${shopItem.cost} 🏆`:key==="classic"?"Standard":"");return `<span class="unlock-chip fx${unlockedNow?"":" locked"}">${unlockedNow?"✓":"🔒"} ${escapeHtml(fx.name)}${!unlockedNow&&req?` · ${escapeHtml(req)}`:""}</span>`;}).join("");
       const winrate=p.stats.rounds?Math.round((p.stats.wins/p.stats.rounds)*100):0;
       return `<div class="profile-card${profileCosmeticFrame(p)?` frame-${profileCosmeticFrame(p)}`:""}" data-profile-id="${escapeHtml(p.id)}">
         <div class="profile-card-top"><div class="profile-identity"><div class="profile-name-line">${escapeHtml(p.name)} <span class="battle-tag">#${escapeHtml(p.tagNumber)}</span></div>${profileCosmeticTitle(p)?`<div class="profile-title-badge">${escapeHtml(profileCosmeticTitle(p))}</div>`:""}<div class="profile-mini">${p.stats.rounds} Runden · ${p.stats.wins} Siege · ${winrate}% Winrate · ${Object.keys(p.achievements).length} Achievements · 🏆 ${p.campaign?.trophies||0}</div></div></div>
-        <div class="profile-actions"><div><label>Name</label><input class="profile-name-edit" maxlength="24" value="${escapeHtml(p.name)}"></div><div><label>Würfeldesign</label><select class="profile-dice-edit">${diceOptions}</select></div><button class="profile-delete">Löschen</button></div>
-        <div class="unlock-strip">${unlocked}</div>
+        <div class="profile-actions"><div><label>Name</label><input class="profile-name-edit" maxlength="24" value="${escapeHtml(p.name)}"></div><div><label>Würfeldesign</label><select class="profile-dice-edit">${diceOptions}</select></div><div><label>Angriffseffekt</label><select class="profile-fx-edit">${fxOptions}</select></div><button class="profile-delete">Löschen</button></div>
+        <div class="unlock-strip-title">Würfeldesigns</div><div class="unlock-strip">${unlocked}</div>
+        <div class="unlock-strip-title">Angriffseffekte</div><div class="unlock-strip">${fxUnlocked}</div>
       </div>`;
     }).join("");
 
@@ -137,6 +142,7 @@
       const id=card.dataset.profileId;
       const nameInput=card.querySelector(".profile-name-edit");
       const diceSelect=card.querySelector(".profile-dice-edit");
+      const fxSelect=card.querySelector(".profile-fx-edit");
       const del=card.querySelector(".profile-delete");
 
       nameInput.onchange=()=>{
@@ -149,6 +155,10 @@
         const p=getProfile(id); if(!p) return;
         if(p.unlockedDice.includes(diceSelect.value)){p.selectedDice=diceSelect.value;saveGameData();renderProfiles();}
       };
+      fxSelect.onchange=()=>{
+        const p=getProfile(id); if(!p) return;
+        if((p.unlockedAttackFx||[]).includes(fxSelect.value)){p.selectedAttackFx=fxSelect.value;saveGameData();renderProfiles();}
+      };
       del.onclick=()=>{
         const p=getProfile(id); if(!p) return;
         if(!confirm(`Profil ${profileLabel(p)} wirklich löschen? Achievements und Statistiken dieses Profils gehen verloren.`)) return;
@@ -160,7 +170,7 @@
   function renderAchievements(){
     const profiles=saveData.profiles;
     achievementList.innerHTML=Object.entries(ACHIEVEMENTS).map(([id,a])=>{
-      const reward=a.rewardDice?`<span class="achievement-reward">🎲 ${escapeHtml(DICE_DESIGNS[a.rewardDice]?.name||a.rewardDice)}</span>`:"";
+      const rewards=[];if(a.rewardDice)rewards.push(`🎲 ${escapeHtml(DICE_DESIGNS[a.rewardDice]?.name||a.rewardDice)}`);if(a.rewardFx)rewards.push(`✨ ${escapeHtml(ATTACK_FX_STYLES[a.rewardFx]?.name||a.rewardFx)}`);const reward=rewards.length?`<span class="achievement-reward">${rewards.join(" · ")}</span>`:"";
       const owners=profiles.length?profiles.map(p=>`<span class="achievement-owner${p.achievements[id]?" done":""}">${p.achievements[id]?"✓":"○"} ${escapeHtml(p.name)} <span class="battle-tag">#${escapeHtml(p.tagNumber)}</span></span>`).join(""):`<span class="achievement-owner">Noch keine Profile</span>`;
       return `<div class="achievement-card"><div class="achievement-head"><div class="achievement-name">🏆 ${escapeHtml(a.name)}</div>${reward}</div><div class="achievement-desc">${escapeHtml(a.desc)}</div><div class="achievement-owners">${owners}</div></div>`;
     }).join("");
@@ -219,7 +229,7 @@
     if(achievementToastBusy||!achievementToastQueue.length) return;
     achievementToastBusy=true;
     const {profile,achievement}=achievementToastQueue.shift();
-    const reward=achievement.rewardDice?`<div class="achievement-toast-reward">🎲 ${escapeHtml(DICE_DESIGNS[achievement.rewardDice]?.name||achievement.rewardDice)} freigeschaltet!</div>`:"";
+    const rewardParts=[];if(achievement.rewardDice)rewardParts.push(`🎲 ${escapeHtml(DICE_DESIGNS[achievement.rewardDice]?.name||achievement.rewardDice)}`);if(achievement.rewardFx)rewardParts.push(`✨ ${escapeHtml(ATTACK_FX_STYLES[achievement.rewardFx]?.name||achievement.rewardFx)}`);const reward=rewardParts.length?`<div class="achievement-toast-reward">${rewardParts.join(" · ")} freigeschaltet!</div>`:"";
     achievementToastLayer.innerHTML=`<div class="achievement-toast"><div class="achievement-toast-kicker">ACHIEVEMENT UNLOCKED</div><div class="achievement-toast-title">🏆 ${escapeHtml(achievement.name)}</div><div class="achievement-toast-profile">${escapeHtml(profile.name)} <span class="battle-tag">#${escapeHtml(profile.tagNumber)}</span></div>${reward}</div>`;
     setTimeout(()=>{achievementToastLayer.innerHTML="";achievementToastBusy=false;showNextAchievementToast();},3250);
   }
@@ -244,6 +254,7 @@
     if(profile.achievements[id]) return onlineWasNew;
     profile.achievements[id]=Date.now();
     if(achievement.rewardDice && !profile.unlockedDice.includes(achievement.rewardDice)) profile.unlockedDice.push(achievement.rewardDice);
+    if(achievement.rewardFx && ATTACK_FX_STYLES[achievement.rewardFx] && !profile.unlockedAttackFx.includes(achievement.rewardFx)) profile.unlockedAttackFx.push(achievement.rewardFx);
     saveGameData();
     enqueueAchievementToast(profile,achievement);
     renderAchievements();
@@ -255,6 +266,10 @@
     const allExtra=Object.keys(DICE_UNLOCK_ACHIEVEMENT).every(k=>profile.unlockedDice.includes(k));
     if(allExtra && id!=="chromatic_menace" && !profile.achievements.chromatic_menace){
       setTimeout(()=>unlockAchievementForPlayer(index,"chromatic_menace"),80);
+    }
+    const allFx=Object.keys(ATTACK_FX_UNLOCK_ACHIEVEMENT).every(k=>(profile.unlockedAttackFx||[]).includes(k));
+    if(allFx && id!=="special_effects_department" && !profile.achievements.special_effects_department){
+      setTimeout(()=>unlockAchievementForPlayer(index,"special_effects_department"),120);
     }
     return true;
   }
@@ -308,7 +323,12 @@
 
   function checkRoundWinnerAchievements(winnerIndex){
     const p=players[winnerIndex];
-    if(!p?.profileId) return;
+    if(!p) return;
+    // Im Online-Match besitzt der Host für fremde Spieler bewusst keine lokale profileId.
+    // Trotzdem müssen Sieger-Achievements in deren autoritativen Unlock-Queue landen,
+    // damit der jeweilige Besitzer sie auf seinem Gerät ins Profil übernehmen kann.
+    const onlineMode=String(gameContext?.mode||"").startsWith("online");
+    if(!p.profileId && !onlineMode) return;
     if(p.roundLastStandTriggered) unlockAchievementForPlayer(winnerIndex,"not_today");
     if(p.hp===1) unlockAchievementForPlayer(winnerIndex,"one_hp_wonder");
     if(p.hp>=maxHpForPlayer(p)) unlockAchievementForPlayer(winnerIndex,"untouchable");
@@ -320,5 +340,6 @@
     if((rs.kills||0)>=3) unlockAchievementForPlayer(winnerIndex,"executioner");
     if((rs.sixes||0)>=15) unlockAchievementForPlayer(winnerIndex,"six_storm");
     if((rs.damage||0)===0) unlockAchievementForPlayer(winnerIndex,"technically_a_win");
+    if((rs.highStakesLosses||0)>=3) unlockAchievementForPlayer(winnerIndex,"house_always_wins");
     if(String(gameContext?.mode||"").startsWith("online") && players.length===4) unlockAchievementForPlayer(winnerIndex,"party_crasher");
   }

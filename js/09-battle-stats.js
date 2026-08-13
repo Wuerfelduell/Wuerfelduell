@@ -14,7 +14,9 @@
       kills:0,
       snakeEyesUsesThisTurn:0,
       twelveTriggers:0,
-      highStakesWins:0
+      highStakesWins:0,
+      highStakesLosses:0,
+      loadedSixToFive:0
     }));
     turnDamageThisTurn=players.map(()=>0);
   }

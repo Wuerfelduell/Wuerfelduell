@@ -107,6 +107,18 @@
       version=7;
     }
 
+    // V7 -> V8: Profilgebundene Angriffseffekte. Die eigentlichen Unlocks werden
+    // beim Normalisieren aus Achievements und Trophy-Shop-Besitz rückwirkend ergänzt.
+    if(version<8){
+      if(Array.isArray(migrated.profiles)){
+        migrated.profiles=migrated.profiles.map(profile=>{
+          if(!profile || typeof profile!=="object") return profile;
+          return {...profile,unlockedAttackFx:Array.isArray(profile.unlockedAttackFx)?profile.unlockedAttackFx:["classic"],selectedAttackFx:profile.selectedAttackFx||"classic"};
+        });
+      }
+      version=8;
+    }
+
     migrated.schemaVersion=Math.max(version,SAVE_SCHEMA_VERSION);
     migrated.campaignVersion=Number(migrated.campaignVersion)||CAMPAIGN_VERSION;
     migrated.lastGameVersion=GAME_VERSION;
@@ -122,14 +134,24 @@
     p.achievements=(p.achievements&&typeof p.achievements==="object")?p.achievements:{};
     // Neue Würfel-Rewards gelten rückwirkend: Wer das Achievement schon hatte,
     // bekommt das zugehörige Design beim ersten Start nach dem Update automatisch.
+    p.unlockedAttackFx=Array.isArray(p.unlockedAttackFx)?[...new Set(["classic",...p.unlockedAttackFx.map(String)])]:["classic"];
     Object.entries(ACHIEVEMENTS).forEach(([id,a])=>{
       if(p.achievements[id] && a.rewardDice && !p.unlockedDice.includes(a.rewardDice)) p.unlockedDice.push(a.rewardDice);
+      if(p.achievements[id] && a.rewardFx && ATTACK_FX_STYLES[a.rewardFx] && !p.unlockedAttackFx.includes(a.rewardFx)) p.unlockedAttackFx.push(a.rewardFx);
+    });
+    // Bereits gekaufte Trophy-Shop-Effekte ebenfalls rückwirkend als freigeschaltet markieren.
+    const rawOwnedFx=Array.isArray(p.prestigeCosmetics?.owned)?p.prestigeCosmetics.owned:[];
+    PRESTIGE_SHOP_ITEMS.filter(item=>item.type==="attackfx"&&rawOwnedFx.includes(item.id)).forEach(item=>{
+      if(!p.unlockedAttackFx.includes(item.value)) p.unlockedAttackFx.push(item.value);
     });
     const originalDiceSet=["obsidian","gold","blood","arcane","emerald"];
     if(originalDiceSet.every(k=>p.unlockedDice.includes(k)) && !p.achievements.dice_goblin) p.achievements.dice_goblin=Date.now();
     const allDiceSet=Object.keys(DICE_UNLOCK_ACHIEVEMENT);
     if(allDiceSet.every(k=>p.unlockedDice.includes(k)) && !p.achievements.chromatic_menace) p.achievements.chromatic_menace=Date.now();
+    const allAchievementFx=Object.keys(ATTACK_FX_UNLOCK_ACHIEVEMENT);
+    if(allAchievementFx.every(k=>p.unlockedAttackFx.includes(k)) && !p.achievements.special_effects_department) p.achievements.special_effects_department=Date.now();
     p.selectedDice=p.unlockedDice.includes(p.selectedDice)?p.selectedDice:"classic";
+    p.selectedAttackFx=p.unlockedAttackFx.includes(p.selectedAttackFx)?p.selectedAttackFx:"classic";
     const rawCosmetics=(p.prestigeCosmetics&&typeof p.prestigeCosmetics==="object")?p.prestigeCosmetics:{};
     p.prestigeCosmetics={
       owned:Array.isArray(rawCosmetics.owned)?[...new Set(rawCosmetics.owned.map(String))]:[],
@@ -228,7 +250,7 @@
   function createProfile(name){
     const clean=String(name||"").trim().slice(0,24);
     if(!clean) return null;
-    const p=normalizeProfile({id:generateProfileId(),name:clean,tagNumber:generateTagNumber(),unlockedDice:["classic"],selectedDice:"classic",achievements:{},stats:emptyProfileStats()});
+    const p=normalizeProfile({id:generateProfileId(),name:clean,tagNumber:generateTagNumber(),unlockedDice:["classic"],selectedDice:"classic",unlockedAttackFx:["classic"],selectedAttackFx:"classic",achievements:{},stats:emptyProfileStats()});
     saveData.profiles.push(p);
     saveGameData();
     return p;

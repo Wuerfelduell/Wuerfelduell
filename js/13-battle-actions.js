@@ -17,6 +17,36 @@
     },ROLL_ANIM_MS);
   }
 
+  function isStraightFive(values){
+    if(!Array.isArray(values)||values.length!==5) return false;
+    return [...values].map(Number).sort((a,b)=>a-b).every((v,i)=>v===i+1);
+  }
+
+  function isFullHouseFive(values){
+    if(!Array.isArray(values)||values.length!==5) return false;
+    const counts=new Map();
+    values.forEach(v=>counts.set(Number(v),(counts.get(Number(v))||0)+1));
+    return [...counts.values()].sort((a,b)=>a-b).join(",")==="2,3";
+  }
+
+  function resetFirstClassStreak(index=current){
+    if(players[index]) players[index].firstClassStreak=0;
+  }
+
+  function recordAttackDamageForAchievements(index,totalActualDamage){
+    const p=players[index];
+    if(!p) return;
+    const damage=Math.max(0,Number(totalActualDamage)||0);
+    if(damage===0){
+      p.firstClassStreak=(p.firstClassStreak||0)+1;
+      if(p.firstClassStreak>=3) unlockAchievementForPlayer(index,"first_class");
+    }else p.firstClassStreak=0;
+    if(p.perfect25AttackArmed){
+      if(damage===0) unlockAchievementForPlayer(index,"perfectly_useless");
+      p.perfect25AttackArmed=false;
+    }
+  }
+
   function rollBase(){
     const indices=[];
     dice.forEach((d,i)=>{if(!d.locked){d.selected=false;indices.push(i);}});
@@ -67,6 +97,10 @@
     const beforeValue=d.value;
     loadedDiceUsed=true;
     d.value=5;
+    if(beforeValue===6 && roundStats[current]){
+      roundStats[current].loadedSixToFive=(roundStats[current].loadedSixToFive||0)+1;
+      if(roundStats[current].loadedSixToFive>=3) unlockAchievementForPlayer(current,"loaded_question");
+    }
     markCampaignAbilityUse(current,18);
 
     const loadedCost=encounterVoluntaryCost(2);
@@ -99,6 +133,7 @@
     if(roundStats[current]){
       roundStats[current].snakeEyesUsesThisTurn++;
       if(roundStats[current].snakeEyesUsesThisTurn>=2) unlockAchievementForPlayer(current,"snake_charmer");
+      if(roundStats[current].snakeEyesUsesThisTurn>=4) unlockAchievementForPlayer(current,"snake_oil");
     }
 
     animateIndices(rerollIndices,()=>{
@@ -118,6 +153,8 @@
       players[current].dumbassBaseArmed=false;
     }
     selected.forEach(d=>{d.locked=true;d.selected=false;});
+    const lockedValues=dice.filter(d=>d.locked&&d.value!=null).map(d=>d.value);
+    if(lockedValues.length===5 && isStraightFive(lockedValues)) unlockAchievementForPlayer(current,"straight");
     if(dice.every(d=>d.locked)){resolveBase();return;}
     phase="base_ready";
     renderAll();
@@ -430,7 +467,12 @@
     players[current].botBloodUsesThisAttack=0;
     activateBloodRushForMainAttack();
     wildcardFace=hasAbility(17)?rollTrackedD6(current):null;
-    if(hasAbility(10)){players[current].momentumStreak=(players[current].momentumStreak||0)+1;momentumBonus=Math.min(Math.max(players[current].momentumStreak-1,0),2);}
+    if(hasAbility(10)){
+      players[current].momentumStreak=(players[current].momentumStreak||0)+1;
+      momentumBonus=Math.min(Math.max(players[current].momentumStreak-1,0),2);
+      if(players[current].momentumStreak>=5) unlockAchievementForPlayer(current,"momentum_mori");
+    }
+    if(source!=="perfect25") players[current].perfect25AttackArmed=false;
     dice=freshDice();phase="attack_ready";
 
     let extra="";
@@ -538,6 +580,7 @@
       perfect25Die.textContent=dieSymbol(result);
 
       if(result>=4){
+        players[current].perfect25AttackArmed=true;
         markCampaignAbilitySuccess(current,15);
         perfect25Result.textContent=`D6 = ${result} → Angriff erlaubt!`;
         addLog(`✨ Perfect 25 würfelt ${result}: Angriff erlaubt. Jetzt entscheidet der D4 die Angriffszahl.`);
@@ -547,6 +590,8 @@
           openPerfect25D4();
         },520);
       }else{
+        players[current].perfect25AttackArmed=false;
+        resetFirstClassStreak(current);
         perfect25Result.textContent=`D6 = ${result} → kein Angriff`;
         addLog(`✨ Perfect 25 würfelt ${result}: kein Angriff.`);
         if(hasAbility(10)) players[current].momentumStreak=0;
@@ -649,6 +694,7 @@
 
       if(result<=3){
         attackDamage=Math.floor(before*0.5);
+        if(roundStats[current]) roundStats[current].highStakesLosses=(roundStats[current].highStakesLosses||0)+1;
         highStakesResult.textContent=`D6 = ${result} → ${before} → ${attackDamage} Schaden`;
         addLog(`🎲 High Stakes: ${result}. Angriffsschaden halbiert: ${before} → ${attackDamage}.`);
       }else{
@@ -746,6 +792,8 @@
       const ctx=insuranceContext;
       const reduced=roll>=5;
       const finalDamage=reduced ? Math.floor(ctx.rawDamage/2) : ctx.rawDamage;
+      if(Number(ctx.total)===20 && roll===1) unlockAchievementForPlayer(current,"nat20_nat1");
+      if(Number(ctx.total)===24 && reduced && finalDamage===0) unlockAchievementForPlayer(current,"insurance_fraud");
 
       insuranceDie.classList.remove("rolling");
       insuranceDie.textContent=dieSymbol(roll);
@@ -775,6 +823,8 @@
     const attackThreshold=hasAdvance?25:26;
 
     if(total<25){
+      resetFirstClassStreak(current);
+      players[current].perfect25AttackArmed=false;
       if(hasAbility(10)) players[current].momentumStreak=0;
       momentumBonus=0;
       const dmg=25-total;
@@ -788,6 +838,8 @@
     }
 
     if(total<attackThreshold){
+      resetFirstClassStreak(current);
+      players[current].perfect25AttackArmed=false;
       if(hasAbility(10)) players[current].momentumStreak=0;
       momentumBonus=0;
       addLog("↳ Genau 25 – kein Schaden, kein Angriff.");
@@ -841,6 +893,10 @@
     animateIndices(indices,()=>{
       const wasFirstAttackRoll=firstAttackRoll;
       const attackRollValues=indices.map(i=>dice[i].value);
+      if(indices.length===5){
+        if(isStraightFive(attackRollValues)) unlockAchievementForPlayer(current,"royal_flush_attack");
+        if(isFullHouseFive(attackRollValues)) unlockAchievementForPlayer(current,"full_house_attack");
+      }
       if(wasFirstAttackRoll && indices.length===5){
         const exactTarget=attackRollValues.every(v=>v===attackFace);
         if(exactTarget) unlockAchievementForPlayer(current,"laser_guided");
@@ -963,7 +1019,10 @@
       else addLog(`↳ Kein neuer Treffer. Angriff endet mit ${attackHits} Treffern = ${totalAttackDamage()} Schaden.`);
 
       if(attackHits>0) dealAttackDamage();
-      else endTurn();
+      else{
+        recordAttackDamageForAchievements(current,0);
+        endTurn();
+      }
       return;
     }
 
@@ -1107,6 +1166,7 @@
       checkBossPhase(attackerIndex,attackerHpBefore,attacker.hp);
       actualDamage=result.lost;
       recordDamageDealt(defenderIndex,actualDamage,false);
+      if(actualDamage>=15) unlockAchievementForPlayer(defenderIndex,"backstab");
       if(actualDamage>0){
         pendingExtraDamageFx.push({target:attackerIndex,amount:actualDamage});
         window.WDAttackFx?.emit?.(defenderIndex,attackerIndex,"counter",actualDamage,1);
@@ -1122,6 +1182,8 @@
         const actualHeal=applyHealingToPlayer(defenderIndex,heal);
         recordHealing(defenderIndex,actualHeal);
         if(actualHeal>0){
+          unlockAchievementForPlayer(defenderIndex,"vampiric_touch");
+          if(actualHeal>=10) unlockAchievementForPlayer(defenderIndex,"blood_bank");
           pendingExtraHealFx.push({target:defenderIndex,amount:actualHeal});
           addLog(`🩸 Counter-Lifesteal: ${defender.name} heilt ${actualHeal} Leben${defender.hp>maxHpForPlayer(defender)?` · ${defender.hp}/${maxHpForPlayer(defender)} HP`:""}.`);
         }
@@ -1260,6 +1322,8 @@
     checkBossPhase(attackTarget,targetHpBefore,target.hp);
     const actualDamage=mainResult.lost;
     recordDamageDealt(current,actualDamage,true);
+    if(actualDamage===21) unlockAchievementForPlayer(current,"critical_hit");
+    if(Number(attackFace)===1 && actualDamage>=15) unlockAchievementForPlayer(current,"one_or_three");
     pendingDamage={target:attackTarget,amount:actualDamage};
     if(actualDamage>0){
       const fxKind=(attackFace===4||attackFace===6)?"lightning":"laser";
@@ -1268,7 +1332,8 @@
 
     addLog(`⚔️ ${target.name} verliert ${actualDamage} Leben${rawDamage>actualDamage?` (${rawDamage} Schaden wären möglich gewesen).`:"."}`);
 
-    if(target.hp<=0){
+    const mainTargetKilled=target.hp<=0;
+    if(mainTargetKilled){
       if(roundStats[current]) roundStats[current].kills++;
       if(doubleTapApplied) unlockAchievementForPlayer(current,"double_trouble");
       recordCampaignKill(current,attackTarget);
@@ -1281,6 +1346,7 @@
     // Kein Mindestwert an Treffern. Nur im echten Multiplayer mit mindestens 3 Lebenden.
     // Ziel ist der nächste andere Spieler NACH dem Hauptziel im Uhrzeigersinn.
     let ricochetActual=0;
+    let ricochetTargetKilled=false;
     if(hasAbility(16) && attackHits>0 && aliveSnapshot.length>=3){
       const ricochetTarget=nextRicochetTarget(attackTarget,aliveSnapshot);
       if(ricochetTarget!==-1){
@@ -1297,6 +1363,7 @@
         }
         addLog(`🪃 Ricochet: ${attackHits} Würfeltreffer → ${players[ricochetTarget].name} erhält ${ricochetActual} Schaden.`);
         if(players[ricochetTarget].hp<=0){
+          ricochetTargetKilled=true;
           if(roundStats[current]) roundStats[current].kills++;
           recordCampaignKill(current,ricochetTarget);
           if(!maybeTriggerCampaignStandardBonusDraft(current,"kill")) maybeTriggerCampaignKillAbilityDraft(current);
@@ -1306,10 +1373,14 @@
       }
     }
 
+    if(mainTargetKilled && ricochetTargetKilled) unlockAchievementForPlayer(current,"collateral_damage");
+    recordAttackDamageForAchievements(current,actualDamage+ricochetActual);
+
     if(hasAbility(2) && (actualDamage+ricochetActual)>0){
       const heal=encounterHealAmount(current,Math.floor((actualDamage+ricochetActual)/2));
       const actualHeal=applyHealingToPlayer(current,heal);
       recordHealing(current,actualHeal);
+      if(actualHeal>=10) unlockAchievementForPlayer(current,"blood_bank");
       if(actualHeal>0) pendingHeal={target:current,amount:actualHeal};
       const p=players[current];
       const over=p.hp>maxHpForPlayer(p)?` · jetzt ${p.hp}/${maxHpForPlayer(p)} HP`:"";

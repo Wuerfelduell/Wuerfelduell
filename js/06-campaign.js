@@ -48,7 +48,7 @@
   }
   function profileCosmeticTitle(profile){const id=profile?.prestigeCosmetics?.selectedTitle;const item=PRESTIGE_SHOP_ITEMS.find(x=>x.id===id&&x.type==="title");return item?.value||"";}
   function profileCosmeticFrame(profile){const id=profile?.prestigeCosmetics?.selectedFrame;const item=PRESTIGE_SHOP_ITEMS.find(x=>x.id===id&&x.type==="frame");return item?.value||"";}
-  function playerCosmeticsFromProfile(profile){return {cosmeticTitle:profileCosmeticTitle(profile),cosmeticFrame:profileCosmeticFrame(profile)};}
+  function playerCosmeticsFromProfile(profile){return {cosmeticTitle:profileCosmeticTitle(profile),cosmeticFrame:profileCosmeticFrame(profile),attackFx:profile?.selectedAttackFx||"classic"};}
   function encounterVoluntaryCost(base){return Math.max(0,base+(encounterRuleActive("blood_tax")?1:0));}
   function encounterHealAmount(index,base){return Math.max(0,base+(campaignMode&&encounterRuleActive("blood_moon")?1:0));}
   function renderEncounterRuleBanner(){

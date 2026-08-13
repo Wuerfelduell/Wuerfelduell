@@ -719,6 +719,7 @@
       name:String(profile.name||"Spieler").slice(0,24),
       tagNumber:String(profile.tagNumber||"0000").padStart(4,"0").slice(-4),
       selectedDice:String(profile.selectedDice||"classic"),
+      selectedAttackFx:String(profile.selectedAttackFx||"classic"),
       cosmeticTitle:String(cosmeticTitle||""),
       cosmeticFrame:String(cosmeticFrame||"")
     };
@@ -749,8 +750,8 @@
       ability:validAbility(entry?.ability),secondAbility:null,thirdAbility:null,fourthAbility:null,
       secondAbilityUnlocked:false,thirdAbilityUnlocked:false,fourthAbilityUnlocked:false,
       rolledAbility:rolled,primaryWasChosen:rolled===6,secondAbilityWasChosen:false,thirdAbilityWasChosen:false,fourthAbilityWasChosen:false,
-      seat:0,diceDesign:String(entry?.diceDesign||localProfile?.selectedDice||"classic"),cosmeticTitle,cosmeticFrame,wins:0,
-      momentumStreak:0,lastStandUsed:false,roundLastStandTriggered:false,damageSinceLastOwnTurn:false,bloodRushPrimed:false,
+      seat:0,diceDesign:String(entry?.diceDesign||localProfile?.selectedDice||"classic"),attackFx:String(entry?.attackFx||localProfile?.selectedAttackFx||"classic"),cosmeticTitle,cosmeticFrame,wins:0,
+      momentumStreak:0,firstClassStreak:0,perfect25AttackArmed:false,lastStandUsed:false,roundLastStandTriggered:false,damageSinceLastOwnTurn:false,bloodRushPrimed:false,
       voluntaryHpPaidThisTurn:false,botBloodUsesThisAttack:0,machineBaseArmed:false,dumbassBaseArmed:false,onlineAchievementUnlocks:[]
     };
   }
@@ -800,10 +801,10 @@
     players.forEach(p=>{
       const roll=p.rolledAbility;
       const abilityText=roll===6?`W25 = 6 → automatische freie Wahl → ${ABILITIES[p.ability].name}`:`W25 = ${roll} → ${ABILITIES[p.ability].name}`;
-      addLog(`${p.name}: ${abilityText} · 🎲 ${DICE_DESIGNS[p.diceDesign]?.name||"Classic"}.`);
+      addLog(`${p.name}: ${abilityText} · 🎲 ${DICE_DESIGNS[p.diceDesign]?.name||"Classic"} · ✨ ${ATTACK_FX_STYLES[p.attackFx]?.name||"Arc Shot"}.`);
     });
     renderAll();enforceOnlineControls();
-    addLog(`🌐 V27.5.0: Smooth Online · 2–4 Spieler · synchronisierte Combat-FX.`);
+    addLog(`🌐 V27.5.1: Smooth Online · 2–4 Spieler · profilgebundene Combat-FX.`);
     return true;
   }
 
@@ -822,6 +823,7 @@
   window.WDOnlineBridge=Object.freeze({
     getProfiles(){try{return (saveData?.profiles||[]).map(publicProfile).filter(Boolean);}catch(err){console.warn("Online-Profilliste konnte nicht gelesen werden",err);return []; }},
     getVersion(){try{return String(GAME_VERSION||"");}catch(_){return "";}},
+    getAttackFxName(id){try{return ATTACK_FX_STYLES[String(id||"classic")]?.name||"Arc Shot";}catch(_){return "Arc Shot";}},
     getOnlineChoicePool(){return REAL_ABILITY_IDS.filter(id=>id!==7);},
     startMatch:startOnlineMatch,
     stopMatch:stopOnlineMatch,
