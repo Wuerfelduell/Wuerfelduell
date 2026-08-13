@@ -1014,7 +1014,7 @@
       if(d.locked) cls+=" attack-hit locked";
       if(d.rolling) cls+=" rolling";
       el.className=cls;
-      renderDieNode(el,d.value);
+      render3DDieNode(el,d.value);
     });
   }
 
