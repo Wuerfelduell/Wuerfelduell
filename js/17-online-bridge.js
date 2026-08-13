@@ -1,7 +1,7 @@
 (function(){
   "use strict";
 
-  let onlineSession={active:false,uid:"",roomCode:"",isHost:false,lastStateSeq:0,actionPending:false,pendingActionId:"",previewActionId:"",previewType:"",transportConnected:true,pendingTimer:null};
+  let onlineSession={active:false,uid:"",roomCode:"",isHost:false,lastStateSeq:0,actionPending:false,pendingActionId:"",pendingActionType:"",previewActionId:"",previewType:"",transportConnected:true,pendingTimer:null,lastHostActionType:"",lastHostActionAt:0};
   let onlineInputHooksInstalled=false;
 
   const ONLINE_ACTION_BUTTONS=[
@@ -61,6 +61,7 @@
     if(onlineSession.pendingTimer){clearTimeout(onlineSession.pendingTimer);onlineSession.pendingTimer=null;}
     onlineSession.actionPending=false;
     onlineSession.pendingActionId="";
+    onlineSession.pendingActionType="";
     onlineSession.previewActionId="";
     onlineSession.previewType="";
   }
@@ -201,16 +202,44 @@
   }
 
   function requestOnlineAction(type,payload=null){
-    if(!isOnlineMatch() || onlineSession.actionPending || !localOwnsInteraction() || !onlineSession.transportConnected) return;
-    const finalPayload=payload&&typeof payload==="object"?payload:payloadForAction(type);
+    if(!isOnlineMatch() || !localOwnsInteraction() || !onlineSession.transportConnected) return;
+    const actionType=String(type||"");
+    const finalPayload=payload&&typeof payload==="object"?payload:payloadForAction(actionType);
+    const transport=window.WDOnlineTransport?.requestAction;
+    if(typeof transport!=="function"){
+      transportActionRejected("","🌐 Online-Aktion konnte nicht gesendet werden.");
+      return;
+    }
+
+    // Der Host IST die autoritative Engine. Seine Eingabe darf deshalb niemals auf
+    // einen Firebase-Roundtrip warten. Die Transport-Schicht serialisiert Publish und
+    // Folgeaktionen separat. Eine sehr kurze Same-Action-Sperre fängt nur echte
+    // Doppeltaps ab, ohne neue Modal-Aktionen (High Stakes / Perfect 25 / Counter) zu blockieren.
+    if(onlineSession.isHost){
+      const now=(globalThis.performance?.now?.()??Date.now());
+      if(onlineSession.lastHostActionType===actionType && now-onlineSession.lastHostActionAt<90) return;
+      onlineSession.lastHostActionType=actionType;
+      onlineSession.lastHostActionAt=now;
+      const promise=transport(actionType,finalPayload,onlineSession.lastStateSeq);
+      if(promise&&typeof promise.catch==="function") promise.catch(err=>{
+        console.error("Online host action",actionType,err);
+        enforceOnlineControls("🌐 Aktion konnte nicht ausgeführt werden.");
+      });
+      return;
+    }
+
+    // Gäste bleiben strikt autoritativ: eine Aktion gleichzeitig, sofortige visuelle
+    // Vorschau, danach bestätigt der Host den stabilen State.
+    if(onlineSession.actionPending) return;
     onlineSession.actionPending=true;
+    onlineSession.pendingActionType=actionType;
     if(onlineSession.pendingTimer) clearTimeout(onlineSession.pendingTimer);
     onlineSession.pendingTimer=setTimeout(()=>{
       if(onlineSession.actionPending) transportActionRejected(onlineSession.pendingActionId,"🌐 Host antwortet nicht. Aktion abgebrochen.");
     },8000);
-    if(!onlineSession.isHost) beginActionPreview(type);
+    beginActionPreview(actionType);
     enforceOnlineControls();
-    const promise=window.WDOnlineTransport?.requestAction?.(type,finalPayload,onlineSession.lastStateSeq);
+    const promise=transport(actionType,finalPayload,onlineSession.lastStateSeq);
     if(!promise || typeof promise.catch!=="function"){
       transportActionRejected("","🌐 Online-Aktion konnte nicht gesendet werden.");
       return;
@@ -221,7 +250,7 @@
         if(onlineSession.previewType) onlineSession.previewActionId=String(result.requestId);
       }
     }).catch(err=>{
-      console.error("Online action request",type,err);
+      console.error("Online action request",actionType,err);
       transportActionRejected("","🌐 Aktion fehlgeschlagen. Bitte erneut versuchen.");
     });
   }
@@ -418,11 +447,16 @@
 
   function restoreSpecialModal(snapshot,modal,die,result,sub=null){
     if(!snapshot){modal.classList.add("hidden");return;}
-    modal.classList.toggle("hidden",!snapshot.open);
+    const open=!!snapshot.open;
+    modal.classList.toggle("hidden",!open);
     if(die){
       if(snapshot.dieClass) die.className=String(snapshot.dieClass);
       die.textContent=String(snapshot.dieText||"");
-      die.disabled=!!snapshot.dieDisabled;
+      // Snapshots werden erst nach abgeschlossener Engine-Animation veröffentlicht.
+      // Ein noch offenes Spezialmodal ist deshalb definitionsgemäß wieder interaktiv.
+      // Transiente disabled-Flags vom Host dürfen nicht auf dem Spiegelclient kleben.
+      die.disabled=!open;
+      die.classList.remove("rolling");
     }
     if(result) result.textContent=String(snapshot.result||"");
     if(sub) sub.textContent=String(snapshot.sub||"");
@@ -451,7 +485,7 @@
     restoreSpecialModal(ui.perfect25,perfect25Modal,perfect25Die,perfect25Result);
     restoreSpecialModal(ui.perfect25d4,perfect25D4Modal,perfect25D4Die,perfect25D4Result);
     restoreSpecialModal(ui.highStakes,highStakesModal,highStakesDie,highStakesResult,highStakesSub);
-    if(ui.highStakes) highStakesSkip.disabled=!!ui.highStakes.skipDisabled;
+    if(ui.highStakes) highStakesSkip.disabled=!ui.highStakes.open;
     restoreSpecialModal(ui.insurance,insuranceModal,insuranceDie,insuranceResult,insuranceSub);
 
     const counter=ui.counter||{};
@@ -460,7 +494,7 @@
       counterTitle.textContent=String(counter.title||"");
       counterResult.textContent=String(counter.result||"");
       counterRollBtn.textContent=String(counter.buttonText||"⚔️ Würfeln");
-      counterRollBtn.disabled=!!counter.buttonDisabled;
+      counterRollBtn.disabled=false;
       renderCounterDice();
     }
 
@@ -662,7 +696,7 @@
 
   function startOnlineMatch(match,localUid,localProfileId,isHost=false){
     const matchPlayers=Array.isArray(match?.players)?match.players:[];
-    onlineSession={active:true,uid:String(localUid||""),roomCode:String(match?.roomCode||""),isHost:!!isHost,lastStateSeq:Number(match?.state?.seq)||0,actionPending:false,pendingActionId:"",previewActionId:"",previewType:"",transportConnected:true,pendingTimer:null};
+    onlineSession={active:true,uid:String(localUid||""),roomCode:String(match?.roomCode||""),isHost:!!isHost,lastStateSeq:Number(match?.state?.seq)||0,actionPending:false,pendingActionId:"",pendingActionType:"",previewActionId:"",previewType:"",transportConnected:true,pendingTimer:null,lastHostActionType:"",lastHostActionAt:0};
     installOnlineInputHooks();
     if(matchPlayers.length!==2 || !localUid) return false;
     if(!matchPlayers.some(p=>String(p?.uid||"")===String(localUid))) return false;
@@ -706,7 +740,7 @@
       addLog(`${p.name}: ${abilityText} · 🎲 ${DICE_DESIGNS[p.diceDesign]?.name||"Classic"}.`);
     });
     renderAll();enforceOnlineControls();
-    addLog(`🌐 V27.4.1: Smooth Online Core aktiv · lokale Sofortreaktion + host-autoritärer Firebase-State.`);
+    addLog(`🌐 V27.4.2: Smooth Online Core · Host-Pipeline + Spezialfähigkeiten synchron.`);
     return true;
   }
 
