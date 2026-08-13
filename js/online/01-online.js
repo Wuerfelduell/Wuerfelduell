@@ -658,7 +658,7 @@ async function createRoom(){
     for(let attempt=0;attempt<12&&!code;attempt++){
       const candidate=makeCode();
       const initial={
-        meta:{hostUid:uid,status:"lobby",version:bridge?.getVersion?.()||"27.5.1",createdAt:Date.now(),maxPlayers,syncSchema:6},
+        meta:{hostUid:uid,status:"lobby",version:bridge?.getVersion?.()||"27.5.2",createdAt:Date.now(),maxPlayers,syncSchema:6},
         players:{[uid]:{name:profile.name,tagNumber:profile.tagNumber,diceDesign:profile.selectedDice||"classic",attackFx:profile.selectedAttackFx||"classic",cosmeticTitle:profile.cosmeticTitle||"",cosmeticFrame:profile.cosmeticFrame||"",ready:false,joinedAt:Date.now(),joinedOrder:0}}
       };
       const result=await runTransaction(roomRef(candidate),current=>current===null?initial:undefined,{applyLocally:false});
