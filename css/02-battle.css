@@ -1080,3 +1080,12 @@
       .turn-total{font-size:19px}
       #game.campaign-game .player{padding:7px 8px}
     }
+
+
+    /* V27.4.3 – Online roll smoothing.
+       Remote previews keep spinning until the authoritative Firebase result arrives.
+       The final face is then snapped in one frame, avoiding the old pause + extra .16 s settle turn. */
+    body.online-roll-window .die-cube{transition:none!important}
+    body.online-remote-roll-preview .die.rolling .die-cube{animation-iteration-count:infinite!important}
+    body.online-dice-snap .die-cube{transition:none!important;animation:none!important}
+    html.legacy-flat-dice body.online-remote-roll-preview .die.rolling{animation-iteration-count:infinite!important}
