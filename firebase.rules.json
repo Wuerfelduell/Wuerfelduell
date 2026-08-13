@@ -21,6 +21,11 @@
             "$uid": {
               ".write": "auth != null && root.child('rooms').child($room).child('meta').child('hostUid').val() === auth.uid"
             }
+          },
+          "postMatch": {
+            "$uid": {
+              ".write": "auth != null && auth.uid === $uid && root.child('rooms').child($room).child('players').child(auth.uid).exists() && root.child('rooms').child($room).child('meta').child('status').val() === 'playing' && (newData.val() === 'rematch' || newData.val() === 'lobby' || !newData.exists())"
+            }
           }
         }
       }
