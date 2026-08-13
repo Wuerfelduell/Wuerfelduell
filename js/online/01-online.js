@@ -168,11 +168,12 @@ function buildMatch(players){
     firstPlayerUid,
     currentPlayerUid:firstPlayerUid,
     turnNumber:1,
-    syncSchema:3,
+    syncSchema:4,
     state:{
       seq:0,
       phase:"idle",
       currentPlayerUid:firstPlayerUid,
+      interactionOwnerUid:firstPlayerUid,
       dice:Array.from({length:5},()=>({value:null,locked:false,selected:false})),
       players:ordered.map(p=>({uid:p.uid,hp:25}))
     },
@@ -231,23 +232,34 @@ function enterStartedMatch(){
 }
 
 
-async function requestBaseRoll(){
+async function requestAction(type,payload={},baseSeq=0){
   if(!currentRoomCode||!uid||currentRoom?.meta?.status!=="playing") throw new Error("NO_ONLINE_MATCH");
+  const actionType=String(type||"");
+  if(!actionType) throw new Error("EMPTY_ACTION");
   const requestId=`${uid.slice(0,8)}-${Date.now().toString(36)}-${Math.random().toString(36).slice(2,7)}`;
   const result=await runTransaction(matchRef(),match=>{
     if(!match) return;
     const state=match.state||{};
-    if(String(match.currentPlayerUid||state.currentPlayerUid||"")!==String(uid)) return;
-    if(String(state.phase||"idle")!=="idle") return;
+    const owner=String(state.interactionOwnerUid||state.currentPlayerUid||match.currentPlayerUid||"");
+    if(owner!==String(uid)) return;
     if(match.actionRequest) return;
-    match.actionRequest={id:requestId,type:"base_roll",actorUid:uid,requestedAt:Date.now()};
+    const liveSeq=Number(state.seq)||0;
+    if(Number(baseSeq)>0 && liveSeq!==Number(baseSeq)) return;
+    match.actionRequest={
+      id:requestId,
+      type:actionType,
+      payload:payload&&typeof payload==="object"?payload:{},
+      actorUid:uid,
+      baseSeq:liveSeq,
+      requestedAt:Date.now()
+    };
     return match;
   },{applyLocally:false});
   if(!result.committed) throw new Error("ACTION_REJECTED");
-  return true;
+  return {requestId};
 }
 
-window.WDOnlineTransport=Object.freeze({requestBaseRoll});
+window.WDOnlineTransport=Object.freeze({requestAction});
 
 async function processHostActionIfNeeded(){
   if(processingActionId||!currentRoomCode||!uid||currentRoom?.meta?.hostUid!==uid||currentRoom?.meta?.status!=="playing") return;
@@ -260,7 +272,10 @@ async function processHostActionIfNeeded(){
     const result=await runTransaction(matchRef(),match=>{
       if(!match||String(match.actionRequest?.id||"")!==String(request.id)) return;
       const previousSeq=Number(match.state?.seq)||0;
-      match.state={...state,seq:previousSeq+1,currentPlayerUid:String(match.currentPlayerUid||state.currentPlayerUid||"")};
+      const nextCurrentUid=String(state.currentPlayerUid||match.currentPlayerUid||"");
+      match.state={...state,seq:previousSeq+1,currentPlayerUid:nextCurrentUid};
+      match.currentPlayerUid=nextCurrentUid;
+      match.turnNumber=Number(state?.battle?.roundNumber)||Number(match.turnNumber)||1;
       match.actionRequest=null;
       return match;
     },{applyLocally:false});
@@ -335,7 +350,7 @@ async function createRoom(){
     for(let attempt=0;attempt<12&&!code;attempt++){
       const candidate=makeCode();
       const initial={
-        meta:{hostUid:uid,status:"lobby",version:bridge?.getVersion?.()||"27.2.5",createdAt:Date.now(),maxPlayers:2},
+        meta:{hostUid:uid,status:"lobby",version:bridge?.getVersion?.()||"27.3.0",createdAt:Date.now(),maxPlayers:2},
         players:{[uid]:{name:profile.name,tagNumber:profile.tagNumber,diceDesign:profile.selectedDice||"classic",cosmeticTitle:profile.cosmeticTitle||"",cosmeticFrame:profile.cosmeticFrame||"",ready:false,joinedAt:Date.now(),joinedOrder:0}}
       };
       const result=await runTransaction(roomRef(candidate),current=>current===null?initial:undefined,{applyLocally:false});
