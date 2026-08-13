@@ -24,7 +24,7 @@ const bridge=window.WDOnlineBridge;
 const $=id=>document.getElementById(id);
 
 const mainMenu=$("mainMenu"),onlineScreen=$("onlineScreen"),menuOnlineBtn=$("menuOnlineBtn"),onlineBackBtn=$("onlineBackBtn");
-const onlineStatus=$("onlineStatus"),onlineStatusDot=$("onlineStatusDot"),onlineProfileSelect=$("onlineProfileSelect");
+const onlineStatus=$("onlineStatus"),onlineStatusDot=$("onlineStatusDot"),onlineProfileSelect=$("onlineProfileSelect"),onlineMaxPlayersSelect=$("onlineMaxPlayersSelect");
 const onlineCreateBtn=$("onlineCreateBtn"),onlineJoinCode=$("onlineJoinCode"),onlineJoinBtn=$("onlineJoinBtn");
 const onlineHome=$("onlineHome"),onlineLobby=$("onlineLobby"),onlineRoomCode=$("onlineRoomCode"),onlineCopyCodeBtn=$("onlineCopyCodeBtn");
 const onlineLobbyState=$("onlineLobbyState"),onlinePlayerList=$("onlinePlayerList"),onlineReadyBtn=$("onlineReadyBtn"),onlineLeaveBtn=$("onlineLeaveBtn");
@@ -73,6 +73,13 @@ let postMatchChoices={};
 
 function escapeHtml(value){return String(value??"").replace(/[&<>'"]/g,ch=>({"&":"&amp;","<":"&lt;",">":"&gt;","'":"&#39;",'"':"&quot;"}[ch]));}
 function normalizeCode(value){return String(value||"").toUpperCase().replace(/[^A-Z2-9]/g,"").slice(0,6);}
+function clampLobbySize(value){return Math.max(2,Math.min(4,Number(value)||2));}
+function desiredLobbySize(){return clampLobbySize(onlineMaxPlayersSelect?.value||2);}
+function shuffledPlayers(players){
+  const out=[...(players||[])];
+  for(let i=out.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[out[i],out[j]]=[out[j],out[i]];}
+  return out;
+}
 function makeCode(){
   const chars="ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
   let out="";
@@ -98,6 +105,7 @@ function setConnection(label,state="pending"){
 function setBusy(value){
   busy=!!value;
   onlineCreateBtn.disabled=busy||!authReady||!firebaseConnected||!selectedProfile();
+  if(onlineMaxPlayersSelect) onlineMaxPlayersSelect.disabled=busy;
   onlineJoinBtn.disabled=busy||!authReady||!firebaseConnected||!selectedProfile()||normalizeCode(onlineJoinCode.value).length!==6;
   if(currentRoomCode&&currentRoom?.meta?.status==="lobby") onlineReadyBtn.disabled=busy;
 }
@@ -201,22 +209,21 @@ function randomOnlineAbility(){
   return {rolledAbility:6,ability:choices[Math.floor(Math.random()*choices.length)]};
 }
 function buildMatch(players){
-  const ordered=[...players];
-  if(Math.random()<0.5) ordered.reverse();
+  const ordered=shuffledPlayers(players);
   const matchId=`${Date.now().toString(36)}-${Math.random().toString(36).slice(2,8)}`;
   const firstPlayerUid=String(ordered[0]?.uid||"");
   return {
     id:matchId,
     roomCode:currentRoomCode,
     createdAt:Date.now(),
-    rules:"classic-1v1",
+    rules:`classic-${ordered.length}p`,
     startHp:25,
     firstPlayerUid,
     currentPlayerUid:firstPlayerUid,
     turnNumber:1,
-    syncSchema:5,
+    syncSchema:6,
     state:{
-      schema:5,seq:0,phase:"idle",actionId:"",actionType:"",
+      schema:6,seq:0,phase:"idle",actionId:"",actionType:"",
       currentPlayerUid:firstPlayerUid,interactionOwnerUid:firstPlayerUid,
       dice:Array.from({length:5},()=>({value:null,locked:false,selected:false})),
       players:ordered.map(p=>({uid:p.uid,onlineUid:p.uid,hp:25}))
@@ -233,24 +240,26 @@ function buildMatch(players){
 }
 async function startMatchIfReady(players){
   if(matchStartBusy||!currentRoomCode||!uid||currentRoom?.meta?.hostUid!==uid||currentRoom?.meta?.status!=="lobby") return;
-  if(players.length!==2||!players.every(p=>p.ready===true)) return;
+  const expected=clampLobbySize(currentRoom?.meta?.maxPlayers||2);
+  if(players.length!==expected||!players.every(p=>p.ready===true)) return;
   matchStartBusy=true;
   onlineReadyBtn.disabled=true;
-  onlineLobbyHint.textContent="⚡ Beide bereit – Match wird gestartet …";
+  onlineLobbyHint.textContent=`⚡ Alle ${expected} bereit – Match wird gestartet …`;
   try{
     const candidate=buildMatch(players);
     const result=await runTransaction(roomRef(),room=>{
       if(!room||room.meta?.status!=="lobby") return;
       const livePlayers=Object.entries(room.players||{}).map(([id,p])=>({uid:id,...p}));
-      if(livePlayers.length!==2||!livePlayers.every(p=>p.ready===true)) return;
-      room.meta={...(room.meta||{}),status:"playing",startedAt:Date.now(),matchId:candidate.id,syncSchema:5};
+      const expected=clampLobbySize(room.meta?.maxPlayers||2);
+      if(livePlayers.length!==expected||!livePlayers.every(p=>p.ready===true)) return;
+      room.meta={...(room.meta||{}),status:"playing",startedAt:Date.now(),matchId:candidate.id,syncSchema:6};
       room.match=candidate;
       return room;
     },{applyLocally:false});
     if(!result.committed&&currentRoom?.meta?.status==="lobby") throw new Error("MATCH_START_ABORTED");
   }catch(err){
     console.error("Start online match",err);
-    setNotice("Matchstart fehlgeschlagen. Beide kurz Bereit zurücknehmen und erneut versuchen.","error");
+    setNotice("Matchstart fehlgeschlagen. Alle kurz Bereit zurücknehmen und erneut versuchen.","error");
     matchStartBusy=false;setBusy(false);
   }
 }
@@ -269,7 +278,7 @@ function stageHostState(rawState,request){
   // Firebase-Publishing läuft danach seriell im Hintergrund. Dadurch hängt kein
   // lokaler Folgebutton mehr an Netzwerklatenz.
   const seq=++hostStateSeq;
-  const state={...rawState,schema:5,seq,actionId:String(request?.id||rawState.actionId||""),actionType:String(request?.type||rawState.actionType||""),updatedAt:Date.now()};
+  const state={...rawState,schema:6,seq,actionId:String(request?.id||rawState.actionId||""),actionType:String(request?.type||rawState.actionType||""),updatedAt:Date.now()};
   const nextUid=String(state.currentPlayerUid||"");
   localStateSeq=seq;
   if(currentIsHost){
@@ -372,17 +381,17 @@ function renderPostMatchControls(){
   if(onlineMainMenuBtn) onlineMainMenuBtn.disabled=false;
 
   const mine=String(postMatchChoices?.[uid]||"");
-  const otherEntry=Object.entries(postMatchChoices||{}).find(([id])=>id!==uid);
-  const other=String(otherEntry?.[1]||"");
+  const ids=Object.keys(currentRoom?.players||{});
+  const rematchCount=ids.filter(id=>String(postMatchChoices?.[id]||"")==="rematch").length;
   if(mine==="rematch"){
-    nextRoundPrepBtn.textContent="✓ Noch ein Spiel · wartet …";
+    nextRoundPrepBtn.textContent=`✓ Noch ein Spiel · ${rematchCount}/${Math.max(2,ids.length)}`;
     nextRoundPrepBtn.disabled=true;
   }
   if(onlinePostMatchStatus){
     let text="";
-    if(mine==="rematch"&&other!=="rematch") text="Rematch angefragt – warte auf den anderen Spieler.";
-    else if(other==="rematch"&&mine!=="rematch") text="Der andere Spieler möchte noch ein Spiel.";
-    else if(mine==="rematch"&&other==="rematch") text="Beide wollen ein Rematch – neues Match startet …";
+    if(rematchCount===ids.length&&ids.length>=2) text="Alle wollen ein Rematch – neues Match startet …";
+    else if(mine==="rematch") text=`Rematch angefragt – ${rematchCount}/${Math.max(2,ids.length)} Spieler bereit.`;
+    else if(rematchCount>0) text=`${rematchCount} Spieler möchten noch ein Spiel.`;
     onlinePostMatchStatus.textContent=text;
     onlinePostMatchStatus.classList.toggle("hidden",!text);
   }
@@ -426,7 +435,7 @@ async function resetFinishedMatchToLobby({rematch=false,force=false}={}){
       const choices=room.match?.postMatch||{};
       if(!force){
         if(rematch){
-          if(ids.length!==2||!ids.every(id=>choices[id]==="rematch")) return;
+          if(ids.length<2||ids.length>4||!ids.every(id=>choices[id]==="rematch")) return;
         }else{
           if(!ids.some(id=>choices[id]==="lobby")) return;
         }
@@ -450,8 +459,9 @@ async function evaluatePostMatchChoices(){
   if(!currentIsHost||!postMatchEnded||postMatchTransitionBusy) return;
   const values=Object.values(postMatchChoices||{}).map(String);
   if(values.includes("lobby")){await resetFinishedMatchToLobby({rematch:false});return;}
-  const playerCount=Object.keys(currentRoom?.players||{}).length;
-  if(playerCount===2&&values.filter(v=>v==="rematch").length===2) await resetFinishedMatchToLobby({rematch:true});
+  const playerIds=Object.keys(currentRoom?.players||{});
+  const playerCount=playerIds.length;
+  if(playerCount>=2&&playerCount<=4&&playerIds.every(id=>String(postMatchChoices?.[id]||"")==="rematch")) await resetFinishedMatchToLobby({rematch:true});
 }
 
 async function choosePostMatch(choice){
@@ -510,12 +520,13 @@ function attachMatchListeners(match){
   playersUnsubscribe=onValue(ref(db,`rooms/${currentRoomCode}/players`),snap=>{
     const livePlayers=snap.exists()?snap.val()||{}:{};
     if(currentRoom) currentRoom.players=livePlayers;
-    if(enteredMatchId && Object.keys(livePlayers).length<2){
+    const expectedPlayers=Math.max(2,Array.isArray(match?.players)?match.players.length:clampLobbySize(currentRoom?.meta?.maxPlayers||2));
+    if(enteredMatchId && Object.keys(livePlayers).length<expectedPlayers){
       if(postMatchEnded&&currentIsHost){
         resetFinishedMatchToLobby({rematch:false,force:true}).catch(err=>console.error("Opponent left after match",err));
       }else{
         bridge?.setConnected?.(false);
-        setNotice("Der andere Spieler hat das Match verlassen.","warn");
+        setNotice("Ein Spieler hat das Match verlassen. Das Match wurde eingefroren.","warn");
       }
     }
   });
@@ -591,10 +602,12 @@ function renderLobby(){
   const me=players.find(p=>p.uid===uid);
   const hostUid=currentRoom.meta?.hostUid;
   const isHost=hostUid===uid;
-  const allReady=players.length===2&&players.every(p=>p.ready===true);
+  const expected=clampLobbySize(currentRoom.meta?.maxPlayers||2);
+  const allReady=players.length===expected&&players.every(p=>p.ready===true);
   currentHostUid=String(hostUid||"");
   currentIsHost=isHost;
-  onlineLobbyState.textContent=`${players.length}/2 Spieler · ${isHost?"Du bist Host":"Gast"}`;
+  onlineLobbyState.textContent=`${players.length}/${expected} Spieler · ${isHost?"Du bist Host":"Gast"}`;
+  onlinePlayerList.classList.toggle("four-player",expected===4);
   onlinePlayerList.innerHTML=players.map(p=>{
     const host=p.uid===hostUid,mine=p.uid===uid;
     return `<div class="online-player${p.ready?" ready":""}"><div class="online-player-main"><strong>${escapeHtml(p.name)} <span>#${escapeHtml(p.tagNumber||"0000")}</span></strong><small>${host?"👑 Host":"🎮 Gast"}${mine?" · Du":""}</small></div><div class="online-ready-chip">${p.ready?"✓ Bereit":"Wartet"}</div></div>`;
@@ -607,7 +620,7 @@ function renderLobby(){
     enterStartedMatch(currentRoom);
     return;
   }
-  onlineLobbyHint.textContent=allReady?"⚡ Beide Spieler sind bereit. Match startet automatisch …":players.length<2?"Teile den Raumcode. Die Lobby wartet auf Spieler 2.":"Sobald beide Bereit sind, werden Startfähigkeiten und Startspieler automatisch bestimmt und das Match beginnt.";
+  onlineLobbyHint.textContent=allReady?`⚡ Alle ${expected} Spieler sind bereit. Match startet automatisch …`:players.length<expected?`Teile den Raumcode. Es fehlen noch ${expected-players.length} Spieler.`:`Sobald alle ${expected} Spieler Bereit sind, werden Startfähigkeiten und Startspieler automatisch bestimmt und das Match beginnt.`;
   if(allReady&&isHost) startMatchIfReady(players);
 }
 
@@ -641,10 +654,11 @@ async function createRoom(){
   setBusy(true);setNotice("Lobby wird erstellt …");
   try{
     let code=null;
+    const maxPlayers=desiredLobbySize();
     for(let attempt=0;attempt<12&&!code;attempt++){
       const candidate=makeCode();
       const initial={
-        meta:{hostUid:uid,status:"lobby",version:bridge?.getVersion?.()||"27.4.4",createdAt:Date.now(),maxPlayers:2,syncSchema:5},
+        meta:{hostUid:uid,status:"lobby",version:bridge?.getVersion?.()||"27.5.0",createdAt:Date.now(),maxPlayers,syncSchema:6},
         players:{[uid]:{name:profile.name,tagNumber:profile.tagNumber,diceDesign:profile.selectedDice||"classic",cosmeticTitle:profile.cosmeticTitle||"",cosmeticFrame:profile.cosmeticFrame||"",ready:false,joinedAt:Date.now(),joinedOrder:0}}
       };
       const result=await runTransaction(roomRef(candidate),current=>current===null?initial:undefined,{applyLocally:false});
@@ -667,7 +681,8 @@ async function joinRoom(){
     const room=roomSnapshot.val();
     if(room?.meta?.status!=="lobby") throw new Error("ROOM_STARTED");
     const existingPlayers=room.players||{};
-    if(!existingPlayers[uid]&&Object.keys(existingPlayers).length>=2) throw new Error("ROOM_FULL");
+    const maxPlayers=clampLobbySize(room?.meta?.maxPlayers||2);
+    if(!existingPlayers[uid]&&Object.keys(existingPlayers).length>=maxPlayers) throw new Error("ROOM_FULL");
 
     const joinedOrder=existingPlayers[uid]?.joinedOrder??Object.keys(existingPlayers).length;
     const playerData={name:profile.name,tagNumber:profile.tagNumber,diceDesign:profile.selectedDice||"classic",cosmeticTitle:profile.cosmeticTitle||"",cosmeticFrame:profile.cosmeticFrame||"",ready:false,joinedAt:Date.now(),joinedOrder};
@@ -741,6 +756,7 @@ onlineJoinBtn?.addEventListener("click",joinRoom);
 onlineReadyBtn?.addEventListener("click",toggleReady);
 onlineLeaveBtn?.addEventListener("click",()=>leaveRoom({showHome:true}));
 onlineProfileSelect?.addEventListener("change",()=>setBusy(false));
+onlineMaxPlayersSelect?.addEventListener("change",()=>setBusy(false));
 onlineJoinCode?.addEventListener("input",()=>{onlineJoinCode.value=normalizeCode(onlineJoinCode.value);setBusy(false);});
 onlineJoinCode?.addEventListener("keydown",e=>{if(e.key==="Enter"&&!onlineJoinBtn.disabled)joinRoom();});
 onlineCopyCodeBtn?.addEventListener("click",async()=>{
