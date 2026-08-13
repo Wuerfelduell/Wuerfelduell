@@ -13,7 +13,7 @@
   let localModeId="classic";
   function localModeRules(){return LOCAL_MODES[localModeId]||LOCAL_MODES.classic;}
 
-  const GAME_VERSION="27.4.4";
+  const GAME_VERSION="27.5.0";
   const SAVE_KEY="wuerfelduell_save_v1"; // absichtlich stabil: Updates lesen denselben Browser-Save
   // Versionsanzeige immer aus derselben Quelle ziehen, damit Titel/Footer nicht mehr hinterherhinken.
   document.title=`Würfelduell · V${GAME_VERSION}`;
@@ -42,10 +42,16 @@
     heavy_hitter:{name:"Delete Button",desc:"Verursache mindestens 20 Schaden in einem einzigen eigenen Zug."},
     executioner:{name:"Executioner",desc:"Schalte in einer Runde mindestens 3 Gegner aus."},
     six_storm:{name:"Sixstorm",desc:"Würfle in einer Runde insgesamt mindestens 15 Sechser."},
-    chromatic_menace:{name:"Chromatic Menace",desc:"Schalte alle zehn zusätzlichen Würfeldesigns frei."}
+    dumbass:{name:"Dumbass",desc:"Würfle im ersten Basiswurf fünf 1er und locke freiwillig alle fünf ein."},
+    full_send:{name:"Full Send",desc:"Würfle im ersten Basiswurf fünf 6er."},
+    machine:{name:"Machine",desc:"Würfle zuerst fünf 6er im Basiswurf und danach im ersten Angriffswurf fünf 5er.",rewardDice:"chrome"},
+    laser_guided:{name:"Laser Guided",desc:"Triff im allerersten Angriffswurf mit allen fünf Würfeln exakt die Zielzahl.",rewardDice:"storm"},
+    technically_a_win:{name:"Technically A Win",desc:"Gewinne eine Runde, ohne selbst auch nur 1 Schaden verursacht zu haben."},
+    party_crasher:{name:"Party Crasher",desc:"Gewinne ein Online-Match mit vier Spielern.",rewardDice:"circuit"},
+    chromatic_menace:{name:"Chromatic Menace",desc:"Schalte alle Achievement-Würfeldesigns frei."}
   };
 
-  const DICE_UNLOCK_ACHIEVEMENT={gold:"grande",obsidian:"not_today",blood:"blood_money",arcane:"dual_wielding",emerald:"back_from_dead",frost:"snake_charmer",pearl:"untouchable",neon:"degenerate_gambler",void:"overkill",sapphire:"hat_trick"};
+  const DICE_UNLOCK_ACHIEVEMENT={gold:"grande",obsidian:"not_today",blood:"blood_money",arcane:"dual_wielding",emerald:"back_from_dead",frost:"snake_charmer",pearl:"untouchable",neon:"degenerate_gambler",void:"overkill",sapphire:"hat_trick",chrome:"machine",storm:"laser_guided",circuit:"party_crasher"};
 
   const PRESTIGE_SHOP_ITEMS=[
     {id:"title_high_roller",type:"title",name:"High Roller",value:"High Roller",cost:5,desc:"Kleiner Prestige-Titel unter deinem Namen."},

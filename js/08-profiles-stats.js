@@ -225,9 +225,23 @@
   }
 
   function unlockAchievementForPlayer(index,id){
-    const profile=profileForPlayer(index);
+    const player=players[index];
     const achievement=ACHIEVEMENTS[id];
-    if(!profile||!achievement||profile.achievements[id]) return false;
+    if(!player||!achievement) return false;
+
+    // Online läuft die Engine nur beim Host. Für fremde Profile kann der Host nicht
+    // direkt in deren localStorage schreiben, deshalb trägt er den Unlock in den
+    // autoritativen Spieler-State ein. Der Besitzer übernimmt ihn beim nächsten Snapshot.
+    const onlineMode=String(gameContext?.mode||"").startsWith("online");
+    let onlineWasNew=false;
+    if(onlineMode){
+      if(!Array.isArray(player.onlineAchievementUnlocks)) player.onlineAchievementUnlocks=[];
+      if(!player.onlineAchievementUnlocks.includes(id)){player.onlineAchievementUnlocks.push(id);onlineWasNew=true;}
+    }
+
+    const profile=profileForPlayer(index);
+    if(!profile) return onlineWasNew;
+    if(profile.achievements[id]) return onlineWasNew;
     profile.achievements[id]=Date.now();
     if(achievement.rewardDice && !profile.unlockedDice.includes(achievement.rewardDice)) profile.unlockedDice.push(achievement.rewardDice);
     saveGameData();
@@ -305,4 +319,6 @@
     if((rs.maxTurnDamage||0)>=20) unlockAchievementForPlayer(winnerIndex,"heavy_hitter");
     if((rs.kills||0)>=3) unlockAchievementForPlayer(winnerIndex,"executioner");
     if((rs.sixes||0)>=15) unlockAchievementForPlayer(winnerIndex,"six_storm");
+    if((rs.damage||0)===0) unlockAchievementForPlayer(winnerIndex,"technically_a_win");
+    if(String(gameContext?.mode||"").startsWith("online") && players.length===4) unlockAchievementForPlayer(winnerIndex,"party_crasher");
   }

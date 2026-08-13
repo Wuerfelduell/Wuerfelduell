@@ -1,7 +1,7 @@
 (function(){
   "use strict";
 
-  let onlineSession={active:false,uid:"",roomCode:"",isHost:false,lastStateSeq:0,actionPending:false,pendingActionId:"",pendingActionType:"",previewActionId:"",previewType:"",transportConnected:true,pendingTimer:null,lastHostActionType:"",lastHostActionAt:0};
+  let onlineSession={active:false,uid:"",roomCode:"",isHost:false,lastStateSeq:0,actionPending:false,pendingActionId:"",pendingActionType:"",previewActionId:"",previewType:"",transportConnected:true,pendingTimer:null,lastHostActionType:"",lastHostActionAt:0,lastCombatFxId:"",playedCombatFxIds:new Set(),localRoundCommitted:false};
   let onlineInputHooksInstalled=false;
 
   const ONLINE_ACTION_BUTTONS=[
@@ -50,7 +50,7 @@
   }
 
   function isOnlineMatch(){
-    return onlineSession.active && gameContext?.mode==="online-1v1";
+    return onlineSession.active && String(gameContext?.mode||"").startsWith("online");
   }
 
   function cloneJson(value,fallback=null){
@@ -371,7 +371,7 @@
 
   function exportOnlineState(actionId="",actionType=""){
     return {
-      schema:5,
+      schema:6,
       seq:onlineSession.lastStateSeq+1,
       actionId:String(actionId||""),
       actionType:String(actionType||""),
@@ -394,7 +394,8 @@
         secondAbilityDraftQueue:cloneJson(secondAbilityDraftQueue,[]),deferredBaseAdvance,
         gamblingBaseTotal,highStakesDecisionThisAttack,perfect25BaseTotal,pendingPerfect25Total,wildcardFace,
         insuranceContext:cloneJson(insuranceContext,null),counterContext:cloneJson(counterContext,null),counterDiceState:cloneJson(counterDiceState,[]),
-        counterHits,counterFirstRoll,pendingCounterattack:cloneJson(pendingCounterattack,null),deferredAttackFinish
+        counterHits,counterFirstRoll,pendingCounterattack:cloneJson(pendingCounterattack,null),deferredAttackFinish,
+        combatFx:cloneJson(lastCombatFx,null),combatFxEvents:cloneJson(combatFxEvents.slice(-8),[])
       },
       ui:exportUiSnapshot(),
       updatedAt:Date.now()
@@ -409,6 +410,16 @@
       const localProfileId=players[idx]?.profileId||null;
       Object.assign(players[idx],cloneJson(entry,{})||{});
       if(localProfileId) players[idx].profileId=localProfileId;
+    });
+  }
+
+  function syncLocalOnlineAchievements(){
+    if(!isOnlineMatch()) return;
+    const idx=players.findIndex(p=>String(p?.onlineUid||"")===String(onlineSession.uid||""));
+    if(idx<0) return;
+    const ids=Array.isArray(players[idx]?.onlineAchievementUnlocks)?players[idx].onlineAchievementUnlocks:[];
+    ids.forEach(id=>{
+      try{unlockAchievementForPlayer(idx,String(id));}catch(err){console.warn("Online achievement sync",id,err);}
     });
   }
 
@@ -553,12 +564,27 @@
     const turnIndex=players.findIndex(p=>String(p?.onlineUid||"")===turnUid);
     if(turnIndex>=0) current=turnIndex;
     applyPlayers(state.players);
+    syncLocalOnlineAchievements();
     applyBattleSnapshot(state.battle||{});
     if(Array.isArray(state.dice)) dice=cloneJson(state.dice,[])||[];
     phase=String(state.phase||phase||"idle");
 
     renderAll();
     restoreUiSnapshot(state.ui||{});
+    const combatFxList=Array.isArray(state?.battle?.combatFxEvents)?state.battle.combatFxEvents:(state?.battle?.combatFx?[state.battle.combatFx]:[]);
+    combatFxList.forEach((combatFx,fxIndex)=>{
+      const combatFxId=String(combatFx?.id||"");
+      if(!combatFxId || onlineSession.playedCombatFxIds?.has(combatFxId)) return;
+      onlineSession.playedCombatFxIds?.add(combatFxId);
+      onlineSession.lastCombatFxId=combatFxId;
+      setTimeout(()=>window.WDAttackFx?.play?.(combatFx),fxIndex*85);
+    });
+    if(!onlineSession.isHost && state?.ui?.winner?.open && !onlineSession.localRoundCommitted && Number.isInteger(roundWinnerIndex)){
+      // Jeder Client besitzt nur sein eigenes lokales Profil. Beim ersten Winner-Snapshot
+      // schreibt deshalb auch der Gast seine eigenen Stats/Achievements lokal weg.
+      try{commitRoundToStorage(roundWinnerIndex);checkRoundWinnerAchievements(roundWinnerIndex);}catch(err){console.warn("Online local round commit",err);}
+      onlineSession.localRoundCommitted=true;
+    }
     if(settlingRoll) finishOnlineRollWindow();
 
     // HP-FX auf Spiegelclients aus der Differenz des autoritativen Snapshots ableiten.
@@ -725,21 +751,21 @@
       rolledAbility:rolled,primaryWasChosen:rolled===6,secondAbilityWasChosen:false,thirdAbilityWasChosen:false,fourthAbilityWasChosen:false,
       seat:0,diceDesign:String(entry?.diceDesign||localProfile?.selectedDice||"classic"),cosmeticTitle,cosmeticFrame,wins:0,
       momentumStreak:0,lastStandUsed:false,roundLastStandTriggered:false,damageSinceLastOwnTurn:false,bloodRushPrimed:false,
-      voluntaryHpPaidThisTurn:false,botBloodUsesThisAttack:0
+      voluntaryHpPaidThisTurn:false,botBloodUsesThisAttack:0,machineBaseArmed:false,dumbassBaseArmed:false,onlineAchievementUnlocks:[]
     };
   }
 
   function startOnlineMatch(match,localUid,localProfileId,isHost=false){
     const matchPlayers=Array.isArray(match?.players)?match.players:[];
-    onlineSession={active:true,uid:String(localUid||""),roomCode:String(match?.roomCode||""),isHost:!!isHost,lastStateSeq:Number(match?.state?.seq)||0,actionPending:false,pendingActionId:"",pendingActionType:"",previewActionId:"",previewType:"",transportConnected:true,pendingTimer:null,lastHostActionType:"",lastHostActionAt:0};
+    onlineSession={active:true,uid:String(localUid||""),roomCode:String(match?.roomCode||""),isHost:!!isHost,lastStateSeq:Number(match?.state?.seq)||0,actionPending:false,pendingActionId:"",pendingActionType:"",previewActionId:"",previewType:"",transportConnected:true,pendingTimer:null,lastHostActionType:"",lastHostActionAt:0,lastCombatFxId:"",playedCombatFxIds:new Set(),localRoundCommitted:false};
     installOnlineInputHooks();
-    if(matchPlayers.length!==2 || !localUid) return false;
+    if(matchPlayers.length<2 || matchPlayers.length>4 || !localUid) return false;
     if(!matchPlayers.some(p=>String(p?.uid||"")===String(localUid))) return false;
 
     tutorialMode=false;campaignMode=false;duoCampaignMode=false;trioCampaignMode=false;localModeId="classic";
     campaignEncounterId=null;campaignProfileId=null;campaignMetrics=freshCampaignMetrics();
     encounterRuntime={ruleIds:[],phaseRuleIds:[],phaseTriggered:false,firstStrikeUsed:new Set(),armorUsed:new Set(),turnStarts:{}};
-    gameContext={mode:"online-1v1",returnScreen:"menu",profileId:localProfileId||null,encounterId:null,roomCode:String(match.roomCode||"")};
+    gameContext={mode:"online",returnScreen:"menu",profileId:localProfileId||null,encounterId:null,roomCode:String(match.roomCode||"")};
 
     resetTutorialUi();
     nextRoundPrepBtn.classList.add("hidden");
@@ -768,14 +794,16 @@
     document.getElementById("onlineScreen")?.classList.add("hidden");hideFrontScreens();game.classList.remove("hidden","campaign-game","trio-game");
     document.body.classList.add("playing");document.body.classList.remove("bot-acting");window.scrollTo?.(0,0);
 
-    addLog(`🌐 Online 1v1 gestartet. ${players[current].name} beginnt.`);
+    window.WDAttackFx?.reset?.();
+    lastCombatFx=null;combatFxSerial=0;combatFxEvents=[];
+    addLog(`🌐 Online ${players.length}-Spieler-Match gestartet. ${players[current].name} beginnt.`);
     players.forEach(p=>{
       const roll=p.rolledAbility;
       const abilityText=roll===6?`W25 = 6 → automatische freie Wahl → ${ABILITIES[p.ability].name}`:`W25 = ${roll} → ${ABILITIES[p.ability].name}`;
       addLog(`${p.name}: ${abilityText} · 🎲 ${DICE_DESIGNS[p.diceDesign]?.name||"Classic"}.`);
     });
     renderAll();enforceOnlineControls();
-    addLog(`🌐 V27.4.3: Smooth Online · durchgehende Rollanimation ohne zweiten Settle-Dreh.`);
+    addLog(`🌐 V27.5.0: Smooth Online · 2–4 Spieler · synchronisierte Combat-FX.`);
     return true;
   }
 
@@ -788,6 +816,7 @@
     isAnimating=false;
     dice.forEach(d=>{if(d)d.rolling=false;});
     if(counterDiceState?.length) counterDiceState.forEach(d=>{if(d)d.rolling=false;});
+    lastCombatFx=null;combatFxSerial=0;combatFxEvents=[];window.WDAttackFx?.reset?.();
   }
 
   window.WDOnlineBridge=Object.freeze({

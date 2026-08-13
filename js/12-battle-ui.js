@@ -52,6 +52,7 @@
 
   function renderPlayers(){
     playersEl.innerHTML="";
+    const onlineBattle=String(gameContext?.mode||"").startsWith("online");
     players.forEach((p,i)=>{
       const el=document.createElement("div");
       el.id="playerCard"+i;
@@ -64,7 +65,7 @@
         ${p.secondAbility!=null ? `<div class="ability-tag second">✦ ${escapeHtml(ABILITIES[p.secondAbility].name)}</div>` : ""}
         ${p.thirdAbility!=null ? `<div class="ability-tag third">✦ ${escapeHtml(ABILITIES[p.thirdAbility].name)}</div>` : ""}
         ${p.fourthAbility!=null ? `<div class="ability-tag fourth">✦ ${escapeHtml(ABILITIES[p.fourthAbility].name)}</div>` : ""}
-        ${campaignCompact?"":`<div class="seat-tag">💺 ${escapeHtml(SEATS[p.seat].name)} · 🎲 ${escapeHtml(DICE_DESIGNS[p.diceDesign]?.name||"Classic")}</div>
+        ${campaignCompact?"":`<div class="seat-tag">${onlineBattle?"":`💺 ${escapeHtml(SEATS[p.seat].name)} · `}🎲 ${escapeHtml(DICE_DESIGNS[p.diceDesign]?.name||"Classic")}</div>
         <div class="live-stats">
           <span>⚔ ${roundStats[i]?.damage||0}</span>
           <span>⚀ ${roundStats[i]?.ones||0}</span>

@@ -45,6 +45,9 @@
     neon:{name:"Neon",className:"theme-neon"},
     void:{name:"Void",className:"theme-void"},
     sapphire:{name:"Sapphire",className:"theme-sapphire"},
+    chrome:{name:"Chrome",className:"theme-chrome"},
+    storm:{name:"Storm",className:"theme-storm"},
+    circuit:{name:"Circuit",className:"theme-circuit"},
     sunset:{name:"Sunset",className:"theme-sunset"},
     toxic:{name:"Toxic",className:"theme-toxic"},
     rose:{name:"Rose",className:"theme-rose"},
@@ -131,6 +134,8 @@
   let perfect25Rolling=false, perfect25D4Rolling=false, perfect25BaseTotal=null, pendingPerfect25Total=null;
   let wildcardFace=null;
   let pendingExtraDamageFx=[], pendingExtraHealFx=[];
+  // V27.5: letztes Projektil-/Einschlag-Event wird mit Online-Snapshots gespiegelt.
+  let combatFxSerial=0, lastCombatFx=null, combatFxEvents=[];
   let secondAbilityDraftQueue=[];
   let insuranceRolling=false, insuranceContext=null;
   let counterRolling=false, counterContext=null, counterDiceState=[], counterHits=0, counterFirstRoll=true, pendingCounterattack=null, deferredAttackFinish=false;

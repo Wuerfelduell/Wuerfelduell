@@ -23,6 +23,14 @@
     lastBaseRollIndices=[...indices];
     
     animateIndices(indices,()=>{
+      // V27.5 Achievements zählen nur den echten ersten 5W6-Basiswurf eines Zuges.
+      if(indices.length===5){
+        const values=indices.map(i=>dice[i].value);
+        const allSixes=values.every(v=>v===6);
+        players[current].machineBaseArmed=allSixes;
+        players[current].dumbassBaseArmed=values.every(v=>v===1);
+        if(allSixes) unlockAchievementForPlayer(current,"full_send");
+      }
       phase="base_select";
       renderAll();
       tutorialAfterBaseRoll();
@@ -105,6 +113,10 @@
     if(isAnimating) return;
     const selected=dice.filter(d=>d.selected&&!d.locked);
     if(!selected.length) return;
+    if(players[current].dumbassBaseArmed && selected.length===5 && dice.every(d=>!d.locked && d.selected && d.value===1)){
+      unlockAchievementForPlayer(current,"dumbass");
+      players[current].dumbassBaseArmed=false;
+    }
     selected.forEach(d=>{d.locked=true;d.selected=false;});
     if(dice.every(d=>d.locked)){resolveBase();return;}
     phase="base_ready";
@@ -827,6 +839,16 @@
     const bloodNeighborsForRoll=[...bloodPriceNeighbors];
 
     animateIndices(indices,()=>{
+      const wasFirstAttackRoll=firstAttackRoll;
+      const attackRollValues=indices.map(i=>dice[i].value);
+      if(wasFirstAttackRoll && indices.length===5){
+        const exactTarget=attackRollValues.every(v=>v===attackFace);
+        if(exactTarget) unlockAchievementForPlayer(current,"laser_guided");
+        if(players[current].machineBaseArmed && attackFace===5 && attackRollValues.every(v=>v===5)){
+          unlockAchievementForPlayer(current,"machine");
+        }
+        players[current].machineBaseArmed=false;
+      }
       currentAttackRollNewHits=0;
       let bloodHits=0;
 
@@ -1085,7 +1107,10 @@
       checkBossPhase(attackerIndex,attackerHpBefore,attacker.hp);
       actualDamage=result.lost;
       recordDamageDealt(defenderIndex,actualDamage,false);
-      if(actualDamage>0) pendingExtraDamageFx.push({target:attackerIndex,amount:actualDamage});
+      if(actualDamage>0){
+        pendingExtraDamageFx.push({target:attackerIndex,amount:actualDamage});
+        window.WDAttackFx?.emit?.(defenderIndex,attackerIndex,"counter",actualDamage,1);
+      }
 
       const counterFormula=counterDoubleTapBonus
         ? `${counterHits} Treffer × ${perHit} + ${counterDoubleTapBonus} Double Tap`
@@ -1236,6 +1261,10 @@
     const actualDamage=mainResult.lost;
     recordDamageDealt(current,actualDamage,true);
     pendingDamage={target:attackTarget,amount:actualDamage};
+    if(actualDamage>0){
+      const fxKind=(attackFace===4||attackFace===6)?"lightning":"laser";
+      window.WDAttackFx?.emit?.(current,attackTarget,fxKind,actualDamage,attackFace);
+    }
 
     addLog(`⚔️ ${target.name} verliert ${actualDamage} Leben${rawDamage>actualDamage?` (${rawDamage} Schaden wären möglich gewesen).`:"."}`);
 
@@ -1262,7 +1291,10 @@
         checkBossPhase(ricochetTarget,ricBefore,players[ricochetTarget]?.hp||0);
         ricochetActual=ricResult.lost;
         recordDamageDealt(current,ricochetActual,true);
-        if(ricochetActual>0) pendingExtraDamageFx.push({target:ricochetTarget,amount:ricochetActual});
+        if(ricochetActual>0){
+          pendingExtraDamageFx.push({target:ricochetTarget,amount:ricochetActual});
+          window.WDAttackFx?.emit?.(current,ricochetTarget,"ricochet",ricochetActual,attackFace);
+        }
         addLog(`🪃 Ricochet: ${attackHits} Würfeltreffer → ${players[ricochetTarget].name} erhält ${ricochetActual} Schaden.`);
         if(players[ricochetTarget].hp<=0){
           if(roundStats[current]) roundStats[current].kills++;
