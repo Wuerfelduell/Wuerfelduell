@@ -29,6 +29,8 @@ const onlineCreateBtn=$("onlineCreateBtn"),onlineJoinCode=$("onlineJoinCode"),on
 const onlineHome=$("onlineHome"),onlineLobby=$("onlineLobby"),onlineRoomCode=$("onlineRoomCode"),onlineCopyCodeBtn=$("onlineCopyCodeBtn");
 const onlineLobbyState=$("onlineLobbyState"),onlinePlayerList=$("onlinePlayerList"),onlineReadyBtn=$("onlineReadyBtn"),onlineLeaveBtn=$("onlineLeaveBtn");
 const onlineNotice=$("onlineNotice"),onlineLobbyHint=$("onlineLobbyHint"),quitConfirmBtn=$("quitConfirmBtn");
+const game=$("game"),winnerBox=$("winnerBox"),nextRoundPrepBtn=$("nextRoundPrepBtn"),restartBtn=$("restartBtn");
+const onlineMainMenuBtn=$("onlineMainMenuBtn"),onlinePostMatchStatus=$("onlinePostMatchStatus");
 
 let uid=null;
 let currentRoomCode=null;
@@ -52,6 +54,7 @@ let playersUnsubscribe=null;
 let actionUnsubscribe=null;
 let visualUnsubscribe=null;
 let ackUnsubscribe=null;
+let postMatchUnsubscribe=null;
 let connectedUnsubscribe=null;
 
 let processingActionId=null;
@@ -64,6 +67,9 @@ let hostPublishChain=Promise.resolve();
 let hostStateSeq=0;
 let localStateSeq=0;
 let localProfileId=null;
+let postMatchEnded=false;
+let postMatchTransitionBusy=false;
+let postMatchChoices={};
 
 function escapeHtml(value){return String(value??"").replace(/[&<>'"]/g,ch=>({"&":"&amp;","<":"&lt;",">":"&gt;","'":"&#39;",'"':"&quot;"}[ch]));}
 function normalizeCode(value){return String(value||"").toUpperCase().replace(/[^A-Z2-9]/g,"").slice(0,6);}
@@ -145,11 +151,13 @@ function actionsRef(code=currentRoomCode){return ref(db,`rooms/${code}/match/act
 function actionItemRef(id,code=currentRoomCode){return ref(db,`rooms/${code}/match/actions/${id}`);}
 function visualRef(code=currentRoomCode){return ref(db,`rooms/${code}/match/visual`);}
 function ackRef(code=currentRoomCode,userUid=uid){return ref(db,`rooms/${code}/match/acks/${userUid}`);}
+function postMatchRef(code=currentRoomCode){return ref(db,`rooms/${code}/match/postMatch`);}
+function postMatchChoiceRef(code=currentRoomCode,userUid=uid){return ref(db,`rooms/${code}/match/postMatch/${userUid}`);}
 
 function detachLobbyListener(){if(roomUnsubscribe){roomUnsubscribe();roomUnsubscribe=null;}}
 function detachMatchListeners(){
-  [metaUnsubscribe,stateUnsubscribe,playersUnsubscribe,actionUnsubscribe,visualUnsubscribe,ackUnsubscribe].forEach(unsub=>{try{unsub?.();}catch(_){}});
-  metaUnsubscribe=stateUnsubscribe=playersUnsubscribe=actionUnsubscribe=visualUnsubscribe=ackUnsubscribe=null;
+  [metaUnsubscribe,stateUnsubscribe,playersUnsubscribe,actionUnsubscribe,visualUnsubscribe,ackUnsubscribe,postMatchUnsubscribe].forEach(unsub=>{try{unsub?.();}catch(_){}});
+  metaUnsubscribe=stateUnsubscribe=playersUnsubscribe=actionUnsubscribe=visualUnsubscribe=ackUnsubscribe=postMatchUnsubscribe=null;
 }
 
 async function prepareDisconnect(code,isHost){
@@ -264,7 +272,10 @@ function stageHostState(rawState,request){
   const state={...rawState,schema:5,seq,actionId:String(request?.id||rawState.actionId||""),actionType:String(request?.type||rawState.actionType||""),updatedAt:Date.now()};
   const nextUid=String(state.currentPlayerUid||"");
   localStateSeq=seq;
-  if(currentIsHost) bridge?.applyState?.(state);
+  if(currentIsHost){
+    bridge?.applyState?.(state);
+    syncPostMatchState(state);
+  }
 
   hostPublishChain=hostPublishChain.then(async()=>{
     if(!currentRoomCode||!enteredMatchId) return;
@@ -340,6 +351,136 @@ async function drainHostActionQueue(){
   }
 }
 
+function hidePostMatchControls(){
+  postMatchEnded=false;
+  postMatchChoices={};
+  postMatchTransitionBusy=false;
+  onlinePostMatchStatus?.classList.add("hidden");
+  if(onlinePostMatchStatus) onlinePostMatchStatus.textContent="";
+  onlineMainMenuBtn?.classList.add("hidden");
+}
+
+function renderPostMatchControls(){
+  if(!postMatchEnded) return;
+  nextRoundPrepBtn.classList.remove("hidden");
+  restartBtn.classList.remove("hidden");
+  onlineMainMenuBtn?.classList.remove("hidden");
+  nextRoundPrepBtn.textContent="🔁 Noch ein Spiel";
+  restartBtn.textContent="↩ Zur Lobby";
+  nextRoundPrepBtn.disabled=false;
+  restartBtn.disabled=false;
+  if(onlineMainMenuBtn) onlineMainMenuBtn.disabled=false;
+
+  const mine=String(postMatchChoices?.[uid]||"");
+  const otherEntry=Object.entries(postMatchChoices||{}).find(([id])=>id!==uid);
+  const other=String(otherEntry?.[1]||"");
+  if(mine==="rematch"){
+    nextRoundPrepBtn.textContent="✓ Noch ein Spiel · wartet …";
+    nextRoundPrepBtn.disabled=true;
+  }
+  if(onlinePostMatchStatus){
+    let text="";
+    if(mine==="rematch"&&other!=="rematch") text="Rematch angefragt – warte auf den anderen Spieler.";
+    else if(other==="rematch"&&mine!=="rematch") text="Der andere Spieler möchte noch ein Spiel.";
+    else if(mine==="rematch"&&other==="rematch") text="Beide wollen ein Rematch – neues Match startet …";
+    onlinePostMatchStatus.textContent=text;
+    onlinePostMatchStatus.classList.toggle("hidden",!text);
+  }
+}
+
+function syncPostMatchState(state){
+  const ended=!!state?.ui?.winner?.open;
+  postMatchEnded=ended;
+  if(!ended){hidePostMatchControls();return;}
+  renderPostMatchControls();
+  if(currentIsHost) evaluatePostMatchChoices().catch(err=>console.warn("Post-match evaluate",err));
+}
+
+async function transitionBackToLobbyView(){
+  if(!currentRoomCode||!uid) return;
+  const code=currentRoomCode;
+  const isHost=currentIsHost;
+  detachMatchListeners();
+  bridge?.stopMatch?.();
+  currentMatchId="";enteredMatchId=null;processingActionId=null;lastProcessedActionId="";lastVisualId="";
+  hostStateSeq=0;localStateSeq=0;hostActionQueue=[];hostEngineDraining=false;hostQueuedActionIds.clear();hostPublishChain=Promise.resolve();
+  hidePostMatchControls();
+  winnerBox?.classList.add("hidden");
+  game?.classList.add("hidden");
+  document.body.classList.remove("playing","bot-acting","online-roll-window","online-remote-roll-preview","online-dice-snap");
+  mainMenu?.classList.add("hidden");
+  onlineScreen?.classList.remove("hidden");
+  await enterRoom(code,isHost);
+}
+
+async function resetFinishedMatchToLobby({rematch=false,force=false}={}){
+  if(postMatchTransitionBusy||!currentIsHost||!currentRoomCode||!enteredMatchId) return;
+  postMatchTransitionBusy=true;
+  try{
+    const expectedMatchId=String(enteredMatchId);
+    const result=await runTransaction(roomRef(),room=>{
+      if(!room||room.meta?.status!=="playing") return;
+      const liveMatchId=String(room.meta?.matchId||room.match?.id||"");
+      if(liveMatchId!==expectedMatchId) return;
+      const ids=Object.keys(room.players||{});
+      const choices=room.match?.postMatch||{};
+      if(!force){
+        if(rematch){
+          if(ids.length!==2||!ids.every(id=>choices[id]==="rematch")) return;
+        }else{
+          if(!ids.some(id=>choices[id]==="lobby")) return;
+        }
+      }
+      room.meta={...(room.meta||{}),status:"lobby",matchId:"",lastMatchId:expectedMatchId,lastMatchEndedAt:Date.now()};
+      ids.forEach(id=>{
+        room.players[id]={...(room.players[id]||{}),ready:!!rematch,readyChangedAt:Date.now()};
+      });
+      delete room.match;
+      return room;
+    },{applyLocally:false});
+    if(!result.committed) postMatchTransitionBusy=false;
+  }catch(err){
+    postMatchTransitionBusy=false;
+    console.error("Post-match lobby reset",err);
+    setNotice("Matchabschluss konnte nicht synchronisiert werden.","error");
+  }
+}
+
+async function evaluatePostMatchChoices(){
+  if(!currentIsHost||!postMatchEnded||postMatchTransitionBusy) return;
+  const values=Object.values(postMatchChoices||{}).map(String);
+  if(values.includes("lobby")){await resetFinishedMatchToLobby({rematch:false});return;}
+  const playerCount=Object.keys(currentRoom?.players||{}).length;
+  if(playerCount===2&&values.filter(v=>v==="rematch").length===2) await resetFinishedMatchToLobby({rematch:true});
+}
+
+async function choosePostMatch(choice){
+  if(!postMatchEnded||!enteredMatchId||!currentRoomCode||!uid||postMatchTransitionBusy) return;
+  if(choice!=="rematch"&&choice!=="lobby") return;
+  try{
+    postMatchChoices={...(postMatchChoices||{}),[uid]:choice};
+    renderPostMatchControls();
+    await set(postMatchChoiceRef(),choice);
+    if(currentIsHost) await evaluatePostMatchChoices();
+  }catch(err){
+    console.error("Post-match choice",err);
+    setNotice("Auswahl nach dem Match konnte nicht synchronisiert werden.","error");
+  }
+}
+
+async function exitOnlineToMainMenu(){
+  if(!enteredMatchId&&!currentRoomCode) return;
+  try{await leaveRoom({showHome:false});}catch(err){console.warn("Online main menu leave",err);}
+  onlineScreen?.classList.add("hidden");
+  if(window.WDAppNav?.openMainMenu) window.WDAppNav.openMainMenu();
+  else{
+    game?.classList.add("hidden");
+    winnerBox?.classList.add("hidden");
+    document.body.classList.remove("playing","bot-acting");
+    mainMenu?.classList.remove("hidden");
+  }
+}
+
 function attachMatchListeners(match){
   detachMatchListeners();
   hostStateSeq=Number(match?.state?.seq)||0;
@@ -347,6 +488,10 @@ function attachMatchListeners(match){
 
   metaUnsubscribe=onValue(metaRef(),snap=>{
     if(!snap.exists()){
+      if(postMatchEnded){
+        exitOnlineToMainMenu().catch(err=>console.warn("Post-match room closed",err));
+        return;
+      }
       // Match einfrieren statt auf lokalen Modus zurückzufallen. Sonst könnten nach
       // Host-Verlust plötzlich die normalen Offline-onclick-Handler weiterlaufen.
       bridge?.setConnected?.(false);
@@ -355,6 +500,10 @@ function attachMatchListeners(match){
     }
     const meta=snap.val()||{};
     currentHostUid=String(meta.hostUid||currentHostUid||"");
+    if(meta.status==="lobby"&&enteredMatchId){
+      transitionBackToLobbyView().catch(err=>console.error("Return to lobby",err));
+      return;
+    }
     if(meta.status&&meta.status!=="playing") console.warn("Online room status",meta.status);
   });
 
@@ -362,8 +511,12 @@ function attachMatchListeners(match){
     const livePlayers=snap.exists()?snap.val()||{}:{};
     if(currentRoom) currentRoom.players=livePlayers;
     if(enteredMatchId && Object.keys(livePlayers).length<2){
-      bridge?.setConnected?.(false);
-      setNotice("Der andere Spieler hat das Match verlassen.","warn");
+      if(postMatchEnded&&currentIsHost){
+        resetFinishedMatchToLobby({rematch:false,force:true}).catch(err=>console.error("Opponent left after match",err));
+      }else{
+        bridge?.setConnected?.(false);
+        setNotice("Der andere Spieler hat das Match verlassen.","warn");
+      }
     }
   });
 
@@ -375,6 +528,7 @@ function attachMatchListeners(match){
     localStateSeq=seq;
     if(currentIsHost) hostStateSeq=Math.max(hostStateSeq,seq);
     bridge?.applyState?.(state);
+    syncPostMatchState(state);
   },err=>{console.error("Match state listener",err);bridge?.setConnected?.(false);});
 
   visualUnsubscribe=onValue(visualRef(),snap=>{
@@ -392,6 +546,12 @@ function attachMatchListeners(match){
     const ack=snap.val()||{};
     if(ack.status==="error") bridge?.rejectAction?.(String(ack.id||""),"🌐 Aktion war nicht mehr gültig. Zustand wurde neu synchronisiert.");
   });
+
+  postMatchUnsubscribe=onValue(postMatchRef(),snap=>{
+    postMatchChoices=snap.exists()?snap.val()||{}:{};
+    if(postMatchEnded) renderPostMatchControls();
+    if(currentIsHost&&postMatchEnded) evaluatePostMatchChoices().catch(err=>console.warn("Post-match choices",err));
+  },err=>console.warn("Post-match listener",err));
 
   if(currentIsHost){
     actionUnsubscribe=onChildAdded(actionsRef(),snap=>{
@@ -418,6 +578,7 @@ function enterStartedMatch(room){
   hostStateSeq=Number(match?.state?.seq)||0;
   localStateSeq=hostStateSeq;
   matchStartBusy=false;
+  postMatchEnded=false;postMatchTransitionBusy=false;postMatchChoices={};hidePostMatchControls();
 
   // Ab Matchstart kein full-room onValue mehr: Lobby-Daten sind statisch genug.
   detachLobbyListener();
@@ -483,7 +644,7 @@ async function createRoom(){
     for(let attempt=0;attempt<12&&!code;attempt++){
       const candidate=makeCode();
       const initial={
-        meta:{hostUid:uid,status:"lobby",version:bridge?.getVersion?.()||"27.4.2",createdAt:Date.now(),maxPlayers:2,syncSchema:5},
+        meta:{hostUid:uid,status:"lobby",version:bridge?.getVersion?.()||"27.4.4",createdAt:Date.now(),maxPlayers:2,syncSchema:5},
         players:{[uid]:{name:profile.name,tagNumber:profile.tagNumber,diceDesign:profile.selectedDice||"classic",cosmeticTitle:profile.cosmeticTitle||"",cosmeticFrame:profile.cosmeticFrame||"",ready:false,joinedAt:Date.now(),joinedOrder:0}}
       };
       const result=await runTransaction(roomRef(candidate),current=>current===null?initial:undefined,{applyLocally:false});
@@ -541,6 +702,7 @@ function resetRoomState(){
   bridge?.stopMatch?.();
   currentRoomCode=null;currentRoom=null;currentIsHost=false;currentHostUid="";currentMatchId="";enteredMatchId=null;
   processingActionId=null;lastProcessedActionId="";lastVisualId="";hostStateSeq=0;localStateSeq=0;localProfileId=null;matchStartBusy=false;
+  postMatchEnded=false;postMatchTransitionBusy=false;postMatchChoices={};hidePostMatchControls();
   hostActionQueue=[];hostEngineDraining=false;hostQueuedActionIds.clear();hostPublishChain=Promise.resolve();
 }
 async function leaveRoom({showHome=true}={}){
@@ -555,6 +717,22 @@ async function leaveRoom({showHome=true}={}){
   resetRoomState();
   if(showHome) showOnlineHome();
 }
+
+nextRoundPrepBtn?.addEventListener("click",event=>{
+  if(!enteredMatchId||!postMatchEnded) return;
+  event.preventDefault();event.stopImmediatePropagation();
+  choosePostMatch("rematch");
+},true);
+restartBtn?.addEventListener("click",event=>{
+  if(!enteredMatchId||!postMatchEnded) return;
+  event.preventDefault();event.stopImmediatePropagation();
+  choosePostMatch("lobby");
+},true);
+onlineMainMenuBtn?.addEventListener("click",event=>{
+  if(!enteredMatchId||!postMatchEnded) return;
+  event.preventDefault();event.stopImmediatePropagation();
+  exitOnlineToMainMenu();
+},true);
 
 menuOnlineBtn?.addEventListener("click",openOnline);
 onlineBackBtn?.addEventListener("click",closeOnline);
