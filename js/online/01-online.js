@@ -165,6 +165,7 @@ function buildMatch(players){
     firstPlayerUid,
     currentPlayerUid:firstPlayerUid,
     turnNumber:1,
+    syncSchema:2,
     players:ordered.map(p=>{
       const rolled=randomOnlineAbility();
       return {
@@ -259,7 +260,7 @@ async function createRoom(){
     for(let attempt=0;attempt<12&&!code;attempt++){
       const candidate=makeCode();
       const initial={
-        meta:{hostUid:uid,status:"lobby",version:bridge?.getVersion?.()||"27.2.3",createdAt:Date.now(),maxPlayers:2},
+        meta:{hostUid:uid,status:"lobby",version:bridge?.getVersion?.()||"27.2.4",createdAt:Date.now(),maxPlayers:2},
         players:{[uid]:{name:profile.name,tagNumber:profile.tagNumber,diceDesign:profile.selectedDice||"classic",cosmeticTitle:profile.cosmeticTitle||"",cosmeticFrame:profile.cosmeticFrame||"",ready:false,joinedAt:Date.now(),joinedOrder:0}}
       };
       const result=await runTransaction(roomRef(candidate),current=>current===null?initial:undefined,{applyLocally:false});
