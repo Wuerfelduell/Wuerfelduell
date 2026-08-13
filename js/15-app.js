@@ -37,6 +37,10 @@
     window.scrollTo?.(0,0);
   }
 
+  // Online-Layer darf nach einem beendeten Match sauber ins Hauptmenü zurückkehren,
+  // ohne die interne Menü-/Game-Cleanup-Logik zu duplizieren.
+  window.WDAppNav=Object.freeze({openMainMenu});
+
   function openFrontScreen(screen){
     document.body.classList.remove("playing","bot-acting");
     game.classList.add("hidden");
