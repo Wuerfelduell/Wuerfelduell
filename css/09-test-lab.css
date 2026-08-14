@@ -26,7 +26,7 @@ body.test-lab-active .test-lab-workbench{
 .test-lab-bench-control{display:flex;flex-direction:column;gap:4px;min-width:0}
 .test-lab-bench-control>span{font-size:10px;font-weight:850;opacity:.72}
 .test-lab-bench-control select{width:100%;min-width:0;padding:7px 8px;border-radius:9px}
-.test-lab-preview-actions{grid-column:1/-1;display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.test-lab-preview-actions{grid-column:1/-1;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
 .test-lab-preview-actions button{padding:8px 10px}
 
 /* Experimental player banner/background. Only card 0 in Test Lab. */
@@ -90,3 +90,17 @@ body.test-lab-active #dice.lab-hot-fire-5 .die{
 #testLabFireCanvas.active{opacity:1}
 
 #testLabFxCanvas{filter:saturate(1.12) contrast(1.04)}
+
+body.test-lab-active .player-card.lab-kill-hit,
+body.test-lab-active [id^="playerCard"].lab-kill-hit{
+  animation:labKillHit .34s cubic-bezier(.2,.8,.25,1);
+}
+@keyframes labKillHit{
+  0%{transform:scale(1)}
+  34%{transform:scale(1.025)}
+  58%{transform:scale(.985)}
+  100%{transform:scale(1)}
+}
+@media(max-width:620px){
+  .test-lab-preview-actions{grid-template-columns:1fr}
+}
