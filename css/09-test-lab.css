@@ -47,35 +47,18 @@ body.test-lab-active .test-lab-profile-card[data-lab-banner]:not([data-lab-banne
 /* Proper smooth Hot Dice: CSS heat body + canvas flame particles. */
 body.test-lab-active #dice.lab-hot-fire .die{
   position:relative;
-  filter:
-    drop-shadow(0 0 5px rgba(255,40,55,.78))
-    drop-shadow(0 0 13px rgba(190,0,22,.52))
-    drop-shadow(0 -7px 14px rgba(110,0,18,.28))!important;
-  animation:labHeatPulse .92s cubic-bezier(.37,0,.63,1) infinite alternate!important;
+  filter:drop-shadow(0 0 4px rgba(255,45,60,.52)) drop-shadow(0 0 10px rgba(170,0,22,.25))!important;
+  animation:labHeatPulse 1.05s cubic-bezier(.37,0,.63,1) infinite alternate!important;
 }
 body.test-lab-active #dice.lab-hot-fire-4 .die{
-  filter:
-    drop-shadow(0 0 7px rgba(255,45,60,.92))
-    drop-shadow(0 0 17px rgba(210,0,28,.68))
-    drop-shadow(0 -9px 18px rgba(130,0,20,.46))!important;
-  animation-duration:.72s!important;
+  filter:drop-shadow(0 0 5px rgba(255,45,60,.65)) drop-shadow(0 0 12px rgba(190,0,24,.34))!important;
+  animation-duration:.88s!important;
 }
 body.test-lab-active #dice.lab-hot-fire-5 .die{
-  filter:
-    drop-shadow(0 0 9px rgba(255,70,80,1))
-    drop-shadow(0 0 22px rgba(230,0,32,.82))
-    drop-shadow(0 -12px 24px rgba(150,0,22,.62))!important;
-  animation-duration:.54s!important;
+  filter:drop-shadow(0 0 6px rgba(255,55,70,.78)) drop-shadow(0 0 15px rgba(205,0,28,.42))!important;
+  animation-duration:.72s!important;
 }
-body.test-lab-active #dice.lab-hot-fire .die::before{
-  content:"";position:absolute;pointer-events:none;inset:-9px;border-radius:inherit;z-index:-1;
-  background:
-    radial-gradient(ellipse at 50% 100%,rgba(255,30,45,.38),transparent 58%),
-    radial-gradient(ellipse at 25% 90%,rgba(170,0,22,.24),transparent 42%),
-    radial-gradient(ellipse at 78% 92%,rgba(230,0,36,.22),transparent 45%);
-  filter:blur(6px);
-  animation:labHeatBreath .76s ease-in-out infinite alternate
-}
+
 @keyframes labHeatPulse{
   from{transform:translateY(0) scale(1)}
   to{transform:translateY(-1.5px) scale(1.022)}
@@ -98,3 +81,10 @@ body.test-lab-active #dice.lab-hot-fire .die::before{
   .test-lab-bench-body{grid-template-columns:1fr 1fr}
   .test-lab-preview-actions{grid-template-columns:1fr}
 }
+
+#testLabFxCanvas,#testLabFireCanvas{
+  position:fixed;inset:0;pointer-events:none;width:100%;height:100%;
+}
+#testLabFxCanvas{z-index:9998}
+#testLabFireCanvas{z-index:9997;opacity:0;transition:opacity .18s ease}
+#testLabFireCanvas.active{opacity:1}
