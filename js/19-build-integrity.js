@@ -1,5 +1,5 @@
 (() => {
-  const EXPECTED = "27.6.0";
+  const EXPECTED = "27.6.1";
   const checks = {
     config: (typeof GAME_VERSION !== "undefined" && GAME_VERSION === EXPECTED),
     saveSchema: (typeof SAVE_SCHEMA_VERSION !== "undefined" && Number(SAVE_SCHEMA_VERSION) >= 9),
