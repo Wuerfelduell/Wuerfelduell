@@ -1,0 +1,9 @@
+/* Würfelduell V27.6.0 — progression / multiplayer polish */
+.online-mode-label{display:grid;gap:6px;margin:10px 0;font-weight:800}.online-mode-label select{width:100%}
+.secret-achievement{border-style:dashed;filter:saturate(.75)}.secret-achievement .achievement-name{letter-spacing:.08em}
+.v276-profile-extra{margin-top:14px;padding-top:12px;border-top:1px solid rgba(255,255,255,.10)}
+.v276-toggle-row,.v276-showcase-list{display:flex;gap:8px;flex-wrap:wrap}.v276-toggle-row label,.v276-showcase-chip{display:flex;align-items:center;gap:6px;padding:7px 10px;border:1px solid rgba(255,255,255,.12);border-radius:999px;background:rgba(255,255,255,.045);font-size:.88rem}.v276-showcase-chip input,.v276-toggle-row input{accent-color:currentColor}
+.v276-awards{margin-top:14px}.v276-award-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px}.v276-award{display:grid;gap:3px;padding:10px 12px;border-radius:14px;background:rgba(255,255,255,.055);border:1px solid rgba(255,255,255,.10)}.v276-award span{font-weight:800}.v276-award small{opacity:.72}
+#dice.hot-dice .die{filter:drop-shadow(0 0 8px rgba(255,170,60,.7));animation:v276HotPulse .8s ease-in-out infinite alternate}#dice.hot-dice-max .die{filter:drop-shadow(0 0 12px rgba(255,120,35,.95)) drop-shadow(0 -5px 10px rgba(255,210,80,.55));animation-duration:.42s}
+@keyframes v276HotPulse{from{transform:translateY(0)}to{transform:translateY(-2px)}}
+@media (prefers-reduced-motion:reduce){#dice.hot-dice .die{animation:none}}
