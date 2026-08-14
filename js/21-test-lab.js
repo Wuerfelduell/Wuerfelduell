@@ -555,6 +555,151 @@
     }
   }
 
+
+  function impactRing(x,y,color,e,maxR=52,width=2.4,alpha=.75){
+    if(e<=0||e>=1) return;
+    fxCtx.save();
+    fxCtx.globalAlpha=(1-e)*alpha;
+    fxCtx.strokeStyle=color;
+    fxCtx.lineWidth=width*(1-e*.35);
+    fxCtx.beginPath();
+    fxCtx.arc(x,y,5+e*maxR,0,Math.PI*2);
+    fxCtx.stroke();
+    fxCtx.restore();
+  }
+
+  function impactFlash(x,y,color,e,size=44,alpha=.32){
+    if(e<=0||e>=1) return;
+    glowCircle(fxCtx,x,y,size*(.42+e*.7),color,(1-e)*alpha);
+  }
+
+  function impactSparks(x,y,color,e,count=8,spread=48){
+    if(e<=0||e>=1) return;
+    fxCtx.save();
+    fxCtx.lineCap='round';
+    for(let k=0;k<count;k++){
+      const a=(Math.PI*2/count)*k + .15*Math.sin(k*5.1);
+      const d=e*spread*(.72+(k%3)*.11);
+      fxCtx.strokeStyle=color;
+      fxCtx.globalAlpha=(1-e)*(.82-(k%2)*.14);
+      fxCtx.lineWidth=k%3===0?2.3:1.35;
+      fxCtx.beginPath();
+      fxCtx.moveTo(x+Math.cos(a)*d*.28,y+Math.sin(a)*d*.28);
+      fxCtx.lineTo(x+Math.cos(a)*d,y+Math.sin(a)*d);
+      fxCtx.stroke();
+    }
+    fxCtx.restore();
+  }
+
+  function impactShards(x,y,color,e,count=8,spread=44){
+    if(e<=0||e>=1) return;
+    fxCtx.save();
+    for(let k=0;k<count;k++){
+      const a=(Math.PI*2/count)*k+.23;
+      const d=e*spread*(.72+(k%2)*.16);
+      const px=x+Math.cos(a)*d;
+      const py=y+Math.sin(a)*d;
+      fxCtx.save();
+      fxCtx.translate(px,py);
+      fxCtx.rotate(a+e*2.4);
+      fxCtx.globalAlpha=(1-e)*.74;
+      fxCtx.fillStyle=color;
+      fxCtx.beginPath();
+      fxCtx.moveTo(0,-5.5);fxCtx.lineTo(2.5,4.5);fxCtx.lineTo(-2.5,4.5);fxCtx.closePath();
+      fxCtx.fill();
+      fxCtx.restore();
+    }
+    fxCtx.restore();
+  }
+
+  function drawImpactForStyle(fx,t){
+    const [c1,c2]=labFxColor(fx.style);
+    const x=fx.to.x,y=fx.to.y;
+    let e=0;
+
+    switch(fx.style){
+      case 'lightning':
+        e=Math.max(0,(t-.48)/.52);
+        impactFlash(x,y,c1,e,58,.48);
+        impactRing(x,y,c1,e,64,2.6,.78);
+        impactSparks(x,y,c1,e,12,66);
+        break;
+
+      case 'flame':
+        e=Math.max(0,(t-.67)/.33);
+        impactFlash(x,y,c1,e,54,.42);
+        impactRing(x,y,c2,e,52,3,.6);
+        impactSparks(x,y,c2,e,10,52);
+        break;
+
+      case 'venom':
+        e=Math.max(0,(t-.66)/.34);
+        impactFlash(x,y,c1,e,36,.28);
+        impactRing(x,y,c2,e,36,2.3,.48);
+        for(let k=0;k<7&&e>0&&e<1;k++){
+          const a=k*Math.PI*2/7+fx.seed;
+          const d=e*(22+(k%3)*7);
+          glowCircle(fxCtx,x+Math.cos(a)*d,y+Math.sin(a)*d,5.5,c1,(1-e)*.24);
+        }
+        break;
+
+      case 'blood':
+        e=Math.max(0,(t-.46)/.54);
+        impactFlash(x,y,c1,e,31,.24);
+        impactSparks(x,y,c1,e,7,38);
+        break;
+
+      case 'jackpot':
+        e=Math.max(0,(t-.6)/.4);
+        impactFlash(x,y,c1,e,44,.36);
+        impactRing(x,y,c1,e,50,2.2,.65);
+        impactSparks(x,y,c2,e,12,52);
+        break;
+
+      case 'void':
+        e=Math.max(0,(t-.56)/.44);
+        impactFlash(x,y,c1,e,48,.32);
+        impactRing(x,y,c2,e,58,3,.68);
+        impactRing(x,y,c1,Math.min(1,e*1.25),34,1.4,.42);
+        break;
+
+      case 'confetti':
+        e=Math.max(0,(t-.46)/.54);
+        impactFlash(x,y,'#ffffff',e,30,.26);
+        impactRing(x,y,'#ffffff',e,34,1.7,.38);
+        break;
+
+      case 'frost':
+        e=Math.max(0,(t-.55)/.45);
+        impactFlash(x,y,c1,e,38,.32);
+        impactRing(x,y,c2,e,42,2,.52);
+        impactShards(x,y,c1,e,10,54);
+        break;
+
+      case 'rift':
+        e=Math.max(0,(t-.48)/.52);
+        impactFlash(x,y,c2,e,44,.3);
+        impactRing(x,y,c1,e,48,2.3,.58);
+        impactSparks(x,y,c1,e,8,44);
+        break;
+
+      case 'crown':
+        e=Math.max(0,(t-.52)/.48);
+        impactFlash(x,y,c1,e,72,.5);
+        impactRing(x,y,c1,e,78,3.4,.9);
+        impactRing(x,y,c2,Math.min(1,e*1.15),54,2,.62);
+        impactSparks(x,y,c2,e,12,68);
+        break;
+
+      default:
+        e=Math.max(0,(t-.68)/.32);
+        impactFlash(x,y,c1,e,40,.32);
+        impactRing(x,y,c2,e,44,2.2,.52);
+        impactSparks(x,y,c1,e,7,40);
+        break;
+    }
+  }
+
   function drawLabFx(fx,now){
     const t=(now-fx.start)/fx.duration;
     if(t>=1) return false;
@@ -571,6 +716,7 @@
       case 'crown':drawCrownfall(fx,t);break;
       default:drawArcShot(fx,t);break;
     }
+    drawImpactForStyle(fx,t);
     return true;
   }
 
@@ -626,45 +772,63 @@
   function drawFlame(p){
     const t=p.life/p.ttl;
     const fade=Math.sin(Math.min(1,t)*Math.PI);
-    const sway=Math.sin(p.phase+p.life*9)*p.sway*(.15+t*.4);
+    const sway=Math.sin(p.phase+p.life*8.1)*p.sway*(.10+t*.50);
+    const bend=Math.sin(p.phase*.8+p.life*4.7)*p.width*.85;
     const x=p.x+sway;
     const y=p.y;
-    const h=p.height*(.65+t*.7);
-    const w=p.width*(1-t*.42);
+    const h=p.height*(.72+t*.74);
+    const w=p.width*(1-t*.34);
 
     fireCtx.save();
     fireCtx.translate(x,y);
     fireCtx.globalCompositeOperation='lighter';
 
-    const grad=fireCtx.createLinearGradient(0,4,0,-h);
-    // dark transparent base -> red/crimson body -> pale red core -> transparent tip
-    grad.addColorStop(0,'rgba(90,0,14,0)');
-    grad.addColorStop(.16,`rgba(155,0,24,${.20*fade})`);
-    grad.addColorStop(.43,`rgba(235,10,38,${.32*fade})`);
-    grad.addColorStop(.68,`rgba(255,75,90,${.25*fade})`);
-    grad.addColorStop(.86,`rgba(255,185,190,${.13*fade})`);
-    grad.addColorStop(1,'rgba(255,220,220,0)');
+    const outer=fireCtx.createLinearGradient(0,4,0,-h);
+    outer.addColorStop(0,'rgba(90,0,14,0)');
+    outer.addColorStop(.10,`rgba(125,0,18,${.12*fade})`);
+    outer.addColorStop(.32,`rgba(210,5,31,${.24*fade})`);
+    outer.addColorStop(.56,`rgba(255,38,58,${.29*fade})`);
+    outer.addColorStop(.76,`rgba(255,105,118,${.20*fade})`);
+    outer.addColorStop(.91,`rgba(255,195,200,${.08*fade})`);
+    outer.addColorStop(1,'rgba(255,225,228,0)');
+    fireCtx.fillStyle=outer;
 
-    fireCtx.fillStyle=grad;
+    // Main flame: rounded shoulder, curved asymmetric tip.
     fireCtx.beginPath();
-    fireCtx.moveTo(-w,2);
-    fireCtx.bezierCurveTo(-w*1.15,-h*.22,-w*.45,-h*.52,0,-h);
-    fireCtx.bezierCurveTo(w*.32,-h*.55,w*1.05,-h*.25,w,2);
-    fireCtx.quadraticCurveTo(0,5,-w,2);
+    fireCtx.moveTo(-w*.9,2);
+    fireCtx.bezierCurveTo(-w*1.12,-h*.16,-w*.72,-h*.40,-w*.34,-h*.57);
+    fireCtx.bezierCurveTo(-w*.05,-h*.70,bend*.15,-h*.84,bend,-h);
+    fireCtx.bezierCurveTo(w*.28,-h*.82,w*.78,-h*.57,w*.96,-h*.30);
+    fireCtx.bezierCurveTo(w*1.10,-h*.10,w*.72,1,w*.20,3);
+    fireCtx.bezierCurveTo(-w*.16,4,-w*.60,4,-w*.9,2);
     fireCtx.fill();
 
-    // very faint hot inner tongue, never opaque
+    // Curved side lick. Gives a real flame silhouette instead of a triangle.
+    const side=Math.sin(p.phase)>0?1:-1;
+    const sh=h*(.43+.10*Math.sin(p.phase*1.6));
+    fireCtx.globalAlpha=.68;
+    fireCtx.beginPath();
+    fireCtx.moveTo(side*w*.15,1);
+    fireCtx.bezierCurveTo(side*w*.42,-sh*.16,side*w*.74,-sh*.40,side*w*.58,-sh*.62);
+    fireCtx.bezierCurveTo(side*w*.44,-sh*.78,side*w*.18,-sh*.90,side*w*.03,-sh);
+    fireCtx.bezierCurveTo(side*(-w*.06),-sh*.66,side*(-w*.01),-sh*.22,side*w*.15,1);
+    fireCtx.fill();
+
+    // Soft inner tongue — transparent, never blocking the die.
     if(p.level>=4){
-      const inner=fireCtx.createLinearGradient(0,0,0,-h*.7);
-      inner.addColorStop(0,'rgba(255,35,55,0)');
-      inner.addColorStop(.45,`rgba(255,80,92,${.12*fade})`);
-      inner.addColorStop(1,'rgba(255,210,215,0)');
+      const inner=fireCtx.createLinearGradient(0,0,0,-h*.68);
+      inner.addColorStop(0,'rgba(255,55,72,0)');
+      inner.addColorStop(.34,`rgba(255,82,98,${.08*fade})`);
+      inner.addColorStop(.62,`rgba(255,150,158,${.10*fade})`);
+      inner.addColorStop(1,'rgba(255,228,230,0)');
+      fireCtx.globalAlpha=.86;
       fireCtx.fillStyle=inner;
       fireCtx.beginPath();
-      fireCtx.moveTo(-w*.32,0);
-      fireCtx.quadraticCurveTo(-w*.18,-h*.3,0,-h*.65);
-      fireCtx.quadraticCurveTo(w*.2,-h*.28,w*.34,0);
-      fireCtx.closePath();fireCtx.fill();
+      fireCtx.moveTo(-w*.23,0);
+      fireCtx.bezierCurveTo(-w*.18,-h*.18,-w*.06,-h*.38,bend*.10,-h*.62);
+      fireCtx.bezierCurveTo(w*.16,-h*.39,w*.27,-h*.18,w*.23,0);
+      fireCtx.closePath();
+      fireCtx.fill();
     }
     fireCtx.restore();
   }
