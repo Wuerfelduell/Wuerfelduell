@@ -149,7 +149,10 @@
 
   resetStorageBtn.onclick=()=>{
     if(!confirm("Wirklich ALLE lokalen Würfelduell-Profile, Kampagnenfortschritte, Achievements und Statistiken löschen?")) return;
-    try{localStorage.removeItem(SAVE_KEY);}catch(e){}
+    try{
+      clearSaveBackups();
+      localStorage.removeItem(SAVE_KEY);
+    }catch(e){}
     saveData=createDefaultSave();saveGameData();gameContext={mode:"menu",returnScreen:"menu",profileId:null,encounterId:null};refreshPersistentUi();
   };
 

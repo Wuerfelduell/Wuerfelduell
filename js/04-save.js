@@ -20,6 +20,108 @@
   let storageAvailable=true;
   let saveData=createDefaultSave();
 
+  // V27.6.6 Save Safety Net
+  const SAVE_BACKUP_KEYS=[
+    `${SAVE_KEY}_backup_1`,
+    `${SAVE_KEY}_backup_2`,
+    `${SAVE_KEY}_backup_3`
+  ];
+
+  function parseStoredSave(raw){
+    if(!raw || typeof raw!=="string") return null;
+    try{
+      const parsed=JSON.parse(raw);
+      return (parsed&&typeof parsed==="object"&&!Array.isArray(parsed))?parsed:null;
+    }catch(_err){
+      return null;
+    }
+  }
+
+  function isMeaningfulStoredSave(rawOrParsed){
+    const parsed=typeof rawOrParsed==="string"?parseStoredSave(rawOrParsed):rawOrParsed;
+    if(!parsed) return false;
+    if(Array.isArray(parsed.profiles)&&parsed.profiles.length>0) return true;
+    if(parsed.global&&Number(parsed.global.completedRounds)>0) return true;
+    if(parsed.duoCampaigns&&typeof parsed.duoCampaigns==="object"&&Object.keys(parsed.duoCampaigns).length>0) return true;
+    if(parsed.trioCampaigns&&typeof parsed.trioCampaigns==="object"&&Object.keys(parsed.trioCampaigns).length>0) return true;
+    return false;
+  }
+
+  function rotateSaveBackups(rawMain){
+    if(!isMeaningfulStoredSave(rawMain)) return false;
+    try{
+      const b1=localStorage.getItem(SAVE_BACKUP_KEYS[0]);
+      const b2=localStorage.getItem(SAVE_BACKUP_KEYS[1]);
+      if(b2) localStorage.setItem(SAVE_BACKUP_KEYS[2],b2);
+      if(b1) localStorage.setItem(SAVE_BACKUP_KEYS[1],b1);
+      localStorage.setItem(SAVE_BACKUP_KEYS[0],rawMain);
+      console.info(`[Würfelduell] Save-Snapshot gesichert: ${parseStoredSave(rawMain)?.lastGameVersion||"unbekannte Version"}`);
+      return true;
+    }catch(err){
+      console.warn("Save-Backup konnte nicht rotiert werden",err);
+      return false;
+    }
+  }
+
+  function newestValidSaveBackup(){
+    for(let i=0;i<SAVE_BACKUP_KEYS.length;i++){
+      try{
+        const raw=localStorage.getItem(SAVE_BACKUP_KEYS[i]);
+        if(parseStoredSave(raw)&&isMeaningfulStoredSave(raw)) return {slot:i+1,key:SAVE_BACKUP_KEYS[i],raw};
+      }catch(_err){}
+    }
+    return null;
+  }
+
+  function clearSaveBackups(){
+    try{
+      SAVE_BACKUP_KEYS.forEach(key=>localStorage.removeItem(key));
+      return true;
+    }catch(err){
+      console.warn("Save-Backups konnten nicht gelöscht werden",err);
+      return false;
+    }
+  }
+
+  function recoverSaveBackup(slot=1){
+    const index=Math.max(1,Math.min(3,Number(slot)||1))-1;
+    try{
+      const raw=localStorage.getItem(SAVE_BACKUP_KEYS[index]);
+      const parsed=parseStoredSave(raw);
+      if(!parsed||!isMeaningfulStoredSave(parsed)) return false;
+      localStorage.setItem(SAVE_KEY,raw);
+      saveData=hydrateSave(parsed);
+      saveData.schemaVersion=Math.max(Number(saveData.schemaVersion)||1,SAVE_SCHEMA_VERSION);
+      saveData.campaignVersion=Math.max(Number(saveData.campaignVersion)||1,CAMPAIGN_VERSION);
+      saveData.lastGameVersion=GAME_VERSION;
+      localStorage.setItem(SAVE_KEY,JSON.stringify(saveData));
+      storageAvailable=true;
+      console.warn(`[Würfelduell] Save aus Backup-Slot ${index+1} wiederhergestellt.`);
+      return true;
+    }catch(err){
+      console.warn("Save-Recovery fehlgeschlagen",err);
+      return false;
+    }
+  }
+
+  window.WDSaveSafety={
+    backupKeys:[...SAVE_BACKUP_KEYS],
+    recover:recoverSaveBackup,
+    clear:clearSaveBackups,
+    inspect(){
+      return SAVE_BACKUP_KEYS.map((key,i)=>{
+        let parsed=null;
+        try{parsed=parseStoredSave(localStorage.getItem(key));}catch(_err){}
+        return {
+          slot:i+1,
+          version:parsed?.lastGameVersion||null,
+          profiles:Array.isArray(parsed?.profiles)?parsed.profiles.length:0,
+          meaningful:isMeaningfulStoredSave(parsed)
+        };
+      });
+    }
+  };
+
   function generateProfileId(){
     if(globalThis.crypto?.randomUUID) return crypto.randomUUID();
     return `p_${Date.now().toString(36)}_${Math.random().toString(36).slice(2,10)}`;
@@ -119,18 +221,6 @@
       version=8;
     }
 
-
-    // V8 -> V9: Showcase + Cosmetic Randomizer + Kill-FX-Slot.
-    if(version<9){
-      if(Array.isArray(migrated.profiles)){
-        migrated.profiles=migrated.profiles.map(profile=>{
-          if(!profile||typeof profile!=="object") return profile;
-          return {...profile,achievementShowcase:Array.isArray(profile.achievementShowcase)?profile.achievementShowcase:[],cosmeticRandomizer:(profile.cosmeticRandomizer&&typeof profile.cosmeticRandomizer==="object")?profile.cosmeticRandomizer:{dice:false,attackFx:false,killFx:false},unlockedKillFx:Array.isArray(profile.unlockedKillFx)?profile.unlockedKillFx:["classic"],selectedKillFx:profile.selectedKillFx||"classic"};
-        });
-      }
-      version=9;
-    }
-
     migrated.schemaVersion=Math.max(version,SAVE_SCHEMA_VERSION);
     migrated.campaignVersion=Number(migrated.campaignVersion)||CAMPAIGN_VERSION;
     migrated.lastGameVersion=GAME_VERSION;
@@ -164,11 +254,6 @@
     if(allAchievementFx.every(k=>p.unlockedAttackFx.includes(k)) && !p.achievements.special_effects_department) p.achievements.special_effects_department=Date.now();
     p.selectedDice=p.unlockedDice.includes(p.selectedDice)?p.selectedDice:"classic";
     p.selectedAttackFx=p.unlockedAttackFx.includes(p.selectedAttackFx)?p.selectedAttackFx:"classic";
-    p.unlockedKillFx=Array.isArray(p.unlockedKillFx)?[...new Set(["classic",...p.unlockedKillFx.map(String)])]:["classic"];
-    p.selectedKillFx=p.unlockedKillFx.includes(p.selectedKillFx)?p.selectedKillFx:"classic";
-    p.achievementShowcase=Array.isArray(p.achievementShowcase)?[...new Set(p.achievementShowcase.map(String).filter(id=>p.achievements[id]))].slice(0,3):[];
-    const rr=(p.cosmeticRandomizer&&typeof p.cosmeticRandomizer==="object")?p.cosmeticRandomizer:{};
-    p.cosmeticRandomizer={dice:!!rr.dice,attackFx:!!rr.attackFx,killFx:!!rr.killFx};
     const rawCosmetics=(p.prestigeCosmetics&&typeof p.prestigeCosmetics==="object")?p.prestigeCosmetics:{};
     p.prestigeCosmetics={
       owned:Array.isArray(rawCosmetics.owned)?[...new Set(rawCosmetics.owned.map(String))]:[],
@@ -234,11 +319,46 @@
   function loadSaveData(){
     try{
       const raw=localStorage.getItem(SAVE_KEY);
-      if(!raw){saveData=createDefaultSave();return;}
-      saveData=hydrateSave(JSON.parse(raw));
-      saveGameData(); // Migration sofort sicher persistieren.
+
+      if(!raw || !parseStoredSave(raw)){
+        const backup=newestValidSaveBackup();
+        if(backup){
+          localStorage.setItem(SAVE_KEY,backup.raw);
+          saveData=hydrateSave(parseStoredSave(backup.raw));
+          saveData.lastGameVersion=GAME_VERSION;
+          localStorage.setItem(SAVE_KEY,JSON.stringify(saveData));
+          storageAvailable=true;
+          console.warn(`[Würfelduell] Hauptsave fehlte/war defekt – Backup ${backup.slot} wurde automatisch wiederhergestellt.`);
+          return;
+        }
+        saveData=createDefaultSave();
+        return;
+      }
+
+      const parsed=parseStoredSave(raw);
+      const previousVersion=String(parsed?.lastGameVersion||"");
+      if(previousVersion!==String(GAME_VERSION) && isMeaningfulStoredSave(parsed)){
+        rotateSaveBackups(raw);
+      }
+
+      saveData=hydrateSave(parsed);
+      saveGameData();
     }catch(err){
       console.warn("Save konnte nicht geladen werden",err);
+      const backup=newestValidSaveBackup();
+      if(backup){
+        try{
+          localStorage.setItem(SAVE_KEY,backup.raw);
+          saveData=hydrateSave(parseStoredSave(backup.raw));
+          saveData.lastGameVersion=GAME_VERSION;
+          localStorage.setItem(SAVE_KEY,JSON.stringify(saveData));
+          storageAvailable=true;
+          console.warn(`[Würfelduell] Ladefehler – Backup ${backup.slot} wurde automatisch wiederhergestellt.`);
+          return;
+        }catch(recoveryErr){
+          console.warn("Automatische Save-Recovery ebenfalls fehlgeschlagen",recoveryErr);
+        }
+      }
       storageAvailable=false;
       saveData=createDefaultSave();
     }
