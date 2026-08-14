@@ -1,13 +1,14 @@
 (() => {
-  const EXPECTED = "27.5.3";
+  const EXPECTED = "27.6.0";
   const checks = {
     config: (typeof GAME_VERSION !== "undefined" && GAME_VERSION === EXPECTED),
-    saveSchema: (typeof SAVE_SCHEMA_VERSION !== "undefined" && Number(SAVE_SCHEMA_VERSION) >= 8),
+    saveSchema: (typeof SAVE_SCHEMA_VERSION !== "undefined" && Number(SAVE_SCHEMA_VERSION) >= 9),
     achievements: (typeof ACHIEVEMENTS !== "undefined" &&
       !!ACHIEVEMENTS.straight &&
       !!ACHIEVEMENTS.backstab &&
       !!ACHIEVEMENTS.vampiric_touch &&
-      !!ACHIEVEMENTS.perfectly_useless),
+      !!ACHIEVEMENTS.perfectly_useless &&
+      !!ACHIEVEMENTS.certified_dumbass),
     attackFxConfig: (typeof ATTACK_FX_STYLES !== "undefined" &&
       !!ATTACK_FX_STYLES.classic &&
       !!ATTACK_FX_STYLES.flame &&

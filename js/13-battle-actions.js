@@ -926,6 +926,7 @@
 
       const bloodText=bloodHits>0 ? ` Davon ${bloodHits} Blutpreis-Treffer.` : "";
       addLog(`↳ Angriffswurf: ${currentAttackRollNewHits} neuer Treffer. Gesamt: ${attackHits} Treffer = ${totalAttackDamage()} Schaden.${bloodText}`);
+      players[current].hotDiceStreak=currentAttackRollNewHits>0?(Number(players[current].hotDiceStreak)||0)+1:0;
       phase="attack_after_roll";
       renderAll();
       tutorialExplainAttackRoll();

@@ -13,12 +13,12 @@
   let localModeId="classic";
   function localModeRules(){return LOCAL_MODES[localModeId]||LOCAL_MODES.classic;}
 
-  const GAME_VERSION="27.5.3";
+  const GAME_VERSION="27.6.0";
   const SAVE_KEY="wuerfelduell_save_v1"; // absichtlich stabil: Updates lesen denselben Browser-Save
   // Versionsanzeige immer aus derselben Quelle ziehen, damit Titel/Footer nicht mehr hinterherhinken.
   document.title=`Würfelduell · V${GAME_VERSION}`;
   queueMicrotask(()=>{const footer=document.querySelector(".version-footer");if(footer)footer.textContent=`WÜRFELDUELL · VERSION ${GAME_VERSION}`;});
-  const SAVE_SCHEMA_VERSION=8;
+  const SAVE_SCHEMA_VERSION=9;
   const CAMPAIGN_VERSION=29;
 
   const ACHIEVEMENTS={
@@ -66,7 +66,13 @@
     perfectly_useless:{name:"Perfectly Useless",desc:"Perfect 25 gibt dir einen Angriff, aber dieser Angriff verursacht 0 Schaden.",rewardFx:"confetti"},
     house_always_wins:{name:"The House Always Wins",desc:"Verliere in einer Runde mindestens dreimal High Stakes mit 1–3 und gewinne die Runde trotzdem."},
     chromatic_menace:{name:"Chromatic Menace",desc:"Schalte alle Achievement-Würfeldesigns frei."},
-    special_effects_department:{name:"Special Effects Department",desc:"Schalte alle Achievement-Angriffseffekte frei."}
+    special_effects_department:{name:"Special Effects Department",desc:"Schalte alle Achievement-Angriffseffekte frei."},
+    certified_dumbass:{name:"Certified Dumbass",desc:"Schaffe Dumbass zweimal im selben Match.",secret:true,requires:"dumbass"},
+    glass_cannon:{name:"Glass Cannon",desc:"Schalte mit exakt 1 HP einen Gegner aus.",secret:true},
+    not_even_close:{name:"Not Even Close",desc:"Gewinne ein Match mit exakt 1 HP.",secret:true,requires:"one_hp_wonder"},
+    stop_hitting_yourself:{name:"Stop Hitting Yourself",desc:"Ein Gegner stirbt durch deine Counterattack.",secret:true,requires:"backstab"},
+    five_of_a_kind:{name:"Five of a Kind",desc:"Würfle in einem Angriffswurf fünf gleiche Zahlen.",secret:true},
+    nothing_personal:{name:"Nothing Personal",desc:"Eliminiere den Spieler, der dich im vorherigen gemeinsamen Match eliminiert hat.",secret:true}
   };
 
   const DICE_UNLOCK_ACHIEVEMENT={gold:"grande",obsidian:"not_today",blood:"blood_money",arcane:"dual_wielding",emerald:"back_from_dead",frost:"snake_charmer",pearl:"untouchable",neon:"degenerate_gambler",void:"overkill",sapphire:"hat_trick",chrome:"machine",storm:"laser_guided",circuit:"party_crasher"};

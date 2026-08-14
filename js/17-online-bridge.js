@@ -720,6 +720,7 @@
       tagNumber:String(profile.tagNumber||"0000").padStart(4,"0").slice(-4),
       selectedDice:String(profile.selectedDice||"classic"),
       selectedAttackFx:String(profile.selectedAttackFx||"classic"),
+      achievementShowcase:Array.isArray(profile.achievementShowcase)?profile.achievementShowcase.slice(0,3):[],
       cosmeticTitle:String(cosmeticTitle||""),
       cosmeticFrame:String(cosmeticFrame||"")
     };
@@ -730,7 +731,7 @@
     return REAL_ABILITY_IDS.includes(n)?n:1;
   }
 
-  function onlinePlayerFromMatch(entry,localUid,localProfileId){
+  function onlinePlayerFromMatch(entry,localUid,localProfileId,startHp=25){
     const isLocal=String(entry?.uid||"")===String(localUid||"");
     const localProfile=isLocal?getProfile(localProfileId):null;
     const rolled=Number(entry?.rolledAbility)||validAbility(entry?.ability);
@@ -746,9 +747,9 @@
       profileId:localProfile?.id||null,
       onlineUid:String(entry?.uid||""),
       botLevel:"human",
-      hp:START_HP,maxHp:START_HP,
-      ability:validAbility(entry?.ability),secondAbility:null,thirdAbility:null,fourthAbility:null,
-      secondAbilityUnlocked:false,thirdAbilityUnlocked:false,fourthAbilityUnlocked:false,
+      hp:startHp,maxHp:startHp,
+      ability:validAbility(entry?.abilities?.[0]??entry?.ability),secondAbility:entry?.abilities?.[1]!=null?validAbility(entry.abilities[1]):null,thirdAbility:entry?.abilities?.[2]!=null?validAbility(entry.abilities[2]):null,fourthAbility:null,
+      secondAbilityUnlocked:entry?.abilities?.[1]!=null,thirdAbilityUnlocked:entry?.abilities?.[2]!=null,fourthAbilityUnlocked:false,
       rolledAbility:rolled,primaryWasChosen:rolled===6,secondAbilityWasChosen:false,thirdAbilityWasChosen:false,fourthAbilityWasChosen:false,
       seat:0,diceDesign:String(entry?.diceDesign||localProfile?.selectedDice||"classic"),attackFx:String(entry?.attackFx||localProfile?.selectedAttackFx||"classic"),cosmeticTitle,cosmeticFrame,wins:0,
       momentumStreak:0,firstClassStreak:0,perfect25AttackArmed:false,lastStandUsed:false,roundLastStandTriggered:false,damageSinceLastOwnTurn:false,bloodRushPrimed:false,
@@ -763,17 +764,18 @@
     if(matchPlayers.length<2 || matchPlayers.length>4 || !localUid) return false;
     if(!matchPlayers.some(p=>String(p?.uid||"")===String(localUid))) return false;
 
-    tutorialMode=false;campaignMode=false;duoCampaignMode=false;trioCampaignMode=false;localModeId="classic";
+    tutorialMode=false;campaignMode=false;duoCampaignMode=false;trioCampaignMode=false;localModeId=["classic","endurance50","overload75"].includes(String(match?.modeId))?String(match.modeId):"classic";
     campaignEncounterId=null;campaignProfileId=null;campaignMetrics=freshCampaignMetrics();
     encounterRuntime={ruleIds:[],phaseRuleIds:[],phaseTriggered:false,firstStrikeUsed:new Set(),armorUsed:new Set(),turnStarts:{}};
-    gameContext={mode:"online",returnScreen:"menu",profileId:localProfileId||null,encounterId:null,roomCode:String(match.roomCode||"")};
+    gameContext={mode:`online-${localModeId}`,returnScreen:"menu",profileId:localProfileId||null,encounterId:null,roomCode:String(match.roomCode||"")};
 
     resetTutorialUi();
     nextRoundPrepBtn.classList.add("hidden");
     restartBtn.classList.add("hidden");
     clearBotAutomation();
 
-    players=matchPlayers.map(entry=>onlinePlayerFromMatch(entry,localUid,localProfileId));
+    const onlineStartHp=Math.max(1,Number(match?.startHp)||25);
+    players=matchPlayers.map(entry=>onlinePlayerFromMatch(entry,localUid,localProfileId,onlineStartHp));
     resetRoundStats();
     const authoritativeTurnUid=String(match?.currentPlayerUid||match?.firstPlayerUid||matchPlayers[0]?.uid||"");
     const authoritativeIndex=players.findIndex(p=>String(p?.onlineUid||"")===authoritativeTurnUid);
@@ -797,14 +799,14 @@
 
     window.WDAttackFx?.reset?.();
     lastCombatFx=null;combatFxSerial=0;combatFxEvents=[];
-    addLog(`🌐 Online ${players.length}-Spieler-Match gestartet. ${players[current].name} beginnt.`);
+    addLog(`🌐 Online ${players.length}-Spieler-Match · ${String(match?.modeName||localModeRules().name)} · ${onlineStartHp} HP. ${players[current].name} beginnt.`);
     players.forEach(p=>{
       const roll=p.rolledAbility;
       const abilityText=roll===6?`W25 = 6 → automatische freie Wahl → ${ABILITIES[p.ability].name}`:`W25 = ${roll} → ${ABILITIES[p.ability].name}`;
       addLog(`${p.name}: ${abilityText} · 🎲 ${DICE_DESIGNS[p.diceDesign]?.name||"Classic"} · ✨ ${ATTACK_FX_STYLES[p.attackFx]?.name||"Arc Shot"}.`);
     });
     renderAll();enforceOnlineControls();
-    addLog(`🌐 V27.5.2: Smooth Online · 2–4 Spieler · profilgebundene Combat-FX.`);
+    addLog(`🌐 V27.6.0: Online-Modi · 2–4 Spieler · profilgebundene Combat-FX.`);
     return true;
   }
 
@@ -824,6 +826,7 @@
     getProfiles(){try{return (saveData?.profiles||[]).map(publicProfile).filter(Boolean);}catch(err){console.warn("Online-Profilliste konnte nicht gelesen werden",err);return []; }},
     getVersion(){try{return String(GAME_VERSION||"");}catch(_){return "";}},
     getAttackFxName(id){try{return ATTACK_FX_STYLES[String(id||"classic")]?.name||"Arc Shot";}catch(_){return "Arc Shot";}},
+    resolveProfileCosmetics(profileId){try{const profile=getProfile(profileId);return window.WDV276?.resolveProfileCosmetics?.(profile)||{dice:profile?.selectedDice||"classic",attackFx:profile?.selectedAttackFx||"classic"};}catch(_){return {dice:"classic",attackFx:"classic"};}},
     getOnlineChoicePool(){return REAL_ABILITY_IDS.filter(id=>id!==7);},
     startMatch:startOnlineMatch,
     stopMatch:stopOnlineMatch,

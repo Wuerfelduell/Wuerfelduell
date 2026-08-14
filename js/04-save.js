@@ -119,6 +119,18 @@
       version=8;
     }
 
+
+    // V8 -> V9: Showcase + Cosmetic Randomizer + Kill-FX-Slot.
+    if(version<9){
+      if(Array.isArray(migrated.profiles)){
+        migrated.profiles=migrated.profiles.map(profile=>{
+          if(!profile||typeof profile!=="object") return profile;
+          return {...profile,achievementShowcase:Array.isArray(profile.achievementShowcase)?profile.achievementShowcase:[],cosmeticRandomizer:(profile.cosmeticRandomizer&&typeof profile.cosmeticRandomizer==="object")?profile.cosmeticRandomizer:{dice:false,attackFx:false,killFx:false},unlockedKillFx:Array.isArray(profile.unlockedKillFx)?profile.unlockedKillFx:["classic"],selectedKillFx:profile.selectedKillFx||"classic"};
+        });
+      }
+      version=9;
+    }
+
     migrated.schemaVersion=Math.max(version,SAVE_SCHEMA_VERSION);
     migrated.campaignVersion=Number(migrated.campaignVersion)||CAMPAIGN_VERSION;
     migrated.lastGameVersion=GAME_VERSION;
@@ -152,6 +164,11 @@
     if(allAchievementFx.every(k=>p.unlockedAttackFx.includes(k)) && !p.achievements.special_effects_department) p.achievements.special_effects_department=Date.now();
     p.selectedDice=p.unlockedDice.includes(p.selectedDice)?p.selectedDice:"classic";
     p.selectedAttackFx=p.unlockedAttackFx.includes(p.selectedAttackFx)?p.selectedAttackFx:"classic";
+    p.unlockedKillFx=Array.isArray(p.unlockedKillFx)?[...new Set(["classic",...p.unlockedKillFx.map(String)])]:["classic"];
+    p.selectedKillFx=p.unlockedKillFx.includes(p.selectedKillFx)?p.selectedKillFx:"classic";
+    p.achievementShowcase=Array.isArray(p.achievementShowcase)?[...new Set(p.achievementShowcase.map(String).filter(id=>p.achievements[id]))].slice(0,3):[];
+    const rr=(p.cosmeticRandomizer&&typeof p.cosmeticRandomizer==="object")?p.cosmeticRandomizer:{};
+    p.cosmeticRandomizer={dice:!!rr.dice,attackFx:!!rr.attackFx,killFx:!!rr.killFx};
     const rawCosmetics=(p.prestigeCosmetics&&typeof p.prestigeCosmetics==="object")?p.prestigeCosmetics:{};
     p.prestigeCosmetics={
       owned:Array.isArray(rawCosmetics.owned)?[...new Set(rawCosmetics.owned.map(String))]:[],

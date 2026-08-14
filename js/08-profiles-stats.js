@@ -170,9 +170,13 @@
   function renderAchievements(){
     const profiles=saveData.profiles;
     achievementList.innerHTML=Object.entries(ACHIEVEMENTS).map(([id,a])=>{
-      const rewards=[];if(a.rewardDice)rewards.push(`🎲 ${escapeHtml(DICE_DESIGNS[a.rewardDice]?.name||a.rewardDice)}`);if(a.rewardFx)rewards.push(`✨ ${escapeHtml(ATTACK_FX_STYLES[a.rewardFx]?.name||a.rewardFx)}`);const reward=rewards.length?`<span class="achievement-reward">${rewards.join(" · ")}</span>`:"";
+      const globallyUnlocked=profiles.some(p=>p.achievements[id]);
+      const prerequisiteVisible=!a.requires||profiles.some(p=>p.achievements[a.requires]);
+      if(a.requires&&!prerequisiteVisible) return "";
+      const hidden=!!a.secret&&!globallyUnlocked;
+      const rewards=[];if(a.rewardDice)rewards.push(`🎲 ${escapeHtml(DICE_DESIGNS[a.rewardDice]?.name||a.rewardDice)}`);if(a.rewardFx)rewards.push(`✨ ${escapeHtml(ATTACK_FX_STYLES[a.rewardFx]?.name||a.rewardFx)}`);const reward=!hidden&&rewards.length?`<span class="achievement-reward">${rewards.join(" · ")}</span>`:"";
       const owners=profiles.length?profiles.map(p=>`<span class="achievement-owner${p.achievements[id]?" done":""}">${p.achievements[id]?"✓":"○"} ${escapeHtml(p.name)} <span class="battle-tag">#${escapeHtml(p.tagNumber)}</span></span>`).join(""):`<span class="achievement-owner">Noch keine Profile</span>`;
-      return `<div class="achievement-card"><div class="achievement-head"><div class="achievement-name">🏆 ${escapeHtml(a.name)}</div>${reward}</div><div class="achievement-desc">${escapeHtml(a.desc)}</div><div class="achievement-owners">${owners}</div></div>`;
+      return `<div class="achievement-card${hidden?" secret-achievement":""}"><div class="achievement-head"><div class="achievement-name">🏆 ${escapeHtml(hidden?"???":a.name)}</div>${reward}</div><div class="achievement-desc">${escapeHtml(hidden?"Geheimes Achievement":a.desc)}</div><div class="achievement-owners">${owners}</div></div>`;
     }).join("");
   }
 
