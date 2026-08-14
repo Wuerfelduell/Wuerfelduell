@@ -20,6 +20,9 @@ if(!bridge){
     lastDesign:'',
     lastRollSignature:'',
     forceSnapTimers:[],
+    searchToken:0,
+    searchRunning:false,
+    replayCheckTimer:null,
     animationId:0,
     lastTime:performance.now(),
     resizeObserver:null
@@ -132,12 +135,12 @@ if(!bridge){
       <div class="test-lab-3d-head">
         <div>
           <strong>🎲 Physics Dice Tray</strong>
-          <small>Three.js + cannon-es · Test-Lab Prototype</small>
+          <small>Three.js + cannon-es · Precomputed Physics V2</small>
         </div>
         <div class="test-lab-3d-status" id="testLab3dStatus">initialisiere…</div>
       </div>
       <div class="test-lab-3d-stage" id="testLab3dStage"></div>
-      <div class="test-lab-3d-hint">3D-Würfel antippen = auswählen · Lock-Button funktioniert wie gewohnt</div>
+      <div class="test-lab-3d-hint">3D-Würfel antippen = auswählen · validierte Physik ohne End-Snap · Locks bleiben beim nächsten Wurf liegen</div>
     `;
     diceDom.parentNode.insertBefore(tray,diceDom);
     state.tray=tray;
@@ -254,7 +257,7 @@ if(!bridge){
     const design=bridge.diceDesign();
     state.lastDesign=design;
     for(let i=0;i<5;i++){
-      const geometry=new THREE.BoxGeometry(1.2,1.2,1.2,3,3,3);
+      const geometry=new THREE.BoxGeometry(1.02,1.02,1.02,3,3,3);
       const materials=buildMaterials(design);
       const mesh=new THREE.Mesh(geometry,materials);
       mesh.castShadow=true;mesh.receiveShadow=true;
@@ -277,7 +280,7 @@ if(!bridge){
         sleepSpeedLimit:.16,
         sleepTimeLimit:.65
       });
-      body.addShape(new CANNON.Box(new CANNON.Vec3(.59,.59,.59)));
+      body.addShape(new CANNON.Box(new CANNON.Vec3(.50,.50,.50)));
       body.position.set((i-2)*1.35,1.5+Math.random()*2,(Math.random()-.5)*2);
       world.addBody(body);
 
@@ -326,84 +329,291 @@ if(!bridge){
     }
   }
 
-  function randomToss(die,index,targetValue){
-    const b=die.body;
-    b.wakeUp();
-    b.type=CANNON.Body.DYNAMIC;
-    b.mass=1;
-    b.updateMassProperties();
-    b.position.set(
-      -3.7 + index*1.65 + (Math.random()-.5)*.7,
-      4.2 + Math.random()*2.2,
-      -1.8 + Math.random()*2.2
-    );
-    b.velocity.set(
-      (Math.random()-.5)*3.1,
-      -1.5-Math.random()*1.5,
-      2.2+Math.random()*3.4
-    );
-    b.angularVelocity.set(
-      (Math.random()-.5)*13,
-      (Math.random()-.5)*13,
-      (Math.random()-.5)*13
-    );
-    const q=new CANNON.Quaternion();
-    q.setFromEuler(Math.random()*Math.PI,Math.random()*Math.PI,Math.random()*Math.PI,'XYZ');
-    b.quaternion.copy(q);
-    b.linearDamping=.08;b.angularDamping=.08;
+  const DIE_HALF=.50;
 
-    die.target=Number(targetValue)||1;
-
-    clearTimeout(die.snapTimer);
-    die.snapTimer=setTimeout(()=>snapToTarget(die),1550+Math.random()*180);
+  function mulberry32(seed){
+    let a=seed>>>0;
+    return function(){
+      a|=0;a=a+0x6D2B79F5|0;
+      let t=Math.imul(a^a>>>15,1|a);
+      t=t+Math.imul(t^t>>>7,61|t)^t;
+      return ((t^t>>>14)>>>0)/4294967296;
+    };
   }
 
-  function snapToTarget(die){
-    if(!state.ready||die.locked||die.target==null) return;
+  function topValueFromQuaternion(q){
+    const tq=new THREE.Quaternion(q.x,q.y,q.z,q.w);
+    let bestValue=1,bestY=-Infinity;
+    for(const [value,normal] of Object.entries(NORMAL_BY_VALUE)){
+      const y=normal.clone().applyQuaternion(tq).y;
+      if(y>bestY){bestY=y;bestValue=Number(value);}
+    }
+    return bestValue;
+  }
 
-    const normal=NORMAL_BY_VALUE[die.target]||NORMAL_BY_VALUE[1];
+  function targetUpQuaternion(value,rng,tiltMax=.36){
+    const normal=NORMAL_BY_VALUE[Number(value)]||NORMAL_BY_VALUE[1];
     const align=new THREE.Quaternion().setFromUnitVectors(normal,new THREE.Vector3(0,1,0));
-    const yaw=new THREE.Quaternion().setFromAxisAngle(
-      new THREE.Vector3(0,1,0),
-      Math.random()*Math.PI*2
-    );
-    const finalQ=yaw.multiply(align);
-
-    die.body.velocity.scale(.08,die.body.velocity);
-    die.body.angularVelocity.scale(.06,die.body.angularVelocity);
-    die.body.linearDamping=.82;
-    die.body.angularDamping=.88;
-
-    // Short visual/physics settle. We keep the current x/z position so it still
-    // looks like the actual physical throw landed there.
-    die.body.quaternion.set(finalQ.x,finalQ.y,finalQ.z,finalQ.w);
-    die.body.position.y=Math.max(die.body.position.y,-.38);
-    die.body.wakeUp();
-
-    setTimeout(()=>{
-      if(die.locked) return;
-      die.body.velocity.set(0,0,0);
-      die.body.angularVelocity.set(0,0,0);
-      die.body.quaternion.set(finalQ.x,finalQ.y,finalQ.z,finalQ.w);
-      die.body.sleep();
-    },280);
+    const yaw=new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0,1,0),rng()*Math.PI*2);
+    const axis=new THREE.Vector3(rng()-.5,0,rng()-.5);
+    if(axis.lengthSq()<.001) axis.set(1,0,0);
+    axis.normalize();
+    const tilt=new THREE.Quaternion().setFromAxisAngle(axis,(rng()-.5)*2*tiltMax);
+    return yaw.multiply(tilt).multiply(align);
   }
 
-  function tossFromSnapshot(snapshot,force=false){
-    if(!state.ready||!state.enabled||!inLab()) return;
-    let count=0;
+  function makeValidationWorld(snapshot){
+    const world=new CANNON.World({gravity:new CANNON.Vec3(0,-22,0),allowSleep:true});
+    world.broadphase=new CANNON.SAPBroadphase(world);
+    world.solver.iterations=12;
+    world.solver.tolerance=.001;
+
+    const floorMaterial=new CANNON.Material('tray-v');
+    const diceMaterial=new CANNON.Material('dice-v');
+
+    world.addContactMaterial(new CANNON.ContactMaterial(diceMaterial,floorMaterial,{
+      friction:.42,restitution:.32,contactEquationStiffness:1e8
+    }));
+    world.addContactMaterial(new CANNON.ContactMaterial(diceMaterial,diceMaterial,{
+      friction:.28,restitution:.38,contactEquationStiffness:1e8
+    }));
+
+    const floorBody=new CANNON.Body({mass:0,material:floorMaterial});
+    floorBody.addShape(new CANNON.Box(new CANNON.Vec3(5.35,.22,3.35)));
+    floorBody.position.set(0,-1.26,0);
+    world.addBody(floorBody);
+
+    function wall(x,y,z,hx,hy,hz){
+      const body=new CANNON.Body({mass:0,material:floorMaterial});
+      body.addShape(new CANNON.Box(new CANNON.Vec3(hx,hy,hz)));
+      body.position.set(x,y,z);
+      world.addBody(body);
+    }
+
+    wall(0,-.35,-3.25,5.55,.65,.18);
+    wall(0,-.35, 3.25,5.55,.65,.18);
+    wall(-5.4,-.35,0,.18,.65,3.25);
+    wall( 5.4,-.35,0,.18,.65,3.25);
+
+    const bodies=[];
+    snapshot.forEach((d,i)=>{
+      const live=state.dice[i]?.body;
+      const body=new CANNON.Body({
+        mass:d.locked?0:1,
+        material:diceMaterial,
+        linearDamping:.08,
+        angularDamping:.08,
+        allowSleep:true,
+        sleepSpeedLimit:.16,
+        sleepTimeLimit:.65
+      });
+      body.addShape(new CANNON.Box(new CANNON.Vec3(DIE_HALF,DIE_HALF,DIE_HALF)));
+
+      if(d.locked && live){
+        body.position.copy(live.position);
+        body.quaternion.copy(live.quaternion);
+        body.type=CANNON.Body.STATIC;
+      }
+      world.addBody(body);
+      bodies.push(body);
+    });
+
+    return {world,bodies};
+  }
+
+  function candidateParams(snapshot,seed,safe=false){
+    const rng=mulberry32(seed);
+
+    return snapshot.map((d,i)=>{
+      if(d.locked) return null;
+      const value=Number(d.value)||1;
+
+      if(safe){
+        const q=targetUpQuaternion(value,rng,.015);
+        return {
+          position:{x:(i-2)*1.62,y:.48+(i%2)*.06,z:-1.3+(i%2)*2.35},
+          velocity:{x:(i%2?-.65:.65)+(rng()-.5)*.15,y:-.25,z:(rng()-.5)*.25},
+          angularVelocity:{x:0,y:(rng()<.5?-1:1)*(6.5+rng()*3.5),z:0},
+          quaternion:{x:q.x,y:q.y,z:q.z,w:q.w}
+        };
+      }
+
+      const q=targetUpQuaternion(value,rng,.28+.20*rng());
+      return {
+        position:{
+          x:-3.35+i*1.68+(rng()-.5)*.30,
+          y:3.45+rng()*1.75+(i%2)*.12,
+          z:-1.45+rng()*1.05
+        },
+        velocity:{
+          x:(rng()-.5)*1.6,
+          y:-.9-rng()*1.15,
+          z:2.0+rng()*2.6
+        },
+        angularVelocity:{
+          x:(rng()-.5)*4.4,
+          y:(rng()<.5?-1:1)*(5.2+rng()*6.2),
+          z:(rng()-.5)*4.4
+        },
+        quaternion:{x:q.x,y:q.y,z:q.z,w:q.w}
+      };
+    });
+  }
+
+  function loadCandidate(validation,snapshot,params){
+    snapshot.forEach((d,i)=>{
+      if(d.locked) return;
+      const body=validation.bodies[i];
+      const p=params[i];
+
+      body.type=CANNON.Body.DYNAMIC;
+      body.mass=1;
+      body.updateMassProperties();
+      body.position.set(p.position.x,p.position.y,p.position.z);
+      body.velocity.set(p.velocity.x,p.velocity.y,p.velocity.z);
+      body.angularVelocity.set(p.angularVelocity.x,p.angularVelocity.y,p.angularVelocity.z);
+      body.quaternion.set(p.quaternion.x,p.quaternion.y,p.quaternion.z,p.quaternion.w);
+      body.linearDamping=.08;
+      body.angularDamping=.08;
+      body.wakeUp();
+    });
+  }
+
+  function simulateCandidate(snapshot,params){
+    const validation=makeValidationWorld(snapshot);
+    loadCandidate(validation,snapshot,params);
+
+    for(let step=0;step<216;step++) validation.world.step(1/60);
+
+    const values=validation.bodies.map((body,i)=>
+      snapshot[i].locked ? Number(snapshot[i].value)||1 : topValueFromQuaternion(body.quaternion)
+    );
+    const exact=values.every((value,i)=>
+      snapshot[i].locked || value===Number(snapshot[i].value)
+    );
+
+    return {exact,values};
+  }
+
+  function candidateEnergy(params){
+    return params.reduce((sum,p)=>{
+      if(!p) return sum;
+      return sum
+        +Math.hypot(p.angularVelocity.x,p.angularVelocity.y,p.angularVelocity.z)*.8
+        +Math.hypot(p.velocity.x,p.velocity.y,p.velocity.z)*.35
+        +(p.position.y||0)*.25;
+    },0);
+  }
+
+  async function searchThrow(snapshot){
+    const token=++state.searchToken;
+    state.searchRunning=true;
+    setStatus('berechnet Physik…');
+
+    let best=null;
+    const maxAttempts=52;
+    const baseSeed=(Date.now()^Math.floor(Math.random()*0x7fffffff))>>>0;
+
+    for(let attempt=0;attempt<maxAttempts;attempt++){
+      if(token!==state.searchToken) return null;
+
+      const seed=(baseSeed+Math.imul(attempt+1,0x9E3779B1))>>>0;
+      const params=candidateParams(snapshot,seed,false);
+      const result=simulateCandidate(snapshot,params);
+
+      if(result.exact){
+        const score=candidateEnergy(params);
+        if(!best || score>best.score){
+          best={params,score,attempt:attempt+1,mode:'searched'};
+        }
+        if(score>43 || attempt>=28) break;
+      }
+
+      if(attempt%4===3){
+        await new Promise(resolve=>setTimeout(resolve,0));
+      }
+    }
+
+    if(token!==state.searchToken) return null;
+
+    if(!best){
+      for(let tries=0;tries<12;tries++){
+        const seed=(baseSeed+0x85EBCA6B+tries*101)>>>0;
+        const params=candidateParams(snapshot,seed,true);
+        const result=simulateCandidate(snapshot,params);
+        if(result.exact){
+          best={params,score:candidateEnergy(params),attempt:maxAttempts+tries+1,mode:'safe'};
+          break;
+        }
+      }
+    }
+
+    state.searchRunning=false;
+    return best;
+  }
+
+  function applyReplay(snapshot,solution){
+    if(!solution||!state.ready) return;
+
     snapshot.forEach((d,i)=>{
       const die=state.dice[i];
-      if(!die||d.value==null||d.locked) return;
-      if(force || d.value!==state.lastSnapshot[i]?.value || state.lastSnapshot[i]?.rolling){
-        randomToss(die,i,d.value);
-        count++;
+      const body=die.body;
+      die.target=Number(d.value)||1;
+
+      if(d.locked){
+        body.velocity.set(0,0,0);
+        body.angularVelocity.set(0,0,0);
+        body.type=CANNON.Body.STATIC;
+        body.mass=0;
+        body.updateMassProperties();
+        return;
       }
+
+      const p=solution.params[i];
+      body.type=CANNON.Body.DYNAMIC;
+      body.mass=1;
+      body.updateMassProperties();
+      body.position.set(p.position.x,p.position.y,p.position.z);
+      body.velocity.set(p.velocity.x,p.velocity.y,p.velocity.z);
+      body.angularVelocity.set(p.angularVelocity.x,p.angularVelocity.y,p.angularVelocity.z);
+      body.quaternion.set(p.quaternion.x,p.quaternion.y,p.quaternion.z,p.quaternion.w);
+      body.linearDamping=.08;
+      body.angularDamping=.08;
+      body.wakeUp();
     });
-    if(count){
-      setStatus(`würfelt ${count}…`);
-      setTimeout(()=>setStatus('bereit'),2100);
+
+    setStatus(solution.mode==='safe'?'validierter Safe-Throw':'validierter Throw');
+    setTimeout(()=>setStatus('bereit'),2900);
+
+    clearTimeout(state.replayCheckTimer);
+    state.replayCheckTimer=setTimeout(()=>{
+      const drift=[];
+      snapshot.forEach((d,i)=>{
+        if(d.locked) return;
+        const got=topValueFromQuaternion(state.dice[i].body.quaternion);
+        if(got!==Number(d.value)) drift.push(`${i+1}:${got}≠${d.value}`);
+      });
+
+      if(drift.length){
+        setStatus('⚠ Replay-Drift');
+        console.warn('[Würfelduell 3D Dice] Replay drift:',drift.join(', '));
+      }
+    },3800);
+  }
+
+  async function tossFromSnapshot(snapshot,force=false){
+    if(!state.ready||!state.enabled||!inLab()||state.searchRunning) return;
+    if(!snapshot.some(d=>!d.locked&&d.value!=null)) return;
+
+    const solution=await searchThrow(snapshot);
+
+    if(!solution){
+      setStatus('kein Seed gefunden');
+      setTimeout(()=>setStatus('bereit'),1300);
+      return;
     }
+
+    applyReplay(snapshot,solution);
   }
 
   function signature(snapshot){
@@ -428,6 +638,13 @@ if(!bridge){
       die.locked=!!d.locked;
       die.selected=!!d.selected;
 
+      if(!d.locked && die.body.type===CANNON.Body.STATIC){
+        die.body.type=CANNON.Body.DYNAMIC;
+        die.body.mass=1;
+        die.body.updateMassProperties();
+        die.body.wakeUp();
+      }
+
       const edgeMat=die.edges.material;
       if(d.locked){
         edgeMat.color.set(0xffd866);
@@ -442,8 +659,8 @@ if(!bridge){
       die.mesh.scale.setScalar(d.selected&&!d.locked?1.055:1);
     });
 
-    if(force && snap.some(d=>d.value!=null)) tossFromSnapshot(snap,true);
-    else if(finalized || firstValues) tossFromSnapshot(snap,false);
+    if(force && snap.some(d=>d.value!=null)) void tossFromSnapshot(snap,true);
+    else if(finalized || firstValues) void tossFromSnapshot(snap,false);
 
     state.lastSnapshot=snap.map(d=>({...d}));
   }
@@ -492,6 +709,8 @@ if(!bridge){
     wrap.innerHTML=`
       <button type="button" class="secondary" id="testLab3dToggle">🎲 3D Dice Tray: AN</button>
       <button type="button" class="secondary" id="testLab3dThrow">🧪 Physik-Wurf testen</button>
+      <button type="button" class="secondary" id="testLab3dLock">🔒 Auswahl locken</button>
+      <button type="button" class="secondary" id="testLab3dUnlock">🔓 Locks lösen</button>
     `;
     body.appendChild(wrap);
 
@@ -507,13 +726,26 @@ if(!bridge){
 
     wrap.querySelector('#testLab3dThrow').addEventListener('click',()=>{
       const snap=bridge.snapshot();
-      // Pure visual preview: does not change the actual Würfelduell result.
-      const visual=snap.map((d,i)=>({
-        ...d,
-        value:d.value??(Math.random()<.5?5:6),
-        locked:false
-      }));
-      tossFromSnapshot(visual,true);
+      if(!snap.some(d=>d.value!=null)){
+        setStatus('erst normal würfeln');
+        setTimeout(()=>setStatus('bereit'),1100);
+        return;
+      }
+      void tossFromSnapshot(snap,true);
+    });
+
+    wrap.querySelector('#testLab3dLock').addEventListener('click',()=>{
+      if(!bridge.lockSelected()){
+        setStatus('erst Würfel auswählen');
+        setTimeout(()=>setStatus('bereit'),1100);
+      }else{
+        setTimeout(()=>syncState(false),0);
+      }
+    });
+
+    wrap.querySelector('#testLab3dUnlock').addEventListener('click',()=>{
+      bridge.clearLocks();
+      setTimeout(()=>syncState(false),0);
     });
   }
 

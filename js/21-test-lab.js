@@ -270,6 +270,19 @@
       el.click();
       return true;
     },
+    lockSelected(){
+      if(!inLab()) return false;
+      const btn=document.getElementById('lockBtn');
+      if(!btn || btn.classList.contains('hidden') || btn.disabled) return false;
+      btn.click();
+      return true;
+    },
+    clearLocks(){
+      if(!inLab() || !Array.isArray(dice)) return false;
+      dice.forEach(d=>{d.locked=false;d.selected=false;});
+      try{renderDice();updateButtons();}catch(_err){}
+      return true;
+    },
     requestRender(){
       try{renderDice();updateButtons();return true;}catch(_err){return false;}
     }
