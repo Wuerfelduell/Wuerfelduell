@@ -42,6 +42,22 @@
   function sourceStyle(index){
     try{return knownStyle(players?.[Number(index)]?.attackFx||"classic");}catch(_){return "classic";}
   }
+
+  function labFxColor(style){
+    return {
+      classic:['#9ee8ff','#3aa8ff'],
+      lightning:['#e9fdff','#57cfff'],
+      flame:['#ff6b6b','#b60020'],
+      venom:['#aaff88','#28c954'],
+      blood:['#ff6a79','#8d001c'],
+      jackpot:['#ffe58a','#e8a82e'],
+      void:['#c990ff','#5d27b8'],
+      confetti:['#ffffff','#ff78d7'],
+      frost:['#e8ffff','#65cffa'],
+      rift:['#d5a5ff','#42d9ff'],
+      crown:['#fff1a8','#ffc43d']
+    }[style]||['#ffffff','#77bfff'];
+  }
   function easeOutCubic(t){return 1-Math.pow(1-t,3)}
   function easeInOut(t){return t<.5?2*t*t:1-Math.pow(-2*t+2,2)/2}
   function lerp(a,b,t){return a+(b-a)*t}
@@ -959,6 +975,152 @@
     setTimeout(()=>addKillFx(resolved,src,dst,false),210);
     return true;
   }
+
+
+  // Main-game Hot Dice canvas. Test Lab keeps its own preview renderer.
+  const hotCanvas=document.createElement("canvas");
+  hotCanvas.id="hotDiceFireCanvasMain";
+  hotCanvas.setAttribute("aria-hidden","true");
+  hotCanvas.style.cssText="position:fixed;inset:0;width:100vw;height:100vh;pointer-events:none;z-index:0;";
+  domLayer.appendChild(hotCanvas);
+  const hotCtx=hotCanvas.getContext("2d");
+  let hotParticles=[];
+  let hotLast=performance.now();
+
+  function inTestLab(){
+    try{return gameContext?.mode==="test-lab";}catch(_){return false;}
+  }
+
+  function resizeHot(){
+    const dpr=Math.min(2,window.devicePixelRatio||1);
+    const w=Math.max(1,window.innerWidth),h=Math.max(1,window.innerHeight);
+    if(hotCanvas.width!==Math.round(w*dpr)||hotCanvas.height!==Math.round(h*dpr)){
+      hotCanvas.width=Math.round(w*dpr);hotCanvas.height=Math.round(h*dpr);
+      hotCanvas.style.width=w+"px";hotCanvas.style.height=h+"px";
+      hotCtx.setTransform(dpr,0,0,dpr,0,0);
+    }
+  }
+
+  function hotLevel(){
+    if(inTestLab()) return 0;
+    try{
+      const streak=Number(players?.[current]?.hotDiceStreak)||0;
+      return streak>=5?5:streak>=4?4:streak>=3?3:0;
+    }catch(_){return 0;}
+  }
+
+  function spawnHotFlame(r,level){
+    const center=r.left+r.width*(.2+Math.random()*.6);
+    const baseY=r.bottom-r.height*(.04+Math.random()*.12);
+    const strength=level>=5?1.22:level>=4?1.05:.9;
+    hotParticles.push({
+      x:center,y:baseY,
+      vx:(Math.random()-.5)*12,
+      vy:-(28+Math.random()*30)*strength,
+      life:0,
+      ttl:.52+Math.random()*.34,
+      width:(3.2+Math.random()*3.8)*strength,
+      height:(14+Math.random()*14)*strength,
+      sway:(Math.random()-.5)*18,
+      phase:Math.random()*Math.PI*2,
+      level
+    });
+  }
+
+  function spawnHot(dt,level){
+    const dice=[...document.querySelectorAll('#dice .die')].filter(el=>el.offsetParent!==null);
+    if(!dice.length||level<3) return;
+    const pps=level>=5?6.5:level>=4?4.8:3.4;
+    const chance=Math.min(.35,(dt/1000)*pps);
+    for(const die of dice){
+      const r=die.getBoundingClientRect();
+      if(Math.random()<chance) spawnHotFlame(r,level);
+      if(level>=5&&Math.random()<chance*.22) spawnHotFlame(r,level);
+    }
+    if(hotParticles.length>85) hotParticles.splice(0,hotParticles.length-85);
+  }
+
+  function drawHotFlame(p){
+    const t=p.life/p.ttl;
+    const fade=Math.sin(Math.min(1,t)*Math.PI);
+    const sway=Math.sin(p.phase+p.life*8.1)*p.sway*(.10+t*.50);
+    const bend=Math.sin(p.phase*.8+p.life*4.7)*p.width*.85;
+    const x=p.x+sway;
+    const y=p.y;
+    const h=p.height*(.72+t*.74);
+    const w=p.width*(1-t*.34);
+
+    hotCtx.save();
+    hotCtx.translate(x,y);
+    hotCtx.globalCompositeOperation='lighter';
+
+    const outer=hotCtx.createLinearGradient(0,4,0,-h);
+    outer.addColorStop(0,'rgba(90,0,14,0)');
+    outer.addColorStop(.10,`rgba(125,0,18,${.12*fade})`);
+    outer.addColorStop(.32,`rgba(210,5,31,${.24*fade})`);
+    outer.addColorStop(.56,`rgba(255,38,58,${.29*fade})`);
+    outer.addColorStop(.76,`rgba(255,105,118,${.20*fade})`);
+    outer.addColorStop(.91,`rgba(255,195,200,${.08*fade})`);
+    outer.addColorStop(1,'rgba(255,225,228,0)');
+    hotCtx.fillStyle=outer;
+
+    hotCtx.beginPath();
+    hotCtx.moveTo(-w*.9,2);
+    hotCtx.bezierCurveTo(-w*1.12,-h*.16,-w*.72,-h*.40,-w*.34,-h*.57);
+    hotCtx.bezierCurveTo(-w*.05,-h*.70,bend*.15,-h*.84,bend,-h);
+    hotCtx.bezierCurveTo(w*.28,-h*.82,w*.78,-h*.57,w*.96,-h*.30);
+    hotCtx.bezierCurveTo(w*1.10,-h*.10,w*.72,1,w*.20,3);
+    hotCtx.bezierCurveTo(-w*.16,4,-w*.60,4,-w*.9,2);
+    hotCtx.fill();
+
+    const side=Math.sin(p.phase)>0?1:-1;
+    const sh=h*(.43+.10*Math.sin(p.phase*1.6));
+    hotCtx.globalAlpha=.68;
+    hotCtx.beginPath();
+    hotCtx.moveTo(side*w*.15,1);
+    hotCtx.bezierCurveTo(side*w*.42,-sh*.16,side*w*.74,-sh*.40,side*w*.58,-sh*.62);
+    hotCtx.bezierCurveTo(side*w*.44,-sh*.78,side*w*.18,-sh*.90,side*w*.03,-sh);
+    hotCtx.bezierCurveTo(side*(-w*.06),-sh*.66,side*(-w*.01),-sh*.22,side*w*.15,1);
+    hotCtx.fill();
+
+    if(p.level>=4){
+      const inner=hotCtx.createLinearGradient(0,0,0,-h*.68);
+      inner.addColorStop(0,'rgba(255,55,72,0)');
+      inner.addColorStop(.34,`rgba(255,82,98,${.08*fade})`);
+      inner.addColorStop(.62,`rgba(255,150,158,${.10*fade})`);
+      inner.addColorStop(1,'rgba(255,228,230,0)');
+      hotCtx.globalAlpha=.86;
+      hotCtx.fillStyle=inner;
+      hotCtx.beginPath();
+      hotCtx.moveTo(-w*.23,0);
+      hotCtx.bezierCurveTo(-w*.18,-h*.18,-w*.06,-h*.38,bend*.10,-h*.62);
+      hotCtx.bezierCurveTo(w*.16,-h*.39,w*.27,-h*.18,w*.23,0);
+      hotCtx.closePath();
+      hotCtx.fill();
+    }
+    hotCtx.restore();
+  }
+
+  function hotFrame(now){
+    resizeHot();
+    const dt=Math.min(34,now-hotLast);hotLast=now;
+    const level=hotLevel();
+    if(level>=3) spawnHot(dt,level);
+
+    hotCtx.clearRect(0,0,window.innerWidth,window.innerHeight);
+    const sec=dt/1000;
+    hotParticles=hotParticles.filter(p=>{
+      p.life+=sec;
+      if(p.life>=p.ttl) return false;
+      p.x+=p.vx*sec;
+      p.y+=p.vy*sec;
+      p.vx*=.992;
+      drawHotFlame(p);
+      return true;
+    });
+    requestAnimationFrame(hotFrame);
+  }
+  requestAnimationFrame(hotFrame);
 
   function frame(now){
     resize();
