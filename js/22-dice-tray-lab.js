@@ -431,29 +431,40 @@ if(!bridge){
       if(safe){
         const q=targetUpQuaternion(value,rng,.015);
         return {
-          position:{x:(i-2)*1.62,y:.48+(i%2)*.06,z:-1.3+(i%2)*2.35},
-          velocity:{x:(i%2?-.65:.65)+(rng()-.5)*.15,y:-.25,z:(rng()-.5)*.25},
-          angularVelocity:{x:0,y:(rng()<.5?-1:1)*(6.5+rng()*3.5),z:0},
+          position:{x:(i-2)*1.62,y:1.55+(i%2)*.12,z:-1.3+(i%2)*2.35},
+          velocity:{x:(i%2?-.75:.75)+(rng()-.5)*.22,y:-.35,z:.9+(rng()-.5)*.35},
+          angularVelocity:{
+            x:(rng()<.5?-1:1)*(5.8+rng()*2.6),
+            y:(rng()<.5?-1:1)*(4.5+rng()*2.8),
+            z:(rng()<.5?-1:1)*(5.6+rng()*2.5)
+          },
           quaternion:{x:q.x,y:q.y,z:q.z,w:q.w}
         };
       }
 
-      const q=targetUpQuaternion(value,rng,.28+.20*rng());
+      const q=targetUpQuaternion(value,rng,.34+.22*rng());
+
+      // V27.7.6: visibly tumbling throw.
+      // X/Z get enough angular speed for ~2-3 obvious flips before settling.
+      const spinX=(rng()<.5?-1:1)*(8.5+rng()*5.5);
+      const spinZ=(rng()<.5?-1:1)*(8.0+rng()*5.0);
+      const spinY=(rng()<.5?-1:1)*(4.0+rng()*5.5);
+
       return {
         position:{
-          x:-3.35+i*1.68+(rng()-.5)*.30,
-          y:3.45+rng()*1.75+(i%2)*.12,
-          z:-1.45+rng()*1.05
+          x:-3.55+i*1.72+(rng()-.5)*.34,
+          y:4.15+rng()*1.95+(i%2)*.16,
+          z:-1.75+rng()*1.10
         },
         velocity:{
-          x:(rng()-.5)*1.6,
-          y:-.9-rng()*1.15,
-          z:2.0+rng()*2.6
+          x:(rng()-.5)*2.35,
+          y:-.65-rng()*1.05,
+          z:2.8+rng()*3.2
         },
         angularVelocity:{
-          x:(rng()-.5)*4.4,
-          y:(rng()<.5?-1:1)*(5.2+rng()*6.2),
-          z:(rng()-.5)*4.4
+          x:spinX,
+          y:spinY,
+          z:spinZ
         },
         quaternion:{x:q.x,y:q.y,z:q.z,w:q.w}
       };
@@ -473,8 +484,8 @@ if(!bridge){
       body.velocity.set(p.velocity.x,p.velocity.y,p.velocity.z);
       body.angularVelocity.set(p.angularVelocity.x,p.angularVelocity.y,p.angularVelocity.z);
       body.quaternion.set(p.quaternion.x,p.quaternion.y,p.quaternion.z,p.quaternion.w);
-      body.linearDamping=.08;
-      body.angularDamping=.08;
+      body.linearDamping=.07;
+      body.angularDamping=.055;
       body.wakeUp();
     });
   }
@@ -483,7 +494,7 @@ if(!bridge){
     const validation=makeValidationWorld(snapshot);
     loadCandidate(validation,snapshot,params);
 
-    for(let step=0;step<216;step++) validation.world.step(1/60);
+    for(let step=0;step<246;step++) validation.world.step(1/60);
 
     const values=validation.bodies.map((body,i)=>
       snapshot[i].locked ? Number(snapshot[i].value)||1 : topValueFromQuaternion(body.quaternion)
@@ -508,10 +519,10 @@ if(!bridge){
   async function searchThrow(snapshot){
     const token=++state.searchToken;
     state.searchRunning=true;
-    setStatus('berechnet Physik…');
+    setStatus('sucht Tumble-Seed…');
 
     let best=null;
-    const maxAttempts=52;
+    const maxAttempts=72;
     const baseSeed=(Date.now()^Math.floor(Math.random()*0x7fffffff))>>>0;
 
     for(let attempt=0;attempt<maxAttempts;attempt++){
