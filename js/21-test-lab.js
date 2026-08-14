@@ -248,6 +248,33 @@
     };
   }
 
+
+  // V27.7.4 — strict Test-Lab bridge for the optional 3D dice tray.
+  // The 3D module never owns game RNG. It only reads the already-determined
+  // Würfelduell results and mirrors selection clicks back into the normal UI.
+  window.WDTestLabDiceBridge={
+    isActive:()=>inLab(),
+    snapshot:()=>Array.isArray(dice)?dice.map((d,index)=>({
+      index,
+      value:d?.value==null?null:Number(d.value),
+      locked:!!d?.locked,
+      selected:!!d?.selected,
+      rolling:!!d?.rolling
+    })):[],
+    playerIndex:()=>Number(current)||0,
+    diceDesign:()=>String(players?.[0]?.diceDesign||'classic'),
+    select(index){
+      if(!inLab()) return false;
+      const el=document.querySelector(`#dice .die:nth-child(${Number(index)+1})`);
+      if(!el) return false;
+      el.click();
+      return true;
+    },
+    requestRender(){
+      try{renderDice();updateButtons();return true;}catch(_err){return false;}
+    }
+  };
+
   // -------------------------------------------------
   // V27.6.8 — LAB ONLY: premium visual FX playground
   // -------------------------------------------------
