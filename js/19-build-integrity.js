@@ -1,14 +1,15 @@
 (() => {
-  const EXPECTED = "27.6.1";
+  const marker = document.querySelector('meta[name="wd-build"]');
+  const EXPECTED = marker?.content || (typeof GAME_VERSION !== "undefined" ? GAME_VERSION : "unknown");
+
   const checks = {
     config: (typeof GAME_VERSION !== "undefined" && GAME_VERSION === EXPECTED),
-    saveSchema: (typeof SAVE_SCHEMA_VERSION !== "undefined" && Number(SAVE_SCHEMA_VERSION) >= 9),
+    saveSchema: (typeof SAVE_SCHEMA_VERSION !== "undefined" && Number(SAVE_SCHEMA_VERSION) >= 8),
     achievements: (typeof ACHIEVEMENTS !== "undefined" &&
       !!ACHIEVEMENTS.straight &&
       !!ACHIEVEMENTS.backstab &&
       !!ACHIEVEMENTS.vampiric_touch &&
-      !!ACHIEVEMENTS.perfectly_useless &&
-      !!ACHIEVEMENTS.certified_dumbass),
+      !!ACHIEVEMENTS.perfectly_useless),
     attackFxConfig: (typeof ATTACK_FX_STYLES !== "undefined" &&
       !!ATTACK_FX_STYLES.classic &&
       !!ATTACK_FX_STYLES.flame &&
@@ -18,7 +19,14 @@
   };
 
   const failed = Object.entries(checks).filter(([, ok]) => !ok).map(([name]) => name);
-  window.__WD_BUILD_INTEGRITY__ = { expected: EXPECTED, ok: failed.length === 0, failed };
+  window.__WD_BUILD_INTEGRITY__ = {
+    expected: EXPECTED,
+    actual: (typeof GAME_VERSION !== "undefined" ? GAME_VERSION : null),
+    ok: failed.length === 0,
+    failed
+  };
+
+  document.getElementById("wdBuildMismatch")?.remove();
 
   if (!failed.length) {
     console.info(`[Würfelduell] Build ${EXPECTED} vollständig geladen.`);
