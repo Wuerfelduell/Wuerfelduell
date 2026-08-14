@@ -60,6 +60,29 @@ if(!bridge){
     try{return !!bridge.isActive();}catch(_){return false;}
   }
 
+  function isPhysicsBusy(){
+    return !!(
+      state.solveRunning ||
+      (state.playback && !state.playback.done)
+    );
+  }
+
+  window.WDTestLabDicePhysics={
+    isBusy:()=>isPhysicsBusy(),
+    isReady:()=>!isPhysicsBusy(),
+    waitUntilReady(timeoutMs=7000){
+      return new Promise(resolve=>{
+        const started=performance.now();
+        const tick=()=>{
+          if(!isPhysicsBusy()) return resolve(true);
+          if(performance.now()-started>timeoutMs) return resolve(false);
+          setTimeout(tick,40);
+        };
+        tick();
+      });
+    }
+  };
+
   function makeCanvasTexture(value,theme){
     const size=256;
     const canvas=document.createElement('canvas');
@@ -252,10 +275,10 @@ if(!bridge){
       body.addShape(new CANNON.Box(new CANNON.Vec3(hx,hy,hz)));
       body.position.set(x,y,z);world.addBody(body);
     }
-    wall(0,-.35,-3.25,5.55,.65,.18);
-    wall(0,-.35, 3.25,5.55,.65,.18);
-    wall(-5.4,-.35,0,.18,.65,3.25);
-    wall( 5.4,-.35,0,.18,.65,3.25);
+    wall(0,1.15,-3.25,5.55,2.15,.18);
+    wall(0,1.15, 3.25,5.55,2.15,.18);
+    wall(-5.4,1.15,0,.18,2.15,3.25);
+    wall( 5.4,1.15,0,.18,2.15,3.25);
 
     const design=bridge.diceDesign();
     state.lastDesign=design;
@@ -425,10 +448,10 @@ if(!bridge){
       world.addBody(body);
     }
 
-    wall(0,-.35,-3.25,5.55,.65,.18);
-    wall(0,-.35, 3.25,5.55,.65,.18);
-    wall(-5.4,-.35,0,.18,.65,3.25);
-    wall( 5.4,-.35,0,.18,.65,3.25);
+    wall(0,1.15,-3.25,5.55,2.15,.18);
+    wall(0,1.15, 3.25,5.55,2.15,.18);
+    wall(-5.4,1.15,0,.18,2.15,3.25);
+    wall( 5.4,1.15,0,.18,2.15,3.25);
 
     const die=new CANNON.Body({
       mass:1,
@@ -494,7 +517,7 @@ if(!bridge){
           Math.min(m,Math.hypot(candidate.x-p.x,candidate.z-p.z)),Infinity
         );
 
-        if(minDist>1.12 || attempt===11){
+        if(minDist>1.28 || attempt===11){
           chosen=candidate;
           break;
         }
@@ -608,6 +631,7 @@ if(!bridge){
     let bounceHeight=0;
     let groundTouches=0;
     let wasNearGround=false;
+    let escapedSafeArea=false;
 
     for(let step=0;step<SOLVE_STEPS;step++){
       world.step(FIXED_DT);
@@ -620,6 +644,11 @@ if(!bridge){
       previousQ=q;
 
       bounceHeight=Math.max(bounceHeight,die.position.y);
+
+      // Hard safety envelope inside the visible tray rails.
+      if(Math.abs(die.position.x)>4.72 || Math.abs(die.position.z)>2.62 || die.position.y<-1.15){
+        escapedSafeArea=true;
+      }
 
       const nearGround=die.position.y<-.37;
       if(nearGround&&!wasNearGround) groundTouches++;
@@ -650,7 +679,7 @@ if(!bridge){
     });
 
     const result=topValueFromQuaternion(die.quaternion);
-    const exact=result===Number(target);
+    const exact=result===Number(target) && !escapedSafeArea;
 
     // Visual quality:
     // angularTravel ~ 4π means about two full visible turns.
@@ -672,11 +701,13 @@ if(!bridge){
       rotations,
       groundTouches,
       landingDistance,
+      finalPosition:{x:die.position.x,y:die.position.y,z:die.position.z},
+      escapedSafeArea,
       quality
     };
   }
 
-  async function solveOneDie(target,index,landing,token){
+  async function solveOneDie(target,index,landing,forbiddenFinals,token){
     const baseSeed=(
       Date.now()
       ^Math.imul(index+1,0x45D9F3B)
@@ -685,14 +716,24 @@ if(!bridge){
 
     let best=null;
 
+    function finalHasRoom(result){
+      if(!result?.finalPosition) return false;
+      return (forbiddenFinals||[]).every(p=>
+        Math.hypot(
+          result.finalPosition.x-p.x,
+          result.finalPosition.z-p.z
+        )>=1.18
+      );
+    }
+
     for(let attempt=0;attempt<MAX_ATTEMPTS_PER_DIE;attempt++){
-      if(token!==state.solveToken) return null;
+      if(token!==state.solveToken){ state.solveRunning=false; return null; }
 
       const seed=(baseSeed+Math.imul(attempt+1,0x9E3779B1))>>>0;
       const candidate=makeCandidate(target,index,seed,landing,false);
       const result=simulateAndRecord(target,index,candidate,landing);
 
-      if(result.exact){
+      if(result.exact && finalHasRoom(result)){
         if(!best||result.quality>best.quality){
           best={
             ...result,
@@ -718,13 +759,13 @@ if(!bridge){
     // Reliable physics fallback per die. Still simulated and recorded;
     // no end rotation and no replay physics.
     for(let attempt=0;attempt<18;attempt++){
-      if(token!==state.solveToken) return null;
+      if(token!==state.solveToken){ state.solveRunning=false; return null; }
 
       const seed=(baseSeed+0x85EBCA6B+attempt*113)>>>0;
       const candidate=makeCandidate(target,index,seed,landing,true);
       const result=simulateAndRecord(target,index,candidate,landing);
 
-      if(result.exact){
+      if(result.exact && finalHasRoom(result)){
         return {
           ...result,
           candidate,
@@ -744,7 +785,7 @@ if(!bridge){
   async function solveSnapshot(snapshot){
     const token=++state.solveToken;
     state.solveRunning=true;
-    setStatus('berechnet 5 Trajektorien…');
+    setStatus('⏳ berechnet Trajektorien…');
 
     const solved=new Array(5).fill(null);
 
@@ -760,8 +801,16 @@ if(!bridge){
     state.landingPlan=landingPlan;
 
     // Solve one die after another to keep mobile CPU spikes modest.
+    // Actual final positions are also separation constraints for later dice.
+    const occupiedFinals=[];
+    solveSnapshot.forEach((d,i)=>{
+      if(!d.locked) return;
+      const mesh=state.dice[i]?.mesh;
+      if(mesh) occupiedFinals.push({x:mesh.position.x,z:mesh.position.z});
+    });
+
     for(let i=0;i<solveSnapshot.length;i++){
-      if(token!==state.solveToken) return null;
+      if(token!==state.solveToken){ state.solveRunning=false; return null; }
       const d=solveSnapshot[i];
 
       if(d.locked || d.value==null){
@@ -774,9 +823,9 @@ if(!bridge){
       }
 
       setStatus(`Solver ${i+1}/5 · Ziel ${d.value}`);
-      const result=await solveOneDie(Number(d.value),i,landingPlan[i],token);
+      const result=await solveOneDie(Number(d.value),i,landingPlan[i],occupiedFinals,token);
 
-      if(token!==state.solveToken) return null;
+      if(token!==state.solveToken){ state.solveRunning=false; return null; }
       if(!result){
         console.warn(`[Würfelduell 3D Dice] Kein Pfad für Würfel ${i+1}, Ziel ${d.value}`);
         state.solveRunning=false;
@@ -789,11 +838,17 @@ if(!bridge){
         frames:result.frames,
         rotations:result.rotations,
         quality:result.quality,
-        mode:result.mode
+        mode:result.mode,
+        finalPosition:result.finalPosition
       };
+
+      occupiedFinals.push({
+        x:result.finalPosition.x,
+        z:result.finalPosition.z
+      });
     }
 
-    if(token!==state.solveToken) return null;
+    if(token!==state.solveToken){ state.solveRunning=false; return null; }
     state.solveRunning=false;
 
     return {

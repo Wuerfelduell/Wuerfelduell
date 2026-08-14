@@ -1412,4 +1412,59 @@
       hotDemoLevel=0;fireParticles=[];activeLabFx=[];activeKillFx=[];labHpSnapshot=[];lastLabAttack={source:null,target:null,style:null,at:0};
     });
   });
+
+  // V27.7.9 — Test-Lab bot must wait for the visible 3D throw.
+  // Wrapped lazily because the core bot function is defined outside this file.
+  function installPhysicsBotGate(){
+    if(window.__wdPhysicsBotGateInstalled) return;
+
+    const waitPhysicsThen=(fn,args,ctx)=>{
+      const physics=window.WDTestLabDicePhysics;
+      if(!inLab() || !physics?.isBusy?.()){
+        return fn.apply(ctx,args);
+      }
+
+      physics.waitUntilReady(7000).then(()=>{
+        if(inLab()) fn.apply(ctx,args);
+      });
+      return undefined;
+    };
+
+    // Try known global bot entry points without touching core files.
+    for(const name of ['botTurn','runBotTurn','takeBotTurn','doBotTurn','scheduleBotTurn']){
+      const original=window[name];
+      if(typeof original!=='function' || original.__wdPhysicsGated) continue;
+
+      const wrapped=function(...args){
+        return waitPhysicsThen(original,args,this);
+      };
+      wrapped.__wdPhysicsGated=true;
+      wrapped.__wdPhysicsOriginal=original;
+      window[name]=wrapped;
+      window.__wdPhysicsBotGateInstalled=true;
+    }
+  }
+
+  setInterval(()=>{
+    if(inLab()) installPhysicsBotGate();
+  },120);
+
+
+  document.addEventListener('click',ev=>{
+    if(!inLab()) return;
+    const physics=window.WDTestLabDicePhysics;
+    if(!physics?.isBusy?.()) return;
+
+    // Human taps remain allowed (locking/selecting). Only suppress script-generated
+    // clicks while the 3D animation is still running.
+    if(ev.isTrusted) return;
+
+    const target=ev.target;
+    if(!(target instanceof HTMLElement)) return;
+    if(target.closest('#testLabWorkbench,#testLab3dDiceTray')) return;
+
+    ev.preventDefault();
+    ev.stopImmediatePropagation();
+  },true);
+
 })();
