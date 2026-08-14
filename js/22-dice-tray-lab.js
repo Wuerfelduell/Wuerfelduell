@@ -20,9 +20,10 @@ if(!bridge){
     lastDesign:'',
     lastRollSignature:'',
     forceSnapTimers:[],
-    searchToken:0,
-    searchRunning:false,
-    replayCheckTimer:null,
+    solveToken:0,
+    solveRunning:false,
+    queuedSnapshot:null,
+    playback:null,
     animationId:0,
     lastTime:performance.now(),
     resizeObserver:null
@@ -135,12 +136,12 @@ if(!bridge){
       <div class="test-lab-3d-head">
         <div>
           <strong>🎲 Physics Dice Tray</strong>
-          <small>Three.js + cannon-es · Precomputed Physics V2</small>
+          <small>Three.js + cannon-es · Trajectory Solver V3</small>
         </div>
         <div class="test-lab-3d-status" id="testLab3dStatus">initialisiere…</div>
       </div>
       <div class="test-lab-3d-stage" id="testLab3dStage"></div>
-      <div class="test-lab-3d-hint">3D-Würfel antippen = auswählen · validierte Physik ohne End-Snap · Locks bleiben beim nächsten Wurf liegen</div>
+      <div class="test-lab-3d-hint">3D-Würfel antippen = auswählen · physisch berechnete Trajektorien · kein Replay-Drift · Locks bleiben liegen</div>
     `;
     diceDom.parentNode.insertBefore(tray,diceDom);
     state.tray=tray;
@@ -330,6 +331,10 @@ if(!bridge){
   }
 
   const DIE_HALF=.50;
+  const FIXED_DT=1/60;
+  const SOLVE_STEPS=210;       // 3.5 s simulated time
+  const RECORD_EVERY=2;        // 30 fps trajectory
+  const MAX_ATTEMPTS_PER_DIE=42;
 
   function mulberry32(seed){
     let a=seed>>>0;
@@ -346,42 +351,60 @@ if(!bridge){
     let bestValue=1,bestY=-Infinity;
     for(const [value,normal] of Object.entries(NORMAL_BY_VALUE)){
       const y=normal.clone().applyQuaternion(tq).y;
-      if(y>bestY){bestY=y;bestValue=Number(value);}
+      if(y>bestY){
+        bestY=y;
+        bestValue=Number(value);
+      }
     }
     return bestValue;
   }
 
-  function targetUpQuaternion(value,rng,tiltMax=.36){
+  function targetUpQuaternion(value,rng,tiltMax=.45){
     const normal=NORMAL_BY_VALUE[Number(value)]||NORMAL_BY_VALUE[1];
     const align=new THREE.Quaternion().setFromUnitVectors(normal,new THREE.Vector3(0,1,0));
-    const yaw=new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0,1,0),rng()*Math.PI*2);
+    const yaw=new THREE.Quaternion().setFromAxisAngle(
+      new THREE.Vector3(0,1,0),
+      rng()*Math.PI*2
+    );
+
     const axis=new THREE.Vector3(rng()-.5,0,rng()-.5);
     if(axis.lengthSq()<.001) axis.set(1,0,0);
     axis.normalize();
-    const tilt=new THREE.Quaternion().setFromAxisAngle(axis,(rng()-.5)*2*tiltMax);
+
+    const tilt=new THREE.Quaternion().setFromAxisAngle(
+      axis,
+      (rng()-.5)*2*tiltMax
+    );
+
     return yaw.multiply(tilt).multiply(align);
   }
 
-  function makeValidationWorld(snapshot){
-    const world=new CANNON.World({gravity:new CANNON.Vec3(0,-22,0),allowSleep:true});
+  function createSingleDieWorld(){
+    const world=new CANNON.World({
+      gravity:new CANNON.Vec3(0,-22,0),
+      allowSleep:true
+    });
     world.broadphase=new CANNON.SAPBroadphase(world);
     world.solver.iterations=12;
     world.solver.tolerance=.001;
 
-    const floorMaterial=new CANNON.Material('tray-v');
-    const diceMaterial=new CANNON.Material('dice-v');
+    const floorMaterial=new CANNON.Material('tray-solver');
+    const diceMaterial=new CANNON.Material('die-solver');
 
-    world.addContactMaterial(new CANNON.ContactMaterial(diceMaterial,floorMaterial,{
-      friction:.42,restitution:.32,contactEquationStiffness:1e8
-    }));
-    world.addContactMaterial(new CANNON.ContactMaterial(diceMaterial,diceMaterial,{
-      friction:.28,restitution:.38,contactEquationStiffness:1e8
-    }));
+    world.addContactMaterial(new CANNON.ContactMaterial(
+      diceMaterial,
+      floorMaterial,
+      {
+        friction:.43,
+        restitution:.34,
+        contactEquationStiffness:1e8
+      }
+    ));
 
-    const floorBody=new CANNON.Body({mass:0,material:floorMaterial});
-    floorBody.addShape(new CANNON.Box(new CANNON.Vec3(5.35,.22,3.35)));
-    floorBody.position.set(0,-1.26,0);
-    world.addBody(floorBody);
+    const floor=new CANNON.Body({mass:0,material:floorMaterial});
+    floor.addShape(new CANNON.Box(new CANNON.Vec3(5.35,.22,3.35)));
+    floor.position.set(0,-1.26,0);
+    world.addBody(floor);
 
     function wall(x,y,z,hx,hy,hz){
       const body=new CANNON.Body({mass:0,material:floorMaterial});
@@ -395,236 +418,393 @@ if(!bridge){
     wall(-5.4,-.35,0,.18,.65,3.25);
     wall( 5.4,-.35,0,.18,.65,3.25);
 
-    const bodies=[];
-    snapshot.forEach((d,i)=>{
-      const live=state.dice[i]?.body;
-      const body=new CANNON.Body({
-        mass:d.locked?0:1,
-        material:diceMaterial,
-        linearDamping:.08,
-        angularDamping:.08,
-        allowSleep:true,
-        sleepSpeedLimit:.16,
-        sleepTimeLimit:.65
-      });
-      body.addShape(new CANNON.Box(new CANNON.Vec3(DIE_HALF,DIE_HALF,DIE_HALF)));
-
-      if(d.locked && live){
-        body.position.copy(live.position);
-        body.quaternion.copy(live.quaternion);
-        body.type=CANNON.Body.STATIC;
-      }
-      world.addBody(body);
-      bodies.push(body);
+    const die=new CANNON.Body({
+      mass:1,
+      material:diceMaterial,
+      linearDamping:.08,
+      angularDamping:.075,
+      allowSleep:true,
+      sleepSpeedLimit:.14,
+      sleepTimeLimit:.55
     });
+    die.addShape(new CANNON.Box(new CANNON.Vec3(DIE_HALF,DIE_HALF,DIE_HALF)));
+    world.addBody(die);
 
-    return {world,bodies};
+    return {world,die};
   }
 
-  function candidateParams(snapshot,seed,safe=false){
+  function makeCandidate(target,index,seed,safe=false){
     const rng=mulberry32(seed);
 
-    return snapshot.map((d,i)=>{
-      if(d.locked) return null;
-      const value=Number(d.value)||1;
+    // Five visual lanes across the tray; enough separation to avoid obvious overlaps.
+    const laneX=(index-2)*1.72;
 
-      if(safe){
-        const q=targetUpQuaternion(value,rng,.015);
-        return {
-          position:{x:(i-2)*1.62,y:1.55+(i%2)*.12,z:-1.3+(i%2)*2.35},
-          velocity:{x:(i%2?-.75:.75)+(rng()-.5)*.22,y:-.35,z:.9+(rng()-.5)*.35},
-          angularVelocity:{
-            x:(rng()<.5?-1:1)*(5.8+rng()*2.6),
-            y:(rng()<.5?-1:1)*(4.5+rng()*2.8),
-            z:(rng()<.5?-1:1)*(5.6+rng()*2.5)
-          },
-          quaternion:{x:q.x,y:q.y,z:q.z,w:q.w}
-        };
-      }
-
-      const q=targetUpQuaternion(value,rng,.34+.22*rng());
-
-      // V27.7.6: visibly tumbling throw.
-      // X/Z get enough angular speed for ~2-3 obvious flips before settling.
-      const spinX=(rng()<.5?-1:1)*(8.5+rng()*5.5);
-      const spinZ=(rng()<.5?-1:1)*(8.0+rng()*5.0);
-      const spinY=(rng()<.5?-1:1)*(4.0+rng()*5.5);
-
+    if(safe){
+      const q=targetUpQuaternion(target,rng,.025);
       return {
-        position:{
-          x:-3.55+i*1.72+(rng()-.5)*.34,
-          y:4.15+rng()*1.95+(i%2)*.16,
-          z:-1.75+rng()*1.10
-        },
+        position:{x:laneX,y:1.72+(index%2)*.12,z:-1.15+(index%2)*1.9},
         velocity:{
-          x:(rng()-.5)*2.35,
-          y:-.65-rng()*1.05,
-          z:2.8+rng()*3.2
+          x:(rng()-.5)*.55,
+          y:-.35,
+          z:.95+rng()*.35
         },
         angularVelocity:{
-          x:spinX,
-          y:spinY,
-          z:spinZ
+          x:(rng()<.5?-1:1)*(5.5+rng()*1.6),
+          y:(rng()<.5?-1:1)*(3.0+rng()*1.5),
+          z:(rng()<.5?-1:1)*(5.2+rng()*1.6)
         },
-        quaternion:{x:q.x,y:q.y,z:q.z,w:q.w}
+        quaternion:q
       };
-    });
+    }
+
+    // Strong enough for visibly ~2–3 tumbles, but not Beyblade territory.
+    const q=targetUpQuaternion(target,rng,.5);
+    return {
+      position:{
+        x:laneX+(rng()-.5)*.48,
+        y:4.2+rng()*1.6+(index%2)*.18,
+        z:-1.65+rng()*.8
+      },
+      velocity:{
+        x:(rng()-.5)*1.7,
+        y:-.6-rng()*.8,
+        z:3.0+rng()*2.3
+      },
+      angularVelocity:{
+        x:(rng()<.5?-1:1)*(8.0+rng()*4.8),
+        y:(rng()<.5?-1:1)*(2.8+rng()*4.0),
+        z:(rng()<.5?-1:1)*(7.5+rng()*4.6)
+      },
+      quaternion:q
+    };
   }
 
-  function loadCandidate(validation,snapshot,params){
-    snapshot.forEach((d,i)=>{
-      if(d.locked) return;
-      const body=validation.bodies[i];
-      const p=params[i];
-
-      body.type=CANNON.Body.DYNAMIC;
-      body.mass=1;
-      body.updateMassProperties();
-      body.position.set(p.position.x,p.position.y,p.position.z);
-      body.velocity.set(p.velocity.x,p.velocity.y,p.velocity.z);
-      body.angularVelocity.set(p.angularVelocity.x,p.angularVelocity.y,p.angularVelocity.z);
-      body.quaternion.set(p.quaternion.x,p.quaternion.y,p.quaternion.z,p.quaternion.w);
-      body.linearDamping=.07;
-      body.angularDamping=.055;
-      body.wakeUp();
-    });
-  }
-
-  function simulateCandidate(snapshot,params){
-    const validation=makeValidationWorld(snapshot);
-    loadCandidate(validation,snapshot,params);
-
-    for(let step=0;step<246;step++) validation.world.step(1/60);
-
-    const values=validation.bodies.map((body,i)=>
-      snapshot[i].locked ? Number(snapshot[i].value)||1 : topValueFromQuaternion(body.quaternion)
+  function loadCandidate(body,c){
+    body.position.set(c.position.x,c.position.y,c.position.z);
+    body.velocity.set(c.velocity.x,c.velocity.y,c.velocity.z);
+    body.angularVelocity.set(
+      c.angularVelocity.x,
+      c.angularVelocity.y,
+      c.angularVelocity.z
     );
-    const exact=values.every((value,i)=>
-      snapshot[i].locked || value===Number(snapshot[i].value)
+    body.quaternion.set(
+      c.quaternion.x,
+      c.quaternion.y,
+      c.quaternion.z,
+      c.quaternion.w
     );
-
-    return {exact,values};
+    body.linearDamping=.08;
+    body.angularDamping=.075;
+    body.wakeUp();
   }
 
-  function candidateEnergy(params){
-    return params.reduce((sum,p)=>{
-      if(!p) return sum;
-      return sum
-        +Math.hypot(p.angularVelocity.x,p.angularVelocity.y,p.angularVelocity.z)*.8
-        +Math.hypot(p.velocity.x,p.velocity.y,p.velocity.z)*.35
-        +(p.position.y||0)*.25;
-    },0);
+  function quaternionAngularDistance(a,b){
+    const dot=Math.min(
+      1,
+      Math.abs(a.x*b.x+a.y*b.y+a.z*b.z+a.w*b.w)
+    );
+    return 2*Math.acos(dot);
   }
 
-  async function searchThrow(snapshot){
-    const token=++state.searchToken;
-    state.searchRunning=true;
-    setStatus('sucht Tumble-Seed…');
+  function simulateAndRecord(target,index,candidate){
+    const {world,die}=createSingleDieWorld();
+    loadCandidate(die,candidate);
+
+    const frames=[];
+    let previousQ={
+      x:die.quaternion.x,y:die.quaternion.y,
+      z:die.quaternion.z,w:die.quaternion.w
+    };
+    let angularTravel=0;
+    let bounceHeight=0;
+    let groundTouches=0;
+    let wasNearGround=false;
+
+    for(let step=0;step<SOLVE_STEPS;step++){
+      world.step(FIXED_DT);
+
+      const q={
+        x:die.quaternion.x,y:die.quaternion.y,
+        z:die.quaternion.z,w:die.quaternion.w
+      };
+      angularTravel+=quaternionAngularDistance(previousQ,q);
+      previousQ=q;
+
+      bounceHeight=Math.max(bounceHeight,die.position.y);
+
+      const nearGround=die.position.y<-.37;
+      if(nearGround&&!wasNearGround) groundTouches++;
+      wasNearGround=nearGround;
+
+      if(step%RECORD_EVERY===0){
+        frames.push({
+          x:die.position.x,
+          y:die.position.y,
+          z:die.position.z,
+          qx:die.quaternion.x,
+          qy:die.quaternion.y,
+          qz:die.quaternion.z,
+          qw:die.quaternion.w
+        });
+      }
+    }
+
+    // Final extra frame.
+    frames.push({
+      x:die.position.x,
+      y:die.position.y,
+      z:die.position.z,
+      qx:die.quaternion.x,
+      qy:die.quaternion.y,
+      qz:die.quaternion.z,
+      qw:die.quaternion.w
+    });
+
+    const result=topValueFromQuaternion(die.quaternion);
+    const exact=result===Number(target);
+
+    // Visual quality:
+    // angularTravel ~ 4π means about two full visible turns.
+    const rotations=angularTravel/(Math.PI*2);
+    const quality=
+      Math.min(rotations,3.5)*6
+      +Math.min(groundTouches,4)*2.5
+      +Math.min(bounceHeight,6)*.45;
+
+    return {
+      exact,
+      result,
+      frames,
+      rotations,
+      groundTouches,
+      quality
+    };
+  }
+
+  async function solveOneDie(target,index,token){
+    const baseSeed=(
+      Date.now()
+      ^Math.imul(index+1,0x45D9F3B)
+      ^Math.floor(Math.random()*0x7fffffff)
+    )>>>0;
 
     let best=null;
-    const maxAttempts=72;
-    const baseSeed=(Date.now()^Math.floor(Math.random()*0x7fffffff))>>>0;
 
-    for(let attempt=0;attempt<maxAttempts;attempt++){
-      if(token!==state.searchToken) return null;
+    for(let attempt=0;attempt<MAX_ATTEMPTS_PER_DIE;attempt++){
+      if(token!==state.solveToken) return null;
 
       const seed=(baseSeed+Math.imul(attempt+1,0x9E3779B1))>>>0;
-      const params=candidateParams(snapshot,seed,false);
-      const result=simulateCandidate(snapshot,params);
+      const candidate=makeCandidate(target,index,seed,false);
+      const result=simulateAndRecord(target,index,candidate);
 
       if(result.exact){
-        const score=candidateEnergy(params);
-        if(!best || score>best.score){
-          best={params,score,attempt:attempt+1,mode:'searched'};
+        if(!best||result.quality>best.quality){
+          best={
+            ...result,
+            candidate,
+            attempt:attempt+1,
+            mode:'searched'
+          };
         }
-        if(score>43 || attempt>=28) break;
+
+        // Prefer a result that actually tumbles rather than first valid lazy seed.
+        if(result.rotations>=1.75 && result.groundTouches>=1 && result.quality>=15){
+          break;
+        }
       }
 
-      if(attempt%4===3){
+      if(attempt%6===5){
         await new Promise(resolve=>setTimeout(resolve,0));
       }
     }
 
-    if(token!==state.searchToken) return null;
+    if(best) return best;
 
-    if(!best){
-      for(let tries=0;tries<12;tries++){
-        const seed=(baseSeed+0x85EBCA6B+tries*101)>>>0;
-        const params=candidateParams(snapshot,seed,true);
-        const result=simulateCandidate(snapshot,params);
-        if(result.exact){
-          best={params,score:candidateEnergy(params),attempt:maxAttempts+tries+1,mode:'safe'};
-          break;
-        }
+    // Reliable physics fallback per die. Still simulated and recorded;
+    // no end rotation and no replay physics.
+    for(let attempt=0;attempt<18;attempt++){
+      if(token!==state.solveToken) return null;
+
+      const seed=(baseSeed+0x85EBCA6B+attempt*113)>>>0;
+      const candidate=makeCandidate(target,index,seed,true);
+      const result=simulateAndRecord(target,index,candidate);
+
+      if(result.exact){
+        return {
+          ...result,
+          candidate,
+          attempt:MAX_ATTEMPTS_PER_DIE+attempt+1,
+          mode:'safe'
+        };
       }
     }
 
-    state.searchRunning=false;
-    return best;
+    return null;
   }
 
-  function applyReplay(snapshot,solution){
-    if(!solution||!state.ready) return;
+  async function solveSnapshot(snapshot){
+    const token=++state.solveToken;
+    state.solveRunning=true;
+    setStatus('berechnet 5 Trajektorien…');
 
+    const solved=new Array(5).fill(null);
+
+    // Solve one die after another to keep mobile CPU spikes modest.
+    for(let i=0;i<snapshot.length;i++){
+      if(token!==state.solveToken) return null;
+      const d=snapshot[i];
+
+      if(d.locked || d.value==null){
+        solved[i]={
+          locked:true,
+          target:Number(d.value)||1,
+          frames:null
+        };
+        continue;
+      }
+
+      setStatus(`Solver ${i+1}/5 · Ziel ${d.value}`);
+      const result=await solveOneDie(Number(d.value),i,token);
+
+      if(token!==state.solveToken) return null;
+      if(!result){
+        console.warn(`[Würfelduell 3D Dice] Kein Pfad für Würfel ${i+1}, Ziel ${d.value}`);
+        state.solveRunning=false;
+        return null;
+      }
+
+      solved[i]={
+        locked:false,
+        target:Number(d.value),
+        frames:result.frames,
+        rotations:result.rotations,
+        quality:result.quality,
+        mode:result.mode
+      };
+    }
+
+    if(token!==state.solveToken) return null;
+    state.solveRunning=false;
+
+    return {
+      token,
+      snapshot:snapshot.map(d=>({...d})),
+      dice:solved
+    };
+  }
+
+  function stopLivePhysicsForPlayback(snapshot){
     snapshot.forEach((d,i)=>{
       const die=state.dice[i];
-      const body=die.body;
-      die.target=Number(d.value)||1;
 
       if(d.locked){
-        body.velocity.set(0,0,0);
-        body.angularVelocity.set(0,0,0);
-        body.type=CANNON.Body.STATIC;
-        body.mass=0;
-        body.updateMassProperties();
+        die.body.type=CANNON.Body.STATIC;
+        die.body.mass=0;
+        die.body.velocity.set(0,0,0);
+        die.body.angularVelocity.set(0,0,0);
+        die.body.updateMassProperties();
         return;
       }
 
-      const p=solution.params[i];
-      body.type=CANNON.Body.DYNAMIC;
-      body.mass=1;
-      body.updateMassProperties();
-      body.position.set(p.position.x,p.position.y,p.position.z);
-      body.velocity.set(p.velocity.x,p.velocity.y,p.velocity.z);
-      body.angularVelocity.set(p.angularVelocity.x,p.angularVelocity.y,p.angularVelocity.z);
-      body.quaternion.set(p.quaternion.x,p.quaternion.y,p.quaternion.z,p.quaternion.w);
-      body.linearDamping=.08;
-      body.angularDamping=.08;
-      body.wakeUp();
+      // During trajectory playback, cannon-es no longer drives the visible mesh.
+      die.body.velocity.set(0,0,0);
+      die.body.angularVelocity.set(0,0,0);
+      die.body.sleep();
     });
-
-    setStatus(solution.mode==='safe'?'validierter Safe-Throw':'validierter Throw');
-    setTimeout(()=>setStatus('bereit'),2900);
-
-    clearTimeout(state.replayCheckTimer);
-    state.replayCheckTimer=setTimeout(()=>{
-      const drift=[];
-      snapshot.forEach((d,i)=>{
-        if(d.locked) return;
-        const got=topValueFromQuaternion(state.dice[i].body.quaternion);
-        if(got!==Number(d.value)) drift.push(`${i+1}:${got}≠${d.value}`);
-      });
-
-      if(drift.length){
-        setStatus('⚠ Replay-Drift');
-        console.warn('[Würfelduell 3D Dice] Replay drift:',drift.join(', '));
-      }
-    },3800);
   }
 
-  async function tossFromSnapshot(snapshot,force=false){
-    if(!state.ready||!state.enabled||!inLab()||state.searchRunning) return;
-    if(!snapshot.some(d=>!d.locked&&d.value!=null)) return;
+  function startPlayback(solution){
+    if(!solution||!state.ready) return;
 
-    const solution=await searchThrow(snapshot);
+    stopLivePhysicsForPlayback(solution.snapshot);
 
-    if(!solution){
-      setStatus('kein Seed gefunden');
-      setTimeout(()=>setStatus('bereit'),1300);
-      return;
+    state.playback={
+      token:solution.token,
+      started:performance.now(),
+      frameDuration:(FIXED_DT*RECORD_EVERY)*1000,
+      dice:solution.dice,
+      done:false
+    };
+
+    const safeCount=solution.dice.filter(d=>d&&!d.locked&&d.mode==='safe').length;
+    setStatus(safeCount?`spielt Physik · ${safeCount} safe`:'spielt validierte Physik');
+  }
+
+  function samplePlayback(now){
+    const pb=state.playback;
+    if(!pb||pb.done) return false;
+
+    const elapsed=now-pb.started;
+    let anyRunning=false;
+
+    pb.dice.forEach((track,i)=>{
+      if(!track||track.locked||!track.frames?.length) return;
+
+      const maxIndex=track.frames.length-1;
+      const floatIndex=elapsed/pb.frameDuration;
+      const index=Math.min(maxIndex,Math.floor(floatIndex));
+      const nextIndex=Math.min(maxIndex,index+1);
+      const localT=Math.min(1,floatIndex-index);
+
+      const a=track.frames[index];
+      const b=track.frames[nextIndex];
+      const mesh=state.dice[i].mesh;
+
+      mesh.position.set(
+        THREE.MathUtils.lerp(a.x,b.x,localT),
+        THREE.MathUtils.lerp(a.y,b.y,localT),
+        THREE.MathUtils.lerp(a.z,b.z,localT)
+      );
+
+      const qa=new THREE.Quaternion(a.qx,a.qy,a.qz,a.qw);
+      const qb=new THREE.Quaternion(b.qx,b.qy,b.qz,b.qw);
+      qa.slerp(qb,localT);
+      mesh.quaternion.copy(qa);
+
+      if(index<maxIndex) anyRunning=true;
+    });
+
+    if(!anyRunning){
+      pb.done=true;
+
+      // Freeze physical bodies exactly at the final recorded transforms,
+      // so locking after the animation preserves the visible location.
+      pb.dice.forEach((track,i)=>{
+        if(!track||track.locked||!track.frames?.length) return;
+        const f=track.frames[track.frames.length-1];
+        const body=state.dice[i].body;
+
+        body.position.set(f.x,f.y,f.z);
+        body.quaternion.set(f.qx,f.qy,f.qz,f.qw);
+        body.velocity.set(0,0,0);
+        body.angularVelocity.set(0,0,0);
+        body.sleep();
+      });
+
+      setStatus('bereit');
+      return false;
     }
 
-    applyReplay(snapshot,solution);
+    return true;
+  }
+
+  async function requestThrow(snapshot){
+    if(!state.ready||!state.enabled||!inLab()) return;
+
+    // New roll always wins. This is the key fix for "sometimes no throw".
+    state.solveToken++;
+    state.queuedSnapshot=snapshot.map(d=>({...d}));
+
+    // Cancel visual playback immediately when a genuinely new result arrives.
+    state.playback=null;
+
+    const mySnapshot=state.queuedSnapshot;
+    const solution=await solveSnapshot(mySnapshot);
+
+    if(!solution) return;
+    if(solution.token!==state.solveToken) return;
+
+    startPlayback(solution);
   }
 
   function signature(snapshot){
@@ -633,28 +813,16 @@ if(!bridge){
 
   function syncState(force=false){
     if(!state.ready||!inLab()) return;
+
     const snap=bridge.snapshot();
     if(!Array.isArray(snap)||snap.length!==5) return;
 
     setDesign(bridge.diceDesign());
 
-    // Detect finalization of the normal Würfelduell roll animation.
-    const finalized=snap.some((d,i)=>
-      state.lastSnapshot[i]?.rolling && !d.rolling && d.value!=null
-    );
-    const firstValues=!state.lastSnapshot.length && snap.some(d=>d.value!=null);
-
     snap.forEach((d,i)=>{
       const die=state.dice[i];
       die.locked=!!d.locked;
       die.selected=!!d.selected;
-
-      if(!d.locked && die.body.type===CANNON.Body.STATIC){
-        die.body.type=CANNON.Body.DYNAMIC;
-        die.body.mass=1;
-        die.body.updateMassProperties();
-        die.body.wakeUp();
-      }
 
       const edgeMat=die.edges.material;
       if(d.locked){
@@ -667,11 +835,53 @@ if(!bridge){
         edgeMat.color.set(0xffffff);
         edgeMat.opacity=.11;
       }
+
       die.mesh.scale.setScalar(d.selected&&!d.locked?1.055:1);
     });
 
-    if(force && snap.some(d=>d.value!=null)) void tossFromSnapshot(snap,true);
-    else if(finalized || firstValues) void tossFromSnapshot(snap,false);
+    const previous=state.lastSnapshot;
+    const valuesReady=snap.some(d=>d.value!=null);
+
+    const valueChanged=snap.some((d,i)=>{
+      if(d.locked) return false;
+      return Number(d.value)!==Number(previous[i]?.value);
+    });
+
+    const lockChanged=snap.some((d,i)=>
+      !!d.locked!==!!previous[i]?.locked
+    );
+
+    const rollFinished=snap.some((d,i)=>
+      previous[i]?.rolling && !d.rolling && d.value!=null
+    );
+
+    const firstValues=!previous.length&&valuesReady;
+
+    if(
+      valuesReady &&
+      (
+        force ||
+        firstValues ||
+        rollFinished ||
+        valueChanged
+      )
+    ){
+      void requestThrow(snap);
+    }else if(lockChanged){
+      // Locking alone should not reroll. Just preserve current transforms.
+      snap.forEach((d,i)=>{
+        if(!d.locked) return;
+        const mesh=state.dice[i].mesh;
+        const body=state.dice[i].body;
+        body.position.copy(mesh.position);
+        body.quaternion.copy(mesh.quaternion);
+        body.velocity.set(0,0,0);
+        body.angularVelocity.set(0,0,0);
+        body.type=CANNON.Body.STATIC;
+        body.mass=0;
+        body.updateMassProperties();
+      });
+    }
 
     state.lastSnapshot=snap.map(d=>({...d}));
   }
@@ -691,23 +901,36 @@ if(!bridge){
 
   function animate(now){
     state.animationId=requestAnimationFrame(animate);
+
     if(!state.ready) return;
+
     if(!inLab()){
       state.tray?.classList.add('hidden');
       return;
     }
 
     state.tray?.classList.remove('hidden');
+
     const dt=Math.min(.034,(now-state.lastTime)/1000||.016);
     state.lastTime=now;
 
+    const playing=!!state.playback&&!state.playback.done;
+
     if(state.enabled){
-      state.world.step(1/60,dt,3);
-      for(const die of state.dice){
-        die.mesh.position.copy(die.body.position);
-        die.mesh.quaternion.copy(die.body.quaternion);
+      if(playing){
+        samplePlayback(now);
+      }else{
+        // Only locked/static dice need their cannon positions mirrored.
+        // Unlocked dice stay at their final trajectory transform until next roll.
+        state.dice.forEach(die=>{
+          if(die.locked){
+            die.mesh.position.copy(die.body.position);
+            die.mesh.quaternion.copy(die.body.quaternion);
+          }
+        });
       }
     }
+
     state.renderer.render(state.scene,state.camera);
   }
 
@@ -722,6 +945,7 @@ if(!bridge){
       <button type="button" class="secondary" id="testLab3dThrow">🧪 Physik-Wurf testen</button>
       <button type="button" class="secondary" id="testLab3dLock">🔒 Auswahl locken</button>
       <button type="button" class="secondary" id="testLab3dUnlock">🔓 Locks lösen</button>
+      <button type="button" class="secondary" id="testLab3dCheck">✅ Ergebnis prüfen</button>
     `;
     body.appendChild(wrap);
 
@@ -742,7 +966,7 @@ if(!bridge){
         setTimeout(()=>setStatus('bereit'),1100);
         return;
       }
-      void tossFromSnapshot(snap,true);
+      void requestThrow(snap);
     });
 
     wrap.querySelector('#testLab3dLock').addEventListener('click',()=>{
@@ -757,6 +981,17 @@ if(!bridge){
     wrap.querySelector('#testLab3dUnlock').addEventListener('click',()=>{
       bridge.clearLocks();
       setTimeout(()=>syncState(false),0);
+    });
+
+    wrap.querySelector('#testLab3dCheck').addEventListener('click',()=>{
+      const snap=bridge.snapshot();
+      const result=state.dice.map((die,i)=>{
+        const shown=topValueFromQuaternion(die.mesh.quaternion);
+        return `${i+1}:${shown}/${snap[i]?.value??'?'}`;
+      }).join(' · ');
+      setStatus(result);
+      console.info('[Würfelduell 3D Dice] shown/target',result);
+      setTimeout(()=>setStatus('bereit'),2600);
     });
   }
 
