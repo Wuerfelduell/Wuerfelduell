@@ -1,0 +1,313 @@
+Abyss King
+Abyss Reaper
+Ace
+Afterglow
+Alpha Seal
+Anchor
+Architect Zero
+Ash
+Auditor
+Bailiff Blue
+Bailiff Gold
+Bailiff Red
+Bass
+Beacon
+Beat
+Bell Four
+Bell One
+Bell Three
+Bell Two
+Bellguard
+Beta Seal
+Black Auditor
+Black Clock
+Blackout
+Blood Dealer
+Blue
+Blue Clock
+Blue Hand
+Bluebook
+Bone
+Breaker
+Broker
+Broker Prime
+Bulwark
+Cerberus Core
+Chain Alpha
+Chain Beta
+Chain Lock
+Chef Red
+Choir A
+Choir B
+Coil Alpha
+Coil Beta
+Collector
+Collector IX
+Collector Shade
+Contact I
+Contact II
+Contact III
+Contact IV
+Covenant Eye
+Covenant Hand
+Covenant King
+Croupier
+Crown
+Crowned Coil
+Dealer Mirror L
+Dealer Mirror R
+Dealer One
+Dealer Two
+Death Clock
+Debt Collector
+Debt Serpent
+Debtkeeper
+Delta Seal
+Depth
+Doctrine
+Door I
+Door II
+Door III
+Drain A
+Drain B
+Dusk
+East
+Echo
+Echo Six
+Eclipse
+Ember
+Exarch Black
+Exarch Pale
+Exarch Red
+Executioner
+Executioner Left
+Executioner Right
+Eye
+Ferryman
+Foreman
+Fracture Monarch
+Future
+Gamma Seal
+Gatekeeper
+Glass
+Glyph I
+Glyph II
+Glyph III
+Glyph IV
+Glyph V
+Gold
+Gold Hand
+Grande Wall A
+Grande Wall B
+Guard A
+Guard B
+Guard C
+Guard Left
+Guard Right
+Hammer Alpha
+Hammer Beta
+Hammer Mirror L
+Hammer Mirror R
+Hammer One
+Hammer Two
+Head Blue
+Head Gold
+Head Red
+Hemomancer
+Hex Dealer
+House Guard
+House Twin A
+House Twin B
+Housemaster
+Interest
+Invoice A
+Invoice B
+Invoice Mirror A
+Invoice Mirror B
+Iron
+Joker
+Key
+King Null
+Ledger Prime
+Leech Mirror A
+Leech Mirror B
+Leech Pot
+Leech Prime
+Left Hand
+Link Left
+Link Right
+Loaded Judge
+Loader
+Lock
+Map Black
+Map Blue
+Map Red
+Margin
+Mark Alpha
+Mark Beta
+Mark East
+Mark Gamma
+Mark North
+Mark West
+Marksman
+Matrix
+Mirror
+Mirror A
+Mirror B
+Mirror Coil L
+Mirror Coil R
+Mirror Crown
+Mirror Heart
+Mute
+Needle
+North
+Null A
+Null B
+Null Roll A
+Null Roll B
+Null Twin A
+Null Twin B
+Omega Crown
+Omega Sovereign
+Oracle
+Overdrive A
+Overdrive B
+Pact Broker
+Pact Guard
+Pair A
+Pair B
+Pair Omega A
+Pair Omega B
+Pair One
+Pair Two
+Pairmaster
+Paradox Croupier
+Paradox Crown
+Past
+Pattern A
+Pattern B
+Pattern C
+Pattern D
+Pit Boss
+Pit Oracle
+Present
+Pressure
+Prime
+Protocoler
+Proxy
+Pulse Black
+Pulse Red
+Pulse White
+Queen Echo
+Reaper
+Recovery Tax
+Red
+Red Broker
+Red Clock
+Red Hand
+Redline
+Reflection
+Relay
+Relay Black
+Relay Blue
+Relay Core
+Relay Gold
+Relay I
+Relay II
+Relay III
+Relay IV
+Relay Red
+Relay V
+Relay Wing L
+Relay Wing R
+Retry
+Rhythm
+Rift King
+Rift Sovereign
+Right Hand
+Rook
+Rookie
+Runner
+Rush
+Rush Echo
+Rush Prime
+Scalpel A
+Scalpel B
+Scar Left
+Scar Right
+Schläger
+Seal Blue
+Seal Gold
+Seal Red
+Serpent Left
+Serpent Right
+Shard
+Shard Left
+Shard Right
+Shared One
+Shared Three
+Shared Two
+Shield
+Sigil Ash
+Sigil Glass
+Sigil Iron
+Sigil Void
+Signal Six
+Silence
+Silence A
+Silence B
+Silence C
+Six Machine
+Snake Charmer
+Soprano
+South
+Spare
+Spark
+Still
+Stone
+Storm Coil
+Storm Fang
+Surgeon Null
+Switchboard
+Tap
+Taxman
+Tenor
+The Alibi
+The Balance
+The Coil
+The Fixer
+The Gambler
+The King
+The Leech
+The Purist
+Thread
+Threefold
+Throne Black
+Throne Red
+Throne White
+Tick
+Tide
+Tock
+Tollkeeper
+Trigger
+Trinity Judge
+Trinity Singularity
+Twenty Five A
+Twenty Five B
+Twenty-Five
+Twin Trigger
+Vein A
+Vein B
+Vein C
+Void
+Wall A
+Wall B
+Warden
+Warden Zero
+Web Core
+Web One
+Web Two
+West
+Witness
+Zero Regent
+Zockerin
