@@ -1,4 +1,5 @@
-/* V27.6.4 Test Lab */
+
+/* V27.6.7 Test Lab / FX Workbench — LAB ONLY */
 .test-lab-hub{max-width:520px}
 .test-lab-hub-actions{display:grid;grid-template-columns:1fr;gap:10px}
 .test-lab-panel{width:min(760px,calc(100vw - 24px));max-height:min(88vh,820px);overflow:auto}
@@ -9,4 +10,91 @@
 .test-lab-ability span{display:block;font-size:11px;opacity:.72;line-height:1.3}
 .test-lab-ability.selected{border-color:rgba(255,70,70,.9);box-shadow:0 0 0 1px rgba(255,40,40,.28),0 0 18px rgba(180,0,0,.22);background:rgba(120,10,10,.28)}
 body.test-lab-active #game::before{content:"🧪 TESTUMGEBUNG · NUR 5 / 6 · KEIN SAVE";display:block;margin:0 auto 8px;width:max-content;max-width:calc(100% - 24px);padding:6px 10px;border-radius:999px;background:rgba(125,0,0,.34);border:1px solid rgba(255,60,60,.42);font-size:10px;font-weight:900;letter-spacing:.08em;color:#ffb2b2}
-@media(max-width:620px){.test-lab-ability-grid{grid-template-columns:1fr}}
+
+/* Live visual workbench */
+body.test-lab-active .test-lab-workbench{
+  position:relative;z-index:30;margin:0 0 10px;padding:10px;
+  border:1px solid rgba(255,62,78,.25);border-radius:14px;
+  background:linear-gradient(180deg,rgba(35,7,11,.96),rgba(16,8,10,.94));
+  box-shadow:inset 0 1px rgba(255,255,255,.035),0 10px 30px rgba(0,0,0,.22)
+}
+.test-lab-bench-head{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.test-lab-bench-head>div{display:flex;flex-direction:column;gap:2px}
+.test-lab-bench-head small{font-size:10px;opacity:.58}
+.test-lab-bench-head button{min-width:38px;padding:5px 9px}
+.test-lab-bench-body{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px;margin-top:9px}
+.test-lab-bench-control{display:flex;flex-direction:column;gap:4px;min-width:0}
+.test-lab-bench-control>span{font-size:10px;font-weight:850;opacity:.72}
+.test-lab-bench-control select{width:100%;min-width:0;padding:7px 8px;border-radius:9px}
+.test-lab-preview-actions{grid-column:1/-1;display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.test-lab-preview-actions button{padding:8px 10px}
+
+/* Experimental player banner/background. Only card 0 in Test Lab. */
+body.test-lab-active .test-lab-profile-card[data-lab-banner]:not([data-lab-banner="default"]){
+  background:var(--lab-banner-bg)!important;
+  border-color:color-mix(in srgb,var(--lab-banner-accent) 52%,transparent)!important;
+  box-shadow:
+    inset 3px 0 0 var(--lab-banner-accent),
+    inset 0 1px rgba(255,255,255,.055),
+    0 0 22px color-mix(in srgb,var(--lab-banner-accent) 18%,transparent)!important;
+}
+body.test-lab-active .test-lab-profile-card[data-lab-banner]:not([data-lab-banner="default"])::after{
+  content:"";position:absolute;inset:0;pointer-events:none;border-radius:inherit;
+  background:radial-gradient(circle at 85% 15%,color-mix(in srgb,var(--lab-banner-accent) 22%,transparent),transparent 42%);
+  opacity:.72
+}
+
+/* Proper smooth Hot Dice: CSS heat body + canvas flame particles. */
+body.test-lab-active #dice.lab-hot-fire .die{
+  position:relative;
+  filter:
+    drop-shadow(0 0 5px rgba(255,40,55,.78))
+    drop-shadow(0 0 13px rgba(190,0,22,.52))
+    drop-shadow(0 -7px 14px rgba(110,0,18,.28))!important;
+  animation:labHeatPulse .92s cubic-bezier(.37,0,.63,1) infinite alternate!important;
+}
+body.test-lab-active #dice.lab-hot-fire-4 .die{
+  filter:
+    drop-shadow(0 0 7px rgba(255,45,60,.92))
+    drop-shadow(0 0 17px rgba(210,0,28,.68))
+    drop-shadow(0 -9px 18px rgba(130,0,20,.46))!important;
+  animation-duration:.72s!important;
+}
+body.test-lab-active #dice.lab-hot-fire-5 .die{
+  filter:
+    drop-shadow(0 0 9px rgba(255,70,80,1))
+    drop-shadow(0 0 22px rgba(230,0,32,.82))
+    drop-shadow(0 -12px 24px rgba(150,0,22,.62))!important;
+  animation-duration:.54s!important;
+}
+body.test-lab-active #dice.lab-hot-fire .die::before{
+  content:"";position:absolute;pointer-events:none;inset:-9px;border-radius:inherit;z-index:-1;
+  background:
+    radial-gradient(ellipse at 50% 100%,rgba(255,30,45,.38),transparent 58%),
+    radial-gradient(ellipse at 25% 90%,rgba(170,0,22,.24),transparent 42%),
+    radial-gradient(ellipse at 78% 92%,rgba(230,0,36,.22),transparent 45%);
+  filter:blur(6px);
+  animation:labHeatBreath .76s ease-in-out infinite alternate
+}
+@keyframes labHeatPulse{
+  from{transform:translateY(0) scale(1)}
+  to{transform:translateY(-1.5px) scale(1.022)}
+}
+@keyframes labHeatBreath{
+  from{opacity:.55;transform:scale(.95,.9)}
+  to{opacity:1;transform:scale(1.07,1.14)}
+}
+#testLabFireCanvas{
+  position:fixed;inset:0;z-index:9998;pointer-events:none;opacity:0;
+  transition:opacity .18s ease
+}
+#testLabFireCanvas.active{opacity:1}
+
+@media(max-width:900px){
+  .test-lab-bench-body{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+@media(max-width:620px){
+  .test-lab-ability-grid{grid-template-columns:1fr}
+  .test-lab-bench-body{grid-template-columns:1fr 1fr}
+  .test-lab-preview-actions{grid-template-columns:1fr}
+}
