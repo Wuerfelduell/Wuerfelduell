@@ -88,3 +88,5 @@ body.test-lab-active #dice.lab-hot-fire-5 .die{
 #testLabFxCanvas{z-index:9998}
 #testLabFireCanvas{z-index:9997;opacity:0;transition:opacity .18s ease}
 #testLabFireCanvas.active{opacity:1}
+
+#testLabFxCanvas{filter:saturate(1.12) contrast(1.04)}
