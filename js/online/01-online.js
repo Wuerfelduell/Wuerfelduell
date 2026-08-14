@@ -770,14 +770,49 @@ onAuthStateChanged(auth,user=>{
   if(user){uid=user.uid;authReady=true;setBusy(false);}
 });
 
-setConnection("Firebase verbindet …","pending");
-setBusy(false);
-signInAnonymously(auth).catch(err=>{
-  console.error("Anonymous auth",err);
-  authReady=false;setConnection("Firebase-Anmeldung fehlgeschlagen","offline");
-  setNotice("Anonymous Authentication konnte nicht gestartet werden. Prüfe in Firebase, ob „Anonym“ aktiviert ist.","error");
+function firebaseErrorDetails(err){
+  const code=String(err?.code||"unknown");
+  const message=String(err?.message||"Unbekannter Firebase-Fehler").replace(/\s+/g," ").trim();
+  const host=String(location.hostname||"unbekannt");
+  const protocol=String(location.protocol||"");
+  window.__WD_FIREBASE_DIAG__={
+    at:new Date().toISOString(),
+    code,
+    message,
+    host,
+    protocol,
+    online:navigator.onLine,
+    authDomain:firebaseConfig.authDomain,
+    projectId:firebaseConfig.projectId
+  };
+  return {code,message,host,protocol};
+}
+
+let authAttempt=0;
+async function startAnonymousAuth({retry=false}={}){
+  authAttempt+=1;
+  setConnection(retry?"Firebase-Anmeldung wird erneut versucht …":"Firebase verbindet …","pending");
   setBusy(false);
-});
+  try{
+    await signInAnonymously(auth);
+  }catch(err){
+    console.error("Anonymous auth",err);
+    authReady=false;
+    const info=firebaseErrorDetails(err);
+    setConnection(`Firebase-Fehler · ${info.code}`,"offline");
+    setNotice(`Firebase Auth fehlgeschlagen · ${info.code} · ${info.message} · Host: ${info.host}`,"error");
+    setBusy(false);
+
+    // Ein einmaliger Retry fängt kurze Mobile-/Cache-/Netzwerk-Hänger ab.
+    // Konfigurationsfehler werden nicht endlos wiederholt.
+    const transient=new Set(["auth/network-request-failed","auth/internal-error","auth/too-many-requests"]);
+    if(!retry && transient.has(info.code)){
+      setTimeout(()=>startAnonymousAuth({retry:true}),1800);
+    }
+  }
+}
+
+startAnonymousAuth();
 
 // .info/connected ist genauer als nur navigator.onLine: Es zeigt, ob die echte
 // Realtime-Database-Verbindung steht. Im Match sperrt die Bridge Eingaben sofort,
