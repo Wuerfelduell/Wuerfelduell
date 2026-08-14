@@ -24,6 +24,8 @@ if(!bridge){
     solveRunning:false,
     queuedSnapshot:null,
     playback:null,
+    landingPlan:null,
+    visualLocked:[false,false,false,false,false],
     animationId:0,
     lastTime:performance.now(),
     resizeObserver:null
@@ -141,7 +143,7 @@ if(!bridge){
         <div class="test-lab-3d-status" id="testLab3dStatus">initialisiere…</div>
       </div>
       <div class="test-lab-3d-stage" id="testLab3dStage"></div>
-      <div class="test-lab-3d-hint">3D-Würfel antippen = auswählen · physisch berechnete Trajektorien · kein Replay-Drift · Locks bleiben liegen</div>
+      <div class="test-lab-3d-hint">3D-Würfel antippen = auswählen · Trajektorien + randomisierte Landung · neue Auto-Locks würfeln trotzdem sichtbar</div>
     `;
     diceDom.parentNode.insertBefore(tray,diceDom);
     state.tray=tray;
@@ -270,6 +272,16 @@ if(!bridge){
       );
       edges.userData.isDieEdge=true;
       mesh.add(edges);
+
+      // Larger invisible touch target for mobile. Visual die stays unchanged.
+      const hitbox=new THREE.Mesh(
+        new THREE.BoxGeometry(1.34,1.34,1.34),
+        new THREE.MeshBasicMaterial({transparent:true,opacity:0,depthWrite:false})
+      );
+      hitbox.userData.dieIndex=i;
+      hitbox.userData.isDieHitbox=true;
+      mesh.add(hitbox);
+
       scene.add(mesh);
 
       const body=new CANNON.Body({
@@ -286,7 +298,7 @@ if(!bridge){
       world.addBody(body);
 
       state.dice.push({
-        index:i,mesh,body,materials,edges,
+        index:i,mesh,body,materials,edges,hitbox,
         target:null,locked:false,selected:false,
         snapTimer:null
       });
@@ -433,20 +445,86 @@ if(!bridge){
     return {world,die};
   }
 
-  function makeCandidate(target,index,seed,safe=false){
+  function makeLandingPlan(snapshot){
+    const rng=mulberry32((Date.now()^Math.floor(Math.random()*0x7fffffff))>>>0);
+
+    // Five loose anchor regions, shuffled every throw.
+    // Anchors overlap visually and receive large random offsets, so it never
+    // looks like fixed parking slots.
+    const anchors=[
+      {x:-2.9,z:-.95},
+      {x:-1.35,z:1.15},
+      {x:.15,z:-.35},
+      {x:1.65,z:1.0},
+      {x:3.0,z:-.85}
+    ];
+
+    // Fisher-Yates shuffle.
+    for(let i=anchors.length-1;i>0;i--){
+      const j=Math.floor(rng()*(i+1));
+      [anchors[i],anchors[j]]=[anchors[j],anchors[i]];
+    }
+
+    const plan=new Array(5).fill(null);
+    const occupied=[];
+
+    snapshot.forEach((d,i)=>{
+      if(d.locked){
+        const mesh=state.dice[i]?.mesh;
+        const pos=mesh?.position;
+        if(pos){
+          plan[i]={x:pos.x,z:pos.z,locked:true};
+          occupied.push({x:pos.x,z:pos.z});
+        }
+      }
+    });
+
+    snapshot.forEach((d,i)=>{
+      if(d.locked) return;
+
+      let chosen=null;
+      for(let attempt=0;attempt<12;attempt++){
+        const a=anchors[i%anchors.length];
+        const candidate={
+          x:THREE.MathUtils.clamp(a.x+(rng()-.5)*1.65,-4.15,4.15),
+          z:THREE.MathUtils.clamp(a.z+(rng()-.5)*1.55,-2.25,2.25)
+        };
+
+        const minDist=occupied.reduce((m,p)=>
+          Math.min(m,Math.hypot(candidate.x-p.x,candidate.z-p.z)),Infinity
+        );
+
+        if(minDist>1.12 || attempt===11){
+          chosen=candidate;
+          break;
+        }
+      }
+
+      plan[i]=chosen;
+      occupied.push(chosen);
+    });
+
+    return plan;
+  }
+
+  function makeCandidate(target,index,seed,landing,safe=false){
     const rng=mulberry32(seed);
 
-    // Five visual lanes across the tray; enough separation to avoid obvious overlaps.
-    const laneX=(index-2)*1.72;
+    const landingX=Number(landing?.x)||0;
+    const landingZ=Number(landing?.z)||0;
 
     if(safe){
       const q=targetUpQuaternion(target,rng,.025);
       return {
-        position:{x:laneX,y:1.72+(index%2)*.12,z:-1.15+(index%2)*1.9},
+        position:{
+          x:landingX+(rng()-.5)*.18,
+          y:1.72+(index%2)*.12,
+          z:landingZ-1.0+(rng()-.5)*.18
+        },
         velocity:{
-          x:(rng()-.5)*.55,
+          x:(landingX-(landingX+(rng()-.5)*.18))*.35+(rng()-.5)*.18,
           y:-.35,
-          z:.95+rng()*.35
+          z:.95+rng()*.32
         },
         angularVelocity:{
           x:(rng()<.5?-1:1)*(5.5+rng()*1.6),
@@ -459,16 +537,27 @@ if(!bridge){
 
     // Strong enough for visibly ~2–3 tumbles, but not Beyblade territory.
     const q=targetUpQuaternion(target,rng,.5);
+    const startX=THREE.MathUtils.clamp(
+      landingX+(rng()<.5?-1:1)*(2.0+rng()*1.6),
+      -4.15,4.15
+    );
+    const startZ=THREE.MathUtils.clamp(
+      landingZ-(1.7+rng()*1.25),
+      -2.35,1.65
+    );
+    const travelX=landingX-startX;
+    const travelZ=landingZ-startZ;
+
     return {
       position:{
-        x:laneX+(rng()-.5)*.48,
+        x:startX,
         y:4.2+rng()*1.6+(index%2)*.18,
-        z:-1.65+rng()*.8
+        z:startZ
       },
       velocity:{
-        x:(rng()-.5)*1.7,
+        x:travelX*(.48+rng()*.14)+(rng()-.5)*.55,
         y:-.6-rng()*.8,
-        z:3.0+rng()*2.3
+        z:travelZ*(.78+rng()*.18)+(rng()-.5)*.45
       },
       angularVelocity:{
         x:(rng()<.5?-1:1)*(8.0+rng()*4.8),
@@ -506,7 +595,7 @@ if(!bridge){
     return 2*Math.acos(dot);
   }
 
-  function simulateAndRecord(target,index,candidate){
+  function simulateAndRecord(target,index,candidate,landing){
     const {world,die}=createSingleDieWorld();
     loadCandidate(die,candidate);
 
@@ -566,10 +655,15 @@ if(!bridge){
     // Visual quality:
     // angularTravel ~ 4π means about two full visible turns.
     const rotations=angularTravel/(Math.PI*2);
+    const landingDistance=landing
+      ? Math.hypot(die.position.x-landing.x,die.position.z-landing.z)
+      : 0;
+
     const quality=
       Math.min(rotations,3.5)*6
       +Math.min(groundTouches,4)*2.5
-      +Math.min(bounceHeight,6)*.45;
+      +Math.min(bounceHeight,6)*.45
+      +Math.max(0,5-landingDistance*2.2);
 
     return {
       exact,
@@ -577,11 +671,12 @@ if(!bridge){
       frames,
       rotations,
       groundTouches,
+      landingDistance,
       quality
     };
   }
 
-  async function solveOneDie(target,index,token){
+  async function solveOneDie(target,index,landing,token){
     const baseSeed=(
       Date.now()
       ^Math.imul(index+1,0x45D9F3B)
@@ -594,8 +689,8 @@ if(!bridge){
       if(token!==state.solveToken) return null;
 
       const seed=(baseSeed+Math.imul(attempt+1,0x9E3779B1))>>>0;
-      const candidate=makeCandidate(target,index,seed,false);
-      const result=simulateAndRecord(target,index,candidate);
+      const candidate=makeCandidate(target,index,seed,landing,false);
+      const result=simulateAndRecord(target,index,candidate,landing);
 
       if(result.exact){
         if(!best||result.quality>best.quality){
@@ -626,8 +721,8 @@ if(!bridge){
       if(token!==state.solveToken) return null;
 
       const seed=(baseSeed+0x85EBCA6B+attempt*113)>>>0;
-      const candidate=makeCandidate(target,index,seed,true);
-      const result=simulateAndRecord(target,index,candidate);
+      const candidate=makeCandidate(target,index,seed,landing,true);
+      const result=simulateAndRecord(target,index,candidate,landing);
 
       if(result.exact){
         return {
@@ -642,6 +737,10 @@ if(!bridge){
     return null;
   }
 
+  function wasLockedBeforeThrow(index){
+    return !!state.lastSnapshot[index]?.locked;
+  }
+
   async function solveSnapshot(snapshot){
     const token=++state.solveToken;
     state.solveRunning=true;
@@ -649,10 +748,21 @@ if(!bridge){
 
     const solved=new Array(5).fill(null);
 
+    // Important: "locked right now" may mean the attack roll just hit and
+    // auto-locked this die. Only dice that were already locked BEFORE this
+    // result arrived are skipped visually.
+    const solveSnapshot=snapshot.map((d,i)=>({
+      ...d,
+      locked:wasLockedBeforeThrow(i) && !!d.locked
+    }));
+
+    const landingPlan=makeLandingPlan(solveSnapshot);
+    state.landingPlan=landingPlan;
+
     // Solve one die after another to keep mobile CPU spikes modest.
-    for(let i=0;i<snapshot.length;i++){
+    for(let i=0;i<solveSnapshot.length;i++){
       if(token!==state.solveToken) return null;
-      const d=snapshot[i];
+      const d=solveSnapshot[i];
 
       if(d.locked || d.value==null){
         solved[i]={
@@ -664,7 +774,7 @@ if(!bridge){
       }
 
       setStatus(`Solver ${i+1}/5 · Ziel ${d.value}`);
-      const result=await solveOneDie(Number(d.value),i,token);
+      const result=await solveOneDie(Number(d.value),i,landingPlan[i],token);
 
       if(token!==state.solveToken) return null;
       if(!result){
@@ -688,7 +798,7 @@ if(!bridge){
 
     return {
       token,
-      snapshot:snapshot.map(d=>({...d})),
+      snapshot:solveSnapshot.map(d=>({...d})),
       dice:solved
     };
   }
@@ -781,6 +891,26 @@ if(!bridge){
         body.sleep();
       });
 
+      // After the visual throw is finished, apply the CURRENT gameplay lock
+      // state. This fixes attack hits that became locked during the same roll.
+      const currentSnap=bridge.snapshot();
+      currentSnap.forEach((d,i)=>{
+        state.visualLocked[i]=!!d.locked;
+        state.dice[i].locked=!!d.locked;
+
+        if(d.locked){
+          const mesh=state.dice[i].mesh;
+          const body=state.dice[i].body;
+          body.position.copy(mesh.position);
+          body.quaternion.copy(mesh.quaternion);
+          body.velocity.set(0,0,0);
+          body.angularVelocity.set(0,0,0);
+          body.type=CANNON.Body.STATIC;
+          body.mass=0;
+          body.updateMassProperties();
+        }
+      });
+
       setStatus('bereit');
       return false;
     }
@@ -842,10 +972,9 @@ if(!bridge){
     const previous=state.lastSnapshot;
     const valuesReady=snap.some(d=>d.value!=null);
 
-    const valueChanged=snap.some((d,i)=>{
-      if(d.locked) return false;
-      return Number(d.value)!==Number(previous[i]?.value);
-    });
+    const valueChanged=snap.some((d,i)=>
+      Number(d.value)!==Number(previous[i]?.value)
+    );
 
     const lockChanged=snap.some((d,i)=>
       !!d.locked!==!!previous[i]?.locked
@@ -892,9 +1021,13 @@ if(!bridge){
     state.pointer.x=((ev.clientX-rect.left)/rect.width)*2-1;
     state.pointer.y=-((ev.clientY-rect.top)/rect.height)*2+1;
     state.raycaster.setFromCamera(state.pointer,state.camera);
-    const hits=state.raycaster.intersectObjects(state.dice.map(d=>d.mesh),false);
+    const hits=state.raycaster.intersectObjects(state.dice.map(d=>d.mesh),true);
     if(!hits.length) return;
-    const idx=hits[0].object.userData.dieIndex;
+    const hit=hits[0].object;
+    const idx=Number.isInteger(hit.userData.dieIndex)
+      ? hit.userData.dieIndex
+      : hit.parent?.userData?.dieIndex;
+    if(!Number.isInteger(idx)) return;
     bridge.select(idx);
     setTimeout(()=>syncState(false),0);
   }
