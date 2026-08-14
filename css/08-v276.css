@@ -4,8 +4,8 @@
 .v276-profile-extra{margin-top:14px;padding-top:12px;border-top:1px solid rgba(255,255,255,.10)}
 .v276-toggle-row,.v276-showcase-list{display:flex;gap:8px;flex-wrap:wrap}.v276-toggle-row label,.v276-showcase-chip{display:flex;align-items:center;gap:6px;padding:7px 10px;border:1px solid rgba(255,255,255,.12);border-radius:999px;background:rgba(255,255,255,.045);font-size:.88rem}.v276-showcase-chip input,.v276-toggle-row input{accent-color:currentColor}
 .v276-awards{margin-top:14px}.v276-award-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px}.v276-award{display:grid;gap:3px;padding:10px 12px;border-radius:14px;background:rgba(255,255,255,.055);border:1px solid rgba(255,255,255,.10)}.v276-award span{font-weight:800}.v276-award small{opacity:.72}
-#dice.hot-dice .die{filter:drop-shadow(0 0 7px rgba(255,35,35,.72)) drop-shadow(0 0 14px rgba(170,0,0,.42));animation:v276HotPulse .82s ease-in-out infinite alternate}
-#dice.hot-dice-strong .die{filter:drop-shadow(0 0 9px rgba(255,28,28,.88)) drop-shadow(0 0 18px rgba(210,0,0,.58));animation-duration:.62s}
-#dice.hot-dice-max .die{filter:drop-shadow(0 0 12px rgba(255,20,20,1)) drop-shadow(0 0 22px rgba(210,0,0,.78)) drop-shadow(0 -5px 12px rgba(120,0,0,.72));animation-duration:.44s}
-@keyframes v276HotPulse{from{transform:translateY(0) scale(1)}to{transform:translateY(-2px) scale(1.025)}}to{transform:translateY(-2px)}}
+#dice.hot-dice .die{filter:drop-shadow(0 0 4px rgba(255,45,60,.52)) drop-shadow(0 0 10px rgba(170,0,22,.25));animation:v276HotPulse 1.05s cubic-bezier(.37,0,.63,1) infinite alternate}
+#dice.hot-dice-strong .die{filter:drop-shadow(0 0 5px rgba(255,45,60,.65)) drop-shadow(0 0 12px rgba(190,0,24,.34));animation-duration:.88s}
+#dice.hot-dice-max .die{filter:drop-shadow(0 0 6px rgba(255,55,70,.78)) drop-shadow(0 0 15px rgba(205,0,28,.42));animation-duration:.72s}
+@keyframes v276HotPulse{from{transform:translateY(0) scale(1)}to{transform:translateY(-2px) scale(1.025)}}
 @media (prefers-reduced-motion:reduce){#dice.hot-dice .die{animation:none}}
