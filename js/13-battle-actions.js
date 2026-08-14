@@ -1194,6 +1194,7 @@
       }
 
       if(attacker.hp<=0){
+        window.WDAttackFx?.kill?.(defenderIndex,attackerIndex);
         if(roundStats[defenderIndex]) roundStats[defenderIndex].kills++;
         if(counterDoubleTapBonus>0) unlockAchievementForPlayer(defenderIndex,"double_trouble");
         recordCampaignKill(defenderIndex,attackerIndex);
@@ -1338,6 +1339,7 @@
 
     const mainTargetKilled=target.hp<=0;
     if(mainTargetKilled){
+      window.WDAttackFx?.kill?.(current,attackTarget);
       if(roundStats[current]) roundStats[current].kills++;
       if(doubleTapApplied) unlockAchievementForPlayer(current,"double_trouble");
       recordCampaignKill(current,attackTarget);
@@ -1367,6 +1369,7 @@
         }
         addLog(`🪃 Ricochet: ${attackHits} Würfeltreffer → ${players[ricochetTarget].name} erhält ${ricochetActual} Schaden.`);
         if(players[ricochetTarget].hp<=0){
+          window.WDAttackFx?.kill?.(current,ricochetTarget);
           ricochetTargetKilled=true;
           if(roundStats[current]) roundStats[current].kills++;
           recordCampaignKill(current,ricochetTarget);
