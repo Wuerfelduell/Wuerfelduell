@@ -66,3 +66,6 @@ body.test-lab-active.test-lab-dice3d #testLab3dDiceTray{
   .test-lab-3d-stage{height:250px}
   .test-lab-3d-controls{grid-template-columns:1fr}
 }
+
+/* V27.7.5 */
+.test-lab-3d-status{min-width:94px;text-align:center}
