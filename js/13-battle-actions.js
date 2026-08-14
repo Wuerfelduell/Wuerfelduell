@@ -461,6 +461,8 @@
       campaignMetrics.attackSequence.push({hero:key,target:targetKey,name:players[attackTarget]?.name||""});
     }
 
+    // V27.6.2: Hot Dice zählt aufeinanderfolgende ANGRIFFE, nicht Würfe im Angriff.
+    players[current].hotDiceStreak=(Number(players[current].hotDiceStreak)||0)+1;
     attackHits=0;attackDamage=0;firstAttackRoll=true;currentAttackRollNewHits=0;
     precisionUses=0;bloodPriceNeighbors=[];momentumBonus=0;
     highStakesDecisionThisAttack=false;doubleTapApplied=false;
@@ -824,6 +826,7 @@
 
     if(total<25){
       resetFirstClassStreak(current);
+      players[current].hotDiceStreak=0;
       players[current].perfect25AttackArmed=false;
       if(hasAbility(10)) players[current].momentumStreak=0;
       momentumBonus=0;
@@ -839,6 +842,7 @@
 
     if(total<attackThreshold){
       resetFirstClassStreak(current);
+      players[current].hotDiceStreak=0;
       players[current].perfect25AttackArmed=false;
       if(hasAbility(10)) players[current].momentumStreak=0;
       momentumBonus=0;
@@ -926,7 +930,6 @@
 
       const bloodText=bloodHits>0 ? ` Davon ${bloodHits} Blutpreis-Treffer.` : "";
       addLog(`↳ Angriffswurf: ${currentAttackRollNewHits} neuer Treffer. Gesamt: ${attackHits} Treffer = ${totalAttackDamage()} Schaden.${bloodText}`);
-      players[current].hotDiceStreak=currentAttackRollNewHits>0?(Number(players[current].hotDiceStreak)||0)+1:0;
       phase="attack_after_roll";
       renderAll();
       tutorialExplainAttackRoll();

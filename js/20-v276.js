@@ -55,6 +55,7 @@
     const dice=$('dice'); if(!dice||typeof players==='undefined'||typeof current==='undefined') return;
     const streak=Number(players[current]?.hotDiceStreak)||0;
     dice.classList.toggle('hot-dice',streak>=3);
+    dice.classList.toggle('hot-dice-strong',streak>=4);
     dice.classList.toggle('hot-dice-max',streak>=5);
     dice.dataset.hotStreak=String(streak);
   }
