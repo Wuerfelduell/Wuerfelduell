@@ -69,3 +69,7 @@ body.test-lab-active.test-lab-dice3d #testLab3dDiceTray{
 
 /* V27.7.5 */
 .test-lab-3d-status{min-width:94px;text-align:center}
+
+/* V27.7.7 — trajectory solver diagnostics */
+.test-lab-3d-controls{grid-template-columns:repeat(2,minmax(0,1fr))}
+.test-lab-3d-controls #testLab3dCheck{grid-column:1/-1}
