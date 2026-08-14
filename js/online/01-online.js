@@ -24,7 +24,7 @@ const bridge=window.WDOnlineBridge;
 const $=id=>document.getElementById(id);
 
 const mainMenu=$("mainMenu"),onlineScreen=$("onlineScreen"),menuOnlineBtn=$("menuOnlineBtn"),onlineBackBtn=$("onlineBackBtn");
-const onlineStatus=$("onlineStatus"),onlineStatusDot=$("onlineStatusDot"),onlineProfileSelect=$("onlineProfileSelect"),onlineMaxPlayersSelect=$("onlineMaxPlayersSelect");
+const onlineStatus=$("onlineStatus"),onlineStatusDot=$("onlineStatusDot"),onlineProfileSelect=$("onlineProfileSelect"),onlineMaxPlayersSelect=$("onlineMaxPlayersSelect"),onlineModeSelect=$("onlineModeSelect");
 const onlineCreateBtn=$("onlineCreateBtn"),onlineJoinCode=$("onlineJoinCode"),onlineJoinBtn=$("onlineJoinBtn");
 const onlineHome=$("onlineHome"),onlineLobby=$("onlineLobby"),onlineRoomCode=$("onlineRoomCode"),onlineCopyCodeBtn=$("onlineCopyCodeBtn");
 const onlineLobbyState=$("onlineLobbyState"),onlinePlayerList=$("onlinePlayerList"),onlineReadyBtn=$("onlineReadyBtn"),onlineLeaveBtn=$("onlineLeaveBtn");
@@ -75,6 +75,8 @@ function escapeHtml(value){return String(value??"").replace(/[&<>'"]/g,ch=>({"&"
 function normalizeCode(value){return String(value||"").toUpperCase().replace(/[^A-Z2-9]/g,"").slice(0,6);}
 function clampLobbySize(value){return Math.max(2,Math.min(4,Number(value)||2));}
 function desiredLobbySize(){return clampLobbySize(onlineMaxPlayersSelect?.value||2);}
+function desiredMode(){return String(onlineModeSelect?.value||"classic");}
+function onlineModeRules(id=desiredMode()){return ({classic:{id:"classic",name:"Classic",hp:25,abilities:1},endurance50:{id:"endurance50",name:"Endurance",hp:50,abilities:2},overload75:{id:"overload75",name:"Overload",hp:75,abilities:3}})[id]||({id:"classic",name:"Classic",hp:25,abilities:1});}
 function shuffledPlayers(players){
   const out=[...(players||[])];
   for(let i=out.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[out[i],out[j]]=[out[j],out[i]];}
@@ -106,6 +108,7 @@ function setBusy(value){
   busy=!!value;
   onlineCreateBtn.disabled=busy||!authReady||!firebaseConnected||!selectedProfile();
   if(onlineMaxPlayersSelect) onlineMaxPlayersSelect.disabled=busy;
+  if(onlineModeSelect) onlineModeSelect.disabled=busy||!!currentRoomCode;
   onlineJoinBtn.disabled=busy||!authReady||!firebaseConnected||!selectedProfile()||normalizeCode(onlineJoinCode.value).length!==6;
   if(currentRoomCode&&currentRoom?.meta?.status==="lobby") onlineReadyBtn.disabled=busy;
 }
@@ -210,34 +213,22 @@ function randomOnlineAbility(){
 }
 function buildMatch(players){
   const ordered=shuffledPlayers(players);
+  const rules=onlineModeRules(currentRoom?.meta?.modeId||desiredMode());
   const matchId=`${Date.now().toString(36)}-${Math.random().toString(36).slice(2,8)}`;
   const firstPlayerUid=String(ordered[0]?.uid||"");
   return {
-    id:matchId,
-    roomCode:currentRoomCode,
-    createdAt:Date.now(),
-    rules:`classic-${ordered.length}p`,
-    startHp:25,
-    firstPlayerUid,
-    currentPlayerUid:firstPlayerUid,
-    turnNumber:1,
-    syncSchema:6,
-    state:{
-      schema:6,seq:0,phase:"idle",actionId:"",actionType:"",
-      currentPlayerUid:firstPlayerUid,interactionOwnerUid:firstPlayerUid,
-      dice:Array.from({length:5},()=>({value:null,locked:false,selected:false})),
-      players:ordered.map(p=>({uid:p.uid,onlineUid:p.uid,hp:25}))
-    },
+    id:matchId,roomCode:currentRoomCode,createdAt:Date.now(),modeId:rules.id,modeName:rules.name,
+    rules:`${rules.id}-${ordered.length}p`,startHp:rules.hp,startAbilityCount:rules.abilities,
+    firstPlayerUid,currentPlayerUid:firstPlayerUid,turnNumber:1,syncSchema:7,
+    state:{schema:7,seq:0,phase:"idle",actionId:"",actionType:"",currentPlayerUid:firstPlayerUid,interactionOwnerUid:firstPlayerUid,dice:Array.from({length:5},()=>({value:null,locked:false,selected:false})),players:ordered.map(p=>({uid:p.uid,onlineUid:p.uid,hp:rules.hp,maxHp:rules.hp}))},
     players:ordered.map(p=>{
-      const rolled=randomOnlineAbility();
-      return {
-        uid:p.uid,name:p.name,tagNumber:p.tagNumber,diceDesign:p.diceDesign||"classic",attackFx:p.attackFx||"classic",
-        cosmeticTitle:p.cosmeticTitle||"",cosmeticFrame:p.cosmeticFrame||"",
-        rolledAbility:rolled.rolledAbility,ability:rolled.ability
-      };
+      const rolls=Array.from({length:rules.abilities},()=>randomOnlineAbility());
+      const unique=[];for(const r of rolls){if(!unique.some(x=>x.ability===r.ability))unique.push(r);else{let rr=randomOnlineAbility();let guard=0;while(unique.some(x=>x.ability===rr.ability)&&guard++<50)rr=randomOnlineAbility();unique.push(rr);}}
+      return {uid:p.uid,name:p.name,tagNumber:p.tagNumber,diceDesign:p.diceDesign||"classic",attackFx:p.attackFx||"classic",cosmeticTitle:p.cosmeticTitle||"",cosmeticFrame:p.cosmeticFrame||"",rolledAbility:unique[0].rolledAbility,ability:unique[0].ability,abilities:unique.map(x=>x.ability),rolledAbilities:unique.map(x=>x.rolledAbility)};
     })
   };
 }
+
 async function startMatchIfReady(players){
   if(matchStartBusy||!currentRoomCode||!uid||currentRoom?.meta?.hostUid!==uid||currentRoom?.meta?.status!=="lobby") return;
   const expected=clampLobbySize(currentRoom?.meta?.maxPlayers||2);
@@ -603,10 +594,12 @@ function renderLobby(){
   const hostUid=currentRoom.meta?.hostUid;
   const isHost=hostUid===uid;
   const expected=clampLobbySize(currentRoom.meta?.maxPlayers||2);
+  if(onlineModeSelect) onlineModeSelect.value=String(currentRoom.meta?.modeId||"classic");
   const allReady=players.length===expected&&players.every(p=>p.ready===true);
   currentHostUid=String(hostUid||"");
   currentIsHost=isHost;
-  onlineLobbyState.textContent=`${players.length}/${expected} Spieler · ${isHost?"Du bist Host":"Gast"}`;
+  const mode=onlineModeRules(currentRoom?.meta?.modeId||"classic");
+  onlineLobbyState.textContent=`${players.length}/${expected} Spieler · ${mode.name} ${mode.hp} HP · ${isHost?"Du bist Host":"Gast"}`;
   onlinePlayerList.classList.toggle("four-player",expected===4);
   onlinePlayerList.innerHTML=players.map(p=>{
     const host=p.uid===hostUid,mine=p.uid===uid;
@@ -657,9 +650,10 @@ async function createRoom(){
     const maxPlayers=desiredLobbySize();
     for(let attempt=0;attempt<12&&!code;attempt++){
       const candidate=makeCode();
+      const resolved=bridge?.resolveProfileCosmetics?.(profile.id)||{dice:profile.selectedDice||"classic",attackFx:profile.selectedAttackFx||"classic"};
       const initial={
-        meta:{hostUid:uid,status:"lobby",version:bridge?.getVersion?.()||"27.5.2",createdAt:Date.now(),maxPlayers,syncSchema:6},
-        players:{[uid]:{name:profile.name,tagNumber:profile.tagNumber,diceDesign:profile.selectedDice||"classic",attackFx:profile.selectedAttackFx||"classic",cosmeticTitle:profile.cosmeticTitle||"",cosmeticFrame:profile.cosmeticFrame||"",ready:false,joinedAt:Date.now(),joinedOrder:0}}
+        meta:{hostUid:uid,status:"lobby",version:bridge?.getVersion?.()||"27.6.0",createdAt:Date.now(),maxPlayers,modeId:desiredMode(),syncSchema:7},
+        players:{[uid]:{name:profile.name,tagNumber:profile.tagNumber,diceDesign:resolved.dice||profile.selectedDice||"classic",attackFx:resolved.attackFx||profile.selectedAttackFx||"classic",cosmeticTitle:profile.cosmeticTitle||"",cosmeticFrame:profile.cosmeticFrame||"",ready:false,joinedAt:Date.now(),joinedOrder:0}}
       };
       const result=await runTransaction(roomRef(candidate),current=>current===null?initial:undefined,{applyLocally:false});
       if(result.committed) code=candidate;
@@ -685,7 +679,8 @@ async function joinRoom(){
     if(!existingPlayers[uid]&&Object.keys(existingPlayers).length>=maxPlayers) throw new Error("ROOM_FULL");
 
     const joinedOrder=existingPlayers[uid]?.joinedOrder??Object.keys(existingPlayers).length;
-    const playerData={name:profile.name,tagNumber:profile.tagNumber,diceDesign:profile.selectedDice||"classic",attackFx:profile.selectedAttackFx||"classic",cosmeticTitle:profile.cosmeticTitle||"",cosmeticFrame:profile.cosmeticFrame||"",ready:false,joinedAt:Date.now(),joinedOrder};
+    const resolved=bridge?.resolveProfileCosmetics?.(profile.id)||{dice:profile.selectedDice||"classic",attackFx:profile.selectedAttackFx||"classic"};
+    const playerData={name:profile.name,tagNumber:profile.tagNumber,diceDesign:resolved.dice||profile.selectedDice||"classic",attackFx:resolved.attackFx||profile.selectedAttackFx||"classic",cosmeticTitle:profile.cosmeticTitle||"",cosmeticFrame:profile.cosmeticFrame||"",ready:false,joinedAt:Date.now(),joinedOrder};
     // Nur den eigenen UID-Knoten schreiben. Das passt zu den sicheren Firebase-Rules
     // und verhindert, dass ein Gast jemals die Daten des Hosts überschreibt.
     await set(playerRef(code,uid),playerData);
