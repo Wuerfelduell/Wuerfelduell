@@ -853,9 +853,21 @@
   }
 
   function startCampaignEncounter(){
-    const profile=getProfile(campaignProfileSelect.value);
-    const encounter=campaignEncounterById(campaignEncounterId);
+    const selectedProfileId=String(campaignProfileSelect.value||campaignProfileId||"");
+    const selectedEncounterId=String(campaignEncounterId||"");
+    const profile=getProfile(selectedProfileId);
+    const encounter=campaignEncounterById(selectedEncounterId);
     if(!profile || !encounter) return;
+
+    campaignProfileId=profile.id;
+    campaignEncounterId=encounter.id;
+    campaignWorldId=encounter.world||campaignWorldId;
+    gameContext={
+      mode:"campaign-starting",
+      returnScreen:"campaign",
+      profileId:profile.id,
+      encounterId:encounter.id
+    };
     if(!campaignEncounterAvailable(profile,encounter)) return;
 
     const unlocked=campaignUnlockedAbilities(profile);
@@ -900,7 +912,7 @@
 
     const heroStartHp=Math.max(1,Number(encounter.playerHp)||START_HP);
     const hero={
-      name:profile.name,battleTag:`#${profile.tagNumber}`,profileId:profile.id,botLevel:"human",campaignTeam:"hero",hp:heroStartHp,maxHp:heroStartHp,
+      name:profile.name,battleTag:`#${profile.tagNumber}`,profileId:profile.id,botLevel:"human",campaignTeam:"hero",hp:heroStartHp,maxHp:heroStartHp,campaignStartHp:heroStartHp,
       ability:heroAbility,secondAbility:startSecond,thirdAbility:startThird,fourthAbility:startFourth,secondAbilityUnlocked:startSecond!=null?true:(encounter.startSecondAbilityDraft?true:unlocked.length<2),thirdAbilityUnlocked:startThird!=null,fourthAbilityUnlocked:startFourth!=null,campaignBonusDraftUsed:false,rolledAbility:"CAMPAIGN",primaryWasChosen:true,secondAbilityWasChosen:false,thirdAbilityWasChosen:false,fourthAbilityWasChosen:false,
       seat:0,diceDesign:profile.selectedDice||"classic",...playerCosmeticsFromProfile(profile),wins:0,momentumStreak:0,lastStandUsed:false,roundLastStandTriggered:false,
       damageSinceLastOwnTurn:false,bloodRushPrimed:false,voluntaryHpPaidThisTurn:false,botBloodUsesThisAttack:0

@@ -85,6 +85,17 @@
   }
 
   function startNextRound(){
+    // Campaign encounters are single-fight states. The generic local "next round"
+    // reset would wipe campaign HP/abilities back to Classic defaults.
+    if(campaignMode){
+      clearBotAutomation();
+      winnerBox.classList.add("hidden");
+      nextRoundBox.classList.add("hidden");
+      roundWinnerHandled=false;
+      addLog("🛡 Campaign-Safety: generischer Rundenreset blockiert.");
+      returnToCampaignMap();
+      return;
+    }
     if(lastPlaceIndex==null) return;
     clearBotAutomation();
     const starter=lastPlaceIndex;
@@ -125,7 +136,10 @@
         p.ability=ability;p.rolledAbility=roll;p.primaryWasChosen=(roll==="FREE_LAST" || roll===6);
         p.secondAbility=null;p.thirdAbility=null;p.secondAbilityUnlocked=false;p.thirdAbilityUnlocked=false;p.secondAbilityWasChosen=false;p.thirdAbilityWasChosen=false;
       }
-      p.hp=special?rules.startHp:START_HP;p.maxHp=special?rules.startHp:START_HP;
+      const resetHp=(campaignMode&&p.campaignTeam==="hero")
+        ?Math.max(1,Number(p.campaignStartHp)||Number(p.maxHp)||START_HP)
+        :(special?rules.startHp:START_HP);
+      p.hp=resetHp;p.maxHp=resetHp;
       p.momentumStreak=0;p.firstClassStreak=0;p.perfect25AttackArmed=false;p.lastStandUsed=false;p.roundLastStandTriggered=false;p.damageSinceLastOwnTurn=false;p.bloodRushPrimed=false;p.voluntaryHpPaidThisTurn=false;p.botBloodUsesThisAttack=0;
     });
 

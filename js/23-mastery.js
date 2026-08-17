@@ -320,7 +320,13 @@
     // Ensure existing profiles receive normalized Mastery containers lazily,
     // without touching old campaign progress.
     try{
-      (saveData.profiles||[]).forEach(profile=>ensure(profile));
+      let migrated=false;
+      (saveData.profiles||[]).forEach(profile=>{
+        const before=!!profile?.campaign?.mastery?.retroGranted;
+        ensure(profile);
+        if(!before && profile?.campaign?.mastery?.retroGranted) migrated=true;
+      });
+      if(migrated) saveGameData();
     }catch(_err){}
   }
 
