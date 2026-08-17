@@ -531,14 +531,15 @@
       return `<button type="button" class="campaign-node${done?" done":""}${current?" current":""}${available?"":" locked"}${isBoss?" boss":""}${isWorldBoss?" world-boss":""}" data-campaign-id="${e.id}" ${available?"":"disabled"}><span>${num}</span>${mark?`<span class="node-mark">${mark}</span>`:""}</button>`;
     }).join("");
     campaignPath.querySelectorAll("[data-campaign-id]").forEach(btn=>btn.onclick=()=>{campaignEncounterId=btn.dataset.campaignId;gameContext.encounterId=campaignEncounterId;renderCampaign();});
-    if(selectedEncounter){const done=!!progress?.completedEncounters?.includes(selectedEncounter.id),available=!!profile&&campaignEncounterAvailable(profile,selectedEncounter),reward=campaignRewardLabel(profile,selectedEncounter),rules=encounterRuleText(selectedEncounter),phase=bossPhaseFor(selectedEncounter),assistText=campaignAssistText(selectedEncounter),grantedSecond=campaignGrantedSecondAbility(selectedEncounter),bonusSlot=soloCampaignHpBonusSlot(selectedEncounter),grantedText=grantedSecond!=null?`${ABILITIES[grantedSecond]?.name||grantedSecond} startet fest als 2. Fähigkeit; erster eigener Kill ODER ≤15 HP öffnet danach den nächsten freien Draft.`:"",challengeGear=campaignChallengeGrantedAbility(selectedEncounter,[grantedSecond].filter(x=>x!=null)),challengeGearText=challengeGear!=null?`${ABILITIES[challengeGear]?.name||challengeGear} wird zusätzlich zu deiner Hauptfähigkeit gestellt.`:"";campaignEncounterDetail.innerHTML=`<div class="node-detail-head"><div><div class="node-detail-title">${escapeHtml(selectedEncounter.title)}</div><div class="node-detail-sub">${escapeHtml(selectedEncounter.subtitle)}</div></div><div class="node-detail-state">${done?(selectedEncounter.farmTrophy?"🏆 FARM":"✓ GESCHAFFT"):available?"OFFEN":"🔒 GESPERRT"}</div></div><div class="node-detail-desc">${escapeHtml(selectedEncounter.desc)}</div><div class="node-detail-row">🎯 <strong>Challenge:</strong> ${escapeHtml(selectedEncounter.challenge.text)}</div><div class="node-detail-row">🎁 <strong>Belohnung:</strong> ${escapeHtml(reward)}</div>${assistText?`<div class="node-detail-row node-detail-phase">⚡ <strong>Encounter-Fähigkeit:</strong> ${escapeHtml(assistText)}</div>`:""}${grantedText?`<div class="node-detail-row node-detail-phase">🩸 <strong>Encounter-Fähigkeit:</strong> ${escapeHtml(grantedText)}</div>`:""}${challengeGearText?`<div class="node-detail-row node-detail-phase">🎯 <strong>Challenge-Ausrüstung:</strong> ${escapeHtml(challengeGearText)}</div>`:""}${REAL_ABILITY_IDS.includes(Number(selectedEncounter.forcedHeroAbility))?`<div class="node-detail-row node-detail-phase">⚡ <strong>Startfähigkeit:</strong> ${escapeHtml(ABILITIES[Number(selectedEncounter.forcedHeroAbility)]?.name||String(selectedEncounter.forcedHeroAbility))} ist fest vorgegeben.</div>`:""}${selectedEncounter.disableBonusDraft?`<div class="node-detail-row node-detail-rule">🚫 <strong>Fähigkeits-Drafts:</strong> In diesem Encounter deaktiviert.</div>`:`<div class="node-detail-row node-detail-phase">✨ <strong>Bonus-Draft:</strong> erster eigener Gegner-Kill oder ≤15 HP – was zuerst passiert.</div>`}${rules.map(r=>`<div class="node-detail-row node-detail-rule">⚙ <strong>${escapeHtml(r.name)}:</strong> ${escapeHtml(r.desc)}</div>`).join("")}${phase?`<div class="node-detail-row node-detail-phase">👹 <strong>Boss-Phase bei ${Math.round((phase.threshold||.5)*100)} %:</strong> ${escapeHtml(phase.title)} · ${escapeHtml(phase.desc)}</div>`:""}`;}else campaignEncounterDetail.innerHTML="";
+    if(selectedEncounter){const done=!!progress?.completedEncounters?.includes(selectedEncounter.id),available=!!profile&&campaignEncounterAvailable(profile,selectedEncounter),reward=campaignRewardLabel(profile,selectedEncounter),rules=encounterRuleText(selectedEncounter),phase=bossPhaseFor(selectedEncounter),assistText=campaignAssistText(selectedEncounter),grantedSecond=campaignGrantedSecondAbility(selectedEncounter),bonusSlot=soloCampaignHpBonusSlot(selectedEncounter),masteryThreshold=window.WDMastery?.abilityThreshold?.(profile,selectedEncounter)??15,grantedText=grantedSecond!=null?`${ABILITIES[grantedSecond]?.name||grantedSecond} startet fest als 2. Fähigkeit; erster eigener Kill ODER ≤${masteryThreshold} HP öffnet danach den nächsten freien Draft.`:"",challengeGear=campaignChallengeGrantedAbility(selectedEncounter,[grantedSecond].filter(x=>x!=null)),challengeGearText=challengeGear!=null?`${ABILITIES[challengeGear]?.name||challengeGear} wird zusätzlich zu deiner Hauptfähigkeit gestellt.`:"";campaignEncounterDetail.innerHTML=`<div class="node-detail-head"><div><div class="node-detail-title">${escapeHtml(selectedEncounter.title)}</div><div class="node-detail-sub">${escapeHtml(selectedEncounter.subtitle)}</div></div><div class="node-detail-state">${done?(selectedEncounter.farmTrophy?"🏆 FARM":"✓ GESCHAFFT"):available?"OFFEN":"🔒 GESPERRT"}</div></div><div class="node-detail-desc">${escapeHtml(selectedEncounter.desc)}</div><div class="node-detail-row">🎯 <strong>Challenge:</strong> ${escapeHtml(selectedEncounter.challenge.text)}</div><div class="node-detail-row">🎁 <strong>Belohnung:</strong> ${escapeHtml(reward)}</div>${assistText?`<div class="node-detail-row node-detail-phase">⚡ <strong>Encounter-Fähigkeit:</strong> ${escapeHtml(assistText)}</div>`:""}${grantedText?`<div class="node-detail-row node-detail-phase">🩸 <strong>Encounter-Fähigkeit:</strong> ${escapeHtml(grantedText)}</div>`:""}${challengeGearText?`<div class="node-detail-row node-detail-phase">🎯 <strong>Challenge-Ausrüstung:</strong> ${escapeHtml(challengeGearText)}</div>`:""}${REAL_ABILITY_IDS.includes(Number(selectedEncounter.forcedHeroAbility))?`<div class="node-detail-row node-detail-phase">⚡ <strong>Startfähigkeit:</strong> ${escapeHtml(ABILITIES[Number(selectedEncounter.forcedHeroAbility)]?.name||String(selectedEncounter.forcedHeroAbility))} ist fest vorgegeben.</div>`:""}${selectedEncounter.disableBonusDraft?`<div class="node-detail-row node-detail-rule">🚫 <strong>Fähigkeits-Drafts:</strong> In diesem Encounter deaktiviert.</div>`:`<div class="node-detail-row node-detail-phase">✨ <strong>Bonus-Draft:</strong> erster eigener Gegner-Kill oder ≤${masteryThreshold} HP – was zuerst passiert.</div>`}${rules.map(r=>`<div class="node-detail-row node-detail-rule">⚙ <strong>${escapeHtml(r.name)}:</strong> ${escapeHtml(r.desc)}</div>`).join("")}${phase?`<div class="node-detail-row node-detail-phase">👹 <strong>Boss-Phase bei ${Math.round((phase.threshold||.5)*100)} %:</strong> ${escapeHtml(phase.title)} · ${escapeHtml(phase.desc)}</div>`:""}`;}else campaignEncounterDetail.innerHTML="";
 
     const secondaryUnlocked=new Set(progress?.unlockedSecondaryAbilities||[]);
     campaignAbilityGrid.innerHTML=REAL_ABILITY_IDS.map(id=>{
       const secondOnly=CAMPAIGN_SECONDARY_ONLY_ABILITY_IDS.includes(id);
       const on=secondOnly?secondaryUnlocked.has(id):unlocked.includes(id);
       const bonusSlot=soloCampaignHpBonusSlot(selectedEncounter);
-      const suffix=secondOnly?` · nur ${bonusSlot===3?"3. Fähigkeit":"Zweitfähigkeit"} ≤${soloCampaignHpBonusThreshold(selectedEncounter)} HP`:"";
+      const masteryThreshold=window.WDMastery?.abilityThreshold?.(profile,selectedEncounter)??soloCampaignHpBonusThreshold(selectedEncounter);
+      const suffix=secondOnly?` · nur ${bonusSlot===3?"3. Fähigkeit":"Zweitfähigkeit"} ≤${masteryThreshold} HP`:"";
       return `<span class="campaign-ability-chip${on?"":" locked"}">${on?(secondOnly?"✦":"✓"):"🔒"} ${id} · ${escapeHtml(ABILITIES[id].name)}${suffix}</span>`;
     }).join("");
 
@@ -546,6 +547,7 @@
     const assistPrimaryOk=!assistPair||assistPair.includes(+campaignAbilitySelect.value);
     campaignStartBtn.disabled=!profile || !selectedEncounter || !unlocked.length || !assistPrimaryOk;
     campaignStartBtn.title=!assistPrimaryOk?campaignAssistText(selectedEncounter):"";
+    window.WDMastery?.refreshCampaignUi?.(profile,selectedEncounter);
   }
 
   function renderDuoCampaign(){
@@ -814,7 +816,9 @@
     clearBotAutomation();resetTutorialUi();tutorialMode=false;campaignMode=true;duoCampaignMode=true;trioCampaignMode=false;campaignProfileId=null;duoProfile1Id=p1.id;duoProfile2Id=p2.id;
     gameContext={mode:"duo-campaign-game",returnScreen:"duo",profileIds:[p1.id,p2.id],encounterId:encounter.id};campaignMetrics=freshCampaignMetrics();resetEncounterRuntime(encounter);
     const sharedDuoSecondPool=[...REAL_ABILITY_IDS];
-    const heroStartHp=Math.max(1,Number(encounter.playerHp)||START_HP);
+    const baseHeroStartHp=Math.max(1,Number(encounter.playerHp)||START_HP);
+    const masteryHpBonus=window.WDMastery?.hpBonus?.(profile,encounter)||0;
+    const heroStartHp=baseHeroStartHp+masteryHpBonus;
     const makeHero=(profile,ability)=>{const challengeAbility=campaignChallengeGrantedAbility(encounter,[ability]);return {name:profile.name,battleTag:`#${profile.tagNumber}`,profileId:profile.id,botLevel:"human",campaignTeam:"hero",hp:heroStartHp,maxHp:heroStartHp,ability,secondAbility:challengeAbility,thirdAbility:null,fourthAbility:null,secondAbilityUnlocked:challengeAbility!=null||sharedDuoSecondPool.length<2,thirdAbilityUnlocked:false,fourthAbilityUnlocked:false,campaignBonusDraftUsed:false,rolledAbility:"DUO",primaryWasChosen:true,secondAbilityWasChosen:false,thirdAbilityWasChosen:false,fourthAbilityWasChosen:false,seat:0,diceDesign:profile.selectedDice||"classic",...playerCosmeticsFromProfile(profile),wins:0,momentumStreak:0,lastStandUsed:false,roundLastStandTriggered:false,damageSinceLastOwnTurn:false,bloodRushPrimed:false,voluntaryHpPaidThisTurn:false,botBloodUsesThisAttack:0};};
     const heroes=[makeHero(p1,a1),makeHero(p2,a2)];
     const enemies=encounter.enemies.map(enemy=>({name:enemy.name,battleTag:"",profileId:null,botLevel:enemy.level||"normal",campaignTeam:"enemy",hp:Number(enemy.hp)||START_HP,maxHp:Number(enemy.hp)||START_HP,ability:Number(enemy.ability)||0,secondAbility:enemy.secondAbility!=null?Number(enemy.secondAbility):null,thirdAbility:null,secondAbilityUnlocked:true,thirdAbilityUnlocked:true,rolledAbility:"DUO",primaryWasChosen:false,seat:0,diceDesign:"classic",wins:0,momentumStreak:0,lastStandUsed:false,roundLastStandTriggered:false,damageSinceLastOwnTurn:false,bloodRushPrimed:false,voluntaryHpPaidThisTurn:false,botBloodUsesThisAttack:0}));
@@ -922,12 +926,16 @@
     encounterRuleText(encounter).forEach(r=>addLog(`⚙ Sonderregel ${r.name}: ${r.desc}`));
     if(bossPhaseFor(encounter)) addLog(`👹 Bossphase vorbereitet: ${bossPhaseFor(encounter).title} bei ${Math.round((bossPhaseFor(encounter).threshold||.5)*100)} % Boss-HP.`);
     addLog(`⚡ ${profile.name} startet mit ${ABILITIES[heroAbility].name}. In der Kampagne stehen nur bereits freigeschaltete Fähigkeiten zur Verfügung.`);
-    if(heroStartHp!==START_HP) addLog(`❤️ Encounter-Bonus: ${profile.name} startet mit ${heroStartHp} HP.`);
+    if(baseHeroStartHp!==START_HP) addLog(`❤️ Encounter-Bonus: ${profile.name} startet mit ${baseHeroStartHp} HP.`);
+    if(masteryHpBonus>0) addLog(`⚔️ Mastery · Vitality: +${masteryHpBonus} HP → ${heroStartHp} Start-HP.`);
     if(grantedSecondAbility!=null) addLog(`🩸 Encounter-Fähigkeit: ${ABILITIES[grantedSecondAbility].name} ist direkt aktiv.`);
     if(grantedThirdAbility!=null) addLog(`🎁 Encounter-Fähigkeit: ${ABILITIES[grantedThirdAbility].name} wird für diesen Kampf bereitgestellt.`);
     if(challengeGrantedAbility!=null) addLog(`🎯 Challenge-Ausrüstung: ${ABILITIES[challengeGrantedAbility].name} ist für diesen Encounter automatisch dabei.`);
     if(encounter.disableBonusDraft) addLog(`🚫 Encounter-Regel: Keine zusätzlichen Fähigkeits-Drafts. ${profile.name} bleibt bei der Startfähigkeit.`);
-    else addLog(`✨ Bonus-Draft: Der erste eigene Gegner-Kill ODER ≤15 HP löst die nächste Fähigkeitswahl aus – was zuerst passiert.`);
+    else {
+      const masteryThreshold=window.WDMastery?.abilityThreshold?.(profile,encounter)??15;
+      addLog(`✨ Bonus-Draft: Der erste eigene Gegner-Kill ODER ≤${masteryThreshold} HP löst die nächste Fähigkeitswahl aus – was zuerst passiert.`);
+    }
     if(enemies.length>1) addLog(`⚠️ 2 gegen 1: ${enemies.map(e=>e.name).join(" & ")} spielen als Team und greifen nur dich an.`);
     renderAll();
     if(encounter.startSecondAbilityDraft){
@@ -956,7 +964,7 @@
       progress.losses=(progress.losses||0)+1;
     }
 
-    let newlyCompleted=false,rewardUnlocked=false,secondaryRewardUnlocked=false,trophiesEarned=0;
+    let newlyCompleted=false,rewardUnlocked=false,secondaryRewardUnlocked=false,trophiesEarned=0,masteryXpEarned=0;
     if(heroWon && challengeMet && profile && progress){
       if(!progress.completedEncounters.includes(encounter.id)){
         progress.completedEncounters.push(encounter.id);
@@ -965,6 +973,7 @@
       rewardUnlocked=unlockCampaignReward(profile,encounter);
       secondaryRewardUnlocked=unlockCampaignSecondaryReward(profile,encounter);
       trophiesEarned=awardCampaignTrophy(profile,encounter);
+      masteryXpEarned=window.WDMastery?.awardCampaignXp?.(profile,encounter,newlyCompleted)||0;
       progress.campaignVersion=Math.max(Number(progress.campaignVersion)||1,CAMPAIGN_VERSION);
     }
     const campaignComplete=profile?isCampaignComplete(profile):false;
@@ -981,9 +990,10 @@
       const secondaryRewardText=secondaryRewardUnlocked?`<br>🍀 <strong>${escapeHtml(ABILITIES[encounter.rewardSecondaryAbility].name)} freigeschaltet:</strong> ausschließlich als Zweitfähigkeit über den HP-Bonus (hier ≤${soloCampaignHpBonusThreshold(encounter)} HP).`:"";
       const trophyText=trophiesEarned?`<br>🏆 <strong>+${trophiesEarned} Prestige-Trophäe</strong> · Gesamt: ${progress?.trophies||0}`:"";
       const prestigeText=(rewardUnlocked && campaignHasAllMainAbilities(profile))?"<br>✨ <strong>PRESTIGE AKTIV:</strong> Ab jetzt bringt jeder erfolgreiche Encounter-Clear 1 Trophäe.":"";
+      const masteryText=masteryXpEarned?`<br>⭐ <strong>+${masteryXpEarned} Mastery XP</strong> · Gesamt: ${window.WDMastery?.ensure?.(profile)?.xp||0}`:"";
       const unlockedWorlds=CAMPAIGN_WORLDS.filter(w=>w.id!==encounter.world && (w.unlockRequires||[]).includes(encounter.id) && campaignWorldUnlocked(profile,w));
       const worldUnlockText=newlyCompleted&&unlockedWorlds.length?unlockedWorlds.map(w=>`<br>🌐 <strong>${escapeHtml(w.name)} wurde freigeschaltet!</strong>`).join(""):"";
-      roundResultText.innerHTML=`✅ Gegner besiegt.<br>✅ Challenge erfüllt: <strong>${escapeHtml(encounter.challenge.text)}</strong>${rewardText}${secondaryRewardText}${trophyText}${prestigeText}${newlyCompleted?"<br>Der nächste Encounter wurde freigeschaltet.":"<br>Dieser Encounter war bereits abgeschlossen und bleibt spielbar."}${worldUnlockText}`;
+      roundResultText.innerHTML=`✅ Gegner besiegt.<br>✅ Challenge erfüllt: <strong>${escapeHtml(encounter.challenge.text)}</strong>${rewardText}${secondaryRewardText}${trophyText}${prestigeText}${masteryText}${newlyCompleted?"<br>Der nächste Encounter wurde freigeschaltet.":"<br>Dieser Encounter war bereits abgeschlossen und bleibt spielbar."}${worldUnlockText}`;
     }else if(heroWon){
       queueEventPopup("Challenge verfehlt","survive");
       winnerText.textContent="⚠️ Sieg – aber Challenge verfehlt";

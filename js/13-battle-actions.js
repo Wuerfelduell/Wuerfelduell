@@ -219,7 +219,7 @@
     if(!p) return null;
     if(campaignMode){
       if(p.campaignTeam!=="hero") return null;
-      const threshold=15;
+      const threshold=window.WDMastery?.abilityThresholdForPlayer?.(index)??15;
       const slot=campaignBonusDraftSlot(index)||2;
       return {threshold,slot,label:`${slot}. Fähigkeit`};
     }
@@ -233,7 +233,8 @@
     const p=players[index];
     if(!p || p.hp<=0) return false;
     if(campaignMode && p.campaignTeam==="hero"){
-      if(newHp<=15) return maybeTriggerCampaignStandardBonusDraft(index,"hp");
+      const threshold=window.WDMastery?.abilityThresholdForPlayer?.(index)??15;
+      if(newHp<=threshold) return maybeTriggerCampaignStandardBonusDraft(index,"hp");
       return false;
     }
     const rule=bonusAbilityRuleFor(index);
@@ -1320,6 +1321,11 @@
     if(campaignMode&&players[current]?.campaignTeam==="hero"&&rawDamage>0&&encounterRuleActive("first_strike")&&!encounterRuntime.firstStrikeUsed.has(String(current))){rawDamage+=2;encounterRuntime.firstStrikeUsed.add(String(current));addLog(`⚡ First Strike: +2 Rohschaden.`);}
     if(campaignMode&&players[current]?.campaignTeam==="hero"&&rawDamage>0&&encounterRuleActive("overcharge")){rawDamage+=2;addLog(`⚡ Overcharge: +2 Rohschaden.`);}
     if(campaignMode&&players[current]?.campaignTeam==="hero"&&rawDamage>0&&encounterRuleActive("armor_shell")&&!encounterRuntime.armorUsed.has(String(attackTarget))){rawDamage=Math.max(0,rawDamage-2);encounterRuntime.armorUsed.add(String(attackTarget));addLog(`🛡 Armor Shell: der erste Angriff auf ${target.name} verliert 2 Rohschaden.`);}
+    const masteryDamageBonus=rawDamage>0?(window.WDMastery?.damageBonusForPlayer?.(current)||0):0;
+    if(masteryDamageBonus>0){
+      rawDamage+=masteryDamageBonus;
+      addLog(`⚔️ Mastery · Force: +${masteryDamageBonus} Gesamtschaden.`);
+    }
     if(rawDamage>=targetHpBefore+10) unlockAchievementForPlayer(current,"overkill");
 
     recordCampaignRawDamage(current,rawDamage);
