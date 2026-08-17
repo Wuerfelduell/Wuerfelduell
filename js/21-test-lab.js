@@ -186,7 +186,16 @@
       playLabKillFx(0,1,style,true);
     });
 
-    preview.append(fxBtn,killBtn,hotBtn);
+    const masteryBtn=document.createElement('button');
+    masteryBtn.type='button';
+    masteryBtn.className='secondary test-lab-mastery-preview-btn';
+    masteryBtn.textContent='🧬 Ability-Mastery Tree';
+    masteryBtn.addEventListener('click',()=>{
+      if(!inLab()) return;
+      window.WDAbilityMasteryLab?.open?.();
+    });
+
+    preview.append(fxBtn,killBtn,hotBtn,masteryBtn);
 
     body.append(diceCtl.wrap,fxCtl.wrap,frameCtl.wrap,bannerCtl.wrap,hotCtl.wrap,preview);
 
