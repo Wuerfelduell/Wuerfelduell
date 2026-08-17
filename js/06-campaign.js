@@ -491,7 +491,7 @@
       campaignEncounterId=selectedEncounter?.id||null;
     }
     gameContext.profileId=profile?.id||gameContext.profileId;
-    gameContext.encounterId=campaignEncounterId||gameContext.encounterId;
+    gameContext.encounterId=campaignEncounterId||null;
 
     const forcedHeroAbilityForSelected=Number(selectedEncounter?.forcedHeroAbility);
     if(REAL_ABILITY_IDS.includes(forcedHeroAbilityForSelected)){
@@ -530,7 +530,20 @@
       const num=i+1,isBoss=num===10||num===15,isWorldBoss=num===15,mark=done?(e.farmTrophy?"🏆":"✓"):available?(current?"▶":""):"🔒";
       return `<button type="button" class="campaign-node${done?" done":""}${current?" current":""}${available?"":" locked"}${isBoss?" boss":""}${isWorldBoss?" world-boss":""}" data-campaign-id="${e.id}" ${available?"":"disabled"}><span>${num}</span>${mark?`<span class="node-mark">${mark}</span>`:""}</button>`;
     }).join("");
-    campaignPath.querySelectorAll("[data-campaign-id]").forEach(btn=>btn.onclick=()=>{campaignEncounterId=btn.dataset.campaignId;gameContext.encounterId=campaignEncounterId;renderCampaign();});
+    campaignPath.querySelectorAll("[data-campaign-id]").forEach(btn=>btn.onclick=()=>{
+      const selectedId=String(btn.dataset.campaignId||"");
+      const selected=campaignEncounterById(selectedId);
+      if(!selected) return;
+      campaignEncounterId=selected.id;
+      campaignWorldId=selected.world||campaignWorldId;
+      gameContext={
+        mode:"campaign-map",
+        returnScreen:"campaign",
+        profileId:campaignProfileId,
+        encounterId:selected.id
+      };
+      renderCampaign();
+    });
     if(selectedEncounter){const done=!!progress?.completedEncounters?.includes(selectedEncounter.id),available=!!profile&&campaignEncounterAvailable(profile,selectedEncounter),reward=campaignRewardLabel(profile,selectedEncounter),rules=encounterRuleText(selectedEncounter),phase=bossPhaseFor(selectedEncounter),assistText=campaignAssistText(selectedEncounter),grantedSecond=campaignGrantedSecondAbility(selectedEncounter),bonusSlot=soloCampaignHpBonusSlot(selectedEncounter),masteryThreshold=window.WDMastery?.abilityThreshold?.(profile,selectedEncounter)??15,grantedText=grantedSecond!=null?`${ABILITIES[grantedSecond]?.name||grantedSecond} startet fest als 2. Fähigkeit; erster eigener Kill ODER ≤${masteryThreshold} HP öffnet danach den nächsten freien Draft.`:"",challengeGear=campaignChallengeGrantedAbility(selectedEncounter,[grantedSecond].filter(x=>x!=null)),challengeGearText=challengeGear!=null?`${ABILITIES[challengeGear]?.name||challengeGear} wird zusätzlich zu deiner Hauptfähigkeit gestellt.`:"";campaignEncounterDetail.innerHTML=`<div class="node-detail-head"><div><div class="node-detail-title">${escapeHtml(selectedEncounter.title)}</div><div class="node-detail-sub">${escapeHtml(selectedEncounter.subtitle)}</div></div><div class="node-detail-state">${done?(selectedEncounter.farmTrophy?"🏆 FARM":"✓ GESCHAFFT"):available?"OFFEN":"🔒 GESPERRT"}</div></div><div class="node-detail-desc">${escapeHtml(selectedEncounter.desc)}</div><div class="node-detail-row">🎯 <strong>Challenge:</strong> ${escapeHtml(selectedEncounter.challenge.text)}</div><div class="node-detail-row">🎁 <strong>Belohnung:</strong> ${escapeHtml(reward)}</div>${assistText?`<div class="node-detail-row node-detail-phase">⚡ <strong>Encounter-Fähigkeit:</strong> ${escapeHtml(assistText)}</div>`:""}${grantedText?`<div class="node-detail-row node-detail-phase">🩸 <strong>Encounter-Fähigkeit:</strong> ${escapeHtml(grantedText)}</div>`:""}${challengeGearText?`<div class="node-detail-row node-detail-phase">🎯 <strong>Challenge-Ausrüstung:</strong> ${escapeHtml(challengeGearText)}</div>`:""}${REAL_ABILITY_IDS.includes(Number(selectedEncounter.forcedHeroAbility))?`<div class="node-detail-row node-detail-phase">⚡ <strong>Startfähigkeit:</strong> ${escapeHtml(ABILITIES[Number(selectedEncounter.forcedHeroAbility)]?.name||String(selectedEncounter.forcedHeroAbility))} ist fest vorgegeben.</div>`:""}${selectedEncounter.disableBonusDraft?`<div class="node-detail-row node-detail-rule">🚫 <strong>Fähigkeits-Drafts:</strong> In diesem Encounter deaktiviert.</div>`:`<div class="node-detail-row node-detail-phase">✨ <strong>Bonus-Draft:</strong> erster eigener Gegner-Kill oder ≤${masteryThreshold} HP – was zuerst passiert.</div>`}${rules.map(r=>`<div class="node-detail-row node-detail-rule">⚙ <strong>${escapeHtml(r.name)}:</strong> ${escapeHtml(r.desc)}</div>`).join("")}${phase?`<div class="node-detail-row node-detail-phase">👹 <strong>Boss-Phase bei ${Math.round((phase.threshold||.5)*100)} %:</strong> ${escapeHtml(phase.title)} · ${escapeHtml(phase.desc)}</div>`:""}`;}else campaignEncounterDetail.innerHTML="";
 
     const secondaryUnlocked=new Set(progress?.unlockedSecondaryAbilities||[]);
@@ -656,7 +669,7 @@
     // Profil und Encounter zuerst sichern, danach den Kampfzustand verlassen.
     const heroProfileId=players.find(p=>p?.campaignTeam==="hero"&&p.profileId)?.profileId||null;
     const keepProfileId=campaignProfileId||gameContext.profileId||heroProfileId||null;
-    const keepEncounterId=gameContext.encounterId||campaignEncounterId||null;
+    const keepEncounterId=campaignEncounterId||gameContext.encounterId||null;
 
     clearBotAutomation();
     tutorialMode=false;
@@ -675,12 +688,37 @@
     rotatingBoard.style.transform="rotate(0deg) scale(1)";
     restartBtn.disabled=false;
 
+    roundWinnerHandled=false;
+    roundWinnerIndex=null;
+    lastPlaceIndex=null;
+    roundEliminationOrder=[];
+    nextRoundAbilityRolls=[];
+    secondAbilityDraftBusy=false;
+    secondAbilityDraftIndex=null;
+    secondAbilityDraftQueue=[];
+    deferredBaseAdvance=false;
+    pendingCampaignAttackStart=null;
+    pendingDamage=null;
+    pendingHeal=null;
+    pendingExtraDamageFx=[];
+    pendingExtraHealFx=[];
+    attackFace=null;
+    attackTarget=null;
+    attackHits=0;
+    attackDamage=0;
+    phase="idle";
+
     if(keepProfileId && getProfile(keepProfileId)) campaignProfileId=keepProfileId;
     if(keepEncounterId && campaignEncounterById(keepEncounterId)){
       campaignEncounterId=keepEncounterId;
       campaignWorldId=campaignEncounterById(keepEncounterId).world||"house";
     }
-    gameContext={mode:"campaign-map",returnScreen:"campaign",profileId:campaignProfileId||keepProfileId,encounterId:campaignEncounterId||keepEncounterId};
+    gameContext={
+      mode:"campaign-map",
+      returnScreen:"campaign",
+      profileId:campaignProfileId||keepProfileId,
+      encounterId:campaignEncounterId||null
+    };
 
     renderCampaign();
     hideFrontScreens();
@@ -910,7 +948,9 @@
     campaignMetrics=freshCampaignMetrics();
     resetEncounterRuntime(encounter);
 
-    const heroStartHp=Math.max(1,Number(encounter.playerHp)||START_HP);
+    const baseHeroStartHp=Math.max(1,Number(encounter.playerHp)||START_HP);
+    const masteryHpBonus=window.WDMastery?.hpBonus?.(profile,encounter)||0;
+    const heroStartHp=baseHeroStartHp+masteryHpBonus;
     const hero={
       name:profile.name,battleTag:`#${profile.tagNumber}`,profileId:profile.id,botLevel:"human",campaignTeam:"hero",hp:heroStartHp,maxHp:heroStartHp,campaignStartHp:heroStartHp,
       ability:heroAbility,secondAbility:startSecond,thirdAbility:startThird,fourthAbility:startFourth,secondAbilityUnlocked:startSecond!=null?true:(encounter.startSecondAbilityDraft?true:unlocked.length<2),thirdAbilityUnlocked:startThird!=null,fourthAbilityUnlocked:startFourth!=null,campaignBonusDraftUsed:false,rolledAbility:"CAMPAIGN",primaryWasChosen:true,secondAbilityWasChosen:false,thirdAbilityWasChosen:false,fourthAbilityWasChosen:false,
