@@ -48,7 +48,8 @@
       lifetimeXp:Math.max(0,Math.floor(Number(raw.lifetimeXp)||0)),
       hpLevel:Math.max(0,Math.min(MAX_HP_LEVEL,Math.floor(Number(raw.hpLevel)||0))),
       damageLevel:Math.max(0,Math.min(MAX_DAMAGE_LEVEL,Math.floor(Number(raw.damageLevel)||0))),
-      abilityLevel:Math.max(0,Math.min(MAX_ABILITY_LEVEL,Math.floor(Number(raw.abilityLevel)||0)))
+      abilityLevel:Math.max(0,Math.min(MAX_ABILITY_LEVEL,Math.floor(Number(raw.abilityLevel)||0))),
+      retroBackfillDone:!!raw.retroBackfillDone
     };
   }
 
@@ -370,6 +371,62 @@
   }
   function refreshCampaignUi(){refreshAll();}
 
+
+  function retroCompletedEncountersForProfile(profile,mode){
+    if(!profile) return [];
+
+    if(mode==="duo"){
+      const out=new Set();
+      try{
+        const pairs=profile.campaign?.duoProgress||{};
+        // Duo progress is stored on profile-pair keys. Count only encounters from W2+.
+        Object.values(pairs).forEach(progress=>{
+          (progress?.completedEncounters||[]).forEach(id=>{
+            const encounter=duoEncounterById(id);
+            if(encounter&&encounterEligible("duo",encounter)) out.add(id);
+          });
+        });
+      }catch(_err){}
+      return [...out];
+    }
+
+    if(mode==="trio"){
+      const out=new Set();
+      try{
+        const groups=profile.campaign?.trioProgress||{};
+        Object.values(groups).forEach(progress=>{
+          (progress?.completedEncounters||[]).forEach(id=>{
+            const encounter=trioEncounterById(id);
+            if(encounter&&encounterEligible("trio",encounter)) out.add(id);
+          });
+        });
+      }catch(_err){}
+      return [...out];
+    }
+
+    return [];
+  }
+
+  function applyRetroBackfill(profile,mode){
+    if(!profile||!["duo","trio"].includes(mode)) return 0;
+    const m=ensure(profile,mode);
+    if(m.retroBackfillDone) return 0;
+
+    const completed=retroCompletedEncountersForProfile(profile,mode);
+    const targetLifetime=completed.length*100;
+    const beforeLifetime=Math.max(0,Math.floor(Number(m.lifetimeXp)||0));
+    const beforeSpendable=Math.max(0,Math.floor(Number(m.xp)||0));
+
+    if(targetLifetime>beforeLifetime){
+      const delta=targetLifetime-beforeLifetime;
+      m.lifetimeXp=targetLifetime;
+      m.xp=beforeSpendable+delta;
+    }
+
+    m.retroBackfillDone=true;
+    return Math.max(0,targetLifetime-beforeLifetime);
+  }
+
   function init(){
     try{
       let migrated=false;
@@ -377,6 +434,12 @@
         const before=!!p.campaign?.masteryModes?.solo;
         ensureModes(p);
         if(!before) migrated=true;
+
+        const duoBefore=!!p.campaign?.masteryModes?.duo?.retroBackfillDone;
+        const trioBefore=!!p.campaign?.masteryModes?.trio?.retroBackfillDone;
+        applyRetroBackfill(p,"duo");
+        applyRetroBackfill(p,"trio");
+        if(!duoBefore||!trioBefore) migrated=true;
       });
       if(migrated) saveGameData();
     }catch(_err){}
@@ -395,7 +458,7 @@
 
   window.WDMastery=Object.freeze({
     ensure,ensureModes,encounterEligible,modeUnlocked,hpBonus,damageBonus,damageBonusForPlayer,
-    abilityThreshold,abilityThresholdForPlayer,awardXp,refreshCampaignUi,refreshAll,open
+    abilityThreshold,abilityThresholdForPlayer,awardXp,applyRetroBackfill,refreshCampaignUi,refreshAll,open
   });
   init();
 })();
