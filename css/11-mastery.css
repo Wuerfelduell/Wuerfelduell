@@ -715,3 +715,11 @@ body.mastery-open{
 .mastery-fusion-placeholder{display:flex;align-items:center;justify-content:center;gap:7px;width:min(270px,100%);margin:10px auto 0;padding:9px 12px;border-radius:14px;border:1px dashed rgba(180,125,255,.25);background:rgba(120,75,190,.06);color:#c9c0d9}.mastery-fusion-placeholder strong{font-size:13px}.mastery-fusion-placeholder small{font-size:7px;color:#8d839a}
 .mastery-locked-info{position:absolute;inset:0;z-index:80;display:grid;place-items:center;padding:18px;background:rgba(2,5,10,.68);backdrop-filter:blur(6px)}.mastery-locked-info.hidden{display:none!important}.mastery-locked-card{position:relative;width:min(400px,100%);padding:18px;border:1px solid rgba(255,255,255,.13);border-radius:18px;background:linear-gradient(180deg,#1a2130,#0e141e);box-shadow:0 20px 60px rgba(0,0,0,.55)}.mastery-locked-card>button{position:absolute;right:10px;top:10px;width:34px;height:34px;min-width:34px;padding:0}.mastery-locked-card h3{margin:5px 38px 8px 0}.mastery-locked-cost{display:inline-block;padding:5px 8px;border-radius:999px;background:rgba(150,100,255,.1);font-size:10px}.mastery-locked-card p{font-size:11px;line-height:1.45;color:#c4ccda}.mastery-locked-card small{color:#788497}
 @media(max-width:620px){.mastery-ability-columns{grid-template-columns:1fr}.mastery-ability-pair-head{font-size:10px}.mastery-mode-bar{align-items:flex-start;flex-direction:column}.mastery-profile-picker{width:100%}.mastery-profile-picker select{flex:1}}
+
+/* V27.9.2 — Ability L1 progression states */
+.mastery-ability-unlocked{opacity:1!important;filter:none!important;border-color:rgba(128,187,255,.28)!important}
+.mastery-ability-unlocked .aml-node-core{box-shadow:0 0 14px rgba(105,174,255,.18)!important}
+.mastery-ability-unlocked .aml-node-tag{border-color:rgba(128,187,255,.22)!important}
+.mastery-ability-unlocked .aml-node-tag small{color:#8fc4ff!important}
+.mastery-ability-pair .aml-node.available{cursor:pointer!important;opacity:1!important;filter:none!important}
+.mastery-ability-pair .aml-node.owned{opacity:1!important;filter:none!important}
