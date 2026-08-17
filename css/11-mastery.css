@@ -274,3 +274,7 @@ body.mastery-open{
     border-radius:20px 20px 14px 14px;
   }
 }
+
+/* V27.8.4 — XP currency */
+.mastery-xp-currency{height:2px;opacity:.35}
+.mastery-node:not(.owned) small{font-weight:900}
