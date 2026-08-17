@@ -1,72 +1,38 @@
 (() => {
-  const XP_PER_POINT=100;
   const MAX_HP_LEVEL=3;
   const MAX_DAMAGE_LEVEL=3;
   const MAX_ABILITY_LEVEL=5;
 
   function masteryDefaults(){
-    return {xp:0,hpLevel:0,damageLevel:0,abilityLevel:0,retroGranted:false};
+    return {
+      xp:0,                  // spendable XP currency
+      lifetimeXp:0,          // total earned after migration
+      hpLevel:0,
+      damageLevel:0,
+      abilityLevel:0,
+      xpCurrencyMigrated:false
+    };
   }
 
-  function retroactiveBaselineXp(profile){
-    const completed=new Set(profile?.campaign?.completedEncounters||[]);
+  function clampLevel(value,max){
+    return Math.max(0,Math.min(max,Math.floor(Number(value)||0)));
+  }
+
+  function perkCostForLevel(level){
+    return Math.max(1,Math.floor(Number(level)||1))*100;
+  }
+
+  function branchSpent(level){
     let total=0;
-
-    CAMPAIGN_ENCOUNTERS.forEach(encounter=>{
-      const wi=CAMPAIGN_WORLDS.findIndex(w=>w.id===(encounter.world||"house"));
-      if(wi<2 || !completed.has(encounter.id)) return;
-
-      total+=25; // 10 regular clear + 15 first-clear value
-
-      const list=CAMPAIGN_ENCOUNTERS.filter(e=>(e.world||"house")===(encounter.world||"house"));
-      const number=list.findIndex(e=>e.id===encounter.id)+1;
-      if(number===10 || number===15) total+=25;
-    });
-
+    for(let i=1;i<=Math.max(0,Math.floor(Number(level)||0));i++){
+      total+=perkCostForLevel(i);
+    }
     return total;
   }
 
-  function applyRetroactiveXp(profile){
-    const m=profile?.campaign?.mastery;
-    if(!m || m.retroGranted) return 0;
-
-    const baseline=retroactiveBaselineXp(profile);
-    const before=Math.max(0,Math.floor(Number(m.xp)||0));
-
-    // max() prevents doubling XP already earned in V27.8.0.
-    m.xp=Math.max(before,baseline);
-    m.retroGranted=true;
-    return Math.max(0,m.xp-before);
-  }
-
-  function ensure(profile){
-    if(!profile) return masteryDefaults();
-    profile.campaign=profile.campaign||{};
-    const raw=(profile.campaign.mastery&&typeof profile.campaign.mastery==="object")
-      ? profile.campaign.mastery
-      : {};
-    profile.campaign.mastery={
-      xp:Math.max(0,Math.floor(Number(raw.xp)||0)),
-      hpLevel:Math.max(0,Math.min(MAX_HP_LEVEL,Math.floor(Number(raw.hpLevel)||0))),
-      damageLevel:Math.max(0,Math.min(MAX_DAMAGE_LEVEL,Math.floor(Number(raw.damageLevel)||0))),
-      abilityLevel:Math.max(0,Math.min(MAX_ABILITY_LEVEL,Math.floor(Number(raw.abilityLevel)||0))),
-      retroGranted:!!raw.retroGranted
-    };
-    applyRetroactiveXp(profile);
-    return profile.campaign.mastery;
-  }
-
-  function spentPoints(profile){
-    const m=ensure(profile);
-    return m.hpLevel+m.damageLevel+m.abilityLevel;
-  }
-
-  function earnedPoints(profile){
-    return Math.floor(ensure(profile).xp/XP_PER_POINT);
-  }
-
-  function freePoints(profile){
-    return Math.max(0,earnedPoints(profile)-spentPoints(profile));
+  function totalSpent(profile){
+    const m=ensure(profile,false);
+    return branchSpent(m.hpLevel)+branchSpent(m.damageLevel)+branchSpent(m.abilityLevel);
   }
 
   function worldIndex(encounter){
@@ -85,6 +51,74 @@
     return !!world3 && (world3.unlockRequires||[]).every(id=>completed.has(id));
   }
 
+  function completedW3Plus(profile){
+    const completed=new Set(profile?.campaign?.completedEncounters||[]);
+    return CAMPAIGN_ENCOUNTERS.filter(encounter=>
+      worldIndex(encounter)>=2 && completed.has(encounter.id)
+    );
+  }
+
+  function oldRetroBaseline(profile){
+    // V27.8.0-27.8.3 retro formula:
+    // 25 per first clear +25 extra on world L10/L15.
+    let total=0;
+    for(const encounter of completedW3Plus(profile)){
+      total+=25;
+      const list=CAMPAIGN_ENCOUNTERS.filter(e=>(e.world||"house")===(encounter.world||"house"));
+      const number=list.findIndex(e=>e.id===encounter.id)+1;
+      if(number===10||number===15) total+=25;
+    }
+    return total;
+  }
+
+  function newRetroBaseline(profile){
+    // New rule: every already completed W3+ encounter = 100 XP.
+    return completedW3Plus(profile).length*100;
+  }
+
+  function migrateToXpCurrency(profile,m){
+    if(m.xpCurrencyMigrated) return false;
+
+    const oldXp=Math.max(0,Math.floor(Number(m.xp)||0));
+    const oldBaseline=oldRetroBaseline(profile);
+    const extraFarmXp=Math.max(0,oldXp-oldBaseline);
+    const lifetime=Math.max(
+      Math.max(0,Math.floor(Number(m.lifetimeXp)||0)),
+      newRetroBaseline(profile)+extraFarmXp
+    );
+
+    m.lifetimeXp=lifetime;
+    m.xp=Math.max(0,lifetime-(
+      branchSpent(m.hpLevel)+
+      branchSpent(m.damageLevel)+
+      branchSpent(m.abilityLevel)
+    ));
+    m.xpCurrencyMigrated=true;
+    return true;
+  }
+
+  function ensure(profile,runMigration=true){
+    if(!profile) return masteryDefaults();
+    profile.campaign=profile.campaign||{};
+    const raw=(profile.campaign.mastery&&typeof profile.campaign.mastery==="object")
+      ? profile.campaign.mastery
+      : {};
+
+    const m={
+      xp:Math.max(0,Math.floor(Number(raw.xp)||0)),
+      lifetimeXp:Math.max(0,Math.floor(Number(raw.lifetimeXp)||0)),
+      hpLevel:clampLevel(raw.hpLevel,MAX_HP_LEVEL),
+      damageLevel:clampLevel(raw.damageLevel,MAX_DAMAGE_LEVEL),
+      abilityLevel:clampLevel(raw.abilityLevel,MAX_ABILITY_LEVEL),
+      xpCurrencyMigrated:!!raw.xpCurrencyMigrated
+    };
+
+    // Legacy flag is intentionally ignored after converting to XP currency.
+    profile.campaign.mastery=m;
+    if(runMigration) migrateToXpCurrency(profile,m);
+    return m;
+  }
+
   function hpBonus(profile,encounter){
     return applies(profile,encounter)?ensure(profile).hpLevel*2:0;
   }
@@ -101,14 +135,11 @@
       const profile=getProfile(player.profileId||campaignProfileId);
       const encounter=campaignEncounterById(campaignEncounterId);
       return damageBonus(profile,encounter);
-    }catch(_err){
-      return 0;
-    }
+    }catch(_err){return 0;}
   }
 
   function abilityThreshold(profile,encounter){
-    const base=15;
-    return applies(profile,encounter)?base+ensure(profile).abilityLevel:base;
+    return applies(profile,encounter)?15+ensure(profile).abilityLevel:15;
   }
 
   function abilityThresholdForPlayer(index){
@@ -119,29 +150,18 @@
       const profile=getProfile(player.profileId||campaignProfileId);
       const encounter=campaignEncounterById(campaignEncounterId);
       return abilityThreshold(profile,encounter);
-    }catch(_err){
-      return 15;
-    }
-  }
-
-  function isBoss(encounter){
-    if(!encounter) return false;
-    const list=CAMPAIGN_ENCOUNTERS.filter(e=>(e.world||"house")===(encounter.world||"house"));
-    const n=list.findIndex(e=>e.id===encounter.id)+1;
-    return n===10||n===15;
+    }catch(_err){return 15;}
   }
 
   function awardCampaignXp(profile,encounter,newlyCompleted){
     if(!profile||!applies(profile,encounter)) return 0;
     const m=ensure(profile);
 
-    // W3+ successful challenge clear:
-    // 10 XP repeat baseline, +15 first clear, +25 boss.
-    let amount=10;
-    if(newlyCompleted) amount+=15;
-    if(isBoss(encounter)) amount+=25;
-
+    // First clear is the main progression source.
+    // Repeats still give a small farm reward.
+    const amount=newlyCompleted?100:20;
     m.xp+=amount;
+    m.lifetimeXp+=amount;
     return amount;
   }
 
@@ -178,20 +198,24 @@
     ];
   }
 
-  function nodeHtml(branch,index,free){
+  function nodeHtml(branch,index,xp){
     const level=index+1;
+    const cost=perkCostForLevel(level);
     const owned=branch.level>=level;
-    const available=!owned && branch.level===index && free>0;
-    const locked=!owned&&!available;
+    const next=!owned && branch.level===index;
+    const affordable=next && xp>=cost;
+    const locked=!owned&&!affordable;
     const value=branch.values[index]||`Level ${level}`;
+
     return `<button type="button"
-      class="mastery-node${owned?" owned":""}${available?" available":""}${locked?" locked":""}"
+      class="mastery-node${owned?" owned":""}${affordable?" available":""}${locked?" locked":""}"
       data-mastery-branch="${branch.key}"
       data-mastery-level="${level}"
-      ${available?"":"disabled"}>
+      data-mastery-cost="${cost}"
+      ${affordable?"":"disabled"}>
       <span class="mastery-node-dot">${owned?"✓":level}</span>
       <span class="mastery-node-value">${value}</span>
-      <small>${owned?"AKTIV":available?"1 PUNKT":"GESPERRT"}</small>
+      <small>${owned?"AKTIV":next?`${cost} XP`:"GESPERRT"}</small>
     </button>`;
   }
 
@@ -201,7 +225,7 @@
   }
 
   function currentEncounter(){
-    return campaignEncounterById(campaignEncounterId) || null;
+    return campaignEncounterById(campaignEncounterId)||null;
   }
 
   function renderModal(){
@@ -217,23 +241,18 @@
     }
 
     const m=ensure(profile);
-    const earned=earnedPoints(profile);
-    const spent=spentPoints(profile);
-    const free=freePoints(profile);
-    const level=earned;
-
     summary.innerHTML=`
       <div class="mastery-summary-main">
         <strong>${escapeHtml(profile.name)}</strong>
-        <span>Mastery ${level}</span>
+        <span>⚔️ Mastery</span>
       </div>
       <div class="mastery-xp-line">
-        <span>⭐ ${m.xp} XP</span>
-        <span>◆ ${free} freie Punkte</span>
-        <span>${spent} / ${earned} investiert</span>
+        <span>⭐ ${m.xp} XP verfügbar</span>
+        <span>Σ ${m.lifetimeXp} XP verdient</span>
+        <span>-${totalSpent(profile)} XP investiert</span>
       </div>
-      <div class="mastery-xp-track"><span style="width:${m.xp%XP_PER_POINT}%"></span></div>
-      <small>${XP_PER_POINT-(m.xp%XP_PER_POINT||0)} XP bis zum nächsten Punkt · Effekte gelten nur in Solo Welt 3+</small>
+      <div class="mastery-xp-track mastery-xp-currency"></div>
+      <small>XP ist die direkte Währung. Nächste Perkstufe kostet 100 / 200 / 300 / … XP.</small>
     `;
 
     const branches=branchData(profile);
@@ -248,7 +267,7 @@
           <span class="mastery-branch-level">${branch.level}/${branch.max}</span>
         </div>
         <div class="mastery-tree-line">
-          ${Array.from({length:branch.max},(_,i)=>nodeHtml(branch,i,free)).join("")}
+          ${Array.from({length:branch.max},(_,i)=>nodeHtml(branch,i,m.xp)).join("")}
         </div>
       </section>
     `).join("");
@@ -256,12 +275,19 @@
     content.querySelectorAll("[data-mastery-branch]").forEach(btn=>{
       btn.addEventListener("click",()=>{
         const profile=currentProfile();
-        if(!profile||freePoints(profile)<=0) return;
-        const branch=btn.dataset.masteryBranch;
+        if(!profile) return;
         const m=ensure(profile);
+        const branch=btn.dataset.masteryBranch;
+        const level=Math.floor(Number(btn.dataset.masteryLevel)||0);
+        const cost=perkCostForLevel(level);
         const caps={hpLevel:MAX_HP_LEVEL,damageLevel:MAX_DAMAGE_LEVEL,abilityLevel:MAX_ABILITY_LEVEL};
-        if(!(branch in caps)||m[branch]>=caps[branch]) return;
-        m[branch]++;
+
+        if(!(branch in caps)) return;
+        if(m[branch]!==level-1 || level>caps[branch]) return;
+        if(m.xp<cost) return;
+
+        m.xp-=cost;
+        m[branch]=level;
         saveGameData();
         renderModal();
         try{renderCampaign();}catch(_err){}
@@ -289,15 +315,14 @@
     if(!counter||!button) return;
 
     if(!profile){
-      counter.textContent="⭐ 0 XP · 0 frei";
+      counter.textContent="⭐ 0 XP";
       button.disabled=true;
       button.textContent="🔒 Mastery";
       return;
     }
 
     const m=ensure(profile);
-    const free=freePoints(profile);
-    counter.textContent=`⭐ ${m.xp} XP · ◆ ${free} frei`;
+    counter.textContent=`⭐ ${m.xp} XP`;
 
     const on=unlocked(profile);
     button.disabled=!on;
@@ -308,26 +333,24 @@
   }
 
   function initUi(){
-    const openBtn=document.getElementById("campaignMasteryBtn");
-    const closeBtn=document.getElementById("masteryCloseBtn");
+    document.getElementById("campaignMasteryBtn")?.addEventListener("click",open);
+    document.getElementById("masteryCloseBtn")?.addEventListener("click",close);
+
     const modal=document.getElementById("masteryModal");
-    openBtn?.addEventListener("click",open);
-    closeBtn?.addEventListener("click",close);
     modal?.addEventListener("click",e=>{if(e.target===modal) close();});
     document.getElementById("campaignProfileSelect")?.addEventListener("change",()=>setTimeout(()=>refreshCampaignUi(),0));
-    refreshCampaignUi();
 
-    // Ensure existing profiles receive normalized Mastery containers lazily,
-    // without touching old campaign progress.
     try{
       let migrated=false;
       (saveData.profiles||[]).forEach(profile=>{
-        const before=!!profile?.campaign?.mastery?.retroGranted;
+        const before=!!profile?.campaign?.mastery?.xpCurrencyMigrated;
         ensure(profile);
-        if(!before && profile?.campaign?.mastery?.retroGranted) migrated=true;
+        if(!before && profile?.campaign?.mastery?.xpCurrencyMigrated) migrated=true;
       });
       if(migrated) saveGameData();
     }catch(_err){}
+
+    refreshCampaignUi();
   }
 
   window.WDMastery=Object.freeze({
@@ -340,9 +363,9 @@
     abilityThreshold,
     abilityThresholdForPlayer,
     awardCampaignXp,
-    earnedPoints,
-    freePoints,
     refreshCampaignUi,
+    perkCostForLevel,
+    totalSpent,
     open
   });
 
