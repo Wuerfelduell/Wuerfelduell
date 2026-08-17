@@ -698,3 +698,20 @@ body.mastery-open{
     font-size:13px!important;
   }
 }
+
+/* V27.9.0 Multi-Campaign Mastery + locked Ability Sheet */
+.mastery-mode-bar{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:8px 0}
+#masteryModeBadge{padding:5px 9px;border-radius:999px;background:rgba(150,100,255,.12);border:1px solid rgba(170,120,255,.2);font-size:9px;font-weight:1000;letter-spacing:.08em}
+.mastery-profile-picker{display:flex;align-items:center;gap:7px;font-size:9px;color:#9da8ba}.mastery-profile-picker select{min-width:130px;padding:6px 8px}
+.mastery-ability-sheet-head{display:flex;align-items:end;justify-content:space-between;gap:10px;margin:22px 0 10px;padding-top:15px;border-top:1px solid rgba(255,255,255,.08)}
+.mastery-ability-sheet-head h3{margin:2px 0 0}.mastery-ability-sheet-head>span{font-size:9px;color:#8d97a9}
+.mastery-ability-sheet{display:grid;gap:12px}
+.mastery-ability-pair{position:relative;padding:12px;border:1px solid rgba(255,255,255,.09);border-radius:18px;background:linear-gradient(180deg,rgba(255,255,255,.035),rgba(255,255,255,.015))}
+.mastery-ability-pair-head{display:grid;grid-template-columns:1fr auto 1fr;gap:8px;align-items:center;margin-bottom:8px;color:#e8edf8;font-size:11px}.mastery-ability-pair-head strong:last-child{text-align:right}.mastery-ability-pair-head span{color:#7e899b;font-size:8px}
+.mastery-ability-columns{display:grid;grid-template-columns:1fr 1fr;gap:8px}.mastery-ability-columns>div{display:grid;gap:7px}.mastery-ability-columns.single{grid-template-columns:1fr;max-width:320px;margin:auto}
+.mastery-ability-locked{position:relative!important;transform:none!important;width:100%!important;min-height:70px!important;grid-template-columns:58px minmax(0,1fr)!important;opacity:.72!important;filter:saturate(.55)}
+.mastery-ability-locked .aml-node-orbit{width:58px!important;height:58px!important;left:0!important}.mastery-ability-locked .aml-node-core{width:44px!important;height:44px!important;left:7px!important;top:7px!important}
+.mastery-ability-locked .aml-node-tag{left:52px!important;top:12px!important;min-width:0!important;max-width:calc(100% - 48px)!important}.mastery-ability-locked .aml-node-tag strong{font-size:9px!important}.mastery-ability-locked .aml-node-tag small{font-size:6px!important}
+.mastery-fusion-placeholder{display:flex;align-items:center;justify-content:center;gap:7px;width:min(270px,100%);margin:10px auto 0;padding:9px 12px;border-radius:14px;border:1px dashed rgba(180,125,255,.25);background:rgba(120,75,190,.06);color:#c9c0d9}.mastery-fusion-placeholder strong{font-size:13px}.mastery-fusion-placeholder small{font-size:7px;color:#8d839a}
+.mastery-locked-info{position:absolute;inset:0;z-index:80;display:grid;place-items:center;padding:18px;background:rgba(2,5,10,.68);backdrop-filter:blur(6px)}.mastery-locked-info.hidden{display:none!important}.mastery-locked-card{position:relative;width:min(400px,100%);padding:18px;border:1px solid rgba(255,255,255,.13);border-radius:18px;background:linear-gradient(180deg,#1a2130,#0e141e);box-shadow:0 20px 60px rgba(0,0,0,.55)}.mastery-locked-card>button{position:absolute;right:10px;top:10px;width:34px;height:34px;min-width:34px;padding:0}.mastery-locked-card h3{margin:5px 38px 8px 0}.mastery-locked-cost{display:inline-block;padding:5px 8px;border-radius:999px;background:rgba(150,100,255,.1);font-size:10px}.mastery-locked-card p{font-size:11px;line-height:1.45;color:#c4ccda}.mastery-locked-card small{color:#788497}
+@media(max-width:620px){.mastery-ability-columns{grid-template-columns:1fr}.mastery-ability-pair-head{font-size:10px}.mastery-mode-bar{align-items:flex-start;flex-direction:column}.mastery-profile-picker{width:100%}.mastery-profile-picker select{flex:1}}
