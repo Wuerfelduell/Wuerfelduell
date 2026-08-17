@@ -125,7 +125,7 @@
     phase="idle";
     isAnimating=false;
     attackFace=null;attackTarget=null;pendingCampaignAttackStart=null;attackHits=0;attackDamage=0;firstAttackRoll=true;currentAttackRollNewHits=0;
-    baseRerollUsed=false;loadedDiceUsed=false;lastBaseRollIndices=[];attackPowerUsed=false;precisionUses=0;
+    baseRerollUsed=false;luckRerollIndex=null;luckRerollSecondUsed=false;loadedDiceUsed=false;loadedDiceUses=0;lastBaseRollIndices=[];attackPowerUsed=false;attackPowerUses=0;precisionUses=0;
     momentumBonus=0;bloodPriceNeighbors=[];bloodRushActiveThisAttack=false;doubleTapApplied=false;
     pendingDamage=null;pendingHeal=null;pendingExtraDamageFx=[];pendingExtraHealFx=[];
     roundNumber=1;roundEliminationOrder=[];lastPlaceIndex=null;roundWinnerHandled=false;roundWinnerIndex=null;nextRoundAbilityRolls=[];

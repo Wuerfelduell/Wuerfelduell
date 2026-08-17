@@ -194,7 +194,7 @@
 
     randomizePlayerOrder(false);resetRoundStats();current=0;prepareBloodRushForTurn(current);dice=freshDice();phase="idle";isAnimating=false;
     attackFace=null;attackTarget=null;pendingCampaignAttackStart=null;attackHits=0;attackDamage=0;firstAttackRoll=true;currentAttackRollNewHits=0;
-    baseRerollUsed=false;loadedDiceUsed=false;lastBaseRollIndices=[];attackPowerUsed=false;precisionUses=0;momentumBonus=0;bloodPriceNeighbors=[];bloodRushActiveThisAttack=false;doubleTapApplied=false;pendingDamage=null;pendingHeal=null;
+    baseRerollUsed=false;luckRerollIndex=null;luckRerollSecondUsed=false;loadedDiceUsed=false;loadedDiceUses=0;lastBaseRollIndices=[];attackPowerUsed=false;attackPowerUses=0;precisionUses=0;momentumBonus=0;bloodPriceNeighbors=[];bloodRushActiveThisAttack=false;doubleTapApplied=false;pendingDamage=null;pendingHeal=null;
     roundNumber=1;roundEliminationOrder=[];lastPlaceIndex=null;roundWinnerHandled=false;roundWinnerIndex=null;nextRoundAbilityRolls=[];eventPopupQueue=[];eventPopupBusy=false;secondAbilityDraftBusy=false;secondAbilityDraftIndex=null;secondAbilityDraftSlot=2;deferredBaseAdvance=false;gamblingRolling=false;gamblingBaseTotal=null;gamblingModal.classList.add("hidden");highStakesRolling=false;highStakesDecisionThisAttack=false;highStakesModal.classList.add("hidden");perfect25Rolling=false;perfect25D4Rolling=false;perfect25BaseTotal=null;pendingPerfect25Total=null;perfect25Modal.classList.add("hidden");perfect25D4Modal.classList.add("hidden");insuranceRolling=false;insuranceContext=null;insuranceModal.classList.add("hidden");counterRolling=false;counterContext=null;counterDiceState=[];counterHits=0;counterFirstRoll=true;pendingCounterattack=null;deferredAttackFinish=false;counterModal.classList.add("hidden");wildcardFace=null;secondAbilityDraftQueue=[];secondAbilityModal.classList.add("hidden");
     logEl.innerHTML="";winnerBox.classList.add("hidden");nextRoundBox.classList.add("hidden");hideFrontScreens();game.classList.remove("hidden","campaign-game","trio-game");document.body.classList.add("playing");window.scrollTo?.(0,0);
 
@@ -212,6 +212,8 @@
   };
 
   gamblingDie.onclick=()=>{if(!isBotPlayer(current))rollGamblingMan();};
+  if(gamblingRetryBtn) gamblingRetryBtn.onclick=()=>{if(!isBotPlayer(current))startGamblingRetry();};
+  if(gamblingRetryEndBtn) gamblingRetryEndBtn.onclick=()=>{if(!isBotPlayer(current))declineGamblingRetry();};
   perfect25Die.onclick=()=>{if(!isBotPlayer(current))rollPerfect25();};
   perfect25D4Die.onclick=()=>{if(!isBotPlayer(current))rollPerfect25D4();};
   highStakesDie.onclick=()=>{if(!isBotPlayer(current))rollHighStakes();};

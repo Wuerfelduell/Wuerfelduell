@@ -140,7 +140,7 @@
         ?Math.max(1,Number(p.campaignStartHp)||Number(p.maxHp)||START_HP)
         :(special?rules.startHp:START_HP);
       p.hp=resetHp;p.maxHp=resetHp;
-      p.momentumStreak=0;p.firstClassStreak=0;p.perfect25AttackArmed=false;p.lastStandUsed=false;p.roundLastStandTriggered=false;p.damageSinceLastOwnTurn=false;p.bloodRushPrimed=false;p.voluntaryHpPaidThisTurn=false;p.botBloodUsesThisAttack=0;
+      p.momentumStreak=0;p.firstClassStreak=0;p.perfect25AttackArmed=false;p.lastStandUsed=false;p.roundLastStandTriggered=false;p.damageSinceLastOwnTurn=false;p.bloodRushPrimed=false;p.voluntaryHpPaidThisTurn=false;p.botBloodUsesThisAttack=0;p.masteryPoisonTurns=0;p.masteryPoisonSource=null;p.masteryUnderdogTurnActive=false;p.masterySelfDamageSinceLastOwnTurn=false;
     });
 
     roundNumber++;roundEliminationOrder=[];lastPlaceIndex=null;roundWinnerHandled=false;roundWinnerIndex=null;nextRoundAbilityRolls=[];
@@ -148,7 +148,7 @@
     gamblingRolling=false;gamblingBaseTotal=null;gamblingModal.classList.add("hidden");highStakesRolling=false;highStakesDecisionThisAttack=false;highStakesModal.classList.add("hidden");perfect25Rolling=false;perfect25D4Rolling=false;perfect25BaseTotal=null;pendingPerfect25Total=null;perfect25Modal.classList.add("hidden");perfect25D4Modal.classList.add("hidden");insuranceRolling=false;insuranceContext=null;insuranceModal.classList.add("hidden");counterRolling=false;counterContext=null;counterDiceState=[];counterHits=0;counterFirstRoll=true;pendingCounterattack=null;deferredAttackFinish=false;counterModal.classList.add("hidden");wildcardFace=null;secondAbilityDraftQueue=[];secondAbilityModal.classList.add("hidden");
     randomizePlayerOrder(true);resetRoundStats();current=Math.max(0,players.indexOf(starterPlayer));prepareBloodRushForTurn(current);
     dice=freshDice();phase="idle";isAnimating=false;attackFace=null;attackTarget=null;pendingCampaignAttackStart=null;attackHits=0;attackDamage=0;firstAttackRoll=true;currentAttackRollNewHits=0;
-    baseRerollUsed=false;loadedDiceUsed=false;lastBaseRollIndices=[];attackPowerUsed=false;precisionUses=0;momentumBonus=0;bloodPriceNeighbors=[];bloodRushActiveThisAttack=false;doubleTapApplied=false;pendingDamage=null;pendingHeal=null;
+    baseRerollUsed=false;luckRerollIndex=null;luckRerollSecondUsed=false;loadedDiceUsed=false;loadedDiceUses=0;lastBaseRollIndices=[];attackPowerUsed=false;attackPowerUses=0;precisionUses=0;momentumBonus=0;bloodPriceNeighbors=[];bloodRushActiveThisAttack=false;doubleTapApplied=false;pendingDamage=null;pendingHeal=null;
     winnerBox.classList.add("hidden");nextRoundBox.classList.add("hidden");logEl.innerHTML="";
     addLog(`Runde ${roundNumber} startet. ${players[current].name} beginnt als Letztplatzierter der vorherigen Runde.`);
     players.forEach((p,i)=>{

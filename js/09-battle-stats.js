@@ -30,6 +30,7 @@
   function recordSelfDamage(index,amount){
     if(index==null || !roundStats[index] || amount<=0) return;
     roundStats[index].selfDamage+=amount;
+    if(players[index] && hasMasteryUpgrade(23,1,index)) players[index].masterySelfDamageSinceLastOwnTurn=true;
   }
 
   function rollTrackedD6(index=current){
@@ -57,7 +58,8 @@
     }
 
     const p=players[index];
-    const healAmount=encounterHealAmount(index,1);
+    const masteryTwelve=hasMasteryUpgrade(22,1,index) && sixes>=3;
+    const healAmount=encounterHealAmount(index,masteryTwelve?2:1);
     const healed=applyHealingToPlayer(index,healAmount);
 
     if(healed>0){
@@ -74,18 +76,30 @@
 
   function isUniqueUnderdog(index){
     if(index==null || !players[index] || players[index].hp<=0) return false;
-    const alive=players.map((p,i)=>p.hp>0?i:null).filter(i=>i!=null);
+    const p=players[index];
+    if(hasMasteryUpgrade(25,1,index) && p.masteryUnderdogTurnActive) return true;
+    const alive=players.map((pl,i)=>pl.hp>0?i:null).filter(i=>i!=null);
     if(alive.length<2) return false;
-    const hp=players[index].hp;
-    return alive.every(i=>i===index || hp<players[i].hp);
+    const hp=p.hp;
+    return hasMasteryUpgrade(25,1,index)
+      ? alive.every(i=>i===index || hp<=players[i].hp)
+      : alive.every(i=>i===index || hp<players[i].hp);
   }
 
   function prepareBloodRushForTurn(index){
     const p=players[index];
     if(!p) return;
-    p.bloodRushPrimed=!!p.damageSinceLastOwnTurn;
+    p.bloodRushPrimed=!!p.damageSinceLastOwnTurn || (hasMasteryUpgrade(23,1,index)&&!!p.masterySelfDamageSinceLastOwnTurn);
     p.damageSinceLastOwnTurn=false;
+    p.masterySelfDamageSinceLastOwnTurn=false;
     p.voluntaryHpPaidThisTurn=false;
+
+    // Underdog L1 locks the condition for the whole own turn if it is true now.
+    p.masteryUnderdogTurnActive=false;
+    if(hasAbility(25,index)&&hasMasteryUpgrade(25,1,index)&&p.hp>0){
+      const alive=players.map((pl,i)=>pl.hp>0?i:null).filter(i=>i!=null);
+      if(alive.length>=2) p.masteryUnderdogTurnActive=alive.every(i=>i===index||p.hp<=players[i].hp);
+    }
   }
 
   function activateBloodRushForMainAttack(){

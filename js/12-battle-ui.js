@@ -223,7 +223,7 @@
   function currentSum(){ return dice.reduce((s,d)=>s+(d.value||0),0); }
   function stackingDamageBonus(){
     let bonus=0;
-    if(hasAbility(9) && players[current].hp<=10) bonus+=2;
+    if(hasAbility(9) && players[current].hp<=(hasMasteryUpgrade(9,1,current)?15:10)) bonus+=2;
     if(hasAbility(10)) bonus+=momentumBonus;
     if(hasAbility(23) && bloodRushActiveThisAttack) bonus+=1;
     if(hasAbility(25) && isUniqueUnderdog(current)) bonus+=1;
@@ -313,7 +313,8 @@
     }
     else if(phase==="attack_ready"){
       const bloodText=bloodPriceNeighbors.length ? ` Blutpreis aktiv: ${[attackFace,...bloodPriceNeighbors].sort((a,b)=>a-b).map(v=>v+"er").join(", ")} treffen.` : "";
-      const wildText=firstAttackRoll&&wildcardFace!=null ? ` Wildcard: auch ${wildcardFace}er zählen im ersten Wurf.` : "";
+      const wildcardWindow=wildcardFace!=null && (attackRollCount===0 || (attackRollCount===1&&hasMasteryUpgrade(17,1,current)));
+      const wildText=wildcardWindow ? ` Wildcard: auch ${wildcardFace}er zählen${attackRollCount===1?" im zweiten Wurf":" im ersten Wurf"}.` : "";
       statusEl.textContent=`Angriff auf ${players[attackTarget].name}: Du brauchst ${attackFace}er. Jeder normale Treffer macht ${damagePerAttackHit()} Schaden.${bloodText}${wildText}`;
       sumLabel.textContent="Angriff";
     }
@@ -337,9 +338,9 @@
     const abilityLines=playerAbilities().map(a=>{
       let usage="passiv";
       if(a===3) usage=baseRerollUsed?"bereits benutzt":"noch verfügbar";
-      if(a===4) usage=attackPowerUsed?"bereits benutzt":"noch verfügbar";
+      if(a===4){const maxChance=hasMasteryUpgrade(4,1,current)?2:1;usage=`${Math.max(0,maxChance-attackPowerUses)}/${maxChance} verfügbar`;}
       if(a===7) usage="Glück aktiv";
-      if(a===8) usage=`${Math.max(0,2-precisionUses)}/2 Rettungen verfügbar`;
+      if(a===8){const maxPrecision=hasMasteryUpgrade(8,1,current)?3:2;usage=`${Math.max(0,maxPrecision-precisionUses)}/${maxPrecision} Rettungen verfügbar`;}
       if(a===9) usage=players[current].hp<=10?"RACHE AKTIV: +2 pro Treffer":"aktiv ab 10 HP";
       if(a===10) usage=`Serie ${players[current].momentumStreak||0} · Bonus +${momentumBonus} pro Treffer`;
       if(a===11) usage=bloodPriceNeighbors.length?`Blutpreis aktiv: ${[attackFace,...bloodPriceNeighbors].sort((x,y)=>x-y).join("/")}`:"3 HP pro Einsatz";
@@ -349,7 +350,7 @@
       if(a===15) usage="triggert bei exakt 25";
       if(a===16) usage="1 Schaden pro Würfeltreffer";
       if(a===17) usage=wildcardFace!=null&&firstAttackRoll?`Wildcard: ${wildcardFace}`:"erster Angriffswurf";
-      if(a===18) usage=loadedDiceUsed?"diesen Zug benutzt":"1× pro Basiszug bereit";
+      if(a===18){const maxLoaded=hasMasteryUpgrade(18,1,current)?2:1;usage=`${Math.max(0,maxLoaded-loadedDiceUses)}/${maxLoaded} pro Basiszug verfügbar`;}
       if(a===19) usage="bei Basiswurf unter 25";
       if(a===20) usage="ab 3 gleichen Würfeln im selben Wurf";
       if(a===21) usage="ab 5 Hauptangriffsschaden";
@@ -397,18 +398,24 @@
     if(phase==="base_select"){
       lockBtn.classList.remove("hidden");
       lockBtn.disabled=!dice.some(d=>d.selected&&!d.locked);
-      if(hasAbility(3)&&!baseRerollUsed&&dice.some(d=>!d.locked&&d.value===1)){
-        baseRerollBtn.classList.remove("hidden");
+      if(hasAbility(3)){
+        const firstLuck=!baseRerollUsed&&dice.some(d=>!d.locked&&d.value===1);
+        const secondLuck=hasMasteryUpgrade(3,1,current)&&baseRerollUsed&&!luckRerollSecondUsed&&luckRerollIndex!=null&&dice[luckRerollIndex]&&!dice[luckRerollIndex].locked;
+        if(firstLuck||secondLuck){
+          baseRerollBtn.classList.remove("hidden");
+          baseRerollBtn.textContent=secondLuck?`🍀 Reroll the Reroll: ${dice[luckRerollIndex].value} neu würfeln`:`🍀 Glückswurf: 1 neu würfeln`;
+        }
       }
 
-      if(hasAbility(18) && !loadedDiceUsed && players[current].hp>2){
+      const loadedMax=hasMasteryUpgrade(18,1,current)?2:1;
+      if(hasAbility(18) && loadedDiceUses<loadedMax && players[current].hp>2){
         const selectedEligible=dice
           .map((d,i)=>({d,i}))
           .filter(x=>x.d.selected && !x.d.locked && x.d.value!=null && x.d.value!==5);
         if(selectedEligible.length===1){
           const v=selectedEligible[0].d.value;
           loadedDiceBtn.classList.remove("hidden");
-          loadedDiceBtn.textContent=`🎲 Loaded Dice: ${v} → 5 (-2 HP)`;
+          loadedDiceBtn.textContent=`🎲 Loaded Dice ${loadedDiceUses+1}/${loadedMax}: ${v} → 5 (-2 HP)`;
         }
       }
 
@@ -436,11 +443,18 @@
       }
     }
     if(phase==="attack_after_roll"){
-      const secondChanceAvailable=hasAbility(4)&&!attackPowerUsed&&dice.some(d=>!d.locked);
+      const secondChanceMax=hasMasteryUpgrade(4,1,current)?2:1;
+      const secondChanceAvailable=hasAbility(4)&&attackPowerUses<secondChanceMax&&dice.some(d=>!d.locked);
       const doubleTapChoice=hasAbility(24)&&attackHits===2&&currentAttackRollNewHits>0;
 
       if(secondChanceAvailable){
         attackPowerBtn.classList.remove("hidden");
+        attackPowerBtn.textContent=`⚡ Second Chance ${attackPowerUses+1}/${secondChanceMax}`;
+      }
+      const attackSnakeGroup=hasMasteryUpgrade(20,1,current)?snakeEyesGroup():null;
+      if(hasAbility(20)&&attackSnakeGroup){
+        snakeEyesBtn.classList.remove("hidden");
+        snakeEyesBtn.textContent=`🐍 Snake Bite: ${attackSnakeGroup.indices.length}× ${attackSnakeGroup.face}er neu würfeln`;
       }
 
       // Double Tap ist eine echte Entscheidung: exakt 2 Treffer sichern ODER

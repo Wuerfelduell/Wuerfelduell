@@ -103,7 +103,7 @@
   const healTint=$("healTint"), healFx=$("healFx");
   const eventPopup=$("eventPopup"), eventPopupText=$("eventPopupText");
   const secondAbilityModal=$("secondAbilityModal"), secondAbilityTitle=$("secondAbilityTitle"), secondAbilityOptions=$("secondAbilityOptions");
-  const gamblingModal=$("gamblingModal"), gamblingDie=$("gamblingDie"), gamblingResult=$("gamblingResult");
+  const gamblingModal=$("gamblingModal"), gamblingDie=$("gamblingDie"), gamblingResult=$("gamblingResult"), gamblingRetryActions=$("gamblingRetryActions"), gamblingRetryBtn=$("gamblingRetryBtn"), gamblingRetryEndBtn=$("gamblingRetryEndBtn");
   const highStakesModal=$("highStakesModal"), highStakesDie=$("highStakesDie"), highStakesResult=$("highStakesResult"), highStakesSub=$("highStakesSub"), highStakesSkip=$("highStakesSkip");
   const perfect25Modal=$("perfect25Modal"), perfect25Die=$("perfect25Die"), perfect25Result=$("perfect25Result");
   const perfect25D4Modal=$("perfect25D4Modal"), perfect25D4Die=$("perfect25D4Die"), perfect25D4Result=$("perfect25D4Result");
@@ -121,6 +121,10 @@
   let players=[], setupAbilityRolls=[], current=0, dice=[], phase="idle", isAnimating=false;
   let attackFace=null, attackTarget=null, attackHits=0, attackDamage=0, firstAttackRoll=true, currentAttackRollNewHits=0;
   let baseRerollUsed=false, loadedDiceUsed=false, lastBaseRollIndices=[], attackPowerUsed=false, precisionUses=0;
+  let luckRerollIndex=null, luckRerollSecondUsed=false, loadedDiceUses=0, attackPowerUses=0;
+  let lastAttackRollIndices=[], attackRollCount=0, wildcardSecondRollArmed=false;
+  let bloodPricePaidThisRoll=0, currentAttackSource="normal", currentAttackBaseTotal=null;
+  let gamblingRetryUsed=false, gamblingRetryPending=false;
   let momentumBonus=0, bloodPriceNeighbors=[];
   let bloodRushActiveThisAttack=false, doubleTapApplied=false;
   let pendingDamage=null, pendingHeal=null;
@@ -138,6 +142,10 @@
   let combatFxSerial=0, lastCombatFx=null, combatFxEvents=[];
   let secondAbilityDraftQueue=[];
   let insuranceRolling=false, insuranceContext=null;
+
+  function hasMasteryUpgrade(id,level=1,index=current){
+    return !!window.WDMastery?.hasAbilityUpgrade?.(id,level,index);
+  }
   let counterRolling=false, counterContext=null, counterDiceState=[], counterHits=0, counterFirstRoll=true, pendingCounterattack=null, deferredAttackFinish=false;
   let secondAbilityDraftChoices=[];
   let secondAbilityDraftSlot=2;

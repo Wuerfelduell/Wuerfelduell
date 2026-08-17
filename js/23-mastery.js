@@ -3,42 +3,56 @@
   const MAX_HP_LEVEL=3;
   const MAX_DAMAGE_LEVEL=3;
   const MAX_ABILITY_LEVEL=5;
+  const ABILITY_ORDER=[1,2,3,4,5,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25];
 
+  // [id, name, L1 name, L1 desc, L2 name, L2 desc]
   const ABILITY_SHEET=[
-    ["Second Chance","One More Try","Second Chance darf 2-mal verwendet werden.","Reroll for Damage","Jeder Wurf im aktuellen Turn gibt dem daraus entstehenden Angriff +1 Gesamtschaden. Maximal +5. Nächster Turn startet wieder bei 0."],
-    ["Rache","Grudge","Rache wird bereits bei ≤15 HP aktiv statt erst bei ≤10 HP.","Vendetta","Basis-Rache bleibt +2 DMG pro Treffer. Zusätzlich: 5 HP = +1 Gesamtschaden, 4 HP = +2, 3 HP = +3, 2 HP = +4, 1 HP = +5 pro Angriff."],
-    ["Last Stand","Back from the Dead","Wenn Last Stand triggert, wird dein Spielerleben auf 6 HP gesetzt.","I Can Do This All Day","Nach einem Last-Stand-Trigger kann Last Stand nach 3 Runden erneut triggern."],
-    ["High Stakes","Raise the Stakes","Eine gewürfelte 3 gilt nicht mehr als Misserfolg, sondern verursacht normalen High-Stakes-Schaden.","All In","Bei einer gewürfelten 6 verursacht High Stakes 75 % mehr Schaden."],
-    ["Ricochet","Rebound","Der erste Ricochet-Bounce auf Gegner 2 verursacht 2 DMG pro Angriffstreffer statt 1.","Chain Reaction","Ricochet bounced auf Gegner 3 weiter und verursacht dort 1 DMG pro Angriffstreffer."],
-    ["Snake Eyes","Snake Bite","Snake Eyes ist auch im Angriffswurf nutzbar.","Python Entangle","Pro Snake-Eyes-Use im aktuellen Zug bekommt der Angriff +1 Gesamtschaden."],
-    ["Loaded Dice","Dealer’s Choice","Loaded Dice darf 2-mal pro Zug verwendet werden.","Discount Dice","Der zweite Loaded-Dice-Use im selben Zug kostet nur 1 HP."],
-    ["Präzision","Wider Window","Präzision erhält +1 Einsatz.","Bullseye","Treffer auf die ursprünglich gewählte Angriffszahl geben +1 Gesamtschaden für den Angriff."],
-    ["Double Tap","One Tap","Bei genau 1 Angriffstreffer kann Double Tap triggern und gibt +2 Bonus-DMG.","Two Piece","Der Double-Tap-Bonus steigt auf +3 statt +2."],
-    ["Momentum","Keep Rolling","Bei einem Fail sinkt die Momentum-Streak um 1 statt komplett zu resetten.","Unstoppable","Der Momentum-Bonus kann bis +3 steigen."],
-    ["Blood Price","Blood Pact","Blood Price kostet weiterhin 3 HP. Bei 0 Treffern bekommst du 2 HP zurück.","Blood Credit","Wenn Blood Price vorher nicht aktiviert wurde, darf es nach dem Angriffswurf für 5 HP aktiviert werden."],
-    ["Lifesteal","Borrowing Life","Bei 0 Treffern heilt Lifesteal trotzdem +2 HP.","Overheal","Ein erfolgreicher Lifesteal heilt zusätzlich +3 HP."],
-    ["Insurance","Better Conditions","50 % Schadensreduktion gilt nun bei 4, 5 und 6.","Full Coverage","Bei einer 6 werden 100 % des anwendbaren Schadens reduziert."],
-    ["Counterattack","Fast Hits","Counterattack triggert bereits bei 4 HP eingehendem Schaden.","Parry","5 Einser im Counterattack-Wurf setzen den ursprünglichen eingehenden Schaden auf 0."],
-    ["Gambling Man","Gambling Twice","Bei 0 Treffern darfst du freiwillig erneut gambeln.","Better Chances","Die 1 ist nicht mehr im Gambling-Man-Angriffspool."],
-    ["Brutale Einsen","1 for Poison","Erfolgreicher 1er-Angriff: Ziel verliert für die nächsten 2 Runden jeweils 1 HP.","Toxic Bomb","Stirbt ein vergifteter Gegner, verursacht eine einmalige Explosion 3 DMG an allen benachbarten Gegnern."],
-    ["Glückswurf","Reroll the Reroll","Die durch Glückswurf neu gewürfelte 1 darf einmal zusätzlich neu gewürfelt werden.","Reroll for Days","Glückswurf kann 2-mal pro Runde triggern."],
-    ["Angriffsvorsprung","Jump Ahead","24 und 25 zählen als 1er-Angriff; bei 24 bleibt 1 Self-DMG.","First Strike","Beim ersten Angriffswurf eines Angriffsvorsprung-Angriffs hast du automatisch 1 Treffer."],
-    ["Perfect 25","Better Odds","Die 3 zählt jetzt auch als Hit.","Even the Odds","Die 2 zählt jetzt ebenfalls als Hit."],
-    ["Wildcard","Wildcards","Wildcard zählt auch beim 2. Angriffswurf.","Joker","Fällt die Wildcard-Zahl nicht, bekommen normale Angriffstreffer jeweils +2 DMG."],
-    ["Blood Rush","Sacrifice","Selbst verursachter Schaden der letzten Runde zählt ebenfalls für Blood Rush.","Self Harm","Nach dem Angriffswurf darfst du 1 HP opfern, um Blood Rush zu triggern, falls es nicht aktiv ist."],
-    ["Underdog","Stay Hungry","Gleichstand bei niedrigsten HP reicht. Ist Underdog zu Zugbeginn aktiv, bleibt es den gesamten Zug aktiv.","Top Dog","Bonus = floor(Angriffstreffer × 1,5): 1→+1, 2→+3, 3→+4, 4→+6, 5→+7."]
+    [1,"Brutale Einsen","1 for Poison","Erfolgreicher 1er-Angriff: Ziel verliert für die nächsten 2 Runden jeweils 1 HP.","Toxic Bomb","Stirbt ein vergifteter Gegner, verursacht eine einmalige Explosion 3 DMG an allen benachbarten Gegnern."],
+    [2,"Lifesteal","Borrowing Life","Bei 0 Treffern heilt Lifesteal trotzdem +2 HP.","Overheal","Ein erfolgreicher Lifesteal heilt zusätzlich +3 HP."],
+    [3,"Glückswurf","Reroll the Reroll","Die durch Glückswurf neu gewürfelte 1 darf einmal zusätzlich neu gewürfelt werden.","Reroll for Days","Glückswurf kann 2-mal pro Runde triggern."],
+    [4,"Second Chance","One More Try","Second Chance darf 2-mal verwendet werden.","Reroll for Damage","Jeder Wurf im aktuellen Turn gibt dem daraus entstehenden Angriff +1 Gesamtschaden. Maximal +5. Nächster Turn startet wieder bei 0."],
+    [5,"Angriffsvorsprung","Jump Ahead","24 und 25 zählen als 1er-Angriff; bei 24 bleibt 1 Self-DMG.","First Strike","Beim ersten Angriffswurf eines Angriffsvorsprung-Angriffs hast du automatisch 1 Treffer."],
+    [8,"Präzision","Wider Window","Präzision erhält +1 Einsatz.","Bullseye","Treffer auf die ursprünglich gewählte Angriffszahl geben +1 Gesamtschaden für den Angriff."],
+    [9,"Rache","Grudge","Rache wird bereits bei ≤15 HP aktiv statt erst bei ≤10 HP.","Vendetta","Basis-Rache bleibt +2 DMG pro Treffer. Zusätzlich: 5 HP = +1 Gesamtschaden, 4 HP = +2, 3 HP = +3, 2 HP = +4, 1 HP = +5 pro Angriff."],
+    [10,"Momentum","Keep Rolling","Bei einem Fail sinkt die Momentum-Streak um 1 statt komplett zu resetten.","Unstoppable","Der Momentum-Bonus kann bis +3 steigen."],
+    [11,"Blood Price","Blood Pact","Blood Price kostet weiterhin 3 HP. Bei 0 Treffern bekommst du 2 HP zurück.","Blood Credit","Wenn Blood Price vorher nicht aktiviert wurde, darf es nach dem Angriffswurf für 5 HP aktiviert werden."],
+    [12,"Gambling Man","Gambling Twice","Bei 0 Treffern darfst du freiwillig erneut gambeln.","Better Chances","Die 1 ist nicht mehr im Gambling-Man-Angriffspool."],
+    [13,"High Stakes","Raise the Stakes","Eine gewürfelte 3 gilt nicht mehr als Misserfolg, sondern verursacht normalen High-Stakes-Schaden.","All In","Bei einer gewürfelten 6 verursacht High Stakes 75 % mehr Schaden."],
+    [14,"Last Stand","Back from the Dead","Wenn Last Stand triggert, wird dein Spielerleben auf 6 HP gesetzt.","I Can Do This All Day","Nach einem Last-Stand-Trigger kann Last Stand nach 3 Runden erneut triggern."],
+    [15,"Perfect 25","Better Odds","Die 3 zählt jetzt auch als Hit.","Even the Odds","Die 2 zählt jetzt ebenfalls als Hit."],
+    [16,"Ricochet","Rebound","Der erste Ricochet-Bounce auf Gegner 2 verursacht 2 DMG pro Angriffstreffer statt 1.","Chain Reaction","Ricochet bounced auf Gegner 3 weiter und verursacht dort 1 DMG pro Angriffstreffer."],
+    [17,"Wildcard","Wildcards","Wildcard zählt auch beim 2. Angriffswurf.","Joker","Fällt die Wildcard-Zahl nicht, bekommen normale Angriffstreffer jeweils +2 DMG."],
+    [18,"Loaded Dice","Dealer’s Choice","Loaded Dice darf 2-mal pro Zug verwendet werden.","Discount Dice","Der zweite Loaded-Dice-Use im selben Zug kostet nur 1 HP."],
+    [19,"Insurance","Better Conditions","50 % Schadensreduktion gilt nun bei 4, 5 und 6.","Full Coverage","Bei einer 6 werden 100 % des anwendbaren Schadens reduziert."],
+    [20,"Snake Eyes","Snake Bite","Snake Eyes ist auch im Angriffswurf nutzbar.","Python Entangle","Pro Snake-Eyes-Use im aktuellen Zug bekommt der Angriff +1 Gesamtschaden."],
+    [21,"Counterattack","Fast Hits","Counterattack triggert bereits bei 4 HP eingehendem Schaden.","Parry","5 Einser im Counterattack-Wurf setzen den ursprünglichen eingehenden Schaden auf 0."],
+    [23,"Blood Rush","Sacrifice","Selbst verursachter Schaden der letzten Runde zählt ebenfalls für Blood Rush.","Self Harm","Nach dem Angriffswurf darfst du 1 HP opfern, um Blood Rush zu triggern, falls es nicht aktiv ist."],
+    [24,"Double Tap","One Tap","Bei genau 1 Angriffstreffer kann Double Tap triggern und gibt +2 Bonus-DMG.","Two Piece","Der Double-Tap-Bonus steigt auf +3 statt +2."],
+    [25,"Underdog","Stay Hungry","Gleichstand bei niedrigsten HP reicht. Ist Underdog zu Zugbeginn aktiv, bleibt es den gesamten Zug aktiv.","Top Dog","Bonus = floor(Angriffstreffer × 1,5): 1→+1, 2→+3, 3→+4, 4→+6, 5→+7."]
   ];
 
+  // Standalone nodes still take their position in the global ability-id unlock order.
   const STANDALONE=[
-    ["Glück","Lucky Bastard","+1 % Chance auf 6er.","Very Lucky Bastard","Noch einmal +1 % Chance auf 6er.","FORTUNE'S FAVOR","Nach 3 Rolls ohne 6 steigt die 6er-Chance temporär stärker, bis eine 6 fällt. Danach Reset."],
-    ["12","18","Bei 3 Sechsern gleichzeitig heilst du +2 HP.","24","Jeder zweite Heileffekt heilt zusätzlich +1 HP.","???","Keystone noch offen."]
+    [7,"Glück","Lucky Bastard","+1 % Chance auf 6er.","Very Lucky Bastard","Noch einmal +1 % Chance auf 6er.","FORTUNE'S FAVOR","Nach 3 Rolls ohne 6 steigt die 6er-Chance temporär stärker, bis eine 6 fällt. Danach Reset."],
+    [22,"12","18","Bei 3 Sechsern gleichzeitig heilst du +2 HP.","24","Jeder zweite Heileffekt heilt zusätzlich +1 HP.","???","Keystone noch offen."]
   ];
 
   let activeMode="solo";
   let activeProfileId=null;
 
+  function normalizeAbilityLevels(raw){
+    const out={};
+    if(raw&&typeof raw==="object"){
+      Object.entries(raw).forEach(([id,level])=>{
+        const n=Math.max(0,Math.min(2,Math.floor(Number(level)||0)));
+        if(n>0) out[String(Number(id))]=n;
+      });
+    }
+    return out;
+  }
+
   function defaults(){
-    return {xp:0,lifetimeXp:0,hpLevel:0,damageLevel:0,abilityLevel:0};
+    return {xp:0,lifetimeXp:0,hpLevel:0,damageLevel:0,abilityLevel:0,abilityLevels:{},retroBackfillDone:false};
   }
 
   function normalize(raw){
@@ -49,7 +63,10 @@
       hpLevel:Math.max(0,Math.min(MAX_HP_LEVEL,Math.floor(Number(raw.hpLevel)||0))),
       damageLevel:Math.max(0,Math.min(MAX_DAMAGE_LEVEL,Math.floor(Number(raw.damageLevel)||0))),
       abilityLevel:Math.max(0,Math.min(MAX_ABILITY_LEVEL,Math.floor(Number(raw.abilityLevel)||0))),
-      retroBackfillDone:!!raw.retroBackfillDone
+      abilityLevels:normalizeAbilityLevels(raw.abilityLevels),
+      retroBackfillDone:!!raw.retroBackfillDone,
+      retroBackfillV2Done:!!raw.retroBackfillV2Done,
+      retroBackfillV3Done:!!raw.retroBackfillV3Done
     };
   }
 
@@ -57,16 +74,10 @@
     if(!profile) return null;
     profile.campaign=profile.campaign||{};
     profile.campaign.masteryModes=profile.campaign.masteryModes||{};
-
-    // One-time safe migration of the old V27.8 Solo pool.
     if(!profile.campaign.masteryModes.solo){
-      const legacy=profile.campaign.mastery;
-      profile.campaign.masteryModes.solo=normalize(legacy);
+      profile.campaign.masteryModes.solo=normalize(profile.campaign.mastery);
     }
-
-    for(const mode of MODES){
-      profile.campaign.masteryModes[mode]=normalize(profile.campaign.masteryModes[mode]);
-    }
+    for(const mode of MODES) profile.campaign.masteryModes[mode]=normalize(profile.campaign.masteryModes[mode]);
     return profile.campaign.masteryModes;
   }
 
@@ -77,59 +88,85 @@
 
   function perkCost(level){return Math.max(1,Number(level)||1)*100;}
   function branchSpent(level){let n=0;for(let i=1;i<=level;i++)n+=perkCost(i);return n;}
+  function abilitySpent(m){
+    return Object.values(m.abilityLevels||{}).reduce((sum,level)=>sum+(level>=1?300:0)+(level>=2?500:0),0);
+  }
   function totalSpent(profile,mode){
     const m=ensure(profile,mode);
-    return branchSpent(m.hpLevel)+branchSpent(m.damageLevel)+branchSpent(m.abilityLevel);
+    return branchSpent(m.hpLevel)+branchSpent(m.damageLevel)+branchSpent(m.abilityLevel)+abilitySpent(m);
   }
 
-  function modeLabel(mode){
-    return mode==="duo"?"DUO MASTERY":mode==="trio"?"TRIO MASTERY":"SOLO MASTERY";
+  function modeLabel(mode){return mode==="duo"?"DUO MASTERY":mode==="trio"?"TRIO MASTERY":"SOLO MASTERY";}
+  function soloWorldIndex(encounter){return CAMPAIGN_WORLDS.findIndex(w=>w.id===(encounter?.world||"house"));}
+  function duoWorldIndex(encounter){return DUO_CAMPAIGN_WORLDS.findIndex(w=>w.id===(encounter?.world||"covenant"));}
+  function encounterLevelInWorld(encounter,mode){
+    if(!encounter) return 0;
+    const list=mode==="duo"
+      ? DUO_CAMPAIGN_ENCOUNTERS.filter(e=>(e.world||"covenant")===(encounter.world||"covenant"))
+      : CAMPAIGN_ENCOUNTERS.filter(e=>(e.world||"house")===(encounter.world||"house"));
+    return list.findIndex(e=>e.id===encounter.id)+1;
   }
 
-  function soloWorldIndex(encounter){
-    return CAMPAIGN_WORLDS.findIndex(w=>w.id===(encounter?.world||"house"));
-  }
-  function duoWorldIndex(encounter){
-    return DUO_CAMPAIGN_WORLDS.findIndex(w=>w.id===(encounter?.world||"covenant"));
-  }
-
+  // XP farming begins with the first Standard-Mastery unlock.
   function encounterEligible(mode,encounter){
     if(!encounter) return false;
-    if(mode==="solo") return soloWorldIndex(encounter)>=2;   // Welt 3+
-    if(mode==="duo") return duoWorldIndex(encounter)>=1;     // Welt 2+
-    if(mode==="trio") return true;                            // Level 1+
+    if(mode==="solo"){
+      const wi=soloWorldIndex(encounter),lv=encounterLevelInWorld(encounter,"solo");
+      return wi>1 || (wi===1&&lv>=10); // Solo XP: W2L10+
+    }
+    if(mode==="duo"){
+      const wi=duoWorldIndex(encounter),lv=encounterLevelInWorld(encounter,"duo");
+      return wi>0 || (wi===0&&lv>=10); // Duo XP: W1L10+
+    }
+    if(mode==="trio") return true; // Trio XP: L1+
     return false;
+  }
+
+  // Standard bonuses may be USED from the newly requested earlier gates.
+  function standardEligible(mode,encounter){
+    if(!encounter) return false;
+    if(mode==="solo"){
+      const wi=soloWorldIndex(encounter),lv=encounterLevelInWorld(encounter,"solo");
+      return wi>1 || (wi===1&&lv>=10); // Solo W2L10+
+    }
+    if(mode==="duo"){
+      const wi=duoWorldIndex(encounter),lv=encounterLevelInWorld(encounter,"duo");
+      return wi>0 || (wi===0&&lv>=10); // Duo W1L10+
+    }
+    return mode==="trio";
+  }
+
+  function completedSetForMode(mode,profiles){
+    const list=(profiles||[]).filter(Boolean);
+    if(mode==="solo") return new Set(list[0]?.campaign?.completedEncounters||[]);
+    if(mode==="duo"&&list.length>=2){
+      try{return new Set(duoCampaignProgress(list[0],list[1],false)?.completedEncounters||[]);}catch(_err){return new Set();}
+    }
+    if(mode==="trio"&&list.length>=3){
+      try{return new Set(trioCampaignProgress(list[0],list[1],list[2],false)?.completedEncounters||[]);}catch(_err){return new Set();}
+    }
+    return new Set();
   }
 
   function modeUnlocked(mode,profiles){
     const list=(profiles||[]).filter(Boolean);
     if(mode==="trio") return list.length>=1;
+    const done=completedSetForMode(mode,list);
     if(mode==="solo"){
-      const profile=list[0];
-      if(!profile) return false;
-      const w3=CAMPAIGN_WORLDS[2];
-      const done=new Set(profile.campaign?.completedEncounters||[]);
-      return !!w3&&(w3.unlockRequires||[]).every(id=>done.has(id));
+      const gate=CAMPAIGN_ENCOUNTERS.filter(e=>(e.world||"house")==="rift")[9]; // W2L10
+      return !!gate&&done.has(gate.id);
     }
     if(mode==="duo"){
       if(list.length<2) return false;
-      try{
-        const w2=DUO_CAMPAIGN_WORLDS[1];
-        return !!w2&&duoWorldUnlocked(list[0],list[1],w2);
-      }catch(_err){return false;}
+      const gate=DUO_CAMPAIGN_ENCOUNTERS.filter(e=>(e.world||"covenant")==="covenant")[9]; // W1L10
+      return !!gate&&done.has(gate.id);
     }
     return false;
   }
 
-  function hpBonus(profile,mode,encounter){
-    return encounterEligible(mode,encounter)?ensure(profile,mode).hpLevel*2:0;
-  }
-  function damageBonus(profile,mode,encounter){
-    return encounterEligible(mode,encounter)?ensure(profile,mode).damageLevel:0;
-  }
-  function abilityThreshold(profile,mode,encounter){
-    return encounterEligible(mode,encounter)?15+ensure(profile,mode).abilityLevel:15;
-  }
+  function hpBonus(profile,mode,encounter){return standardEligible(mode,encounter)?ensure(profile,mode).hpLevel*2:0;}
+  function damageBonus(profile,mode,encounter){return standardEligible(mode,encounter)?ensure(profile,mode).damageLevel:0;}
+  function abilityThreshold(profile,mode,encounter){return standardEligible(mode,encounter)?15+ensure(profile,mode).abilityLevel:15;}
 
   function currentBattleMode(){
     if(typeof trioCampaignMode!=="undefined"&&trioCampaignMode) return "trio";
@@ -137,65 +174,50 @@
     return "solo";
   }
 
+  function abilityLevel(profile,mode,id){return Math.max(0,Number(ensure(profile,mode).abilityLevels?.[String(Number(id))])||0);}
+  function abilityLevelForPlayer(id,index=current){
+    try{
+      if(!campaignMode) return 0;
+      const p=players?.[Number(index)];
+      if(!p||p.campaignTeam!=="hero") return 0;
+      const profile=getProfile(p.profileId);
+      return abilityLevel(profile,currentBattleMode(),id);
+    }catch(_err){return 0;}
+  }
+  function hasAbilityUpgrade(id,level=1,index=current){return abilityLevelForPlayer(id,index)>=level;}
+
   function damageBonusForPlayer(index){
     try{
       if(!campaignMode) return 0;
       const p=players?.[Number(index)];
       if(!p||p.campaignTeam!=="hero") return 0;
-      const mode=currentBattleMode();
-      const profile=getProfile(p.profileId);
-      const encounter=currentEncounterObject?.();
-      return damageBonus(profile,mode,encounter);
+      return damageBonus(getProfile(p.profileId),currentBattleMode(),currentEncounterObject?.());
     }catch(_err){return 0;}
   }
-
   function abilityThresholdForPlayer(index){
     try{
       if(!campaignMode) return 15;
       const p=players?.[Number(index)];
       if(!p||p.campaignTeam!=="hero") return 15;
-      const mode=currentBattleMode();
-      const profile=getProfile(p.profileId);
-      const encounter=currentEncounterObject?.();
-      return abilityThreshold(profile,mode,encounter);
+      return abilityThreshold(getProfile(p.profileId),currentBattleMode(),currentEncounterObject?.());
     }catch(_err){return 15;}
   }
 
   function awardXp(profile,mode,encounter,newlyCompleted){
     if(!profile||!encounterEligible(mode,encounter)) return 0;
-    const m=ensure(profile,mode);
-    const amount=newlyCompleted?100:20;
-    m.xp+=amount;
-    m.lifetimeXp+=amount;
-    return amount;
+    const m=ensure(profile,mode),amount=newlyCompleted?100:20;
+    m.xp+=amount;m.lifetimeXp+=amount;return amount;
   }
 
   function profileIdsForMode(mode){
-    if(mode==="solo"){
-      return [document.getElementById("campaignProfileSelect")?.value||campaignProfileId].filter(Boolean);
-    }
-    if(mode==="duo"){
-      return [
-        document.getElementById("duoProfile1Select")?.value||duoProfile1Id,
-        document.getElementById("duoProfile2Select")?.value||duoProfile2Id
-      ].filter(Boolean);
-    }
-    return [
-      document.getElementById("trioProfile1Select")?.value||trioProfile1Id,
-      document.getElementById("trioProfile2Select")?.value||trioProfile2Id,
-      document.getElementById("trioProfile3Select")?.value||trioProfile3Id
-    ].filter(Boolean);
+    if(mode==="solo") return [document.getElementById("campaignProfileSelect")?.value||campaignProfileId].filter(Boolean);
+    if(mode==="duo") return [document.getElementById("duoProfile1Select")?.value||duoProfile1Id,document.getElementById("duoProfile2Select")?.value||duoProfile2Id].filter(Boolean);
+    return [document.getElementById("trioProfile1Select")?.value||trioProfile1Id,document.getElementById("trioProfile2Select")?.value||trioProfile2Id,document.getElementById("trioProfile3Select")?.value||trioProfile3Id].filter(Boolean);
   }
-
-  function profilesForMode(mode){
-    return profileIdsForMode(mode).map(getProfile).filter(Boolean);
-  }
-
+  function profilesForMode(mode){return profileIdsForMode(mode).map(getProfile).filter(Boolean);}
   function selectedMasteryProfile(){
-    const profiles=profilesForMode(activeMode);
-    if(!profiles.length) return null;
-    const picked=getProfile(activeProfileId);
-    return picked&&profiles.some(p=>p.id===picked.id)?picked:profiles[0];
+    const profiles=profilesForMode(activeMode);if(!profiles.length)return null;
+    const picked=getProfile(activeProfileId);return picked&&profiles.some(p=>p.id===picked.id)?picked:profiles[0];
   }
 
   function branchData(profile){
@@ -206,224 +228,150 @@
       {key:"abilityLevel",icon:"✨",title:"Awakening",desc:"Bonus-Draft früher verfügbar.",max:5,level:m.abilityLevel,values:["16 HP","17 HP","18 HP","19 HP","20 HP"]}
     ];
   }
-
   function standardNode(branch,index,xp){
-    const level=index+1,cost=perkCost(level);
-    const owned=branch.level>=level;
-    const next=!owned&&branch.level===index;
-    const available=next&&xp>=cost;
-    return `<button type="button" class="mastery-node${owned?" owned":""}${available?" available":" locked"}"
-      data-standard-branch="${branch.key}" data-standard-level="${level}" data-standard-cost="${cost}" ${available?"":"disabled"}>
-      <span class="mastery-node-orb"><span class="mastery-node-dot">${owned?"✓":level}</span></span>
-      <span class="mastery-node-plaque"><span class="mastery-node-value">${branch.values[index]}</span><small>${owned?"AKTIV":next?cost+" XP":"GESPERRT"}</small></span>
-    </button>`;
+    const level=index+1,cost=perkCost(level),owned=branch.level>=level,next=!owned&&branch.level===index,available=next&&xp>=cost;
+    return `<button type="button" class="mastery-node${owned?" owned":""}${available?" available":" locked"}" data-standard-branch="${branch.key}" data-standard-level="${level}" data-standard-cost="${cost}" ${available?"":"disabled"}><span class="mastery-node-orb"><span class="mastery-node-dot">${owned?"✓":level}</span></span><span class="mastery-node-plaque"><span class="mastery-node-value">${branch.values[index]}</span><small>${owned?"AKTIV":next?cost+" XP":"GESPERRT"}</small></span></button>`;
   }
-
   function renderStandard(profile){
-    const m=ensure(profile,activeMode);
-    const summary=document.getElementById("masterySummary");
-    const content=document.getElementById("masteryContent");
-    summary.innerHTML=`
-      <div class="mastery-summary-main"><strong>${escapeHtml(profile.name)}</strong><span>${modeLabel(activeMode)}</span></div>
-      <div class="mastery-xp-line"><span>⭐ ${m.xp} XP verfügbar</span><span>Σ ${m.lifetimeXp} verdient</span><span>-${totalSpent(profile,activeMode)} investiert</span></div>
-      <div class="mastery-xp-track mastery-xp-currency"></div>
-      <small>Dieses XP-Konto gilt nur für ${activeMode.toUpperCase()}.</small>`;
-
-    content.innerHTML=branchData(profile).map(branch=>`
-      <section class="mastery-branch branch-${branch.key}">
-        <div class="mastery-branch-head"><span class="mastery-branch-icon">${branch.icon}</span><div><strong>${branch.title}</strong><small>${branch.desc}</small></div><span class="mastery-branch-level">${branch.level}/${branch.max}</span></div>
-        <div class="mastery-tree-line">${Array.from({length:branch.max},(_,i)=>standardNode(branch,i,m.xp)).join("")}</div>
-      </section>`).join("");
-
-    content.querySelectorAll("[data-standard-branch]").forEach(btn=>{
-      btn.addEventListener("click",()=>{
-        const p=selectedMasteryProfile(); if(!p) return;
-        const mode=activeMode,m=ensure(p,mode);
-        const branch=btn.dataset.standardBranch,level=Number(btn.dataset.standardLevel),cost=Number(btn.dataset.standardCost);
-        const caps={hpLevel:3,damageLevel:3,abilityLevel:5};
-        if(!(branch in caps)||m[branch]!==level-1||m.xp<cost) return;
-        m.xp-=cost;m[branch]=level;
-        saveGameData();
-        renderModal();
-        refreshAll();
-      });
-    });
+    const m=ensure(profile,activeMode),summary=document.getElementById("masterySummary"),content=document.getElementById("masteryContent");
+    summary.innerHTML=`<div class="mastery-summary-main"><strong>${escapeHtml(profile.name)}</strong><span>${modeLabel(activeMode)}</span></div><div class="mastery-xp-line"><span>⭐ ${m.xp} XP verfügbar</span><span>Σ ${m.lifetimeXp} verdient</span><span>-${totalSpent(profile,activeMode)} investiert</span></div><div class="mastery-xp-track mastery-xp-currency"></div><small>Standard-Mastery: ${activeMode==="solo"?"ab Solo W2L10":activeMode==="duo"?"ab Duo W1L10":"ab Trio L1"}. XP-Farming bleibt Solo W3 / Duo W2 / Trio L1.</small>`;
+    content.innerHTML=branchData(profile).map(branch=>`<section class="mastery-branch branch-${branch.key}"><div class="mastery-branch-head"><span class="mastery-branch-icon">${branch.icon}</span><div><strong>${branch.title}</strong><small>${branch.desc}</small></div><span class="mastery-branch-level">${branch.level}/${branch.max}</span></div><div class="mastery-tree-line">${Array.from({length:branch.max},(_,i)=>standardNode(branch,i,m.xp)).join("")}</div></section>`).join("");
+    content.querySelectorAll("[data-standard-branch]").forEach(btn=>btn.addEventListener("click",()=>{
+      const p=selectedMasteryProfile();if(!p)return;const m=ensure(p,activeMode),branch=btn.dataset.standardBranch,level=Number(btn.dataset.standardLevel),cost=Number(btn.dataset.standardCost),caps={hpLevel:3,damageLevel:3,abilityLevel:5};
+      if(!(branch in caps)||m[branch]!==level-1||m.xp<cost)return;m.xp-=cost;m[branch]=level;saveGameData();renderModal();refreshAll();
+    }));
   }
 
-  function lockedAbilityNode(ability,level){
-    const name=level===1?ability[1]:ability[3];
-    const desc=level===1?ability[2]:ability[4];
-    const cost=level===1?300:500;
-    return `<button type="button" class="aml-node aml-ability-node mastery-ability-locked" data-locked-title="${escapeHtml(ability[0]+" · "+name)}" data-locked-desc="${escapeHtml(desc)}" data-locked-cost="${cost}">
-      <span class="aml-node-orbit"></span><span class="aml-node-core"><span class="aml-node-level">🔒</span></span>
-      <span class="aml-node-tag"><strong>${escapeHtml(name)}</strong><small>${cost} XP · GESPERRT</small></span>
-    </button>`;
-  }
-
-  function abilityPair(a,b){
-    return `<section class="mastery-ability-pair">
-      <div class="mastery-ability-pair-head"><strong>${escapeHtml(a[0])}</strong><span>×</span><strong>${escapeHtml(b[0])}</strong></div>
-      <div class="mastery-ability-columns">
-        <div>${lockedAbilityNode(a,1)}${lockedAbilityNode(a,2)}</div>
-        <div>${lockedAbilityNode(b,1)}${lockedAbilityNode(b,2)}</div>
-      </div>
-      <button type="button" class="mastery-fusion-placeholder" data-locked-title="${escapeHtml(a[0]+" × "+b[0]+" · Fusion")}" data-locked-desc="Fusion noch nicht festgelegt." data-locked-cost="1000">🔒 <strong>???</strong><small>FUSION · 1000 XP</small></button>
-    </section>`;
-  }
-
-  function renderAbilitySheet(){
-    const sheet=document.getElementById("masteryAbilitySheet");
-    const chunks=[];
-    for(let i=0;i<ABILITY_SHEET.length;i+=2) chunks.push(abilityPair(ABILITY_SHEET[i],ABILITY_SHEET[i+1]));
-
-    const stand=STANDALONE.map(a=>`
-      <section class="mastery-ability-pair mastery-standalone-pair">
-        <div class="mastery-ability-pair-head"><strong>${escapeHtml(a[0])}</strong><span>STANDALONE</span></div>
-        <div class="mastery-ability-columns single">
-          <div>
-            ${lockedAbilityNode([a[0],a[1],a[2],a[3],a[4]],1)}
-            ${lockedAbilityNode([a[0],a[1],a[2],a[3],a[4]],2)}
-          </div>
-        </div>
-        <button type="button" class="mastery-fusion-placeholder" data-locked-title="${escapeHtml(a[0]+" · "+a[5])}" data-locked-desc="${escapeHtml(a[6])}" data-locked-cost="1000">🔒 <strong>${escapeHtml(a[5])}</strong><small>KEYSTONE · 1000 XP</small></button>
-      </section>`).join("");
-
-    sheet.innerHTML=chunks.join("")+stand;
-    sheet.querySelectorAll("[data-locked-title]").forEach(btn=>{
-      btn.addEventListener("click",()=>showLockedPopup(btn.dataset.lockedTitle,btn.dataset.lockedDesc,btn.dataset.lockedCost));
-    });
-  }
-
-  function showLockedPopup(title,desc,cost){
-    let p=document.getElementById("masteryLockedInfo");
-    if(!p){
-      p=document.createElement("div");
-      p.id="masteryLockedInfo";p.className="mastery-locked-info hidden";
-      p.innerHTML=`<div class="mastery-locked-card"><button type="button">✕</button><div class="mastery-kicker">ABILITY MASTERY · GESPERRT</div><h3></h3><div class="mastery-locked-cost"></div><p></p><small>Freischaltbedingung wird später festgelegt.</small></div>`;
-      document.getElementById("masteryModal")?.appendChild(p);
-      p.querySelector("button").onclick=()=>p.classList.add("hidden");
-      p.onclick=e=>{if(e.target===p)p.classList.add("hidden")};
+  function abilityUnlockSequence(mode){
+    if(mode==="solo"){
+      const all=CAMPAIGN_WORLDS.flatMap(w=>CAMPAIGN_ENCOUNTERS.filter(e=>(e.world||"house")===w.id));
+      const start=all.findIndex(e=>(e.world||"house")==="rift"&&encounterLevelInWorld(e,"solo")===10);
+      return start>=0?all.slice(start):[];
     }
-    p.querySelector("h3").textContent=title;
-    p.querySelector(".mastery-locked-cost").textContent=`🔒 ${cost} XP`;
-    p.querySelector("p").textContent=desc;
-    p.classList.remove("hidden");
+    if(mode==="duo"){
+      const all=DUO_CAMPAIGN_WORLDS.flatMap(w=>DUO_CAMPAIGN_ENCOUNTERS.filter(e=>(e.world||"covenant")===w.id));
+      const start=all.findIndex(e=>(e.world||"covenant")==="covenant"&&encounterLevelInWorld(e,"duo")===10);
+      return start>=0?all.slice(start):[];
+    }
+    return [];
+  }
+  function abilityGate(mode,id){
+    const pos=ABILITY_ORDER.indexOf(Number(id));if(pos<0||mode==="trio")return null;
+    return abilityUnlockSequence(mode)[pos]||null;
+  }
+  function abilityGateLabel(mode,id){
+    const e=abilityGate(mode,id);if(!e)return mode==="trio"?"Trio Unlock folgt":"Später";
+    const wi=mode==="duo"?duoWorldIndex(e):soloWorldIndex(e),lv=encounterLevelInWorld(e,mode);
+    return `${mode==="duo"?"Duo":"Solo"} W${wi+1}L${lv}`;
+  }
+  function abilityGateReached(mode,id){
+    if(mode==="trio") return false;
+    const gate=abilityGate(mode,id);if(!gate)return false;
+    return completedSetForMode(mode,profilesForMode(mode)).has(gate.id);
+  }
+
+  function abilityNode(entry,level,profile){
+    const id=entry[0],name=level===1?entry[2]:entry[4],desc=level===1?entry[3]:entry[5],cost=level===1?300:500,m=ensure(profile,activeMode),owned=abilityLevel(profile,activeMode,id)>=level;
+    const l1Unlocked=level===1&&abilityGateReached(activeMode,id),available=l1Unlocked&&!owned&&m.xp>=cost;
+    const status=owned?"AKTIV":level===2?"🔒 L2 später":l1Unlocked?`${cost} XP`:`🔒 ${abilityGateLabel(activeMode,id)}`;
+    const cls=owned?" owned":available?" available":l1Unlocked?" mastery-ability-unlocked":" mastery-ability-locked";
+    return `<button type="button" class="aml-node aml-ability-node ${cls}" data-ability-id="${id}" data-ability-level="${level}" data-ability-title="${escapeHtml(entry[1]+" · "+name)}" data-ability-desc="${escapeHtml(desc)}" data-ability-cost="${cost}" ${available?"":"data-info-only=\"1\""}><span class="aml-node-orbit"></span><span class="aml-node-core"><span class="aml-node-level">${owned?"✓":level===1&&l1Unlocked?"L1":"🔒"}</span></span><span class="aml-node-tag"><strong>${escapeHtml(name)}</strong><small>${status}</small></span></button>`;
+  }
+  function abilityPair(a,b,profile){
+    return `<section class="mastery-ability-pair"><div class="mastery-ability-pair-head"><strong>${escapeHtml(a[1])}</strong><span>×</span><strong>${escapeHtml(b[1])}</strong></div><div class="mastery-ability-columns"><div>${abilityNode(a,1,profile)}${abilityNode(a,2,profile)}</div><div>${abilityNode(b,1,profile)}${abilityNode(b,2,profile)}</div></div><button type="button" class="mastery-fusion-placeholder" data-fusion-info="${escapeHtml(a[1]+" × "+b[1])}">🔒 <strong>???</strong><small>FUSION · 1000 XP</small></button></section>`;
+  }
+  function standaloneCard(a,profile){
+    const entry=[a[0],a[1],a[2],a[3],a[4],a[5]];
+    return `<section class="mastery-ability-pair mastery-standalone-pair"><div class="mastery-ability-pair-head"><strong>${escapeHtml(a[1])}</strong><span>STANDALONE</span></div><div class="mastery-ability-columns single"><div>${abilityNode(entry,1,profile)}${abilityNode(entry,2,profile)}</div></div><button type="button" class="mastery-fusion-placeholder" data-keystone-info="${escapeHtml(a[1]+" · "+a[6])}">🔒 <strong>${escapeHtml(a[6])}</strong><small>KEYSTONE · 1000 XP</small></button></section>`;
+  }
+  function showAbilityInfo(title,desc,cost,note){
+    let p=document.getElementById("masteryLockedInfo");
+    if(!p){p=document.createElement("div");p.id="masteryLockedInfo";p.className="mastery-locked-info hidden";p.innerHTML=`<div class="mastery-locked-card"><button type="button">✕</button><div class="mastery-kicker">ABILITY MASTERY</div><h3></h3><div class="mastery-locked-cost"></div><p></p><small></small></div>`;document.getElementById("masteryModal")?.appendChild(p);p.querySelector("button").onclick=()=>p.classList.add("hidden");p.onclick=e=>{if(e.target===p)p.classList.add("hidden")};}
+    p.querySelector("h3").textContent=title;p.querySelector(".mastery-locked-cost").textContent=cost;p.querySelector("p").textContent=desc;p.querySelector("small").textContent=note||"";p.classList.remove("hidden");
+  }
+  function renderAbilitySheet(profile){
+    const sheet=document.getElementById("masteryAbilitySheet"),ordered=ABILITY_ORDER.map(id=>ABILITY_SHEET.find(a=>a[0]===id)).filter(Boolean),chunks=[];
+    for(let i=0;i<ordered.length;i+=2){if(ordered[i+1])chunks.push(abilityPair(ordered[i],ordered[i+1],profile));else chunks.push(standaloneCard([ordered[i][0],ordered[i][1],ordered[i][2],ordered[i][3],ordered[i][4],ordered[i][5],"???","Keystone offen"],profile));}
+    // Insert the two actual standalone abilities at their id-order position as separate cards.
+    const stand=STANDALONE.map(a=>standaloneCard(a,profile)).join("");
+    sheet.innerHTML=chunks.join("")+stand;
+    sheet.querySelectorAll("[data-ability-id]").forEach(btn=>btn.addEventListener("click",()=>{
+      const p=selectedMasteryProfile();if(!p)return;const id=Number(btn.dataset.abilityId),level=Number(btn.dataset.abilityLevel),cost=Number(btn.dataset.abilityCost),m=ensure(p,activeMode),owned=abilityLevel(p,activeMode,id)>=level;
+      if(owned){showAbilityInfo(btn.dataset.abilityTitle,btn.dataset.abilityDesc,"✅ Aktiv","Bereits gekauft.");return;}
+      if(level!==1||!abilityGateReached(activeMode,id)){showAbilityInfo(btn.dataset.abilityTitle,btn.dataset.abilityDesc,`🔒 ${cost} XP`,level===2?"Level 2 Unlocks folgen später.":`Freischaltung: ${abilityGateLabel(activeMode,id)} abschließen.`);return;}
+      if(m.xp<cost){showAbilityInfo(btn.dataset.abilityTitle,btn.dataset.abilityDesc,`⭐ ${cost} XP`,`Dir fehlen ${cost-m.xp} XP.`);return;}
+      m.xp-=cost;m.abilityLevels[String(id)]=1;saveGameData();renderModal();refreshAll();
+    }));
+    sheet.querySelectorAll("[data-fusion-info]").forEach(btn=>btn.addEventListener("click",()=>showAbilityInfo(btn.dataset.fusionInfo,"Fusion noch nicht festgelegt.","🔒 1000 XP","Fusionen bleiben Platzhalter.")));
+    sheet.querySelectorAll("[data-keystone-info]").forEach(btn=>btn.addEventListener("click",()=>showAbilityInfo(btn.dataset.keystoneInfo,"Keystone bleibt vorerst gesperrt.","🔒 1000 XP","Keystone-Unlock folgt später.")));
   }
 
   function renderProfilePicker(){
-    const wrap=document.getElementById("masteryProfilePickerWrap");
-    const select=document.getElementById("masteryProfilePicker");
-    const profiles=profilesForMode(activeMode);
-    select.innerHTML=profiles.map(p=>`<option value="${escapeHtml(p.id)}">${escapeHtml(p.name)}</option>`).join("");
-    if(!activeProfileId||!profiles.some(p=>p.id===activeProfileId)) activeProfileId=profiles[0]?.id||null;
-    select.value=activeProfileId||"";
-    wrap.classList.toggle("hidden",profiles.length<=1);
+    const wrap=document.getElementById("masteryProfilePickerWrap"),select=document.getElementById("masteryProfilePicker"),profiles=profilesForMode(activeMode);
+    select.innerHTML=profiles.map(p=>`<option value="${escapeHtml(p.id)}">${escapeHtml(p.name)}</option>`).join("");if(!activeProfileId||!profiles.some(p=>p.id===activeProfileId))activeProfileId=profiles[0]?.id||null;select.value=activeProfileId||"";wrap.classList.toggle("hidden",profiles.length<=1);
   }
-
   function renderModal(){
-    const profile=selectedMasteryProfile();
-    document.getElementById("masteryModeBadge").textContent=modeLabel(activeMode);
-    document.querySelector("#masteryModal .mastery-kicker").textContent=`Campaign Progression · ${modeLabel(activeMode)}`;
-    renderProfilePicker();
-    if(!profile){
-      document.getElementById("masterySummary").textContent="Kein Profil ausgewählt.";
-      document.getElementById("masteryContent").innerHTML="";
-    }else renderStandard(profile);
-    renderAbilitySheet();
+    const profile=selectedMasteryProfile();document.getElementById("masteryModeBadge").textContent=modeLabel(activeMode);document.querySelector("#masteryModal .mastery-kicker").textContent=`Campaign Progression · ${modeLabel(activeMode)}`;renderProfilePicker();
+    if(!profile){document.getElementById("masterySummary").textContent="Kein Profil ausgewählt.";document.getElementById("masteryContent").innerHTML="";document.getElementById("masteryAbilitySheet").innerHTML="";}else{renderStandard(profile);renderAbilitySheet(profile);}
   }
-
   function open(mode="solo"){
-    if(!MODES.includes(mode)) mode="solo";
-    const profiles=profilesForMode(mode);
-    if(!profiles.length||!modeUnlocked(mode,profiles)) return;
-    activeMode=mode;activeProfileId=profiles[0].id;
-    document.getElementById("masteryModal")?.classList.remove("hidden");
-    document.body.classList.add("mastery-open");
-    renderModal();
+    if(!MODES.includes(mode))mode="solo";const profiles=profilesForMode(mode);if(!profiles.length||!modeUnlocked(mode,profiles))return;activeMode=mode;activeProfileId=profiles[0].id;document.getElementById("masteryModal")?.classList.remove("hidden");document.body.classList.add("mastery-open");renderModal();
   }
-  function close(){
-    document.getElementById("masteryModal")?.classList.add("hidden");
-    document.getElementById("masteryLockedInfo")?.classList.add("hidden");
-    document.body.classList.remove("mastery-open");
-  }
-
-  function summaryFor(mode){
-    const profiles=profilesForMode(mode);
-    if(!profiles.length) return "⭐ –";
-    return profiles.map(p=>`${p.name}: ${ensure(p,mode).xp}`).join(" · ")+" XP";
-  }
-
+  function close(){document.getElementById("masteryModal")?.classList.add("hidden");document.getElementById("masteryLockedInfo")?.classList.add("hidden");document.body.classList.remove("mastery-open");}
+  function summaryFor(mode){const profiles=profilesForMode(mode);if(!profiles.length)return"⭐ –";return profiles.map(p=>`${p.name}: ${ensure(p,mode).xp}`).join(" · ")+" XP";}
   function refreshMode(mode){
-    const profiles=profilesForMode(mode);
-    const unlocked=modeUnlocked(mode,profiles);
-    const ids=mode==="solo"
-      ?["campaignMasteryXpSummary","campaignMasteryBtn"]
-      :mode==="duo"
-        ?["duoCampaignMasteryXpSummary","duoCampaignMasteryBtn"]
-        :["trioCampaignMasteryXpSummary","trioCampaignMasteryBtn"];
-    const counter=document.getElementById(ids[0]),btn=document.getElementById(ids[1]);
-    if(counter) counter.textContent=summaryFor(mode);
-    if(btn){btn.disabled=!unlocked;btn.textContent=unlocked?"⚔️ Mastery":"🔒 Mastery";}
+    const profiles=profilesForMode(mode),unlocked=modeUnlocked(mode,profiles),ids=mode==="solo"?["campaignMasteryXpSummary","campaignMasteryBtn"]:mode==="duo"?["duoCampaignMasteryXpSummary","duoCampaignMasteryBtn"]:["trioCampaignMasteryXpSummary","trioCampaignMasteryBtn"],counter=document.getElementById(ids[0]),btn=document.getElementById(ids[1]);
+    if(counter)counter.textContent=summaryFor(mode);if(btn){btn.disabled=!unlocked;btn.textContent=unlocked?"⚔️ Mastery":"🔒 Mastery";btn.title=unlocked?"Mastery öffnen":mode==="solo"?"Nach Solo W2L10":"Nach Duo W1L10";}
   }
-
-  function refreshAll(){
-    refreshMode("solo");refreshMode("duo");refreshMode("trio");
-  }
+  function refreshAll(){refreshMode("solo");refreshMode("duo");refreshMode("trio");}
   function refreshCampaignUi(){refreshAll();}
 
-
   function retroCompletedEncountersForProfile(profile,mode){
-    if(!profile) return [];
-
-    if(mode==="duo"){
-      const out=new Set();
-      try{
-        const pairs=profile.campaign?.duoProgress||{};
-        // Duo progress is stored on profile-pair keys. Count only encounters from W2+.
-        Object.values(pairs).forEach(progress=>{
-          (progress?.completedEncounters||[]).forEach(id=>{
-            const encounter=duoEncounterById(id);
-            if(encounter&&encounterEligible("duo",encounter)) out.add(id);
-          });
+    if(!profile)return[];
+    const out=new Set();
+    try{
+      if(mode==="solo"){
+        (profile.campaign?.completedEncounters||[]).forEach(id=>{
+          const e=campaignEncounterById(id);
+          if(e&&encounterEligible("solo",e)) out.add(String(id));
         });
-      }catch(_err){}
-      return [...out];
-    }
+        return [...out];
+      }
 
-    if(mode==="trio"){
-      const out=new Set();
-      try{
-        const groups=profile.campaign?.trioProgress||{};
-        Object.values(groups).forEach(progress=>{
-          (progress?.completedEncounters||[]).forEach(id=>{
-            const encounter=trioEncounterById(id);
-            if(encounter&&encounterEligible("trio",encounter)) out.add(id);
-          });
+      const store=mode==="duo"?(saveData.duoCampaigns||{}):(saveData.trioCampaigns||{});
+      Object.values(store).forEach(progress=>{
+        if(!(progress?.profileIds||[]).map(String).includes(String(profile.id))) return;
+        (progress?.completedEncounters||[]).forEach(id=>{
+          const e=mode==="duo"?duoEncounterById(id):trioEncounterById(id);
+          if(e&&encounterEligible(mode,e)) out.add(String(id));
         });
-      }catch(_err){}
-      return [...out];
-    }
-
-    return [];
+      });
+    }catch(_err){}
+    return [...out];
   }
 
   function applyRetroBackfill(profile,mode){
-    if(!profile||!["duo","trio"].includes(mode)) return 0;
-    const m=ensure(profile,mode);
-    if(m.retroBackfillDone) return 0;
+    if(!profile||!MODES.includes(mode))return 0;
+    const state=ensure(profile,mode);
+
+    // V27.9.3 recalculates the baseline with the new XP gates:
+    // Solo W2L10+, Duo W1L10+, Trio L1+.
+    if(state.retroBackfillV3Done)return 0;
 
     const completed=retroCompletedEncountersForProfile(profile,mode);
     const targetLifetime=completed.length*100;
-    const beforeLifetime=Math.max(0,Math.floor(Number(m.lifetimeXp)||0));
-    const beforeSpendable=Math.max(0,Math.floor(Number(m.xp)||0));
+    const beforeLifetime=Math.max(0,Math.floor(Number(state.lifetimeXp)||0));
+    const beforeSpendable=Math.max(0,Math.floor(Number(state.xp)||0));
 
     if(targetLifetime>beforeLifetime){
       const delta=targetLifetime-beforeLifetime;
-      m.lifetimeXp=targetLifetime;
-      m.xp=beforeSpendable+delta;
+      state.lifetimeXp=targetLifetime;
+      state.xp=beforeSpendable+delta;
     }
 
-    m.retroBackfillDone=true;
+    state.retroBackfillDone=true;
+    state.retroBackfillV2Done=true;
+    state.retroBackfillV3Done=true;
     return Math.max(0,targetLifetime-beforeLifetime);
   }
 
@@ -431,34 +379,23 @@
     try{
       let migrated=false;
       (saveData.profiles||[]).forEach(p=>{
-        const before=!!p.campaign?.masteryModes?.solo;
+        const hadSolo=!!p.campaign?.masteryModes?.solo;
         ensureModes(p);
-        if(!before) migrated=true;
+        if(!hadSolo)migrated=true;
 
-        const duoBefore=!!p.campaign?.masteryModes?.duo?.retroBackfillDone;
-        const trioBefore=!!p.campaign?.masteryModes?.trio?.retroBackfillDone;
-        applyRetroBackfill(p,"duo");
-        applyRetroBackfill(p,"trio");
-        if(!duoBefore||!trioBefore) migrated=true;
+        for(const mode of MODES){
+          const before=!!p.campaign?.masteryModes?.[mode]?.retroBackfillV3Done;
+          applyRetroBackfill(p,mode);
+          if(!before)migrated=true;
+        }
       });
-      if(migrated) saveGameData();
+      if(migrated)saveGameData();
     }catch(_err){}
-
-    document.getElementById("campaignMasteryBtn")?.addEventListener("click",()=>open("solo"));
-    document.getElementById("duoCampaignMasteryBtn")?.addEventListener("click",()=>open("duo"));
-    document.getElementById("trioCampaignMasteryBtn")?.addEventListener("click",()=>open("trio"));
-    document.getElementById("masteryCloseBtn")?.addEventListener("click",close);
-    document.getElementById("masteryModal")?.addEventListener("click",e=>{if(e.target?.id==="masteryModal")close()});
-    document.getElementById("masteryProfilePicker")?.addEventListener("change",e=>{activeProfileId=e.target.value;renderModal();});
-
-    ["campaignProfileSelect","duoProfile1Select","duoProfile2Select","trioProfile1Select","trioProfile2Select","trioProfile3Select"]
-      .forEach(id=>document.getElementById(id)?.addEventListener("change",()=>setTimeout(refreshAll,0)));
-    refreshAll();
+    document.getElementById("campaignMasteryBtn")?.addEventListener("click",()=>open("solo"));document.getElementById("duoCampaignMasteryBtn")?.addEventListener("click",()=>open("duo"));document.getElementById("trioCampaignMasteryBtn")?.addEventListener("click",()=>open("trio"));document.getElementById("masteryCloseBtn")?.addEventListener("click",close);document.getElementById("masteryModal")?.addEventListener("click",e=>{if(e.target?.id==="masteryModal")close()});document.getElementById("masteryProfilePicker")?.addEventListener("change",e=>{activeProfileId=e.target.value;renderModal();});["campaignProfileSelect","duoProfile1Select","duoProfile2Select","trioProfile1Select","trioProfile2Select","trioProfile3Select"].forEach(id=>document.getElementById(id)?.addEventListener("change",()=>setTimeout(refreshAll,0)));refreshAll();
   }
 
   window.WDMastery=Object.freeze({
-    ensure,ensureModes,encounterEligible,modeUnlocked,hpBonus,damageBonus,damageBonusForPlayer,
-    abilityThreshold,abilityThresholdForPlayer,awardXp,applyRetroBackfill,refreshCampaignUi,refreshAll,open
+    ensure,ensureModes,encounterEligible,standardEligible,modeUnlocked,hpBonus,damageBonus,damageBonusForPlayer,abilityThreshold,abilityThresholdForPlayer,awardXp,applyRetroBackfill,abilityLevel,abilityLevelForPlayer,hasAbilityUpgrade,abilityGate,abilityGateLabel,abilityGateReached,refreshCampaignUi,refreshAll,open
   });
   init();
 })();

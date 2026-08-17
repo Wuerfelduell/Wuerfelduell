@@ -2,7 +2,7 @@
     // Fähigkeit 7 (BETA): +6 Prozentpunkte auf die 6.
     // Funktioniert auch für Würfe außerhalb des aktiven Spielers, z.B. Counterattack.
     if(hasAbility(7,index)){
-      const sixChance=(1/6)+0.06;
+      const sixChance=(1/6)+0.06+(hasMasteryUpgrade(7,1,index)?0.01:0);
       const r=Math.random();
       if(r<sixChance) return 6;
       const normalized=(r-sixChance)/(1-sixChance);
@@ -496,7 +496,9 @@
 
   function snakeEyesGroup(){
     const groups=new Map();
-    lastBaseRollIndices.forEach(i=>{
+    const masteryAttackSnake=phase==="attack_after_roll" && hasMasteryUpgrade(20,1,current);
+    const sourceIndices=masteryAttackSnake?lastAttackRollIndices:lastBaseRollIndices;
+    sourceIndices.forEach(i=>{
       const d=dice[i];
       if(!d || d.locked || d.value==null) return;
       if(!groups.has(d.value)) groups.set(d.value,[]);
