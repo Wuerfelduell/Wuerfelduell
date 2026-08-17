@@ -5,7 +5,38 @@
   const MAX_ABILITY_LEVEL=5;
 
   function masteryDefaults(){
-    return {xp:0,hpLevel:0,damageLevel:0,abilityLevel:0};
+    return {xp:0,hpLevel:0,damageLevel:0,abilityLevel:0,retroGranted:false};
+  }
+
+  function retroactiveBaselineXp(profile){
+    const completed=new Set(profile?.campaign?.completedEncounters||[]);
+    let total=0;
+
+    CAMPAIGN_ENCOUNTERS.forEach(encounter=>{
+      const wi=CAMPAIGN_WORLDS.findIndex(w=>w.id===(encounter.world||"house"));
+      if(wi<2 || !completed.has(encounter.id)) return;
+
+      total+=25; // 10 regular clear + 15 first-clear value
+
+      const list=CAMPAIGN_ENCOUNTERS.filter(e=>(e.world||"house")===(encounter.world||"house"));
+      const number=list.findIndex(e=>e.id===encounter.id)+1;
+      if(number===10 || number===15) total+=25;
+    });
+
+    return total;
+  }
+
+  function applyRetroactiveXp(profile){
+    const m=profile?.campaign?.mastery;
+    if(!m || m.retroGranted) return 0;
+
+    const baseline=retroactiveBaselineXp(profile);
+    const before=Math.max(0,Math.floor(Number(m.xp)||0));
+
+    // max() prevents doubling XP already earned in V27.8.0.
+    m.xp=Math.max(before,baseline);
+    m.retroGranted=true;
+    return Math.max(0,m.xp-before);
   }
 
   function ensure(profile){
@@ -18,8 +49,10 @@
       xp:Math.max(0,Math.floor(Number(raw.xp)||0)),
       hpLevel:Math.max(0,Math.min(MAX_HP_LEVEL,Math.floor(Number(raw.hpLevel)||0))),
       damageLevel:Math.max(0,Math.min(MAX_DAMAGE_LEVEL,Math.floor(Number(raw.damageLevel)||0))),
-      abilityLevel:Math.max(0,Math.min(MAX_ABILITY_LEVEL,Math.floor(Number(raw.abilityLevel)||0)))
+      abilityLevel:Math.max(0,Math.min(MAX_ABILITY_LEVEL,Math.floor(Number(raw.abilityLevel)||0))),
+      retroGranted:!!raw.retroGranted
     };
+    applyRetroactiveXp(profile);
     return profile.campaign.mastery;
   }
 
@@ -241,11 +274,13 @@
     const profile=currentProfile();
     if(!profile||!unlocked(profile)) return;
     document.getElementById("masteryModal")?.classList.remove("hidden");
+    document.body.classList.add("mastery-open");
     renderModal();
   }
 
   function close(){
     document.getElementById("masteryModal")?.classList.add("hidden");
+    document.body.classList.remove("mastery-open");
   }
 
   function refreshCampaignUi(profile=currentProfile(),encounter=currentEncounter()){
@@ -256,7 +291,7 @@
     if(!profile){
       counter.textContent="⭐ 0 XP · 0 frei";
       button.disabled=true;
-      button.textContent="🔒 Mastery · ab Welt 3";
+      button.textContent="🔒 Mastery";
       return;
     }
 
@@ -266,7 +301,7 @@
 
     const on=unlocked(profile);
     button.disabled=!on;
-    button.textContent=on?"⚔️ Mastery": "🔒 Mastery · ab Welt 3";
+    button.textContent=on?"⚔️ Mastery":"🔒 Mastery";
     button.title=on
       ?"Campaign Mastery öffnen"
       :"Wird freigeschaltet, sobald Welt 3 verfügbar ist.";
