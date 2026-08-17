@@ -278,3 +278,423 @@ body.mastery-open{
 /* V27.8.4 — XP currency */
 .mastery-xp-currency{height:2px;opacity:.35}
 .mastery-node:not(.owned) small{font-weight:900}
+
+
+/* =========================================================
+   V27.8.5 — MASTERY TREE VISUAL REBUILD
+   ========================================================= */
+
+#masteryModal .mastery-panel{
+  width:min(940px,100%)!important;
+  background:
+    radial-gradient(circle at 50% -10%,rgba(130,92,255,.16),transparent 34%),
+    linear-gradient(180deg,#171e2b 0%,#0d131d 62%,#0a0f17 100%)!important;
+}
+
+.mastery-content{
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:14px;
+  align-items:start;
+}
+
+.mastery-branch{
+  --branch-accent:132,108,255;
+  --branch-accent-2:186,126,255;
+  position:relative;
+  overflow:hidden;
+  padding:14px 12px 18px;
+  border:1px solid rgba(255,255,255,.13);
+  border-radius:20px;
+  background:
+    radial-gradient(circle at 50% 0%,rgba(var(--branch-accent),.13),transparent 36%),
+    linear-gradient(180deg,rgba(255,255,255,.055),rgba(255,255,255,.022));
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.07),
+    inset 0 -18px 45px rgba(0,0,0,.22),
+    0 12px 28px rgba(0,0,0,.16);
+}
+
+.mastery-branch::after{
+  content:"";
+  position:absolute;
+  left:12%;
+  right:12%;
+  bottom:-22px;
+  height:52px;
+  border-radius:50%;
+  background:rgba(var(--branch-accent),.11);
+  filter:blur(22px);
+  pointer-events:none;
+}
+
+.mastery-branch.branch-hpLevel{
+  --branch-accent:255,74,116;
+  --branch-accent-2:255,130,157;
+}
+.mastery-branch.branch-damageLevel{
+  --branch-accent:255,177,60;
+  --branch-accent-2:255,222,125;
+}
+.mastery-branch.branch-abilityLevel{
+  --branch-accent:166,103,255;
+  --branch-accent-2:102,183,255;
+}
+
+.mastery-branch-head{
+  position:relative;
+  z-index:2;
+  grid-template-columns:auto minmax(0,1fr) auto;
+  min-height:76px;
+  padding-bottom:10px;
+  border-bottom:1px solid rgba(255,255,255,.07);
+}
+.mastery-branch-icon{
+  font-size:27px;
+  filter:drop-shadow(0 4px 8px rgba(0,0,0,.35));
+}
+.mastery-branch-head strong{
+  color:#f7f9ff;
+  font-size:17px;
+  line-height:1.05;
+  text-shadow:0 1px 0 rgba(0,0,0,.5);
+}
+.mastery-branch-head small{
+  color:#b7c0d0;
+  opacity:.84;
+  font-size:10px;
+  line-height:1.35;
+}
+.mastery-branch-level{
+  color:#eef2ff;
+  background:rgba(255,255,255,.08);
+  border:1px solid rgba(255,255,255,.07);
+  box-shadow:inset 0 1px rgba(255,255,255,.06);
+}
+
+.mastery-tree-line{
+  position:relative;
+  display:flex;
+  flex-direction:column;
+  align-items:stretch;
+  gap:18px;
+  margin-top:16px;
+  padding:8px 2px 10px;
+}
+
+/* Central luminous trunk */
+.mastery-tree-line::before{
+  content:"";
+  position:absolute;
+  left:50%;
+  top:20px;
+  bottom:22px;
+  width:5px;
+  transform:translateX(-50%);
+  border-radius:999px;
+  background:
+    linear-gradient(90deg,
+      rgba(0,0,0,.45),
+      rgba(var(--branch-accent),.42) 25%,
+      rgba(var(--branch-accent-2),.72) 50%,
+      rgba(var(--branch-accent),.42) 75%,
+      rgba(0,0,0,.45));
+  box-shadow:
+    0 0 10px rgba(var(--branch-accent),.28),
+    inset 0 0 3px rgba(255,255,255,.28);
+}
+
+/* Every step is a real node, staggered around the tree trunk. */
+.mastery-node{
+  --shift:-20px;
+  position:relative;
+  z-index:2;
+  width:calc(100% - 18px);
+  min-height:76px;
+  margin:0 auto;
+  padding:0;
+  display:grid;
+  grid-template-columns:68px minmax(0,1fr);
+  gap:4px;
+  align-items:center;
+  overflow:visible;
+  border:0!important;
+  background:transparent!important;
+  box-shadow:none!important;
+  color:#f5f7ff!important;
+  opacity:1!important;
+  transform:translateX(var(--shift));
+  transition:transform .16s ease,filter .16s ease;
+}
+.mastery-node:nth-child(even){--shift:20px}
+.mastery-node:not(:disabled):active{
+  transform:translateX(var(--shift)) translateY(2px) scale(.985);
+}
+
+/* Little branch arm from central trunk to orb */
+.mastery-node::before{
+  content:"";
+  position:absolute;
+  z-index:-1;
+  top:50%;
+  left:50%;
+  width:42px;
+  height:4px;
+  border-radius:999px;
+  transform:translate(-50%,-50%);
+  background:linear-gradient(90deg,
+    rgba(var(--branch-accent),.22),
+    rgba(var(--branch-accent-2),.62),
+    rgba(var(--branch-accent),.22));
+  box-shadow:0 0 9px rgba(var(--branch-accent),.22);
+}
+
+.mastery-node-orb{
+  position:relative;
+  display:grid;
+  place-items:center;
+  width:62px;
+  height:62px;
+  justify-self:center;
+  border-radius:50%;
+  filter:drop-shadow(0 10px 10px rgba(0,0,0,.35));
+}
+.mastery-node-orb::before{
+  content:"";
+  position:absolute;
+  inset:2px;
+  border-radius:50%;
+  background:
+    radial-gradient(circle at 34% 24%,rgba(255,255,255,.30),transparent 17%),
+    radial-gradient(circle at 50% 55%,rgba(var(--branch-accent),.22),rgba(11,14,21,.96) 68%);
+  border:1px solid rgba(255,255,255,.13);
+  box-shadow:
+    inset 0 4px 8px rgba(255,255,255,.08),
+    inset 0 -8px 12px rgba(0,0,0,.52),
+    0 0 0 4px rgba(0,0,0,.16);
+}
+.mastery-node-orb::after{
+  content:"";
+  position:absolute;
+  inset:8px;
+  border-radius:50%;
+  border:1px solid rgba(var(--branch-accent-2),.24);
+  box-shadow:inset 0 0 12px rgba(var(--branch-accent),.08);
+}
+
+.mastery-node-dot{
+  position:relative;
+  z-index:2;
+  display:grid;
+  place-items:center;
+  width:42px;
+  height:42px;
+  border-radius:50%;
+  border:2px solid rgba(var(--branch-accent-2),.38)!important;
+  background:
+    linear-gradient(145deg,rgba(255,255,255,.07),rgba(0,0,0,.22)),
+    rgba(15,18,28,.92)!important;
+  color:#d8deeb!important;
+  font-size:15px;
+  font-weight:1000;
+  text-shadow:0 2px 4px rgba(0,0,0,.65);
+  box-shadow:
+    inset 2px 2px 4px rgba(255,255,255,.07),
+    inset -3px -4px 7px rgba(0,0,0,.55);
+}
+
+/* 3D floating plaque */
+.mastery-node-plaque{
+  position:relative;
+  min-width:0;
+  min-height:56px;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  gap:4px;
+  padding:9px 12px 9px 14px;
+  border-radius:13px;
+  border:1px solid rgba(255,255,255,.12);
+  background:
+    linear-gradient(180deg,rgba(40,47,61,.96),rgba(17,22,32,.98));
+  color:#edf1fb;
+  text-align:left;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.08),
+    inset 0 -2px 0 rgba(0,0,0,.25),
+    0 7px 12px rgba(0,0,0,.24);
+}
+.mastery-node-plaque::before{
+  content:"";
+  position:absolute;
+  left:-7px;
+  top:50%;
+  width:13px;
+  height:13px;
+  transform:translateY(-50%) rotate(45deg);
+  background:#222938;
+  border-left:1px solid rgba(255,255,255,.11);
+  border-bottom:1px solid rgba(255,255,255,.11);
+}
+
+.mastery-node-value{
+  color:#f5f7ff!important;
+  font-size:14px!important;
+  font-weight:1000!important;
+  letter-spacing:.01em;
+  text-shadow:0 1px 2px rgba(0,0,0,.7);
+}
+.mastery-node small{
+  color:#aeb8ca!important;
+  opacity:1!important;
+  font-size:9px!important;
+  font-weight:950!important;
+  letter-spacing:.08em;
+}
+
+/* OWNED: emerald core, but keeps branch identity around it */
+.mastery-node.owned .mastery-node-orb::before{
+  background:
+    radial-gradient(circle at 34% 24%,rgba(255,255,255,.36),transparent 18%),
+    radial-gradient(circle at 50% 55%,rgba(59,210,123,.52),rgba(10,51,34,.97) 68%);
+  border-color:rgba(105,239,161,.56);
+  box-shadow:
+    inset 0 4px 8px rgba(255,255,255,.10),
+    inset 0 -8px 12px rgba(0,0,0,.42),
+    0 0 17px rgba(76,220,137,.20);
+}
+.mastery-node.owned .mastery-node-dot{
+  color:#dffff0!important;
+  border-color:rgba(125,245,175,.78)!important;
+  background:rgba(35,127,79,.54)!important;
+  box-shadow:
+    inset 2px 2px 5px rgba(255,255,255,.12),
+    0 0 13px rgba(69,223,134,.28);
+}
+.mastery-node.owned .mastery-node-plaque{
+  border-color:rgba(86,224,145,.26);
+  background:
+    linear-gradient(180deg,rgba(31,73,54,.96),rgba(17,38,30,.98));
+}
+.mastery-node.owned small{color:#8ce8b4!important}
+
+/* AVAILABLE: unmistakable purchase node */
+.mastery-node.available{
+  cursor:pointer;
+  filter:drop-shadow(0 0 10px rgba(var(--branch-accent),.16));
+}
+.mastery-node.available .mastery-node-orb{
+  animation:masteryNodePulse 1.7s ease-in-out infinite;
+}
+.mastery-node.available .mastery-node-orb::before{
+  border-color:rgba(var(--branch-accent-2),.82);
+  box-shadow:
+    inset 0 5px 10px rgba(255,255,255,.12),
+    inset 0 -9px 13px rgba(0,0,0,.45),
+    0 0 10px rgba(var(--branch-accent),.40),
+    0 0 24px rgba(var(--branch-accent),.20);
+}
+.mastery-node.available .mastery-node-dot{
+  color:#fff!important;
+  border-color:rgba(var(--branch-accent-2),.95)!important;
+  box-shadow:
+    inset 2px 2px 5px rgba(255,255,255,.12),
+    0 0 16px rgba(var(--branch-accent),.46);
+}
+.mastery-node.available .mastery-node-plaque{
+  border-color:rgba(var(--branch-accent-2),.72);
+  background:
+    linear-gradient(180deg,rgba(var(--branch-accent),.18),rgba(15,18,27,.98) 58%);
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.12),
+    0 8px 16px rgba(0,0,0,.30),
+    0 0 18px rgba(var(--branch-accent),.13);
+}
+.mastery-node.available small{
+  color:rgb(var(--branch-accent-2))!important;
+  font-size:10px!important;
+}
+
+/* LOCKED: still readable. No more black-on-black mystery boxes. */
+.mastery-node.locked{
+  filter:saturate(.58);
+}
+.mastery-node.locked .mastery-node-orb{
+  opacity:.68;
+}
+.mastery-node.locked .mastery-node-dot{
+  color:#8f98a9!important;
+  border-color:rgba(151,160,179,.22)!important;
+}
+.mastery-node.locked .mastery-node-plaque{
+  opacity:.76;
+  border-color:rgba(255,255,255,.075);
+  background:linear-gradient(180deg,rgba(32,38,49,.92),rgba(14,18,27,.96));
+}
+.mastery-node.locked .mastery-node-value{
+  color:#c4cad6!important;
+}
+.mastery-node.locked small{
+  color:#7f899a!important;
+}
+
+@keyframes masteryNodePulse{
+  0%,100%{transform:translateY(0) scale(1)}
+  50%{transform:translateY(-2px) scale(1.035)}
+}
+
+/* The summary should remain readable above the flashy tree. */
+.mastery-summary{
+  background:
+    linear-gradient(180deg,rgba(255,255,255,.055),rgba(255,255,255,.028));
+  color:#eef2fb;
+}
+.mastery-summary small{color:#aeb7c8;opacity:.9}
+.mastery-xp-line{color:#dce2ee}
+
+@media(max-width:760px){
+  .mastery-content{
+    grid-template-columns:1fr;
+    gap:16px;
+  }
+  .mastery-branch{
+    padding:14px 14px 18px;
+  }
+  .mastery-tree-line{
+    max-width:560px;
+    width:100%;
+    margin:16px auto 0;
+    gap:16px;
+  }
+  .mastery-node{
+    width:calc(100% - 28px);
+    --shift:-14px;
+    grid-template-columns:66px minmax(0,1fr);
+  }
+  .mastery-node:nth-child(even){--shift:14px}
+}
+
+@media(max-width:420px){
+  .mastery-node{
+    width:100%;
+    --shift:-6px;
+    grid-template-columns:62px minmax(0,1fr);
+  }
+  .mastery-node:nth-child(even){--shift:6px}
+  .mastery-node-orb{
+    width:58px;
+    height:58px;
+  }
+  .mastery-node-dot{
+    width:39px;
+    height:39px;
+    font-size:14px;
+  }
+  .mastery-node-plaque{
+    min-height:54px;
+    padding:8px 10px 8px 12px;
+  }
+  .mastery-node-value{
+    font-size:13px!important;
+  }
+}
