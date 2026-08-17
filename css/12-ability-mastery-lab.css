@@ -457,3 +457,345 @@ body.ability-mastery-lab-open{overflow:hidden!important}
     min-height:510px;
   }
 }
+
+
+/* =========================================================
+   V27.8.7 — MOBILE FIT + BRANCH HEADINGS + INFO POPUP
+   ========================================================= */
+
+.ability-mastery-lab-tree{
+  min-width:0!important;
+  width:100%!important;
+}
+
+.aml-pair{
+  min-height:470px!important;
+}
+
+.aml-branch-headings{
+  position:absolute;
+  z-index:8;
+  left:18px;
+  right:18px;
+  top:18px;
+  display:grid;
+  grid-template-columns:1fr auto 1fr;
+  align-items:start;
+  gap:10px;
+}
+
+.aml-ability-heading{
+  min-width:0;
+}
+.aml-ability-heading-right{
+  text-align:right;
+}
+.aml-ability-heading small{
+  display:block;
+  color:#7f899d;
+  font-size:7px;
+  font-weight:1000;
+  letter-spacing:.12em;
+}
+.aml-ability-heading strong{
+  display:block;
+  margin-top:2px;
+  color:#f0f3fa;
+  font-size:13px;
+  font-weight:1000;
+  white-space:nowrap;
+}
+.aml-pair-emblem{
+  position:static!important;
+  transform:none!important;
+  align-self:start;
+  margin-top:1px;
+  padding:5px 8px!important;
+  font-size:8px!important;
+}
+
+.aml-links{
+  top:0!important;
+}
+
+.aml-branch{
+  top:88px!important;
+  width:42%!important;
+  gap:48px!important;
+}
+.aml-branch-left{
+  left:3%!important;
+}
+.aml-branch-right{
+  right:3%!important;
+}
+
+.aml-node{
+  height:92px!important;
+  width:100%!important;
+  border:0!important;
+  padding:0!important;
+  background:transparent!important;
+  text-align:left;
+  cursor:pointer;
+}
+
+.aml-node-orbit{
+  left:0!important;
+  width:78px!important;
+  height:78px!important;
+}
+.aml-node-core{
+  left:9px!important;
+  top:9px!important;
+  width:60px!important;
+  height:60px!important;
+}
+.aml-node-number{
+  font-size:20px!important;
+}
+.aml-node-core small{
+  font-size:7px!important;
+}
+
+.aml-node-tag{
+  left:68px!important;
+  top:23px!important;
+  min-width:72px!important;
+  max-width:calc(100% - 62px)!important;
+  padding:6px 8px!important;
+}
+.aml-node-tag strong{
+  font-size:13px!important;
+}
+.aml-node-tag span{
+  font-size:7px!important;
+}
+
+.aml-fusion-node{
+  bottom:16px!important;
+  width:150px!important;
+  height:126px!important;
+  border:0!important;
+  background:transparent!important;
+  padding:0!important;
+  cursor:pointer;
+}
+.aml-fusion-halo.halo-a{
+  width:116px!important;
+  height:116px!important;
+}
+.aml-fusion-halo.halo-b{
+  width:94px!important;
+  height:94px!important;
+}
+.aml-fusion-core{
+  width:78px!important;
+  height:78px!important;
+  border-radius:24px!important;
+}
+.aml-fusion-core strong{
+  font-size:19px!important;
+}
+.aml-fusion-core span{
+  font-size:7px!important;
+}
+
+.aml-future-node{
+  max-width:360px;
+  width:100%;
+  box-sizing:border-box;
+}
+
+/* upgrade description popup */
+.aml-info-popup{
+  position:absolute;
+  inset:0;
+  z-index:50;
+  display:grid;
+  place-items:center;
+  padding:18px;
+  background:rgba(2,5,10,.62);
+  backdrop-filter:blur(6px);
+  -webkit-backdrop-filter:blur(6px);
+}
+.aml-info-popup.hidden{
+  display:none!important;
+}
+.aml-info-card{
+  position:relative;
+  width:min(380px,100%);
+  padding:18px;
+  border:1px solid rgba(255,255,255,.14);
+  border-radius:18px;
+  background:
+    radial-gradient(circle at 50% 0%,rgba(150,105,255,.14),transparent 35%),
+    linear-gradient(180deg,#1b2230,#0e141e);
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.07),
+    0 22px 60px rgba(0,0,0,.52);
+}
+.aml-info-close{
+  position:absolute;
+  top:10px;
+  right:10px;
+  width:34px;
+  height:34px;
+  min-width:34px;
+  padding:0;
+  border-radius:11px;
+  background:rgba(255,255,255,.06);
+  border:1px solid rgba(255,255,255,.08);
+}
+.aml-info-kicker{
+  padding-right:42px;
+  color:#8d98aa;
+  font-size:8px;
+  font-weight:1000;
+  letter-spacing:.13em;
+}
+.aml-info-title{
+  margin-top:5px;
+  padding-right:42px;
+  color:#f3f6fc;
+  font-size:20px;
+  font-weight:1000;
+}
+.aml-info-cost{
+  display:inline-block;
+  margin-top:9px;
+  padding:5px 9px;
+  border-radius:999px;
+  color:#d8c4ff;
+  background:rgba(143,91,255,.12);
+  border:1px solid rgba(169,120,255,.22);
+  font-size:11px;
+  font-weight:1000;
+}
+.aml-info-desc{
+  margin-top:13px;
+  color:#c5cedd;
+  font-size:12px;
+  line-height:1.45;
+}
+.aml-info-note{
+  margin-top:13px;
+  padding:8px 9px;
+  border-radius:10px;
+  color:#7f8a9d;
+  background:rgba(255,255,255,.035);
+  font-size:9px;
+  line-height:1.35;
+}
+
+@media(max-width:700px){
+  .ability-mastery-lab-viewport{
+    overflow-x:hidden!important;
+  }
+  .ability-mastery-lab-tree{
+    min-width:0!important;
+  }
+  .aml-pair{
+    min-height:445px!important;
+  }
+  .aml-branch-headings{
+    left:10px;
+    right:10px;
+    gap:6px;
+  }
+  .aml-ability-heading small{
+    display:none;
+  }
+  .aml-ability-heading strong{
+    font-size:11px;
+  }
+  .aml-pair-emblem{
+    padding:4px 6px!important;
+    font-size:7px!important;
+  }
+  .aml-branch{
+    top:76px!important;
+    width:45%!important;
+    gap:42px!important;
+  }
+  .aml-branch-left{
+    left:1%!important;
+  }
+  .aml-branch-right{
+    right:1%!important;
+  }
+  .aml-node{
+    height:86px!important;
+  }
+  .aml-node-orbit{
+    width:70px!important;
+    height:70px!important;
+  }
+  .aml-node-core{
+    left:8px!important;
+    top:8px!important;
+    width:54px!important;
+    height:54px!important;
+  }
+  .aml-node-number{
+    font-size:18px!important;
+  }
+  .aml-node-tag{
+    left:59px!important;
+    top:20px!important;
+    min-width:60px!important;
+    padding:5px 7px!important;
+  }
+  .aml-node-tag strong{
+    font-size:12px!important;
+  }
+  .aml-fusion-node{
+    width:134px!important;
+    height:112px!important;
+    bottom:12px!important;
+  }
+  .aml-fusion-halo.halo-a{
+    width:102px!important;
+    height:102px!important;
+  }
+  .aml-fusion-halo.halo-b{
+    width:82px!important;
+    height:82px!important;
+  }
+  .aml-fusion-core{
+    width:70px!important;
+    height:70px!important;
+  }
+}
+
+@media(max-width:390px){
+  .ability-mastery-lab-viewport{
+    padding-left:4px!important;
+    padding-right:4px!important;
+  }
+  .aml-pair{
+    min-height:425px!important;
+  }
+  .aml-branch{
+    width:46%!important;
+  }
+  .aml-node-orbit{
+    width:64px!important;
+    height:64px!important;
+  }
+  .aml-node-core{
+    left:7px!important;
+    top:7px!important;
+    width:50px!important;
+    height:50px!important;
+  }
+  .aml-node-tag{
+    left:54px!important;
+    top:18px!important;
+    min-width:55px!important;
+    padding:5px 6px!important;
+  }
+  .aml-node-tag strong{
+    font-size:11px!important;
+  }
+}
