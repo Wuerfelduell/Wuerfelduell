@@ -213,9 +213,13 @@
       data-mastery-level="${level}"
       data-mastery-cost="${cost}"
       ${affordable?"":"disabled"}>
-      <span class="mastery-node-dot">${owned?"✓":level}</span>
-      <span class="mastery-node-value">${value}</span>
-      <small>${owned?"AKTIV":next?`${cost} XP`:"GESPERRT"}</small>
+      <span class="mastery-node-orb">
+        <span class="mastery-node-dot">${owned?"✓":level}</span>
+      </span>
+      <span class="mastery-node-plaque">
+        <span class="mastery-node-value">${value}</span>
+        <small>${owned?"AKTIV":next?`${cost} XP`:"GESPERRT"}</small>
+      </span>
     </button>`;
   }
 
@@ -257,7 +261,7 @@
 
     const branches=branchData(profile);
     content.innerHTML=branches.map(branch=>`
-      <section class="mastery-branch">
+      <section class="mastery-branch branch-${branch.key}">
         <div class="mastery-branch-head">
           <span class="mastery-branch-icon">${branch.icon}</span>
           <div>
