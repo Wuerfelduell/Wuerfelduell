@@ -1,0 +1,459 @@
+
+/* Würfelduell V27.8.6 — Ability Mastery fusion-tree visual prototype */
+#abilityMasteryLabModal{
+  position:fixed;
+  inset:0;
+  z-index:120000;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:12px;
+  background:
+    radial-gradient(circle at 50% 15%,rgba(112,76,255,.15),transparent 34%),
+    rgba(2,5,10,.86);
+  backdrop-filter:blur(10px);
+  -webkit-backdrop-filter:blur(10px);
+}
+#abilityMasteryLabModal.hidden{display:none!important}
+body.ability-mastery-lab-open{overflow:hidden!important}
+
+.ability-mastery-lab-shell{
+  width:min(980px,100%);
+  max-height:calc(100dvh - 24px);
+  display:flex;
+  flex-direction:column;
+  overflow:hidden;
+  border:1px solid rgba(255,255,255,.13);
+  border-radius:24px;
+  background:
+    linear-gradient(180deg,rgba(27,34,48,.98),rgba(9,14,22,.99));
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.08),
+    0 28px 100px rgba(0,0,0,.66);
+}
+
+.ability-mastery-lab-topbar{
+  flex:0 0 auto;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:14px;
+  padding:16px 18px 11px;
+  border-bottom:1px solid rgba(255,255,255,.07);
+}
+.ability-mastery-lab-kicker{
+  color:#8994a9;
+  font-size:9px;
+  font-weight:1000;
+  letter-spacing:.14em;
+}
+.ability-mastery-lab-title{
+  margin-top:2px;
+  color:#f5f7ff;
+  font-size:24px;
+  font-weight:1000;
+}
+#abilityMasteryLabClose{
+  width:42px;
+  height:42px;
+  min-width:42px;
+  padding:0;
+  border-radius:14px;
+  color:#e8ecf6;
+  background:rgba(255,255,255,.07);
+  border:1px solid rgba(255,255,255,.09);
+}
+
+.ability-mastery-lab-meta{
+  flex:0 0 auto;
+  display:flex;
+  flex-wrap:wrap;
+  gap:6px;
+  padding:9px 18px 10px;
+}
+.ability-mastery-lab-meta span,
+.aml-tree-chip{
+  padding:4px 8px;
+  border-radius:999px;
+  border:1px solid rgba(255,255,255,.08);
+  background:rgba(255,255,255,.045);
+  color:#aeb8c9;
+  font-size:9px;
+  font-weight:900;
+}
+
+.ability-mastery-lab-viewport{
+  flex:1 1 auto;
+  overflow:auto;
+  overscroll-behavior:contain;
+  padding:0 14px 18px;
+}
+.ability-mastery-lab-tree{
+  width:100%;
+  min-width:620px;
+  display:grid;
+  gap:18px;
+}
+
+.aml-tree-intro{
+  position:sticky;
+  top:0;
+  z-index:20;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  padding:10px 8px 12px;
+  background:linear-gradient(180deg,#171e2b 72%,transparent);
+}
+.aml-tree-intro small{
+  display:block;
+  color:#818ca0;
+  font-size:8px;
+  letter-spacing:.14em;
+  font-weight:1000;
+}
+.aml-tree-intro strong{
+  display:block;
+  margin-top:2px;
+  color:#eef2fa;
+  font-size:14px;
+}
+
+/* one pair = two ability tracks converging into one fusion */
+.aml-pair{
+  --aml-accent:rgba(190,105,255,.78);
+  --aml-accent2:rgba(102,183,255,.90);
+  position:relative;
+  min-height:530px;
+  overflow:hidden;
+  border:1px solid rgba(255,255,255,.10);
+  border-radius:24px;
+  background:
+    radial-gradient(circle at 50% 86%,rgba(160,100,255,.13),transparent 22%),
+    radial-gradient(circle at 16% 15%,rgba(255,255,255,.04),transparent 24%),
+    linear-gradient(180deg,rgba(255,255,255,.045),rgba(255,255,255,.018));
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.055),
+    inset 0 -28px 60px rgba(0,0,0,.22);
+}
+.aml-pair-crimson{
+  --aml-accent:rgba(255,83,117,.82);
+  --aml-accent2:rgba(255,181,76,.92);
+}
+.aml-pair-violet{
+  --aml-accent:rgba(178,99,255,.84);
+  --aml-accent2:rgba(96,174,255,.94);
+}
+.aml-pair-cyan{
+  --aml-accent:rgba(77,217,255,.84);
+  --aml-accent2:rgba(95,255,183,.92);
+}
+
+.aml-links{
+  position:absolute;
+  inset:0;
+  width:100%;
+  height:100%;
+  pointer-events:none;
+}
+.aml-link{
+  fill:none;
+  stroke-width:5;
+  stroke-linecap:round;
+}
+.aml-link-dim{
+  stroke:rgba(255,255,255,.08);
+}
+.aml-link-hot{
+  stroke-width:4;
+  opacity:.82;
+}
+
+.aml-branch{
+  position:absolute;
+  top:46px;
+  width:250px;
+  display:grid;
+  gap:68px;
+}
+.aml-branch-left{left:42px}
+.aml-branch-right{right:42px}
+
+.aml-node{
+  position:relative;
+  height:108px;
+}
+.aml-node-orbit{
+  position:absolute;
+  left:18px;
+  top:0;
+  width:94px;
+  height:94px;
+  border-radius:50%;
+  border:1px solid color-mix(in srgb,var(--aml-accent) 48%,transparent);
+  box-shadow:
+    0 0 18px color-mix(in srgb,var(--aml-accent) 22%,transparent),
+    inset 0 0 20px rgba(255,255,255,.025);
+}
+.aml-node-orbit::before,
+.aml-node-orbit::after{
+  content:"";
+  position:absolute;
+  inset:8px;
+  border-radius:50%;
+  border:1px solid rgba(255,255,255,.07);
+}
+.aml-node-orbit::after{
+  inset:20px;
+  border-color:color-mix(in srgb,var(--aml-accent2) 26%,transparent);
+}
+
+.aml-node-core{
+  position:absolute;
+  left:29px;
+  top:11px;
+  width:72px;
+  height:72px;
+  display:grid;
+  place-items:center;
+  align-content:center;
+  border-radius:50%;
+  background:
+    radial-gradient(circle at 32% 22%,rgba(255,255,255,.28),transparent 15%),
+    radial-gradient(circle at 50% 55%,color-mix(in srgb,var(--aml-accent) 25%,#171d28),#0c1018 72%);
+  border:2px solid color-mix(in srgb,var(--aml-accent2) 62%,#ffffff 12%);
+  box-shadow:
+    inset 0 5px 9px rgba(255,255,255,.08),
+    inset 0 -8px 12px rgba(0,0,0,.48),
+    0 0 18px color-mix(in srgb,var(--aml-accent) 22%,transparent),
+    0 10px 18px rgba(0,0,0,.35);
+}
+.aml-node-number{
+  color:#fff;
+  font-size:24px;
+  line-height:1;
+  font-weight:1000;
+  text-shadow:0 2px 5px rgba(0,0,0,.7);
+}
+.aml-node-core small{
+  margin-top:2px;
+  color:#b8c4d7;
+  font-size:8px;
+  font-weight:1000;
+  letter-spacing:.12em;
+}
+
+.aml-node-tag{
+  position:absolute;
+  left:106px;
+  top:29px;
+  min-width:92px;
+  display:flex;
+  align-items:baseline;
+  gap:4px;
+  padding:8px 11px;
+  border:1px solid color-mix(in srgb,var(--aml-accent) 30%,rgba(255,255,255,.10));
+  border-radius:11px;
+  background:
+    linear-gradient(180deg,rgba(37,44,58,.96),rgba(15,20,29,.98));
+  box-shadow:
+    inset 0 1px rgba(255,255,255,.07),
+    0 7px 14px rgba(0,0,0,.25);
+}
+.aml-node-tag::before{
+  content:"";
+  position:absolute;
+  left:-7px;
+  top:50%;
+  width:12px;
+  height:12px;
+  transform:translateY(-50%) rotate(45deg);
+  background:#202737;
+  border-left:1px solid rgba(255,255,255,.08);
+  border-bottom:1px solid rgba(255,255,255,.08);
+}
+.aml-node-tag strong{
+  color:#f1f5ff;
+  font-size:16px;
+}
+.aml-node-tag span{
+  color:#8e9bad;
+  font-size:8px;
+  font-weight:1000;
+}
+
+.aml-pair-emblem{
+  position:absolute;
+  left:50%;
+  top:168px;
+  transform:translateX(-50%);
+  display:flex;
+  align-items:center;
+  gap:8px;
+  padding:7px 11px;
+  border-radius:999px;
+  border:1px solid rgba(255,255,255,.08);
+  background:rgba(7,10,17,.66);
+  color:#8f9aad;
+  font-size:10px;
+  font-weight:1000;
+  box-shadow:0 7px 18px rgba(0,0,0,.22);
+}
+.aml-pair-emblem i{
+  color:color-mix(in srgb,var(--aml-accent2) 78%,white);
+  font-style:normal;
+}
+
+/* oversized fusion orb */
+.aml-fusion-node{
+  position:absolute;
+  left:50%;
+  bottom:24px;
+  width:190px;
+  height:150px;
+  transform:translateX(-50%);
+  display:grid;
+  place-items:center;
+}
+.aml-fusion-halo{
+  position:absolute;
+  border-radius:50%;
+  border:1px solid color-mix(in srgb,var(--aml-accent) 42%,transparent);
+}
+.aml-fusion-halo.halo-a{
+  width:142px;
+  height:142px;
+  box-shadow:
+    0 0 28px color-mix(in srgb,var(--aml-accent) 23%,transparent),
+    inset 0 0 28px color-mix(in srgb,var(--aml-accent2) 10%,transparent);
+}
+.aml-fusion-halo.halo-b{
+  width:116px;
+  height:116px;
+  border-style:dashed;
+  opacity:.68;
+  transform:rotate(18deg);
+}
+.aml-fusion-core{
+  position:relative;
+  z-index:2;
+  width:94px;
+  height:94px;
+  display:grid;
+  place-items:center;
+  align-content:center;
+  border-radius:28px;
+  transform:rotate(45deg);
+  background:
+    radial-gradient(circle at 25% 18%,rgba(255,255,255,.32),transparent 16%),
+    linear-gradient(145deg,
+      color-mix(in srgb,var(--aml-accent) 44%,#181a28),
+      color-mix(in srgb,var(--aml-accent2) 18%,#090d15));
+  border:2px solid color-mix(in srgb,var(--aml-accent2) 72%,white 8%);
+  box-shadow:
+    inset 0 5px 10px rgba(255,255,255,.10),
+    inset 0 -10px 16px rgba(0,0,0,.46),
+    0 0 18px color-mix(in srgb,var(--aml-accent) 35%,transparent),
+    0 0 42px color-mix(in srgb,var(--aml-accent2) 15%,transparent),
+    0 14px 22px rgba(0,0,0,.35);
+}
+.aml-fusion-core > *{
+  transform:rotate(-45deg);
+}
+.aml-fusion-core small{
+  color:#c6d0e0;
+  font-size:7px;
+  font-weight:1000;
+  letter-spacing:.15em;
+}
+.aml-fusion-core strong{
+  margin:1px 0;
+  color:#fff;
+  font-size:23px;
+  line-height:1;
+  text-shadow:0 2px 6px rgba(0,0,0,.7);
+}
+.aml-fusion-core span{
+  color:color-mix(in srgb,var(--aml-accent2) 80%,white);
+  font-size:8px;
+  font-weight:1000;
+}
+
+.aml-future-node{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:12px;
+  margin:0 auto;
+  padding:13px 18px;
+  border:1px dashed rgba(255,255,255,.11);
+  border-radius:18px;
+  color:#778296;
+  background:rgba(255,255,255,.018);
+}
+.aml-future-node>span{
+  display:grid;
+  place-items:center;
+  width:42px;
+  height:42px;
+  border-radius:50%;
+  border:1px solid rgba(255,255,255,.10);
+  font-size:18px;
+  font-weight:1000;
+}
+.aml-future-node strong,
+.aml-future-node small{display:block}
+.aml-future-node strong{font-size:10px}
+.aml-future-node small{font-size:8px;margin-top:2px}
+
+.ability-mastery-lab-legend{
+  flex:0 0 auto;
+  display:flex;
+  justify-content:center;
+  flex-wrap:wrap;
+  gap:8px 14px;
+  padding:10px 14px 13px;
+  border-top:1px solid rgba(255,255,255,.07);
+  background:rgba(6,9,14,.72);
+  color:#9ca7b8;
+  font-size:9px;
+  font-weight:900;
+}
+.aml-dot{
+  display:inline-block;
+  width:8px;
+  height:8px;
+  margin-right:4px;
+  border-radius:50%;
+}
+.aml-dot-l1{background:#718096}
+.aml-dot-l2{background:#c690ff;box-shadow:0 0 6px #a66cff}
+.aml-dot-fusion{background:#ffcb67;box-shadow:0 0 8px #ffae35}
+
+.test-lab-mastery-preview-btn{
+  grid-column:1/-1;
+}
+
+/* Mobile: horizontal tree canvas is intentional, but starts centered enough to inspect */
+@media(max-width:700px){
+  #abilityMasteryLabModal{
+    padding:7px;
+    align-items:flex-end;
+  }
+  .ability-mastery-lab-shell{
+    max-height:94dvh;
+    border-radius:22px 22px 12px 12px;
+  }
+  .ability-mastery-lab-title{font-size:21px}
+  .ability-mastery-lab-viewport{
+    padding-left:8px;
+    padding-right:8px;
+  }
+  .ability-mastery-lab-tree{
+    min-width:600px;
+  }
+  .aml-pair{
+    min-height:510px;
+  }
+}
