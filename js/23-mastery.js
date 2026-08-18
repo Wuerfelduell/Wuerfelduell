@@ -70,14 +70,32 @@
     };
   }
 
+  function normalizeInPlace(raw){
+    const target=raw&&typeof raw==="object"?raw:{};
+    const normalized=normalize(target);
+    Object.assign(target,normalized);
+    return target;
+  }
+
   function ensureModes(profile){
     if(!profile) return null;
     profile.campaign=profile.campaign||{};
     profile.campaign.masteryModes=profile.campaign.masteryModes||{};
+
     if(!profile.campaign.masteryModes.solo){
       profile.campaign.masteryModes.solo=normalize(profile.campaign.mastery);
+    }else{
+      normalizeInPlace(profile.campaign.masteryModes.solo);
     }
-    for(const mode of MODES) profile.campaign.masteryModes[mode]=normalize(profile.campaign.masteryModes[mode]);
+
+    for(const mode of MODES){
+      if(!profile.campaign.masteryModes[mode]){
+        profile.campaign.masteryModes[mode]=defaults();
+      }else{
+        normalizeInPlace(profile.campaign.masteryModes[mode]);
+      }
+    }
+
     return profile.campaign.masteryModes;
   }
 
@@ -174,7 +192,7 @@
     return "solo";
   }
 
-  function abilityLevel(profile,mode,id){return Math.max(0,Number(ensure(profile,mode).abilityLevels?.[String(Number(id))])||0);}
+  function abilityLevel(profile,mode,id){return Math.max(0,Number(ensure(profile,mode).abilityLevels?.[String(Number(id))])||0);} // ensure() must preserve object identity
   function abilityLevelForPlayer(id,index=current){
     try{
       if(!campaignMode) return 0;
