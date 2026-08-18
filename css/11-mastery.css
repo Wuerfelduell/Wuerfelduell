@@ -815,3 +815,60 @@ body.mastery-open{
 .mastery-purchase-actions button{
   min-height:42px;
 }
+
+
+/* V27.10.0 — Ability branch readability: L1/L2 nebeneinander */
+.mastery-ability-branches{
+  display:grid;
+  grid-template-columns:1fr;
+  gap:12px;
+}
+.mastery-ability-branch{
+  border:1px solid rgba(255,255,255,.07);
+  border-radius:15px;
+  padding:10px;
+  background:rgba(255,255,255,.018);
+}
+.mastery-ability-name{
+  margin:0 0 8px;
+  color:#eef2fa;
+  font-size:11px;
+  font-weight:1000;
+  letter-spacing:.02em;
+}
+.mastery-ability-node-row{
+  display:grid;
+  grid-template-columns:minmax(0,1fr) minmax(0,1fr);
+  gap:8px;
+}
+.mastery-ability-node-row .aml-ability-node{
+  min-width:0!important;
+}
+.mastery-ability-node-row .aml-node-tag strong{
+  white-space:normal!important;
+  line-height:1.08;
+}
+.mastery-ability-node-row .aml-node-tag small{
+  white-space:normal!important;
+  line-height:1.08;
+}
+@media(max-width:420px){
+  .mastery-ability-branch{padding:8px}
+  .mastery-ability-node-row{gap:5px}
+  .mastery-ability-sheet .aml-ability-node{
+    min-height:66px!important;
+    height:66px!important;
+    grid-template-columns:46px minmax(0,1fr)!important;
+  }
+  .mastery-ability-sheet .aml-ability-node .aml-node-orbit{
+    width:48px!important;height:48px!important;top:8px!important;
+  }
+  .mastery-ability-sheet .aml-ability-node .aml-node-core{
+    width:36px!important;height:36px!important;left:6px!important;top:14px!important;
+  }
+  .mastery-ability-sheet .aml-ability-node .aml-node-tag{
+    left:42px!important;top:10px!important;max-width:calc(100% - 39px)!important;
+  }
+  .mastery-ability-sheet .aml-ability-node .aml-node-tag strong{font-size:8px!important}
+  .mastery-ability-sheet .aml-ability-node .aml-node-tag small{font-size:6px!important}
+}
