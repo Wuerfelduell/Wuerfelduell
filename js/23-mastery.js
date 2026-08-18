@@ -232,13 +232,24 @@
   function l2Progress(profile,mode,id){
     return Math.max(0,Number(ensure(profile,mode).abilityL2Progress?.[String(Number(id))])||0);
   }
+  function l2ChallengeEligible(mode,encounter){
+    if(!encounter) return false;
+    if(mode==="solo") return soloWorldIndex(encounter)>=2; // Welt 3+
+    if(mode==="duo") return duoWorldIndex(encounter)>=2;   // Welt 3+
+    if(mode==="trio") return true;                         // Trio besitzt keine Welten
+    return false;
+  }
+
   function playerProfileAndMode(index){
     try{
       const p=players?.[Number(index)];
       if(!campaignMode||!p||p.campaignTeam!=="hero"||!p.profileId) return null;
       const profile=resolveMasteryProfile(p.profileId);
       if(!profile) return null;
-      return {profile,mode:currentBattleMode(),player:p};
+      const mode=currentBattleMode();
+      const encounter=currentEncounterObject?.();
+      if(!l2ChallengeEligible(mode,encounter)) return null;
+      return {profile,mode,player:p,encounter};
     }catch(_err){return null;}
   }
   function unlockL2ForPlayer(index,id){
@@ -835,7 +846,7 @@
   }
 
   window.WDMastery=Object.freeze({
-    ensure,ensureModes,encounterEligible,standardEligible,modeUnlocked,hpBonus,damageBonus,damageBonusForPlayer,abilityThreshold,abilityThresholdForPlayer,awardXp,applyRetroBackfill,abilityLevel,abilityLevelForPlayer,hasAbilityUpgrade,abilityGate,abilityGateLabel,abilityGateReached,l2Unlocked,l2Progress,unlockL2ForPlayer,addL2Progress,runState,noteAbilityUse,noteSelfDamage,noteHealing,noteKill,noteAttackRoll,noteRerolledSixes,noteAnyD6,noteAttackStart,noteAttackResolved,notePoison,noteInsurance,noteCounterDamage,noteTurnStart,notePerfect25Base,notePerfect25Break,notePerfect25Permit,notePerfect25D4,noteMatchEnd,refreshCampaignUi,refreshAll,open
+    ensure,ensureModes,encounterEligible,standardEligible,modeUnlocked,hpBonus,damageBonus,damageBonusForPlayer,abilityThreshold,abilityThresholdForPlayer,awardXp,applyRetroBackfill,abilityLevel,abilityLevelForPlayer,hasAbilityUpgrade,abilityGate,abilityGateLabel,abilityGateReached,l2Unlocked,l2Progress,l2ChallengeEligible,unlockL2ForPlayer,addL2Progress,runState,noteAbilityUse,noteSelfDamage,noteHealing,noteKill,noteAttackRoll,noteRerolledSixes,noteAnyD6,noteAttackStart,noteAttackResolved,notePoison,noteInsurance,noteCounterDamage,noteTurnStart,notePerfect25Base,notePerfect25Break,notePerfect25Permit,notePerfect25D4,noteMatchEnd,refreshCampaignUi,refreshAll,open
   });
   init();
 })();
