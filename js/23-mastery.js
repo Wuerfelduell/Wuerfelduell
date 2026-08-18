@@ -232,11 +232,11 @@
     const level=index+1,cost=perkCost(level),owned=branch.level>=level,next=!owned&&branch.level===index,available=next&&xp>=cost;
     return `<button type="button" class="mastery-node${owned?" owned":""}${available?" available":" locked"}" data-standard-branch="${branch.key}" data-standard-level="${level}" data-standard-cost="${cost}" data-standard-title="${escapeHtml(branch.title+" · "+branch.values[index])}" data-standard-available="${available?"1":"0"}"><span class="mastery-node-orb"><span class="mastery-node-dot">${owned?"✓":level}</span></span><span class="mastery-node-plaque"><span class="mastery-node-value">${branch.values[index]}</span><small>${owned?"AKTIV":next?cost+" XP":"GESPERRT"}</small></span></button>`;
   }
-  let pendingMasteryPurchase=null;
-
   function closePurchaseConfirm(){
-    document.getElementById("masteryPurchaseConfirm")?.classList.add("hidden");
-    pendingMasteryPurchase=null;
+    const modal=document.getElementById("masteryPurchaseConfirm");
+    if(!modal) return;
+    modal.classList.add("hidden");
+    modal.removeAttribute("data-tx");
   }
 
   function resolveMasteryProfile(profileId){
@@ -244,7 +244,6 @@
       const direct=getProfile(profileId);
       if(direct) return direct;
     }catch(_err){}
-
     try{
       return (saveData.profiles||[]).find(p=>String(p.id)===String(profileId))||null;
     }catch(_err){
@@ -253,107 +252,109 @@
   }
 
   function executeMasteryPurchase(tx){
-    if(!tx) return false;
+    if(!tx||typeof tx!=="object") return false;
+
     const profile=resolveMasteryProfile(tx.profileId);
     if(!profile){
-      showAbilityInfo("Kauf fehlgeschlagen","Profil konnte nicht aufgelöst werden.","⚠️ Kein Kauf",`ID: ${String(tx.profileId)} · Es wurden keine XP abgezogen.`);
+      showAbilityInfo("Kauf fehlgeschlagen","Profil konnte nicht aufgelöst werden.","⚠️ Kein Kauf",`ID: ${String(tx.profileId)} · Keine XP abgezogen.`);
       return false;
     }
 
-    const state=ensure(profile,tx.mode);
-    if(state.xp<tx.cost){
-      showAbilityInfo(tx.title,"Nicht mehr genug XP.",`⭐ ${tx.cost} XP`,`Verfügbar: ${state.xp} XP. Es wurden keine XP abgezogen.`);
+    const mode=MODES.includes(tx.mode)?tx.mode:"solo";
+    const state=ensure(profile,mode);
+    const cost=Math.max(0,Number(tx.cost)||0);
+
+    if(state.xp<cost){
+      showAbilityInfo(tx.title||"Mastery","Nicht mehr genug XP.",`⭐ ${cost} XP`,`Verfügbar: ${state.xp} XP.`);
       return false;
     }
 
     if(tx.type==="standard"){
+      const branch=String(tx.branch||"");
+      const level=Number(tx.level);
       const caps={hpLevel:3,damageLevel:3,abilityLevel:5};
-      if(!(tx.branch in caps)||tx.level<1||tx.level>caps[tx.branch]){
-        showAbilityInfo(tx.title,"Ungültiger Standard-Mastery-Kauf.","⚠️ Kein Kauf","Es wurden keine XP abgezogen.");
+
+      if(!(branch in caps)||level<1||level>caps[branch]){
+        showAbilityInfo(tx.title||"Mastery","Ungültiger Standard-Mastery-Kauf.","⚠️ Kein Kauf","Keine XP abgezogen.");
         return false;
       }
-      if(state[tx.branch]>=tx.level){
-        showAbilityInfo(tx.title,"Diese Stufe ist bereits aktiv.","✅ Aktiv","Es wurden keine XP abgezogen.");
+      if(state[branch]>=level){
+        showAbilityInfo(tx.title||"Mastery","Diese Stufe ist bereits aktiv.","✅ Aktiv","Keine XP abgezogen.");
         return false;
       }
-      if(state[tx.branch]!==tx.level-1){
-        showAbilityInfo(tx.title,"Die vorherige Stufe muss zuerst gekauft werden.","🔒 Gesperrt","Es wurden keine XP abgezogen.");
+      if(state[branch]!==level-1){
+        showAbilityInfo(tx.title||"Mastery","Vorherige Stufe zuerst kaufen.","🔒 Gesperrt","Keine XP abgezogen.");
         return false;
       }
 
-      state.xp-=tx.cost;
-      state[tx.branch]=tx.level;
+      state.xp-=cost;
+      state[branch]=level;
     }else if(tx.type==="ability"){
-      if(tx.level!==1){
-        showAbilityInfo(tx.title,"Level 2 ist noch gesperrt.","🔒 Gesperrt","Es wurden keine XP abgezogen.");
+      const id=Number(tx.abilityId);
+      const level=Number(tx.level);
+
+      if(level!==1){
+        showAbilityInfo(tx.title||"Ability Mastery","Level 2 ist noch gesperrt.","🔒 Gesperrt","Keine XP abgezogen.");
         return false;
       }
-      if(abilityLevel(profile,tx.mode,tx.abilityId)>=1){
-        showAbilityInfo(tx.title,"Dieses Upgrade ist bereits aktiv.","✅ Aktiv","Es wurden keine XP abgezogen.");
+      if(abilityLevel(profile,mode,id)>=1){
+        showAbilityInfo(tx.title||"Ability Mastery","Dieses Upgrade ist bereits aktiv.","✅ Aktiv","Keine XP abgezogen.");
         return false;
       }
-      // The node was already proven unlocked when the confirmation opened.
-      // Do not depend on current screen selections again here.
-      state.xp-=tx.cost;
-      state.abilityLevels[String(tx.abilityId)]=1;
+
+      state.xp-=cost;
+      state.abilityLevels[String(id)]=1;
     }else{
+      showAbilityInfo(tx.title||"Mastery","Unbekannter Kauf-Typ.","⚠️ Kein Kauf","Keine XP abgezogen.");
       return false;
     }
 
     saveGameData();
-    activeMode=tx.mode;
+    activeMode=mode;
     activeProfileId=profile.id;
     renderModal();
     refreshAll();
     return true;
   }
 
+  function ensurePurchaseConfirm(){
+    let modal=document.getElementById("masteryPurchaseConfirm");
+    if(modal) return modal;
+
+    modal=document.createElement("div");
+    modal.id="masteryPurchaseConfirm";
+    modal.className="mastery-purchase-confirm hidden";
+    modal.innerHTML=`
+      <div class="mastery-purchase-card">
+        <div class="mastery-kicker">MASTERY KAUF BESTÄTIGEN</div>
+        <h3></h3>
+        <p class="mastery-purchase-desc"></p>
+        <div class="mastery-purchase-price"></div>
+        <div class="mastery-purchase-balance"></div>
+        <div class="mastery-purchase-actions">
+          <button type="button" class="secondary mastery-purchase-cancel">Abbrechen</button>
+          <button type="button" class="good mastery-purchase-buy">Kaufen</button>
+        </div>
+      </div>`;
+    document.getElementById("masteryModal")?.appendChild(modal);
+    return modal;
+  }
+
   function showPurchaseConfirm({title,desc,cost,transaction}){
     const profile=resolveMasteryProfile(transaction?.profileId);
     if(!profile||!transaction) return;
 
-    let modal=document.getElementById("masteryPurchaseConfirm");
-    if(!modal){
-      modal=document.createElement("div");
-      modal.id="masteryPurchaseConfirm";
-      modal.className="mastery-purchase-confirm hidden";
-      modal.innerHTML=`
-        <div class="mastery-purchase-card">
-          <div class="mastery-kicker">MASTERY KAUF BESTÄTIGEN</div>
-          <h3></h3>
-          <p class="mastery-purchase-desc"></p>
-          <div class="mastery-purchase-price"></div>
-          <div class="mastery-purchase-balance"></div>
-          <div class="mastery-purchase-actions">
-            <button type="button" class="secondary mastery-purchase-cancel">Abbrechen</button>
-            <button type="button" class="good mastery-purchase-buy">Kaufen</button>
-          </div>
-        </div>`;
-      document.getElementById("masteryModal")?.appendChild(modal);
-
-      modal.querySelector(".mastery-purchase-cancel").addEventListener("click",e=>{
-        e.preventDefault();e.stopPropagation();closePurchaseConfirm();
-      });
-      modal.addEventListener("click",e=>{if(e.target===modal)closePurchaseConfirm();});
-      modal.querySelector(".mastery-purchase-buy").addEventListener("click",e=>{
-        e.preventDefault();
-        e.stopPropagation();
-        const tx=pendingMasteryPurchase;
-        if(!tx) return;
-        pendingMasteryPurchase=null;
-        modal.classList.add("hidden");
-        executeMasteryPurchase(tx);
-      });
-    }
-
+    const modal=ensurePurchaseConfirm();
     const state=ensure(profile,transaction.mode);
-    pendingMasteryPurchase={...transaction,title};
+
+    modal.dataset.tx=JSON.stringify({...transaction,title});
     modal.querySelector("h3").textContent=title;
     modal.querySelector(".mastery-purchase-desc").textContent=desc||"";
     modal.querySelector(".mastery-purchase-price").textContent=`⭐ ${cost} XP`;
     modal.querySelector(".mastery-purchase-balance").textContent=`Verfügbar: ${state.xp} XP → danach ${Math.max(0,state.xp-cost)} XP`;
     modal.classList.remove("hidden");
   }
+
 
   function renderStandard(profile){
     const m=ensure(profile,activeMode),summary=document.getElementById("masterySummary"),content=document.getElementById("masteryContent");
@@ -553,6 +554,42 @@
       });
       if(migrated)saveGameData();
     }catch(_err){}
+    const masteryRoot=document.getElementById("masteryModal");
+    masteryRoot?.addEventListener("click",e=>{
+      const cancel=e.target.closest?.(".mastery-purchase-cancel");
+      if(cancel){
+        e.preventDefault();
+        e.stopPropagation();
+        closePurchaseConfirm();
+        return;
+      }
+
+      const buy=e.target.closest?.(".mastery-purchase-buy");
+      if(buy){
+        e.preventDefault();
+        e.stopPropagation();
+
+        const confirm=document.getElementById("masteryPurchaseConfirm");
+        if(!confirm) return;
+
+        let tx=null;
+        try{tx=JSON.parse(confirm.dataset.tx||"null");}catch(_err){tx=null;}
+        if(!tx){
+          showAbilityInfo("Kauf fehlgeschlagen","Kaufdaten fehlen.","⚠️ Kein Kauf","Keine XP abgezogen.");
+          return;
+        }
+
+        confirm.classList.add("hidden");
+        confirm.removeAttribute("data-tx");
+        executeMasteryPurchase(tx);
+        return;
+      }
+
+      if(e.target?.id==="masteryPurchaseConfirm"){
+        closePurchaseConfirm();
+      }
+    });
+
     document.getElementById("campaignMasteryBtn")?.addEventListener("click",()=>open("solo"));document.getElementById("duoCampaignMasteryBtn")?.addEventListener("click",()=>open("duo"));document.getElementById("trioCampaignMasteryBtn")?.addEventListener("click",()=>open("trio"));document.getElementById("masteryCloseBtn")?.addEventListener("click",close);document.getElementById("masteryModal")?.addEventListener("click",e=>{if(e.target?.id==="masteryModal")close()});document.getElementById("masteryProfilePicker")?.addEventListener("change",e=>{activeProfileId=e.target.value;renderModal();});["campaignProfileSelect","duoProfile1Select","duoProfile2Select","trioProfile1Select","trioProfile2Select","trioProfile3Select"].forEach(id=>document.getElementById(id)?.addEventListener("change",()=>setTimeout(refreshAll,0)));refreshAll();
   }
 
