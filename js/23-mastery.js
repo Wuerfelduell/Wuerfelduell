@@ -235,7 +235,7 @@
   function l2ChallengeEligible(mode,encounter){
     if(!encounter) return false;
     if(mode==="solo") return soloWorldIndex(encounter)>=2; // Welt 3+
-    if(mode==="duo") return duoWorldIndex(encounter)>=2;   // Welt 3+
+    if(mode==="duo") return duoWorldIndex(encounter)>=1;   // Welt 2+
     if(mode==="trio") return true;                         // Trio besitzt keine Welten
     return false;
   }
@@ -252,8 +252,14 @@
       return {profile,mode,player:p,encounter};
     }catch(_err){return null;}
   }
+  function l2TrackingContext(index,id){
+    const ctx=playerProfileAndMode(index);
+    if(!ctx)return null;
+    if(abilityLevel(ctx.profile,ctx.mode,id)<1)return null;
+    return ctx;
+  }
   function unlockL2ForPlayer(index,id){
-    const ctx=playerProfileAndMode(index);if(!ctx)return false;
+    const ctx=l2TrackingContext(index,id);if(!ctx)return false;
     const state=ensure(ctx.profile,ctx.mode),key=String(Number(id));
     if(state.abilityL2Unlocked[key])return false;
     state.abilityL2Unlocked[key]=true;
@@ -263,7 +269,7 @@
     return true;
   }
   function addL2Progress(index,id,amount=1){
-    const ctx=playerProfileAndMode(index);if(!ctx)return 0;
+    const ctx=l2TrackingContext(index,id);if(!ctx)return 0;
     const state=ensure(ctx.profile,ctx.mode),key=String(Number(id)),target=Number(L2_PROGRESS_TARGETS[Number(id)])||0;
     if(state.abilityL2Unlocked[key]||target<=0)return state.abilityL2Progress[key]||0;
     state.abilityL2Progress[key]=Math.min(target,Math.max(0,Number(state.abilityL2Progress[key])||0)+Math.max(0,Number(amount)||0));
@@ -289,14 +295,21 @@
     if(Number(id)===24)r.doubleTapUsed=true;
   }
   function noteSelfDamage(index,amount,source=""){
-    const r=runState(index);if(!r||amount<=0)return;
-    r.selfDamageTotal+=amount;r.selfDamageSerial++;
-    if(source==="loaded")r.loadedSelfDamage+=amount;
-    if(r.selfDamageTotal>=40)unlockL2ForPlayer(index,11);
-    if(r.loadedSelfDamage>=20)unlockL2ForPlayer(index,18);
+    if(amount<=0)return;
+    const r=runState(index);if(!r)return;
+    if(l2TrackingContext(index,11)){
+      r.selfDamageTotal+=amount;
+      if(r.selfDamageTotal>=40)unlockL2ForPlayer(index,11);
+    }
+    if(l2TrackingContext(index,18)&&source==="loaded"){
+      r.loadedSelfDamage+=amount;
+      if(r.loadedSelfDamage>=20)unlockL2ForPlayer(index,18);
+    }
+    if(l2TrackingContext(index,23))r.selfDamageSerial++;
   }
   function noteHealing(index,amount){
-    const r=runState(index);if(!r||amount<=0)return;
+    if(amount<=0||!l2TrackingContext(index,2))return;
+    const r=runState(index);if(!r)return;
     if(hasAbility(2,index))r.everHadLifesteal=true;
     if(!r.everHadLifesteal){
       r.healNoLifesteal+=amount;
@@ -305,97 +318,105 @@
   }
   function noteKill(index,targetIndex){
     const r=runState(index);if(!r)return;
-    if(players?.[index]?.hp<10)addL2Progress(index,9,1);
-    if(!r.ricochetUsed){
+    if(l2TrackingContext(index,9)&&players?.[index]?.hp<10)addL2Progress(index,9,1);
+    if(l2TrackingContext(index,16)&&!r.ricochetUsed){
       r.killsNoRicochet++;
       if(r.killsNoRicochet>=3)unlockL2ForPlayer(index,16);
     }
   }
   function noteAttackRoll(index,values,face){
     if(!Array.isArray(values))return;
-    addL2Progress(index,4,1);
+    if(l2TrackingContext(index,4))addL2Progress(index,4,1);
     if(values.length===5){
-      if(values.every(v=>v===6))unlockL2ForPlayer(index,13);
-      if(values.every(v=>v===values[0]))unlockL2ForPlayer(index,20);
-      if(values.every(v=>v===Number(face)))unlockL2ForPlayer(index,8);
+      if(l2TrackingContext(index,13)&&values.every(v=>v===6))unlockL2ForPlayer(index,13);
+      if(l2TrackingContext(index,20)&&values.every(v=>v===values[0]))unlockL2ForPlayer(index,20);
+      if(l2TrackingContext(index,8)&&values.every(v=>v===Number(face)))unlockL2ForPlayer(index,8);
     }
   }
   function noteRerolledSixes(index,count){
-    if(count>0)addL2Progress(index,7,count);
+    if(count>0&&l2TrackingContext(index,7))addL2Progress(index,7,count);
   }
   function noteAnyD6(index){
-    addL2Progress(index,3,1);
+    if(l2TrackingContext(index,3))addL2Progress(index,3,1);
   }
   function noteAttackStart(index,source){
     const r=runState(index);if(!r)return;
     const p=players[index];
-    if(!r.firstAttackDone)r.firstAttackSource=source;
-    if(!hasAbility(10,index)&&Number(p?.hotDiceStreak||0)>=5)unlockL2ForPlayer(index,10);
-    if(hasAbility(24,index)&&!r.doubleTapUsed){
-      r.doubleTapSafeAttacks++;
+    if(l2TrackingContext(index,5)&&!r.firstAttackDone)r.firstAttackSource=source;
+    if(l2TrackingContext(index,10)&&!hasAbility(10,index)&&Number(p?.hotDiceStreak||0)>=5)unlockL2ForPlayer(index,10);
+    if(l2TrackingContext(index,24)&&hasAbility(24,index)&&!r.doubleTapUsed)r.doubleTapSafeAttacks++;
+    if(l2TrackingContext(index,23)){
+      if(r.bloodMarathonCount===0)r.bloodMarathonCount=1;
+      else if(r.selfDamageSerial>r.bloodMarathonLastSerial)r.bloodMarathonCount++;
+      else r.bloodMarathonCount=1;
+      r.bloodMarathonLastSerial=r.selfDamageSerial;
+      if(r.bloodMarathonCount>=4)unlockL2ForPlayer(index,23);
     }
-    if(r.bloodMarathonCount===0)r.bloodMarathonCount=1;
-    else if(r.selfDamageSerial>r.bloodMarathonLastSerial)r.bloodMarathonCount++;
-    else r.bloodMarathonCount=1;
-    r.bloodMarathonLastSerial=r.selfDamageSerial;
-    if(r.bloodMarathonCount>=4)unlockL2ForPlayer(index,23);
   }
   function noteAttackResolved(index,damage,source,normalHits=0,wildcardHits=0){
     const r=runState(index);if(!r)return;
-    if(!r.firstAttackDone){
+    if(l2TrackingContext(index,5)&&!r.firstAttackDone){
       if(Number(damage)>=20&&source!=="advance")unlockL2ForPlayer(index,5);
       r.firstAttackDone=true;
     }
-    if(hasAbility(24,index)&&!r.doubleTapUsed&&r.doubleTapSafeAttacks>=5)unlockL2ForPlayer(index,24);
-    if(Number(normalHits)===0&&Number(wildcardHits)>0&&Number(damage)>=15)unlockL2ForPlayer(index,17);
+    if(l2TrackingContext(index,24)&&hasAbility(24,index)&&!r.doubleTapUsed&&r.doubleTapSafeAttacks>=5)unlockL2ForPlayer(index,24);
+    if(l2TrackingContext(index,17)&&Number(normalHits)===0&&Number(wildcardHits)>0&&Number(damage)>=15)unlockL2ForPlayer(index,17);
   }
   function notePoison(index,targetIndex){
+    if(!l2TrackingContext(index,1))return;
     const r=runState(index);if(!r)return;
     const key=String(targetIndex);r.poisons[key]=(r.poisons[key]||0)+1;
     if(r.poisons[key]>=3)unlockL2ForPlayer(index,1);
   }
   function noteInsurance(index,success){
+    if(success||!l2TrackingContext(index,19))return;
     const r=runState(index);if(!r)return;
-    if(success)return;
     r.insuranceFails++;
     if(r.insuranceFails>=3)unlockL2ForPlayer(index,19);
   }
   function noteCounterDamage(index,amount){
+    if(!l2TrackingContext(index,21))return;
     const r=runState(index);if(!r)return;
     const dmg=Math.max(0,Number(amount)||0);
     if(dmg>0){r.counterEvents++;r.counterDamageTotal+=dmg;}
   }
   function noteTurnStart(index){
     const r=runState(index);if(!r)return;
-    if(hasAbility(2,index))r.everHadLifesteal=true;
-    if(hasAbility(14,index))r.everHadLastStand=true;
-    const enemies=players.map((p,i)=>p?.hp>0&&p.campaignTeam==="enemy"?i:null).filter(i=>i!=null);
-    if(enemies.length&&enemies.every(i=>players[index].hp>players[i].hp)){
-      r.underdogHighTurns++;
-      if(r.underdogHighTurns>=5)unlockL2ForPlayer(index,25);
+    if(l2TrackingContext(index,2)&&hasAbility(2,index))r.everHadLifesteal=true;
+    if(l2TrackingContext(index,14)&&hasAbility(14,index))r.everHadLastStand=true;
+    if(l2TrackingContext(index,25)){
+      const enemies=players.map((p,i)=>p?.hp>0&&p.campaignTeam==="enemy"?i:null).filter(i=>i!=null);
+      if(enemies.length&&enemies.every(i=>players[index].hp>players[i].hp)){
+        r.underdogHighTurns++;
+        if(r.underdogHighTurns>=5)unlockL2ForPlayer(index,25);
+      }
     }
   }
   function notePerfect25Base(index){
+    if(!l2TrackingContext(index,15))return;
     const r=runState(index);if(!r)return;
     r.perfect25Chain=(r.perfect25Chain||0)+1;
     if(r.perfect25Chain>2)r.perfect25Chain=2;
   }
   function notePerfect25Break(index){
+    if(!l2TrackingContext(index,15))return;
     const r=runState(index);if(r)r.perfect25Chain=0;
   }
   function notePerfect25Permit(index,success){
+    if(!l2TrackingContext(index,15))return;
     const r=runState(index);if(!r)return;
     if(success&&r.perfect25Chain>=2)r.perfect25PermitChain=2;
     else if(!success)r.perfect25PermitChain=0;
   }
   function notePerfect25D4(index,value){
+    if(!l2TrackingContext(index,15))return;
     const r=runState(index);if(!r)return;
     if(r.perfect25PermitChain>=2&&Number(value)===4)unlockL2ForPlayer(index,15);
   }
   function noteMatchEnd(index,won){
     const r=runState(index);if(!r)return;
-    if(won&&players[index]?.hp===1&&!r.everHadLastStand&&!hasAbility(14,index))unlockL2ForPlayer(index,14);
-    if(r.counterEvents===1&&r.counterDamageTotal===1)unlockL2ForPlayer(index,21);
+    if(l2TrackingContext(index,14)&&won&&players[index]?.hp===1&&!r.everHadLastStand&&!hasAbility(14,index))unlockL2ForPlayer(index,14);
+    if(l2TrackingContext(index,21)&&r.counterEvents===1&&r.counterDamageTotal===1)unlockL2ForPlayer(index,21);
   }
 
   function abilityLevelForPlayer(id,index=current){
@@ -846,7 +867,7 @@
   }
 
   window.WDMastery=Object.freeze({
-    ensure,ensureModes,encounterEligible,standardEligible,modeUnlocked,hpBonus,damageBonus,damageBonusForPlayer,abilityThreshold,abilityThresholdForPlayer,awardXp,applyRetroBackfill,abilityLevel,abilityLevelForPlayer,hasAbilityUpgrade,abilityGate,abilityGateLabel,abilityGateReached,l2Unlocked,l2Progress,l2ChallengeEligible,unlockL2ForPlayer,addL2Progress,runState,noteAbilityUse,noteSelfDamage,noteHealing,noteKill,noteAttackRoll,noteRerolledSixes,noteAnyD6,noteAttackStart,noteAttackResolved,notePoison,noteInsurance,noteCounterDamage,noteTurnStart,notePerfect25Base,notePerfect25Break,notePerfect25Permit,notePerfect25D4,noteMatchEnd,refreshCampaignUi,refreshAll,open
+    ensure,ensureModes,encounterEligible,standardEligible,modeUnlocked,hpBonus,damageBonus,damageBonusForPlayer,abilityThreshold,abilityThresholdForPlayer,awardXp,applyRetroBackfill,abilityLevel,abilityLevelForPlayer,hasAbilityUpgrade,abilityGate,abilityGateLabel,abilityGateReached,l2Unlocked,l2Progress,l2ChallengeEligible,l2TrackingContext,unlockL2ForPlayer,addL2Progress,runState,noteAbilityUse,noteSelfDamage,noteHealing,noteKill,noteAttackRoll,noteRerolledSixes,noteAnyD6,noteAttackStart,noteAttackResolved,notePoison,noteInsurance,noteCounterDamage,noteTurnStart,notePerfect25Base,notePerfect25Break,notePerfect25Permit,notePerfect25D4,noteMatchEnd,refreshCampaignUi,refreshAll,open
   });
   init();
 })();
