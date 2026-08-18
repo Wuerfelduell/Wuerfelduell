@@ -239,11 +239,24 @@
     pendingMasteryPurchase=null;
   }
 
+  function resolveMasteryProfile(profileId){
+    try{
+      const direct=getProfile(profileId);
+      if(direct) return direct;
+    }catch(_err){}
+
+    try{
+      return (saveData.profiles||[]).find(p=>String(p.id)===String(profileId))||null;
+    }catch(_err){
+      return null;
+    }
+  }
+
   function executeMasteryPurchase(tx){
     if(!tx) return false;
-    const profile=getProfile(tx.profileId);
+    const profile=resolveMasteryProfile(tx.profileId);
     if(!profile){
-      showAbilityInfo("Kauf fehlgeschlagen","Profil wurde nicht gefunden.","⚠️ Kein Kauf","Es wurden keine XP abgezogen.");
+      showAbilityInfo("Kauf fehlgeschlagen","Profil konnte nicht aufgelöst werden.","⚠️ Kein Kauf",`ID: ${String(tx.profileId)} · Es wurden keine XP abgezogen.`);
       return false;
     }
 
@@ -289,14 +302,14 @@
 
     saveGameData();
     activeMode=tx.mode;
-    activeProfileId=String(tx.profileId);
+    activeProfileId=profile.id;
     renderModal();
     refreshAll();
     return true;
   }
 
   function showPurchaseConfirm({title,desc,cost,transaction}){
-    const profile=getProfile(transaction?.profileId);
+    const profile=resolveMasteryProfile(transaction?.profileId);
     if(!profile||!transaction) return;
 
     let modal=document.getElementById("masteryPurchaseConfirm");
@@ -360,7 +373,7 @@
         cost,
         transaction:{
           type:"standard",
-          profileId:String(p.id),
+          profileId:p.id,
           mode:activeMode,
           branch,
           level,
@@ -443,7 +456,7 @@
         cost,
         transaction:{
           type:"ability",
-          profileId:String(p.id),
+          profileId:p.id,
           mode:activeMode,
           abilityId:id,
           level,
