@@ -230,15 +230,81 @@
   }
   function standardNode(branch,index,xp){
     const level=index+1,cost=perkCost(level),owned=branch.level>=level,next=!owned&&branch.level===index,available=next&&xp>=cost;
-    return `<button type="button" class="mastery-node${owned?" owned":""}${available?" available":" locked"}" data-standard-branch="${branch.key}" data-standard-level="${level}" data-standard-cost="${cost}" ${available?"":"disabled"}><span class="mastery-node-orb"><span class="mastery-node-dot">${owned?"✓":level}</span></span><span class="mastery-node-plaque"><span class="mastery-node-value">${branch.values[index]}</span><small>${owned?"AKTIV":next?cost+" XP":"GESPERRT"}</small></span></button>`;
+    return `<button type="button" class="mastery-node${owned?" owned":""}${available?" available":" locked"}" data-standard-branch="${branch.key}" data-standard-level="${level}" data-standard-cost="${cost}" data-standard-title="${escapeHtml(branch.title+" · "+branch.values[index])}" data-standard-available="${available?"1":"0"}"><span class="mastery-node-orb"><span class="mastery-node-dot">${owned?"✓":level}</span></span><span class="mastery-node-plaque"><span class="mastery-node-value">${branch.values[index]}</span><small>${owned?"AKTIV":next?cost+" XP":"GESPERRT"}</small></span></button>`;
   }
+  let pendingMasteryPurchase=null;
+
+  function closePurchaseConfirm(){
+    document.getElementById("masteryPurchaseConfirm")?.classList.add("hidden");
+    pendingMasteryPurchase=null;
+  }
+
+  function showPurchaseConfirm({title,desc,cost,onConfirm}){
+    const profile=selectedMasteryProfile();
+    if(!profile||typeof onConfirm!=="function") return;
+
+    let modal=document.getElementById("masteryPurchaseConfirm");
+    if(!modal){
+      modal=document.createElement("div");
+      modal.id="masteryPurchaseConfirm";
+      modal.className="mastery-purchase-confirm hidden";
+      modal.innerHTML=`
+        <div class="mastery-purchase-card">
+          <div class="mastery-kicker">MASTERY KAUF BESTÄTIGEN</div>
+          <h3></h3>
+          <p class="mastery-purchase-desc"></p>
+          <div class="mastery-purchase-price"></div>
+          <div class="mastery-purchase-balance"></div>
+          <div class="mastery-purchase-actions">
+            <button type="button" class="secondary mastery-purchase-cancel">Abbrechen</button>
+            <button type="button" class="good mastery-purchase-buy">Kaufen</button>
+          </div>
+        </div>`;
+      document.getElementById("masteryModal")?.appendChild(modal);
+      modal.querySelector(".mastery-purchase-cancel").addEventListener("click",closePurchaseConfirm);
+      modal.addEventListener("click",e=>{if(e.target===modal)closePurchaseConfirm();});
+      modal.querySelector(".mastery-purchase-buy").addEventListener("click",()=>{
+        const pending=pendingMasteryPurchase;
+        if(!pending) return;
+        pendingMasteryPurchase=null;
+        modal.classList.add("hidden");
+        pending();
+      });
+    }
+
+    const state=ensure(profile,activeMode);
+    pendingMasteryPurchase=onConfirm;
+    modal.querySelector("h3").textContent=title;
+    modal.querySelector(".mastery-purchase-desc").textContent=desc||"";
+    modal.querySelector(".mastery-purchase-price").textContent=`⭐ ${cost} XP`;
+    modal.querySelector(".mastery-purchase-balance").textContent=`Verfügbar: ${state.xp} XP → danach ${Math.max(0,state.xp-cost)} XP`;
+    modal.classList.remove("hidden");
+  }
+
   function renderStandard(profile){
     const m=ensure(profile,activeMode),summary=document.getElementById("masterySummary"),content=document.getElementById("masteryContent");
-    summary.innerHTML=`<div class="mastery-summary-main"><strong>${escapeHtml(profile.name)}</strong><span>${modeLabel(activeMode)}</span></div><div class="mastery-xp-line"><span>⭐ ${m.xp} XP verfügbar</span><span>Σ ${m.lifetimeXp} verdient</span><span>-${totalSpent(profile,activeMode)} investiert</span></div><div class="mastery-xp-track mastery-xp-currency"></div><small>Standard-Mastery: ${activeMode==="solo"?"ab Solo W2L10":activeMode==="duo"?"ab Duo W1L10":"ab Trio L1"}. XP-Farming bleibt Solo W3 / Duo W2 / Trio L1.</small>`;
+    summary.innerHTML=`<div class="mastery-summary-main"><strong>${escapeHtml(profile.name)}</strong><span>${modeLabel(activeMode)}</span></div><div class="mastery-xp-line"><span>⭐ ${m.xp} XP verfügbar</span><span>Σ ${m.lifetimeXp} verdient</span><span>-${totalSpent(profile,activeMode)} investiert</span></div><div class="mastery-xp-track mastery-xp-currency"></div><small>Standard-Mastery: ${activeMode==="solo"?"ab Solo W2L10":activeMode==="duo"?"ab Duo W1L10":"ab Trio L1"}. XP-Farming: Solo ab W2L10 · Duo ab W1L10 · Trio ab L1.</small>`;
     content.innerHTML=branchData(profile).map(branch=>`<section class="mastery-branch branch-${branch.key}"><div class="mastery-branch-head"><span class="mastery-branch-icon">${branch.icon}</span><div><strong>${branch.title}</strong><small>${branch.desc}</small></div><span class="mastery-branch-level">${branch.level}/${branch.max}</span></div><div class="mastery-tree-line">${Array.from({length:branch.max},(_,i)=>standardNode(branch,i,m.xp)).join("")}</div></section>`).join("");
     content.querySelectorAll("[data-standard-branch]").forEach(btn=>btn.addEventListener("click",()=>{
-      const p=selectedMasteryProfile();if(!p)return;const m=ensure(p,activeMode),branch=btn.dataset.standardBranch,level=Number(btn.dataset.standardLevel),cost=Number(btn.dataset.standardCost),caps={hpLevel:3,damageLevel:3,abilityLevel:5};
-      if(!(branch in caps)||m[branch]!==level-1||m.xp<cost)return;m.xp-=cost;m[branch]=level;saveGameData();renderModal();refreshAll();
+      const p=selectedMasteryProfile();if(!p)return;
+      const state=ensure(p,activeMode),branch=btn.dataset.standardBranch,level=Number(btn.dataset.standardLevel),cost=Number(btn.dataset.standardCost),caps={hpLevel:3,damageLevel:3,abilityLevel:5};
+      if(!(branch in caps))return;
+      if(state[branch]>=level){showAbilityInfo(btn.dataset.standardTitle,"Dieses Standard-Mastery-Level ist bereits aktiv.","✅ Aktiv","Bereits gekauft.");return;}
+      if(state[branch]!==level-1){showAbilityInfo(btn.dataset.standardTitle,"Vorherige Stufe zuerst freischalten.",`🔒 ${cost} XP`,"Gesperrt.");return;}
+      if(state.xp<cost){showAbilityInfo(btn.dataset.standardTitle,"Nicht genug XP.",`⭐ ${cost} XP`,`Dir fehlen ${cost-state.xp} XP.`);return;}
+
+      showPurchaseConfirm({
+        title:btn.dataset.standardTitle,
+        desc:`Standard-Mastery Level ${level} für ${modeLabel(activeMode)} kaufen?`,
+        cost,
+        onConfirm:()=>{
+          const freshProfile=selectedMasteryProfile();if(!freshProfile)return;
+          const fresh=ensure(freshProfile,activeMode);
+          if(fresh[branch]!==level-1||fresh.xp<cost)return;
+          fresh.xp-=cost;fresh[branch]=level;
+          saveGameData();renderModal();refreshAll();
+        }
+      });
     }));
   }
 
@@ -296,11 +362,32 @@
     const stand=STANDALONE.map(a=>standaloneCard(a,profile)).join("");
     sheet.innerHTML=chunks.join("")+stand;
     sheet.querySelectorAll("[data-ability-id]").forEach(btn=>btn.addEventListener("click",()=>{
-      const p=selectedMasteryProfile();if(!p)return;const id=Number(btn.dataset.abilityId),level=Number(btn.dataset.abilityLevel),cost=Number(btn.dataset.abilityCost),m=ensure(p,activeMode),owned=abilityLevel(p,activeMode,id)>=level;
+      const p=selectedMasteryProfile();if(!p)return;
+      const id=Number(btn.dataset.abilityId),level=Number(btn.dataset.abilityLevel),cost=Number(btn.dataset.abilityCost),state=ensure(p,activeMode),owned=abilityLevel(p,activeMode,id)>=level;
+
       if(owned){showAbilityInfo(btn.dataset.abilityTitle,btn.dataset.abilityDesc,"✅ Aktiv","Bereits gekauft.");return;}
-      if(level!==1||!abilityGateReached(activeMode,id)){showAbilityInfo(btn.dataset.abilityTitle,btn.dataset.abilityDesc,`🔒 ${cost} XP`,level===2?"Level 2 Unlocks folgen später.":`Freischaltung: ${abilityGateLabel(activeMode,id)} abschließen.`);return;}
-      if(m.xp<cost){showAbilityInfo(btn.dataset.abilityTitle,btn.dataset.abilityDesc,`⭐ ${cost} XP`,`Dir fehlen ${cost-m.xp} XP.`);return;}
-      m.xp-=cost;m.abilityLevels[String(id)]=1;saveGameData();renderModal();refreshAll();
+      if(level!==1||!abilityGateReached(activeMode,id)){
+        showAbilityInfo(btn.dataset.abilityTitle,btn.dataset.abilityDesc,`🔒 ${cost} XP`,level===2?"Level 2 Unlocks folgen später.":`Freischaltung: ${abilityGateLabel(activeMode,id)} abschließen.`);
+        return;
+      }
+      if(state.xp<cost){
+        showAbilityInfo(btn.dataset.abilityTitle,btn.dataset.abilityDesc,`⭐ ${cost} XP`,`Dir fehlen ${cost-state.xp} XP.`);
+        return;
+      }
+
+      showPurchaseConfirm({
+        title:btn.dataset.abilityTitle,
+        desc:btn.dataset.abilityDesc,
+        cost,
+        onConfirm:()=>{
+          const freshProfile=selectedMasteryProfile();if(!freshProfile)return;
+          const fresh=ensure(freshProfile,activeMode);
+          if(abilityLevel(freshProfile,activeMode,id)>=1||!abilityGateReached(activeMode,id)||fresh.xp<cost)return;
+          fresh.xp-=cost;
+          fresh.abilityLevels[String(id)]=1;
+          saveGameData();renderModal();refreshAll();
+        }
+      });
     }));
     sheet.querySelectorAll("[data-fusion-info]").forEach(btn=>btn.addEventListener("click",()=>showAbilityInfo(btn.dataset.fusionInfo,"Fusion noch nicht festgelegt.","🔒 1000 XP","Fusionen bleiben Platzhalter.")));
     sheet.querySelectorAll("[data-keystone-info]").forEach(btn=>btn.addEventListener("click",()=>showAbilityInfo(btn.dataset.keystoneInfo,"Keystone bleibt vorerst gesperrt.","🔒 1000 XP","Keystone-Unlock folgt später.")));
