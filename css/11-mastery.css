@@ -723,3 +723,95 @@ body.mastery-open{
 .mastery-ability-unlocked .aml-node-tag small{color:#8fc4ff!important}
 .mastery-ability-pair .aml-node.available{cursor:pointer!important;opacity:1!important;filter:none!important}
 .mastery-ability-pair .aml-node.owned{opacity:1!important;filter:none!important}
+
+
+/* V27.9.4 — clickable unlocked nodes + safe purchase confirmation */
+.mastery-ability-sheet .aml-ability-node{
+  position:relative!important;
+  transform:none!important;
+  width:100%!important;
+  min-height:70px!important;
+  height:70px!important;
+  grid-template-columns:58px minmax(0,1fr)!important;
+  opacity:1;
+  cursor:pointer!important;
+  pointer-events:auto!important;
+  touch-action:manipulation;
+}
+.mastery-ability-sheet .aml-ability-node .aml-node-orbit{
+  width:58px!important;
+  height:58px!important;
+  left:0!important;
+  top:5px!important;
+}
+.mastery-ability-sheet .aml-ability-node .aml-node-core{
+  width:44px!important;
+  height:44px!important;
+  left:7px!important;
+  top:12px!important;
+}
+.mastery-ability-sheet .aml-ability-node .aml-node-tag{
+  left:52px!important;
+  top:12px!important;
+  min-width:0!important;
+  max-width:calc(100% - 48px)!important;
+}
+.mastery-ability-unlocked,
+.mastery-ability-sheet .aml-ability-node.available{
+  cursor:pointer!important;
+  pointer-events:auto!important;
+}
+.mastery-ability-unlocked:active,
+.mastery-ability-sheet .aml-ability-node.available:active{
+  transform:scale(.985)!important;
+}
+
+.mastery-purchase-confirm{
+  position:absolute;
+  inset:0;
+  z-index:100;
+  display:grid;
+  place-items:center;
+  padding:18px;
+  background:rgba(2,5,10,.74);
+  backdrop-filter:blur(7px);
+  -webkit-backdrop-filter:blur(7px);
+}
+.mastery-purchase-confirm.hidden{display:none!important}
+.mastery-purchase-card{
+  width:min(400px,100%);
+  padding:18px;
+  border:1px solid rgba(255,255,255,.14);
+  border-radius:19px;
+  background:
+    radial-gradient(circle at 50% 0%,rgba(130,95,255,.16),transparent 38%),
+    linear-gradient(180deg,#1b2231,#0d131d);
+  box-shadow:0 24px 70px rgba(0,0,0,.62),inset 0 1px rgba(255,255,255,.07);
+}
+.mastery-purchase-card h3{margin:5px 0 8px;color:#f2f5fc}
+.mastery-purchase-desc{color:#c1cad9;font-size:11px;line-height:1.45}
+.mastery-purchase-price{
+  display:inline-block;
+  margin-top:5px;
+  padding:6px 10px;
+  border-radius:999px;
+  border:1px solid rgba(176,126,255,.26);
+  background:rgba(145,95,255,.10);
+  color:#dccaff;
+  font-size:12px;
+  font-weight:1000;
+}
+.mastery-purchase-balance{
+  margin-top:9px;
+  color:#949fb1;
+  font-size:9px;
+}
+.mastery-purchase-actions{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:8px;
+  margin-top:15px;
+}
+.mastery-purchase-actions button{
+  min-height:42px;
+}
