@@ -27,8 +27,15 @@
   // Local Battle und Kampagnen-Gegner bleiben am normalen Max-HP-Limit.
   function applyHealingToPlayer(index,amount){
     const p=players[index];
-    const heal=Math.max(0,Number(amount)||0);
+    let heal=Math.max(0,Number(amount)||0);
     if(!p || heal<=0) return 0;
+    if(hasAbility(22,index)&&hasMasteryUpgrade(22,2,index)){
+      p.masteryHealEffectCount=(Number(p.masteryHealEffectCount)||0)+1;
+      if(p.masteryHealEffectCount%2===0){
+        heal+=1;
+        addLog(`🎲 24: jeder 2. Heileffekt erhält +1 HP.`);
+      }
+    }
     const before=p.hp;
     const campaignHeroOverheal=campaignMode && p.campaignTeam==="hero";
     p.hp=campaignHeroOverheal ? p.hp+heal : Math.min(maxHpForPlayer(p),p.hp+heal);
@@ -385,7 +392,7 @@
 
   function hideAllControls(){
     campaignTargetBox.classList.add("hidden");
-    [primaryBtn,lockBtn,baseRerollBtn,loadedDiceBtn,snakeEyesBtn,attackPowerBtn,bloodLowerBtn,bloodHigherBtn,resolveAttackBtn,nextBtn].forEach(b=>{
+    [primaryBtn,lockBtn,baseRerollBtn,loadedDiceBtn,snakeEyesBtn,attackPowerBtn,bloodLowerBtn,bloodHigherBtn,bloodRushMasteryBtn,resolveAttackBtn,nextBtn].forEach(b=>{
       b.classList.add("hidden"); b.disabled=false;
     });
   }
@@ -399,23 +406,25 @@
       lockBtn.classList.remove("hidden");
       lockBtn.disabled=!dice.some(d=>d.selected&&!d.locked);
       if(hasAbility(3)){
-        const firstLuck=!baseRerollUsed&&dice.some(d=>!d.locked&&d.value===1);
-        const secondLuck=hasMasteryUpgrade(3,1,current)&&baseRerollUsed&&!luckRerollSecondUsed&&luckRerollIndex!=null&&dice[luckRerollIndex]&&!dice[luckRerollIndex].locked;
-        if(firstLuck||secondLuck){
+        const maxLuckUses=hasMasteryUpgrade(3,2,current)?2:1;
+        const standardLuck=luckRerollUses<maxLuckUses&&dice.some(d=>!d.locked&&d.value===1);
+        const secondLuck=hasMasteryUpgrade(3,1,current)&&luckRerollUses>0&&!luckRerollSecondUsed&&luckRerollIndex!=null&&dice[luckRerollIndex]&&!dice[luckRerollIndex].locked;
+        if(standardLuck||secondLuck){
           baseRerollBtn.classList.remove("hidden");
-          baseRerollBtn.textContent=secondLuck?`🍀 Reroll the Reroll: ${dice[luckRerollIndex].value} neu würfeln`:`🍀 Glückswurf: 1 neu würfeln`;
+          baseRerollBtn.textContent=secondLuck?`🍀 Reroll the Reroll: ${dice[luckRerollIndex].value} neu würfeln`:`🍀 Glückswurf ${luckRerollUses+1}/${maxLuckUses}: 1 neu würfeln`;
         }
       }
 
       const loadedMax=hasMasteryUpgrade(18,1,current)?2:1;
-      if(hasAbility(18) && loadedDiceUses<loadedMax && players[current].hp>2){
+      const loadedUiCost=(hasMasteryUpgrade(18,2,current)&&loadedDiceUses===1)?1:2;
+      if(hasAbility(18) && loadedDiceUses<loadedMax && players[current].hp>loadedUiCost){
         const selectedEligible=dice
           .map((d,i)=>({d,i}))
           .filter(x=>x.d.selected && !x.d.locked && x.d.value!=null && x.d.value!==5);
         if(selectedEligible.length===1){
           const v=selectedEligible[0].d.value;
           loadedDiceBtn.classList.remove("hidden");
-          loadedDiceBtn.textContent=`🎲 Loaded Dice ${loadedDiceUses+1}/${loadedMax}: ${v} → 5 (-2 HP)`;
+          const shownCost=(hasMasteryUpgrade(18,2,current)&&loadedDiceUses===1)?1:2;loadedDiceBtn.textContent=`🎲 Loaded Dice ${loadedDiceUses+1}/${loadedMax}: ${v} → 5 (-${shownCost} HP)`;
         }
       }
 
@@ -443,6 +452,14 @@
       }
     }
     if(phase==="attack_after_roll"){
+      if(hasAbility(11)&&hasMasteryUpgrade(11,2,current)&&!bloodPriceWasPreActivatedThisRoll&&bloodPriceNeighbors.length===0&&players[current].hp>5){
+        const neighbors=[];if(attackFace>1)neighbors.push(attackFace-1);if(attackFace<6)neighbors.push(attackFace+1);
+        if(neighbors.length){bloodLowerBtn.classList.remove("hidden");bloodLowerBtn.textContent=`🩸 Blood Credit · 5 HP: ${[attackFace,...neighbors].sort((a,b)=>a-b).join(" + ")}`;}
+      }
+      if(hasAbility(23)&&hasMasteryUpgrade(23,2,current)&&!bloodRushActiveThisAttack&&players[current].hp>1){
+        bloodRushMasteryBtn.classList.remove("hidden");
+        bloodRushMasteryBtn.textContent="🩸 Self Harm · 1 HP → Blood Rush";
+      }
       const secondChanceMax=hasMasteryUpgrade(4,1,current)?2:1;
       const secondChanceAvailable=hasAbility(4)&&attackPowerUses<secondChanceMax&&dice.some(d=>!d.locked);
       const doubleTapChoice=hasAbility(24)&&attackHits===2&&currentAttackRollNewHits>0;

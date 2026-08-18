@@ -91,7 +91,7 @@
   const campaignTargetBox=$("campaignTargetBox"), campaignTargetList=$("campaignTargetList");
   const sumEl=$("sum"), sumLabel=$("sumLabel"), primaryBtn=$("primaryBtn");
   const lockBtn=$("lockBtn"), baseRerollBtn=$("baseRerollBtn"), loadedDiceBtn=$("loadedDiceBtn"), snakeEyesBtn=$("snakeEyesBtn");
-  const attackPowerBtn=$("attackPowerBtn"), bloodLowerBtn=$("bloodLowerBtn"), bloodHigherBtn=$("bloodHigherBtn"), resolveAttackBtn=$("resolveAttackBtn");
+  const attackPowerBtn=$("attackPowerBtn"), bloodLowerBtn=$("bloodLowerBtn"), bloodHigherBtn=$("bloodHigherBtn"), bloodRushMasteryBtn=$("bloodRushMasteryBtn"), resolveAttackBtn=$("resolveAttackBtn");
   const nextBtn=$("nextBtn"), logEl=$("log"), winnerBox=$("winnerBox");
   const winnerText=$("winnerText"), roundResultText=$("roundResultText"), roundStandings=$("roundStandings"), roundStatsBox=$("roundStatsBox"), rollAbilitiesBtn=$("rollAbilities");
   const winTrackerLabel=$("winTrackerLabel");
@@ -121,9 +121,9 @@
   let players=[], setupAbilityRolls=[], current=0, dice=[], phase="idle", isAnimating=false;
   let attackFace=null, attackTarget=null, attackHits=0, attackDamage=0, firstAttackRoll=true, currentAttackRollNewHits=0;
   let baseRerollUsed=false, loadedDiceUsed=false, lastBaseRollIndices=[], attackPowerUsed=false, precisionUses=0;
-  let luckRerollIndex=null, luckRerollSecondUsed=false, loadedDiceUses=0, attackPowerUses=0;
-  let lastAttackRollIndices=[], attackRollCount=0, wildcardSecondRollArmed=false;
-  let bloodPricePaidThisRoll=0, currentAttackSource="normal", currentAttackBaseTotal=null;
+  let luckRerollIndex=null, luckRerollSecondUsed=false, luckRerollUses=0, loadedDiceUses=0, attackPowerUses=0;
+  let lastAttackRollIndices=[], attackRollCount=0, attackMasteryRollCount=0, normalAttackHitsThisAttack=0, exactFaceHitsThisAttack=0, wildcardAttackHitsThisAttack=0, wildcardSecondRollArmed=false, wildcardTriggeredThisAttack=false, masteryL2AttackBonusesApplied=false;
+  let bloodPricePaidThisRoll=0, bloodPriceWasPreActivatedThisRoll=false, currentAttackSource="normal", currentAttackBaseTotal=null;
   let gamblingRetryUsed=false, gamblingRetryPending=false;
   let momentumBonus=0, bloodPriceNeighbors=[];
   let bloodRushActiveThisAttack=false, doubleTapApplied=false;

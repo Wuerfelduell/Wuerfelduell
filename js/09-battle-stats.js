@@ -24,18 +24,23 @@
   function recordD6(index,value){
     if(index==null || !roundStats[index]) return;
     if(value===1) roundStats[index].ones++;
-    if(value===6) roundStats[index].sixes++;
+    if(value===6){
+      roundStats[index].sixes++;
+      if(roundStats[index].sixes>=24)window.WDMastery?.unlockL2ForPlayer?.(index,22);
+    }
   }
 
-  function recordSelfDamage(index,amount){
+  function recordSelfDamage(index,amount,source=""){
     if(index==null || !roundStats[index] || amount<=0) return;
     roundStats[index].selfDamage+=amount;
+    window.WDMastery?.noteSelfDamage?.(index,amount,source);
     if(players[index] && hasMasteryUpgrade(23,1,index)) players[index].masterySelfDamageSinceLastOwnTurn=true;
   }
 
   function rollTrackedD6(index=current){
     const value=randDieForPlayer(index);
     recordD6(index,value);
+    window.WDMastery?.noteAnyD6?.(index);
     return value;
   }
 
@@ -43,6 +48,7 @@
     let value=excludedValue;
     while(value===excludedValue) value=randDieForPlayer(index);
     recordD6(index,value);
+    window.WDMastery?.noteAnyD6?.(index);
     return value;
   }
 
@@ -89,6 +95,11 @@
   function prepareBloodRushForTurn(index){
     const p=players[index];
     if(!p) return;
+    if(hasAbility(14,index)&&hasMasteryUpgrade(14,2,index)&&Number(p.masteryLastStandCooldown)>0){
+      p.masteryLastStandCooldown=Math.max(0,Number(p.masteryLastStandCooldown)-1);
+      if(p.masteryLastStandCooldown===0){p.lastStandUsed=false;addLog(`🛡️ I Can Do This All Day: ${p.name} kann Last Stand wieder triggern.`);}
+    }
+    window.WDMastery?.noteTurnStart?.(index);
     p.bloodRushPrimed=!!p.damageSinceLastOwnTurn || (hasMasteryUpgrade(23,1,index)&&!!p.masterySelfDamageSinceLastOwnTurn);
     p.damageSinceLastOwnTurn=false;
     p.masterySelfDamageSinceLastOwnTurn=false;
@@ -187,11 +198,13 @@
   function recordCampaignKill(killerIndex,targetIndex){
     if(!campaignMode || players[killerIndex]?.campaignTeam!=="hero" || players[targetIndex]?.campaignTeam!=="enemy") return;
     recordCampaignEnemyElimination(targetIndex,killerIndex);
+    window.WDMastery?.noteKill?.(killerIndex,targetIndex);
   }
 
   function recordHealing(index,amount){
     if(index==null || !roundStats[index] || amount<=0) return;
     roundStats[index].healed+=amount;
+    window.WDMastery?.noteHealing?.(index,amount);
     if(roundStats[index].healed>=8) unlockAchievementForPlayer(index,"back_from_dead");
   }
 

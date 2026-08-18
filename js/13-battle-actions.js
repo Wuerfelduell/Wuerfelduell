@@ -69,18 +69,30 @@
 
   function useBaseReroll(){
     if(!hasAbility(3)||isAnimating) return;
-    const mastery=hasMasteryUpgrade(3,1,current);
-    const isSecond=mastery&&baseRerollUsed&&!luckRerollSecondUsed&&luckRerollIndex!=null&&dice[luckRerollIndex]&&!dice[luckRerollIndex].locked;
+    const masteryL1=hasMasteryUpgrade(3,1,current);
+    const masteryL2=hasMasteryUpgrade(3,2,current);
+    const maxUses=masteryL2?2:1;
+    const canRerollReroll=masteryL1&&luckRerollUses>0&&!luckRerollSecondUsed&&luckRerollIndex!=null&&dice[luckRerollIndex]&&!dice[luckRerollIndex].locked;
+    const isSecond=canRerollReroll;
     const idx=isSecond?luckRerollIndex:dice.findIndex(d=>!d.locked&&d.value===1);
     if(idx===-1||idx==null) return;
-    if(!isSecond&&baseRerollUsed) return;
-    if(isSecond) luckRerollSecondUsed=true;
-    else{baseRerollUsed=true;luckRerollIndex=idx;markCampaignAbilityUse(current,3);}
+    if(!isSecond&&luckRerollUses>=maxUses)return;
+
+    if(isSecond){
+      luckRerollSecondUsed=true;
+    }else{
+      luckRerollUses++;
+      baseRerollUsed=luckRerollUses>0;
+      luckRerollIndex=idx;
+      luckRerollSecondUsed=false;
+      markCampaignAbilityUse(current,3);
+    }
+
     const old=dice[idx].value;
     animateIndices([idx],()=>{
       addLog(isSecond
         ?`🍀 Reroll the Reroll: ${players[current].name} würfelt ${old} erneut → ${dice[idx].value}.`
-        :`⚡ ${players[current].name} nutzt Glückswurf: ${old} → ${dice[idx].value}. Eine neue 1 ist ausgeschlossen.`);
+        :`⚡ ${players[current].name} nutzt Glückswurf ${luckRerollUses}/${maxUses}: ${old} → ${dice[idx].value}. Eine neue 1 ist ausgeschlossen.`);
       phase="base_select";renderAll();
     },{
       preview:()=>{let value=1;while(value===1)value=randDieForPlayer(current);return value;},
@@ -91,7 +103,8 @@
 
   function useLoadedDice(){
     const loadedMax=hasMasteryUpgrade(18,1,current)?2:1;
-    if(!hasAbility(18) || loadedDiceUses>=loadedMax || isAnimating || phase!=="base_select" || players[current].hp<=encounterVoluntaryCost(2)) return;
+    const nextLoadedBaseCost=(hasMasteryUpgrade(18,2,current)&&loadedDiceUses===1)?1:2;
+    if(!hasAbility(18) || loadedDiceUses>=loadedMax || isAnimating || phase!=="base_select" || players[current].hp<=encounterVoluntaryCost(nextLoadedBaseCost)) return;
 
     const eligible=dice
       .map((d,i)=>({d,i}))
@@ -101,6 +114,7 @@
 
     const {d,i}=eligible[0];
     const beforeValue=d.value;
+    const loadedUseNumber=loadedDiceUses+1;
     loadedDiceUses++;
     loadedDiceUsed=loadedDiceUses>=loadedMax;
     d.value=5;
@@ -110,10 +124,11 @@
     }
     markCampaignAbilityUse(current,18);
 
-    const loadedCost=encounterVoluntaryCost(2);
+    const baseLoadedCost=(hasMasteryUpgrade(18,2,current)&&loadedUseNumber===2)?1:2;
+    const loadedCost=encounterVoluntaryCost(baseLoadedCost);
     const damageResult=applyDamageToPlayer(current,loadedCost,"voluntary");
     players[current].voluntaryHpPaidThisTurn=true;
-    recordSelfDamage(current,damageResult.lost);
+    recordSelfDamage(current,damageResult.lost,"loaded");
     recordVoluntaryHp(current,damageResult.lost);
     if(damageResult.lost>0) pendingDamage={target:current,amount:damageResult.lost};
 
@@ -415,6 +430,7 @@
     if(after<=0 && hasAbility(14,index) && !p.lastStandUsed){
       after=hasMasteryUpgrade(14,1,index)?6:1;
       p.lastStandUsed=true;
+      if(hasMasteryUpgrade(14,2,index))p.masteryLastStandCooldown=3;
       p.roundLastStandTriggered=true;
       lastStand=true;
       markCampaignAbilityUse(index,14);
@@ -444,6 +460,50 @@
       }
     }
     return -1;
+  }
+
+  function nextRicochetTargetExcluding(from,snapshotAlive,excluded=[]){
+    const aliveSet=new Set(snapshotAlive),blocked=new Set(excluded.map(Number));
+    for(let step=1;step<=players.length;step++){
+      const i=(from+step)%players.length;
+      if(i===current||i===from||blocked.has(i)||!aliveSet.has(i))continue;
+      if(campaignMode&&players[i]?.campaignTeam===players[current]?.campaignTeam)continue;
+      return i;
+    }
+    return -1;
+  }
+
+  function triggerToxicBomb(deadIndex){
+    const dead=players[deadIndex];
+    const source=Number(dead?.masteryPoisonSource);
+    if(!dead||!(dead.masteryPoisonTurns>0)||!Number.isInteger(source)||!players[source]||!hasMasteryUpgrade(1,2,source))return 0;
+    dead.masteryPoisonTurns=0;
+    const adjacent=[(deadIndex-1+players.length)%players.length,(deadIndex+1)%players.length];
+    let total=0;
+    adjacent.forEach(i=>{
+      const target=players[i];
+      if(!target||target.hp<=0||i===source)return;
+      if(campaignMode&&target.campaignTeam===players[source]?.campaignTeam)return;
+      const before=target.hp;
+      const result=applyDamageToPlayer(i,3,"opponent");
+      total+=result.lost;
+      if(result.lost>0){
+        recordDamageDealt(source,result.lost,false);
+        pendingExtraDamageFx.push({target:i,amount:result.lost});
+        window.WDAttackFx?.emit?.(source,i,"poison",result.lost,1);
+        addLog(`💥 Toxic Bomb: ${target.name} erhält ${result.lost} Giftschaden.`);
+      }
+      if(before>0&&target.hp<=0){
+        window.WDAttackFx?.kill?.(source,i);
+        if(roundStats[source])roundStats[source].kills++;
+        recordCampaignKill(source,i);
+        if(!maybeTriggerCampaignStandardBonusDraft(source,"kill"))maybeTriggerCampaignKillAbilityDraft(source);
+        markEliminated(i);
+        addLog(`💀 ${target.name} fällt durch Toxic Bomb.`);
+      }
+    });
+    if(total>0)addLog(`☠️ Toxic Bomb explodiert bei ${dead.name}: ${total} Gesamtschaden.`);
+    return total;
   }
 
   function markEliminated(index){
@@ -485,7 +545,7 @@
     // V27.6.2: Hot Dice zählt aufeinanderfolgende ANGRIFFE, nicht Würfe im Angriff.
     players[current].hotDiceStreak=(Number(players[current].hotDiceStreak)||0)+1;
     attackHits=0;attackDamage=0;firstAttackRoll=true;currentAttackRollNewHits=0;
-    attackRollCount=0;lastAttackRollIndices=[];wildcardSecondRollArmed=false;
+    attackRollCount=0;attackMasteryRollCount=0;normalAttackHitsThisAttack=0;exactFaceHitsThisAttack=0;wildcardAttackHitsThisAttack=0;lastAttackRollIndices=[];wildcardSecondRollArmed=false;wildcardTriggeredThisAttack=false;masteryL2AttackBonusesApplied=false;
     currentAttackSource=source;currentAttackBaseTotal=total;gamblingRetryUsed=false;gamblingRetryPending=false;
     precisionUses=0;bloodPriceNeighbors=[];bloodPricePaidThisRoll=0;momentumBonus=0;
     highStakesDecisionThisAttack=false;doubleTapApplied=false;
@@ -494,10 +554,11 @@
     wildcardFace=hasAbility(17)?rollTrackedD6(current):null;
     if(hasAbility(10)){
       players[current].momentumStreak=(players[current].momentumStreak||0)+1;
-      momentumBonus=Math.min(Math.max(players[current].momentumStreak-1,0),2);
+      momentumBonus=Math.min(Math.max(players[current].momentumStreak-1,0),hasMasteryUpgrade(10,2,current)?3:2);
       if(players[current].momentumStreak>=5) unlockAchievementForPlayer(current,"momentum_mori");
     }
     if(source!=="perfect25") players[current].perfect25AttackArmed=false;
+    window.WDMastery?.noteAttackStart?.(current,source);
     dice=freshDice();phase="attack_ready";
 
     let extra="";
@@ -547,7 +608,7 @@
 
     setTimeout(()=>{
       clearInterval(timer);
-      const result=rollTrackedD6(current);
+      const result=hasMasteryUpgrade(12,2,current)?rollTrackedD6Excluding(current,1):rollTrackedD6(current);
       gamblingDie.classList.remove("rolling");
       gamblingDie.textContent=dieSymbol(result);
       gamblingResult.textContent=`D6 = ${result} → Angriff auf ${result}er`;
@@ -559,7 +620,7 @@
         const total=gamblingBaseTotal;
         gamblingBaseTotal=null;
         if(retryRoll){
-          attackFace=result;attackHits=0;attackDamage=0;firstAttackRoll=true;currentAttackRollNewHits=0;attackRollCount=0;lastAttackRollIndices=[];precisionUses=0;bloodPriceNeighbors=[];bloodPricePaidThisRoll=0;wildcardFace=hasAbility(17)?rollTrackedD6(current):null;dice=freshDice();phase="attack_ready";gamblingRetryPending=false;gamblingRetryUsed=true;addLog(`🎰 Gambling Twice: neuer Angriff auf ${result}er.`);renderAll();
+          attackFace=result;attackHits=0;attackDamage=0;firstAttackRoll=true;currentAttackRollNewHits=0;attackRollCount=0;attackMasteryRollCount=0;normalAttackHitsThisAttack=0;exactFaceHitsThisAttack=0;wildcardAttackHitsThisAttack=0;wildcardTriggeredThisAttack=false;masteryL2AttackBonusesApplied=false;lastAttackRollIndices=[];precisionUses=0;bloodPriceNeighbors=[];bloodPricePaidThisRoll=0;bloodPriceWasPreActivatedThisRoll=false;wildcardFace=hasAbility(17)?rollTrackedD6(current):null;dice=freshDice();phase="attack_ready";gamblingRetryPending=false;gamblingRetryUsed=true;addLog(`🎰 Gambling Twice: neuer Angriff auf ${result}er.`);renderAll();
         }else beginAttackWithFace(result,total,"gambling");
       },650);
     },560);
@@ -622,7 +683,8 @@
       perfect25Die.classList.remove("rolling");
       perfect25Die.textContent=dieSymbol(result);
 
-      if(result>=(hasMasteryUpgrade(15,1,current)?3:4)){
+      if(result>=(hasMasteryUpgrade(15,2,current)?2:(hasMasteryUpgrade(15,1,current)?3:4))){
+        window.WDMastery?.notePerfect25Permit?.(current,true);
         players[current].perfect25AttackArmed=true;
         markCampaignAbilitySuccess(current,15);
         perfect25Result.textContent=`D6 = ${result} → Angriff erlaubt!`;
@@ -633,6 +695,7 @@
           openPerfect25D4();
         },520);
       }else{
+        window.WDMastery?.notePerfect25Permit?.(current,false);
         players[current].perfect25AttackArmed=false;
         resetFirstClassStreak(current);
         perfect25Result.textContent=`D6 = ${result} → kein Angriff`;
@@ -677,6 +740,7 @@
     setTimeout(()=>{
       clearInterval(timer);
       const result=randD4();
+      window.WDMastery?.notePerfect25D4?.(current,result);
       perfect25D4Die.classList.remove("rolling");
       perfect25D4Die.textContent=String(result);
       perfect25D4Result.textContent=`D4 = ${result} → Angriff auf ${result}er`;
@@ -701,7 +765,7 @@
     highStakesDie.textContent="?";
     highStakesDie.disabled=false;
     highStakesSkip.disabled=false;
-    highStakesResult.textContent="1–3: −50 % · 4–6: +50 %";
+    highStakesResult.textContent=hasMasteryUpgrade(13,2,current)?"1–2: −50 % · 3: normal · 4–5: +50 % · 6: +75 %":(hasMasteryUpgrade(13,1,current)?"1–2: −50 % · 3: normal · 4–6: +50 %":"1–3: −50 % · 4–6: +50 %");
     highStakesSub.textContent=`Aktueller Schaden: ${base}. Du kannst ihn sicher nehmen oder jetzt gamblen.`;
     highStakesModal.classList.remove("hidden");
     scheduleBotAction(120);
@@ -745,14 +809,15 @@
         highStakesResult.textContent=`D6 = 3 → normaler Schaden: ${attackDamage}`;
         addLog(`🎲 Raise the Stakes: 3 zählt als neutral – ${attackDamage} Schaden bleiben.`);
       }else{
-        attackDamage=Math.floor(before*1.5);
+        const highMultiplier=(result===6&&hasMasteryUpgrade(13,2,current))?1.75:1.5;
+        attackDamage=Math.floor(before*highMultiplier);
         markCampaignAbilitySuccess(current,13);
         if(roundStats[current]){
           roundStats[current].highStakesWins++;
           if(roundStats[current].highStakesWins>=3) unlockAchievementForPlayer(current,"degenerate_gambler");
         }
         highStakesResult.textContent=`D6 = ${result} → ${before} → ${attackDamage} Schaden`;
-        addLog(`🎲 High Stakes: ${result}. Angriffsschaden +50 %: ${before} → ${attackDamage}.`);
+        addLog(`🎲 High Stakes: ${result}. Angriffsschaden +${result===6&&hasMasteryUpgrade(13,2,current)?75:50} %: ${before} → ${attackDamage}.`);
       }
 
       setTimeout(()=>{
@@ -773,7 +838,7 @@
     insuranceDie.className=`special-big-die ${DICE_DESIGNS[designKey]?.className||"theme-classic"}`;
     insuranceDie.textContent="?";
     insuranceDie.disabled=false;
-    insuranceResult.textContent=hasMasteryUpgrade(19,1,current)?"4–6 = Eigenschaden halbiert":"5–6 = Eigenschaden halbiert";
+    insuranceResult.textContent=hasMasteryUpgrade(19,2,current)?"4–5 = halbiert · 6 = 100 % geblockt":(hasMasteryUpgrade(19,1,current)?"4–6 = Eigenschaden halbiert":"5–6 = Eigenschaden halbiert");
     insuranceSub.textContent=`Normaler Eigenschaden: ${rawDamage}. Würfle jetzt deinen Insurance-D6.`;
     insuranceModal.classList.remove("hidden");
     addLog(`🛡️ Insurance: ${players[current].name} würfelt vor ${rawDamage} Eigenschaden.`);
@@ -791,6 +856,9 @@
   function applyBaseSelfDamage(total,damage,afterMode,insuranceRoll){
     const result=applyDamageToPlayer(current,damage);
     recordSelfDamage(current,result.lost);
+    if(Number(total)===5&&result.lost>=20&&dice.length===5&&dice.every(d=>d.locked&&d.value===1)){
+      window.WDMastery?.unlockL2ForPlayer?.(current,12);
+    }
     if(result.lost>0) pendingDamage={target:current,amount:result.lost};
 
     if(insuranceRoll!=null){
@@ -840,7 +908,9 @@
       const roll=rollTrackedD6(current);
       const ctx=insuranceContext;
       const reduced=roll>=(hasMasteryUpgrade(19,1,current)?4:5);
-      const finalDamage=reduced ? Math.floor(ctx.rawDamage/2) : ctx.rawDamage;
+      const fullCoverage=roll===6&&hasMasteryUpgrade(19,2,current);
+      const finalDamage=fullCoverage?0:(reduced ? Math.floor(ctx.rawDamage/2) : ctx.rawDamage);
+      window.WDMastery?.noteInsurance?.(current,reduced);
       if(Number(ctx.total)===20 && roll===1) unlockAchievementForPlayer(current,"nat20_nat1");
       if(Number(ctx.total)===24 && reduced && finalDamage===0) unlockAchievementForPlayer(current,"insurance_fraud");
 
@@ -886,6 +956,7 @@
     }
 
     if(total<25){
+      window.WDMastery?.notePerfect25Break?.(current);
       resetFirstClassStreak(current);
       players[current].hotDiceStreak=0;
       players[current].perfect25AttackArmed=false;
@@ -897,6 +968,7 @@
     }
 
     if(total===25 && !hasAdvance && hasAbility(15)){
+      window.WDMastery?.notePerfect25Base?.(current);
       queuePerfect25(total);
       return;
     }
@@ -919,34 +991,69 @@
       return;
     }
 
+    window.WDMastery?.notePerfect25Break?.(current);
     const normalFace=hasAdvance?total-24:total-25;
     beginAttackWithFace(normalFace,total,hasAdvance?"advance":"normal");
   }
 
   function useBloodPrice(){
     if(!hasAbility(11) || isAnimating || bloodPriceNeighbors.length) return;
-    if(phase!=="attack_ready" && phase!=="attack_continue") return;
-    if(players[current].hp<=encounterVoluntaryCost(3)) return;
+    const postRoll=phase==="attack_after_roll"&&hasMasteryUpgrade(11,2,current)&&!bloodPriceWasPreActivatedThisRoll;
+    const preRoll=phase==="attack_ready"||phase==="attack_continue";
+    if(!postRoll&&!preRoll)return;
 
     const neighbors=[];
     if(attackFace>1) neighbors.push(attackFace-1);
     if(attackFace<6) neighbors.push(attackFace+1);
     if(!neighbors.length) return;
 
-    const bloodCost=encounterVoluntaryCost(3);
+    const baseCost=postRoll?5:3;
+    const bloodCost=encounterVoluntaryCost(baseCost);
+    if(players[current].hp<=bloodCost)return;
+
     const damageResult=applyDamageToPlayer(current,bloodCost,"voluntary");
     markCampaignAbilityUse(current,11);
     players[current].voluntaryHpPaidThisTurn=true;
     recordSelfDamage(current,damageResult.lost);
     recordVoluntaryHp(current,damageResult.lost);
-    bloodPriceNeighbors=neighbors;
-    bloodPricePaidThisRoll=damageResult.lost;
     pendingDamage={target:current,amount:damageResult.lost};
 
-    // Blood Rush darf durch Blutpreis auch mitten im laufenden Angriff zünden.
-    activateBloodRushMidAttackIfEligible(current);
+    if(postRoll){
+      let added=0;
+      (lastAttackRollIndices||[]).forEach(i=>{
+        const d=dice[i];
+        if(!d||d.locked||!neighbors.includes(d.value))return;
+        d.locked=true;
+        attackHits++;
+        currentAttackRollNewHits++;
+        attackDamage+=damagePerAttackHit();
+        added++;
+      });
+      activateBloodRushMidAttackIfEligible(current);
+      addLog(`🩸 Blood Credit: ${players[current].name} zahlt ${damageResult.lost} HP nach dem Wurf → ${added} Nachbartreffer werden nachträglich gesichert.`);
+      renderAll();
+      return;
+    }
 
+    bloodPriceNeighbors=neighbors;
+    bloodPricePaidThisRoll=damageResult.lost;
+    activateBloodRushMidAttackIfEligible(current);
     addLog(`🩸 ${players[current].name} zahlt ${damageResult.lost} HP für Blutpreis: ${[attackFace,...neighbors].sort((a,b)=>a-b).join(", ")} treffen im nächsten Angriffswurf.`);
+    renderAll();
+  }
+
+  function useBloodRushSelfHarm(){
+    if(isAnimating||phase!=="attack_after_roll"||!hasAbility(23)||!hasMasteryUpgrade(23,2,current)||bloodRushActiveThisAttack)return;
+    const cost=encounterVoluntaryCost(1);
+    if(players[current].hp<=cost)return;
+    const result=applyDamageToPlayer(current,cost,"voluntary");
+    if(result.lost<=0)return;
+    recordSelfDamage(current,result.lost);
+    recordVoluntaryHp(current,result.lost);
+    players[current].voluntaryHpPaidThisTurn=true;
+    pendingDamage={target:current,amount:result.lost};
+    activateBloodRushMidAttackIfEligible(current);
+    addLog(`🩸 Self Harm: ${players[current].name} opfert ${result.lost} HP und aktiviert Blood Rush.`);
     renderAll();
   }
 
@@ -955,12 +1062,22 @@
     const indices=[];
     dice.forEach((d,i)=>{if(!d.locked)indices.push(i);});
     const bloodNeighborsForRoll=[...bloodPriceNeighbors];
+    bloodPriceWasPreActivatedThisRoll=bloodNeighborsForRoll.length>0;
     attackRollCount++;
+    attackMasteryRollCount++;
     lastAttackRollIndices=[...indices];
 
     animateIndices(indices,()=>{
       const wasFirstAttackRoll=firstAttackRoll;
+      if(wasFirstAttackRoll&&currentAttackSource==="advance"&&hasMasteryUpgrade(5,2,current)){
+        const alreadyHit=indices.some(i=>isNormalAttackHitValue(dice[i].value)||bloodNeighborsForRoll.includes(dice[i].value)||(wildcardFace!=null&&dice[i].value===wildcardFace));
+        if(!alreadyHit&&indices.length){
+          dice[indices[0]].value=attackFace;
+          addLog(`⚡ First Strike: der erste Angriffswurf erhält automatisch 1 Treffer.`);
+        }
+      }
       const attackRollValues=indices.map(i=>dice[i].value);
+      window.WDMastery?.noteAttackRoll?.(current,attackRollValues,attackFace);
       if(indices.length===5){
         if(isStraightFive(attackRollValues)) unlockAchievementForPlayer(current,"royal_flush_attack");
         if(isFullHouseFive(attackRollValues)) unlockAchievementForPlayer(current,"full_house_attack");
@@ -984,6 +1101,8 @@
           dice[i].locked=true;
           attackHits++;
           currentAttackRollNewHits++;
+          if(isNormal){normalAttackHitsThisAttack++;if(dice[i].value===attackFace)exactFaceHitsThisAttack++;}
+          if(isWildcard){wildcardTriggeredThisAttack=true;if(!isNormal)wildcardAttackHitsThisAttack++;}
           // Wildcard macht absichtlich den normalen Schaden der eigentlichen Zielzahl.
           attackDamage+=damagePerAttackHit();
           if(isBlood&&!isNormal&&!isWildcard) bloodHits++;
@@ -1012,16 +1131,20 @@
     if(!indices.length) return;
 
     attackPowerUses++;
+    attackMasteryRollCount++;
     attackPowerUsed=attackPowerUses>=maxUses;
     markCampaignAbilityUse(current,4);
     addLog(`⚡ ${players[current].name} nutzt Zweite Chance: alle Nicht-Treffer werden neu gewürfelt.`);
     animateIndices(indices,()=>{
+      window.WDMastery?.noteAttackRoll?.(current,indices.map(i=>dice[i].value),attackFace);
       let bonusHits=0;
       indices.forEach(i=>{
         const isNormal=isNormalAttackHitValue(dice[i].value);
         const isWildcard=wildcardFace!=null && (attackRollCount===1 || (attackRollCount===2&&hasMasteryUpgrade(17,1,current))) && dice[i].value===wildcardFace;
         if(isNormal || isWildcard){
           dice[i].locked=true;attackHits++;bonusHits++;
+          if(isNormal){normalAttackHitsThisAttack++;if(dice[i].value===attackFace)exactFaceHitsThisAttack++;}
+          if(isWildcard){wildcardTriggeredThisAttack=true;if(!isNormal)wildcardAttackHitsThisAttack++;}
           attackDamage+=damagePerAttackHit();
         }
       });
@@ -1103,6 +1226,7 @@
           const heal=applyHealingToPlayer(current,encounterHealAmount(current,2));recordHealing(current,heal);if(heal>0)pendingHeal={target:current,amount:heal};addLog(`🩸 Borrowing Life: 0 Treffer → ${heal} HP geheilt.`);
         }
         if(offerGamblingRetry()) return;
+        window.WDMastery?.noteAttackResolved?.(current,0,currentAttackSource,normalAttackHitsThisAttack,wildcardAttackHitsThisAttack);
         endTurn();
       }
       return;
@@ -1125,7 +1249,33 @@
       if(attackHits===2){
         doubleTapApplied=true;markCampaignAbilitySuccess(current,24);attackDamage+=4;addLog(`🔫 Double Tap: exakt 2 Treffer → +4 Gesamtschaden. Neuer Schaden: ${attackDamage}.`);
       }else if(attackHits===1&&hasMasteryUpgrade(24,1,current)){
-        doubleTapApplied=true;markCampaignAbilitySuccess(current,24);attackDamage+=2;addLog(`🔫 One Tap: exakt 1 Treffer → +2 Gesamtschaden. Neuer Schaden: ${attackDamage}.`);
+        const oneTapBonus=hasMasteryUpgrade(24,2,current)?3:2;
+        doubleTapApplied=true;markCampaignAbilitySuccess(current,24);attackDamage+=oneTapBonus;addLog(`🔫 ${hasMasteryUpgrade(24,2,current)?"Two Piece":"One Tap"}: exakt 1 Treffer → +${oneTapBonus} Gesamtschaden. Neuer Schaden: ${attackDamage}.`);
+      }
+    }
+
+    if(!masteryL2AttackBonusesApplied){
+      masteryL2AttackBonusesApplied=true;
+      if(hasAbility(4)&&hasMasteryUpgrade(4,2,current)&&attackHits>0){
+        const bonus=Math.min(5,Math.max(0,attackMasteryRollCount));
+        if(bonus>0){attackDamage+=bonus;addLog(`⚡ Reroll for Damage: ${attackMasteryRollCount} Würfe → +${bonus} Gesamtschaden.`);}
+      }
+      if(hasAbility(8)&&hasMasteryUpgrade(8,2,current)&&exactFaceHitsThisAttack>0){
+        attackDamage+=1;addLog(`🎯 Bullseye: exakte Trefferzahl → +1 Gesamtschaden.`);
+      }
+      if(hasAbility(9)&&hasMasteryUpgrade(9,2,current)&&players[current].hp<=5&&players[current].hp>0){
+        const bonus=6-players[current].hp;attackDamage+=bonus;addLog(`😡 Vendetta: ${players[current].hp} HP → +${bonus} Gesamtschaden.`);
+      }
+      if(hasAbility(20)&&hasMasteryUpgrade(20,2,current)){
+        const uses=Math.max(0,Number(roundStats[current]?.snakeEyesUsesThisTurn)||0);
+        if(uses>0){attackDamage+=uses;addLog(`🐍 Python Entangle: ${uses} Snake-Eyes-Use${uses===1?"":"s"} → +${uses} Gesamtschaden.`);}
+      }
+      if(hasAbility(25)&&hasMasteryUpgrade(25,2,current)&&isUniqueUnderdog(current)&&attackHits>0){
+        const desired=Math.floor(attackHits*1.5),already=attackHits,extra=Math.max(0,desired-already);
+        if(extra>0){attackDamage+=extra;addLog(`🐕 Top Dog: Underdog-Bonus ${already} → ${desired} (+${extra} extra).`);}
+      }
+      if(hasAbility(17)&&hasMasteryUpgrade(17,2,current)&&!wildcardTriggeredThisAttack&&attackHits>0){
+        const bonus=attackHits*2;attackDamage+=bonus;addLog(`🃏 Joker: Wildcard nicht getroffen → +${bonus} Schaden (${attackHits} × 2).`);
       }
     }
 
@@ -1143,15 +1293,15 @@
     if(hasAbility(9,index) && players[index].hp<=(hasMasteryUpgrade(9,1,index)?15:10)) dmg+=2;
     if(hasAbility(10,index)){
       const streak=players[index].momentumStreak||0;
-      dmg+=Math.min(Math.max(streak-1,0),2);
+      dmg+=Math.min(Math.max(streak-1,0),hasMasteryUpgrade(10,2,index)?3:2);
     }
     if(counterContext?.bloodRushActive && hasAbility(23,index)) dmg+=1;
     if(hasAbility(25,index) && isUniqueUnderdog(index)) dmg+=1;
     return dmg;
   }
 
-  function queueCounterattack(defenderIndex,attackerIndex){
-    pendingCounterattack={defenderIndex,attackerIndex};
+  function queueCounterattack(defenderIndex,attackerIndex,restoreHp=null,incomingDamage=0,lastStandTriggered=false){
+    pendingCounterattack={defenderIndex,attackerIndex,restoreHp,incomingDamage,lastStandTriggered};
 
     if(secondAbilityDraftBusy){
       return;
@@ -1159,7 +1309,7 @@
 
     const ctx=pendingCounterattack;
     pendingCounterattack=null;
-    openCounterattack(ctx.defenderIndex,ctx.attackerIndex);
+    openCounterattack(ctx.defenderIndex,ctx.attackerIndex,ctx.restoreHp,ctx.incomingDamage,ctx.lastStandTriggered);
   }
 
   function renderCounterDice(){
@@ -1184,7 +1334,7 @@
     });
   }
 
-  function openCounterattack(defenderIndex,attackerIndex){
+  function openCounterattack(defenderIndex,attackerIndex,restoreHp=null,incomingDamage=0,lastStandTriggered=false){
     const defender=players[defenderIndex];
     const attacker=players[attackerIndex];
 
@@ -1196,6 +1346,9 @@
     counterContext={
       defenderIndex,
       attackerIndex,
+      restoreHp,
+      incomingDamage,
+      lastStandTriggered,
       bloodRushActive:consumeBloodRushForCounter(defenderIndex)
     };
     markCampaignAbilityUse(defenderIndex,21);
@@ -1225,6 +1378,18 @@
     const defender=players[defenderIndex];
     const attacker=players[attackerIndex];
 
+    const perfectParry=hasMasteryUpgrade(21,2,defenderIndex)&&counterDiceState.length===5&&counterDiceState.every(d=>d.value===1);
+    if(perfectParry){
+      const restoreTo=Math.max(defender.hp,Number(counterContext.restoreHp)||defender.hp);
+      const restored=Math.max(0,restoreTo-defender.hp);
+      defender.hp=restoreTo;
+      if(counterContext.lastStandTriggered){
+        defender.lastStandUsed=false;defender.roundLastStandTriggered=false;defender.masteryLastStandCooldown=0;
+      }
+      if(roundStats[defenderIndex])roundStats[defenderIndex].damageTaken=Math.max(0,(roundStats[defenderIndex].damageTaken||0)-(Number(counterContext.incomingDamage)||0));
+      addLog(`🛡️ Parry: 5 Einser! Der ursprüngliche Angriff wird vollständig abgewehrt${restored?` · ${restored} HP wiederhergestellt`:""}.`);
+    }
+
     if(counterHits===5) unlockAchievementForPlayer(defenderIndex,"grande");
 
     const perHit=counterattackDamagePerHit(defenderIndex);
@@ -1232,10 +1397,24 @@
     let rawCounterDamage=baseCounterDamage;
     let counterDoubleTapBonus=0;
 
-    if(hasAbility(24,defenderIndex) && counterHits===2){
-      counterDoubleTapBonus=4;
-      rawCounterDamage+=counterDoubleTapBonus;
-      addLog(`🔫 Double Tap im Counterattack: exakt 2 Treffer → +4 Schaden.`);
+    if(hasAbility(24,defenderIndex)){
+      if(counterHits===2){
+        counterDoubleTapBonus=4;
+        rawCounterDamage+=counterDoubleTapBonus;
+        markCampaignAbilitySuccess(defenderIndex,24);
+        addLog(`🔫 Double Tap im Counterattack: exakt 2 Treffer → +4 Schaden.`);
+      }else if(counterHits===1&&hasMasteryUpgrade(24,1,defenderIndex)){
+        counterDoubleTapBonus=hasMasteryUpgrade(24,2,defenderIndex)?3:2;
+        rawCounterDamage+=counterDoubleTapBonus;
+        markCampaignAbilitySuccess(defenderIndex,24);
+        addLog(`🔫 ${hasMasteryUpgrade(24,2,defenderIndex)?"Two Piece":"One Tap"} im Counterattack: +${counterDoubleTapBonus} Schaden.`);
+      }
+    }
+    if(hasAbility(9,defenderIndex)&&hasMasteryUpgrade(9,2,defenderIndex)&&defender.hp<=5&&defender.hp>0){
+      rawCounterDamage+=6-defender.hp;
+    }
+    if(hasAbility(25,defenderIndex)&&hasMasteryUpgrade(25,2,defenderIndex)&&isUniqueUnderdog(defenderIndex)&&counterHits>0){
+      rawCounterDamage+=Math.max(0,Math.floor(counterHits*1.5)-counterHits);
     }
 
     let actualDamage=0;
@@ -1248,6 +1427,7 @@
       const result=applyDamageToPlayer(attackerIndex,rawCounterDamage,"opponent");
       checkBossPhase(attackerIndex,attackerHpBefore,attacker.hp);
       actualDamage=result.lost;
+      window.WDMastery?.noteCounterDamage?.(defenderIndex,actualDamage);
       recordDamageDealt(defenderIndex,actualDamage,false);
       if(actualDamage>=15) unlockAchievementForPlayer(defenderIndex,"backstab");
       if(actualDamage>0){
@@ -1261,7 +1441,8 @@
       addLog(`⚔️ Counterattack endet: ${counterFormula} = ${actualDamage} Schaden an ${attacker.name}.`);
 
       if(hasAbility(2,defenderIndex) && actualDamage>0){
-        const heal=encounterHealAmount(defenderIndex,Math.floor(actualDamage/2));
+        let heal=encounterHealAmount(defenderIndex,Math.floor(actualDamage/2));
+        if(hasMasteryUpgrade(2,2,defenderIndex))heal+=3;
         const actualHeal=applyHealingToPlayer(defenderIndex,heal);
         recordHealing(defenderIndex,actualHeal);
         if(actualHeal>0){
@@ -1282,6 +1463,7 @@
         addLog(`💀 ${attacker.name} ist durch Counterattack ausgeschieden.`);
       }
     }else{
+      window.WDMastery?.noteCounterDamage?.(defenderIndex,0);
       addLog(`⚔️ Counterattack endet ohne Treffer.`);
     }
 
@@ -1394,6 +1576,8 @@
     let rawDamage=totalAttackDamage();
     recordCampaignAttackResult(current,attackHits);
     const aliveSnapshot=players.map((p,i)=>p.hp>0?i:null).filter(i=>i!=null);
+    const ricochetWillTrigger=hasAbility(16)&&attackHits>0&&aliveSnapshot.length>=3;
+    if(ricochetWillTrigger)markCampaignAbilityUse(current,16);
     const target=players[attackTarget];
     const targetHpBefore=target?.hp||0;
     if(campaignMode&&players[current]?.campaignTeam==="hero"&&rawDamage>0&&encounterRuleActive("first_strike")&&!encounterRuntime.firstStrikeUsed.has(String(current))){rawDamage+=2;encounterRuntime.firstStrikeUsed.add(String(current));addLog(`⚡ First Strike: +2 Rohschaden.`);}
@@ -1423,9 +1607,10 @@
 
     const mainTargetKilled=target.hp<=0;
     if(!mainTargetKilled && attackFace===1 && attackHits>0 && hasAbility(1) && hasMasteryUpgrade(1,1,current)){
-      target.masteryPoisonTurns=2;target.masteryPoisonSource=current;addLog(`☠️ 1 for Poison: ${target.name} ist für die nächsten 2 eigenen Züge vergiftet.`);
+      target.masteryPoisonTurns=2;target.masteryPoisonSource=current;window.WDMastery?.notePoison?.(current,attackTarget);addLog(`☠️ 1 for Poison: ${target.name} ist für die nächsten 2 eigenen Züge vergiftet.`);
     }
     if(mainTargetKilled){
+      triggerToxicBomb(attackTarget);
       window.WDAttackFx?.kill?.(current,attackTarget);
       if(roundStats[current]) roundStats[current].kills++;
       if(doubleTapApplied) unlockAchievementForPlayer(current,"double_trouble");
@@ -1440,7 +1625,7 @@
     // Ziel ist der nächste andere Spieler NACH dem Hauptziel im Uhrzeigersinn.
     let ricochetActual=0;
     let ricochetTargetKilled=false;
-    if(hasAbility(16) && attackHits>0 && aliveSnapshot.length>=3){
+    if(ricochetWillTrigger){
       const ricochetTarget=nextRicochetTarget(attackTarget,aliveSnapshot);
       if(ricochetTarget!==-1){
         const ricochetDamage=attackHits*(hasMasteryUpgrade(16,1,current)?2:1);
@@ -1456,6 +1641,7 @@
         }
         addLog(`🪃 Ricochet${hasMasteryUpgrade(16,1,current)?" · Rebound":""}: ${attackHits} Würfeltreffer → ${players[ricochetTarget].name} erhält ${ricochetActual} Schaden.`);
         if(players[ricochetTarget].hp<=0){
+          triggerToxicBomb(ricochetTarget);
           window.WDAttackFx?.kill?.(current,ricochetTarget);
           ricochetTargetKilled=true;
           if(roundStats[current]) roundStats[current].kills++;
@@ -1467,11 +1653,40 @@
       }
     }
 
-    if(mainTargetKilled && ricochetTargetKilled) unlockAchievementForPlayer(current,"collateral_damage");
-    recordAttackDamageForAchievements(current,actualDamage+ricochetActual);
+    let ricochetSecondActual=0;
+    if(hasAbility(16)&&hasMasteryUpgrade(16,2,current)&&attackHits>0&&aliveSnapshot.length>=4){
+      const firstTarget=nextRicochetTarget(attackTarget,aliveSnapshot);
+      const secondTarget=firstTarget!==-1?nextRicochetTargetExcluding(firstTarget,aliveSnapshot,[attackTarget,firstTarget]):-1;
+      if(secondTarget!==-1&&players[secondTarget]?.hp>0){
+        const ric2Damage=attackHits;
+        const before=players[secondTarget].hp;
+        const res=applyDamageToPlayer(secondTarget,ric2Damage,"opponent");
+        ricochetSecondActual=res.lost;
+        recordDamageDealt(current,ricochetSecondActual,true);
+        if(ricochetSecondActual>0){
+          pendingExtraDamageFx.push({target:secondTarget,amount:ricochetSecondActual});
+          window.WDAttackFx?.emit?.(current,secondTarget,"ricochet",ricochetSecondActual,attackFace);
+        }
+        addLog(`🪃 Chain Reaction: ${players[secondTarget].name} erhält ${ricochetSecondActual} Schaden.`);
+        if(before>0&&players[secondTarget].hp<=0){
+          triggerToxicBomb(secondTarget);
+          window.WDAttackFx?.kill?.(current,secondTarget);
+          if(roundStats[current])roundStats[current].kills++;
+          recordCampaignKill(current,secondTarget);
+          if(!maybeTriggerCampaignStandardBonusDraft(current,"kill"))maybeTriggerCampaignKillAbilityDraft(current);
+          markEliminated(secondTarget);
+          addLog(`💀 ${players[secondTarget].name} ist durch Chain Reaction ausgeschieden.`);
+        }
+      }
+    }
 
-    if(hasAbility(2) && (actualDamage+ricochetActual)>0){
-      const heal=encounterHealAmount(current,Math.floor((actualDamage+ricochetActual)/2));
+    if(mainTargetKilled && ricochetTargetKilled) unlockAchievementForPlayer(current,"collateral_damage");
+    recordAttackDamageForAchievements(current,actualDamage+ricochetActual+ricochetSecondActual);
+    window.WDMastery?.noteAttackResolved?.(current,actualDamage,currentAttackSource,normalAttackHitsThisAttack,wildcardAttackHitsThisAttack);
+
+    if(hasAbility(2) && (actualDamage+ricochetActual+ricochetSecondActual)>0){
+      let heal=encounterHealAmount(current,Math.floor((actualDamage+ricochetActual+ricochetSecondActual)/2));
+      if(hasMasteryUpgrade(2,2,current))heal+=3;
       const actualHeal=applyHealingToPlayer(current,heal);
       recordHealing(current,actualHeal);
       if(actualHeal>=10) unlockAchievementForPlayer(current,"blood_bank");
@@ -1489,7 +1704,7 @@
     const counterEligible=rawDamage>=counterThreshold && target.hp>0 && players[current].hp>0 && hasAbility(21,attackTarget);
 
     if(counterEligible){
-      queueCounterattack(attackTarget,current);
+      queueCounterattack(attackTarget,current,targetHpBefore,actualDamage,!!mainResult.lastStand);
       return;
     }
 
@@ -1531,7 +1746,7 @@
   function applyMasteryPoisonTurnStart(index){
     const p=players[index];if(!p||p.hp<=0||!(p.masteryPoisonTurns>0))return true;
     const source=Number(p.masteryPoisonSource);const before=p.hp;const result=applyDamageToPlayer(index,1,"opponent");p.masteryPoisonTurns=Math.max(0,p.masteryPoisonTurns-1);addLog(`☠️ Poison: ${p.name} verliert ${result.lost} HP (${p.masteryPoisonTurns} Tick${p.masteryPoisonTurns===1?"":"s"} übrig).`);
-    if(p.hp<=0){if(Number.isInteger(source)&&players[source]){if(roundStats[source])roundStats[source].kills++;recordCampaignKill(source,index);if(!maybeTriggerCampaignStandardBonusDraft(source,"kill"))maybeTriggerCampaignKillAbilityDraft(source);}markEliminated(index);addLog(`💀 ${p.name} stirbt am Gift.`);return false;}return true;
+    if(p.hp<=0){triggerToxicBomb(index);if(Number.isInteger(source)&&players[source]){if(roundStats[source])roundStats[source].kills++;recordCampaignKill(source,index);if(!maybeTriggerCampaignStandardBonusDraft(source,"kill"))maybeTriggerCampaignKillAbilityDraft(source);}markEliminated(index);addLog(`💀 ${p.name} stirbt am Gift.`);return false;}return true;
   }
 
   function advanceTurn(){
@@ -1550,7 +1765,7 @@
     if(roundStats[current]) roundStats[current].snakeEyesUsesThisTurn=0;
     dice=freshDice();phase="idle";
     attackFace=null;attackTarget=null;pendingCampaignAttackStart=null;attackHits=0;attackDamage=0;firstAttackRoll=true;currentAttackRollNewHits=0;
-    baseRerollUsed=false;luckRerollIndex=null;luckRerollSecondUsed=false;loadedDiceUsed=false;loadedDiceUses=0;lastBaseRollIndices=[];attackPowerUsed=false;attackPowerUses=0;precisionUses=0;momentumBonus=0;bloodPriceNeighbors=[];bloodPricePaidThisRoll=0;bloodRushActiveThisAttack=false;doubleTapApplied=false;lastAttackRollIndices=[];attackRollCount=0;wildcardSecondRollArmed=false;currentAttackSource="normal";currentAttackBaseTotal=null;gamblingRetryUsed=false;gamblingRetryPending=false;
+    baseRerollUsed=false;luckRerollIndex=null;luckRerollSecondUsed=false;luckRerollUses=0;loadedDiceUsed=false;loadedDiceUses=0;lastBaseRollIndices=[];attackPowerUsed=false;attackPowerUses=0;precisionUses=0;momentumBonus=0;bloodPriceNeighbors=[];bloodPricePaidThisRoll=0;bloodPriceWasPreActivatedThisRoll=false;bloodRushActiveThisAttack=false;doubleTapApplied=false;lastAttackRollIndices=[];attackRollCount=0;attackMasteryRollCount=0;normalAttackHitsThisAttack=0;exactFaceHitsThisAttack=0;wildcardAttackHitsThisAttack=0;wildcardTriggeredThisAttack=false;masteryL2AttackBonusesApplied=false;wildcardSecondRollArmed=false;currentAttackSource="normal";currentAttackBaseTotal=null;gamblingRetryUsed=false;gamblingRetryPending=false;
     highStakesDecisionThisAttack=false;wildcardFace=null;
     gamblingRolling=false;gamblingBaseTotal=null;gamblingRetryActions?.classList.add("hidden");gamblingModal.classList.add("hidden");highStakesRolling=false;highStakesDecisionThisAttack=false;highStakesModal.classList.add("hidden");perfect25Rolling=false;perfect25D4Rolling=false;perfect25BaseTotal=null;pendingPerfect25Total=null;perfect25Modal.classList.add("hidden");perfect25D4Modal.classList.add("hidden");insuranceRolling=false;insuranceContext=null;insuranceModal.classList.add("hidden");counterRolling=false;counterContext=null;counterDiceState=[];counterHits=0;counterFirstRoll=true;pendingCounterattack=null;deferredAttackFinish=false;counterModal.classList.add("hidden");wildcardFace=null;secondAbilityDraftQueue=[];
     highStakesModal.classList.add("hidden");perfect25Modal.classList.add("hidden");perfect25D4Modal.classList.add("hidden");

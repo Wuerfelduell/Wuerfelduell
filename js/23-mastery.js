@@ -37,6 +37,36 @@
     [22,"12","18","Bei 3 Sechsern gleichzeitig heilst du +2 HP.","24","Jeder zweite Heileffekt heilt zusätzlich +1 HP.","???","Keystone noch offen."]
   ];
 
+  const L2_CONDITIONS={
+    1:"Vergifte denselben Gegner 3-mal in einem Kampf.",
+    2:"Heile 15 HP in einem Kampf, ohne Lifesteal mitzuhaben.",
+    3:"Würfle insgesamt 100-mal.",
+    4:"Führe insgesamt 50 Angriffswürfe aus.",
+    5:"Verursache mit deinem ersten Angriff eines Kampfes mindestens 20 Schaden, ohne Angriffsvorsprung dafür zu verwenden.",
+    7:"Würfle insgesamt 25 Sechser im Basiswurf weiter, statt sie einzulocken.",
+    8:"Würfle im Angriffswurf ein Grande exakt auf deiner Trefferzahl.",
+    9:"Töte insgesamt 10 Gegner, während du selbst unter 10 HP bist.",
+    10:"Baue eine 5er Angriffsstreak auf, ohne Momentum mitzuhaben.",
+    11:"Füge dir in einem Kampf insgesamt 40 Self-Damage zu.",
+    12:"Locke im Basiswurf 5 Einser ein und kassiere 20 Self-Damage auf einmal.",
+    13:"Würfle im Angriffswurf 5 Sechser gleichzeitig.",
+    14:"Gewinne einen Kampf mit exakt 1 HP, ohne Last Stand mitzuhaben.",
+    15:"Würfle 2-mal hintereinander exakt 25 mit Perfect 25 aktiv, schaffe den Perfect-25-Erlaubniswurf und würfle danach mit dem D4 eine 4.",
+    16:"Töte 3 Gegner in einem Kampf, ohne Ricochet zu benutzen.",
+    17:"Wrong Number: Verursache in einem Angriff mindestens 15 Schaden ausschließlich über Wildcard-Treffer, ohne Treffer deiner eigentlichen Angriffszahl.",
+    18:"Zieh dir mit Loaded Dice in einem Kampf insgesamt 20 HP ab.",
+    19:"Nutze Insurance 3-mal in einem Kampf und fail alle 3 Würfe.",
+    20:"Würfle im Angriffswurf ein Grande Serviert; die Zahl muss nicht deiner Trefferzahl entsprechen.",
+    21:"Verursache in einem Kampf genau einmal exakt 1 Schaden mit Counterattack – nicht mehr und nicht weniger.",
+    22:"Würfle in einem Kampf insgesamt 24 Sechser.",
+    23:"Blood Marathon: Greife 4-mal in einem Kampf an und erleide zwischen jedem dieser Angriffe Self-Damage.",
+    24:"Greife 5-mal in einem Kampf an, ohne Double Tap zu verwenden, obwohl du Double Tap mithast.",
+    25:"Starte in einem Kampf 5 eigene Züge mit mehr HP als alle Gegner."
+  };
+
+  const L2_PROGRESS_TARGETS={3:100,4:50,7:25,9:10};
+
+
   let activeMode="solo";
   let activeProfileId=null;
 
@@ -52,7 +82,7 @@
   }
 
   function defaults(){
-    return {xp:0,lifetimeXp:0,hpLevel:0,damageLevel:0,abilityLevel:0,abilityLevels:{},retroBackfillDone:false};
+    return {xp:0,lifetimeXp:0,hpLevel:0,damageLevel:0,abilityLevel:0,abilityLevels:{},abilityL2Unlocked:{},abilityL2Progress:{},retroBackfillDone:false};
   }
 
   function normalize(raw){
@@ -64,6 +94,8 @@
       damageLevel:Math.max(0,Math.min(MAX_DAMAGE_LEVEL,Math.floor(Number(raw.damageLevel)||0))),
       abilityLevel:Math.max(0,Math.min(MAX_ABILITY_LEVEL,Math.floor(Number(raw.abilityLevel)||0))),
       abilityLevels:normalizeAbilityLevels(raw.abilityLevels),
+      abilityL2Unlocked:raw.abilityL2Unlocked&&typeof raw.abilityL2Unlocked==="object"?Object.fromEntries(Object.entries(raw.abilityL2Unlocked).filter(([,v])=>!!v).map(([k])=>[String(Number(k)),true])):{},
+      abilityL2Progress:raw.abilityL2Progress&&typeof raw.abilityL2Progress==="object"?Object.fromEntries(Object.entries(raw.abilityL2Progress).map(([k,v])=>[String(Number(k)),Math.max(0,Math.floor(Number(v)||0))])):{},
       retroBackfillDone:!!raw.retroBackfillDone,
       retroBackfillV2Done:!!raw.retroBackfillV2Done,
       retroBackfillV3Done:!!raw.retroBackfillV3Done
@@ -193,6 +225,168 @@
   }
 
   function abilityLevel(profile,mode,id){return Math.max(0,Number(ensure(profile,mode).abilityLevels?.[String(Number(id))])||0);} // ensure() must preserve object identity
+
+  function l2Unlocked(profile,mode,id){
+    return !!ensure(profile,mode).abilityL2Unlocked?.[String(Number(id))];
+  }
+  function l2Progress(profile,mode,id){
+    return Math.max(0,Number(ensure(profile,mode).abilityL2Progress?.[String(Number(id))])||0);
+  }
+  function playerProfileAndMode(index){
+    try{
+      const p=players?.[Number(index)];
+      if(!campaignMode||!p||p.campaignTeam!=="hero"||!p.profileId) return null;
+      const profile=resolveMasteryProfile(p.profileId);
+      if(!profile) return null;
+      return {profile,mode:currentBattleMode(),player:p};
+    }catch(_err){return null;}
+  }
+  function unlockL2ForPlayer(index,id){
+    const ctx=playerProfileAndMode(index);if(!ctx)return false;
+    const state=ensure(ctx.profile,ctx.mode),key=String(Number(id));
+    if(state.abilityL2Unlocked[key])return false;
+    state.abilityL2Unlocked[key]=true;
+    saveGameData();
+    try{addLog(`🧬 Mastery L2 freigeschaltet: ${ABILITIES[Number(id)]?.name||id}!`);}catch(_err){}
+    try{queueEventPopup(`L2 Mastery unlocked!`,"win");}catch(_err){}
+    return true;
+  }
+  function addL2Progress(index,id,amount=1){
+    const ctx=playerProfileAndMode(index);if(!ctx)return 0;
+    const state=ensure(ctx.profile,ctx.mode),key=String(Number(id)),target=Number(L2_PROGRESS_TARGETS[Number(id)])||0;
+    if(state.abilityL2Unlocked[key]||target<=0)return state.abilityL2Progress[key]||0;
+    state.abilityL2Progress[key]=Math.min(target,Math.max(0,Number(state.abilityL2Progress[key])||0)+Math.max(0,Number(amount)||0));
+    if(state.abilityL2Progress[key]>=target)unlockL2ForPlayer(index,id);
+    return state.abilityL2Progress[key];
+  }
+  function runState(index){
+    const p=players?.[Number(index)];if(!p)return null;
+    if(!p.masteryL2Run)p.masteryL2Run={
+      abilityUses:{},poisons:{},killsNoRicochet:0,ricochetUsed:false,
+      counterEvents:0,counterDamageTotal:0,selfDamageTotal:0,loadedSelfDamage:0,
+      insuranceFails:0,healNoLifesteal:0,everHadLifesteal:false,everHadLastStand:false,
+      firstAttackDone:false,doubleTapUsed:false,doubleTapSafeAttacks:0,
+      selfDamageSerial:0,bloodMarathonCount:0,bloodMarathonLastSerial:0,
+      perfect25Chain:0,perfect25PermitChain:0,underdogHighTurns:0
+    };
+    return p.masteryL2Run;
+  }
+  function noteAbilityUse(index,id){
+    const r=runState(index);if(!r)return;
+    r.abilityUses[String(Number(id))]=(r.abilityUses[String(Number(id))]||0)+1;
+    if(Number(id)===16)r.ricochetUsed=true;
+    if(Number(id)===24)r.doubleTapUsed=true;
+  }
+  function noteSelfDamage(index,amount,source=""){
+    const r=runState(index);if(!r||amount<=0)return;
+    r.selfDamageTotal+=amount;r.selfDamageSerial++;
+    if(source==="loaded")r.loadedSelfDamage+=amount;
+    if(r.selfDamageTotal>=40)unlockL2ForPlayer(index,11);
+    if(r.loadedSelfDamage>=20)unlockL2ForPlayer(index,18);
+  }
+  function noteHealing(index,amount){
+    const r=runState(index);if(!r||amount<=0)return;
+    if(hasAbility(2,index))r.everHadLifesteal=true;
+    if(!r.everHadLifesteal){
+      r.healNoLifesteal+=amount;
+      if(r.healNoLifesteal>=15)unlockL2ForPlayer(index,2);
+    }
+  }
+  function noteKill(index,targetIndex){
+    const r=runState(index);if(!r)return;
+    if(players?.[index]?.hp<10)addL2Progress(index,9,1);
+    if(!r.ricochetUsed){
+      r.killsNoRicochet++;
+      if(r.killsNoRicochet>=3)unlockL2ForPlayer(index,16);
+    }
+  }
+  function noteAttackRoll(index,values,face){
+    if(!Array.isArray(values))return;
+    addL2Progress(index,4,1);
+    if(values.length===5){
+      if(values.every(v=>v===6))unlockL2ForPlayer(index,13);
+      if(values.every(v=>v===values[0]))unlockL2ForPlayer(index,20);
+      if(values.every(v=>v===Number(face)))unlockL2ForPlayer(index,8);
+    }
+  }
+  function noteRerolledSixes(index,count){
+    if(count>0)addL2Progress(index,7,count);
+  }
+  function noteAnyD6(index){
+    addL2Progress(index,3,1);
+  }
+  function noteAttackStart(index,source){
+    const r=runState(index);if(!r)return;
+    const p=players[index];
+    if(!r.firstAttackDone)r.firstAttackSource=source;
+    if(!hasAbility(10,index)&&Number(p?.hotDiceStreak||0)>=5)unlockL2ForPlayer(index,10);
+    if(hasAbility(24,index)&&!r.doubleTapUsed){
+      r.doubleTapSafeAttacks++;
+    }
+    if(r.bloodMarathonCount===0)r.bloodMarathonCount=1;
+    else if(r.selfDamageSerial>r.bloodMarathonLastSerial)r.bloodMarathonCount++;
+    else r.bloodMarathonCount=1;
+    r.bloodMarathonLastSerial=r.selfDamageSerial;
+    if(r.bloodMarathonCount>=4)unlockL2ForPlayer(index,23);
+  }
+  function noteAttackResolved(index,damage,source,normalHits=0,wildcardHits=0){
+    const r=runState(index);if(!r)return;
+    if(!r.firstAttackDone){
+      if(Number(damage)>=20&&source!=="advance")unlockL2ForPlayer(index,5);
+      r.firstAttackDone=true;
+    }
+    if(hasAbility(24,index)&&!r.doubleTapUsed&&r.doubleTapSafeAttacks>=5)unlockL2ForPlayer(index,24);
+    if(Number(normalHits)===0&&Number(wildcardHits)>0&&Number(damage)>=15)unlockL2ForPlayer(index,17);
+  }
+  function notePoison(index,targetIndex){
+    const r=runState(index);if(!r)return;
+    const key=String(targetIndex);r.poisons[key]=(r.poisons[key]||0)+1;
+    if(r.poisons[key]>=3)unlockL2ForPlayer(index,1);
+  }
+  function noteInsurance(index,success){
+    const r=runState(index);if(!r)return;
+    if(success)return;
+    r.insuranceFails++;
+    if(r.insuranceFails>=3)unlockL2ForPlayer(index,19);
+  }
+  function noteCounterDamage(index,amount){
+    const r=runState(index);if(!r)return;
+    const dmg=Math.max(0,Number(amount)||0);
+    if(dmg>0){r.counterEvents++;r.counterDamageTotal+=dmg;}
+  }
+  function noteTurnStart(index){
+    const r=runState(index);if(!r)return;
+    if(hasAbility(2,index))r.everHadLifesteal=true;
+    if(hasAbility(14,index))r.everHadLastStand=true;
+    const enemies=players.map((p,i)=>p?.hp>0&&p.campaignTeam==="enemy"?i:null).filter(i=>i!=null);
+    if(enemies.length&&enemies.every(i=>players[index].hp>players[i].hp)){
+      r.underdogHighTurns++;
+      if(r.underdogHighTurns>=5)unlockL2ForPlayer(index,25);
+    }
+  }
+  function notePerfect25Base(index){
+    const r=runState(index);if(!r)return;
+    r.perfect25Chain=(r.perfect25Chain||0)+1;
+    if(r.perfect25Chain>2)r.perfect25Chain=2;
+  }
+  function notePerfect25Break(index){
+    const r=runState(index);if(r)r.perfect25Chain=0;
+  }
+  function notePerfect25Permit(index,success){
+    const r=runState(index);if(!r)return;
+    if(success&&r.perfect25Chain>=2)r.perfect25PermitChain=2;
+    else if(!success)r.perfect25PermitChain=0;
+  }
+  function notePerfect25D4(index,value){
+    const r=runState(index);if(!r)return;
+    if(r.perfect25PermitChain>=2&&Number(value)===4)unlockL2ForPlayer(index,15);
+  }
+  function noteMatchEnd(index,won){
+    const r=runState(index);if(!r)return;
+    if(won&&players[index]?.hp===1&&!r.everHadLastStand&&!hasAbility(14,index))unlockL2ForPlayer(index,14);
+    if(r.counterEvents===1&&r.counterDamageTotal===1)unlockL2ForPlayer(index,21);
+  }
+
   function abilityLevelForPlayer(id,index=current){
     try{
       if(!campaignMode) return 0;
@@ -311,17 +505,25 @@
       const id=Number(tx.abilityId);
       const level=Number(tx.level);
 
-      if(level!==1){
-        showAbilityInfo(tx.title||"Ability Mastery","Level 2 ist noch gesperrt.","🔒 Gesperrt","Keine XP abgezogen.");
-        return false;
-      }
-      if(abilityLevel(profile,mode,id)>=1){
+      const currentLevel=abilityLevel(profile,mode,id);
+      if(currentLevel>=level){
         showAbilityInfo(tx.title||"Ability Mastery","Dieses Upgrade ist bereits aktiv.","✅ Aktiv","Keine XP abgezogen.");
         return false;
       }
+      if(level===1){
+        if(currentLevel!==0){
+          showAbilityInfo(tx.title||"Ability Mastery","Level 1 ist bereits aktiv.","✅ Aktiv","Keine XP abgezogen.");
+          return false;
+        }
+      }else if(level===2){
+        if(currentLevel<1||!l2Unlocked(profile,mode,id)){
+          showAbilityInfo(tx.title||"Ability Mastery","Die L2-Challenge ist noch nicht erfüllt.","🔒 Gesperrt",L2_CONDITIONS[id]||"Condition offen.");
+          return false;
+        }
+      }else return false;
 
       state.xp-=cost;
-      state.abilityLevels[String(id)]=1;
+      state.abilityLevels[String(id)]=level;
     }else{
       showAbilityInfo(tx.title||"Mastery","Unbekannter Kauf-Typ.","⚠️ Kein Kauf","Keine XP abgezogen.");
       return false;
@@ -431,19 +633,32 @@
   }
 
   function abilityNode(entry,level,profile){
-    const id=entry[0],name=level===1?entry[2]:entry[4],desc=level===1?entry[3]:entry[5],cost=level===1?300:500,m=ensure(profile,activeMode),owned=abilityLevel(profile,activeMode,id)>=level;
-    const l1Unlocked=level===1&&abilityGateReached(activeMode,id),available=l1Unlocked&&!owned&&m.xp>=cost;
-    const status=owned?"AKTIV":level===2?"🔒 L2 später":l1Unlocked?`${cost} XP`:`🔒 ${abilityGateLabel(activeMode,id)}`;
-    const cls=owned?" owned":available?" available":l1Unlocked?" mastery-ability-unlocked":" mastery-ability-locked";
-    return `<button type="button" class="aml-node aml-ability-node ${cls}" data-ability-id="${id}" data-ability-level="${level}" data-ability-title="${escapeHtml(entry[1]+" · "+name)}" data-ability-desc="${escapeHtml(desc)}" data-ability-cost="${cost}" ${available?"":"data-info-only=\"1\""}><span class="aml-node-orbit"></span><span class="aml-node-core"><span class="aml-node-level">${owned?"✓":level===1&&l1Unlocked?"L1":"🔒"}</span></span><span class="aml-node-tag"><strong>${escapeHtml(name)}</strong><small>${status}</small></span></button>`;
+    const id=entry[0],name=level===1?entry[2]:entry[4],desc=level===1?entry[3]:entry[5],cost=level===1?300:500,state=ensure(profile,activeMode),owned=abilityLevel(profile,activeMode,id)>=level;
+    const l1Unlocked=abilityGateReached(activeMode,id);
+    const l2Gate=l2Unlocked(profile,activeMode,id);
+    const prereq=level===1?l1Unlocked:(abilityLevel(profile,activeMode,id)>=1&&l2Gate);
+    const available=prereq&&!owned&&state.xp>=cost;
+    let status="";
+    if(owned)status="AKTIV";
+    else if(level===1)status=l1Unlocked?`${cost} XP`:`🔒 ${abilityGateLabel(activeMode,id)}`;
+    else{
+      const target=L2_PROGRESS_TARGETS[id],prog=l2Progress(profile,activeMode,id),l1Owned=abilityLevel(profile,activeMode,id)>=1;
+      status=!l1Owned?"🔒 L1 zuerst":l2Gate?`${cost} XP`:(target?`🔒 ${prog}/${target}`:"🔒 Challenge");
+    }
+    const cls=owned?" owned":available?" available":prereq?" mastery-ability-unlocked":" mastery-ability-locked";
+    return `<button type="button" class="aml-node aml-ability-node ${cls}" data-ability-id="${id}" data-ability-level="${level}" data-ability-title="${escapeHtml(entry[1]+" · "+name)}" data-ability-desc="${escapeHtml(desc)}" data-ability-cost="${cost}"><span class="aml-node-orbit"></span><span class="aml-node-core"><span class="aml-node-level">${owned?"✓":"L"+level}</span></span><span class="aml-node-tag"><strong>${escapeHtml(name)}</strong><small>${status}</small></span></button>`;
+  }
+  function abilityBranch(entry,profile){
+    return `<div class="mastery-ability-branch"><div class="mastery-ability-name">${escapeHtml(entry[1])}</div><div class="mastery-ability-node-row">${abilityNode(entry,1,profile)}${abilityNode(entry,2,profile)}</div></div>`;
   }
   function abilityPair(a,b,profile){
-    return `<section class="mastery-ability-pair"><div class="mastery-ability-pair-head"><strong>${escapeHtml(a[1])}</strong><span>×</span><strong>${escapeHtml(b[1])}</strong></div><div class="mastery-ability-columns"><div>${abilityNode(a,1,profile)}${abilityNode(a,2,profile)}</div><div>${abilityNode(b,1,profile)}${abilityNode(b,2,profile)}</div></div><button type="button" class="mastery-fusion-placeholder" data-fusion-info="${escapeHtml(a[1]+" × "+b[1])}">🔒 <strong>???</strong><small>FUSION · 1000 XP</small></button></section>`;
+    return `<section class="mastery-ability-pair"><div class="mastery-ability-branches">${abilityBranch(a,profile)}${abilityBranch(b,profile)}</div><button type="button" class="mastery-fusion-placeholder" data-fusion-info="${escapeHtml(a[1]+" × "+b[1])}">🔒 <strong>???</strong><small>FUSION · 1000 XP</small></button></section>`;
   }
   function standaloneCard(a,profile){
     const entry=[a[0],a[1],a[2],a[3],a[4],a[5]];
-    return `<section class="mastery-ability-pair mastery-standalone-pair"><div class="mastery-ability-pair-head"><strong>${escapeHtml(a[1])}</strong><span>STANDALONE</span></div><div class="mastery-ability-columns single"><div>${abilityNode(entry,1,profile)}${abilityNode(entry,2,profile)}</div></div><button type="button" class="mastery-fusion-placeholder" data-keystone-info="${escapeHtml(a[1]+" · "+a[6])}">🔒 <strong>${escapeHtml(a[6])}</strong><small>KEYSTONE · 1000 XP</small></button></section>`;
+    return `<section class="mastery-ability-pair mastery-standalone-pair">${abilityBranch(entry,profile)}<button type="button" class="mastery-fusion-placeholder" data-keystone-info="${escapeHtml(a[1]+" · "+a[6])}">🔒 <strong>${escapeHtml(a[6])}</strong><small>KEYSTONE · 1000 XP</small></button></section>`;
   }
+
   function showAbilityInfo(title,desc,cost,note){
     let p=document.getElementById("masteryLockedInfo");
     if(!p){p=document.createElement("div");p.id="masteryLockedInfo";p.className="mastery-locked-info hidden";p.innerHTML=`<div class="mastery-locked-card"><button type="button">✕</button><div class="mastery-kicker">ABILITY MASTERY</div><h3></h3><div class="mastery-locked-cost"></div><p></p><small></small></div>`;document.getElementById("masteryModal")?.appendChild(p);p.querySelector("button").onclick=()=>p.classList.add("hidden");p.onclick=e=>{if(e.target===p)p.classList.add("hidden")};}
@@ -460,9 +675,17 @@
       const id=Number(btn.dataset.abilityId),level=Number(btn.dataset.abilityLevel),cost=Number(btn.dataset.abilityCost),state=ensure(p,activeMode),owned=abilityLevel(p,activeMode,id)>=level;
 
       if(owned){showAbilityInfo(btn.dataset.abilityTitle,btn.dataset.abilityDesc,"✅ Aktiv","Bereits gekauft.");return;}
-      if(level!==1||!abilityGateReached(activeMode,id)){
-        showAbilityInfo(btn.dataset.abilityTitle,btn.dataset.abilityDesc,`🔒 ${cost} XP`,level===2?"Level 2 Unlocks folgen später.":`Freischaltung: ${abilityGateLabel(activeMode,id)} abschließen.`);
+      if(level===1&&!abilityGateReached(activeMode,id)){
+        showAbilityInfo(btn.dataset.abilityTitle,btn.dataset.abilityDesc,`🔒 ${cost} XP`,`Freischaltung: ${abilityGateLabel(activeMode,id)} abschließen.`);
         return;
+      }
+      if(level===2){
+        if(abilityLevel(p,activeMode,id)<1){showAbilityInfo(btn.dataset.abilityTitle,btn.dataset.abilityDesc,`🔒 ${cost} XP`,"Kaufe zuerst Level 1.");return;}
+        if(!l2Unlocked(p,activeMode,id)){
+          const target=L2_PROGRESS_TARGETS[id],prog=l2Progress(p,activeMode,id),progressText=target?`Fortschritt: ${prog}/${target}. `:"";
+          showAbilityInfo(btn.dataset.abilityTitle,btn.dataset.abilityDesc,`🔒 ${cost} XP`,`${progressText}${L2_CONDITIONS[id]||"L2-Challenge noch offen."}`);
+          return;
+        }
       }
       if(state.xp<cost){
         showAbilityInfo(btn.dataset.abilityTitle,btn.dataset.abilityDesc,`⭐ ${cost} XP`,`Dir fehlen ${cost-state.xp} XP.`);
@@ -612,7 +835,7 @@
   }
 
   window.WDMastery=Object.freeze({
-    ensure,ensureModes,encounterEligible,standardEligible,modeUnlocked,hpBonus,damageBonus,damageBonusForPlayer,abilityThreshold,abilityThresholdForPlayer,awardXp,applyRetroBackfill,abilityLevel,abilityLevelForPlayer,hasAbilityUpgrade,abilityGate,abilityGateLabel,abilityGateReached,refreshCampaignUi,refreshAll,open
+    ensure,ensureModes,encounterEligible,standardEligible,modeUnlocked,hpBonus,damageBonus,damageBonusForPlayer,abilityThreshold,abilityThresholdForPlayer,awardXp,applyRetroBackfill,abilityLevel,abilityLevelForPlayer,hasAbilityUpgrade,abilityGate,abilityGateLabel,abilityGateReached,l2Unlocked,l2Progress,unlockL2ForPlayer,addL2Progress,runState,noteAbilityUse,noteSelfDamage,noteHealing,noteKill,noteAttackRoll,noteRerolledSixes,noteAnyD6,noteAttackStart,noteAttackResolved,notePoison,noteInsurance,noteCounterDamage,noteTurnStart,notePerfect25Base,notePerfect25Break,notePerfect25Permit,notePerfect25D4,noteMatchEnd,refreshCampaignUi,refreshAll,open
   });
   init();
 })();
