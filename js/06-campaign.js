@@ -472,8 +472,7 @@
   }
 
   function campaignMasteryXpReward(mode,encounter,done){
-    const eligible=!!window.WDMastery?.encounterEligible?.(mode,encounter);
-    return eligible?(done?20:100):0;
+    return Number(window.WDMastery?.xpReward?.(mode,encounter,!done)||0);
   }
   function campaignMasteryXpBadge(mode,encounter,done){
     const xp=campaignMasteryXpReward(mode,encounter,done);

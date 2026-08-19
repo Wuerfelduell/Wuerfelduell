@@ -82,7 +82,7 @@
   }
 
   function defaults(){
-    return {xp:0,lifetimeXp:0,hpLevel:0,damageLevel:0,abilityLevel:0,abilityLevels:{},abilityL2Unlocked:{},abilityL2Progress:{},retroBackfillDone:false};
+    return {xp:0,lifetimeXp:0,hpLevel:0,damageLevel:0,abilityLevel:0,abilityLevels:{},abilityL2Unlocked:{},abilityL2Progress:{},retroBackfillDone:false,retroBackfillV4Done:false};
   }
 
   function normalize(raw){
@@ -98,7 +98,8 @@
       abilityL2Progress:raw.abilityL2Progress&&typeof raw.abilityL2Progress==="object"?Object.fromEntries(Object.entries(raw.abilityL2Progress).map(([k,v])=>[String(Number(k)),Math.max(0,Math.floor(Number(v)||0))])):{},
       retroBackfillDone:!!raw.retroBackfillDone,
       retroBackfillV2Done:!!raw.retroBackfillV2Done,
-      retroBackfillV3Done:!!raw.retroBackfillV3Done
+      retroBackfillV3Done:!!raw.retroBackfillV3Done,
+      retroBackfillV4Done:!!raw.retroBackfillV4Done
     };
   }
 
@@ -447,9 +448,27 @@
     }catch(_err){return 15;}
   }
 
+  function isBossMasteryEncounter(mode,encounter){
+    if(!encounter)return false;
+    const level=encounterLevelInWorld(encounter,mode);
+    const isBoss=level===10||level===15;
+    if(!isBoss)return false;
+    if(mode==="solo")return soloWorldIndex(encounter)>=2; // W3+
+    if(mode==="duo")return duoWorldIndex(encounter)>=1;   // W2+
+    return false;
+  }
+
+  function xpReward(mode,encounter,newlyCompleted){
+    if(!encounterEligible(mode,encounter))return 0;
+    if(isBossMasteryEncounter(mode,encounter))return newlyCompleted?200:50;
+    return newlyCompleted?100:20;
+  }
+
   function awardXp(profile,mode,encounter,newlyCompleted){
-    if(!profile||!encounterEligible(mode,encounter)) return 0;
-    const m=ensure(profile,mode),amount=newlyCompleted?100:20;
+    if(!profile)return 0;
+    const amount=xpReward(mode,encounter,!!newlyCompleted);
+    if(amount<=0)return 0;
+    const m=ensure(profile,mode);
     m.xp+=amount;m.lifetimeXp+=amount;return amount;
   }
 
@@ -789,26 +808,45 @@
   function applyRetroBackfill(profile,mode){
     if(!profile||!MODES.includes(mode))return 0;
     const state=ensure(profile,mode);
+    let granted=0;
 
-    // V27.9.3 recalculates the baseline with the new XP gates:
-    // Solo W2L10+, Duo W1L10+, Trio L1+.
-    if(state.retroBackfillV3Done)return 0;
+    // Preserve the older baseline migration first.
+    if(!state.retroBackfillV3Done){
+      const completed=retroCompletedEncountersForProfile(profile,mode);
+      const targetLifetime=completed.length*100;
+      const beforeLifetime=Math.max(0,Math.floor(Number(state.lifetimeXp)||0));
+      const beforeSpendable=Math.max(0,Math.floor(Number(state.xp)||0));
 
-    const completed=retroCompletedEncountersForProfile(profile,mode);
-    const targetLifetime=completed.length*100;
-    const beforeLifetime=Math.max(0,Math.floor(Number(state.lifetimeXp)||0));
-    const beforeSpendable=Math.max(0,Math.floor(Number(state.xp)||0));
+      if(targetLifetime>beforeLifetime){
+        const delta=targetLifetime-beforeLifetime;
+        state.lifetimeXp=targetLifetime;
+        state.xp=beforeSpendable+delta;
+        granted+=delta;
+      }
 
-    if(targetLifetime>beforeLifetime){
-      const delta=targetLifetime-beforeLifetime;
-      state.lifetimeXp=targetLifetime;
-      state.xp=beforeSpendable+delta;
+      state.retroBackfillDone=true;
+      state.retroBackfillV2Done=true;
+      state.retroBackfillV3Done=true;
     }
 
-    state.retroBackfillDone=true;
-    state.retroBackfillV2Done=true;
-    state.retroBackfillV3Done=true;
-    return Math.max(0,targetLifetime-beforeLifetime);
+    // V27.10.4: old boss first-clears used to be worth 100 XP.
+    // New eligible bosses are worth 200, so each already-cleared boss gets exactly +100 once.
+    if(!state.retroBackfillV4Done){
+      const completed=retroCompletedEncountersForProfile(profile,mode);
+      let bossBonus=0;
+      completed.forEach(id=>{
+        const e=mode==="solo"?campaignEncounterById(id):mode==="duo"?duoEncounterById(id):trioEncounterById(id);
+        if(e&&isBossMasteryEncounter(mode,e))bossBonus+=100;
+      });
+      if(bossBonus>0){
+        state.xp+=bossBonus;
+        state.lifetimeXp+=bossBonus;
+        granted+=bossBonus;
+      }
+      state.retroBackfillV4Done=true;
+    }
+
+    return granted;
   }
 
   function init(){
@@ -820,7 +858,7 @@
         if(!hadSolo)migrated=true;
 
         for(const mode of MODES){
-          const before=!!p.campaign?.masteryModes?.[mode]?.retroBackfillV3Done;
+          const before=!!p.campaign?.masteryModes?.[mode]?.retroBackfillV4Done;
           applyRetroBackfill(p,mode);
           if(!before)migrated=true;
         }
@@ -867,7 +905,7 @@
   }
 
   window.WDMastery=Object.freeze({
-    ensure,ensureModes,encounterEligible,standardEligible,modeUnlocked,hpBonus,damageBonus,damageBonusForPlayer,abilityThreshold,abilityThresholdForPlayer,awardXp,applyRetroBackfill,abilityLevel,abilityLevelForPlayer,hasAbilityUpgrade,abilityGate,abilityGateLabel,abilityGateReached,l2Unlocked,l2Progress,l2ChallengeEligible,l2TrackingContext,unlockL2ForPlayer,addL2Progress,runState,noteAbilityUse,noteSelfDamage,noteHealing,noteKill,noteAttackRoll,noteRerolledSixes,noteAnyD6,noteAttackStart,noteAttackResolved,notePoison,noteInsurance,noteCounterDamage,noteTurnStart,notePerfect25Base,notePerfect25Break,notePerfect25Permit,notePerfect25D4,noteMatchEnd,refreshCampaignUi,refreshAll,open
+    ensure,ensureModes,encounterEligible,standardEligible,modeUnlocked,hpBonus,damageBonus,damageBonusForPlayer,abilityThreshold,abilityThresholdForPlayer,isBossMasteryEncounter,xpReward,awardXp,applyRetroBackfill,abilityLevel,abilityLevelForPlayer,hasAbilityUpgrade,abilityGate,abilityGateLabel,abilityGateReached,l2Unlocked,l2Progress,l2ChallengeEligible,l2TrackingContext,unlockL2ForPlayer,addL2Progress,runState,noteAbilityUse,noteSelfDamage,noteHealing,noteKill,noteAttackRoll,noteRerolledSixes,noteAnyD6,noteAttackStart,noteAttackResolved,notePoison,noteInsurance,noteCounterDamage,noteTurnStart,notePerfect25Base,notePerfect25Break,notePerfect25Permit,notePerfect25D4,noteMatchEnd,refreshCampaignUi,refreshAll,open
   });
   init();
 })();
