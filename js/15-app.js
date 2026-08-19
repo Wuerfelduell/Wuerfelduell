@@ -11,7 +11,24 @@
     [mainMenu,campaignScreen,duoCampaignScreen,trioCampaignScreen,setup,profilesScreen,prestigeShopScreen,achievementsScreen,statsScreen,settingsScreen,rulesScreen,changelogScreen,abilitiesScreen].forEach(el=>el?.classList.add("hidden"));
   }
 
-  function openMainMenu(){
+  function gameIsActivelyRunning(){
+    return !game.classList.contains("hidden")
+      && winnerBox.classList.contains("hidden")
+      && nextRoundBox.classList.contains("hidden");
+  }
+
+  function requestLeaveCurrentGame(){
+    if(game.classList.contains("hidden")) return false;
+    clearBotAutomation();
+    quitModal.classList.remove("hidden");
+    return true;
+  }
+
+  function openMainMenu(force=false){
+    if(!force && gameIsActivelyRunning()){
+      requestLeaveCurrentGame();
+      return;
+    }
     clearBotAutomation();
     tutorialMode=false;
     campaignMode=false;
@@ -39,7 +56,7 @@
 
   // Online-Layer darf nach einem beendeten Match sauber ins Hauptmenü zurückkehren,
   // ohne die interne Menü-/Game-Cleanup-Logik zu duplizieren.
-  window.WDAppNav=Object.freeze({openMainMenu});
+  window.WDAppNav=Object.freeze({openMainMenu,requestLeaveCurrentGame});
 
   function openFrontScreen(screen){
     document.body.classList.remove("playing","bot-acting");
@@ -93,11 +110,7 @@
   $("menuChangelogBtn").onclick=()=>openFrontScreen(changelogScreen);
   tutorialContinueBtn.onclick=closeTutorialStep;
 
-  gameMenuBtn.onclick=()=>{
-    if(game.classList.contains("hidden")) return;
-    clearBotAutomation();
-    quitModal.classList.remove("hidden");
-  };
+  gameMenuBtn.onclick=()=>requestLeaveCurrentGame();
 
   quitCancelBtn.onclick=()=>{
     quitModal.classList.add("hidden");
@@ -109,7 +122,7 @@
     if(gameContext.returnScreen==="trio" || trioCampaignMode){returnToTrioCampaignMap();return;}
     if(gameContext.returnScreen==="duo" || duoCampaignMode){returnToDuoCampaignMap();return;}
     if(campaignMode || gameContext.returnScreen==="campaign"){openCampaignScreen();return;}
-    openMainMenu();
+    openMainMenu(true);
   };
 
   $("setupBackBtn").onclick=openMainMenu;
