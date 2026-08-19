@@ -162,3 +162,34 @@
     }
     .campaign-node-detail{margin-top:8px!important}
     @media(max-width:540px){.campaign-node-map{gap:10px 4px!important;padding:12px 4px!important}.campaign-node{width:min(52px,100%)!important}}
+
+
+/* V27.10.3 — Campaign Mastery XP preview */
+.campaign-node .node-xp-badge{
+  position:absolute;
+  left:50%;
+  bottom:-10px;
+  transform:translateX(-50%);
+  z-index:4;
+  white-space:nowrap;
+  padding:2px 5px;
+  border-radius:999px;
+  border:1px solid rgba(255,216,106,.28);
+  background:rgba(12,16,23,.94);
+  color:#ffd86a;
+  font-size:7px;
+  font-weight:1000;
+  line-height:1.15;
+  box-shadow:0 3px 8px rgba(0,0,0,.35);
+}
+.node-detail-xp{
+  border-color:rgba(255,216,106,.18)!important;
+  background:rgba(255,216,106,.04)!important;
+}
+@media(max-width:540px){
+  .campaign-node .node-xp-badge{
+    bottom:-9px;
+    font-size:6px;
+    padding:2px 4px;
+  }
+}
