@@ -265,7 +265,7 @@
     state.abilityL2Unlocked[key]=true;
     saveGameData();
     try{addLog(`🧬 Mastery L2 freigeschaltet: ${ABILITIES[Number(id)]?.name||id}!`);}catch(_err){}
-    try{queueEventPopup(`L2 Mastery unlocked!`,"win");}catch(_err){}
+    try{queueEventPopup(`${ABILITIES[Number(id)]?.name||"Ability"} L2 unlocked!`,"win");}catch(_err){}
     return true;
   }
   function addL2Progress(index,id,amount=1){
