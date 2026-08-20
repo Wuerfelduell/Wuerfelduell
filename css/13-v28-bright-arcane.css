@@ -1,4 +1,4 @@
-/* DiceDuel V28.0.0 — Bright Arcane Premium UI pass
+/* DiceDuel V28.0.2 — Bright Arcane Premium UI pass
    Pure presentation layer: gameplay mechanics remain untouched. */
 :root{
   --v28-ivory:#f7f0df;
@@ -290,4 +290,117 @@ body.playing .die{border-color:rgba(215,173,82,.48);box-shadow:inset 0 -4px 0 rg
   .campaign-mode-grid{grid-template-columns:1fr!important}.campaign-mode-choice{min-height:78px!important}
   .utility-panel,.round-overlay-panel,.second-ability-panel,.special-roll-panel,.gambling-panel{width:min(94vw,620px)!important;padding:16px!important}
   .v28-ability-picker-title{font-size:25px}
+}
+
+/* ============================================================
+   V28.0.2 — REAL ASSET PASS 01
+   Uses supplied Bright Arcane artwork. Gameplay/click handling untouched.
+   ============================================================ */
+:root{
+  --v28-ui-main-bg:url("../assets/ui/v28/bg-main-palace.png");
+  --v28-ui-combat-bg:url("../assets/ui/v28/bg-combat-hall.png");
+  --v28-ui-button-ivory:url("../assets/ui/v28/frame-button-ivory.png");
+  --v28-ui-tile-navy:url("../assets/ui/v28/frame-tile-navy.png");
+  --v28-ui-panel-ivory:url("../assets/ui/v28/frame-panel-ivory.png");
+}
+
+#mainMenu{
+  position:relative;isolation:isolate;
+  margin:-14px -16px -40px;
+  min-height:100dvh;
+  padding:20px 18px 34px;
+  overflow:hidden;
+  background:linear-gradient(180deg,rgba(255,255,255,.03),rgba(225,236,247,.22)),var(--v28-ui-main-bg) center top/cover no-repeat;
+}
+#mainMenu::before{
+  content:"";position:absolute;inset:0;z-index:-1;pointer-events:none;
+  background:radial-gradient(ellipse at 50% 18%,rgba(255,255,255,.22),transparent 34%),linear-gradient(180deg,transparent 60%,rgba(223,233,244,.20));
+}
+#mainMenu::after{
+  content:"";position:absolute;left:7%;right:7%;bottom:13px;height:2px;pointer-events:none;
+  background:linear-gradient(90deg,transparent,#c69a3d,#ffe6a0,#c69a3d,transparent);opacity:.8;
+}
+#mainMenu .menu-hero{padding:2px 4px 6px;min-height:0}
+#mainMenu .menu-hero::before{display:none!important;content:none!important}
+#mainMenu .menu-logo-img{
+  display:block!important;width:clamp(96px,28vw,145px);height:auto;object-fit:contain;margin:0 auto -2px;
+  border-radius:0;box-shadow:none;transform:none;filter:drop-shadow(0 8px 15px rgba(29,72,121,.20));
+}
+#mainMenu .menu-title{
+  margin:-2px 0 0;font-family:Georgia,"Times New Roman",serif;font-size:clamp(43px,12vw,63px);font-weight:700;line-height:.92;letter-spacing:.015em;
+  color:#092b51;text-shadow:0 1px 0 #fff,0 2px 0 rgba(207,161,66,.50),0 5px 16px rgba(255,255,255,.72);
+}
+#mainMenu .menu-tagline{
+  margin-top:8px;font-size:clamp(14px,4vw,19px);line-height:1.15;font-weight:700;color:#17365b;text-shadow:0 1px 4px rgba(255,255,255,.92);
+}
+#mainMenu .menu-actions{position:relative;z-index:1;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:7px 6px;margin-top:3px}
+#mainMenu .menu-actions button.menu-play,
+#mainMenu .menu-actions button.menu-online,
+#mainMenu .menu-actions button.menu-campaign,
+#mainMenu .menu-actions button.menu-tutorial{
+  grid-column:1/-1;position:relative;min-height:clamp(64px,18vw,84px);padding:10px clamp(18px,7vw,54px);
+  border:0!important;border-radius:0!important;background:var(--v28-ui-button-ivory) center/100% 100% no-repeat!important;box-shadow:none!important;
+  color:#102f55!important;font-family:Georgia,"Times New Roman",serif;font-size:clamp(22px,6.3vw,31px)!important;font-weight:700!important;
+  justify-content:center;text-align:center;text-shadow:0 1px 0 #fff;overflow:visible;
+}
+#mainMenu .menu-actions button.menu-play{min-height:clamp(72px,20vw,94px)}
+#mainMenu .menu-actions button.menu-play:active,
+#mainMenu .menu-actions button.menu-online:active,
+#mainMenu .menu-actions button.menu-campaign:active,
+#mainMenu .menu-actions button.menu-tutorial:active{transform:translateY(1px) scale(.987);filter:brightness(.98) saturate(1.05)}
+#mainMenu .menu-actions button.menu-play .menu-icon,
+#mainMenu .menu-actions button.menu-online .menu-icon,
+#mainMenu .menu-actions button.menu-campaign .menu-icon,
+#mainMenu .menu-actions button.menu-tutorial .menu-icon{
+  width:clamp(34px,10vw,46px);height:clamp(34px,10vw,46px);flex:0 0 auto;display:grid;place-items:center;margin-right:4px;
+  clip-path:polygon(50% 0,100% 50%,50% 100%,0 50%);background:linear-gradient(145deg,#164b82,#082b55);color:#f4d784;
+  font-family:system-ui,sans-serif;font-size:clamp(17px,5vw,23px)!important;filter:none!important;text-shadow:0 1px 2px rgba(0,0,0,.30);
+}
+#mainMenu .online-beta-badge{
+  margin-left:5px;padding:3px 8px;border-radius:999px;background:linear-gradient(180deg,#153f70,#082947)!important;
+  border:1px solid #cda349!important;color:#f5d77d!important;font-family:Georgia,"Times New Roman",serif;font-size:clamp(8px,2.3vw,11px)!important;
+  letter-spacing:.06em;box-shadow:0 2px 5px rgba(20,52,83,.20);
+}
+#mainMenu .menu-actions button.menu-profile,
+#mainMenu .menu-actions button.menu-account,
+#mainMenu .menu-actions button.menu-achievements,
+#mainMenu .menu-actions button.menu-prestige,
+#mainMenu #menuStatsBtn,#mainMenu #menuSettingsBtn,#mainMenu #menuRulesBtn,#mainMenu #menuChangelogBtn{
+  grid-column:auto!important;aspect-ratio:1/1;min-height:0!important;padding:14% 6% 10%!important;border:0!important;border-radius:0!important;
+  background:var(--v28-ui-tile-navy) center/100% 100% no-repeat!important;box-shadow:none!important;color:#fff4cf!important;
+  display:flex;flex-direction:column;justify-content:center;align-items:center;gap:5px;text-align:center;
+  font-family:Georgia,"Times New Roman",serif;font-size:clamp(9px,2.55vw,13px)!important;line-height:1.03;font-weight:700!important;
+  text-shadow:0 1px 3px rgba(0,0,0,.46);overflow:visible;
+}
+#mainMenu .menu-actions button.menu-profile .menu-icon,
+#mainMenu .menu-actions button.menu-account .menu-icon,
+#mainMenu .menu-actions button.menu-achievements .menu-icon,
+#mainMenu .menu-actions button.menu-prestige .menu-icon,
+#mainMenu #menuStatsBtn .menu-icon,#mainMenu #menuSettingsBtn .menu-icon,#mainMenu #menuRulesBtn .menu-icon,#mainMenu #menuChangelogBtn .menu-icon{
+  font-size:clamp(23px,7vw,35px)!important;line-height:1;filter:saturate(.82) sepia(.22) brightness(1.10)!important;
+}
+#mainMenu .menu-actions button.menu-account{position:relative}
+#mainMenu .menu-actions button.menu-account .online-beta-badge{position:absolute;right:8%;top:9%;margin:0}
+#mainMenu .menu-actions button:disabled{opacity:.62}
+#mainMenu .version-footer{
+  position:relative;z-index:1;margin-top:8px;padding-bottom:2px;color:#173b63;font-family:Georgia,"Times New Roman",serif;
+  font-size:clamp(10px,2.6vw,12px);font-weight:700;letter-spacing:.12em;text-shadow:0 1px 4px rgba(255,255,255,.9);
+}
+
+/* First reusable real asset: ivory framed utility/modal surface. */
+.campaign-mode-panel,.utility-panel{
+  border:0!important;background:var(--v28-ui-panel-ivory) center/100% 100% no-repeat!important;
+  box-shadow:0 24px 70px rgba(12,34,57,.34)!important;color:#102f55!important;
+}
+
+/* Supplied darker hall behind the existing battle HUD. */
+#game:not(.hidden){
+  position:relative;margin:-14px -16px -40px;min-height:100dvh;padding:16px 16px 40px;
+  background:linear-gradient(180deg,rgba(3,18,39,.10),rgba(3,18,39,.28)),var(--v28-ui-combat-bg) center top/cover no-repeat;
+}
+@media (max-width:390px){
+  #mainMenu{padding-left:12px;padding-right:12px}
+  #mainMenu .menu-actions{gap:5px 4px}
+  #mainMenu .menu-actions button.menu-profile,#mainMenu .menu-actions button.menu-account,#mainMenu .menu-actions button.menu-achievements,
+  #mainMenu .menu-actions button.menu-prestige,#mainMenu #menuStatsBtn,#mainMenu #menuSettingsBtn,#mainMenu #menuRulesBtn,#mainMenu #menuChangelogBtn{font-size:9.5px!important}
 }
