@@ -1,7 +1,7 @@
 {
-  "name": "Würfelduell by seb",
-  "short_name": "Würfelduell",
-  "description": "Würfelduell – Push your luck. Kill your friends.",
+  "name": "DiceDuel",
+  "short_name": "DiceDuel",
+  "description": "DiceDuel – Push your luck. Kill your friends.",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
