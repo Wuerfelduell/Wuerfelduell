@@ -1,0 +1,52 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1" height="1" viewBox="0 0 1 1">
+  <defs>
+    <linearGradient id="gold" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#fff4bf"/>
+      <stop offset="0.22" stop-color="#f6d679"/>
+      <stop offset="0.52" stop-color="#c98a26"/>
+      <stop offset="0.78" stop-color="#ffe59a"/>
+      <stop offset="1" stop-color="#9a5d16"/>
+    </linearGradient>
+    <linearGradient id="blue" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#2d76d9"/>
+      <stop offset="0.5" stop-color="#104a97"/>
+      <stop offset="1" stop-color="#071f4b"/>
+    </linearGradient>
+    <linearGradient id="ivory" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#fffdf2"/>
+      <stop offset="1" stop-color="#eadcbd"/>
+    </linearGradient>
+    <filter id="shadow" x="-30%" y="-30%" width="160%" height="160%">
+      <feDropShadow dx="0" dy="1.4" stdDeviation="1.25" flood-color="#06152e" flood-opacity="0.58"/>
+    </filter>
+  </defs><style>
+    .s{fill:none;stroke:url(#gold);stroke-width:3;stroke-linecap:round;stroke-linejoin:round}
+    .t{fill:none;stroke:url(#gold);stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+    .f{fill:url(#gold);stroke:#6f4314;stroke-width:1.2;stroke-linejoin:round}
+    .n{fill:url(#blue);stroke:url(#gold);stroke-width:2.2;stroke-linejoin:round}
+    .i{fill:url(#ivory);stroke:url(#gold);stroke-width:2.2;stroke-linejoin:round}
+    .b{fill:#27a9ff;stroke:#d8f6ff;stroke-width:1}
+  </style><symbol id="play" viewBox="0 0 64 64"><title>Play</title><g filter="url(#shadow)"><path class="s" d="M17 51 47 13M13 17l8-4 30 30-4 8L17 21l-4-4Zm30 34 8-4L21 13l-8 4 34 34Z"/><path class="f" d="m13 17 7-7 3 9-4 4-6-6Zm38 0-7-7-3 9 4 4 6-6Z"/></g></symbol>
+<symbol id="online" viewBox="0 0 64 64"><title>Online</title><g filter="url(#shadow)"><circle class="s" cx="32" cy="32" r="23"/><path class="t" d="M9 32h46M32 9c8 7 12 15 12 23S40 48 32 55M32 9c-8 7-12 15-12 23s4 16 12 23M14 19h36M14 45h36"/></g></symbol>
+<symbol id="campaign" viewBox="0 0 64 64"><title>Campaign</title><g filter="url(#shadow)"><path class="f" d="M12 53V25h8v-9h8v9h8v-9h8v9h8v28H12Z"/><path class="n" d="M27 53V39c0-4 2-7 5-7s5 3 5 7v14H27Z"/><path class="t" d="M16 31h6m20 0h6M16 40h6m20 0h6"/></g></symbol>
+<symbol id="tutorial" viewBox="0 0 64 64"><title>Tutorial</title><g filter="url(#shadow)"><path class="i" d="M7 16c9-3 17-1 25 5v34C24 49 16 47 7 50V16Zm50 0c-9-3-17-1-25 5v34c8-6 16-8 25-5V16Z"/><path class="t" d="M13 25h12m-12 7h12m14-7h12m-12 7h12"/><path class="f" d="M31 28h2v20h-2z"/></g></symbol>
+<symbol id="profile" viewBox="0 0 64 64"><title>Profile</title><g filter="url(#shadow)"><path class="f" d="M12 31c0-13 8-22 20-22s20 9 20 22v9l-8 3-4 12H24l-4-12-8-3v-9Z"/><path class="n" d="M18 31h28l-5 10H23l-5-10Zm10 11h8v13h-8z"/><path class="t" d="M16 25h32M23 16l9-7 9 7"/></g></symbol>
+<symbol id="account" viewBox="0 0 64 64"><title>Account</title><g filter="url(#shadow)"><circle class="f" cx="27" cy="21" r="10"/><path class="f" d="M9 53c1-13 8-20 18-20s17 7 18 20H9Z"/><circle class="n" cx="48" cy="44" r="10"/><path class="t" d="M48 38v12m-6-6h12"/></g></symbol>
+<symbol id="achievements" viewBox="0 0 64 64"><title>Achievements</title><g filter="url(#shadow)"><path class="f" d="m32 8 7 14 16 2-12 11 3 16-14-8-14 8 3-16L9 24l16-2 7-14Z"/><path class="s" d="M13 53c6 1 11-1 15-5M51 53c-6 1-11-1-15-5M8 42c4 2 7 5 8 10m40-10c-4 2-7 5-8 10"/></g></symbol>
+<symbol id="trophy-shop" viewBox="0 0 64 64"><title>Trophy Shop</title><g filter="url(#shadow)"><path class="s" d="M8 13h7l6 29h27l6-20H18M24 28h26"/><circle class="f" cx="25" cy="51" r="4"/><circle class="f" cx="46" cy="51" r="4"/><path class="f" d="M28 8h16v8c0 8-3 12-8 12s-8-4-8-12V8Z"/><path class="t" d="M28 12h-5v3c0 4 2 6 6 6m15-9h5v3c0 4-2 6-6 6"/></g></symbol>
+<symbol id="statistics" viewBox="0 0 64 64"><title>Statistics</title><g filter="url(#shadow)"><path class="f" d="M9 35h8v19H9zM23 25h8v29h-8zM37 12h8v42h-8zM51 30h6v24h-6z"/><path class="t" d="M7 55h51"/></g></symbol>
+<symbol id="settings" viewBox="0 0 64 64"><title>Settings</title><g filter="url(#shadow)"><path class="f" d="m27 7 10 0 2 8 7 3 7-4 5 9-6 5v8l6 5-5 9-7-4-7 3-2 8H27l-2-8-7-3-7 4-5-9 6-5v-8l-6-5 5-9 7 4 7-3 2-8Z"/><circle class="n" cx="32" cy="32" r="9"/></g></symbol>
+<symbol id="rules" viewBox="0 0 64 64"><title>Rules</title><g filter="url(#shadow)"><path class="i" d="M14 9h36v46H14z"/><path class="f" d="M10 9h8v8h-8c-3 0-5-2-5-4s2-4 5-4Zm44 0h-8v8h8c3 0 5-2 5-4s-2-4-5-4ZM10 47h8v8h-8c-3 0-5-2-5-4s2-4 5-4Zm44 0h-8v8h8c3 0 5-2 5-4s-2-4 5-4Z"/><path class="t" d="M32 18v25m-12-18h24M24 25l-6 11h12l-6-11Zm16 0-6 11h12l-6-11Z"/></g></symbol>
+<symbol id="changelog" viewBox="0 0 64 64"><title>Changelog</title><g filter="url(#shadow)"><path class="i" d="M10 8h34v48H10z"/><path class="t" d="M17 18h20M17 27h16M17 36h12"/><path class="f" d="M51 11 57 17 32 49l-10 5 4-11 25-32Z"/><path class="t" d="m47 15 6 6"/></g></symbol>
+<symbol id="heart-hp" viewBox="0 0 64 64"><title>Heart HP</title><g filter="url(#shadow)"><path class="f" d="M32 55S8 41 8 23c0-9 6-15 14-15 5 0 9 3 10 7 1-4 5-7 10-7 8 0 14 6 14 15 0 18-24 32-24 32Z"/></g></symbol>
+<symbol id="sword-damage" viewBox="0 0 64 64"><title>Sword Damage</title><g filter="url(#shadow)"><path class="f" d="m52 7-5 20-18 18-6-6 18-18 11-14Z"/><path class="s" d="m20 36 8 8-8 8-8-8 8-8Zm-4 12-7 7"/></g></symbol>
+<symbol id="shield" viewBox="0 0 64 64"><title>Shield</title><g filter="url(#shadow)"><path class="n" d="M32 7 53 15v14c0 13-8 23-21 29C19 52 11 42 11 29V15l21-8Z"/><path class="f" d="m32 16 4 9 10 1-8 7 2 10-8-5-8 5 2-10-8-7 10-1 4-9Z"/></g></symbol>
+<symbol id="dice" viewBox="0 0 64 64"><title>Dice</title><g filter="url(#shadow)"><path class="i" d="m10 20 22-12 22 12v25L32 57 10 45V20Z"/><path class="t" d="m10 20 22 12 22-12M32 32v25"/><circle class="f" cx="20" cy="27" r="2.6"/><circle class="f" cx="19" cy="40" r="2.6"/><circle class="f" cx="42" cy="27" r="2.6"/><circle class="f" cx="44" cy="42" r="2.6"/><circle class="f" cx="36" cy="38" r="2.6"/></g></symbol>
+<symbol id="crown" viewBox="0 0 64 64"><title>Crown</title><g filter="url(#shadow)"><path class="f" d="m8 19 12 9 12-18 12 18 12-9-6 31H14L8 19Z"/><path class="n" d="M14 43h36v9H14z"/><circle class="b" cx="32" cy="35" r="3"/></g></symbol>
+<symbol id="xp" viewBox="0 0 64 64"><title>XP</title><g filter="url(#shadow)"><path class="n" d="m32 5 23 13v28L32 59 9 46V18L32 5Z"/><text x="32" y="39" text-anchor="middle" font-family="Georgia,serif" font-size="22" font-weight="700" fill="url(#gold)" stroke="#6f4314" stroke-width="0.8">XP</text></g></symbol>
+<symbol id="mastery" viewBox="0 0 64 64"><title>Mastery</title><g filter="url(#shadow)"><path class="s" d="M13 51 47 13m4 38L17 13"/><path class="f" d="m47 13 8-5-5 8-3-3Zm-30 0-8-5 5 8 3-3ZM13 51l-5 5 8-2-3-3Zm38 0 5 5-8-2 3-3Z"/><path class="b" d="m32 25 6 7-6 7-6-7 6-7Z"/></g></symbol>
+<symbol id="prestige" viewBox="0 0 64 64"><title>Prestige</title><g filter="url(#shadow)"><path class="f" d="M20 8h24v11c0 12-4 19-12 19s-12-7-12-19V8Z"/><path class="s" d="M20 13h-8v5c0 8 4 12 10 12m22-17h8v5c0 8-4 12-10 12M32 38v9m-10 8h20M25 47h14v8H25z"/><path class="b" d="m32 13 3 6 7 1-5 5 1 7-6-3-6 3 1-7-5-5 7-1 3-6Z"/></g></symbol>
+<symbol id="checkmark" viewBox="0 0 64 64"><title>Checkmark</title><g filter="url(#shadow)"><circle class="n" cx="32" cy="32" r="24"/><path class="s" stroke-width="5" d="m18 32 9 10 20-22"/></g></symbol>
+<symbol id="lock" viewBox="0 0 64 64"><title>Lock</title><g filter="url(#shadow)"><rect class="n" x="13" y="28" width="38" height="29" rx="5"/><path class="s" d="M20 28V19c0-9 5-14 12-14s12 5 12 14v9"/><circle class="f" cx="32" cy="41" r="4"/><path class="t" d="M32 45v6"/></g></symbol>
+<symbol id="back-arrow" viewBox="0 0 64 64"><title>Back Arrow</title><g filter="url(#shadow)"><circle class="n" cx="32" cy="32" r="25"/><path class="s" stroke-width="4" d="M38 17 23 32l15 15M24 32h22"/></g></symbol>
+<symbol id="close-x" viewBox="0 0 64 64"><title>Close X</title><g filter="url(#shadow)"><path class="n" d="m32 4 25 14v28L32 60 7 46V18L32 4Z"/><path class="s" stroke-width="4" d="m21 21 22 22m0-22L21 43"/></g></symbol></svg>
