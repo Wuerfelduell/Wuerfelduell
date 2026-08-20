@@ -6,7 +6,7 @@ import {
 } from "https://www.gstatic.com/firebasejs/12.17.1/firebase-database.js";
 
 // Firebase bleibt bewusst nur Transport + Raum-/Presence-Layer.
-// Die eigentliche Würfelduell-Engine läuft weiterhin auf dem Host-Gerät.
+// Die eigentliche DiceDuel-Engine läuft weiterhin auf dem Host-Gerät.
 const firebaseConfig={
   apiKey:"AIzaSyDWVildqD4Hx8JpuY87blbcdJYawluDJ5Y",
   authDomain:"wuerfelduell-35558.firebaseapp.com",
