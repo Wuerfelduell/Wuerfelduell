@@ -8,7 +8,7 @@
   }
 
   function hideFrontScreens(){
-    [mainMenu,campaignScreen,duoCampaignScreen,trioCampaignScreen,setup,profilesScreen,prestigeShopScreen,achievementsScreen,statsScreen,settingsScreen,rulesScreen,changelogScreen,abilitiesScreen].forEach(el=>el?.classList.add("hidden"));
+    [mainMenu,campaignScreen,duoCampaignScreen,trioCampaignScreen,setup,profilesScreen,prestigeShopScreen,achievementsScreen,statsScreen,settingsScreen,rulesScreen,changelogScreen,abilitiesScreen,$("accountScreen")].forEach(el=>el?.classList.add("hidden"));
   }
 
   function gameIsActivelyRunning(){
@@ -100,6 +100,8 @@
   campaignStartBtn.onclick=startCampaignEncounter;
   campaignProfilesBtn.onclick=()=>{profileScreenOrigin="campaign";renderProfiles();openFrontScreen(profilesScreen);};
   $("menuProfilesBtn").onclick=()=>{profileScreenOrigin="menu";renderProfiles();openFrontScreen(profilesScreen);};
+  $("menuAccountBtn").onclick=()=>{window.WDCloudAccount?.open?.(openFrontScreen);};
+  $("accountBackBtn").onclick=openMainMenu;
   $("menuAchievementsBtn").onclick=()=>{renderAchievements();openFrontScreen(achievementsScreen);};
   $("menuPrestigeShopBtn").onclick=()=>{renderPrestigeShop();openFrontScreen(prestigeShopScreen);};
   prestigeShopBackBtn.onclick=openMainMenu;
