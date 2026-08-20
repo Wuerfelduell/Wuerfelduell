@@ -150,7 +150,7 @@
 
     queueTutorialStep(
       "intro",
-      "Willkommen bei Würfelduell",
+      "Willkommen bei DiceDuel",
       `Du spielst eine kurze normale Runde gegen einen <strong>leichten Bot</strong>. Du startest mit <strong>25 HP</strong> und der einfachen Fähigkeit <strong>Glückswurf</strong>; der Bot hat im Tutorial keine Fähigkeit.<br><br>Dein Ziel: <strong>als Letzter am Leben bleiben</strong>. Starte danach einfach mit „Basiswurf“.`
     );
   }

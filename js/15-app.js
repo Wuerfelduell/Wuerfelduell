@@ -163,7 +163,7 @@
   // V27.6.5: Save Import/Export entfernt. Browser-Save bleibt ausschließlich lokal.
 
   resetStorageBtn.onclick=()=>{
-    if(!confirm("Wirklich ALLE lokalen Würfelduell-Profile, Kampagnenfortschritte, Achievements und Statistiken löschen?")) return;
+    if(!confirm("Wirklich ALLE lokalen DiceDuel-Profile, Kampagnenfortschritte, Achievements und Statistiken löschen?")) return;
     try{
       clearSaveBackups();
       localStorage.removeItem(SAVE_KEY);

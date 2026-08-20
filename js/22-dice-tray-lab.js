@@ -3,7 +3,7 @@ import * as CANNON from 'cannon-es';
 
 const bridge=window.WDTestLabDiceBridge;
 if(!bridge){
-  console.warn('[Würfelduell 3D Dice] Test-Lab bridge not available.');
+  console.warn('[DiceDuel 3D Dice] Test-Lab bridge not available.');
 } else {
   const state={
     enabled:true,
@@ -827,7 +827,7 @@ if(!bridge){
 
       if(token!==state.solveToken){ state.solveRunning=false; return null; }
       if(!result){
-        console.warn(`[Würfelduell 3D Dice] Kein Pfad für Würfel ${i+1}, Ziel ${d.value}`);
+        console.warn(`[DiceDuel 3D Dice] Kein Pfad für Würfel ${i+1}, Ziel ${d.value}`);
         state.solveRunning=false;
         return null;
       }
@@ -1178,7 +1178,7 @@ if(!bridge){
         return `${i+1}:${shown}/${snap[i]?.value??'?'}`;
       }).join(' · ');
       setStatus(result);
-      console.info('[Würfelduell 3D Dice] shown/target',result);
+      console.info('[DiceDuel 3D Dice] shown/target',result);
       setTimeout(()=>setStatus('bereit'),2600);
     });
   }

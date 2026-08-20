@@ -29,11 +29,11 @@
   document.getElementById("wdBuildMismatch")?.remove();
 
   if (!failed.length) {
-    console.info(`[Würfelduell] Build ${EXPECTED} vollständig geladen.`);
+    console.info(`[DiceDuel] Build ${EXPECTED} vollständig geladen.`);
     return;
   }
 
-  console.error(`[Würfelduell] Mischbuild erkannt. Fehlend/alt: ${failed.join(", ")}`);
+  console.error(`[DiceDuel] Mischbuild erkannt. Fehlend/alt: ${failed.join(", ")}`);
   const warning = document.createElement("div");
   warning.id = "wdBuildMismatch";
   warning.textContent = `⚠️ UPDATE-MISCHBUILD · ${failed.join(", ")} · Seite komplett neu laden`;

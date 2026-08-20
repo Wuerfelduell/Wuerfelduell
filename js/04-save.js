@@ -55,7 +55,7 @@
       if(b2) localStorage.setItem(SAVE_BACKUP_KEYS[2],b2);
       if(b1) localStorage.setItem(SAVE_BACKUP_KEYS[1],b1);
       localStorage.setItem(SAVE_BACKUP_KEYS[0],rawMain);
-      console.info(`[Würfelduell] Save-Snapshot gesichert: ${parseStoredSave(rawMain)?.lastGameVersion||"unbekannte Version"}`);
+      console.info(`[DiceDuel] Save-Snapshot gesichert: ${parseStoredSave(rawMain)?.lastGameVersion||"unbekannte Version"}`);
       return true;
     }catch(err){
       console.warn("Save-Backup konnte nicht rotiert werden",err);
@@ -97,7 +97,7 @@
       try{window.WDCloudAccount?.noteLocalSave?.(saveData);}catch(_err){}
       localStorage.setItem(SAVE_KEY,JSON.stringify(saveData));
       storageAvailable=true;
-      console.warn(`[Würfelduell] Save aus Backup-Slot ${index+1} wiederhergestellt.`);
+      console.warn(`[DiceDuel] Save aus Backup-Slot ${index+1} wiederhergestellt.`);
       return true;
     }catch(err){
       console.warn("Save-Recovery fehlgeschlagen",err);
@@ -329,7 +329,7 @@
           saveData.lastGameVersion=GAME_VERSION;
           localStorage.setItem(SAVE_KEY,JSON.stringify(saveData));
           storageAvailable=true;
-          console.warn(`[Würfelduell] Hauptsave fehlte/war defekt – Backup ${backup.slot} wurde automatisch wiederhergestellt.`);
+          console.warn(`[DiceDuel] Hauptsave fehlte/war defekt – Backup ${backup.slot} wurde automatisch wiederhergestellt.`);
           return;
         }
         saveData=createDefaultSave();
@@ -354,7 +354,7 @@
           saveData.lastGameVersion=GAME_VERSION;
           localStorage.setItem(SAVE_KEY,JSON.stringify(saveData));
           storageAvailable=true;
-          console.warn(`[Würfelduell] Ladefehler – Backup ${backup.slot} wurde automatisch wiederhergestellt.`);
+          console.warn(`[DiceDuel] Ladefehler – Backup ${backup.slot} wurde automatisch wiederhergestellt.`);
           return;
         }catch(recoveryErr){
           console.warn("Automatische Save-Recovery ebenfalls fehlgeschlagen",recoveryErr);

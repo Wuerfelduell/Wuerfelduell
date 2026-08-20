@@ -1,7 +1,7 @@
 (() => {
   "use strict";
 
-  // Würfelduell Audio Layer · V26.1.7
+  // DiceDuel Audio Layer · V26.1.7
   // Absichtlich vollständig isoliert vom Spielstand und von der Battle-/Campaign-Logik.
   const AUDIO_KEY = "wuerfelduell_audio_v1";
   const DEFAULTS = { enabled: true, volume: 0.24 };

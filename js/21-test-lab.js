@@ -260,7 +260,7 @@
 
   // V27.7.4 — strict Test-Lab bridge for the optional 3D dice tray.
   // The 3D module never owns game RNG. It only reads the already-determined
-  // Würfelduell results and mirrors selection clicks back into the normal UI.
+  // DiceDuel results and mirrors selection clicks back into the normal UI.
   window.WDTestLabDiceBridge={
     isActive:()=>inLab(),
     snapshot:()=>Array.isArray(dice)?dice.map((d,index)=>({

@@ -1,4 +1,4 @@
-// WÜRFELDUELL CHARACTER DATABASE
+// DICEDUEL CHARACTER DATABASE
 // 313 eindeutige Kampagnengegner aus Solo + Duo + Trio.
 // Noch NICHT in index.html eingebunden.
 // Visual-Felder bleiben absichtlich leer, bis die finalen Designs festgelegt sind.
