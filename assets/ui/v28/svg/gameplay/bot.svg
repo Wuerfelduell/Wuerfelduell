@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Bot">
+  <title>Bot</title><defs>
+  <linearGradient id="gold" x1="0" y1="0" x2="1" y2="1">
+    <stop offset="0" stop-color="#fff4bf"/><stop offset=".22" stop-color="#f6d679"/>
+    <stop offset=".52" stop-color="#c98a26"/><stop offset=".78" stop-color="#ffe59a"/>
+    <stop offset="1" stop-color="#9a5d16"/>
+  </linearGradient>
+  <linearGradient id="blue" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#245da9"/><stop offset=".48" stop-color="#0d3975"/>
+    <stop offset="1" stop-color="#061a3d"/>
+  </linearGradient>
+  <linearGradient id="ivory" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#fffdf2"/><stop offset="1" stop-color="#eadcbd"/>
+  </linearGradient>
+  <filter id="shadow" x="-30%" y="-30%" width="160%" height="160%">
+    <feDropShadow dx="0" dy="1.4" stdDeviation="1.25" flood-color="#06152e" flood-opacity=".58"/>
+  </filter>
+</defs><style>
+  .s{fill:none;stroke:url(#gold);stroke-width:3;stroke-linecap:round;stroke-linejoin:round}
+  .t{fill:none;stroke:url(#gold);stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+  .h{fill:none;stroke:#fff0b8;stroke-width:1.1;stroke-linecap:round;stroke-linejoin:round}
+  .f{fill:url(#gold);stroke:#6f4314;stroke-width:1.15;stroke-linejoin:round}
+  .n{fill:url(#blue);stroke:url(#gold);stroke-width:2.2;stroke-linejoin:round}
+  .i{fill:url(#ivory);stroke:url(#gold);stroke-width:2.2;stroke-linejoin:round}
+  .b{fill:#27a9ff;stroke:#d8f6ff;stroke-width:1}
+  .r{fill:#a8182e;stroke:url(#gold);stroke-width:1.5}
+</style><g filter="url(#shadow)"><path class="n" d="M10 20h44v34H10z"/><path class="s" d="M32 20V9m-7 0h14M18 31h8m12 0h8M21 44h22"/><circle class="b" cx="22" cy="31" r="3"/><circle class="b" cx="42" cy="31" r="3"/></g>
+</svg>
