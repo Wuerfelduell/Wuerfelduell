@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta name="wd-build" content="28.2.2" />
+  <meta name="wd-build" content="28.2.3" />
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <meta name="theme-color" content="#e8f2f6" />
@@ -11,7 +11,7 @@
   <link rel="manifest" href="manifest.json" />
   <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png" />
   <link rel="apple-touch-icon" sizes="192x192" href="icon-192.png" />
-  <title>DiceDuel · V28.2.2</title>
+  <title>DiceDuel · V28.2.3</title>
     <link rel="stylesheet" href="css/01-base-ui.css?v=28.2.1" />
   <link rel="stylesheet" href="css/02-battle.css?v=28.2.1" />
   <link rel="stylesheet" href="css/03-campaign.css?v=28.2.1" />
@@ -31,6 +31,7 @@
   <link rel="stylesheet" href="css/15-v28-ui-rework.css?v=28.2.1">
   <link rel="stylesheet" href="css/16-v28-ui-phase1.css?v=28.2.1">
   <link rel="stylesheet" href="css/17-v28-ui-phase2.css?v=28.2.2">
+  <link rel="stylesheet" href="css/18-v28-ui-phase3.css?v=28.2.3">
   <script type="importmap">
   {
     "imports": {
@@ -213,7 +214,7 @@
       <button id="menuRulesBtn"><span class="menu-icon">📖</span> Regeln</button>
       <button id="menuChangelogBtn"><span class="menu-icon">📝</span> Changelog</button>
     </div>
-    <div class="version-footer">DICEDUEL · VERSION 28.2.2</div>
+    <div class="version-footer">DICEDUEL · VERSION 28.2.3</div>
   </section>
 
 
@@ -463,6 +464,7 @@
   <section id="changelogScreen" class="card screen-card hidden">
     <div class="screen-topbar"><button class="menuBackBtn">←</button><h2 class="screen-title">📝 Changelog</h2></div>
     <div class="screen-subtitle">Die großen Versionssprünge, ohne jeden Mini-Hotfix.</div>
+    <div class="changelog-entry"><div class="changelog-version">V28.2.3</div><ul><li>UI-Rework Phase 3 anhand der Rot-/Gelb-/Orange-/Lila-Markierungen</li><li>Überstehende helle und navyfarbene Rechteckkanten hinter transparenten 9-Slice-Rahmen entfernt</li><li>Campaign-Map, Campaign-Nodes, Mastery-Zweige, Standard-Nodes, Ability-Nodes, Profilkarten und Combat-Hauptflächen erhalten echte vorhandene V28-Rahmen</li><li>Encounter starten nutzt jetzt einen grünen Aktionskern im vorhandenen Navy-Gold-Rahmen</li><li>Quit-Dialog besitzt korrekt positionierten Titel sowie echte Navy- und Danger-Button-Assets</li><li>Boss- und Encounter-Regelrahmen kompakter zugeschnitten; Gameplay-, Save-, Campaign- und Online-Logik unverändert</li></ul></div>
     <div class="changelog-entry"><div class="changelog-version">V28.2.2</div><ul><li>UI-Rework Phase 2 anhand der nächsten markierten Mobile-Screenshots</li><li>Weiße Rechteckflächen außerhalb der transparenten Rahmen bei großen Screens, Modals und Pickern global entfernt</li><li>Picker-Kopf, Hauptmenü-Symbole und 4×2-Navigation, Campaign-Zusammenfassungen, Encounter-Button und aktueller Level-Node nachjustiert</li><li>Bossdetail Variante A besitzt jetzt einen kollisionsfreien kompakten Bildkopf</li><li>Setup-Selects und Würfel-/Fähigkeitsanzeigen kompakter; Mastery-Nodes bleiben auch im deaktivierten Zustand lesbar</li><li>Gameplay-, Save-, Campaign- und Online-Logik unverändert</li></ul></div>
     <div class="changelog-entry"><div class="changelog-version">V28.2.1</div><ul><li>UI-Rework Phase 1 anhand der markierten Mobile-Screenshots</li><li>Fehlende Gameplay-SVGs und veraltete Bild-URLs repariert; Cache-Key für alle geladenen Assets auf 28.2.1 erhöht</li><li>Campaign-Hub, Weltenleiste, Profil-/Fähigkeitswahl, Mastery-Leiste, Encounter-Button und Levelpfad neu ausgerichtet</li><li>Bossdetail Variante A: roter Bossrahmen nur noch als kompakter Kopf; Beschreibung, Challenge, Belohnung und Regeln liegen in separaten lesbaren Karten</li><li>Solo-/Duo-/Trio-Symbole, Setup- und Combat-Symbole, Regelkarten, Achievement-Karten und Profilbearbeitung korrigiert</li><li>Zweitfähigkeitswahl positioniert Ability-Icon links und Auswahlindikator rechts</li><li>Ordnerstruktur sowie Gameplay-, Save-, Campaign- und Online-Logik unverändert</li></ul></div>
     <div class="changelog-entry"><div class="changelog-version">V28.2.0</div><ul><li>Vollständiger Bright-Arcane-UI-Rework auf Basis des V28.0.2-Pakets</li><li>Offizielles UI-Asset-Pack vollständig und ergänzend in die vorhandene Ordnerstruktur integriert</li><li>Hauptmenü, Setup, Campaign, Profile, Achievements, Trophy Shop und Combat verwenden die neuen echten SVG-/PNG-Flächen und Icons</li><li>Campaign-Bossdetail ist jetzt ein echter Layout-Rahmen statt eines überlagernden Bildes</li><li>Kampagnenmodus- und Zweitfähigkeits-Popups besitzen korrigierte Titelabstände und mobile Buttonhöhen</li><li>Native graue Select-Menüs der regulären UI wurden durch einen DiceDuel-Picker ersetzt; Test-Labs bleiben bewusst unangetastet</li><li>Gameplay-, Save-, Campaign- und Online-Logik unverändert</li></ul></div>
