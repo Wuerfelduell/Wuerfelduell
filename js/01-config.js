@@ -13,7 +13,7 @@
   let localModeId="classic";
   function localModeRules(){return LOCAL_MODES[localModeId]||LOCAL_MODES.classic;}
 
-  const GAME_VERSION="28.2.0";
+  const GAME_VERSION="28.0.2";
   const SAVE_KEY="wuerfelduell_save_v1"; // absichtlich stabil: Updates lesen denselben Browser-Save
   // Versionsanzeige immer aus derselben Quelle ziehen, damit Titel/Footer nicht mehr hinterherhinken.
   document.title=`DiceDuel · V${GAME_VERSION}`;
@@ -156,3 +156,4 @@
     trio_cerberus_gate:{boss:"Cerberus Core",threshold:.5,title:"THREE HEADS, ONE CORE",desc:"Der Core heilt 8 HP, wechselt auf Counterattack + High Stakes und zieht den ganzen Tisch auf Casino Floor.",heal:8,ability:21,secondAbility:13,rule:"casino_floor"},
     trio_singularity:{boss:"Trinity Singularity",threshold:.5,title:"SINGULARITY OPEN",desc:"Die Singularity heilt 10 HP, wechselt auf High Stakes + Counterattack und aktiviert Overcharge für alle Helden: +2 Rohschaden, danach 1 HP Rückstoß.",heal:10,ability:13,secondAbility:21,rule:"overcharge"}
   };
+
