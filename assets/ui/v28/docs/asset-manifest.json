@@ -1,6 +1,6 @@
 {
   "pack": "DiceDuel UI Asset Pack",
-  "version": "2.0.0",
+  "version": "2.1.0",
   "generated_at": "2026-08-21",
   "design_language": "bright premium fantasy; luminous ivory; deep navy; polished gold; sapphire accents",
   "palette": {
@@ -14,17 +14,17 @@
     "danger": "#a8182e"
   },
   "counts": {
-    "png": 26,
+    "png": 32,
     "svg_individual": 100,
     "svg_sprite": 2,
     "ability_icons": 24,
-    "total_assets": 128
+    "total_assets": 134
   },
   "validation": {
     "checked_at": "2026-08-21",
-    "png_readable": 26,
+    "png_readable": 32,
     "opaque_backgrounds": 5,
-    "transparent_png_components": 21,
+    "transparent_png_components": 27,
     "svg_individual_readable": 100,
     "svg_sprites_readable": 2,
     "missing_files": 0
@@ -98,6 +98,110 @@
       "format": "png",
       "width": 1024,
       "height": 1024,
+      "alpha": true,
+      "true_transparency": true,
+      "alpha_range": {
+        "min": 0,
+        "max": 255
+      }
+    },
+    {
+      "name": "campaign-node-farm-frame",
+      "file": "png/components/campaign-node-farm-frame.png",
+      "role": "campaign-node",
+      "scalable": false,
+      "dynamic_content": [
+        "number",
+        "localized_name"
+      ],
+      "format": "png",
+      "width": 1254,
+      "height": 1254,
+      "alpha": true,
+      "true_transparency": true,
+      "alpha_range": {
+        "min": 0,
+        "max": 255
+      }
+    },
+    {
+      "name": "xp-badge",
+      "file": "png/components/xp-badge.png",
+      "role": "badge",
+      "scalable": false,
+      "format": "png",
+      "width": 1254,
+      "height": 1254,
+      "alpha": true,
+      "true_transparency": true,
+      "alpha_range": {
+        "min": 0,
+        "max": 255
+      }
+    },
+    {
+      "name": "encounter-button-green",
+      "file": "png/components/encounter-button-green.png",
+      "role": "button-frame",
+      "scalable": true,
+      "dynamic_content": [
+        "icon",
+        "localized_label"
+      ],
+      "nine_slice": {
+        "top": 130,
+        "right": 260,
+        "bottom": 130,
+        "left": 260
+      },
+      "format": "png",
+      "width": 2172,
+      "height": 724,
+      "alpha": true,
+      "true_transparency": true,
+      "alpha_range": {
+        "min": 0,
+        "max": 255
+      }
+    },
+    {
+      "name": "hp-heart-medallion",
+      "file": "png/components/hp-heart-medallion.png",
+      "role": "stat-medallion",
+      "scalable": false,
+      "format": "png",
+      "width": 1254,
+      "height": 1254,
+      "alpha": true,
+      "true_transparency": true,
+      "alpha_range": {
+        "min": 0,
+        "max": 255
+      }
+    },
+    {
+      "name": "completed-check-medallion",
+      "file": "png/components/completed-check-medallion.png",
+      "role": "status-medallion",
+      "scalable": false,
+      "format": "png",
+      "width": 1254,
+      "height": 1254,
+      "alpha": true,
+      "true_transparency": true,
+      "alpha_range": {
+        "min": 0,
+        "max": 255
+      }
+    },
+    {
+      "name": "back-button",
+      "file": "png/components/back-button.png",
+      "role": "navigation-button",
+      "scalable": false,
+      "format": "png",
+      "width": 1254,
+      "height": 1254,
       "alpha": true,
       "true_transparency": true,
       "alpha_range": {
@@ -1036,6 +1140,7 @@
     "Use screen or additive blending for VFX and the active-player overlay.",
     "All isolated PNG components have true alpha transparency.",
     "All individual SVG icons have transparent backgrounds.",
-    "Ability rows should render only icon, dynamic number and localized name; no description is baked into assets."
+    "Ability rows should render only icon, dynamic number and localized name; no description is baked into assets.",
+    "The farm node and green encounter button intentionally keep number, name, icon and localized label dynamic."
   ]
 }

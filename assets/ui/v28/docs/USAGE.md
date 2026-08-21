@@ -67,6 +67,37 @@ nicht kleiner als angegeben skalieren.
 Beschreibungstext wird bewusst nicht in dieser Zeile gerendert. Nummer, Name und Sprache bleiben
 vollständig dynamisch. Das Mapping aller 24 Dateien steht in `ability-icons.json`.
 
+## Campaign-Node und grüner Encounter-Button
+
+`campaign-node-farm-frame.png` enthält absichtlich weder Nummer noch Bezeichnung. Dadurch bleiben
+Levelnummer und FARM/BOSS/CHALLENGE vollständig dynamisch und übersetzbar.
+
+```html
+<article class="campaign-node farm-node">
+  <img src="assets/png/components/campaign-node-farm-frame.png" alt="">
+  <strong class="node-number">15</strong>
+  <span class="node-name">Farm</span>
+</article>
+```
+
+```css
+.encounter-button {
+  border: 42px solid transparent;
+  border-image-source: url("../png/components/encounter-button-green.png");
+  border-image-slice: 130 260 130 260 fill;
+  border-image-width: 30px 68px;
+  color: #fff8e8;
+}
+```
+
+Crossed-Swords-Icon und lokalisierter Buttontext werden als eigene Layer gesetzt.
+
+## Gerenderte Medaillons
+
+`hp-heart-medallion.png`, `completed-check-medallion.png` und `back-button.png` immer proportional
+mit `object-fit: contain` skalieren; niemals 9-Slice verwenden. Der neue breite Goldpfeil liegt auch
+als `svg/navigation/back.svg` und `svg/navigation/back-arrow.svg` vor.
+
 ## Active Player
 
 ```css
