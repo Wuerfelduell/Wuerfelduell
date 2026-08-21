@@ -1,0 +1,1041 @@
+{
+  "pack": "DiceDuel UI Asset Pack",
+  "version": "2.0.0",
+  "generated_at": "2026-08-21",
+  "design_language": "bright premium fantasy; luminous ivory; deep navy; polished gold; sapphire accents",
+  "palette": {
+    "navy": "#061a3d",
+    "royal_navy": "#0b2b58",
+    "sapphire": "#2475ce",
+    "arcane_cyan": "#27a9ff",
+    "gold": "#d6a53c",
+    "highlight_gold": "#ffe59a",
+    "ivory": "#fff9e7",
+    "danger": "#a8182e"
+  },
+  "counts": {
+    "png": 26,
+    "svg_individual": 100,
+    "svg_sprite": 2,
+    "ability_icons": 24,
+    "total_assets": 128
+  },
+  "validation": {
+    "checked_at": "2026-08-21",
+    "png_readable": 26,
+    "opaque_backgrounds": 5,
+    "transparent_png_components": 21,
+    "svg_individual_readable": 100,
+    "svg_sprites_readable": 2,
+    "missing_files": 0
+  },
+  "png": [
+    {
+      "name": "main-menu-background",
+      "file": "png/backgrounds/main-menu.png",
+      "role": "background",
+      "scalable": false,
+      "anchor": "center",
+      "format": "png",
+      "width": 864,
+      "height": 1536,
+      "alpha": false,
+      "true_transparency": false
+    },
+    {
+      "name": "combat-background",
+      "file": "png/backgrounds/combat.png",
+      "role": "background",
+      "scalable": false,
+      "anchor": "center",
+      "format": "png",
+      "width": 864,
+      "height": 1536,
+      "alpha": false,
+      "true_transparency": false
+    },
+    {
+      "name": "campaign-mastery-light-background",
+      "file": "png/backgrounds/campaign-mastery-light.png",
+      "role": "background",
+      "scalable": false,
+      "anchor": "center",
+      "format": "png",
+      "width": 864,
+      "height": 1536,
+      "alpha": false,
+      "true_transparency": false
+    },
+    {
+      "name": "navy-lobby-profile-background",
+      "file": "png/backgrounds/navy-lobby-profile.png",
+      "role": "background",
+      "scalable": false,
+      "anchor": "center",
+      "format": "png",
+      "width": 864,
+      "height": 1536,
+      "alpha": false,
+      "true_transparency": false
+    },
+    {
+      "name": "boss-finale-background",
+      "file": "png/backgrounds/boss-finale.png",
+      "role": "background",
+      "scalable": false,
+      "anchor": "center",
+      "format": "png",
+      "width": 864,
+      "height": 1536,
+      "alpha": false,
+      "true_transparency": false
+    },
+    {
+      "name": "diceduel-crest",
+      "file": "png/emblems/diceduel-crest.png",
+      "role": "emblem",
+      "scalable": false,
+      "format": "png",
+      "width": 1024,
+      "height": 1024,
+      "alpha": true,
+      "true_transparency": true,
+      "alpha_range": {
+        "min": 0,
+        "max": 255
+      }
+    },
+    {
+      "name": "ivory-button-frame",
+      "file": "png/frames/ivory-button.png",
+      "role": "frame",
+      "scalable": true,
+      "nine_slice": {
+        "top": 104,
+        "right": 240,
+        "bottom": 104,
+        "left": 240
+      },
+      "format": "png",
+      "width": 1536,
+      "height": 512,
+      "alpha": true,
+      "true_transparency": true,
+      "alpha_range": {
+        "min": 0,
+        "max": 255
+      }
+    },
+    {
+      "name": "navy-tile-frame",
+      "file": "png/frames/navy-tile.png",
+      "role": "frame",
+      "scalable": true,
+      "nine_slice": {
+        "top": 104,
+        "right": 104,
+        "bottom": 104,
+        "left": 104
+      },
+      "format": "png",
+      "width": 768,
+      "height": 768,
+      "alpha": true,
+      "true_transparency": true,
+      "alpha_range": {
+        "min": 0,
+        "max": 255
+      }
+    },
+    {
+      "name": "large-panel-frame",
+      "file": "png/frames/panel-large.png",
+      "role": "frame",
+      "scalable": true,
+      "nine_slice": {
+        "top": 96,
+        "right": 82,
+        "bottom": 96,
+        "left": 82
+      },
+      "format": "png",
+      "width": 768,
+      "height": 1024,
+      "alpha": true,
+      "true_transparency": true,
+      "alpha_range": {
+        "min": 0,
+        "max": 255
+      }
+    },
+    {
+      "name": "modal-popup-frame",
+      "file": "png/frames/modal-popup.png",
+      "role": "frame",
+      "scalable": true,
+      "nine_slice": {
+        "top": 150,
+        "right": 92,
+        "bottom": 104,
+        "left": 92
+      },
+      "format": "png",
+      "width": 768,
+      "height": 960,
+      "alpha": true,
+      "true_transparency": true,
+      "alpha_range": {
+        "min": 0,
+        "max": 255
+      }
+    },
+    {
+      "name": "boss-frame",
+      "file": "png/frames/boss.png",
+      "role": "special-frame",
+      "scalable": true,
+      "nine_slice": {
+        "top": 122,
+        "right": 190,
+        "bottom": 122,
+        "left": 190
+      },
+      "format": "png",
+      "width": 1536,
+      "height": 512,
+      "alpha": true,
+      "true_transparency": true,
+      "alpha_range": {
+        "min": 0,
+        "max": 255
+      }
+    },
+    {
+      "name": "mastery-frame",
+      "file": "png/frames/mastery.png",
+      "role": "special-frame",
+      "scalable": true,
+      "nine_slice": {
+        "top": 128,
+        "right": 210,
+        "bottom": 128,
+        "left": 210
+      },
+      "format": "png",
+      "width": 1536,
+      "height": 512,
+      "alpha": true,
+      "true_transparency": true,
+      "alpha_range": {
+        "min": 0,
+        "max": 255
+      }
+    },
+    {
+      "name": "prestige-frame",
+      "file": "png/frames/prestige.png",
+      "role": "special-frame",
+      "scalable": true,
+      "nine_slice": {
+        "top": 154,
+        "right": 270,
+        "bottom": 154,
+        "left": 270
+      },
+      "format": "png",
+      "width": 1535,
+      "height": 614,
+      "alpha": true,
+      "true_transparency": true,
+      "alpha_range": {
+        "min": 0,
+        "max": 255
+      }
+    },
+    {
+      "name": "ivory-card-small",
+      "file": "png/frames/ivory-card-small.png",
+      "role": "frame",
+      "scalable": true,
+      "nine_slice": {
+        "top": 76,
+        "right": 168,
+        "bottom": 76,
+        "left": 168
+      },
+      "format": "png",
+      "width": 1536,
+      "height": 512,
+      "alpha": true,
+      "true_transparency": true,
+      "alpha_range": {
+        "min": 0,
+        "max": 255
+      }
+    },
+    {
+      "name": "navy-button-horizontal",
+      "file": "png/frames/navy-button-horizontal.png",
+      "role": "button-frame",
+      "scalable": true,
+      "nine_slice": {
+        "top": 92,
+        "right": 170,
+        "bottom": 92,
+        "left": 170
+      },
+      "format": "png",
+      "width": 1536,
+      "height": 512,
+      "alpha": true,
+      "true_transparency": true,
+      "alpha_range": {
+        "min": 0,
+        "max": 255
+      }
+    },
+    {
+      "name": "gold-special-button",
+      "file": "png/frames/gold-special-button.png",
+      "role": "button-frame",
+      "scalable": true,
+      "nine_slice": {
+        "top": 104,
+        "right": 190,
+        "bottom": 104,
+        "left": 190
+      },
+      "format": "png",
+      "width": 1536,
+      "height": 512,
+      "alpha": true,
+      "true_transparency": true,
+      "alpha_range": {
+        "min": 0,
+        "max": 255
+      }
+    },
+    {
+      "name": "danger-button",
+      "file": "png/frames/danger-button.png",
+      "role": "button-frame",
+      "scalable": true,
+      "nine_slice": {
+        "top": 104,
+        "right": 190,
+        "bottom": 104,
+        "left": 190
+      },
+      "format": "png",
+      "width": 1536,
+      "height": 512,
+      "alpha": true,
+      "true_transparency": true,
+      "alpha_range": {
+        "min": 0,
+        "max": 255
+      }
+    },
+    {
+      "name": "icon-frame-round",
+      "file": "png/frames/icon-frame-round.png",
+      "role": "icon-frame",
+      "scalable": false,
+      "format": "png",
+      "width": 768,
+      "height": 768,
+      "alpha": true,
+      "true_transparency": true,
+      "alpha_range": {
+        "min": 0,
+        "max": 255
+      }
+    },
+    {
+      "name": "ability-choice-card",
+      "file": "png/frames/ability-choice-card.png",
+      "role": "ability-row",
+      "scalable": true,
+      "nine_slice": {
+        "top": 84,
+        "right": 165,
+        "bottom": 84,
+        "left": 230
+      },
+      "format": "png",
+      "width": 1536,
+      "height": 512,
+      "alpha": true,
+      "true_transparency": true,
+      "alpha_range": {
+        "min": 0,
+        "max": 255
+      }
+    },
+    {
+      "name": "player-card-combat",
+      "file": "png/frames/player-card-combat.png",
+      "role": "player-card",
+      "scalable": true,
+      "nine_slice": {
+        "top": 96,
+        "right": 122,
+        "bottom": 96,
+        "left": 122
+      },
+      "format": "png",
+      "width": 1200,
+      "height": 704,
+      "alpha": true,
+      "true_transparency": true,
+      "alpha_range": {
+        "min": 0,
+        "max": 255
+      }
+    },
+    {
+      "name": "active-player-glow",
+      "file": "png/frames/active-player-glow.png",
+      "role": "state-overlay",
+      "scalable": true,
+      "nine_slice": {
+        "top": 108,
+        "right": 132,
+        "bottom": 108,
+        "left": 132
+      },
+      "blend_mode": "screen",
+      "format": "png",
+      "width": 1200,
+      "height": 704,
+      "alpha": true,
+      "true_transparency": true,
+      "alpha_range": {
+        "min": 0,
+        "max": 254
+      }
+    },
+    {
+      "name": "boss-player-card",
+      "file": "png/frames/boss-player-card.png",
+      "role": "boss-player-card",
+      "scalable": true,
+      "nine_slice": {
+        "top": 110,
+        "right": 140,
+        "bottom": 110,
+        "left": 140
+      },
+      "format": "png",
+      "width": 1200,
+      "height": 704,
+      "alpha": true,
+      "true_transparency": true,
+      "alpha_range": {
+        "min": 0,
+        "max": 254
+      }
+    },
+    {
+      "name": "campaign-node-selected",
+      "file": "png/frames/campaign-node-selected.png",
+      "role": "selected-node",
+      "scalable": false,
+      "format": "png",
+      "width": 768,
+      "height": 768,
+      "alpha": true,
+      "true_transparency": true,
+      "alpha_range": {
+        "min": 0,
+        "max": 255
+      }
+    },
+    {
+      "name": "achievement-trophy-card",
+      "file": "png/frames/achievement-trophy-card.png",
+      "role": "premium-card",
+      "scalable": true,
+      "nine_slice": {
+        "top": 140,
+        "right": 155,
+        "bottom": 128,
+        "left": 155
+      },
+      "format": "png",
+      "width": 1200,
+      "height": 774,
+      "alpha": true,
+      "true_transparency": true,
+      "alpha_range": {
+        "min": 0,
+        "max": 255
+      }
+    },
+    {
+      "name": "arcane-halo-blue",
+      "file": "png/fx/arcane-halo-blue.png",
+      "role": "vfx",
+      "scalable": false,
+      "blend_mode": "screen",
+      "format": "png",
+      "width": 1024,
+      "height": 1024,
+      "alpha": true,
+      "true_transparency": true,
+      "alpha_range": {
+        "min": 0,
+        "max": 254
+      }
+    },
+    {
+      "name": "divine-burst-gold",
+      "file": "png/fx/divine-burst-gold.png",
+      "role": "vfx",
+      "scalable": false,
+      "blend_mode": "screen",
+      "format": "png",
+      "width": 1024,
+      "height": 1024,
+      "alpha": true,
+      "true_transparency": true,
+      "alpha_range": {
+        "min": 0,
+        "max": 255
+      }
+    }
+  ],
+  "svg": {
+    "categories": {
+      "abilities": [
+        {
+          "name": "01-brutale-einsen",
+          "file": "svg/abilities/01-brutale-einsen.svg",
+          "viewBox": "0 0 64 64"
+        },
+        {
+          "name": "02-lifesteal",
+          "file": "svg/abilities/02-lifesteal.svg",
+          "viewBox": "0 0 64 64"
+        },
+        {
+          "name": "03-glueckswurf",
+          "file": "svg/abilities/03-glueckswurf.svg",
+          "viewBox": "0 0 64 64"
+        },
+        {
+          "name": "04-zweite-chance",
+          "file": "svg/abilities/04-zweite-chance.svg",
+          "viewBox": "0 0 64 64"
+        },
+        {
+          "name": "05-angriffsvorsprung",
+          "file": "svg/abilities/05-angriffsvorsprung.svg",
+          "viewBox": "0 0 64 64"
+        },
+        {
+          "name": "07-glueck",
+          "file": "svg/abilities/07-glueck.svg",
+          "viewBox": "0 0 64 64"
+        },
+        {
+          "name": "08-praezision",
+          "file": "svg/abilities/08-praezision.svg",
+          "viewBox": "0 0 64 64"
+        },
+        {
+          "name": "09-rache",
+          "file": "svg/abilities/09-rache.svg",
+          "viewBox": "0 0 64 64"
+        },
+        {
+          "name": "10-momentum",
+          "file": "svg/abilities/10-momentum.svg",
+          "viewBox": "0 0 64 64"
+        },
+        {
+          "name": "11-blutpreis",
+          "file": "svg/abilities/11-blutpreis.svg",
+          "viewBox": "0 0 64 64"
+        },
+        {
+          "name": "12-gambling-man",
+          "file": "svg/abilities/12-gambling-man.svg",
+          "viewBox": "0 0 64 64"
+        },
+        {
+          "name": "13-high-stakes",
+          "file": "svg/abilities/13-high-stakes.svg",
+          "viewBox": "0 0 64 64"
+        },
+        {
+          "name": "14-last-stand",
+          "file": "svg/abilities/14-last-stand.svg",
+          "viewBox": "0 0 64 64"
+        },
+        {
+          "name": "15-perfect-25",
+          "file": "svg/abilities/15-perfect-25.svg",
+          "viewBox": "0 0 64 64"
+        },
+        {
+          "name": "16-ricochet",
+          "file": "svg/abilities/16-ricochet.svg",
+          "viewBox": "0 0 64 64"
+        },
+        {
+          "name": "17-wildcard",
+          "file": "svg/abilities/17-wildcard.svg",
+          "viewBox": "0 0 64 64"
+        },
+        {
+          "name": "18-loaded-dice",
+          "file": "svg/abilities/18-loaded-dice.svg",
+          "viewBox": "0 0 64 64"
+        },
+        {
+          "name": "19-insurance",
+          "file": "svg/abilities/19-insurance.svg",
+          "viewBox": "0 0 64 64"
+        },
+        {
+          "name": "20-snake-eyes",
+          "file": "svg/abilities/20-snake-eyes.svg",
+          "viewBox": "0 0 64 64"
+        },
+        {
+          "name": "21-counterattack",
+          "file": "svg/abilities/21-counterattack.svg",
+          "viewBox": "0 0 64 64"
+        },
+        {
+          "name": "22-twelve",
+          "file": "svg/abilities/22-twelve.svg",
+          "viewBox": "0 0 64 64"
+        },
+        {
+          "name": "23-blood-rush",
+          "file": "svg/abilities/23-blood-rush.svg",
+          "viewBox": "0 0 64 64"
+        },
+        {
+          "name": "24-double-tap",
+          "file": "svg/abilities/24-double-tap.svg",
+          "viewBox": "0 0 64 64"
+        },
+        {
+          "name": "25-underdog",
+          "file": "svg/abilities/25-underdog.svg",
+          "viewBox": "0 0 64 64"
+        }
+      ],
+      "badges": [
+        {
+          "name": "beta",
+          "file": "svg/badges/beta.svg",
+          "viewBox": "0 0 180 64"
+        },
+        {
+          "name": "boss",
+          "file": "svg/badges/boss.svg",
+          "viewBox": "0 0 180 64"
+        },
+        {
+          "name": "challenge",
+          "file": "svg/badges/challenge.svg",
+          "viewBox": "0 0 180 64"
+        },
+        {
+          "name": "farm",
+          "file": "svg/badges/farm.svg",
+          "viewBox": "0 0 180 64"
+        },
+        {
+          "name": "prep",
+          "file": "svg/badges/prep.svg",
+          "viewBox": "0 0 180 64"
+        }
+      ],
+      "gameplay": [
+        {
+          "name": "attack",
+          "file": "svg/gameplay/attack.svg",
+          "viewBox": "0 0 64 64"
+        },
+        {
+          "name": "boss",
+          "file": "svg/gameplay/boss.svg",
+          "viewBox": "0 0 64 64"
+        },
+        {
+          "name": "bot",
+          "file": "svg/gameplay/bot.svg",
+          "viewBox": "0 0 64 64"
+        },
+        {
+          "name": "campaign",
+          "file": "svg/gameplay/campaign.svg",
+          "viewBox": "0 0 64 64"
+        },
+        {
+          "name": "challenge",
+          "file": "svg/gameplay/challenge.svg",
+          "viewBox": "0 0 64 64"
+        },
+        {
+          "name": "completed",
+          "file": "svg/gameplay/completed.svg",
+          "viewBox": "0 0 64 64"
+        },
+        {
+          "name": "crown",
+          "file": "svg/gameplay/crown.svg",
+          "viewBox": "0 0 64 64"
+        },
+        {
+          "name": "damage-sword",
+          "file": "svg/gameplay/damage-sword.svg",
+          "viewBox": "0 0 64 64"
+        },
+        {
+          "name": "dice",
+          "file": "svg/gameplay/dice.svg",
+          "viewBox": "0 0 64 64"
+        },
+        {
+          "name": "duo",
+          "file": "svg/gameplay/duo.svg",
+          "viewBox": "0 0 64 64"
+        },
+        {
+          "name": "encounter",
+          "file": "svg/gameplay/encounter.svg",
+          "viewBox": "0 0 64 64"
+        },
+        {
+          "name": "farm",
+          "file": "svg/gameplay/farm.svg",
+          "viewBox": "0 0 64 64"
+        },
+        {
+          "name": "heal",
+          "file": "svg/gameplay/heal.svg",
+          "viewBox": "0 0 64 64"
+        },
+        {
+          "name": "heart-hp",
+          "file": "svg/gameplay/heart-hp.svg",
+          "viewBox": "0 0 64 64"
+        },
+        {
+          "name": "locked",
+          "file": "svg/gameplay/locked.svg",
+          "viewBox": "0 0 64 64"
+        },
+        {
+          "name": "loss",
+          "file": "svg/gameplay/loss.svg",
+          "viewBox": "0 0 64 64"
+        },
+        {
+          "name": "mastery",
+          "file": "svg/gameplay/mastery.svg",
+          "viewBox": "0 0 64 64"
+        },
+        {
+          "name": "player",
+          "file": "svg/gameplay/player.svg",
+          "viewBox": "0 0 64 64"
+        },
+        {
+          "name": "prestige",
+          "file": "svg/gameplay/prestige.svg",
+          "viewBox": "0 0 64 64"
+        },
+        {
+          "name": "reward-gift",
+          "file": "svg/gameplay/reward-gift.svg",
+          "viewBox": "0 0 64 64"
+        },
+        {
+          "name": "seat-position",
+          "file": "svg/gameplay/seat-position.svg",
+          "viewBox": "0 0 64 64"
+        },
+        {
+          "name": "self-damage-blood",
+          "file": "svg/gameplay/self-damage-blood.svg",
+          "viewBox": "0 0 64 64"
+        },
+        {
+          "name": "shield",
+          "file": "svg/gameplay/shield.svg",
+          "viewBox": "0 0 64 64"
+        },
+        {
+          "name": "solo",
+          "file": "svg/gameplay/solo.svg",
+          "viewBox": "0 0 64 64"
+        },
+        {
+          "name": "streak-flame",
+          "file": "svg/gameplay/streak-flame.svg",
+          "viewBox": "0 0 64 64"
+        },
+        {
+          "name": "target",
+          "file": "svg/gameplay/target.svg",
+          "viewBox": "0 0 64 64"
+        },
+        {
+          "name": "trio",
+          "file": "svg/gameplay/trio.svg",
+          "viewBox": "0 0 64 64"
+        },
+        {
+          "name": "trophy",
+          "file": "svg/gameplay/trophy.svg",
+          "viewBox": "0 0 64 64"
+        },
+        {
+          "name": "win",
+          "file": "svg/gameplay/win.svg",
+          "viewBox": "0 0 64 64"
+        },
+        {
+          "name": "world",
+          "file": "svg/gameplay/world.svg",
+          "viewBox": "0 0 64 64"
+        },
+        {
+          "name": "xp-star",
+          "file": "svg/gameplay/xp-star.svg",
+          "viewBox": "0 0 64 64"
+        }
+      ],
+      "menu": [
+        {
+          "name": "account",
+          "file": "svg/menu/account.svg",
+          "viewBox": "0 0 64 64"
+        },
+        {
+          "name": "achievements",
+          "file": "svg/menu/achievements.svg",
+          "viewBox": "0 0 64 64"
+        },
+        {
+          "name": "campaign",
+          "file": "svg/menu/campaign.svg",
+          "viewBox": "0 0 64 64"
+        },
+        {
+          "name": "changelog",
+          "file": "svg/menu/changelog.svg",
+          "viewBox": "0 0 64 64"
+        },
+        {
+          "name": "online",
+          "file": "svg/menu/online.svg",
+          "viewBox": "0 0 64 64"
+        },
+        {
+          "name": "play",
+          "file": "svg/menu/play.svg",
+          "viewBox": "0 0 64 64"
+        },
+        {
+          "name": "profile",
+          "file": "svg/menu/profile.svg",
+          "viewBox": "0 0 64 64"
+        },
+        {
+          "name": "rules",
+          "file": "svg/menu/rules.svg",
+          "viewBox": "0 0 64 64"
+        },
+        {
+          "name": "settings",
+          "file": "svg/menu/settings.svg",
+          "viewBox": "0 0 64 64"
+        },
+        {
+          "name": "statistics",
+          "file": "svg/menu/statistics.svg",
+          "viewBox": "0 0 64 64"
+        },
+        {
+          "name": "trophy-shop",
+          "file": "svg/menu/trophy-shop.svg",
+          "viewBox": "0 0 64 64"
+        },
+        {
+          "name": "tutorial",
+          "file": "svg/menu/tutorial.svg",
+          "viewBox": "0 0 64 64"
+        }
+      ],
+      "navigation": [
+        {
+          "name": "back-arrow",
+          "file": "svg/navigation/back-arrow.svg",
+          "viewBox": "0 0 64 64"
+        },
+        {
+          "name": "back",
+          "file": "svg/navigation/back.svg",
+          "viewBox": "0 0 64 64"
+        },
+        {
+          "name": "checkmark",
+          "file": "svg/navigation/checkmark.svg",
+          "viewBox": "0 0 64 64"
+        },
+        {
+          "name": "chevron-down",
+          "file": "svg/navigation/chevron-down.svg",
+          "viewBox": "0 0 64 64"
+        },
+        {
+          "name": "chevron-right",
+          "file": "svg/navigation/chevron-right.svg",
+          "viewBox": "0 0 64 64"
+        },
+        {
+          "name": "close-x",
+          "file": "svg/navigation/close-x.svg",
+          "viewBox": "0 0 64 64"
+        },
+        {
+          "name": "info",
+          "file": "svg/navigation/info.svg",
+          "viewBox": "0 0 64 64"
+        },
+        {
+          "name": "lock",
+          "file": "svg/navigation/lock.svg",
+          "viewBox": "0 0 64 64"
+        },
+        {
+          "name": "menu-hamburger",
+          "file": "svg/navigation/menu-hamburger.svg",
+          "viewBox": "0 0 64 64"
+        },
+        {
+          "name": "minus",
+          "file": "svg/navigation/minus.svg",
+          "viewBox": "0 0 64 64"
+        },
+        {
+          "name": "plus",
+          "file": "svg/navigation/plus.svg",
+          "viewBox": "0 0 64 64"
+        },
+        {
+          "name": "refresh-reroll",
+          "file": "svg/navigation/refresh-reroll.svg",
+          "viewBox": "0 0 64 64"
+        },
+        {
+          "name": "unlock",
+          "file": "svg/navigation/unlock.svg",
+          "viewBox": "0 0 64 64"
+        },
+        {
+          "name": "warning",
+          "file": "svg/navigation/warning.svg",
+          "viewBox": "0 0 64 64"
+        }
+      ],
+      "ornaments": [
+        {
+          "name": "corner-ornament",
+          "file": "svg/ornaments/corner-ornament.svg",
+          "viewBox": "varies"
+        },
+        {
+          "name": "diamond",
+          "file": "svg/ornaments/diamond.svg",
+          "viewBox": "varies"
+        },
+        {
+          "name": "gold-divider",
+          "file": "svg/ornaments/gold-divider.svg",
+          "viewBox": "varies"
+        },
+        {
+          "name": "star",
+          "file": "svg/ornaments/star.svg",
+          "viewBox": "varies"
+        }
+      ],
+      "stats": [
+        {
+          "name": "crown",
+          "file": "svg/stats/crown.svg",
+          "viewBox": "0 0 64 64"
+        },
+        {
+          "name": "dice",
+          "file": "svg/stats/dice.svg",
+          "viewBox": "0 0 64 64"
+        },
+        {
+          "name": "heart-hp",
+          "file": "svg/stats/heart-hp.svg",
+          "viewBox": "0 0 64 64"
+        },
+        {
+          "name": "mastery",
+          "file": "svg/stats/mastery.svg",
+          "viewBox": "0 0 64 64"
+        },
+        {
+          "name": "prestige",
+          "file": "svg/stats/prestige.svg",
+          "viewBox": "0 0 64 64"
+        },
+        {
+          "name": "shield",
+          "file": "svg/stats/shield.svg",
+          "viewBox": "0 0 64 64"
+        },
+        {
+          "name": "sword-damage",
+          "file": "svg/stats/sword-damage.svg",
+          "viewBox": "0 0 64 64"
+        },
+        {
+          "name": "xp",
+          "file": "svg/stats/xp.svg",
+          "viewBox": "0 0 64 64"
+        }
+      ],
+      "status": [
+        {
+          "name": "checkmark",
+          "file": "svg/status/checkmark.svg",
+          "viewBox": "0 0 64 64"
+        },
+        {
+          "name": "lock",
+          "file": "svg/status/lock.svg",
+          "viewBox": "0 0 64 64"
+        }
+      ]
+    },
+    "sprites": [
+      "svg/icon-sprite-v2.svg",
+      "svg/icon-sprite.svg"
+    ]
+  },
+  "nine_slice_order": "top, right, bottom, left",
+  "notes": [
+    "Backgrounds are intended for center/cover placement.",
+    "Do not nine-slice emblems, round medallions or VFX overlays.",
+    "Use screen or additive blending for VFX and the active-player overlay.",
+    "All isolated PNG components have true alpha transparency.",
+    "All individual SVG icons have transparent backgrounds.",
+    "Ability rows should render only icon, dynamic number and localized name; no description is baked into assets."
+  ]
+}

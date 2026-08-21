@@ -1,0 +1,376 @@
+{
+  "generated_at": "2026-08-20",
+  "palette": {
+    "navy": "#061a3d",
+    "sapphire": "#27a9ff",
+    "gold": "#d6a53c",
+    "ivory": "#fff9e7",
+    "danger": "#a8182e"
+  },
+  "navigation": [
+    {
+      "name": "back",
+      "file": "svg/navigation/back.svg",
+      "viewBox": "0 0 64 64"
+    },
+    {
+      "name": "chevron-down",
+      "file": "svg/navigation/chevron-down.svg",
+      "viewBox": "0 0 64 64"
+    },
+    {
+      "name": "chevron-right",
+      "file": "svg/navigation/chevron-right.svg",
+      "viewBox": "0 0 64 64"
+    },
+    {
+      "name": "checkmark",
+      "file": "svg/navigation/checkmark.svg",
+      "viewBox": "0 0 64 64"
+    },
+    {
+      "name": "lock",
+      "file": "svg/navigation/lock.svg",
+      "viewBox": "0 0 64 64"
+    },
+    {
+      "name": "unlock",
+      "file": "svg/navigation/unlock.svg",
+      "viewBox": "0 0 64 64"
+    },
+    {
+      "name": "plus",
+      "file": "svg/navigation/plus.svg",
+      "viewBox": "0 0 64 64"
+    },
+    {
+      "name": "minus",
+      "file": "svg/navigation/minus.svg",
+      "viewBox": "0 0 64 64"
+    },
+    {
+      "name": "info",
+      "file": "svg/navigation/info.svg",
+      "viewBox": "0 0 64 64"
+    },
+    {
+      "name": "warning",
+      "file": "svg/navigation/warning.svg",
+      "viewBox": "0 0 64 64"
+    },
+    {
+      "name": "refresh-reroll",
+      "file": "svg/navigation/refresh-reroll.svg",
+      "viewBox": "0 0 64 64"
+    },
+    {
+      "name": "menu-hamburger",
+      "file": "svg/navigation/menu-hamburger.svg",
+      "viewBox": "0 0 64 64"
+    }
+  ],
+  "gameplay": [
+    {
+      "name": "heart-hp",
+      "file": "svg/gameplay/heart-hp.svg",
+      "viewBox": "0 0 64 64"
+    },
+    {
+      "name": "damage-sword",
+      "file": "svg/gameplay/damage-sword.svg",
+      "viewBox": "0 0 64 64"
+    },
+    {
+      "name": "shield",
+      "file": "svg/gameplay/shield.svg",
+      "viewBox": "0 0 64 64"
+    },
+    {
+      "name": "dice",
+      "file": "svg/gameplay/dice.svg",
+      "viewBox": "0 0 64 64"
+    },
+    {
+      "name": "attack",
+      "file": "svg/gameplay/attack.svg",
+      "viewBox": "0 0 64 64"
+    },
+    {
+      "name": "heal",
+      "file": "svg/gameplay/heal.svg",
+      "viewBox": "0 0 64 64"
+    },
+    {
+      "name": "self-damage-blood",
+      "file": "svg/gameplay/self-damage-blood.svg",
+      "viewBox": "0 0 64 64"
+    },
+    {
+      "name": "target",
+      "file": "svg/gameplay/target.svg",
+      "viewBox": "0 0 64 64"
+    },
+    {
+      "name": "crown",
+      "file": "svg/gameplay/crown.svg",
+      "viewBox": "0 0 64 64"
+    },
+    {
+      "name": "trophy",
+      "file": "svg/gameplay/trophy.svg",
+      "viewBox": "0 0 64 64"
+    },
+    {
+      "name": "xp-star",
+      "file": "svg/gameplay/xp-star.svg",
+      "viewBox": "0 0 64 64"
+    },
+    {
+      "name": "prestige",
+      "file": "svg/gameplay/prestige.svg",
+      "viewBox": "0 0 64 64"
+    },
+    {
+      "name": "mastery",
+      "file": "svg/gameplay/mastery.svg",
+      "viewBox": "0 0 64 64"
+    },
+    {
+      "name": "boss",
+      "file": "svg/gameplay/boss.svg",
+      "viewBox": "0 0 64 64"
+    },
+    {
+      "name": "challenge",
+      "file": "svg/gameplay/challenge.svg",
+      "viewBox": "0 0 64 64"
+    },
+    {
+      "name": "reward-gift",
+      "file": "svg/gameplay/reward-gift.svg",
+      "viewBox": "0 0 64 64"
+    },
+    {
+      "name": "player",
+      "file": "svg/gameplay/player.svg",
+      "viewBox": "0 0 64 64"
+    },
+    {
+      "name": "bot",
+      "file": "svg/gameplay/bot.svg",
+      "viewBox": "0 0 64 64"
+    },
+    {
+      "name": "seat-position",
+      "file": "svg/gameplay/seat-position.svg",
+      "viewBox": "0 0 64 64"
+    },
+    {
+      "name": "win",
+      "file": "svg/gameplay/win.svg",
+      "viewBox": "0 0 64 64"
+    },
+    {
+      "name": "loss",
+      "file": "svg/gameplay/loss.svg",
+      "viewBox": "0 0 64 64"
+    },
+    {
+      "name": "streak-flame",
+      "file": "svg/gameplay/streak-flame.svg",
+      "viewBox": "0 0 64 64"
+    },
+    {
+      "name": "campaign",
+      "file": "svg/gameplay/campaign.svg",
+      "viewBox": "0 0 64 64"
+    },
+    {
+      "name": "solo",
+      "file": "svg/gameplay/solo.svg",
+      "viewBox": "0 0 64 64"
+    },
+    {
+      "name": "duo",
+      "file": "svg/gameplay/duo.svg",
+      "viewBox": "0 0 64 64"
+    },
+    {
+      "name": "trio",
+      "file": "svg/gameplay/trio.svg",
+      "viewBox": "0 0 64 64"
+    },
+    {
+      "name": "world",
+      "file": "svg/gameplay/world.svg",
+      "viewBox": "0 0 64 64"
+    },
+    {
+      "name": "encounter",
+      "file": "svg/gameplay/encounter.svg",
+      "viewBox": "0 0 64 64"
+    },
+    {
+      "name": "farm",
+      "file": "svg/gameplay/farm.svg",
+      "viewBox": "0 0 64 64"
+    },
+    {
+      "name": "completed",
+      "file": "svg/gameplay/completed.svg",
+      "viewBox": "0 0 64 64"
+    },
+    {
+      "name": "locked",
+      "file": "svg/gameplay/locked.svg",
+      "viewBox": "0 0 64 64"
+    }
+  ],
+  "abilities": [
+    {
+      "number": 1,
+      "name": "Brutale Einsen",
+      "file": "svg/abilities/01-brutale-einsen.svg",
+      "viewBox": "0 0 64 64"
+    },
+    {
+      "number": 2,
+      "name": "Lifesteal",
+      "file": "svg/abilities/02-lifesteal.svg",
+      "viewBox": "0 0 64 64"
+    },
+    {
+      "number": 3,
+      "name": "Glückswurf",
+      "file": "svg/abilities/03-glueckswurf.svg",
+      "viewBox": "0 0 64 64"
+    },
+    {
+      "number": 4,
+      "name": "Zweite Chance",
+      "file": "svg/abilities/04-zweite-chance.svg",
+      "viewBox": "0 0 64 64"
+    },
+    {
+      "number": 5,
+      "name": "Angriffsvorsprung",
+      "file": "svg/abilities/05-angriffsvorsprung.svg",
+      "viewBox": "0 0 64 64"
+    },
+    {
+      "number": 7,
+      "name": "Glück",
+      "file": "svg/abilities/07-glueck.svg",
+      "viewBox": "0 0 64 64"
+    },
+    {
+      "number": 8,
+      "name": "Präzision",
+      "file": "svg/abilities/08-praezision.svg",
+      "viewBox": "0 0 64 64"
+    },
+    {
+      "number": 9,
+      "name": "Rache",
+      "file": "svg/abilities/09-rache.svg",
+      "viewBox": "0 0 64 64"
+    },
+    {
+      "number": 10,
+      "name": "Momentum",
+      "file": "svg/abilities/10-momentum.svg",
+      "viewBox": "0 0 64 64"
+    },
+    {
+      "number": 11,
+      "name": "Blutpreis",
+      "file": "svg/abilities/11-blutpreis.svg",
+      "viewBox": "0 0 64 64"
+    },
+    {
+      "number": 12,
+      "name": "Gambling Man",
+      "file": "svg/abilities/12-gambling-man.svg",
+      "viewBox": "0 0 64 64"
+    },
+    {
+      "number": 13,
+      "name": "High Stakes",
+      "file": "svg/abilities/13-high-stakes.svg",
+      "viewBox": "0 0 64 64"
+    },
+    {
+      "number": 14,
+      "name": "Last Stand",
+      "file": "svg/abilities/14-last-stand.svg",
+      "viewBox": "0 0 64 64"
+    },
+    {
+      "number": 15,
+      "name": "Perfect 25",
+      "file": "svg/abilities/15-perfect-25.svg",
+      "viewBox": "0 0 64 64"
+    },
+    {
+      "number": 16,
+      "name": "Ricochet",
+      "file": "svg/abilities/16-ricochet.svg",
+      "viewBox": "0 0 64 64"
+    },
+    {
+      "number": 17,
+      "name": "Wildcard",
+      "file": "svg/abilities/17-wildcard.svg",
+      "viewBox": "0 0 64 64"
+    },
+    {
+      "number": 18,
+      "name": "Loaded Dice",
+      "file": "svg/abilities/18-loaded-dice.svg",
+      "viewBox": "0 0 64 64"
+    },
+    {
+      "number": 19,
+      "name": "Insurance",
+      "file": "svg/abilities/19-insurance.svg",
+      "viewBox": "0 0 64 64"
+    },
+    {
+      "number": 20,
+      "name": "Snake Eyes",
+      "file": "svg/abilities/20-snake-eyes.svg",
+      "viewBox": "0 0 64 64"
+    },
+    {
+      "number": 21,
+      "name": "Counterattack",
+      "file": "svg/abilities/21-counterattack.svg",
+      "viewBox": "0 0 64 64"
+    },
+    {
+      "number": 22,
+      "name": "12",
+      "file": "svg/abilities/22-twelve.svg",
+      "viewBox": "0 0 64 64"
+    },
+    {
+      "number": 23,
+      "name": "Blood Rush",
+      "file": "svg/abilities/23-blood-rush.svg",
+      "viewBox": "0 0 64 64"
+    },
+    {
+      "number": 24,
+      "name": "Double Tap",
+      "file": "svg/abilities/24-double-tap.svg",
+      "viewBox": "0 0 64 64"
+    },
+    {
+      "number": 25,
+      "name": "Underdog",
+      "file": "svg/abilities/25-underdog.svg",
+      "viewBox": "0 0 64 64"
+    }
+  ],
+  "sprite": "svg/icon-sprite-v2.svg"
+}
