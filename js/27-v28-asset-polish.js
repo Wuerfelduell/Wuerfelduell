@@ -1,5 +1,5 @@
 (() => {
-  const VERSION = "28.1.0";
+  const VERSION = "28.2.0";
   const ROOT = "assets/ui/v28/svg/";
 
   const menuIcons = {
