@@ -1,0 +1,153 @@
+/* ============================================================
+   DiceDuel V28.2.10 — UI Rework Phase 10
+   Exact artwork anchoring for the ability bonus, combat cards
+   and premium campaign nodes.
+
+   Presentation only. Gameplay, saves and campaign rules stay
+   untouched. Existing rendered V28 assets are reused throughout.
+   ============================================================ */
+
+/* ---------- Ability bonus: use the plaque and both artwork sockets ----------
+   The modal frame already owns its navy title plaque. The ability frame also
+   owns a left diamond and a right number ring, so those three elements are
+   anchored to the artwork instead of reserving extra grid columns. */
+html[data-v28-rework="2"] .second-ability-panel{
+  position:relative!important;
+}
+html[data-v28-rework="2"] .second-ability-panel>.second-ability-kicker{
+  position:absolute!important;
+  z-index:3!important;
+  top:-27px!important;
+  left:50%!important;
+  width:88%!important;
+  min-height:26px!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  margin:0!important;
+  padding:0 12px!important;
+  transform:translateX(-50%)!important;
+  color:#fff2c8!important;
+  background:none!important;
+  font-size:13px!important;
+  line-height:1.05!important;
+  text-align:center!important;
+  pointer-events:none;
+}
+html[data-v28-rework="2"] .second-ability-title{
+  margin:14px 0 6px!important;
+}
+html[data-v28-rework="2"] .second-ability-options{
+  margin-top:8px!important;
+}
+html[data-v28-rework="2"] .second-ability-card{
+  position:relative!important;
+  grid-template-columns:minmax(0,1fr)!important;
+  grid-template-rows:1fr!important;
+}
+html[data-v28-rework="2"] .second-ability-card>.dd-ability-icon{
+  position:absolute!important;
+  z-index:2!important;
+  left:-44px!important;
+  top:50%!important;
+  grid-column:auto!important;
+  grid-row:auto!important;
+  transform:translateY(-50%)!important;
+}
+html[data-v28-rework="2"] .second-ability-card>.num{
+  position:absolute!important;
+  z-index:2!important;
+  right:-16px!important;
+  top:50%!important;
+  width:32px!important;
+  height:44px!important;
+  min-width:0!important;
+  display:grid!important;
+  place-items:center!important;
+  grid-column:auto!important;
+  grid-row:auto!important;
+  margin:0!important;
+  padding:0!important;
+  transform:translateY(-50%)!important;
+  color:#082a55!important;
+  background:transparent!important;
+  border:0!important;
+  border-radius:0!important;
+  box-shadow:none!important;
+  font:900 18px/1 Georgia,"Times New Roman",serif!important;
+  text-align:center!important;
+}
+html[data-v28-rework="2"] .second-ability-card>.name{
+  width:100%!important;
+  box-sizing:border-box!important;
+  grid-column:1!important;
+  grid-row:1!important;
+  justify-self:center!important;
+  padding:0 12px!important;
+  text-align:center!important;
+}
+
+/* ---------- Combat: align the 1200x704 active canvas to the full card ---------- */
+html[data-v28-rework="2"] body.playing #players .player.active::after{
+  inset:-19px -22px!important;
+}
+html[data-v28-rework="2"] body.playing #players .player.v28-boss-player.active::after{
+  inset:-20px -23px!important;
+}
+
+/* ---------- Campaign: glow directly below the premium node artwork ---------- */
+html[data-v28-rework="2"] .campaign-hub .campaign-node.boss.p6-farm-node{
+  isolation:isolate!important;
+  overflow:visible!important;
+}
+html[data-v28-rework="2"] .campaign-hub .campaign-node.boss.p6-farm-node::before{
+  z-index:0!important;
+}
+html[data-v28-rework="2"] .campaign-hub .campaign-node.boss.p6-farm-node>.p8-boss-selected-glow{
+  z-index:-1!important;
+  inset:-7px!important;
+  width:calc(100% + 14px)!important;
+  height:calc(100% + 14px)!important;
+  max-width:none!important;
+  max-height:none!important;
+  object-fit:contain!important;
+  object-position:center!important;
+  transform:none!important;
+  mix-blend-mode:normal!important;
+  opacity:1!important;
+  filter:drop-shadow(0 0 5px rgba(23,240,106,.30));
+}
+html[data-v28-rework="2"] .campaign-hub .campaign-node.p6-farm-node>.node-xp-badge{
+  left:50%!important;
+  right:auto!important;
+  bottom:-20px!important;
+  transform:translateX(-50%)!important;
+}
+
+@media(max-width:540px){
+  html[data-v28-rework="2"] .second-ability-card>.dd-ability-icon{
+    left:-38px!important;
+  }
+  html[data-v28-rework="2"] body.playing #players .player.active::after{
+    inset:-17px!important;
+  }
+  html[data-v28-rework="2"] body.playing #players .player.v28-boss-player.active::after{
+    inset:-18px!important;
+  }
+}
+
+@media(max-width:390px){
+  html[data-v28-rework="2"] .second-ability-card>.dd-ability-icon{
+    left:-34px!important;
+  }
+  html[data-v28-rework="2"] .second-ability-card>.num{
+    font-size:17px!important;
+  }
+}
+
+@media(prefers-reduced-motion:reduce){
+  html[data-v28-rework="2"] .campaign-hub .campaign-node.boss.p6-farm-node>.p8-boss-selected-glow{
+    animation:none!important;
+    opacity:1!important;
+  }
+}
