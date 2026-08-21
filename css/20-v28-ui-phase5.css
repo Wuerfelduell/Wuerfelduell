@@ -1,0 +1,195 @@
+/* ============================================================
+   DiceDuel V28.2.5 — UI Rework Phase 5
+   Fine polish: real danger action, lean combat cards, emoji-free
+   mastery surfaces, compact prestige summary and picker bounds.
+
+   Presentation only. Gameplay, saves and campaign rules stay
+   untouched. Existing V28 assets are reused throughout.
+   ============================================================ */
+
+:root{
+  --p5-danger-button:url("../assets/ui/v28/png/frames/danger-button.png?v=28.2.5");
+}
+
+/* ---------- Quit action: paint the real ornamental danger asset ---------- */
+html[data-v28-rework="2"] #quitModal .utility-actions{
+  overflow:visible!important;
+  gap:10px!important;
+  padding:3px 2px!important;
+}
+html[data-v28-rework="2"] #quitConfirmBtn{
+  position:relative!important;
+  isolation:isolate;
+  overflow:visible!important;
+  min-height:76px!important;
+  padding:18px 30px!important;
+  border:0!important;
+  border-radius:0!important;
+  background:transparent!important;
+  box-shadow:none!important;
+  color:#fff7e9!important;
+  text-shadow:0 1px 3px rgba(42,2,9,.82)!important;
+}
+html[data-v28-rework="2"] #quitConfirmBtn::before{
+  content:"";
+  position:absolute;
+  z-index:0;
+  inset:-3px -6px;
+  pointer-events:none;
+  background:var(--p5-danger-button) center/100% 100% no-repeat;
+  filter:drop-shadow(0 6px 10px rgba(54,3,12,.24));
+}
+html[data-v28-rework="2"] #quitConfirmBtn>.p5-button-label{
+  position:relative;
+  z-index:1;
+}
+
+/* ---------- Combat: remove obsolete match metadata ---------- */
+html[data-v28-rework="2"] body.playing #winTrackerLabel,
+html[data-v28-rework="2"] body.playing #players .seat-tag,
+html[data-v28-rework="2"] body.playing #players .score-badge{
+  display:none!important;
+}
+
+/* Keep the animated active-player artwork completely inside its card. */
+html[data-v28-rework="2"] body.playing #players .player.active::after{
+  inset:1px!important;
+  background-size:100% 100%!important;
+  clip-path:inset(0 round 2px);
+}
+
+/* ---------- Mastery: SVG sprites instead of text emoji ---------- */
+html[data-v28-rework="2"] .p5-mastery-title-icon,
+html[data-v28-rework="2"] .p5-mastery-sheet-icon,
+html[data-v28-rework="2"] .p5-mastery-button-icon,
+html[data-v28-rework="2"] .p5-mastery-xp-icon,
+html[data-v28-rework="2"] .p5-mastery-lock-icon{
+  display:inline-block;
+  object-fit:contain;
+  vertical-align:middle;
+  pointer-events:none;
+}
+html[data-v28-rework="2"] #masteryModal .screen-title{
+  display:flex!important;
+  align-items:center!important;
+  gap:8px!important;
+}
+html[data-v28-rework="2"] #masteryModal .p5-mastery-title-icon{
+  width:36px;
+  height:36px;
+  flex:0 0 36px;
+}
+html[data-v28-rework="2"] #masteryModal .mastery-branch-icon>.p5-mastery-branch-sprite{
+  width:30px;
+  height:30px;
+  object-fit:contain;
+  filter:drop-shadow(0 2px 3px rgba(2,15,35,.38));
+}
+html[data-v28-rework="2"] #masteryModal .mastery-xp-line>span:first-child{
+  display:inline-flex;
+  align-items:center;
+  gap:5px;
+}
+html[data-v28-rework="2"] #masteryModal .p5-mastery-xp-icon,
+html[data-v28-rework="2"] .campaign-hub .p5-mastery-xp-icon{
+  width:18px;
+  height:18px;
+  flex:0 0 18px;
+}
+html[data-v28-rework="2"] #masteryModal .mastery-ability-sheet-head h3{
+  display:flex!important;
+  align-items:center!important;
+  gap:7px!important;
+}
+html[data-v28-rework="2"] #masteryModal .p5-mastery-sheet-icon{
+  width:27px;
+  height:27px;
+  flex:0 0 27px;
+}
+html[data-v28-rework="2"] #masteryModal .mastery-fusion-placeholder .p5-mastery-lock-icon{
+  width:18px;
+  height:18px;
+  flex:0 0 18px;
+}
+html[data-v28-rework="2"] .campaign-hub .campaign-mastery-btn{
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  gap:8px!important;
+}
+html[data-v28-rework="2"] .campaign-hub .p5-mastery-button-icon{
+  width:25px;
+  height:25px;
+  flex:0 0 25px;
+}
+html[data-v28-rework="2"] .campaign-hub .campaign-mastery-xp strong{
+  display:flex!important;
+  align-items:center!important;
+  gap:5px!important;
+}
+html[data-v28-rework="2"] #abilityMasteryLabModal .ability-mastery-lab-title{
+  display:flex;
+  align-items:center;
+  gap:7px;
+}
+html[data-v28-rework="2"] #abilityMasteryLabModal .p5-mastery-title-icon{
+  width:28px;
+  height:28px;
+}
+
+/* ---------- Campaign prestige: one label, trophy + value below ---------- */
+html[data-v28-rework="2"] #campaignScreen .p5-prestige-card .campaign-label>.p1-inline-icon{
+  display:none!important;
+}
+html[data-v28-rework="2"] #campaignScreen .p5-prestige-card .campaign-label{
+  padding-left:0!important;
+}
+html[data-v28-rework="2"] #campaignTrophySummary.p5-prestige-value{
+  display:flex!important;
+  align-items:center!important;
+  gap:7px!important;
+  min-height:28px;
+}
+html[data-v28-rework="2"] #campaignTrophySummary .p5-prestige-trophy{
+  width:27px;
+  height:27px;
+  flex:0 0 27px;
+  object-fit:contain;
+}
+html[data-v28-rework="2"] #campaignTrophySummary .p5-prestige-count{
+  font:900 19px/1 Georgia,"Times New Roman",serif;
+  color:#0b2f5c;
+}
+
+/* ---------- Generic picker: close circle stays fully on-screen ---------- */
+html[data-v28-rework="2"] .dd-select-panel{
+  box-sizing:border-box!important;
+  width:min(560px,calc(100% - 8px))!important;
+}
+html[data-v28-rework="2"] .dd-select-close{
+  top:-43px!important;
+  right:12px!important;
+}
+
+@media(max-width:540px){
+  html[data-v28-rework="2"] #quitConfirmBtn{
+    min-height:72px!important;
+    padding:16px 22px!important;
+  }
+  html[data-v28-rework="2"] .dd-select-close{
+    top:-40px!important;
+    right:10px!important;
+  }
+}
+
+@media(max-width:390px){
+  html[data-v28-rework="2"] #quitModal .utility-actions{
+    gap:7px!important;
+  }
+  html[data-v28-rework="2"] #quitCancelBtn,
+  html[data-v28-rework="2"] #quitConfirmBtn{
+    padding-inline:18px!important;
+    font-size:14px!important;
+  }
+}
+
