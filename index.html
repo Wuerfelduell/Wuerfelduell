@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta name="wd-build" content="28.2.5" />
+  <meta name="wd-build" content="28.2.6" />
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <meta name="theme-color" content="#e8f2f6" />
@@ -11,7 +11,7 @@
   <link rel="manifest" href="manifest.json" />
   <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png" />
   <link rel="apple-touch-icon" sizes="192x192" href="icon-192.png" />
-  <title>DiceDuel · V28.2.5</title>
+  <title>DiceDuel · V28.2.6</title>
     <link rel="stylesheet" href="css/01-base-ui.css?v=28.2.1" />
   <link rel="stylesheet" href="css/02-battle.css?v=28.2.1" />
   <link rel="stylesheet" href="css/03-campaign.css?v=28.2.1" />
@@ -34,6 +34,7 @@
   <link rel="stylesheet" href="css/18-v28-ui-phase3.css?v=28.2.3">
   <link rel="stylesheet" href="css/19-v28-ui-phase4.css?v=28.2.4">
   <link rel="stylesheet" href="css/20-v28-ui-phase5.css?v=28.2.5">
+  <link rel="stylesheet" href="css/21-v28-ui-phase6.css?v=28.2.6">
   <script type="importmap">
   {
     "imports": {
@@ -466,6 +467,7 @@
   <section id="changelogScreen" class="card screen-card hidden">
     <div class="screen-topbar"><button class="menuBackBtn">←</button><h2 class="screen-title">📝 Changelog</h2></div>
     <div class="screen-subtitle">Die großen Versionssprünge, ohne jeden Mini-Hotfix.</div>
+    <div class="changelog-entry"><div class="changelog-version">V28.2.6</div><ul><li>Erweitertes V28-Asset-Pack integriert: dynamische Farm-Nodes, XP-Badges und echter grüner Encounter-Button</li><li>HP- und Completed-Status verwenden die neuen gerenderten Medaillons</li><li>Zurück-Navigation nutzt den neu aufgebauten Gold-Navy-Button; Back-SVG und beide Icon-Sprites aktualisiert</li><li>Farm-Nummer, FARM-Label, XP-Wert, Button-Icon und lokalisierter Buttontext bleiben dynamische UI-Layer</li><li>Gameplay-, Save-, Campaign- und Online-Logik unverändert</li></ul></div>
     <div class="changelog-entry"><div class="changelog-version">V28.2.5</div><ul><li>UI-Rework Phase 5: echter roter Quit-Rahmen und vollständig sichtbarer Picker-Schließen-Kreis</li><li>Sieg-Tracker, Siege, Sitzplatz und Würfeldesign aus den Kampf-Spielerkarten entfernt</li><li>Mastery-Oberflächen von alten Text-Emojis bereinigt und mit vorhandenen V28-SVG-Sprites ausgestattet</li><li>Solo-Prestige-Zusammenfassung auf einmal PRESTIGE plus Pokal und Zahl reduziert</li><li>Gameplay-, Save-, Campaign- und Online-Logik unverändert</li></ul></div>
     <div class="changelog-entry"><div class="changelog-version">V28.2.3</div><ul><li>UI-Rework Phase 3 anhand der Rot-/Gelb-/Orange-/Lila-Markierungen</li><li>Überstehende helle und navyfarbene Rechteckkanten hinter transparenten 9-Slice-Rahmen entfernt</li><li>Campaign-Map, Campaign-Nodes, Mastery-Zweige, Standard-Nodes, Ability-Nodes, Profilkarten und Combat-Hauptflächen erhalten echte vorhandene V28-Rahmen</li><li>Encounter starten nutzt jetzt einen grünen Aktionskern im vorhandenen Navy-Gold-Rahmen</li><li>Quit-Dialog besitzt korrekt positionierten Titel sowie echte Navy- und Danger-Button-Assets</li><li>Boss- und Encounter-Regelrahmen kompakter zugeschnitten; Gameplay-, Save-, Campaign- und Online-Logik unverändert</li></ul></div>
     <div class="changelog-entry"><div class="changelog-version">V28.2.2</div><ul><li>UI-Rework Phase 2 anhand der nächsten markierten Mobile-Screenshots</li><li>Weiße Rechteckflächen außerhalb der transparenten Rahmen bei großen Screens, Modals und Pickern global entfernt</li><li>Picker-Kopf, Hauptmenü-Symbole und 4×2-Navigation, Campaign-Zusammenfassungen, Encounter-Button und aktueller Level-Node nachjustiert</li><li>Bossdetail Variante A besitzt jetzt einen kollisionsfreien kompakten Bildkopf</li><li>Setup-Selects und Würfel-/Fähigkeitsanzeigen kompakter; Mastery-Nodes bleiben auch im deaktivierten Zustand lesbar</li><li>Gameplay-, Save-, Campaign- und Online-Logik unverändert</li></ul></div>
@@ -728,5 +730,6 @@
 <script src="js/30-v28-ui-phase2.js?v=28.2.2"></script>
 <script src="js/31-v28-ui-phase4.js?v=28.2.4"></script>
 <script src="js/32-v28-ui-phase5.js?v=28.2.5"></script>
+<script src="js/33-v28-ui-phase6.js?v=28.2.6"></script>
 </body>
 </html>
