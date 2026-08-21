@@ -1,0 +1,580 @@
+/* ============================================================
+   DiceDuel V28.2.4 — UI Rework Phase 4
+   Final screenshot polish: stable campaign tones, compact nodes,
+   clean navigation circles, framed utility surfaces and setup
+   sprite cleanup. Existing V28 assets only.
+   ============================================================ */
+
+:root{
+  --p4-ivory-card:url("../assets/ui/v28/png/frames/ivory-card-small.png?v=28.2.4");
+  --p4-panel:url("../assets/ui/v28/png/frames/panel-large.png?v=28.2.4");
+  --p4-navy-button:url("../assets/ui/v28/png/frames/navy-button-horizontal.png?v=28.2.4");
+  --p4-gold-button:url("../assets/ui/v28/png/frames/gold-special-button.png?v=28.2.4");
+  --p4-navy-tile:url("../assets/ui/v28/png/frames/navy-tile.png?v=28.2.4");
+  --p4-achievement:url("../assets/ui/v28/png/frames/achievement-trophy-card.png?v=28.2.4");
+  --p4-round-frame:url("../assets/ui/v28/png/frames/icon-frame-round.png?v=28.2.4");
+  --p4-boss-bar:url("../assets/ui/v28/png/frames/boss.png?v=28.2.4");
+  --p4-back:url("../assets/ui/v28/svg/navigation/back.svg?v=28.2.4");
+  --p4-close:url("../assets/ui/v28/svg/navigation/close-x.svg?v=28.2.4");
+}
+
+/* ---------- One navigation size everywhere ---------- */
+html[data-v28-rework="2"] .screen-topbar>button,
+html[data-v28-rework="2"] #masteryCloseBtn,
+html[data-v28-rework="2"] .ability-mastery-lab-topbar>button,
+html[data-v28-rework="2"] .mastery-locked-card>button,
+html[data-v28-rework="2"] .dd-select-close{
+  box-sizing:border-box!important;
+  width:48px!important;
+  height:48px!important;
+  min-width:48px!important;
+  min-height:48px!important;
+  flex:0 0 48px!important;
+  overflow:hidden!important;
+  padding:0!important;
+  border:2px solid #d7aa48!important;
+  border-radius:50%!important;
+  outline:1px solid rgba(255,235,170,.72)!important;
+  outline-offset:-5px!important;
+  color:transparent!important;
+  font-size:0!important;
+  background:
+    var(--p4-back) center/31% 31% no-repeat,
+    radial-gradient(circle at 50% 34%,#195489 0 40%,#0a315f 61%,#04162f 100%)!important;
+  box-shadow:0 4px 12px rgba(5,29,61,.19),inset 0 0 0 4px #092650!important;
+  transform:none!important;
+}
+html[data-v28-rework="2"] .ability-mastery-lab-topbar>button,
+html[data-v28-rework="2"] .mastery-locked-card>button,
+html[data-v28-rework="2"] .dd-select-close{
+  background:
+    var(--p4-close) center/29% 29% no-repeat,
+    radial-gradient(circle at 50% 34%,#195489 0 40%,#0a315f 61%,#04162f 100%)!important;
+}
+html[data-v28-rework="2"] #setup #setupBackBtn{
+  transform:none!important;
+}
+
+/* Keep the picker close control inside the framed panel. */
+html[data-v28-rework="2"] .dd-select-panel{
+  overflow:hidden!important;
+}
+html[data-v28-rework="2"] .dd-select-close{
+  top:-45px!important;
+  right:-6px!important;
+}
+html[data-v28-rework="2"] .dd-select-options{
+  min-height:0!important;
+  padding:2px 1px 0!important;
+  scroll-snap-type:y proximity;
+  scrollbar-gutter:stable;
+}
+html[data-v28-rework="2"] .dd-select-option{
+  scroll-snap-align:start;
+}
+
+/* ---------- Remove rectangular lips behind ornamental frames ---------- */
+html[data-v28-rework="2"] #rulesScreen .menu-info-card,
+html[data-v28-rework="2"] #achievementsScreen .achievement-card,
+html[data-v28-rework="2"] #prestigeShopScreen .prestige-item,
+html[data-v28-rework="2"] #prestigeShopScreen .prestige-item.owned,
+html[data-v28-rework="2"] #prestigeShopScreen .prestige-item.expensive,
+html[data-v28-rework="2"] #profilesScreen .profile-card,
+html[data-v28-rework="2"] #profilesScreen .profile-actions .dd-select-trigger,
+html[data-v28-rework="2"] #profilesScreen .profile-name-edit{
+  background-color:transparent!important;
+  box-shadow:none!important;
+}
+html[data-v28-rework="2"] #rulesScreen .menu-info-card,
+html[data-v28-rework="2"] #achievementsScreen .achievement-card,
+html[data-v28-rework="2"] #prestigeShopScreen .prestige-item,
+html[data-v28-rework="2"] #profilesScreen .profile-card{
+  background-image:none!important;
+}
+
+/* ---------- Rules ---------- */
+html[data-v28-rework="2"] #rulesScreen .menu-info-card{
+  min-height:0!important;
+  padding:9px 12px 12px!important;
+}
+html[data-v28-rework="2"] #rulesScreen .menu-info-card>strong{
+  min-height:34px;
+  margin:0 0 4px!important;
+}
+html[data-v28-rework="2"] #rulesScreen .rules-extra{
+  margin-top:13px!important;
+}
+html[data-v28-rework="2"] #rulesScreen #allAbilitiesBtn{
+  box-sizing:border-box!important;
+  width:100%!important;
+  min-height:68px!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  gap:9px!important;
+  padding:13px 38px!important;
+  border:0!important;
+  border-radius:0!important;
+  color:#fff4d4!important;
+  background:var(--p4-navy-button) center/100% 100% no-repeat!important;
+  box-shadow:none!important;
+  text-shadow:0 1px 3px rgba(2,16,38,.72)!important;
+}
+html[data-v28-rework="2"] #rulesScreen #allAbilitiesBtn .p4-action-icon{
+  width:25px;
+  height:25px;
+  flex:0 0 25px;
+}
+html[data-v28-rework="2"] .p4-action-icon,
+html[data-v28-rework="2"] .p4-inline-icon,
+html[data-v28-rework="2"] .p4-setup-label-icon,
+html[data-v28-rework="2"] .p4-node-mark-icon,
+html[data-v28-rework="2"] .p4-node-xp-icon{
+  display:inline-block;
+  object-fit:contain;
+  pointer-events:none;
+  user-select:none;
+}
+
+/* ---------- Trophy Shop ---------- */
+html[data-v28-rework="2"] #prestigeShopScreen .prestige-wallet{
+  box-sizing:border-box!important;
+  min-height:64px!important;
+  padding:12px 31px!important;
+  border:0!important;
+  border-radius:0!important;
+  color:#fff1cb!important;
+  background:var(--p4-navy-button) center/100% 100% no-repeat!important;
+  box-shadow:none!important;
+}
+html[data-v28-rework="2"] #prestigeShopScreen .prestige-wallet span{
+  color:#d4dfec!important;
+}
+html[data-v28-rework="2"] #prestigeShopScreen .prestige-wallet strong{
+  display:flex;
+  align-items:center;
+  gap:6px;
+  color:#ffe18b!important;
+}
+html[data-v28-rework="2"] #prestigeShopScreen .prestige-equipped{
+  box-sizing:border-box!important;
+  margin:0 0 12px!important;
+  padding:15px 22px 17px!important;
+  border:16px 21px solid transparent!important;
+  border-image-source:var(--p4-navy-tile)!important;
+  border-image-slice:150 fill!important;
+  border-image-width:16px 21px!important;
+  border-image-repeat:stretch!important;
+  border-radius:0!important;
+  color:#dce5ef!important;
+  background:transparent!important;
+  box-shadow:none!important;
+}
+html[data-v28-rework="2"] #prestigeShopScreen .prestige-reset-row{
+  gap:7px!important;
+  margin-top:9px!important;
+}
+html[data-v28-rework="2"] #prestigeShopScreen .prestige-reset-row button{
+  min-height:39px!important;
+  padding:7px 20px!important;
+  border:0!important;
+  border-radius:0!important;
+  color:#fff0ca!important;
+  background:var(--p4-navy-button) center/100% 100% no-repeat!important;
+  box-shadow:none!important;
+}
+html[data-v28-rework="2"] #prestigeShopScreen .prestige-item,
+html[data-v28-rework="2"] #prestigeShopScreen .prestige-item.owned,
+html[data-v28-rework="2"] #prestigeShopScreen .prestige-item.expensive{
+  min-height:164px!important;
+  display:flex!important;
+  flex-direction:column!important;
+  padding:16px 17px 15px!important;
+}
+html[data-v28-rework="2"] #prestigeShopScreen .prestige-item-kicker{
+  min-height:18px;
+  display:flex;
+  align-items:center;
+  gap:5px;
+  margin:2px 0 0!important;
+  line-height:1.15!important;
+}
+html[data-v28-rework="2"] #prestigeShopScreen .prestige-item-name{
+  margin:4px 0 0!important;
+  line-height:1.14!important;
+}
+html[data-v28-rework="2"] #prestigeShopScreen .prestige-item-desc{
+  min-height:0!important;
+  margin:7px 0 12px!important;
+  line-height:1.42!important;
+}
+html[data-v28-rework="2"] #prestigeShopScreen .prestige-item>button{
+  min-height:48px!important;
+  margin-top:auto!important;
+  padding:9px 31px!important;
+  border:0!important;
+  border-radius:0!important;
+  box-shadow:none!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  gap:6px!important;
+}
+html[data-v28-rework="2"] #prestigeShopScreen .prestige-item>button.good,
+html[data-v28-rework="2"] #prestigeShopScreen .prestige-item>button:disabled:not(.gold){
+  color:#fff1cb!important;
+  background:var(--p4-navy-button) center/100% 100% no-repeat!important;
+}
+html[data-v28-rework="2"] #prestigeShopScreen .prestige-item>button.gold{
+  color:#102c51!important;
+  background:var(--p4-gold-button) center/100% 100% no-repeat!important;
+}
+html[data-v28-rework="2"] #prestigeShopScreen .prestige-item>button.gold:disabled{
+  color:#233b56!important;
+  background:var(--p4-gold-button) center/100% 100% no-repeat!important;
+  opacity:.52!important;
+  filter:grayscale(.68) saturate(.58)!important;
+}
+html[data-v28-rework="2"] #prestigeShopScreen .p4-inline-icon{
+  width:18px;
+  height:18px;
+  flex:0 0 18px;
+}
+
+/* ---------- Profile panels and small section plaques ---------- */
+html[data-v28-rework="2"] #profilesScreen .profile-card-top{
+  box-sizing:border-box!important;
+  min-height:92px!important;
+  margin:-8px -8px 13px!important;
+  padding:19px 34px!important;
+  border:0!important;
+  color:#fff3d1!important;
+  background:var(--p4-navy-button) center/100% 100% no-repeat!important;
+  box-shadow:none!important;
+}
+html[data-v28-rework="2"] #profilesScreen .profile-actions label,
+html[data-v28-rework="2"] #profilesScreen .unlock-strip-title{
+  box-sizing:border-box!important;
+  width:max-content!important;
+  min-width:104px;
+  min-height:27px;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  margin:8px 0 5px!important;
+  padding:4px 22px!important;
+  color:#fff0c9!important;
+  background:var(--p4-navy-button) center/100% 100% no-repeat!important;
+  font-size:9px!important;
+  line-height:1!important;
+  letter-spacing:.075em!important;
+  text-shadow:0 1px 2px rgba(2,16,38,.66);
+}
+html[data-v28-rework="2"] #profilesScreen .profile-actions>div:first-child label{
+  margin-top:0!important;
+}
+html[data-v28-rework="2"] #profilesScreen .unlock-strip{
+  box-sizing:border-box!important;
+  margin:0!important;
+  padding:13px 17px!important;
+  border:16px 19px solid transparent!important;
+  border-image-source:var(--p4-navy-tile)!important;
+  border-image-slice:150 fill!important;
+  border-image-width:16px 19px!important;
+  border-image-repeat:stretch!important;
+  border-radius:0!important;
+  background:transparent!important;
+  box-shadow:none!important;
+}
+
+/* ---------- Achievements: no navy rectangles outside gold corners ---------- */
+html[data-v28-rework="2"] #achievementsScreen .achievement-list{
+  gap:10px!important;
+  padding-inline:2px;
+}
+html[data-v28-rework="2"] #achievementsScreen .achievement-card,
+html[data-v28-rework="2"] #achievementsScreen .achievement-card.dd-achieved{
+  width:calc(100% - 6px)!important;
+  min-height:166px!important;
+  margin-inline:3px!important;
+  padding:15px 12px 17px!important;
+  border:24px 29px solid transparent!important;
+  border-image-source:var(--p4-achievement)!important;
+  border-image-slice:140 155 128 155 fill!important;
+  border-image-width:24px 29px!important;
+  border-image-repeat:stretch!important;
+  color:#fff1cf!important;
+  background:transparent!important;
+  box-shadow:none!important;
+}
+html[data-v28-rework="2"] #achievementsScreen .achievement-head{
+  padding-inline:2px;
+}
+html[data-v28-rework="2"] #achievementsScreen .achievement-desc,
+html[data-v28-rework="2"] #achievementsScreen .achievement-owners{
+  padding-inline:2px;
+}
+
+/* ---------- Campaign nodes: keep every mark inside its own circle ---------- */
+html[data-v28-rework="2"] .campaign-hub .campaign-node-map{
+  gap:24px 7px!important;
+  padding-bottom:27px!important;
+}
+html[data-v28-rework="2"] .campaign-hub .campaign-node,
+html[data-v28-rework="2"] .campaign-hub .campaign-node.boss,
+html[data-v28-rework="2"] .campaign-hub .campaign-node.world-boss{
+  width:min(60px,100%)!important;
+  aspect-ratio:1/1!important;
+  transform:none!important;
+  border-radius:50%!important;
+}
+html[data-v28-rework="2"] .campaign-hub .campaign-node>span:first-child{
+  position:absolute!important;
+  z-index:3!important;
+  inset:0!important;
+  display:grid!important;
+  place-items:center!important;
+  transform:none!important;
+  font-size:16px!important;
+  line-height:1!important;
+}
+html[data-v28-rework="2"] .campaign-hub .campaign-node .node-mark{
+  position:absolute!important;
+  z-index:5!important;
+  top:-4px!important;
+  right:-3px!important;
+  width:20px!important;
+  height:20px!important;
+  display:grid!important;
+  place-items:center!important;
+  transform:none!important;
+  font-size:0!important;
+}
+html[data-v28-rework="2"] .campaign-hub .campaign-node .node-mark img{
+  width:18px!important;
+  height:18px!important;
+  object-fit:contain;
+  filter:drop-shadow(0 2px 2px rgba(0,0,0,.42));
+}
+html[data-v28-rework="2"] .campaign-hub .campaign-node .node-xp-badge{
+  z-index:6!important;
+  left:50%!important;
+  right:auto!important;
+  top:auto!important;
+  bottom:-16px!important;
+  min-height:15px;
+  display:flex!important;
+  align-items:center!important;
+  gap:2px!important;
+  transform:translateX(-50%)!important;
+  padding:2px 6px!important;
+  font-size:7px!important;
+  line-height:1!important;
+}
+html[data-v28-rework="2"] .campaign-hub .campaign-node .node-xp-badge img{
+  width:9px;
+  height:9px;
+}
+
+/* ---------- Stable encounter detail tone ----------
+   data-p4-detail-tone is set from the selected node before its click handler
+   renders new content. Older text classifiers may still toggle their class,
+   but can no longer change the visible colour between two frames. */
+html[data-v28-rework="2"] .campaign-node-detail[data-p4-detail-tone]{
+  transition:none!important;
+  animation:none!important;
+}
+html[data-v28-rework="2"] .campaign-node-detail[data-p4-detail-tone="standard"],
+html[data-v28-rework="2"] .campaign-node-detail[data-p4-detail-tone="standard"].v28-boss-detail{
+  padding:12px!important;
+  border:1px solid rgba(214,165,60,.48)!important;
+  border-image:none!important;
+  border-radius:18px!important;
+  color:#fff3d5!important;
+  background:linear-gradient(155deg,#123b70,#071d43)!important;
+  box-shadow:0 12px 28px rgba(8,35,73,.16)!important;
+}
+html[data-v28-rework="2"] .campaign-node-detail[data-p4-detail-tone="standard"] .node-detail-head,
+html[data-v28-rework="2"] .campaign-node-detail[data-p4-detail-tone="standard"].v28-boss-detail .node-detail-head{
+  min-height:0!important;
+  display:flex!important;
+  align-items:center!important;
+  margin:-3px -2px 10px!important;
+  padding:10px 11px!important;
+  border:0!important;
+  border-bottom:1px solid rgba(214,165,60,.26)!important;
+  background:transparent!important;
+}
+html[data-v28-rework="2"] .campaign-node-detail[data-p4-detail-tone="standard"] .node-detail-title,
+html[data-v28-rework="2"] .campaign-node-detail[data-p4-detail-tone="standard"].v28-boss-detail .node-detail-title{
+  color:#fff4da!important;
+  white-space:normal!important;
+}
+html[data-v28-rework="2"] .campaign-node-detail[data-p4-detail-tone="standard"] .node-detail-sub,
+html[data-v28-rework="2"] .campaign-node-detail[data-p4-detail-tone="standard"].v28-boss-detail .node-detail-sub{
+  color:#f1cf80!important;
+}
+html[data-v28-rework="2"] .campaign-node-detail[data-p4-detail-tone="standard"] .node-detail-state,
+html[data-v28-rework="2"] .campaign-node-detail[data-p4-detail-tone="standard"].v28-boss-detail .node-detail-state{
+  color:#fff0c7!important;
+  border:1px solid rgba(214,165,60,.34)!important;
+  background:rgba(3,17,39,.55)!important;
+}
+html[data-v28-rework="2"] .campaign-node-detail[data-p4-detail-tone="standard"] .node-detail-desc,
+html[data-v28-rework="2"] .campaign-node-detail[data-p4-detail-tone="standard"] .node-detail-row,
+html[data-v28-rework="2"] .campaign-node-detail[data-p4-detail-tone="standard"].v28-boss-detail .node-detail-desc,
+html[data-v28-rework="2"] .campaign-node-detail[data-p4-detail-tone="standard"].v28-boss-detail .node-detail-row{
+  color:#e4ebf3!important;
+  background:rgba(3,17,39,.36)!important;
+  border-color:rgba(214,165,60,.22)!important;
+}
+html[data-v28-rework="2"] .campaign-node-detail[data-p4-detail-tone="boss"],
+html[data-v28-rework="2"] .campaign-node-detail[data-p4-detail-tone="boss"].v28-prestige-detail:not(.v28-boss-detail){
+  padding:12px!important;
+  border:1px solid rgba(230,151,67,.38)!important;
+  border-image:none!important;
+  border-radius:18px!important;
+  color:#fff2df!important;
+  background:
+    radial-gradient(circle at 50% 0%,rgba(211,42,55,.18),transparent 48%),
+    linear-gradient(160deg,#3b0d1b,#200713)!important;
+  box-shadow:0 16px 34px rgba(47,4,15,.22)!important;
+}
+html[data-v28-rework="2"] .campaign-node-detail[data-p4-detail-tone="boss"] .node-detail-head{
+  box-sizing:border-box!important;
+  min-height:94px!important;
+  display:grid!important;
+  grid-template-columns:minmax(0,1fr) auto!important;
+  align-items:center!important;
+  gap:8px!important;
+  margin:-3px -3px 11px!important;
+  padding:19px 34px!important;
+  border:0!important;
+  border-radius:0!important;
+  background:var(--p4-boss-bar) center/100% 154% no-repeat!important;
+}
+html[data-v28-rework="2"] .campaign-node-detail[data-p4-detail-tone="boss"] .node-detail-title{
+  color:#fff4df!important;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+html[data-v28-rework="2"] .campaign-node-detail[data-p4-detail-tone="boss"] .node-detail-sub{
+  color:#f4cf89!important;
+}
+html[data-v28-rework="2"] .campaign-node-detail[data-p4-detail-tone="boss"] .node-detail-state{
+  color:#fff0c7!important;
+  border:1px solid rgba(245,194,97,.38)!important;
+  background:rgba(27,2,8,.68)!important;
+}
+html[data-v28-rework="2"] .campaign-node-detail[data-p4-detail-tone="boss"] .node-detail-desc,
+html[data-v28-rework="2"] .campaign-node-detail[data-p4-detail-tone="boss"] .node-detail-row,
+html[data-v28-rework="2"] .campaign-node-detail[data-p4-detail-tone="boss"].v28-prestige-detail:not(.v28-boss-detail) .node-detail-desc,
+html[data-v28-rework="2"] .campaign-node-detail[data-p4-detail-tone="boss"].v28-prestige-detail:not(.v28-boss-detail) .node-detail-row{
+  color:#f7e6df!important;
+  border-color:rgba(242,190,92,.20)!important;
+  background:rgba(17,2,7,.34)!important;
+}
+
+/* ---------- Setup: the player count already rebuilds automatically ---------- */
+html[data-v28-rework="2"] #setup #makeNames{
+  display:none!important;
+}
+html[data-v28-rework="2"] #setup .setup-row{
+  grid-template-columns:1fr!important;
+}
+html[data-v28-rework="2"] #setup .setup-row>label,
+html[data-v28-rework="2"] #setup #setupProfilesBtn,
+html[data-v28-rework="2"] #setup .setup-row>.dd-select-trigger{
+  grid-column:1!important;
+  width:100%!important;
+}
+html[data-v28-rework="2"] #setup .local-mode-card>label{
+  display:flex!important;
+  align-items:center!important;
+  gap:8px!important;
+  flex-wrap:wrap;
+}
+html[data-v28-rework="2"] #setup .local-mode-card>label>.dd-native-select,
+html[data-v28-rework="2"] #setup .local-mode-card>label>.dd-select-trigger{
+  flex-basis:100%;
+}
+html[data-v28-rework="2"] #setup .p4-setup-label-icon{
+  width:25px;
+  height:25px;
+  flex:0 0 25px;
+}
+
+@media(max-width:540px){
+  html[data-v28-rework="2"] .dd-select-panel{
+    max-height:calc(100dvh - 42px)!important;
+  }
+  html[data-v28-rework="2"] .dd-select-close{
+    top:-42px!important;
+    right:-3px!important;
+  }
+  html[data-v28-rework="2"] #prestigeShopScreen .prestige-item,
+  html[data-v28-rework="2"] #prestigeShopScreen .prestige-item.owned,
+  html[data-v28-rework="2"] #prestigeShopScreen .prestige-item.expensive{
+    min-height:154px!important;
+    padding:14px 13px 13px!important;
+  }
+  html[data-v28-rework="2"] #profilesScreen .profile-card-top{
+    min-height:88px!important;
+    padding:18px 30px!important;
+  }
+  html[data-v28-rework="2"] #profilesScreen .profile-actions label,
+  html[data-v28-rework="2"] #profilesScreen .unlock-strip-title{
+    min-width:98px;
+    padding-inline:19px!important;
+  }
+  html[data-v28-rework="2"] #achievementsScreen .achievement-card,
+  html[data-v28-rework="2"] #achievementsScreen .achievement-card.dd-achieved{
+    width:100%!important;
+    margin-inline:0!important;
+    border-width:22px 25px!important;
+    border-image-width:22px 25px!important;
+    padding:13px 8px 15px!important;
+  }
+  html[data-v28-rework="2"] .campaign-hub .campaign-node-map{
+    gap:23px 5px!important;
+    padding:20px 7px 27px!important;
+  }
+  html[data-v28-rework="2"] .campaign-hub .campaign-node,
+  html[data-v28-rework="2"] .campaign-hub .campaign-node.boss,
+  html[data-v28-rework="2"] .campaign-hub .campaign-node.world-boss{
+    width:min(55px,100%)!important;
+  }
+  html[data-v28-rework="2"] .campaign-node-detail[data-p4-detail-tone="boss"] .node-detail-head{
+    min-height:90px!important;
+    padding:18px 29px!important;
+  }
+}
+
+@media(max-width:390px){
+  html[data-v28-rework="2"] .screen-topbar>button,
+  html[data-v28-rework="2"] #masteryCloseBtn,
+  html[data-v28-rework="2"] .ability-mastery-lab-topbar>button,
+  html[data-v28-rework="2"] .mastery-locked-card>button,
+  html[data-v28-rework="2"] .dd-select-close{
+    width:46px!important;
+    height:46px!important;
+    min-width:46px!important;
+    min-height:46px!important;
+    flex-basis:46px!important;
+  }
+  html[data-v28-rework="2"] .campaign-hub .campaign-node,
+  html[data-v28-rework="2"] .campaign-hub .campaign-node.boss,
+  html[data-v28-rework="2"] .campaign-hub .campaign-node.world-boss{
+    width:min(51px,100%)!important;
+  }
+  html[data-v28-rework="2"] .campaign-hub .campaign-node>span:first-child{
+    font-size:14px!important;
+  }
+}
+
+@media(prefers-reduced-motion:reduce){
+  html[data-v28-rework="2"] .campaign-hub .campaign-node.current{
+    animation:none!important;
+  }
+}
