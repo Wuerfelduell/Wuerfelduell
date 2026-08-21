@@ -1,8 +1,8 @@
 {
   "name": "DiceDuel",
-  "version": "28.2.0",
+  "version": "28.0.2",
   "saveSchema": 9,
   "campaignVersion": 34,
   "saveKey": "wuerfelduell_save_v1",
-  "releaseDate": "2026-08-21"
+  "releaseDate": "2026-08-20"
 }
