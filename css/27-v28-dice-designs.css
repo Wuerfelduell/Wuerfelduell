@@ -1,0 +1,170 @@
+/* DiceDuel V28.3.0 – rendered dice collection */
+
+/* ---------- Rendered faces in the regular 3D/2D battle dice ---------- */
+.die.theme-classic-v2{--dice-accent:#45b9ff;--dice-glow:rgba(69,185,255,.88)}
+.die.theme-sapphire-crown{--dice-accent:#53d9ff;--dice-glow:rgba(83,217,255,.9)}
+.die.theme-amethyst-rift{--dice-accent:#c36bff;--dice-glow:rgba(195,107,255,.9)}
+
+.die.theme-art-die .die-face{
+  border:0!important;
+  border-radius:15%!important;
+  background-color:transparent!important;
+  background-repeat:no-repeat!important;
+  background-position:center!important;
+  background-size:118% 118%!important;
+  box-shadow:none!important;
+}
+.die.theme-art-die .die-face::after{display:none!important}
+.die.theme-art-die .die-face-1{background-image:var(--die-art-face-1)!important}
+.die.theme-art-die .die-face-2{background-image:var(--die-art-face-2)!important}
+.die.theme-art-die .die-face-3{background-image:var(--die-art-face-3)!important}
+.die.theme-art-die .die-face-4{background-image:var(--die-art-face-4)!important}
+.die.theme-art-die .die-face-5{background-image:var(--die-art-face-5)!important}
+.die.theme-art-die .die-face-6{background-image:var(--die-art-face-6)!important}
+.die.theme-art-die[data-value=""] .die-face{background-image:var(--die-art-question)!important}
+.die.theme-art-die :is(.die-pips,.die-question){display:none!important}
+
+html.legacy-flat-dice .die.theme-art-die{
+  border-color:transparent!important;
+  background:transparent!important;
+  box-shadow:none!important;
+}
+.die.theme-art-die .die-flat-face{
+  inset:0!important;
+  border-radius:15%!important;
+  background:var(--die-art-current) center/118% 118% no-repeat!important;
+}
+.die.theme-art-die .die-flat-face::after,
+.die.theme-art-die .die-flat-pips,
+.die.theme-art-die .die-flat-question{display:none!important}
+
+/* ---------- Gambling, Insurance, High Stakes and Perfect 25 D6 ---------- */
+:is(.special-big-die,.gambling-die).theme-art-die:not(.d4){
+  appearance:none!important;
+  border-color:transparent!important;
+  background-color:transparent!important;
+  background-image:var(--die-art-current)!important;
+  background-repeat:no-repeat!important;
+  background-position:center!important;
+  background-size:118% 118%!important;
+  color:transparent!important;
+  text-shadow:none!important;
+  box-shadow:0 15px 30px rgba(0,0,0,.28),0 0 24px var(--dice-glow,rgba(104,167,255,.3))!important;
+}
+.special-big-die.d4.theme-classic-v2{background:linear-gradient(145deg,#fffdf7,#e9dac0)!important;color:#123765!important;border-color:#e8b33e!important}
+.special-big-die.d4.theme-sapphire-crown{background:linear-gradient(145deg,#174eb5,#061d68)!important;color:#ffd75e!important;border-color:#e9b635!important}
+.special-big-die.d4.theme-amethyst-rift{background:linear-gradient(145deg,#7d22bc,#2d0b5b)!important;color:#7fe9ff!important;border-color:#f0b43a!important}
+
+/* ---------- Profile collection using the supplied shop/beauty views ---------- */
+html[data-v28-rework="2"] #profilesScreen .dice-design-gallery{
+  display:grid!important;
+  grid-template-columns:repeat(3,minmax(0,1fr))!important;
+  gap:9px!important;
+  margin:0!important;
+  padding:11px!important;
+  border:1px solid rgba(214,165,60,.48)!important;
+  border-radius:16px!important;
+  background:linear-gradient(155deg,#103660,#071f40)!important;
+}
+html[data-v28-rework="2"] #profilesScreen .dice-design-card{
+  appearance:none!important;
+  display:flex!important;
+  min-width:0!important;
+  min-height:0!important;
+  padding:7px 7px 9px!important;
+  flex-direction:column!important;
+  align-items:center!important;
+  justify-content:flex-start!important;
+  gap:2px!important;
+  border:1px solid rgba(224,177,69,.62)!important;
+  border-radius:13px!important;
+  background:linear-gradient(165deg,rgba(16,62,108,.98),rgba(3,22,49,.98))!important;
+  box-shadow:inset 0 0 0 1px rgba(255,244,193,.08),0 5px 12px rgba(1,10,24,.2)!important;
+  color:#f6f8fb!important;
+  text-align:center!important;
+  opacity:1!important;
+  filter:none!important;
+  transform:none!important;
+  overflow:hidden!important;
+}
+html[data-v28-rework="2"] #profilesScreen .dice-design-card:not([disabled]){cursor:pointer!important}
+html[data-v28-rework="2"] #profilesScreen .dice-design-card:not([disabled]):active{transform:scale(.975)!important}
+html[data-v28-rework="2"] #profilesScreen .dice-design-card:focus-visible{outline:3px solid #71d9ff!important;outline-offset:2px!important}
+html[data-v28-rework="2"] #profilesScreen .dice-design-card.selected{
+  border-color:#79f5ad!important;
+  box-shadow:inset 0 0 0 2px rgba(121,245,173,.3),0 0 16px rgba(75,224,136,.45)!important;
+}
+html[data-v28-rework="2"] #profilesScreen .dice-design-preview{
+  position:relative!important;
+  display:block!important;
+  width:100%!important;
+  aspect-ratio:1/1!important;
+  border-radius:10px!important;
+  background:radial-gradient(circle at 50% 45%,rgba(34,107,173,.62),rgba(2,18,43,.18) 68%,transparent 70%)!important;
+  overflow:hidden!important;
+}
+html[data-v28-rework="2"] #profilesScreen .dice-design-beauty{
+  display:block!important;
+  width:100%!important;
+  height:100%!important;
+  object-fit:contain!important;
+  transform:scale(1.06)!important;
+  filter:drop-shadow(0 5px 7px rgba(0,0,0,.35));
+  transition:filter .16s ease,transform .16s ease;
+}
+html[data-v28-rework="2"] #profilesScreen .dice-design-card:not([disabled]):hover .dice-design-beauty{transform:scale(1.1)!important}
+html[data-v28-rework="2"] #profilesScreen .dice-design-card.locked .dice-design-beauty{
+  filter:saturate(.48) brightness(.58) drop-shadow(0 4px 6px rgba(0,0,0,.3))!important;
+}
+html[data-v28-rework="2"] #profilesScreen .dice-design-state{
+  position:absolute!important;
+  top:3px!important;
+  right:3px!important;
+  z-index:2!important;
+  display:block!important;
+  width:34px!important;
+  height:34px!important;
+  object-fit:contain!important;
+  pointer-events:none!important;
+  filter:drop-shadow(0 2px 4px rgba(0,0,0,.38));
+}
+html[data-v28-rework="2"] #profilesScreen .dice-design-card.locked .dice-design-state{
+  top:50%!important;
+  right:auto!important;
+  left:50%!important;
+  width:46px!important;
+  height:46px!important;
+  transform:translate(-50%,-50%)!important;
+}
+html[data-v28-rework="2"] #profilesScreen .dice-design-name{
+  display:block!important;
+  width:100%!important;
+  margin-top:3px!important;
+  color:#fff6d5!important;
+  font-family:Georgia,"Times New Roman",serif!important;
+  font-size:clamp(11px,2.7vw,14px)!important;
+  font-weight:900!important;
+  line-height:1.08!important;
+  overflow-wrap:anywhere!important;
+}
+html[data-v28-rework="2"] #profilesScreen .dice-design-meta{
+  display:block!important;
+  width:100%!important;
+  min-height:2.25em!important;
+  color:#aebfd2!important;
+  font-size:9px!important;
+  font-weight:850!important;
+  line-height:1.15!important;
+}
+html[data-v28-rework="2"] #profilesScreen .dice-design-card.selected .dice-design-meta{color:#79f5ad!important}
+
+@media (max-width:390px){
+  html[data-v28-rework="2"] #profilesScreen .dice-design-gallery{gap:6px!important;padding:8px!important}
+  html[data-v28-rework="2"] #profilesScreen .dice-design-card{padding:5px 5px 7px!important}
+  html[data-v28-rework="2"] #profilesScreen .dice-design-state{width:29px!important;height:29px!important}
+  html[data-v28-rework="2"] #profilesScreen .dice-design-card.locked .dice-design-state{width:40px!important;height:40px!important}
+}
+
+@media (prefers-reduced-motion:reduce){
+  html[data-v28-rework="2"] #profilesScreen .dice-design-beauty{transition:none!important}
+}
