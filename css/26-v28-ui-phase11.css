@@ -1,0 +1,164 @@
+/* ============================================================
+   DiceDuel V28.2.11 — UI Rework Phase 11
+   Stable ability-choice geometry, clean quit action and campaign
+   node anchoring without transform/pulse races.
+
+   Presentation only. Gameplay, saves and campaign rules stay
+   untouched. Existing rendered V28 assets are reused throughout.
+   ============================================================ */
+
+/* ---------- Ability bonus: compact frame and icon use one geometry ----------
+   The left navy socket is baked into the card artwork. Reducing the card height
+   while scaling the icon from the same breakpoint variables makes both shapes
+   meet instead of leaving a tall empty diamond around a small icon. */
+html[data-v28-rework="2"] .second-ability-card{
+  --p11-choice-icon-size:64px;
+  min-height:84px!important;
+  padding-block:0!important;
+}
+html[data-v28-rework="2"] .second-ability-card>.dd-ability-icon{
+  left:-44px!important;
+  width:var(--p11-choice-icon-size)!important;
+  height:var(--p11-choice-icon-size)!important;
+  max-width:none!important;
+  max-height:none!important;
+  object-fit:contain!important;
+}
+html[data-v28-rework="2"] .second-ability-card>.name{
+  padding-inline:18px 24px!important;
+  line-height:1.06!important;
+}
+
+/* ---------- Quit modal: no native/native-theme rectangle below the PNG ---------- */
+html[data-v28-rework="2"] #quitModal .utility-kicker{
+  transform:translateY(11px)!important;
+}
+html[data-v28-rework="2"] #quitConfirmBtn,
+html[data-v28-rework="2"] #quitConfirmBtn:hover,
+html[data-v28-rework="2"] #quitConfirmBtn:focus,
+html[data-v28-rework="2"] #quitConfirmBtn:active{
+  -webkit-appearance:none!important;
+  appearance:none!important;
+  border:0!important;
+  outline:0!important;
+  background:none!important;
+  background-color:transparent!important;
+  background-image:none!important;
+  box-shadow:none!important;
+  filter:none!important;
+  -webkit-tap-highlight-color:transparent!important;
+}
+html[data-v28-rework="2"] #quitConfirmBtn::before{
+  z-index:0!important;
+  background-color:transparent!important;
+}
+html[data-v28-rework="2"] #quitConfirmBtn::after{
+  content:none!important;
+  display:none!important;
+  background:none!important;
+}
+html[data-v28-rework="2"] #quitConfirmBtn>.p5-button-label{
+  transform:translateY(2px)!important;
+}
+
+/* ---------- Campaign nodes: stable number, size and selected state ----------
+   Phase 8 prepends the selected-glow image. Therefore :first-child no longer
+   identifies the level number. :first-of-type remains stable because the glow
+   is an IMG and the dynamic level number is the first SPAN. */
+html[data-v28-rework="2"] .campaign-hub .campaign-node,
+html[data-v28-rework="2"] .campaign-hub .campaign-node.boss,
+html[data-v28-rework="2"] .campaign-hub .campaign-node.world-boss{
+  transform:none!important;
+  rotate:0deg!important;
+  scale:1!important;
+  animation:none!important;
+  transition:none!important;
+  will-change:auto!important;
+}
+html[data-v28-rework="2"] .campaign-hub .campaign-node.boss,
+html[data-v28-rework="2"] .campaign-hub .campaign-node.world-boss{
+  width:min(68px,100%)!important;
+  aspect-ratio:1/1!important;
+}
+html[data-v28-rework="2"] .campaign-hub .campaign-node>span:first-of-type{
+  position:absolute!important;
+  z-index:3!important;
+  inset:0!important;
+  display:grid!important;
+  place-items:center!important;
+  margin:0!important;
+  transform:none!important;
+  rotate:0deg!important;
+  scale:1!important;
+  animation:none!important;
+  transition:none!important;
+  font-size:16px!important;
+  line-height:1!important;
+  text-align:center!important;
+}
+html[data-v28-rework="2"] .campaign-hub .campaign-node.p6-farm-node>span:first-of-type{
+  inset:8% 12% 25%!important;
+  font-size:18px!important;
+  color:#fff0bd!important;
+  text-shadow:0 2px 3px rgba(1,13,31,.86)!important;
+}
+html[data-v28-rework="2"] .campaign-hub .campaign-node.boss>.p8-boss-selected-glow{
+  opacity:1!important;
+  transform:none!important;
+  rotate:0deg!important;
+  scale:1!important;
+  animation:none!important;
+  transition:none!important;
+  filter:drop-shadow(0 0 5px rgba(23,240,106,.30))!important;
+  will-change:auto!important;
+}
+
+/* The detail panel and its asynchronously decorated contents must not inherit
+   generic button/card transitions. This prevents the lower encounter card from
+   alternating by a pixel while its status classes are applied. */
+html[data-v28-rework="2"] .campaign-node-detail,
+html[data-v28-rework="2"] .campaign-node-detail *,
+html[data-v28-rework="2"] .campaign-node-detail::before,
+html[data-v28-rework="2"] .campaign-node-detail::after{
+  animation:none!important;
+  transition:none!important;
+  will-change:auto!important;
+}
+html[data-v28-rework="2"] .campaign-node-detail{
+  transform:none!important;
+  scale:1!important;
+}
+
+@media(max-width:540px){
+  html[data-v28-rework="2"] .second-ability-card{
+    --p11-choice-icon-size:60px;
+    min-height:80px!important;
+  }
+  html[data-v28-rework="2"] .second-ability-card>.dd-ability-icon{
+    left:-43px!important;
+  }
+  html[data-v28-rework="2"] .campaign-hub .campaign-node.boss,
+  html[data-v28-rework="2"] .campaign-hub .campaign-node.world-boss{
+    width:min(58px,100%)!important;
+  }
+  html[data-v28-rework="2"] .campaign-hub .campaign-node.p6-farm-node>span:first-of-type{
+    font-size:15px!important;
+  }
+}
+
+@media(max-width:390px){
+  html[data-v28-rework="2"] .second-ability-card{
+    --p11-choice-icon-size:56px;
+    min-height:76px!important;
+  }
+  html[data-v28-rework="2"] .second-ability-card>.dd-ability-icon{
+    left:-39px!important;
+  }
+  html[data-v28-rework="2"] .second-ability-card>.name{
+    padding-inline:14px 21px!important;
+    font-size:17px!important;
+  }
+  html[data-v28-rework="2"] .campaign-hub .campaign-node>span:first-of-type{
+    font-size:14px!important;
+  }
+}
