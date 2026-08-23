@@ -857,6 +857,15 @@
     return true;
   }
 
+  function unlockCampaignDiceReward(profile,encounter){
+    const reward=SOLO_BOSS_DICE_REWARDS[encounter?.id];
+    if(!profile || !reward?.designKey || !DICE_DESIGNS[reward.designKey]) return null;
+    if(!Array.isArray(profile.unlockedDice)) profile.unlockedDice=["classic","classic_v2"];
+    if(profile.unlockedDice.includes(reward.designKey)) return null;
+    profile.unlockedDice.push(reward.designKey);
+    return reward.designKey;
+  }
+
   function awardCampaignTrophy(profile,encounter){
     const progress=campaignProgress(profile);
     if(!progress || !encounter) return 0;
@@ -1067,7 +1076,7 @@
       progress.losses=(progress.losses||0)+1;
     }
 
-    let newlyCompleted=false,rewardUnlocked=false,secondaryRewardUnlocked=false,trophiesEarned=0,masteryXpEarned=0;
+    let newlyCompleted=false,rewardUnlocked=false,secondaryRewardUnlocked=false,diceRewardKey=null,trophiesEarned=0,masteryXpEarned=0;
     if(heroWon && challengeMet && profile && progress){
       if(!progress.completedEncounters.includes(encounter.id)){
         progress.completedEncounters.push(encounter.id);
@@ -1075,6 +1084,7 @@
       }
       rewardUnlocked=unlockCampaignReward(profile,encounter);
       secondaryRewardUnlocked=unlockCampaignSecondaryReward(profile,encounter);
+      diceRewardKey=unlockCampaignDiceReward(profile,encounter);
       trophiesEarned=awardCampaignTrophy(profile,encounter);
       masteryXpEarned=window.WDMastery?.awardXp?.(profile,"solo",encounter,newlyCompleted)||0;
       progress.campaignVersion=Math.max(Number(progress.campaignVersion)||1,CAMPAIGN_VERSION);
@@ -1095,12 +1105,13 @@
       winnerText.innerHTML=campaignComplete?"🏆 KAMPAGNE GESCHAFFT!":"🗺️ Encounter geschafft!";
       const rewardText=rewardUnlocked?`<br><strong>Neue Hauptfähigkeit:</strong> ${encounter.rewardAbility} · ${escapeHtml(ABILITIES[encounter.rewardAbility].name)}`:"";
       const secondaryRewardText=secondaryRewardUnlocked?`<br>🍀 <strong>${escapeHtml(ABILITIES[encounter.rewardSecondaryAbility].name)} freigeschaltet:</strong> ausschließlich als Zweitfähigkeit über den HP-Bonus (hier ≤${soloCampaignHpBonusThreshold(encounter)} HP).`:"";
+      const diceRewardText=diceRewardKey?`<br>🎲 <strong>Neues Würfeldesign:</strong> ${escapeHtml(DICE_DESIGNS[diceRewardKey].name)} freigeschaltet!`:"";
       const trophyText=trophiesEarned?`<br>🏆 <strong>+${trophiesEarned} Prestige-Trophäe</strong> · Gesamt: ${progress?.trophies||0}`:"";
       const prestigeText=(rewardUnlocked && campaignHasAllMainAbilities(profile))?"<br>✨ <strong>PRESTIGE AKTIV:</strong> Ab jetzt bringt jeder erfolgreiche Encounter-Clear 1 Trophäe.":"";
       const masteryText=masteryXpEarned?`<br>⭐ <strong>+${masteryXpEarned} Mastery XP</strong> · Gesamt: ${window.WDMastery?.ensure?.(profile)?.xp||0}`:"";
       const unlockedWorlds=CAMPAIGN_WORLDS.filter(w=>w.id!==encounter.world && (w.unlockRequires||[]).includes(encounter.id) && campaignWorldUnlocked(profile,w));
       const worldUnlockText=newlyCompleted&&unlockedWorlds.length?unlockedWorlds.map(w=>`<br>🌐 <strong>${escapeHtml(w.name)} wurde freigeschaltet!</strong>`).join(""):"";
-      roundResultText.innerHTML=`✅ Gegner besiegt.<br>✅ Challenge erfüllt: <strong>${escapeHtml(encounter.challenge.text)}</strong>${rewardText}${secondaryRewardText}${trophyText}${prestigeText}${masteryText}${newlyCompleted?"<br>Der nächste Encounter wurde freigeschaltet.":"<br>Dieser Encounter war bereits abgeschlossen und bleibt spielbar."}${worldUnlockText}`;
+      roundResultText.innerHTML=`✅ Gegner besiegt.<br>✅ Challenge erfüllt: <strong>${escapeHtml(encounter.challenge.text)}</strong>${rewardText}${secondaryRewardText}${diceRewardText}${trophyText}${prestigeText}${masteryText}${newlyCompleted?"<br>Der nächste Encounter wurde freigeschaltet.":"<br>Dieser Encounter war bereits abgeschlossen und bleibt spielbar."}${worldUnlockText}`;
     }else if(heroWon){
       queueEventPopup("Challenge verfehlt","survive");
       winnerText.textContent="⚠️ Sieg – aber Challenge verfehlt";
@@ -1139,5 +1150,4 @@
     if(!enemyAlive) return finishCampaignEncounter(true);
     return false;
   }
-
 

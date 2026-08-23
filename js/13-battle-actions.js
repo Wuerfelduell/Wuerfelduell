@@ -581,7 +581,7 @@
 
     const designKey=players[current]?.diceDesign||"classic";
     gamblingDie.className=`gambling-die ${DICE_DESIGNS[designKey]?.className||"theme-classic"}`;
-    gamblingDie.textContent="?";
+    renderSpecialDieFace(gamblingDie,designKey,null);
     gamblingResult.textContent="Tippe den D6";
     gamblingDie.disabled=false;
     gamblingRetryActions?.classList.add("hidden");
@@ -601,7 +601,7 @@
 
     let ticks=0;
     const timer=setInterval(()=>{
-      gamblingDie.textContent=dieSymbol(randDie());
+      renderSpecialDieFace(gamblingDie,players[current]?.diceDesign||"classic",randDie());
       ticks++;
       if(ticks>=8) clearInterval(timer);
     },60);
@@ -610,7 +610,7 @@
       clearInterval(timer);
       const result=hasMasteryUpgrade(12,2,current)?rollTrackedD6Excluding(current,1):rollTrackedD6(current);
       gamblingDie.classList.remove("rolling");
-      gamblingDie.textContent=dieSymbol(result);
+      renderSpecialDieFace(gamblingDie,players[current]?.diceDesign||"classic",result);
       gamblingResult.textContent=`D6 = ${result} → Angriff auf ${result}er`;
       addLog(`🎰 Gambling Man würfelt ${result}: Angriff auf ${result}er.`);
 
@@ -630,7 +630,7 @@
   function offerGamblingRetry(){
     if(!hasAbility(12)||!hasMasteryUpgrade(12,1,current)||gamblingRetryUsed||currentAttackSource!=="gambling") return false;
     phase="gamble_retry_offer";gamblingRolling=false;gamblingRetryPending=true;
-    gamblingDie.disabled=true;gamblingDie.textContent="?";gamblingResult.textContent="0 Treffer – Gambling Twice nutzen?";
+    gamblingDie.disabled=true;renderSpecialDieFace(gamblingDie,players[current]?.diceDesign||"classic",null);gamblingResult.textContent="0 Treffer – Gambling Twice nutzen?";
     gamblingRetryActions?.classList.remove("hidden");gamblingModal.classList.remove("hidden");renderAll();return true;
   }
   function startGamblingRetry(){
@@ -648,7 +648,7 @@
     perfect25Rolling=false;
     const designKey=players[current]?.diceDesign||"classic";
     perfect25Die.className=`special-big-die ${DICE_DESIGNS[designKey]?.className||"theme-classic"}`;
-    perfect25Die.textContent="?";
+    renderSpecialDieFace(perfect25Die,designKey,null);
     perfect25Die.disabled=false;
     perfect25Result.textContent="D6 würfeln";
     perfect25Modal.classList.remove("hidden");
@@ -673,7 +673,7 @@
 
     let ticks=0;
     const timer=setInterval(()=>{
-      perfect25Die.textContent=dieSymbol(randDie());
+      renderSpecialDieFace(perfect25Die,players[current]?.diceDesign||"classic",randDie());
       if(++ticks>=8) clearInterval(timer);
     },60);
 
@@ -681,7 +681,7 @@
       clearInterval(timer);
       const result=rollTrackedD6(current);
       perfect25Die.classList.remove("rolling");
-      perfect25Die.textContent=dieSymbol(result);
+      renderSpecialDieFace(perfect25Die,players[current]?.diceDesign||"classic",result);
 
       if(result>=(hasMasteryUpgrade(15,2,current)?2:(hasMasteryUpgrade(15,1,current)?3:4))){
         window.WDMastery?.notePerfect25Permit?.(current,true);
@@ -717,6 +717,7 @@
     perfect25D4Rolling=false;
     const designKey=players[current]?.diceDesign||"classic";
     perfect25D4Die.className=`special-big-die d4 ${DICE_DESIGNS[designKey]?.className||"theme-classic"}`;
+    clearDiceArtwork(perfect25D4Die);
     perfect25D4Die.textContent="?";
     perfect25D4Die.disabled=false;
     perfect25D4Result.textContent="D4 würfeln";
@@ -762,7 +763,7 @@
     const base=totalAttackDamage();
     const designKey=players[current]?.diceDesign||"classic";
     highStakesDie.className=`special-big-die ${DICE_DESIGNS[designKey]?.className||"theme-classic"}`;
-    highStakesDie.textContent="?";
+    renderSpecialDieFace(highStakesDie,designKey,null);
     highStakesDie.disabled=false;
     highStakesSkip.disabled=false;
     highStakesResult.textContent=hasMasteryUpgrade(13,2,current)?"1–2: −50 % · 3: normal · 4–5: +50 % · 6: +75 %":(hasMasteryUpgrade(13,1,current)?"1–2: −50 % · 3: normal · 4–6: +50 %":"1–3: −50 % · 4–6: +50 %");
@@ -789,7 +790,7 @@
     const before=attackDamage;
     let ticks=0;
     const timer=setInterval(()=>{
-      highStakesDie.textContent=dieSymbol(randDie());
+      renderSpecialDieFace(highStakesDie,players[current]?.diceDesign||"classic",randDie());
       if(++ticks>=8) clearInterval(timer);
     },60);
 
@@ -797,7 +798,7 @@
       clearInterval(timer);
       const result=rollTrackedD6(current);
       highStakesDie.classList.remove("rolling");
-      highStakesDie.textContent=dieSymbol(result);
+      renderSpecialDieFace(highStakesDie,players[current]?.diceDesign||"classic",result);
 
       if(result<=2 || (result===3&&!hasMasteryUpgrade(13,1,current))){
         attackDamage=Math.floor(before*0.5);
@@ -836,7 +837,7 @@
 
     const designKey=players[current]?.diceDesign||"classic";
     insuranceDie.className=`special-big-die ${DICE_DESIGNS[designKey]?.className||"theme-classic"}`;
-    insuranceDie.textContent="?";
+    renderSpecialDieFace(insuranceDie,designKey,null);
     insuranceDie.disabled=false;
     insuranceResult.textContent=hasMasteryUpgrade(19,2,current)?"4–5 = halbiert · 6 = 100 % geblockt":(hasMasteryUpgrade(19,1,current)?"4–6 = Eigenschaden halbiert":"5–6 = Eigenschaden halbiert");
     insuranceSub.textContent=`Normaler Eigenschaden: ${rawDamage}. Würfle jetzt deinen Insurance-D6.`;
@@ -899,7 +900,7 @@
 
     let ticks=0;
     const timer=setInterval(()=>{
-      insuranceDie.textContent=dieSymbol(randDie());
+      renderSpecialDieFace(insuranceDie,players[current]?.diceDesign||"classic",randDie());
       if(++ticks>=8) clearInterval(timer);
     },60);
 
@@ -915,7 +916,7 @@
       if(Number(ctx.total)===24 && reduced && finalDamage===0) unlockAchievementForPlayer(current,"insurance_fraud");
 
       insuranceDie.classList.remove("rolling");
-      insuranceDie.textContent=dieSymbol(roll);
+      renderSpecialDieFace(insuranceDie,players[current]?.diceDesign||"classic",roll);
       insuranceResult.textContent=reduced
         ? `D6 = ${roll} → ${ctx.rawDamage} → ${finalDamage} Schaden`
         : `D6 = ${roll} → voller Schaden: ${finalDamage}`;
@@ -1330,7 +1331,7 @@
       if(d.locked) cls+=" attack-hit locked";
       if(d.rolling) cls+=" rolling";
       el.className=cls;
-      render3DDieNode(el,d.value);
+      render3DDieNode(el,d.value,designKey);
     });
   }
 
@@ -1881,4 +1882,3 @@
     }
     return false;
   }
-

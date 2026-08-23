@@ -120,20 +120,27 @@
 
   function renderProfiles(){
     if(!saveData.profiles.length){
-      profileList.innerHTML=`<div class="profile-empty">Noch kein Profil. Erstelle dein erstes Profil – Classic ist sofort freigeschaltet.</div>`;
+      profileList.innerHTML=`<div class="profile-empty">Noch kein Profil. Erstelle dein erstes Profil – Classic und ClassicV2 sind sofort freigeschaltet.</div>`;
       return;
     }
 
     profileList.innerHTML=saveData.profiles.map(p=>{
-      const unlocked=Object.entries(DICE_DESIGNS).map(([key,d])=>{const unlockedNow=p.unlockedDice.includes(key);const shopItem=PRESTIGE_SHOP_ITEMS.find(x=>x.type==="dice"&&x.value===key);const req=DICE_UNLOCK_ACHIEVEMENT[key]?ACHIEVEMENTS[DICE_UNLOCK_ACHIEVEMENT[key]]?.name:(shopItem?`Trophy Shop · ${shopItem.cost} 🏆`:"");return `<span class="unlock-chip${unlockedNow?"":" locked"}">${unlockedNow?"✓":"🔒"} ${escapeHtml(d.name)}${!unlockedNow&&req?` · ${escapeHtml(req)}`:""}</span>`;}).join("");
+      const featuredDice=Object.entries(DICE_DESIGNS).filter(([,d])=>d.previewAsset).map(([key,d])=>{
+        const unlockedNow=p.unlockedDice.includes(key),selected=p.selectedDice===key;
+        const stateAsset=unlockedNow?"assets/ui/v28/png/components/completed-check-medallion.png":"assets/ui/v28/png/components/locked-padlock-overlay.png";
+        const stateLabel=selected?"Aktiv":unlockedNow?"Freigeschaltet":d.unlockText||"Gesperrt";
+        return `<button type="button" class="dice-design-card${unlockedNow?" unlocked":" locked"}${selected?" selected":""}" data-dice-design="${escapeHtml(key)}"${unlockedNow?"":" disabled"} aria-label="${escapeHtml(`${d.name}: ${stateLabel}`)}"><span class="dice-design-preview"><img class="dice-design-beauty" src="${escapeHtml(d.previewAsset)}?v=${GAME_VERSION}" alt="" loading="lazy"><img class="dice-design-state" src="${stateAsset}?v=28.3.0" alt="" aria-hidden="true"></span><span class="dice-design-name">${escapeHtml(d.name)}</span><span class="dice-design-meta">${escapeHtml(stateLabel)}</span></button>`;
+      }).join("");
+      const unlocked=Object.entries(DICE_DESIGNS).filter(([,d])=>!d.previewAsset).map(([key,d])=>{const unlockedNow=p.unlockedDice.includes(key);const shopItem=PRESTIGE_SHOP_ITEMS.find(x=>x.type==="dice"&&x.value===key);const req=DICE_UNLOCK_ACHIEVEMENT[key]?ACHIEVEMENTS[DICE_UNLOCK_ACHIEVEMENT[key]]?.name:(shopItem?`Trophy Shop · ${shopItem.cost} 🏆`:"");return `<span class="unlock-chip${unlockedNow?"":" locked"}">${unlockedNow?"✓ ":""}${escapeHtml(d.name)}${!unlockedNow&&req?` · ${escapeHtml(req)}`:""}</span>`;}).join("");
       const diceOptions=p.unlockedDice.filter(k=>DICE_DESIGNS[k]).map(k=>`<option value="${k}"${p.selectedDice===k?" selected":""}>🎲 ${escapeHtml(DICE_DESIGNS[k].name)}</option>`).join("");
       const fxOptions=(p.unlockedAttackFx||["classic"]).filter(k=>ATTACK_FX_STYLES[k]).map(k=>`<option value="${k}"${p.selectedAttackFx===k?" selected":""}>✨ ${escapeHtml(ATTACK_FX_STYLES[k].name)}</option>`).join("");
-      const fxUnlocked=Object.entries(ATTACK_FX_STYLES).map(([key,fx])=>{const unlockedNow=(p.unlockedAttackFx||[]).includes(key);const shopItem=PRESTIGE_SHOP_ITEMS.find(x=>x.type==="attackfx"&&x.value===key);const req=ATTACK_FX_UNLOCK_ACHIEVEMENT[key]?ACHIEVEMENTS[ATTACK_FX_UNLOCK_ACHIEVEMENT[key]]?.name:(shopItem?`Trophy Shop · ${shopItem.cost} 🏆`:key==="classic"?"Standard":"");return `<span class="unlock-chip fx${unlockedNow?"":" locked"}">${unlockedNow?"✓":"🔒"} ${escapeHtml(fx.name)}${!unlockedNow&&req?` · ${escapeHtml(req)}`:""}</span>`;}).join("");
+      const fxUnlocked=Object.entries(ATTACK_FX_STYLES).map(([key,fx])=>{const unlockedNow=(p.unlockedAttackFx||[]).includes(key);const shopItem=PRESTIGE_SHOP_ITEMS.find(x=>x.type==="attackfx"&&x.value===key);const req=ATTACK_FX_UNLOCK_ACHIEVEMENT[key]?ACHIEVEMENTS[ATTACK_FX_UNLOCK_ACHIEVEMENT[key]]?.name:(shopItem?`Trophy Shop · ${shopItem.cost} 🏆`:key==="classic"?"Standard":"");return `<span class="unlock-chip fx${unlockedNow?"":" locked"}">${unlockedNow?"✓ ":""}${escapeHtml(fx.name)}${!unlockedNow&&req?` · ${escapeHtml(req)}`:""}</span>`;}).join("");
       const winrate=p.stats.rounds?Math.round((p.stats.wins/p.stats.rounds)*100):0;
       return `<div class="profile-card${profileCosmeticFrame(p)?` frame-${profileCosmeticFrame(p)}`:""}" data-profile-id="${escapeHtml(p.id)}">
         <div class="profile-card-top"><div class="profile-identity"><div class="profile-name-line">${escapeHtml(p.name)} <span class="battle-tag">#${escapeHtml(p.tagNumber)}</span></div>${profileCosmeticTitle(p)?`<div class="profile-title-badge">${escapeHtml(profileCosmeticTitle(p))}</div>`:""}<div class="profile-mini">${p.stats.rounds} Runden · ${p.stats.wins} Siege · ${winrate}% Winrate · ${Object.keys(p.achievements).length} Achievements · 🏆 ${p.campaign?.trophies||0}</div></div></div>
         <div class="profile-actions"><div><label>Name</label><input class="profile-name-edit" maxlength="24" value="${escapeHtml(p.name)}"></div><div><label>Würfeldesign</label><select class="profile-dice-edit">${diceOptions}</select></div><div><label>Angriffseffekt</label><select class="profile-fx-edit">${fxOptions}</select></div><button class="profile-delete">Löschen</button></div>
-        <div class="unlock-strip-title">Würfeldesigns</div><div class="unlock-strip">${unlocked}</div>
+        <div class="unlock-strip-title">Würfel-Kollektion</div><div class="dice-design-gallery">${featuredDice}</div>
+        <div class="unlock-strip-title">Weitere Würfeldesigns</div><div class="unlock-strip">${unlocked}</div>
         <div class="unlock-strip-title">Angriffseffekte</div><div class="unlock-strip">${fxUnlocked}</div>
       </div>`;
     }).join("");
@@ -155,6 +162,11 @@
         const p=getProfile(id); if(!p) return;
         if(p.unlockedDice.includes(diceSelect.value)){p.selectedDice=diceSelect.value;saveGameData();renderProfiles();}
       };
+      card.querySelectorAll(".dice-design-card:not([disabled])").forEach(button=>button.onclick=()=>{
+        const p=getProfile(id),designKey=button.dataset.diceDesign;
+        if(!p || !p.unlockedDice.includes(designKey)) return;
+        p.selectedDice=designKey;saveGameData();renderProfiles();
+      });
       fxSelect.onchange=()=>{
         const p=getProfile(id); if(!p) return;
         if((p.unlockedAttackFx||[]).includes(fxSelect.value)){p.selectedAttackFx=fxSelect.value;saveGameData();renderProfiles();}

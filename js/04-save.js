@@ -233,7 +233,7 @@
     p.id=p.id||generateProfileId();
     p.name=String(p.name||"Spieler").slice(0,24);
     p.tagNumber=String(p.tagNumber??generateTagNumber()).padStart(4,"0").slice(-4);
-    p.unlockedDice=Array.isArray(p.unlockedDice)?[...new Set(["classic",...p.unlockedDice])]:["classic"];
+    p.unlockedDice=Array.isArray(p.unlockedDice)?[...new Set(["classic","classic_v2",...p.unlockedDice])]:["classic","classic_v2"];
     p.achievements=(p.achievements&&typeof p.achievements==="object")?p.achievements:{};
     // Neue Würfel-Rewards gelten rückwirkend: Wer das Achievement schon hatte,
     // bekommt das zugehörige Design beim ersten Start nach dem Update automatisch.
@@ -273,6 +273,13 @@
       ? [...new Set(rawCampaign.completedEncounters.map(String).filter(Boolean))]
       : [];
     p.campaign.campaignVersion=Number(rawCampaign.campaignVersion)||CAMPAIGN_VERSION;
+    // Boss-Würfel sind rückwirkend: Bereits abgeschlossene Solo-Finals schalten
+    // die Designs beim ersten Start dieses Builds automatisch frei.
+    Object.entries(SOLO_BOSS_DICE_REWARDS).forEach(([encounterId,reward])=>{
+      if(p.campaign.completedEncounters.includes(encounterId) && DICE_DESIGNS[reward.designKey] && !p.unlockedDice.includes(reward.designKey)){
+        p.unlockedDice.push(reward.designKey);
+      }
+    });
 
     const earnedRewards=CAMPAIGN_ENCOUNTERS
       .filter(e=>p.campaign.completedEncounters.includes(e.id) && e.rewardAbility)
@@ -388,7 +395,7 @@
   function createProfile(name){
     const clean=String(name||"").trim().slice(0,24);
     if(!clean) return null;
-    const p=normalizeProfile({id:generateProfileId(),name:clean,tagNumber:generateTagNumber(),unlockedDice:["classic"],selectedDice:"classic",unlockedAttackFx:["classic"],selectedAttackFx:"classic",achievements:{},stats:emptyProfileStats()});
+    const p=normalizeProfile({id:generateProfileId(),name:clean,tagNumber:generateTagNumber(),unlockedDice:["classic","classic_v2"],selectedDice:"classic_v2",unlockedAttackFx:["classic"],selectedAttackFx:"classic",achievements:{},stats:emptyProfileStats()});
     saveData.profiles.push(p);
     saveGameData();
     return p;

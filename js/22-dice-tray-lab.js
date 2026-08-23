@@ -55,6 +55,12 @@ if(!bridge){
     storm:{body:'#26374b',pip:'#bcecff',edge:'#5da7d4',metalness:.5,roughness:.28},
     chrome:{body:'#aeb4ba',pip:'#21252b',edge:'#f3f6f8',metalness:.95,roughness:.17}
   };
+  const ART_DICE_DESIGNS={
+    classic_v2:{artKey:'ivory-royal',metalness:.16,roughness:.36},
+    sapphire_crown:{artKey:'sapphire-crown',metalness:.2,roughness:.32},
+    amethyst_rift:{artKey:'amethyst-rift',metalness:.18,roughness:.34}
+  };
+  const artworkTextureLoader=new THREE.TextureLoader();
 
   function inLab(){
     try{return !!bridge.isActive();}catch(_){return false;}
@@ -128,6 +134,23 @@ if(!bridge){
   }
 
   function buildMaterials(design){
+    const artwork=ART_DICE_DESIGNS[design];
+    if(artwork){
+      return FACE_BY_MATERIAL.map(value=>{
+        const path=`assets/ui/v28/png/dice-designs/${artwork.artKey}/${artwork.artKey}-face-${value}.png?v=28.3.0`;
+        const texture=artworkTextureLoader.load(path);
+        texture.colorSpace=THREE.SRGBColorSpace;
+        texture.anisotropy=8;
+        return new THREE.MeshStandardMaterial({
+          map:texture,
+          color:0xffffff,
+          transparent:true,
+          alphaTest:.025,
+          metalness:artwork.metalness,
+          roughness:artwork.roughness
+        });
+      });
+    }
     const theme=DESIGN_THEMES[design]||DESIGN_THEMES.classic;
     return FACE_BY_MATERIAL.map(value=>{
       const texture=makeCanvasTexture(value,theme);

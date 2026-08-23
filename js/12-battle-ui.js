@@ -122,6 +122,35 @@
 
   function dieSymbol(v){ return v==null?"?":["⚀","⚁","⚂","⚃","⚄","⚅"][v-1]; }
 
+  const DICE_ART_VARIABLES=["--die-art-question","--die-art-current",...Array.from({length:6},(_,i)=>`--die-art-face-${i+1}`)];
+  function diceArtworkAsset(designKey,face="question"){
+    const artKey=DICE_DESIGNS[designKey]?.artKey;
+    if(!artKey) return "";
+    const suffix=face==="question"?"question":String(Math.max(1,Math.min(6,Number(face)||1)));
+    return `assets/ui/v28/png/dice-designs/${artKey}/${artKey}-face-${suffix}.png?v=${GAME_VERSION}`;
+  }
+  function clearDiceArtwork(el){
+    el.classList.remove("theme-art-die");
+    DICE_ART_VARIABLES.forEach(name=>el.style.removeProperty(name));
+    delete el.dataset.diceArt;
+  }
+  function applyDiceArtwork(el,designKey,value=null){
+    const design=DICE_DESIGNS[designKey];
+    if(!design?.artKey){clearDiceArtwork(el);return false;}
+    el.classList.add("theme-art-die");
+    el.dataset.diceArt=design.artKey;
+    for(let face=1;face<=6;face++) el.style.setProperty(`--die-art-face-${face}`,`url("${diceArtworkAsset(designKey,face)}")`);
+    el.style.setProperty("--die-art-question",`url("${diceArtworkAsset(designKey,"question")}")`);
+    el.style.setProperty("--die-art-current",`url("${diceArtworkAsset(designKey,value==null?"question":value)}")`);
+    return true;
+  }
+  function renderSpecialDieFace(el,designKey,value=null){
+    const usesArtwork=applyDiceArtwork(el,designKey,value);
+    el.dataset.value=value==null?"":String(value);
+    el.textContent=usesArtwork?"":dieSymbol(value);
+    el.setAttribute("aria-label",value==null?"Würfel bereit":`Würfel ${value}`);
+  }
+
   // V27.1.3 – versteckter Kompatibilitätscode für problematische ältere Android-GPUs.
   // Sobald ein echtes Spielerprofil „GalaxyA50“ heißt (Leerzeichen/Bindestriche egal),
   // nutzt dieses Gerät für ALLE Würfel der Partie den stabilen 2D-Würfelrenderer. Ohne diesen Profilcode bleibt alles 3D.
@@ -175,7 +204,8 @@
     return cube;
   }
 
-  function render3DDieNode(el,value){
+  function render3DDieNode(el,value,designKey="classic"){
+    applyDiceArtwork(el,designKey,value);
     if(galaxyA50CompatibilityMode()){
       renderFlatDieNode(el,value);
       return;
@@ -274,7 +304,7 @@
       const designKey=players[current]?.diceDesign||"classic";
       cls+=" "+(DICE_DESIGNS[designKey]?.className||"theme-classic");
       el.className=cls;
-      render3DDieNode(el,d.value);
+      render3DDieNode(el,d.value,designKey);
       el.onclick=null;
 
       if(phase==="base_select"&&!d.locked&&!isAnimating&&!isBotPlayer(current)){
@@ -617,4 +647,3 @@
     flushPendingFx();
     scheduleBotAction();
   }
-

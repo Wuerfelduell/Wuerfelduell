@@ -13,7 +13,7 @@
   let localModeId="classic";
   function localModeRules(){return LOCAL_MODES[localModeId]||LOCAL_MODES.classic;}
 
-  const GAME_VERSION="28.2.11";
+  const GAME_VERSION="28.3.0";
   const SAVE_KEY="wuerfelduell_save_v1"; // absichtlich stabil: Updates lesen denselben Browser-Save
   // Versionsanzeige immer aus derselben Quelle ziehen, damit Titel/Footer nicht mehr hinterherhinken.
   document.title=`DiceDuel · V${GAME_VERSION}`;
@@ -76,6 +76,10 @@
   };
 
   const DICE_UNLOCK_ACHIEVEMENT={gold:"grande",obsidian:"not_today",blood:"blood_money",arcane:"dual_wielding",emerald:"back_from_dead",frost:"snake_charmer",pearl:"untouchable",neon:"degenerate_gambler",void:"overkill",sapphire:"hat_trick",chrome:"machine",storm:"laser_guided",circuit:"party_crasher"};
+  const SOLO_BOSS_DICE_REWARDS={
+    zero_regent:{designKey:"sapphire_crown",requirement:"Solo · Welt 3 Boss"},
+    abyss_throne:{designKey:"amethyst_rift",requirement:"Solo · Welt 4 Boss"}
+  };
 
   const ATTACK_FX_STYLES={
     classic:{name:"Arc Shot",desc:"Der klassische adaptive Laser/Blitz aus V27.5."},

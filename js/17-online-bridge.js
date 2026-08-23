@@ -332,6 +332,7 @@
       open:!!modal && !modal.classList.contains("hidden"),
       dieText:die?.textContent||"",
       dieClass:die?.className||"",
+      dieValue:die?.dataset?.value??"",
       dieDisabled:!!die?.disabled,
       result:result?.textContent||"",
       sub:sub?.textContent||"",
@@ -488,7 +489,11 @@
     modal.classList.toggle("hidden",!open);
     if(die){
       if(snapshot.dieClass) die.className=String(snapshot.dieClass);
-      die.textContent=String(snapshot.dieText||"");
+      if(Object.prototype.hasOwnProperty.call(snapshot,"dieValue") && !die.classList.contains("d4")){
+        const rawValue=String(snapshot.dieValue??"");
+        const value=rawValue===""?null:Number(rawValue);
+        renderSpecialDieFace(die,players[current]?.diceDesign||"classic",Number.isFinite(value)?value:null);
+      }else die.textContent=String(snapshot.dieText||"");
       // Snapshots werden erst nach abgeschlossener Engine-Animation veröffentlicht.
       // Ein noch offenes Spezialmodal ist deshalb definitionsgemäß wieder interaktiv.
       // Transiente disabled-Flags vom Host dürfen nicht auf dem Spiegelclient kleben.
