@@ -15,7 +15,9 @@
       !!ATTACK_FX_STYLES.flame &&
       !!ATTACK_FX_STYLES.venom &&
       !!ATTACK_FX_STYLES.crown),
-    attackFxEngine: !!window.WDAttackFx
+    attackFxEngine: !!window.WDAttackFx,
+    cssPhase11: !!document.querySelector('link[href*="26-v28-ui-phase11.css"]'),
+    versionFooter: !document.querySelector(".version-footer") || (document.querySelector(".version-footer").textContent||"").includes(EXPECTED)
   };
 
   const failed = Object.entries(checks).filter(([, ok]) => !ok).map(([name]) => name);

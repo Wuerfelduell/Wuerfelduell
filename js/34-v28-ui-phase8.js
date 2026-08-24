@@ -1,7 +1,7 @@
 (() => {
   "use strict";
 
-  const VERSION = "28.2.8";
+  const VERSION = "28.3.6";
   const COMPONENT_ROOT = "assets/ui/v28/png/components/";
   const FX_ROOT = "assets/ui/v28/png/fx/";
   const LOCK_TEXT = /(?:\u{1F512}|\u{1F510})\uFE0F?/gu;
@@ -13,6 +13,7 @@
     ".aml-info-close"
   ].join(",");
   let decorateQueued = false;
+  let decorating = false;
   const queuedRoots = new Set();
 
   function component(path){
@@ -124,7 +125,6 @@
     }else if(!selectedBoss && glow){
       glow.remove();
     }
-    // Do not touch existing stable glow — prevents MutationObserver re-entry jitter.
   }
 
   function containsLockText(element){
@@ -243,20 +243,32 @@
   }
 
   function decorate(root=document.body){
-    if(!root) return;
-    syncCloseButtons(root);
-    syncCampaignLocks(root);
-    syncProfileLocks(root);
-    syncMasteryLocks(root);
-    syncLabLocks(root);
-    cleanLockText(root);
+    if(!root || decorating) return;
+    decorating = true;
+    try{
+      syncCloseButtons(root);
+      syncCampaignLocks(root);
+      syncProfileLocks(root);
+      syncMasteryLocks(root);
+      syncLabLocks(root);
+      cleanLockText(root);
+    }finally{
+      decorating = false;
+    }
+  }
+
+  function isOwnAsset(node){
+    return !!(node && node.nodeType === 1 && node.classList && (
+      node.classList.contains("p8-boss-selected-glow")
+      || node.classList.contains("p8-lock-overlay")
+    ));
   }
 
   function flushDecorate(){
     decorateQueued = false;
     const roots = [...queuedRoots];
     queuedRoots.clear();
-    if(!roots.length) return;
+    if(!roots.length || decorating) return;
     if(roots.includes(document.body)){
       decorate(document.body);
       return;
@@ -265,6 +277,7 @@
   }
 
   function scheduleDecorate(root=document.body){
+    if(decorating) return;
     if(root) queuedRoots.add(baseElement(root));
     if(decorateQueued) return;
     decorateQueued = true;
@@ -274,35 +287,29 @@
 
   function observe(){
     const observer = new MutationObserver(mutations => {
+      if(decorating) return;
       mutations.forEach(mutation => {
-        // Ignore our own stable glow layer — adding/removing it must not re-enter decorate.
         if(mutation.type === "childList"){
           const nodes = [...mutation.addedNodes, ...mutation.removedNodes];
-          const onlyGlow = nodes.length > 0 && nodes.every(n =>
-            n.nodeType === 1 && n.classList?.contains("p8-boss-selected-glow")
-          );
-          if(onlyGlow) return;
+          if(nodes.length && nodes.every(isOwnAsset)) return;
           scheduleDecorate(mutation.target);
-          mutation.addedNodes.forEach(n => {
-            if(n.nodeType === 1 && n.classList?.contains("p8-boss-selected-glow")) return;
-            scheduleDecorate(n);
-          });
-        }else if(mutation.type === "characterData"){
-          scheduleDecorate(mutation.target.parentElement);
+          mutation.addedNodes.forEach(n => { if(!isOwnAsset(n)) scheduleDecorate(n); });
         }else if(mutation.type === "attributes"){
-          if(mutation.target?.classList?.contains("p8-boss-selected-glow")) return;
-          scheduleDecorate(mutation.target);
-        }else{
-          scheduleDecorate(mutation.target);
+          if(isOwnAsset(mutation.target)) return;
+          const el = mutation.target;
+          if(!(el instanceof Element)) return;
+          if(
+            el.closest?.(".campaign-hub, #masteryModal, #profilesScreen, #abilityMasteryLabModal")
+            || el.matches?.(CLOSE_SELECTOR)
+          ) scheduleDecorate(el);
         }
       });
     });
     observer.observe(document.body, {
       childList:true,
       subtree:true,
-      characterData:true,
       attributes:true,
-      attributeFilter:["class", "disabled", "aria-hidden"]
+      attributeFilter:["class", "disabled"]
     });
   }
 

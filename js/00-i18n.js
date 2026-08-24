@@ -1,10 +1,13 @@
 (() => {
   const STORAGE_KEY = 'diceduel_language';
-  const DEFAULT_LANG = 'en';
+  const DEFAULT_LANG = 'de';
   const packs = window.WD_LANG_PACKS || {};
   const supported = ['en', 'de'];
-  let lang = localStorage.getItem(STORAGE_KEY) || DEFAULT_LANG;
-  if (!supported.includes(lang)) lang = DEFAULT_LANG;
+  let lang = localStorage.getItem(STORAGE_KEY);
+  if (!supported.includes(lang)) {
+    const nav = String(navigator.language || navigator.userLanguage || "de").slice(0, 2).toLowerCase();
+    lang = nav === "en" ? "en" : DEFAULT_LANG;
+  }
 
   const germanHints = /[äöüÄÖÜß]|\b(?:der|die|das|den|dem|des|ein|eine|einen|einem|einer|und|oder|du|dein|deine|wird|werden|wurde|wurden|ist|sind|hat|haben|mit|ohne|gegen|für|bei|nach|vor|während|wenn|darf|musst|kannst|können|soll|Spieler|Runde|Würfel|Schaden|Fähigkeit|Kampagne|Gegner|Profil|Welt|Zug|Wurf|Heilung|Treffer|Angriff)\b/i;
 
@@ -100,188 +103,17 @@
       }
     }
 
-    // Common dynamic grammar / status patterns.
-    out = out
-      .replace(/zurück/gi, 'back')
-      .replace(/Zurück/g, 'Back')
-      .replace(/\bUND\b/g, 'AND')
-      .replace(/\bund\b/gi, 'and')
-      .replace(/\boder\b/gi, 'or')
-      .replace(/\bmit\b/gi, 'with')
-      .replace(/\bohne\b/gi, 'without')
-      .replace(/\bgegen\b/gi, 'against')
-      .replace(/\bwährend\b/gi, 'during')
-      .replace(/\bnach\b/gi, 'after')
-      .replace(/\bvor\b/gi, 'before')
-      .replace(/\bpro\b/gi, 'per')
-      .replace(/\bdu\b/gi, 'you')
-      .replace(/\bdein\b/gi, 'your')
-      .replace(/\bdeine\b/gi, 'your')
-      .replace(/\bdeinen\b/gi, 'your')
-      .replace(/\bdeinem\b/gi, 'your')
-      .replace(/\bdeiner\b/gi, 'your')
-      .replace(/\b(\d+)er\b/g, '$1s')
-      .replace(/\b(\d+) Einser\b/g, '$1 ones')
-      .replace(/\b(\d+) Sechser\b/g, '$1 sixes')
-      .replace(/\b(\d+) neue hit\b/gi, '$1 new hit')
-      .replace(/\b(\d+) neue hits\b/gi, '$1 new hits')
-      .replace(/\b(\d+) playern\b/gi, '$1 players')
-      .replace(/\b(\d+) player\b/gi, '$1 player')
-      .replace(/\bist dran\b/gi, 'is up')
-      .replace(/\bführt die Counterattack aus\b/gi, 'is resolving the Counterattack')
-      .replace(/\bwählt eine ability\b/gi, 'is choosing an ability')
-      .replace(/\bverliert ([0-9]+) HP\b/gi, 'loses $1 HP')
-      .replace(/\bverliert ([0-9]+) damage\b/gi, 'takes $1 damage')
-      .replace(/\berhält ([0-9]+) damage\b/gi, 'takes $1 damage')
-      .replace(/\bheilt ([0-9]+) HP\b/gi, 'heals $1 HP')
-      .replace(/\bheilt ([0-9]+) HP\b/gi, 'heals $1 HP')
-      .replace(/\bstartet\b/gi, 'starts')
-      .replace(/\bstarten\b/gi, 'start')
-      .replace(/\bwird zufällig bestimmt\b/gi, 'is determined randomly')
-      .replace(/\bwerden zufällig bestimmt\b/gi, 'are determined randomly')
-      .replace(/\bbleibt aktiv\b/gi, 'stays active')
-      .replace(/\bbleiben aktiv\b/gi, 'stay active')
-      .replace(/\bsteht noch nicht zur Verfügung\b/gi, 'is not available yet')
-      .replace(/\bnoch nicht verfügbar\b/gi, 'not available yet')
-      .replace(/\bbenutzen\b/gi, 'use')
-      .replace(/\bBenutze\b/g, 'Use')
-      .replace(/\bbenutzt\b/gi, 'uses')
-      .replace(/\bTriggere\b/g, 'Trigger')
-      .replace(/\btriggern\b/gi, 'trigger')
-      .replace(/\btriggert\b/gi, 'triggers')
-      .replace(/\bwürfeln\b/gi, 'roll')
-      .replace(/\bWürfle\b/g, 'Roll')
-      .replace(/\bwürfelt\b/gi, 'rolls')
-      .replace(/\blocke\b/gi, 'lock')
-      .replace(/\bLocke\b/g, 'Lock')
-      .replace(/\bgelockt\b/gi, 'locked')
-      .replace(/\beingeloggten\b/gi, 'locked')
-      .replace(/\bungelockten\b/gi, 'unlocked')
-      .replace(/\bbezahle\b/gi, 'pay')
-      .replace(/\bBezahle\b/g, 'Pay')
-      .replace(/\bbezahlt\b/gi, 'paid')
-      .replace(/\bverursache\b/gi, 'deal')
-      .replace(/\bVerursache\b/g, 'Deal')
-      .replace(/\bverursacht\b/gi, 'deals')
-      .replace(/\bverursachen\b/gi, 'deal')
-      .replace(/\bnimm\b/gi, 'take')
-      .replace(/\bNimm\b/g, 'Take')
-      .replace(/\bnimmt\b/gi, 'takes')
-      .replace(/\berhalte\b/gi, 'gain')
-      .replace(/\bErhalte\b/g, 'Gain')
-      .replace(/\berhält\b/gi, 'gains')
-      .replace(/\bbleibe\b/gi, 'stay')
-      .replace(/\bBleibe\b/g, 'Stay')
-      .replace(/\bbleibt\b/gi, 'stays')
-      .replace(/\bspiele\b/gi, 'play')
-      .replace(/\bSpiele\b/g, 'Play')
-      .replace(/\bspielt\b/gi, 'plays')
-      .replace(/\baktiv\b/gi, 'active')
-      .replace(/\bzufällig\b/gi, 'randomly')
-      .replace(/\bzufälligen\b/gi, 'random')
-      .replace(/\bzufällige\b/gi, 'random')
-      .replace(/\bkostenlos\b/gi, 'for free')
-      .replace(/\bgratis\b/gi, 'for free')
-      .replace(/\bgleich\b/gi, 'same')
-      .replace(/\bverschiedenen\b/gi, 'different')
-      .replace(/\bverschiedene\b/gi, 'different')
-      .replace(/\bvorhandenen\b/gi, 'available')
-      .replace(/\baktuell\b/gi, 'currently')
-      .replace(/\bAktuell\b/g, 'Currently')
-      .replace(/\bspäter\b/gi, 'later')
-      .replace(/\bmehr\b/gi, 'more')
-      .replace(/\bweniger\b/gi, 'less')
-      .replace(/\bhöher\b/gi, 'higher')
-      .replace(/\bniedriger\b/gi, 'lower')
-      .replace(/\bnur\b/gi, 'only')
-      .replace(/\bNur\b/g, 'Only')
-      .replace(/\bimmer\b/gi, 'always')
-      .replace(/\bjetzt\b/gi, 'now')
-      .replace(/\bnoch\b/gi, 'still')
-      .replace(/\bselbst\b/gi, 'yourself')
-      .replace(/\beigene\b/gi, 'own')
-      .replace(/\beigenen\b/gi, 'own')
-      .replace(/\beinem\b/gi, 'a')
-      .replace(/\beinen\b/gi, 'a')
-      .replace(/\beiner\b/gi, 'a')
-      .replace(/\beine\b/gi, 'a')
-      .replace(/\bein\b/gi, 'a')
-      .replace(/\bder\b/gi, 'the')
-      .replace(/\bdie\b/gi, 'the')
-      .replace(/\bdas\b/gi, 'the')
-      .replace(/\bden\b/gi, 'the')
-      .replace(/\bdem\b/gi, 'the')
-      .replace(/\bdes\b/gi, 'the')
-      .replace(/\bzum\b/gi, 'to the')
-      .replace(/\bzur\b/gi, 'to the')
-      .replace(/\bim\b/gi, 'in the')
-      .replace(/\bins\b/gi, 'into the')
-      .replace(/\bam\b/gi, 'at the')
-      .replace(/\bauf\b/gi, 'on')
-      .replace(/\baus\b/gi, 'from')
-      .replace(/\bvon\b/gi, 'from')
-      .replace(/\bfür\b/gi, 'for')
-      .replace(/\bbei\b/gi, 'at')
-      .replace(/\bals\b/gi, 'as')
-      .replace(/\bbis\b/gi, 'until')
-      .replace(/\bdurch\b/gi, 'through')
-      .replace(/\bdamit\b/gi, 'with it')
-      .replace(/\bdiesem\b/gi, 'this')
-      .replace(/\bdieser\b/gi, 'this')
-      .replace(/\bdiese\b/gi, 'this')
-      .replace(/\bdieses\b/gi, 'this')
-      .replace(/\bwenn\b/gi, 'if')
-      .replace(/\bWenn\b/g, 'If')
-      .replace(/\bfalls\b/gi, 'if')
-      .replace(/\bdarfst\b/gi, 'may')
-      .replace(/\bkannst\b/gi, 'can')
-      .replace(/\bmusst\b/gi, 'must')
-      .replace(/\bsollst\b/gi, 'should')
-      .replace(/\bwird\b/gi, 'is')
-      .replace(/\bwerden\b/gi, 'are')
-      .replace(/\bwurde\b/gi, 'was')
-      .replace(/\bwurden\b/gi, 'were')
-      .replace(/\bist\b/gi, 'is')
-      .replace(/\bsind\b/gi, 'are')
-      .replace(/\bhat\b/gi, 'has')
-      .replace(/\bhaben\b/gi, 'have')
-      .replace(/\bbleiben\b/gi, 'stay')
-      .replace(/\bgenug\b/gi, 'enough')
-      .replace(/\bsehr\b/gi, 'very')
-      .replace(/\bwirklich\b/gi, 'really')
-      .replace(/\bautomatisch\b/gi, 'automatically')
-      .replace(/\bdirekt\b/gi, 'directly')
-      .replace(/\bzusätzlich\b/gi, 'additionally')
-      .replace(/\bzusätzlichen\b/gi, 'additional')
-      .replace(/\bzusätzliche\b/gi, 'additional')
-      .replace(/\bweiter\b/gi, 'continue')
-      .replace(/\bweiteren\b/gi, 'additional')
-      .replace(/\bweitere\b/gi, 'additional')
-      .replace(/\bvorhanden\b/gi, 'available')
-      .replace(/\babschließen\b/gi, 'complete')
-      .replace(/\babgeschlossen\b/gi, 'completed')
-      .replace(/\bgeschafft\b/gi, 'completed')
-      .replace(/\bgespeichert\b/gi, 'saved')
-      .replace(/\bangezeigt\b/gi, 'shown')
-      .replace(/\bgeändert\b/gi, 'changed')
-      .replace(/\bdeaktiviert\b/gi, 'disabled')
-      .replace(/\baktiviert\b/gi, 'enabled')
-      .replace(/\bvorbereiten\b/gi, 'prepare')
-      .replace(/\bvorbereitet\b/gi, 'prepared');
+    // No generic der/die/das rewrite: that produced mixed DE/EN copy.
+    out = out.replace(/\s{2,}/g, ' ');
 
-    // Clean common artifacts created by the conservative fallback pass.
-    out = out
-      .replace(/\bthe your\b/gi, 'your')
-      .replace(/\byour the\b/gi, 'your')
-      .replace(/\ba the\b/gi, 'a')
-      .replace(/\bthe a\b/gi, 'a')
-      .replace(/\bwith the it\b/gi, 'with it')
-      .replace(/\s{2,}/g, ' ');
     return out;
   }
 
   function translateTextNode(node) {
     if (!node || node.nodeType !== Node.TEXT_NODE) return;
+    const parent = node.parentElement;
+    if (parent && /^(?:SCRIPT|STYLE|TEXTAREA|CODE|PRE)$/u.test(parent.tagName)) return;
+    if (parent?.closest?.(".p8-lock-overlay, .p8-boss-selected-glow")) return;
     const raw = node.nodeValue;
     if (!raw || !raw.trim()) return;
     let translated = translate(raw);
@@ -344,22 +176,7 @@
   }
 
   function configureEnglishChangelog() {
-    if (lang !== 'en') return;
-    const screen = document.getElementById('changelogScreen');
-    if (!screen) return;
-    const entries = Array.from(screen.querySelectorAll('.changelog-entry'));
-    entries.forEach(e => e.classList.add('i18n-old-changelog'));
-    if (!screen.querySelector('.i18n-changelog-summary')) {
-      const summary = document.createElement('div');
-      summary.className = 'changelog-entry i18n-changelog-summary';
-      summary.innerHTML = '<div class="changelog-version">V27.12.0</div><ul><li>Added full English/German language system with an in-game language switch.</li><li>English is now the default interface language.</li><li>German keeps the original wording and existing English ability/enemy names where appropriate.</li><li>Updated official branding from DiceDuel to DiceDuel.</li></ul>';
-      const subtitle = screen.querySelector('.screen-subtitle');
-      subtitle?.insertAdjacentElement('afterend', summary);
-    }
-    const style = document.createElement('style');
-    style.id = 'i18n-changelog-style';
-    style.textContent = '.i18n-old-changelog{display:none!important;}';
-    document.head.appendChild(style);
+    // Keep the real changelog visible in English. walk() translates entries in place.
   }
 
   // User-facing native dialogs also pass through the language pack.
@@ -395,7 +212,11 @@
       for (const rec of records) {
         if (rec.type === 'characterData') translateTextNode(rec.target);
         if (rec.type === 'attributes') translateElement(rec.target);
-        for (const node of rec.addedNodes || []) walk(node);
+        for (const node of rec.addedNodes || []) {
+          if (node.nodeType === 1 && node.classList?.contains("p8-boss-selected-glow")) continue;
+          if (node.nodeType === 1 && node.classList?.contains("p8-lock-overlay")) continue;
+          walk(node);
+        }
       }
     });
     observer.observe(document.documentElement, {

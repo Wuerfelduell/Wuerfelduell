@@ -1,6 +1,6 @@
   function randomUniqueAbilityIds(count,exclude=[]){
-    const used=new Set(exclude.filter(id=>REAL_ABILITY_IDS.includes(id)));
-    const pool=REAL_ABILITY_IDS.filter(id=>!used.has(id));
+    const used=new Set(exclude.filter(id=>CHOOSABLE_ABILITY_IDS.includes(id)));
+    const pool=CHOOSABLE_ABILITY_IDS.filter(id=>!used.has(id));
     for(let i=pool.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[pool[i],pool[j]]=[pool[j],pool[i]];}
     return pool.slice(0,Math.max(0,count));
   }

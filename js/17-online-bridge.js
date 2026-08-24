@@ -327,6 +327,19 @@
     },true);
   }
 
+  function sanitizeUiHtml(html){
+    const template=document.createElement("template");
+    template.innerHTML=String(html||"");
+    template.content.querySelectorAll("*").forEach(el=>{
+      if(!/^(STRONG|B|EM|BR|SPAN|SMALL|DIV|P|UL|LI)$/i.test(el.tagName)){
+        el.replaceWith(...el.childNodes);
+        return;
+      }
+      [...el.attributes].forEach(attr=>el.removeAttribute(attr.name));
+    });
+    return template.innerHTML;
+  }
+
   function modalSnapshot(modal,die,result,sub=null,extra={}){
     return {
       open:!!modal && !modal.classList.contains("hidden"),
@@ -345,10 +358,10 @@
       log:Array.from(logEl.children).slice(0,32).map(el=>el.textContent||""),
       winner:!winnerBox.classList.contains("hidden")?{
         open:true,
-        winnerHtml:winnerText.innerHTML,
-        resultHtml:roundResultText.innerHTML,
-        standingsHtml:roundStandings.innerHTML,
-        statsHtml:roundStatsBox.innerHTML
+        winnerHtml:sanitizeUiHtml(winnerText.innerHTML),
+        resultHtml:sanitizeUiHtml(roundResultText.innerHTML),
+        standingsHtml:sanitizeUiHtml(roundStandings.innerHTML),
+        statsHtml:sanitizeUiHtml(roundStatsBox.innerHTML)
       }:{open:false},
       draft:{
         open:!secondAbilityModal.classList.contains("hidden"),
@@ -543,10 +556,10 @@
     const winner=ui.winner||{};
     winnerBox.classList.toggle("hidden",!winner.open);
     if(winner.open){
-      winnerText.innerHTML=String(winner.winnerHtml||"");
-      roundResultText.innerHTML=String(winner.resultHtml||"");
-      roundStandings.innerHTML=String(winner.standingsHtml||"");
-      roundStatsBox.innerHTML=String(winner.statsHtml||"");
+      winnerText.innerHTML=sanitizeUiHtml(winner.winnerHtml||"");
+      roundResultText.innerHTML=sanitizeUiHtml(winner.resultHtml||"");
+      roundStandings.innerHTML=sanitizeUiHtml(winner.standingsHtml||"");
+      roundStatsBox.innerHTML=sanitizeUiHtml(winner.statsHtml||"");
       nextRoundBox.classList.add("hidden");
       nextRoundPrepBtn.classList.add("hidden");
       // V27.4.0: Online ist vorerst ein einzelnes Match. Kein lokaler Restart,

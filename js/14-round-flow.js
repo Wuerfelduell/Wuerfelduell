@@ -14,7 +14,7 @@
   function makeSpecialAbilityChoiceSelect(id,index,slot,selected){
     const select=document.createElement("select");
     select.id=`nextAbilityChoice${index}_${slot}`;
-    REAL_ABILITY_IDS.forEach(a=>{const opt=document.createElement("option");opt.value=a;opt.textContent=`${a} – ${ABILITIES[a].name}`;if(a===selected)opt.selected=true;select.appendChild(opt);});
+    CHOOSABLE_ABILITY_IDS.forEach(a=>{const opt=document.createElement("option");opt.value=a;opt.textContent=`${a} – ${ABILITIES[a].name}`;if(a===selected)opt.selected=true;select.appendChild(opt);});
     return select;
   }
 
@@ -39,7 +39,7 @@
           const currentAbilities=playerAbilities(i);
           for(let slot=0;slot<freeCount;slot++){
             const note=document.createElement("div");note.className="round-note last-place-note";note.textContent=`🏁 Freie Wahl ${slot+1}/${freeCount}`;box.appendChild(note);
-            box.appendChild(makeSpecialAbilityChoiceSelect("nextAbilityChoice",i,slot,currentAbilities[slot]||REAL_ABILITY_IDS[slot]));
+            box.appendChild(makeSpecialAbilityChoiceSelect("nextAbilityChoice",i,slot,currentAbilities[slot]||CHOOSABLE_ABILITY_IDS[slot]));
           }
           const randomCount=rules.startAbilityCount-freeCount;
           if(randomCount>0){const note=document.createElement("div");note.className="round-note";note.textContent=`🎲 ${randomCount} weitere ${randomCount===1?"Fähigkeit wird":"Fähigkeiten werden"} beim Rundenstart zufällig bestimmt.`;box.appendChild(note);}
@@ -111,7 +111,7 @@
           const free=[];
           for(let slot=0;slot<payload.freeCount;slot++){
             const id=+$(`nextAbilityChoice${i}_${slot}`)?.value;
-            if(REAL_ABILITY_IDS.includes(id) && !free.includes(id)) free.push(id);
+            if(CHOOSABLE_ABILITY_IDS.includes(id) && !free.includes(id)) free.push(id);
           }
           while(free.length<payload.freeCount){free.push(...randomUniqueAbilityIds(1,free));}
           abilities=[...free,...randomUniqueAbilityIds(rules.startAbilityCount-free.length,free)];

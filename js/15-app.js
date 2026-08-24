@@ -9,6 +9,7 @@
 
   function hideFrontScreens(){
     [mainMenu,campaignScreen,duoCampaignScreen,trioCampaignScreen,setup,profilesScreen,prestigeShopScreen,achievementsScreen,statsScreen,settingsScreen,rulesScreen,changelogScreen,abilitiesScreen,$("accountScreen")].forEach(el=>el?.classList.add("hidden"));
+    document.documentElement.classList.remove("wd-front-scroll-lock");
   }
 
   function gameIsActivelyRunning(){
@@ -58,12 +59,30 @@
   // ohne die interne Menü-/Game-Cleanup-Logik zu duplizieren.
   window.WDAppNav=Object.freeze({openMainMenu,requestLeaveCurrentGame});
 
+  function layoutContainedScreen(screen){
+    if(!screen || screen.classList.contains("hidden")) return;
+    const inner = screen.querySelector(":scope > .screen-scroll-inner") || screen;
+    const topbar = inner.querySelector(".screen-topbar");
+    const sub = inner.querySelector(".screen-subtitle");
+    const body = inner.querySelector(".ability-list, .screen-scroll-body, .menu-list");
+    if(!body) return;
+    const used = (topbar ? topbar.offsetHeight : 0) + (sub ? sub.offsetHeight : 0);
+    const extra = screen === rulesScreen ? (inner.querySelector(".rules-extra")?.offsetHeight || 0) : 0;
+    const available = Math.max(120, inner.clientHeight - used - extra);
+    body.style.maxHeight = available + "px";
+    body.style.overflowY = "auto";
+    body.style.webkitOverflowScrolling = "touch";
+  }
+
   function openFrontScreen(screen){
     document.body.classList.remove("playing","bot-acting");
     game.classList.add("hidden");
     hideFrontScreens();
     screen.classList.remove("hidden");
     window.scrollTo?.(0,0);
+    const contained = screen===abilitiesScreen || screen===changelogScreen || screen===rulesScreen || screen===statsScreen || screen===settingsScreen;
+    document.documentElement.classList.toggle("wd-front-scroll-lock", contained);
+    if(contained) requestAnimationFrame(()=>layoutContainedScreen(screen));
   }
 
   $("menuCampaignBtn").onclick=()=>{campaignModePicker.classList.remove("hidden");};
@@ -289,6 +308,8 @@
 
   window.addEventListener("resize",()=>{
     if(!game.classList.contains("hidden")) applySeatRotation();
+    const open=[abilitiesScreen,changelogScreen,rulesScreen,statsScreen,settingsScreen].find(el=>el && !el.classList.contains("hidden"));
+    if(open) layoutContainedScreen(open);
   });
 
   loadSaveData();

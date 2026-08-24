@@ -210,7 +210,7 @@
       : (campaignMode && players[index]?.campaignTeam==="hero")
         ? campaignUnlockedSecondAbilities(getProfile(players[index]?.profileId)||getProfile(campaignProfileId))
         : REAL_ABILITY_IDS;
-    const pool=allowed.filter(a=>!owned.has(a));
+    const pool=allowed.filter(a=>!owned.has(a) && a!==7);
 
     for(let i=pool.length-1;i>0;i--){
       const j=Math.floor(Math.random()*(i+1));
