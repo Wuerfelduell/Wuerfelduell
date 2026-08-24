@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="de" class="wd-booting">
 <head>
-  <meta name="wd-build" content="28.3.17" />
+  <meta name="wd-build" content="28.3.18" />
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <meta name="theme-color" content="#e8f2f6" />
@@ -11,14 +11,17 @@
   <link rel="manifest" href="manifest.json" />
   <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png" />
   <link rel="apple-touch-icon" sizes="192x192" href="icon-192.png" />
-  <title>DiceDuel · V28.3.17</title>
+  <title>DiceDuel · V28.3.18</title>
+  <link rel="preload" as="image" href="assets/ui/v28/bg-main-palace.png">
   <style>
     html.wd-booting,body.wd-booting{overflow:hidden!important;overscroll-behavior:none}
-    #wdBootGate{position:fixed;inset:0;z-index:2147483000;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:28px 22px;background:#061428;color:#f6e7c0;text-align:center;font-family:Georgia,"Times New Roman",serif}
+    #wdBootGate{position:fixed;inset:0;z-index:2147483000;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:28px 22px;background:#061428 url("assets/ui/v28/bg-main-palace.png") center/cover no-repeat;color:#f6e7c0;text-align:center;font-family:Georgia,"Times New Roman",serif}
+    #wdBootGate::before{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(6,20,40,.42),rgba(6,20,40,.78));pointer-events:none}
+    #wdBootGate>*{position:relative;z-index:1}
     #wdBootGate img{width:92px;height:92px;object-fit:contain;filter:drop-shadow(0 8px 18px rgba(0,0,0,.45))}
-    #wdBootGate h1{margin:14px 0 6px;font-size:28px;letter-spacing:.12em;text-transform:uppercase}
-    #wdBootGate p{margin:0 0 18px;font-size:14px;opacity:.86}
-    #wdBootBar{width:min(280px,78vw);height:10px;border:1px solid #d6a53c;border-radius:999px;overflow:hidden;background:#0b2344}
+    #wdBootGate h1{margin:14px 0 6px;font-size:28px;letter-spacing:.12em;text-transform:uppercase;text-shadow:0 2px 12px rgba(0,0,0,.55)}
+    #wdBootGate p{margin:0 0 18px;font-size:14px;opacity:.92;text-shadow:0 1px 8px rgba(0,0,0,.55)}
+    #wdBootBar{width:min(280px,78vw);height:10px;border:1px solid #d6a53c;border-radius:999px;overflow:hidden;background:rgba(11,35,68,.85);box-shadow:0 4px 18px rgba(0,0,0,.35)}
     #wdBootBarFill{display:block;height:100%;width:0;background:linear-gradient(90deg,#f0d27a,#d6a53c);transition:width .18s linear}
     #wdBootGate.is-done{opacity:0;pointer-events:none;transition:opacity .35s ease}
     body.wd-booting>#wdBootGate~*{pointer-events:none!important}
@@ -496,6 +499,7 @@
     <div class="screen-topbar"><button class="menuBackBtn">←</button><h2 class="screen-title">📝 Changelog</h2></div>
     <div class="screen-subtitle">Die großen Versionssprünge, ohne jeden Mini-Hotfix.</div>
     <div class="screen-scroll-body">
+    <div class="changelog-entry"><div class="changelog-version">V28.3.18</div><ul><li>Boot-Screen nutzt den Palast-Hintergrund hinter Crest und Ladebalken</li></ul></div>
     <div class="changelog-entry"><div class="changelog-version">V28.3.17</div><ul><li>Boot-Gate: Spiel startet erst, wenn Würfel-PNGs und Kern-UI geladen sind (Fortschrittsbalken, Klicks gesperrt)</li></ul></div>
     <div class="changelog-entry"><div class="changelog-version">V28.3.15</div><ul><li>Art-Würfel im Slot flach und mittig, 3D-Spin nur beim Würfeln</li><li>Art-Würfel zurück auf 28.3.12 (kein Stretch, Spin wie vorher)</li><li>Art-Würfel füllen den Slot, weniger 3D-Kanten</li><li>Art-Würfel sitzen mittig im Slot — weniger Tiefe, exakter PNG-Zuschnitt</li><li>Art-Würfel bleiben sichtbar: Flächen als img auf dem Cube, Parent-transform aus (Android hat den Cube plattgemacht)</li><li>PNG-Flächen sitzen auf dem echten 3D-Cube — gleicher Spin wie Classic-Würfel; Insurance/Gambling ebenfalls</li><li>Art-Würfel rollen mit Tumble statt 2D-Spin; Insurance/Gambling/High Stakes nutzen dasselbe PNG-Design</li><li>PNG-Würfeldesigns (ClassicV2, Sapphire Crown, Amethyst Rift) erscheinen im Kampf als Sprite statt unsichtbar auf dem 3D-Cube</li><li>Fähigkeiten-Picker scrollt im Rahmen — scrollIntoView auf die Seite entfernt</li><li>Phase-2-Observer beobachtet keinen characterData-Loop mehr</li><li>Eine Versionsquelle: GAME_VERSION, version.json, Footer und wd-build sind 28.3.15</li><li>Alle-Fähigkeiten und andere Menü-Screens scrollen im Ornament-Rahmen, nicht durch ihn durch</li><li>Campaign-Node-Jitter: Observer bleibt für Lock-Overlays, Pulse/Filter/Glow-Loop ist tot</li><li>Glück (BETA) ist nicht mehr über freie Wahl, Draft oder Random-Start wählbar — nur natürliche 7</li><li>Deutsch ist Default; Englisch übersetzt ohne Wort-für-Wort-Mischtext; Changelog bleibt sichtbar</li><li>Online-Sieg-HTML wird sanitizt</li></ul></div>
     <div class="changelog-entry"><div class="changelog-version">V28.3.0</div><ul><li>Drei neue gerenderte Würfeldesigns mit echten Flächen 1–6, eigener Fragezeichen-Fläche und Shop-Vorschau</li><li>ClassicV2 (Elfenbein/Gold) ist für alle bestehenden und neuen Profile von Anfang an freigeschaltet</li><li>Sapphire Crown wird durch den Solo-Welt-3-Boss Zero Regent freigeschaltet; Amethyst Rift durch den Solo-Welt-4-Boss Abyss Throne</li><li>Boss-Freischaltungen gelten rückwirkend und werden bei bereits abgeschlossenen Welten automatisch nachgetragen</li><li>Neue Würfel-Kollektion im Profil sowie Artwork-Unterstützung für Hauptwürfel, Spezialwürfe, Counterattack, Online-Snapshots und Physics-Test-Lab</li></ul></div>
@@ -734,7 +738,7 @@
 <script src="lang/de.js?v=28.2.1"></script>
 <script src="lang/en.js?v=28.2.1"></script>
 <script src="js/00-i18n.js?v=28.3.15"></script>
-<script src="js/01-config.js?v=28.3.17"></script>
+<script src="js/01-config.js?v=28.3.18"></script>
 <script src="js/02-campaign-solo-data.js?v=28.2.1"></script>
 <script src="js/03-campaign-duo-data.js?v=28.2.1"></script>
 <script src="js/03b-campaign-trio-data.js?v=28.2.1"></script>
