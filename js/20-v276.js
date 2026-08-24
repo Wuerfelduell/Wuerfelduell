@@ -1,6 +1,6 @@
 (()=>{
   const $=id=>document.getElementById(id);
-  function esc(v){return String(v??'').replace(/[&<>'"]/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[ch]));}
+  function esc(v){return String(v??'').replace(/[&<>'"]/g,ch=>({'&':'&','<':'<','>':'>',"'":'&#39;','"':'"'}[ch]));}
 
   function randomPick(list,fallback){return Array.isArray(list)&&list.length?list[Math.floor(Math.random()*list.length)]:fallback;}
   window.WDV276={
@@ -15,24 +15,95 @@
     }
   };
 
-  function decorateProfiles(){
-    const list=$('profileList'); if(!list||typeof saveData==='undefined') return;
-    list.querySelectorAll('.profile-card').forEach(card=>{
-      if(card.querySelector('.v276-profile-extra')) return;
-      const p=getProfile(card.dataset.profileId); if(!p) return;
-      const ownedAch=Object.keys(p.achievements||{});
-      const showcase=new Set((p.achievementShowcase||[]).slice(0,3));
-      const box=document.createElement('div'); box.className='v276-profile-extra';
-      box.innerHTML=`<div class="unlock-strip-title">🎲 Cosmetic Randomizer</div>
+  let cosmeticProfileId="";
+
+  function cosmeticOverlay(){
+    let overlay=$("cosmeticMenu");
+    if(overlay) return overlay;
+    overlay=document.createElement("div");
+    overlay.id="cosmeticMenu";
+    overlay.className="utility-overlay hidden";
+    overlay.innerHTML=`<div class="utility-panel cosmetic-menu-panel">
+      <div class="utility-kicker">Profil</div>
+      <div class="utility-title" id="cosmeticMenuTitle">Kosmetik</div>
+      <div id="cosmeticMenuBody" class="cosmetic-menu-body"></div>
+      <div class="utility-actions"><button type="button" id="cosmeticMenuClose" class="secondary">Schließen</button></div>
+    </div>`;
+    document.body.appendChild(overlay);
+    overlay.addEventListener("click",event=>{if(event.target===overlay) closeCosmeticMenu();});
+    overlay.querySelector("#cosmeticMenuClose").addEventListener("click",closeCosmeticMenu);
+    return overlay;
+  }
+
+  function closeCosmeticMenu(){
+    cosmeticOverlay().classList.add("hidden");
+    cosmeticProfileId="";
+  }
+
+  function bindCosmeticControls(root, profileId){
+    root.querySelectorAll("[data-random]").forEach(el=>el.addEventListener("change",()=>{
+      const q=getProfile(profileId); if(!q) return;
+      q.cosmeticRandomizer=q.cosmeticRandomizer||{};
+      q.cosmeticRandomizer[el.dataset.random]=!!el.checked;
+      saveGameData();
+    }));
+    root.querySelectorAll("[data-showcase]").forEach(el=>el.addEventListener("change",()=>{
+      const q=getProfile(profileId); if(!q) return;
+      let arr=Array.isArray(q.achievementShowcase)?[...q.achievementShowcase]:[];
+      const id=el.dataset.showcase;
+      if(el.checked&&!arr.includes(id)){
+        if(arr.length>=3){el.checked=false;return;}
+        arr.push(id);
+      }else if(!el.checked) arr=arr.filter(x=>x!==id);
+      q.achievementShowcase=arr.slice(0,3);
+      saveGameData();
+    }));
+  }
+
+  function cosmeticMenuHtml(p){
+    const ownedAch=Object.keys(p.achievements||{});
+    const showcase=new Set((p.achievementShowcase||[]).slice(0,3));
+    const chips=ownedAch.length
+      ? ownedAch.map(id=>`<label class="v276-showcase-chip"><input type="checkbox" data-showcase="${esc(id)}" ${showcase.has(id)?"checked":""}><span>${esc(ACHIEVEMENTS[id]?.name||id)}</span></label>`).join("")
+      : `<div class="cosmetic-menu-empty">Noch keine Achievements freigeschaltet.</div>`;
+    return `<div class="cosmetic-menu-block">
+        <div class="unlock-strip-title">Zufällige Kosmetik</div>
         <div class="v276-toggle-row">
-          <label><input type="checkbox" data-random="dice" ${p.cosmeticRandomizer?.dice?'checked':''}> Würfel</label>
-          <label><input type="checkbox" data-random="attackFx" ${p.cosmeticRandomizer?.attackFx?'checked':''}> Angriffseffekt</label>
+          <label class="v276-showcase-chip"><input type="checkbox" data-random="dice" ${p.cosmeticRandomizer?.dice?"checked":""}><span>Würfel</span></label>
+          <label class="v276-showcase-chip"><input type="checkbox" data-random="attackFx" ${p.cosmeticRandomizer?.attackFx?"checked":""}><span>Angriffseffekt</span></label>
         </div>
-        <div class="unlock-strip-title">🏅 Achievement Showcase · max. 3</div>
-        <div class="v276-showcase-list">${ownedAch.length?ownedAch.map(id=>`<label class="v276-showcase-chip"><input type="checkbox" data-showcase="${esc(id)}" ${showcase.has(id)?'checked':''}> ${esc(ACHIEVEMENTS[id]?.name||id)}</label>`).join(''):'Noch keine Achievements freigeschaltet.'}</div>`;
-      card.appendChild(box);
-      box.querySelectorAll('[data-random]').forEach(el=>el.addEventListener('change',()=>{const q=getProfile(card.dataset.profileId);if(!q)return;q.cosmeticRandomizer=q.cosmeticRandomizer||{};q.cosmeticRandomizer[el.dataset.random]=!!el.checked;saveGameData();}));
-      box.querySelectorAll('[data-showcase]').forEach(el=>el.addEventListener('change',()=>{const q=getProfile(card.dataset.profileId);if(!q)return;let arr=Array.isArray(q.achievementShowcase)?[...q.achievementShowcase]:[];const id=el.dataset.showcase;if(el.checked&&!arr.includes(id)){if(arr.length>=3){el.checked=false;return;}arr.push(id);}else if(!el.checked)arr=arr.filter(x=>x!==id);q.achievementShowcase=arr.slice(0,3);saveGameData();}));
+      </div>
+      <div class="cosmetic-menu-block">
+        <div class="unlock-strip-title">Achievement-Anzeige · max. 3</div>
+        <div class="v276-showcase-list">${chips}</div>
+      </div>`;
+  }
+
+  function openCosmeticMenu(profileId){
+    const p=getProfile(profileId); if(!p) return;
+    cosmeticProfileId=profileId;
+    const overlay=cosmeticOverlay();
+    overlay.querySelector("#cosmeticMenuTitle").textContent=`Kosmetik · ${p.name} #${p.tagNumber}`;
+    const body=overlay.querySelector("#cosmeticMenuBody");
+    body.innerHTML=cosmeticMenuHtml(p);
+    bindCosmeticControls(body, profileId);
+    overlay.classList.remove("hidden");
+  }
+
+  function decorateProfiles(){
+    const list=$("profileList"); if(!list||typeof saveData==="undefined") return;
+    list.querySelectorAll(".profile-card").forEach(card=>{
+      if(card.querySelector(".v276-cosmetic-open")) return;
+      card.querySelector(".v276-profile-extra")?.remove();
+      const p=getProfile(card.dataset.profileId); if(!p) return;
+      const button=document.createElement("button");
+      button.type="button";
+      button.className="secondary v276-cosmetic-open";
+      button.textContent="Kosmetik";
+      button.addEventListener("click",()=>openCosmeticMenu(card.dataset.profileId));
+      const actions=card.querySelector(".profile-actions");
+      if(actions) actions.insertAdjacentElement("afterend", button);
+      else card.appendChild(button);
     });
   }
 
