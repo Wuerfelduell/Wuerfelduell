@@ -1,40 +1,109 @@
-/* V28.3.4 — UI hotfix
-   Jitter: nodePulse tot + Selected-Frames ohne Filter-Repaint + Map clippt Glow
-   Scroll: abilitiesScreen Rahmen innen größer, Liste strikt im Frame
+/* V28.3.5 — UI hotfix
+   Alle Fähigkeiten: Page-Scroll lock + inner clip (border-image bleibt sichtbar)
+   Campaign Jitter: Pulse/Filter/Glow tot, Map clippt Selected-Frames
    Kampagnen-Fähigkeiten: weg
    L1/L2: unangetastet
 */
 
-/* ===== 1) JITTER ===== */
+/* ===== Page lock while abilities screen is open (set by 35-v28-ui-phase12.js) ===== */
+html.wd-abilities-open,
+html.wd-abilities-open body{
+  overflow:hidden!important;
+  height:100dvh!important;
+  max-height:100dvh!important;
+  overscroll-behavior:none!important;
+}
 
-/* Prestige nodePulse tot (falls noch irgendwo referenziert) */
-html[data-v28-rework="2"] .campaign-node.current,
-html[data-v28-rework="2"] .campaign-node.selected,
+#abilitiesScreen.hidden{display:none!important}
+
+#abilitiesScreen.screen-card:not(.hidden){
+  display:flex!important;
+  flex-direction:column!important;
+  height:calc(100dvh - 12px)!important;
+  max-height:calc(100dvh - 12px)!important;
+  min-height:0!important;
+  /* overflow hidden clips descendants to the padding-box.
+     border-image lives in the border-box and stays visible. */
+  overflow:hidden!important;
+  box-sizing:border-box!important;
+}
+
+#abilitiesScreen:not(.hidden)>.screen-scroll-inner{
+  display:flex!important;
+  flex-direction:column!important;
+  flex:1 1 auto!important;
+  min-height:0!important;
+  height:100%!important;
+  overflow:hidden!important;
+}
+
+#abilitiesScreen:not(.hidden) .screen-topbar,
+#abilitiesScreen:not(.hidden) .screen-subtitle{
+  flex:0 0 auto!important;
+}
+
+#abilitiesScreen:not(.hidden) .ability-list,
+#abilitiesScreen:not(.hidden) #allAbilitiesList{
+  flex:1 1 auto!important;
+  min-height:0!important;
+  overflow-x:hidden!important;
+  overflow-y:auto!important;
+  -webkit-overflow-scrolling:touch;
+  overscroll-behavior:contain;
+  padding:4px 2px 18px!important;
+  margin:0!important;
+  box-sizing:border-box!important;
+}
+
+#abilitiesScreen .ability-list-item{
+  max-width:100%!important;
+  box-sizing:border-box!important;
+}
+
+/* ===== Kampagnen-Fähigkeiten weg ===== */
+.campaign-unlocks,
+#campaignAbilityGrid{
+  display:none!important;
+  height:0!important;
+  margin:0!important;
+  padding:0!important;
+  overflow:hidden!important;
+  visibility:hidden!important;
+  pointer-events:none!important;
+}
+
+/* ===== Campaign node jitter ===== */
+html[data-v28-rework="2"] .campaign-hub .campaign-node,
 html[data-v28-rework="2"] .campaign-hub .campaign-node.current,
 html[data-v28-rework="2"] .campaign-hub .campaign-node.selected,
+html[data-v28-rework="2"] .campaign-hub .campaign-node.boss,
 html[data-v28-rework="2"] .campaign-hub .campaign-node.boss.current,
-html[data-v28-rework="2"] .campaign-hub .campaign-node.boss.selected{
+html[data-v28-rework="2"] .campaign-hub .campaign-node.boss.selected,
+html[data-v28-rework="2"] .campaign-hub .campaign-node.boss span,
+html[data-v28-rework="2"] .campaign-hub .campaign-node.boss .node-mark{
   animation:none!important;
   transition:none!important;
   transform:none!important;
+  rotate:0deg!important;
   scale:1!important;
   will-change:auto!important;
   filter:none!important;
 }
 
-/* Selected-Rahmen: kein drop-shadow (Filter = Scroll-Jitter auf Mobile) */
+html[data-v28-rework="2"] .campaign-hub .campaign-node::before,
+html[data-v28-rework="2"] .campaign-hub .campaign-node::after,
 html[data-v28-rework="2"] .campaign-hub .campaign-node.current::before,
 html[data-v28-rework="2"] .campaign-hub .campaign-node.selected::before,
 html[data-v28-rework="2"] .campaign-hub .campaign-node.current::after,
 html[data-v28-rework="2"] .campaign-hub .campaign-node.selected::after,
-html[data-v28-rework="2"] .campaign-node.current::after,
-html[data-v28-rework="2"] .campaign-node.selected::after{
+html[data-v28-rework="2"] .campaign-hub .campaign-node.p6-farm-node::before,
+html[data-v28-rework="2"] .campaign-hub .campaign-node.p6-farm-node.current::before,
+html[data-v28-rework="2"] .campaign-hub .campaign-node.p6-farm-node.selected::before{
   animation:none!important;
   transition:none!important;
   filter:none!important;
 }
 
-/* Boss-Glow-PNG: fest, kein Blend/Filter-Pulse */
 html[data-v28-rework="2"] .campaign-hub .campaign-node.boss>.p8-boss-selected-glow,
 html[data-v28-rework="2"] .campaign-hub .campaign-node.boss.p6-farm-node>.p8-boss-selected-glow{
   position:absolute!important;
@@ -43,7 +112,6 @@ html[data-v28-rework="2"] .campaign-hub .campaign-node.boss.p6-farm-node>.p8-bos
   width:calc(100% + 12px)!important;
   height:calc(100% + 12px)!important;
   object-fit:contain!important;
-  object-position:center!important;
   pointer-events:none!important;
   mix-blend-mode:normal!important;
   opacity:.9!important;
@@ -54,21 +122,11 @@ html[data-v28-rework="2"] .campaign-hub .campaign-node.boss.p6-farm-node>.p8-bos
   will-change:auto!important;
 }
 
-/* Map: mehr Innenabstand damit Selected-Glow nicht am Rand „atmet“, Glow clippen */
-html[data-v28-rework="2"] .campaign-hub .campaign-node-map,
-html[data-v28-rework="2"] .campaign-node-map{
+html[data-v28-rework="2"] .campaign-hub .campaign-node-map{
   overflow:hidden!important;
-  padding:22px 14px!important;
-  contain:paint!important;
+  padding:24px 16px!important;
 }
 
-html[data-v28-rework="2"] .campaign-hub .campaign-node,
-html[data-v28-rework="2"] .campaign-node{
-  contain:layout style!important;
-  backface-visibility:hidden;
-}
-
-/* Detail-Card stabil */
 html[data-v28-rework="2"] .campaign-node-detail,
 html[data-v28-rework="2"] .campaign-node-detail *{
   animation:none!important;
@@ -81,69 +139,4 @@ html[data-v28-rework="2"] .campaign-node-detail *{
 }
 @keyframes p8BossSelectedPulse{
   0%,50%,100%{opacity:.9;filter:none}
-}
-
-/* ===== 2) Kampagnen-Fähigkeiten weg ===== */
-.campaign-unlocks,
-#campaignAbilityGrid{
-  display:none!important;
-  height:0!important;
-  margin:0!important;
-  padding:0!important;
-  overflow:hidden!important;
-  visibility:hidden!important;
-  pointer-events:none!important;
-}
-
-/* ===== 3) Alle Fähigkeiten: größerer Innenrahmen, Scroll nur innen ===== */
-#abilitiesScreen.hidden{
-  display:none!important;
-}
-
-#abilitiesScreen.screen-card:not(.hidden){
-  display:flex!important;
-  flex-direction:column!important;
-  max-height:calc(100dvh - 16px)!important;
-  overflow:hidden!important;
-  box-sizing:border-box!important;
-  /* mehr Innenfläche = dekorativer Rahmen „größer“ relativ zum Content */
-  padding:18px 16px 22px!important;
-}
-
-#abilitiesScreen:not(.hidden) .screen-topbar,
-#abilitiesScreen:not(.hidden) .screen-subtitle{
-  flex:0 0 auto;
-}
-
-#abilitiesScreen:not(.hidden) .ability-list,
-#abilitiesScreen:not(.hidden) #allAbilitiesList{
-  flex:1 1 auto!important;
-  min-height:0!important;
-  overflow-x:hidden!important;
-  overflow-y:auto!important;
-  -webkit-overflow-scrolling:touch;
-  overscroll-behavior:contain;
-  padding:4px 4px 16px!important;
-  margin:0!important;
-  box-sizing:border-box!important;
-}
-
-#abilitiesScreen .ability-list-item{
-  max-width:100%!important;
-  box-sizing:border-box!important;
-  overflow:hidden!important;
-}
-
-/* border-image Screens: Content darf nicht über die Slice-Zone malen */
-html[data-v28-rework="2"] #abilitiesScreen.screen-card:not(.hidden){
-  /* etwas dickere border-image-width = optisch größerer Rahmen */
-  border-width:36px 30px!important;
-  border-image-width:36px 30px!important;
-  padding:8px 6px 12px!important;
-}
-
-html[data-v28-rework="2"] .campaign-hub.screen-card{
-  overflow-x:hidden!important;
-  max-width:100%!important;
-  box-sizing:border-box!important;
 }

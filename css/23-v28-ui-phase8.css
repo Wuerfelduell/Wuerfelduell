@@ -244,9 +244,9 @@ html[data-v28-rework="2"] .campaign-hub .campaign-node.boss>.p8-boss-selected-gl
   pointer-events:none;
   user-select:none;
   -webkit-user-drag:none;
-  mix-blend-mode:screen;
+  mix-blend-mode:normal;
   opacity:.94;
-  animation:p8BossSelectedPulse 1.65s ease-in-out infinite;
+  animation:none;
 }
 html[data-v28-rework="2"] .campaign-hub .campaign-node.boss.p6-farm-node>.p8-boss-selected-glow{
   inset:-7px;
@@ -257,8 +257,7 @@ html[data-v28-rework="2"] .campaign-hub .campaign-node.p6-farm-node:is(.current,
   filter:drop-shadow(0 6px 9px rgba(1,16,39,.36))!important;
 }
 @keyframes p8BossSelectedPulse{
-  0%,100%{opacity:.80;filter:brightness(.94)}
-  50%{opacity:1;filter:brightness(1.12) drop-shadow(0 0 5px rgba(44,255,133,.34))}
+  0%,50%,100%{opacity:.94;filter:none}
 }
 
 @media(max-width:420px){
