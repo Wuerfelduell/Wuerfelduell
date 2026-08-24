@@ -1,11 +1,33 @@
-/* V28.3.1 — UI hotfix
-   1) Boss-Selected-Glow: stabil (kein Size-Jitter durch Pulse/Filter)
-   2) Kampagnen-Fähigkeiten-Strip entfernen
-   3) Mastery L1/L2 Text im Kreis zentrieren
-   4) Ability-Listen / Chip-Grids im Rahmen halten (kein Overflow)
+/* V28.3.2 — UI hotfix
+   1) Jitter: nodePulse + boss-glow Animation/Filter killen (box-shadow 2px→5px war die Ursache)
+   2) Kampagnen-Fähigkeiten-Strip weg
+   3) Alle-Fähigkeiten: Liste scrollt INNERHALB des Ornament-Rahmens
+   L1/L2: absichtlich unangetastet (kommt später mit neuen Assets)
 */
 
-/* ---------- 1) Boss selected glow: fixed size, no layout pulse ---------- */
+/* ---------- 1) Jitter kill: nodePulse + selected glow stabil ---------- */
+
+html[data-v28-rework="2"] .campaign-hub .campaign-node.current,
+html[data-v28-rework="2"] .campaign-hub .campaign-node.selected,
+html[data-v28-rework="2"] .campaign-hub .campaign-node.boss.current,
+html[data-v28-rework="2"] .campaign-hub .campaign-node.boss.selected,
+html[data-v28-rework="2"] .campaign-node.current,
+html[data-v28-rework="2"] .campaign-node.selected{
+  animation:none!important;
+  transition:box-shadow 0s, filter 0s, transform 0s, scale 0s!important;
+  transform:none!important;
+  scale:1!important;
+  will-change:auto!important;
+}
+
+html[data-v28-rework="2"] .campaign-hub .campaign-node.current::before,
+html[data-v28-rework="2"] .campaign-hub .campaign-node.selected::before,
+html[data-v28-rework="2"] .campaign-hub .campaign-node.current::after,
+html[data-v28-rework="2"] .campaign-hub .campaign-node.selected::after{
+  animation:none!important;
+  transition:none!important;
+}
+
 html[data-v28-rework="2"] .campaign-hub .campaign-node.boss>.p8-boss-selected-glow,
 html[data-v28-rework="2"] .campaign-hub .campaign-node.boss.p6-farm-node>.p8-boss-selected-glow{
   position:absolute!important;
@@ -30,33 +52,30 @@ html[data-v28-rework="2"] .campaign-hub .campaign-node.boss.p6-farm-node>.p8-bos
   filter:drop-shadow(0 0 5px rgba(23,240,106,.28))!important;
   will-change:auto!important;
 }
-
 html[data-v28-rework="2"] .campaign-hub .campaign-node.boss.p6-farm-node>.p8-boss-selected-glow{
   inset:-7px!important;
   width:calc(100% + 14px)!important;
   height:calc(100% + 14px)!important;
 }
 
-/* Detail-Card darf nicht durch Transitions/Decorate um 1px springen */
 html[data-v28-rework="2"] .campaign-node-detail,
-html[data-v28-rework="2"] .campaign-node-detail *{
-  transition:none!important;
+html[data-v28-rework="2"] .campaign-node-detail *,
+html[data-v28-rework="2"] .campaign-node-detail::before,
+html[data-v28-rework="2"] .campaign-node-detail::after{
   animation:none!important;
+  transition:none!important;
+  will-change:auto!important;
 }
 html[data-v28-rework="2"] .campaign-node-detail{
   transform:none!important;
   scale:1!important;
-  will-change:auto!important;
 }
 
-/* Selected/current Node selbst: kein Scale/Transform-Pulse */
-html[data-v28-rework="2"] .campaign-hub .campaign-node.current,
-html[data-v28-rework="2"] .campaign-hub .campaign-node.selected,
-html[data-v28-rework="2"] .campaign-hub .campaign-node.boss.current,
-html[data-v28-rework="2"] .campaign-hub .campaign-node.boss.selected{
-  transform:none!important;
-  scale:1!important;
-  animation:none!important;
+@keyframes nodePulse{
+  0%,50%,100%{box-shadow:0 0 0 3px rgba(255,200,87,.12),0 0 16px rgba(255,200,87,.18)}
+}
+@keyframes p8BossSelectedPulse{
+  0%,50%,100%{opacity:.94;filter:drop-shadow(0 0 5px rgba(23,240,106,.28))}
 }
 
 /* ---------- 2) Kampagnen-Fähigkeiten komplett weg ---------- */
@@ -72,99 +91,42 @@ html[data-v28-rework="2"] .campaign-hub .campaign-node.boss.selected{
   pointer-events:none!important;
 }
 
-/* ---------- 3) Mastery L1/L2 mittig im Kreis ---------- */
-.aml-node-core,
-.mastery-ability-sheet .aml-ability-node .aml-node-core,
-.mastery-ability-locked .aml-node-core{
-  display:grid!important;
-  place-items:center!important;
-  align-content:center!important;
-  justify-items:center!important;
-  text-align:center!important;
-}
-
-.aml-node-level,
-.mastery-ability-sheet .aml-node-level,
-.mastery-ability-locked .aml-node-level{
+/* ---------- 3) Alle Fähigkeiten: Scroll INNERHALB des Rahmens ---------- */
+#abilitiesScreen.screen-card{
   display:flex!important;
-  align-items:center!important;
-  justify-content:center!important;
-  width:100%!important;
-  height:100%!important;
-  margin:0!important;
-  padding:0!important;
-  line-height:1!important;
-  text-align:center!important;
-  transform:none!important;
-  position:relative!important;
-  left:auto!important;
-  top:auto!important;
-  right:auto!important;
-  bottom:auto!important;
+  flex-direction:column!important;
+  max-height:calc(100dvh - 20px)!important;
+  overflow:hidden!important;
+  box-sizing:border-box!important;
 }
 
-/* Orbit/Core-Offsets der Sheet-Variante: Core bleibt geometrisch mittig im Orbit */
-.mastery-ability-sheet .aml-ability-node .aml-node-orbit{
-  display:grid!important;
-  place-items:center!important;
-}
-.mastery-ability-sheet .aml-ability-node .aml-node-core{
-  /* statt left/top-Absolutzahlen: zentriert im Orbit */
-  position:absolute!important;
-  left:50%!important;
-  top:50%!important;
-  transform:translate(-50%,-50%)!important;
-  margin:0!important;
-}
-.mastery-ability-sheet .aml-ability-node .aml-node-level{
-  transform:none!important; /* Text bleibt im Core zentriert, Core selbst ist schon -50%/-50% */
+#abilitiesScreen .screen-topbar,
+#abilitiesScreen .screen-subtitle{
+  flex:0 0 auto;
 }
 
-/* Locked-Variante gleich behandeln */
-.mastery-ability-locked .aml-node-orbit{
-  display:grid!important;
-  place-items:center!important;
-}
-.mastery-ability-locked .aml-node-core{
-  position:absolute!important;
-  left:50%!important;
-  top:50%!important;
-  transform:translate(-50%,-50%)!important;
-  margin:0!important;
-}
-
-/* ---------- 4) Overflow: Listen bleiben im Rahmen ---------- */
-#abilitiesScreen.screen-card,
-#abilitiesScreen .ability-list{
+#abilitiesScreen .ability-list,
+#abilitiesScreen #allAbilitiesList{
+  flex:1 1 auto!important;
+  min-height:0!important;
+  max-height:none!important;
   overflow-x:hidden!important;
-}
-#abilitiesScreen .ability-list{
   overflow-y:auto!important;
-  max-height:min(70dvh, 640px);
   -webkit-overflow-scrolling:touch;
   overscroll-behavior:contain;
-  padding-bottom:12px;
-  box-sizing:border-box;
+  padding-bottom:10px!important;
+  margin:0!important;
+  box-sizing:border-box!important;
 }
 
-/* Campaign-Hub: nichts soll horizontal aus dem Panel rauslaufen */
-html[data-v28-rework="2"] .campaign-hub.screen-card,
-html[data-v28-rework="2"] .campaign-hub .campaign-node-detail{
+#abilitiesScreen .ability-list-item{
+  max-width:100%!important;
+  box-sizing:border-box!important;
+  overflow:hidden!important;
+}
+
+html[data-v28-rework="2"] .campaign-hub.screen-card{
   overflow-x:hidden!important;
   max-width:100%!important;
   box-sizing:border-box!important;
-}
-
-html[data-v28-rework="2"] .campaign-hub .campaign-unlock-grid,
-html[data-v28-rework="2"] .campaign-hub .campaign-ability-chip{
-  max-width:100%!important;
-  box-sizing:border-box!important;
-}
-
-/* Chip-Text nicht aus dem Frame schieben */
-.campaign-ability-chip{
-  max-width:100%;
-  overflow:hidden;
-  text-overflow:ellipsis;
-  white-space:nowrap;
 }
