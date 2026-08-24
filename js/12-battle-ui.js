@@ -481,6 +481,16 @@
     initializeAttackAfterTarget(pending.total,pending.source);
   }
 
+  function battleAction(btn, label, icon){
+    const img=document.createElement("img");
+    img.className="p1-action-icon";
+    img.src=`assets/ui/v28/svg/${icon}?v=${GAME_VERSION}`;
+    img.alt="";
+    img.draggable=false;
+    img.setAttribute("aria-hidden","true");
+    btn.replaceChildren(img, document.createTextNode(label));
+    btn.classList.add("p1-action-button");
+  }
   function hideAllControls(){
     campaignTargetBox.classList.add("hidden");
     [primaryBtn,lockBtn,baseRerollBtn,loadedDiceBtn,snakeEyesBtn,attackPowerBtn,bloodLowerBtn,bloodHigherBtn,bloodRushMasteryBtn,resolveAttackBtn,nextBtn].forEach(b=>{
@@ -492,7 +502,7 @@
     if(isAnimating) return;
     if(phase==="campaign_target"){renderCampaignTargetChoices();return;}
 
-    if(phase==="idle"){primaryBtn.classList.remove("hidden");primaryBtn.textContent="🎲 Basiswurf";}
+    if(phase==="idle"){primaryBtn.classList.remove("hidden");battleAction(primaryBtn,"Basiswurf","gameplay/dice.svg");}
     if(phase==="base_select"){
       lockBtn.classList.remove("hidden");
       lockBtn.disabled=!dice.some(d=>d.selected&&!d.locked);
@@ -525,12 +535,16 @@
         snakeEyesBtn.textContent=`🐍 Snake Eyes: ${snakeGroup.indices.length}× ${snakeGroup.face}er neu würfeln`;
       }
     }
-    if(phase==="base_ready"){primaryBtn.classList.remove("hidden");primaryBtn.textContent="🎲 Rest würfeln";}
+    if(phase==="base_ready"){primaryBtn.classList.remove("hidden");battleAction(primaryBtn,"Rest würfeln","gameplay/dice.svg");}
     if(phase==="attack_ready"||phase==="attack_continue"){
       primaryBtn.classList.remove("hidden");
-      primaryBtn.textContent=bloodPriceNeighbors.length
-        ? `🩸 Würfeln: ${[attackFace,...bloodPriceNeighbors].sort((a,b)=>a-b).join(" / ")}`
-        : (phase==="attack_ready"?`⚔️ Auf ${attackFace}er würfeln`:"⚔️ Angriff weiterwürfeln");
+      battleAction(
+        primaryBtn,
+        bloodPriceNeighbors.length
+          ? `Würfeln: ${[attackFace,...bloodPriceNeighbors].sort((a,b)=>a-b).join(" / ")}`
+          : (phase==="attack_ready"?`Auf ${attackFace}er würfeln`:"Angriff weiterwürfeln"),
+        bloodPriceNeighbors.length ? "gameplay/heart-hp.svg" : "gameplay/attack.svg"
+      );
 
       if(hasAbility(11) && bloodPriceNeighbors.length===0 && players[current].hp>3){
         const neighbors=[];
@@ -570,7 +584,7 @@
       // der Cash-out auf dem Auswerten-Button.
       if(doubleTapChoice){
         primaryBtn.classList.remove("hidden");
-        primaryBtn.textContent="🎲 Mit 2 Treffern weiterwürfeln";
+        battleAction(primaryBtn,"Mit 2 Treffern weiterwürfeln","gameplay/dice.svg");
         resolveAttackBtn.classList.remove("hidden");
         resolveAttackBtn.textContent="🔫 2 Treffer sichern · Double Tap";
       }

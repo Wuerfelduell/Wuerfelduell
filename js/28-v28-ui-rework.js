@@ -34,14 +34,14 @@
   const SELECT_ICON_PATHS = [
     [/localMode/i,"gameplay/dice.svg"],
     [/playerCount/i,"gameplay/player.svg"],
+    [/dice/i,"gameplay/dice.svg"],
+    [/fx/i,"gameplay/attack.svg"],
     [/profile/i,"gameplay/player.svg"],
     [/seat/i,"gameplay/seat-position.svg"],
-    [/dice/i,"gameplay/dice.svg"],
     [/bot/i,"gameplay/bot.svg"],
     [/animation/i,"navigation/refresh-reroll.svg"],
     [/language/i,"navigation/info.svg"],
-    [/world/i,"gameplay/world.svg"],
-    [/fx/i,"gameplay/attack.svg"]
+    [/world/i,"gameplay/world.svg"]
   ];
 
   let selectPicker = null;

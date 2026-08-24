@@ -87,7 +87,7 @@
       node.nodeType === Node.TEXT_NODE && node.nodeValue.trim()
     );
     if(textNode){
-      textNode.nodeValue = textNode.nodeValue.replace(/^\s*[^\p{L}\p{N}]+\s*/u, "");
+      textNode.nodeValue = textNode.nodeValue.replace(/^\s*[^\p{L}\p{N}]+\s*/u, " ");
     }
   }
 
