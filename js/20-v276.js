@@ -24,14 +24,20 @@
     overlay.id="cosmeticMenu";
     overlay.className="utility-overlay hidden";
     overlay.innerHTML=`<div class="utility-panel cosmetic-menu-panel">
-      <div class="utility-kicker">Profil</div>
-      <div class="utility-title" id="cosmeticMenuTitle">Kosmetik</div>
+      <div class="cosmetic-menu-head">
+        <div>
+          <div class="utility-kicker">Profil</div>
+          <div class="utility-title" id="cosmeticMenuTitle">Kosmetik</div>
+        </div>
+        <button type="button" id="cosmeticMenuCloseX" class="cosmetic-menu-close-x" aria-label="Schließen">×</button>
+      </div>
       <div id="cosmeticMenuBody" class="cosmetic-menu-body"></div>
       <div class="utility-actions"><button type="button" id="cosmeticMenuClose" class="secondary">Schließen</button></div>
     </div>`;
     document.body.appendChild(overlay);
     overlay.addEventListener("click",event=>{if(event.target===overlay) closeCosmeticMenu();});
     overlay.querySelector("#cosmeticMenuClose").addEventListener("click",closeCosmeticMenu);
+    overlay.querySelector("#cosmeticMenuCloseX").addEventListener("click",closeCosmeticMenu);
     return overlay;
   }
 
