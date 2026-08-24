@@ -1,5 +1,6 @@
-/* DiceDuel 28.3.24 — rules overflow, trophy shop, combat action icons */
+/* DiceDuel 28.3.25 — quit red rect, scrolls, ability picker clip, frame jitter, primaryBtn .hidden */
 
+/* ---- Rules: auto-height cards, no text bleed ---- */
 html[data-v28-rework="2"] #rulesScreen .menu-list{
   gap:14px!important;
   align-items:stretch!important;
@@ -12,9 +13,7 @@ html[data-v28-rework="2"] #rulesScreen .menu-info-card{
   flex-direction:column!important;
   padding:16px 20px 18px!important;
 }
-html[data-v28-rework="2"] #rulesScreen .menu-info-card>strong{
-  flex:0 0 auto;
-}
+html[data-v28-rework="2"] #rulesScreen .menu-info-card>strong{flex:0 0 auto}
 html[data-v28-rework="2"] #rulesScreen .menu-info-card .small{
   display:block!important;
   overflow:visible!important;
@@ -23,6 +22,7 @@ html[data-v28-rework="2"] #rulesScreen .menu-info-card .small{
   margin-top:6px!important;
 }
 
+/* ---- Trophy shop (keep 24 polish) ---- */
 html[data-v28-rework="2"] #prestigeShopScreen .prestige-item-kicker{
   color:#e2b44a!important;
   letter-spacing:.04em!important;
@@ -31,45 +31,163 @@ html[data-v28-rework="2"] #prestigeShopScreen .prestige-item-kicker{
   padding-left:2px;
   opacity:1!important;
 }
-html[data-v28-rework="2"] #prestigeShopScreen .prestige-equipped{
-  overflow:visible!important;
-}
+html[data-v28-rework="2"] #prestigeShopScreen .prestige-equipped{overflow:visible!important}
 html[data-v28-rework="2"] #prestigeShopScreen .prestige-active-list{
-  display:flex;
-  flex-wrap:wrap;
-  gap:8px;
-  margin:8px 0 4px;
+  display:flex;flex-wrap:wrap;gap:8px;margin:8px 0 4px;
 }
 html[data-v28-rework="2"] #prestigeShopScreen .prestige-active-chip{
-  display:inline-flex;
-  align-items:center;
-  gap:6px;
-  padding:6px 10px;
-  border:1px solid rgba(214,165,60,.38);
-  border-radius:999px;
-  background:rgba(7,31,75,.38);
-  color:#f4ead0;
-  font-size:12px;
-  font-weight:700;
-  max-width:100%;
+  display:inline-flex;align-items:center;gap:6px;padding:6px 10px;
+  border:1px solid rgba(214,165,60,.38);border-radius:999px;
+  background:rgba(7,31,75,.38);color:#f4ead0;font-size:12px;font-weight:700;max-width:100%;
 }
 html[data-v28-rework="2"] #prestigeShopScreen .prestige-active-chip b{
-  color:#e2b44a;
-  font-size:10px;
-  letter-spacing:.04em;
-  text-transform:uppercase;
-  font-weight:800;
+  color:#e2b44a;font-size:10px;letter-spacing:.04em;text-transform:uppercase;font-weight:800;
 }
 
-html[data-v28-rework="2"] body.playing #primaryBtn.p1-action-button{
+/* ---- PrimaryBtn: never force display when .hidden (regression fix) ---- */
+html[data-v28-rework="2"] body.playing #primaryBtn.p1-action-button:not(.hidden){
   display:flex!important;
   align-items:center!important;
   justify-content:center!important;
   gap:8px!important;
 }
+html[data-v28-rework="2"] body.playing #primaryBtn.hidden{
+  display:none!important;
+}
 html[data-v28-rework="2"] body.playing #primaryBtn .p1-action-icon{
-  width:22px;
-  height:22px;
-  margin:0!important;
-  flex:0 0 22px;
+  width:22px;height:22px;margin:0!important;flex:0 0 22px;
+}
+
+/* ---- Quit modal: kill native red rectangle under ornate leave button ---- */
+html[data-v28-rework="2"] #quitModal #quitConfirmBtn,
+html[data-v28-rework="2"] #quitModal #quitConfirmBtn.blood,
+html[data-v28-rework="2"] #quitModal #quitConfirmBtn:hover,
+html[data-v28-rework="2"] #quitModal #quitConfirmBtn:focus,
+html[data-v28-rework="2"] #quitModal #quitConfirmBtn:active{
+  -webkit-appearance:none!important;
+  appearance:none!important;
+  background:transparent!important;
+  background-color:transparent!important;
+  background-image:none!important;
+  border:0!important;
+  outline:0!important;
+  box-shadow:none!important;
+  filter:none!important;
+  -webkit-tap-highlight-color:transparent!important;
+}
+html[data-v28-rework="2"] #quitModal #quitConfirmBtn::before{
+  background-color:transparent!important;
+}
+html[data-v28-rework="2"] #quitModal #quitConfirmBtn::after{
+  content:none!important;
+  display:none!important;
+  background:none!important;
+  box-shadow:none!important;
+}
+html[data-v28-rework="2"] #quitModal .utility-actions{
+  isolation:isolate;
+}
+
+/* ---- Stats / Settings / Profiles: real inner scroll (no screen-scroll-body in HTML) ---- */
+html[data-v28-rework="2"] #statsScreen.screen-card:not(.hidden),
+html[data-v28-rework="2"] #settingsScreen.screen-card:not(.hidden),
+html[data-v28-rework="2"] #profilesScreen.screen-card:not(.hidden),
+html[data-v28-rework="2"] #achievementsScreen.screen-card:not(.hidden),
+html[data-v28-rework="2"] #prestigeShopScreen.screen-card:not(.hidden){
+  display:flex!important;
+  flex-direction:column!important;
+  height:calc(100dvh - 12px)!important;
+  max-height:calc(100dvh - 12px)!important;
+  min-height:0!important;
+  overflow:hidden!important;
+  box-sizing:border-box!important;
+}
+html[data-v28-rework="2"] #statsScreen:not(.hidden),
+html[data-v28-rework="2"] #settingsScreen:not(.hidden),
+html[data-v28-rework="2"] #profilesScreen:not(.hidden),
+html[data-v28-rework="2"] #achievementsScreen:not(.hidden),
+html[data-v28-rework="2"] #prestigeShopScreen:not(.hidden){
+  overflow-x:hidden!important;
+  overflow-y:auto!important;
+  -webkit-overflow-scrolling:touch;
+  overscroll-behavior:contain;
+  padding-bottom:18px!important;
+}
+
+/* ---- Cosmetic overlay: scroll body + close control ---- */
+#cosmeticMenu .cosmetic-menu-panel{
+  max-height:min(82vh,760px)!important;
+  overflow:hidden!important;
+  display:flex!important;
+  flex-direction:column!important;
+  min-height:0!important;
+}
+#cosmeticMenu .cosmetic-menu-body{
+  flex:1 1 auto!important;
+  min-height:0!important;
+  overflow-x:hidden!important;
+  overflow-y:auto!important;
+  -webkit-overflow-scrolling:touch;
+  overscroll-behavior:contain;
+  max-height:min(58vh,520px)!important;
+  padding:6px 4px 12px!important;
+}
+#cosmeticMenu .cosmetic-menu-head{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+  margin-bottom:4px;
+}
+#cosmeticMenu .cosmetic-menu-close-x{
+  box-sizing:border-box!important;
+  width:44px!important;
+  height:44px!important;
+  min-width:44px!important;
+  min-height:44px!important;
+  flex:0 0 44px!important;
+  padding:0!important;
+  border:0!important;
+  border-radius:0!important;
+  background:url("assets/ui/v28/png/components/close-button.png") center/contain no-repeat!important;
+  color:transparent!important;
+  font-size:0!important;
+  box-shadow:none!important;
+  cursor:pointer;
+}
+
+/* ---- Ability picker: keep list inside ornate frame ---- */
+html[data-v28-rework="2"] .dd-select-panel,
+.dd-select-picker .dd-select-panel,
+html[data-v28-rework="2"] .v28-ability-picker-panel{
+  overflow:hidden!important;
+  isolation:isolate!important;
+}
+html[data-v28-rework="2"] .dd-select-options,
+.dd-select-picker .dd-select-options,
+html[data-v28-rework="2"] .v28-ability-picker-options{
+  overflow-x:hidden!important;
+  overflow-y:auto!important;
+  overscroll-behavior:contain!important;
+  -webkit-overflow-scrolling:touch;
+  max-height:calc(78dvh - 150px)!important;
+  mask-image:none!important;
+  -webkit-mask-image:none!important;
+  padding:6px 8px 22px!important;
+  box-sizing:border-box!important;
+}
+
+/* ---- Combat frame jitter on prestige frames (enemies + self) ---- */
+html[data-v28-rework="2"] body.playing .player.frame-rift,
+html[data-v28-rework="2"] body.playing .player.frame-void,
+html[data-v28-rework="2"] body.playing .player.frame-crown,
+html[data-v28-rework="2"] body.playing .player.frame-brass{
+  animation:none!important;
+  filter:none!important;
+}
+html[data-v28-rework="2"] body.playing .player.frame-rift::before,
+html[data-v28-rework="2"] body.playing .player.frame-void::before,
+html[data-v28-rework="2"] body.playing .player.frame-crown::before,
+html[data-v28-rework="2"] body.playing .player.frame-brass::before{
+  animation:none!important;
 }
