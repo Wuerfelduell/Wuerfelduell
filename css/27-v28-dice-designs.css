@@ -14,6 +14,7 @@
   animation:none!important;
 }
 .die.theme-art-die{
+  position:relative!important;
   perspective:860px;
   transform-style:preserve-3d;
   overflow:hidden!important;
@@ -34,13 +35,17 @@
   pointer-events:none;
 }
 
+/* echte Mitte: left/top 50% + translate — inset+width kann auf Android links kleben */
 .theme-art-die>.die-art-sprite{
-  position:absolute;
-  inset:-11.5%;
-  width:123%;
-  height:123%;
-  object-fit:fill;
-  object-position:center;
+  position:absolute!important;
+  left:50%!important;
+  top:50%!important;
+  width:123%!important;
+  height:123%!important;
+  margin:0!important;
+  transform:translate(-50%,-50%)!important;
+  object-fit:fill!important;
+  object-position:center!important;
   z-index:2;
   pointer-events:none;
   display:block!important;
@@ -57,12 +62,14 @@
 }
 .theme-art-die .die-face::after{display:none!important}
 .theme-art-die .die-face-art{
-  position:absolute;
-  inset:-11.5%;
-  width:123%;
-  height:123%;
-  object-fit:fill;
-  object-position:center;
+  position:absolute!important;
+  left:50%!important;
+  top:50%!important;
+  width:123%!important;
+  height:123%!important;
+  transform:translate(-50%,-50%)!important;
+  object-fit:fill!important;
+  object-position:center!important;
   pointer-events:none;
   display:block;
   z-index:1;
