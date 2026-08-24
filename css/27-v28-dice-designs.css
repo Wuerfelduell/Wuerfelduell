@@ -16,7 +16,7 @@
   animation:none!important;
 }
 .die.theme-art-die{
-  perspective:860px;
+  perspective:1400px;
   transform-style:preserve-3d;
 }
 .die.theme-art-die.selected,
@@ -24,13 +24,17 @@
 .die.theme-art-die:active{
   transform:none!important;
   animation:none!important;
-}
-.die.theme-art-die.selected:not(.rolling)>.die-cube{
-  transform:rotateX(var(--die-rx)) rotateY(var(--die-ry)) scale(1.05);
+  outline-offset:0;
 }
 .die.theme-art-die>.die-cube{
-  inset:0;
+  inset:-1px;
   transform-origin:50% 50%;
+}
+.die.theme-art-die:not(.rolling)>.die-cube{
+  transform:rotateX(var(--die-rx)) rotateY(var(--die-ry)) scale(1.14);
+}
+.die.theme-art-die.selected:not(.rolling)>.die-cube{
+  transform:rotateX(var(--die-rx)) rotateY(var(--die-ry)) scale(1.18);
 }
 .theme-art-die>.die-art-sprite{display:none!important}
 
