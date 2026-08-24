@@ -1,4 +1,5 @@
-/* DiceDuel V28.3.19 – rest pose centered, cover (no stretch), 3D only while rolling. */
+/* DiceDuel V28.3.15 – rest pose = flat face filling the slot.
+   3D cube only while .rolling so the spin stays, the idle pose stays square. */
 
 .die.theme-classic-v2{--dice-accent:#45b9ff;--dice-glow:rgba(69,185,255,.88)}
 .die.theme-sapphire-crown{--dice-accent:#53d9ff;--dice-glow:rgba(83,217,255,.9)}
@@ -29,20 +30,26 @@
   inset:0;
   transform-origin:50% 50%;
 }
+.die.theme-art-die.rolling>.die-cube{
+  animation:die3dSpin .42s linear both;
+}
+body.fast-animations .die.theme-art-die.rolling>.die-cube{
+  animation-duration:.24s;
+}
 .theme-art-die:not(.rolling)>.die-cube{
   opacity:0;
   pointer-events:none;
 }
 
+/* echte Mitte: left/top 50% + translate — inset+width kann auf Android links kleben */
 .theme-art-die>.die-art-sprite{
   position:absolute!important;
   left:50%!important;
   top:50%!important;
-  width:128%!important;
-  height:auto!important;
-  aspect-ratio:1/1;
+  width:100%!important;
+  height:100%!important;
   margin:0!important;
-  transform:translate(-50%,-50%)!important;
+  transform:translate(-50%,-50%) scale(1.24)!important;
   object-fit:cover!important;
   object-position:center!important;
   z-index:2;
@@ -64,11 +71,10 @@
   position:absolute!important;
   left:50%!important;
   top:50%!important;
-  width:128%!important;
-  height:auto!important;
-  aspect-ratio:1/1;
+  width:100%!important;
+  height:100%!important;
   margin:0!important;
-  transform:translate(-50%,-50%)!important;
+  transform:translate(-50%,-50%) scale(1.24)!important;
   object-fit:cover!important;
   object-position:center!important;
   pointer-events:none;
@@ -87,6 +93,7 @@ html.legacy-flat-dice .die.theme-art-die{
   inset:0!important;
   border-radius:16%!important;
   background:var(--die-art-current) center/cover no-repeat!important;
+  transform:scale(1.24);
 }
 .die.theme-art-die .die-flat-face::after,
 .die.theme-art-die .die-flat-pips,
@@ -120,7 +127,10 @@ html.legacy-flat-dice .die.theme-art-die{
   transform:none!important;
 }
 :is(.special-big-die,.gambling-die).theme-art-die:not(.d4).rolling>.die-cube{
-  animation:die3dSpin .55s linear both!important;
+  animation:die3dSpin .42s linear both!important;
+}
+body.fast-animations :is(.special-big-die,.gambling-die).theme-art-die:not(.d4).rolling>.die-cube{
+  animation-duration:.24s!important;
 }
 
 .special-big-die.d4.theme-classic-v2{background:linear-gradient(145deg,#fffdf7,#e9dac0)!important;color:#123765!important;border-color:#e8b33e!important}
