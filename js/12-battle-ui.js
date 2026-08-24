@@ -198,10 +198,29 @@
     return cube;
   }
 
+  function stampArtFaces(el,designKey,value){
+    const cube=ensure3DDieStructure(el);
+    cube.querySelectorAll(":scope > .die-face").forEach(side=>{
+      const face=Number(side.dataset.face)||1;
+      let img=side.querySelector(":scope > img.die-face-art");
+      if(!img){
+        img=document.createElement("img");
+        img.className="die-face-art";
+        img.alt="";
+        img.draggable=false;
+        img.setAttribute("aria-hidden","true");
+        side.prepend(img);
+      }
+      const next=diceArtworkAsset(designKey,value==null?"question":face);
+      if(img.getAttribute("src")!==next) img.src=next;
+    });
+    return cube;
+  }
+
   function applyArtCube(el,designKey,value){
     applyDiceArtwork(el,designKey,value);
     el.querySelector(":scope > img.die-art-sprite")?.remove();
-    ensure3DDieStructure(el);
+    stampArtFaces(el,designKey,value);
     const dieWidth=el.getBoundingClientRect().width;
     if(dieWidth>0) el.style.setProperty("--die-half",`${Math.max(14,(dieWidth-6)/2)}px`);
     const rotation=DIE_3D_ROTATION[value]||DIE_3D_ROTATION[1];
@@ -232,6 +251,7 @@
       applyArtCube(el,designKey,value);
       return;
     }
+    el.querySelectorAll("img.die-face-art").forEach(n=>n.remove());
     applyDiceArtwork(el,designKey,value);
     if(galaxyA50CompatibilityMode()){
       renderFlatDieNode(el,value);
