@@ -204,7 +204,30 @@
     return cube;
   }
 
+  function renderArtDieSprite(el,designKey,value){
+    applyDiceArtwork(el,designKey,value);
+    el.querySelector(":scope > .die-cube")?.remove();
+    let img=el.querySelector(":scope > img.die-art-sprite");
+    if(!img){
+      img=document.createElement("img");
+      img.className="die-art-sprite";
+      img.alt="";
+      img.draggable=false;
+      img.setAttribute("aria-hidden","true");
+      el.prepend(img);
+    }
+    const next=diceArtworkAsset(designKey,value==null?"question":value);
+    if(img.getAttribute("src")!==next) img.src=next;
+    el.dataset.value=value==null?"":String(value);
+    el.setAttribute("aria-label",value==null?"Würfel bereit":`Würfel ${value}`);
+  }
+
   function render3DDieNode(el,value,designKey="classic"){
+    if(DICE_DESIGNS[designKey]?.artKey){
+      renderArtDieSprite(el,designKey,value);
+      return;
+    }
+    el.querySelector(":scope > img.die-art-sprite")?.remove();
     applyDiceArtwork(el,designKey,value);
     if(galaxyA50CompatibilityMode()){
       renderFlatDieNode(el,value);
