@@ -118,10 +118,13 @@
     let glow = node.querySelector(":scope > .p8-boss-selected-glow");
     if(selectedBoss && !glow){
       glow = image(effect("premium-card-selected-glow-green.png"), "p8-boss-selected-glow");
+      glow.dataset.p8Stable = "1";
+      glow.setAttribute("aria-hidden", "true");
       node.prepend(glow);
     }else if(!selectedBoss && glow){
       glow.remove();
     }
+    // Do not touch existing stable glow — prevents MutationObserver re-entry jitter.
   }
 
   function containsLockText(element){
@@ -272,11 +275,23 @@
   function observe(){
     const observer = new MutationObserver(mutations => {
       mutations.forEach(mutation => {
+        // Ignore our own stable glow layer — adding/removing it must not re-enter decorate.
         if(mutation.type === "childList"){
+          const nodes = [...mutation.addedNodes, ...mutation.removedNodes];
+          const onlyGlow = nodes.length > 0 && nodes.every(n =>
+            n.nodeType === 1 && n.classList?.contains("p8-boss-selected-glow")
+          );
+          if(onlyGlow) return;
           scheduleDecorate(mutation.target);
-          mutation.addedNodes.forEach(scheduleDecorate);
+          mutation.addedNodes.forEach(n => {
+            if(n.nodeType === 1 && n.classList?.contains("p8-boss-selected-glow")) return;
+            scheduleDecorate(n);
+          });
         }else if(mutation.type === "characterData"){
           scheduleDecorate(mutation.target.parentElement);
+        }else if(mutation.type === "attributes"){
+          if(mutation.target?.classList?.contains("p8-boss-selected-glow")) return;
+          scheduleDecorate(mutation.target);
         }else{
           scheduleDecorate(mutation.target);
         }
