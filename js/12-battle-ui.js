@@ -222,7 +222,7 @@
     el.querySelector(":scope > img.die-art-sprite")?.remove();
     stampArtFaces(el,designKey,value);
     const dieWidth=el.getBoundingClientRect().width;
-    if(dieWidth>0) el.style.setProperty("--die-half",`${Math.max(14,(dieWidth-6)/2)}px`);
+    if(dieWidth>0) el.style.setProperty("--die-half",`${Math.max(10,dieWidth*0.36)}px`);
     const rotation=DIE_3D_ROTATION[value]||DIE_3D_ROTATION[1];
     if(!el.classList.contains("rolling")){
       el.style.setProperty("--die-rx",rotation[0]);
