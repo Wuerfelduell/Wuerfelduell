@@ -1,5 +1,4 @@
-/* DiceDuel V28.3.15 – rest pose = flat face filling the slot.
-   3D cube only while .rolling so the spin stays, the idle pose stays square. */
+/* DiceDuel V28.3.19 – rest pose centered, cover (no stretch), 3D only while rolling. */
 
 .die.theme-classic-v2{--dice-accent:#45b9ff;--dice-glow:rgba(69,185,255,.88)}
 .die.theme-sapphire-crown{--dice-accent:#53d9ff;--dice-glow:rgba(83,217,255,.9)}
@@ -35,16 +34,16 @@
   pointer-events:none;
 }
 
-/* echte Mitte: left/top 50% + translate — inset+width kann auf Android links kleben */
 .theme-art-die>.die-art-sprite{
   position:absolute!important;
   left:50%!important;
   top:50%!important;
-  width:123%!important;
-  height:123%!important;
+  width:128%!important;
+  height:auto!important;
+  aspect-ratio:1/1;
   margin:0!important;
   transform:translate(-50%,-50%)!important;
-  object-fit:fill!important;
+  object-fit:cover!important;
   object-position:center!important;
   z-index:2;
   pointer-events:none;
@@ -65,10 +64,12 @@
   position:absolute!important;
   left:50%!important;
   top:50%!important;
-  width:123%!important;
-  height:123%!important;
+  width:128%!important;
+  height:auto!important;
+  aspect-ratio:1/1;
+  margin:0!important;
   transform:translate(-50%,-50%)!important;
-  object-fit:fill!important;
+  object-fit:cover!important;
   object-position:center!important;
   pointer-events:none;
   display:block;
@@ -85,7 +86,7 @@ html.legacy-flat-dice .die.theme-art-die{
 .die.theme-art-die .die-flat-face{
   inset:0!important;
   border-radius:16%!important;
-  background:var(--die-art-current) center/123% 123% no-repeat!important;
+  background:var(--die-art-current) center/cover no-repeat!important;
 }
 .die.theme-art-die .die-flat-face::after,
 .die.theme-art-die .die-flat-pips,
