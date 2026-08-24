@@ -318,7 +318,8 @@
     observe();
     decorate(document.body);
     document.addEventListener("click", event => {
-      if(event.target.closest?.(".campaign-hub .campaign-node")) setTimeout(() => scheduleDecorate(document.body), 0);
+      const node = event.target.closest?.(".campaign-hub .campaign-node");
+      if(node) setTimeout(() => scheduleDecorate(node), 0);
     }, true);
     console.info(`[DiceDuel] UI Rework Phase 8 ${VERSION} active.`);
   }
