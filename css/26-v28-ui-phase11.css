@@ -162,3 +162,119 @@ html[data-v28-rework="2"] .campaign-node-detail{
     font-size:14px!important;
   }
 }
+
+/* V28.3.6 — contained front screens + campaign jitter (folded into last UI sheet) */
+
+html.wd-front-scroll-lock,
+html.wd-front-scroll-lock body{
+  overflow:hidden!important;
+  height:100dvh!important;
+  max-height:100dvh!important;
+  overscroll-behavior:none!important;
+}
+
+#abilitiesScreen.hidden,
+#changelogScreen.hidden,
+#rulesScreen.hidden,
+#statsScreen.hidden,
+#settingsScreen.hidden{display:none!important}
+
+#abilitiesScreen.screen-card:not(.hidden),
+#changelogScreen.screen-card:not(.hidden),
+#rulesScreen.screen-card:not(.hidden),
+#statsScreen.screen-card:not(.hidden),
+#settingsScreen.screen-card:not(.hidden){
+  display:flex!important;
+  flex-direction:column!important;
+  height:calc(100dvh - 12px)!important;
+  max-height:calc(100dvh - 12px)!important;
+  min-height:0!important;
+  overflow:hidden!important;
+  box-sizing:border-box!important;
+}
+
+.screen-card:not(.hidden)>.screen-scroll-inner{
+  display:flex!important;
+  flex-direction:column!important;
+  flex:1 1 auto!important;
+  min-height:0!important;
+  height:100%!important;
+  overflow:hidden!important;
+}
+
+#abilitiesScreen:not(.hidden) .ability-list,
+#abilitiesScreen:not(.hidden) #allAbilitiesList,
+#rulesScreen:not(.hidden) .menu-list,
+#changelogScreen:not(.hidden) .screen-scroll-body,
+#statsScreen:not(.hidden) .screen-scroll-body,
+#settingsScreen:not(.hidden) .screen-scroll-body{
+  flex:1 1 auto!important;
+  min-height:0!important;
+  overflow-x:hidden!important;
+  overflow-y:auto!important;
+  -webkit-overflow-scrolling:touch;
+  overscroll-behavior:contain;
+  padding-bottom:12px!important;
+  box-sizing:border-box!important;
+}
+
+#abilitiesScreen .ability-list-item{
+  max-width:100%!important;
+  box-sizing:border-box!important;
+}
+
+.campaign-unlocks,
+#campaignAbilityGrid{
+  display:none!important;
+  height:0!important;
+  margin:0!important;
+  padding:0!important;
+  overflow:hidden!important;
+  visibility:hidden!important;
+  pointer-events:none!important;
+}
+
+html[data-v28-rework="2"] .campaign-hub .campaign-node,
+html[data-v28-rework="2"] .campaign-hub .campaign-node.current,
+html[data-v28-rework="2"] .campaign-hub .campaign-node.selected,
+html[data-v28-rework="2"] .campaign-hub .campaign-node.boss,
+html[data-v28-rework="2"] .campaign-hub .campaign-node.boss span,
+html[data-v28-rework="2"] .campaign-hub .campaign-node.boss .node-mark{
+  animation:none!important;
+  transition:none!important;
+  transform:none!important;
+  rotate:0deg!important;
+  scale:1!important;
+  will-change:auto!important;
+  filter:none!important;
+}
+
+html[data-v28-rework="2"] .campaign-hub .campaign-node::before,
+html[data-v28-rework="2"] .campaign-hub .campaign-node::after,
+html[data-v28-rework="2"] .campaign-hub .campaign-node.current::before,
+html[data-v28-rework="2"] .campaign-hub .campaign-node.selected::before,
+html[data-v28-rework="2"] .campaign-hub .campaign-node.p6-farm-node.current::before,
+html[data-v28-rework="2"] .campaign-hub .campaign-node.p6-farm-node.selected::before{
+  animation:none!important;
+  transition:none!important;
+  filter:none!important;
+}
+
+html[data-v28-rework="2"] .campaign-hub .campaign-node.boss>.p8-boss-selected-glow{
+  mix-blend-mode:normal!important;
+  animation:none!important;
+  transition:none!important;
+  filter:none!important;
+  transform:none!important;
+  will-change:auto!important;
+}
+
+html[data-v28-rework="2"] .campaign-hub .campaign-node-map{
+  overflow:hidden!important;
+  padding:24px 16px!important;
+}
+
+@keyframes nodePulse{
+  0%,50%,100%{box-shadow:0 0 0 3px rgba(255,200,87,.12),0 0 14px rgba(255,200,87,.16)}
+}
+
