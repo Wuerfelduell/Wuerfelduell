@@ -144,12 +144,6 @@
     el.style.setProperty("--die-art-current",`url("${diceArtworkAsset(designKey,value==null?"question":value)}")`);
     return true;
   }
-  function renderSpecialDieFace(el,designKey,value=null){
-    const usesArtwork=applyDiceArtwork(el,designKey,value);
-    el.dataset.value=value==null?"":String(value);
-    el.textContent=usesArtwork?"":dieSymbol(value);
-    el.setAttribute("aria-label",value==null?"Würfel bereit":`Würfel ${value}`);
-  }
 
   // V27.1.3 – versteckter Kompatibilitätscode für problematische ältere Android-GPUs.
   // Sobald ein echtes Spielerprofil „GalaxyA50“ heißt (Leerzeichen/Bindestriche egal),
@@ -206,7 +200,10 @@
 
   function renderArtDieSprite(el,designKey,value){
     applyDiceArtwork(el,designKey,value);
-    el.querySelector(":scope > .die-cube")?.remove();
+    [...el.childNodes].forEach(node=>{
+      if(node.nodeType===Node.ELEMENT_NODE && node.classList.contains("die-art-sprite")) return;
+      node.remove();
+    });
     let img=el.querySelector(":scope > img.die-art-sprite");
     if(!img){
       img=document.createElement("img");
@@ -220,6 +217,18 @@
     if(img.getAttribute("src")!==next) img.src=next;
     el.dataset.value=value==null?"":String(value);
     el.setAttribute("aria-label",value==null?"Würfel bereit":`Würfel ${value}`);
+  }
+
+  function renderSpecialDieFace(el,designKey,value=null){
+    if(el.classList.contains("d4") || !DICE_DESIGNS[designKey]?.artKey){
+      el.querySelector(":scope > img.die-art-sprite")?.remove();
+      clearDiceArtwork(el);
+      el.dataset.value=value==null?"":String(value);
+      el.textContent=dieSymbol(value);
+      el.setAttribute("aria-label",value==null?"Würfel bereit":`Würfel ${value}`);
+      return;
+    }
+    renderArtDieSprite(el,designKey,value);
   }
 
   function render3DDieNode(el,value,designKey="classic"){

@@ -6,10 +6,25 @@
     indices.forEach(i=>dice[i].rolling=true);
     renderAll();
 
-    // V25.6: Der 3D-Cube zeigt beim Spin ohnehin alle sechs Seiten.
-    // Keine 55-ms-DOM-Neurenders mehr während der Animation: der Browser kann
-    // den Transform jetzt durchgehend auf der Compositor-Thread animieren.
+    const designKey=players[current]?.diceDesign||"classic";
+    const artKey=DICE_DESIGNS[designKey]?.artKey;
+    let artTick=null;
+    if(artKey){
+      artTick=setInterval(()=>{
+        indices.forEach(i=>{
+          if(!dice[i].rolling) return;
+          const el=diceEl.children[i];
+          const img=el?.querySelector(":scope > img.die-art-sprite");
+          if(!img) return;
+          const face=previewRoll(i);
+          const src=diceArtworkAsset(designKey,face);
+          if(img.getAttribute("src")!==src) img.src=src;
+        });
+      },80);
+    }
+
     setTimeout(()=>{
+      if(artTick) clearInterval(artTick);
       indices.forEach(i=>{dice[i].value=finalRoll(i);dice[i].rolling=false;});
       applyTwelveHeal(current,indices.map(i=>dice[i].value),phase.startsWith("attack")?"Angriffswurf":"Basiswurf");
       isAnimating=false;
