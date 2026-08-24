@@ -6,30 +6,20 @@
     indices.forEach(i=>dice[i].rolling=true);
     renderAll();
 
-    const designKey=players[current]?.diceDesign||"classic";
-    const artKey=DICE_DESIGNS[designKey]?.artKey;
-    let artTick=null;
-    if(artKey){
-      artTick=setInterval(()=>{
-        indices.forEach(i=>{
-          if(!dice[i].rolling) return;
-          const el=diceEl.children[i];
-          const img=el?.querySelector(":scope > img.die-art-sprite");
-          if(!img) return;
-          const face=previewRoll(i);
-          const src=diceArtworkAsset(designKey,face);
-          if(img.getAttribute("src")!==src) img.src=src;
-        });
-      },80);
-    }
-
+    // 3D-Cube (CSS und Art-Flächen) zeigt beim Spin alle sechs Seiten.
+    // Keine 55-ms-Neurenders: Animation bleibt auf dem Compositor.
     setTimeout(()=>{
-      if(artTick) clearInterval(artTick);
       indices.forEach(i=>{dice[i].value=finalRoll(i);dice[i].rolling=false;});
       applyTwelveHeal(current,indices.map(i=>dice[i].value),phase.startsWith("attack")?"Angriffswurf":"Basiswurf");
       isAnimating=false;
       finalizer();
     },ROLL_ANIM_MS);
+  }
+
+  function tickClassicSpecialDie(el){
+    const key=players[current]?.diceDesign||"classic";
+    if(DICE_DESIGNS[key]?.artKey) return;
+    renderSpecialDieFace(el,key,randDie());
   }
 
   function isStraightFive(values){
@@ -616,7 +606,7 @@
 
     let ticks=0;
     const timer=setInterval(()=>{
-      renderSpecialDieFace(gamblingDie,players[current]?.diceDesign||"classic",randDie());
+      tickClassicSpecialDie(gamblingDie);
       ticks++;
       if(ticks>=8) clearInterval(timer);
     },60);
@@ -688,7 +678,7 @@
 
     let ticks=0;
     const timer=setInterval(()=>{
-      renderSpecialDieFace(perfect25Die,players[current]?.diceDesign||"classic",randDie());
+      tickClassicSpecialDie(perfect25Die);
       if(++ticks>=8) clearInterval(timer);
     },60);
 
@@ -805,7 +795,7 @@
     const before=attackDamage;
     let ticks=0;
     const timer=setInterval(()=>{
-      renderSpecialDieFace(highStakesDie,players[current]?.diceDesign||"classic",randDie());
+      tickClassicSpecialDie(highStakesDie);
       if(++ticks>=8) clearInterval(timer);
     },60);
 
@@ -915,7 +905,7 @@
 
     let ticks=0;
     const timer=setInterval(()=>{
-      renderSpecialDieFace(insuranceDie,players[current]?.diceDesign||"classic",randDie());
+      tickClassicSpecialDie(insuranceDie);
       if(++ticks>=8) clearInterval(timer);
     },60);
 

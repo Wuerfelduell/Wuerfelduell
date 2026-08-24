@@ -198,29 +198,24 @@
     return cube;
   }
 
-  function renderArtDieSprite(el,designKey,value){
+  function applyArtCube(el,designKey,value){
     applyDiceArtwork(el,designKey,value);
-    [...el.childNodes].forEach(node=>{
-      if(node.nodeType===Node.ELEMENT_NODE && node.classList.contains("die-art-sprite")) return;
-      node.remove();
-    });
-    let img=el.querySelector(":scope > img.die-art-sprite");
-    if(!img){
-      img=document.createElement("img");
-      img.className="die-art-sprite";
-      img.alt="";
-      img.draggable=false;
-      img.setAttribute("aria-hidden","true");
-      el.prepend(img);
+    el.querySelector(":scope > img.die-art-sprite")?.remove();
+    ensure3DDieStructure(el);
+    const dieWidth=el.getBoundingClientRect().width;
+    if(dieWidth>0) el.style.setProperty("--die-half",`${Math.max(14,(dieWidth-6)/2)}px`);
+    const rotation=DIE_3D_ROTATION[value]||DIE_3D_ROTATION[1];
+    if(!el.classList.contains("rolling")){
+      el.style.setProperty("--die-rx",rotation[0]);
+      el.style.setProperty("--die-ry",rotation[1]);
     }
-    const next=diceArtworkAsset(designKey,value==null?"question":value);
-    if(img.getAttribute("src")!==next) img.src=next;
     el.dataset.value=value==null?"":String(value);
     el.setAttribute("aria-label",value==null?"Würfel bereit":`Würfel ${value}`);
   }
 
   function renderSpecialDieFace(el,designKey,value=null){
     if(el.classList.contains("d4") || !DICE_DESIGNS[designKey]?.artKey){
+      el.querySelector(":scope > .die-cube")?.remove();
       el.querySelector(":scope > img.die-art-sprite")?.remove();
       clearDiceArtwork(el);
       el.dataset.value=value==null?"":String(value);
@@ -228,15 +223,15 @@
       el.setAttribute("aria-label",value==null?"Würfel bereit":`Würfel ${value}`);
       return;
     }
-    renderArtDieSprite(el,designKey,value);
+    applyArtCube(el,designKey,value);
   }
 
   function render3DDieNode(el,value,designKey="classic"){
-    if(DICE_DESIGNS[designKey]?.artKey){
-      renderArtDieSprite(el,designKey,value);
+    el.querySelector(":scope > img.die-art-sprite")?.remove();
+    if(DICE_DESIGNS[designKey]?.artKey && !galaxyA50CompatibilityMode()){
+      applyArtCube(el,designKey,value);
       return;
     }
-    el.querySelector(":scope > img.die-art-sprite")?.remove();
     applyDiceArtwork(el,designKey,value);
     if(galaxyA50CompatibilityMode()){
       renderFlatDieNode(el,value);
