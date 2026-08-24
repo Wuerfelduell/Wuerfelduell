@@ -29,7 +29,7 @@
     statsScreen:"menu/statistics.svg",
     settingsScreen:"menu/settings.svg",
     rulesScreen:"menu/rules.svg",
-    abilitiesScreen:"stats/mastery.svg",
+    abilitiesScreen:"gameplay/mastery.svg",
     changelogScreen:"menu/changelog.svg"
   };
 

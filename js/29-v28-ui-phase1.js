@@ -258,9 +258,9 @@
       }
 
       const reward = card.querySelector(".achievement-reward");
-      if(reward){
+      if(reward && !reward.querySelector("img")){
         const raw = reward.textContent;
-        const path = raw.includes("✨") ? "gameplay/attack.svg" : "gameplay/dice.svg";
+        const path = /fx|effekt|✨/i.test(raw) ? "gameplay/attack.svg" : "gameplay/dice.svg";
         ensureLeadingIcon(reward, path, "p1-reward-icon");
       }
     });
@@ -319,6 +319,30 @@
     });
   }
 
+  function ensureStatsAndSettingsIcons(){
+    document.querySelectorAll("#statsScreen .stats-section-title").forEach(title => {
+      const text = title.textContent || "";
+      const path = /fähigkeit|abilit/i.test(text) ? "gameplay/mastery.svg" : "gameplay/player.svg";
+      ensureLeadingIcon(title, path, "p1-inline-icon");
+    });
+    ensureLeadingIcon(
+      document.querySelector("#settingsScreen .storage-note strong"),
+      "navigation/info.svg",
+      "p1-inline-icon"
+    );
+    const reset = document.getElementById("resetStorageBtn");
+    if(reset){
+      reset.classList.add("p1-action-button");
+      ensureLeadingIcon(reset, "navigation/warning.svg", "p1-action-icon");
+    }
+    ["campaignProfilesBtn","duoCampaignProfilesBtn","trioCampaignProfilesBtn"].forEach(id => {
+      const button = document.getElementById(id);
+      if(!button) return;
+      button.classList.add("p1-action-button");
+      ensureLeadingIcon(button, "gameplay/player.svg", "p1-action-icon");
+    });
+  }
+
   function decorateAll(){
     decorateQueued = false;
     ensureModeChoiceIcons();
@@ -330,6 +354,7 @@
     ensureAchievementIcons();
     ensureSetupActionIcons();
     ensureCombatIcons();
+    ensureStatsAndSettingsIcons();
     syncKnownSelectIcons();
     repairAllAssetUrls(document);
   }

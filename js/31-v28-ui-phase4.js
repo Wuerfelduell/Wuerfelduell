@@ -101,7 +101,7 @@
 
   function decoratePrestigeShop(){
     const wallet = document.getElementById("prestigeShopTrophies");
-    if(wallet && !wallet.querySelector(":scope > .p4-inline-icon")){
+    if(wallet && !wallet.querySelector(":scope > img")){
       const node = directTextNode(wallet);
       if(node) node.nodeValue = node.nodeValue.replace(/^\s*🏆\s*/u, "");
       wallet.prepend(icon("gameplay/trophy.svg", "p4-inline-icon"));
@@ -110,21 +110,25 @@
     document.querySelectorAll("#prestigeShopScreen .prestige-item").forEach(item => {
       const kicker = item.querySelector(".prestige-item-kicker");
       if(kicker && !kicker.dataset.p4Decorated){
-        const raw = kicker.textContent.trim();
-        const match = raw.match(/^(.*?)\s*·\s*🏆?\s*(\d+)\s*$/u);
-        if(match){
-          kicker.textContent = "";
-          const type = document.createElement("span");
-          type.textContent = match[1].trim();
-          const cost = document.createElement("span");
-          cost.textContent = match[2];
-          kicker.append(type, document.createTextNode(" · "), icon("gameplay/trophy.svg", "p4-inline-icon"), cost);
+        if(kicker.querySelector("img")){
+          kicker.dataset.p4Decorated = "1";
+        }else{
+          const raw = kicker.textContent.trim();
+          const match = raw.match(/^(.*?)\s*·\s*🏆?\s*(\d+)\s*$/u);
+          if(match){
+            kicker.textContent = "";
+            const type = document.createElement("span");
+            type.textContent = match[1].trim();
+            const cost = document.createElement("span");
+            cost.textContent = match[2];
+            kicker.append(type, document.createTextNode(" · "), icon("gameplay/trophy.svg", "p4-inline-icon"), cost);
+          }
+          kicker.dataset.p4Decorated = "1";
         }
-        kicker.dataset.p4Decorated = "1";
       }
 
       const button = item.querySelector(":scope > button");
-      if(!button || button.querySelector(":scope > .p4-inline-icon")) return;
+      if(!button || button.querySelector("img")) return;
       const raw = button.textContent.trim();
       const active = /^✓/u.test(raw);
       button.textContent = raw.replace(/^\s*(?:🏆|✓)\s*/u, "");
