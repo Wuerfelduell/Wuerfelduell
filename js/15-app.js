@@ -61,15 +61,54 @@
 
   function layoutContainedScreen(screen){
     if(!screen || screen.classList.contains("hidden")) return;
+    const vh = window.innerHeight || document.documentElement.clientHeight || 640;
+    const frameMax = Math.max(160, vh - 12);
+    screen.style.height = frameMax + "px";
+    screen.style.maxHeight = frameMax + "px";
+
     const inner = screen.querySelector(":scope > .screen-scroll-inner") || screen;
     const topbar = inner.querySelector(".screen-topbar");
     const sub = inner.querySelector(".screen-subtitle");
-    const body = inner.querySelector(".ability-list, .screen-scroll-body, .menu-list");
-    if(!body) return;
-    const used = (topbar ? topbar.offsetHeight : 0) + (sub ? sub.offsetHeight : 0);
+    const body = inner.querySelector(
+      ".ability-list, .screen-scroll-body, .menu-list, .profile-list, .achievement-list, .prestige-shop-list"
+    );
+    let createH = 0;
+    inner.querySelectorAll(".profile-create, .prestige-shop-head, .prestige-equipped").forEach(el=>{
+      createH += el.offsetHeight || 0;
+    });
+
+    // Screens without a dedicated list body (stats / settings): scroll the whole card
+    if(!body){
+      screen.style.overflowX = "hidden";
+      screen.style.overflowY = "auto";
+      screen.style.webkitOverflowScrolling = "touch";
+      if(inner !== screen){
+        inner.style.height = "";
+        inner.style.maxHeight = "";
+        inner.style.overflow = "";
+      }
+      return;
+    }
+
+    // Screens with a list body: lock the frame, scroll only the list
+    screen.style.overflow = "hidden";
+    if(inner !== screen){
+      inner.style.display = "flex";
+      inner.style.flexDirection = "column";
+      inner.style.height = "100%";
+      inner.style.minHeight = "0";
+      inner.style.overflow = "hidden";
+    }
+    const used =
+      (topbar ? topbar.offsetHeight : 0) +
+      (sub ? sub.offsetHeight : 0) +
+      createH;
     const extra = screen === rulesScreen ? (inner.querySelector(".rules-extra")?.offsetHeight || 0) : 0;
-    const available = Math.max(120, inner.clientHeight - used - extra);
+    const available = Math.max(120, (inner.clientHeight || frameMax) - used - extra - 8);
+    body.style.flex = "1 1 auto";
+    body.style.minHeight = "0";
     body.style.maxHeight = available + "px";
+    body.style.overflowX = "hidden";
     body.style.overflowY = "auto";
     body.style.webkitOverflowScrolling = "touch";
   }
@@ -80,7 +119,15 @@
     hideFrontScreens();
     screen.classList.remove("hidden");
     window.scrollTo?.(0,0);
-    const contained = screen===abilitiesScreen || screen===changelogScreen || screen===rulesScreen || screen===statsScreen || screen===settingsScreen;
+    const contained =
+      screen===abilitiesScreen ||
+      screen===changelogScreen ||
+      screen===rulesScreen ||
+      screen===statsScreen ||
+      screen===settingsScreen ||
+      screen===profilesScreen ||
+      screen===achievementsScreen ||
+      screen===prestigeShopScreen;
     document.documentElement.classList.toggle("wd-front-scroll-lock", contained);
     if(contained) requestAnimationFrame(()=>layoutContainedScreen(screen));
   }
@@ -308,7 +355,7 @@
 
   window.addEventListener("resize",()=>{
     if(!game.classList.contains("hidden")) applySeatRotation();
-    const open=[abilitiesScreen,changelogScreen,rulesScreen,statsScreen,settingsScreen].find(el=>el && !el.classList.contains("hidden"));
+    const open=[abilitiesScreen,changelogScreen,rulesScreen,statsScreen,settingsScreen,profilesScreen,achievementsScreen,prestigeShopScreen].find(el=>el && !el.classList.contains("hidden"));
     if(open) layoutContainedScreen(open);
   });
 
