@@ -96,7 +96,7 @@
     document.addEventListener("change", scheduleDecorate, true);
 
     const observer = new MutationObserver(scheduleDecorate);
-    observer.observe(document.body, {childList:true, subtree:true, characterData:true});
+    observer.observe(document.body, {childList:true, subtree:true});
     decorate();
     console.info(`[DiceDuel] UI Rework Phase 2 ${VERSION} active.`);
   }

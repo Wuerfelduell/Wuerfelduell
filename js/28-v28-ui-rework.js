@@ -405,7 +405,8 @@
         panel.style.overflow = "hidden";
       }
       const headH = head ? head.getBoundingClientRect().height : 40;
-      const room = Math.max(140, max - headH - 78);
+      const frame = 78;
+      const room = Math.max(140, max - headH - frame);
       options.style.maxHeight = room + "px";
       options.style.overflowY = "auto";
       options.style.overflowX = "hidden";
