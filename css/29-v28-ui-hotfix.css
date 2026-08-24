@@ -1,0 +1,75 @@
+/* DiceDuel 28.3.24 — rules overflow, trophy shop, combat action icons */
+
+html[data-v28-rework="2"] #rulesScreen .menu-list{
+  gap:14px!important;
+  align-items:stretch!important;
+}
+html[data-v28-rework="2"] #rulesScreen .menu-info-card{
+  height:auto!important;
+  min-height:0!important;
+  overflow:visible!important;
+  display:flex!important;
+  flex-direction:column!important;
+  padding:16px 20px 18px!important;
+}
+html[data-v28-rework="2"] #rulesScreen .menu-info-card>strong{
+  flex:0 0 auto;
+}
+html[data-v28-rework="2"] #rulesScreen .menu-info-card .small{
+  display:block!important;
+  overflow:visible!important;
+  max-height:none!important;
+  white-space:normal!important;
+  margin-top:6px!important;
+}
+
+html[data-v28-rework="2"] #prestigeShopScreen .prestige-item-kicker{
+  color:#e2b44a!important;
+  letter-spacing:.04em!important;
+  font-size:11px!important;
+  overflow:visible!important;
+  padding-left:2px;
+  opacity:1!important;
+}
+html[data-v28-rework="2"] #prestigeShopScreen .prestige-equipped{
+  overflow:visible!important;
+}
+html[data-v28-rework="2"] #prestigeShopScreen .prestige-active-list{
+  display:flex;
+  flex-wrap:wrap;
+  gap:8px;
+  margin:8px 0 4px;
+}
+html[data-v28-rework="2"] #prestigeShopScreen .prestige-active-chip{
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+  padding:6px 10px;
+  border:1px solid rgba(214,165,60,.38);
+  border-radius:999px;
+  background:rgba(7,31,75,.38);
+  color:#f4ead0;
+  font-size:12px;
+  font-weight:700;
+  max-width:100%;
+}
+html[data-v28-rework="2"] #prestigeShopScreen .prestige-active-chip b{
+  color:#e2b44a;
+  font-size:10px;
+  letter-spacing:.04em;
+  text-transform:uppercase;
+  font-weight:800;
+}
+
+html[data-v28-rework="2"] body.playing #primaryBtn.p1-action-button{
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  gap:8px!important;
+}
+html[data-v28-rework="2"] body.playing #primaryBtn .p1-action-icon{
+  width:22px;
+  height:22px;
+  margin:0!important;
+  flex:0 0 22px;
+}
