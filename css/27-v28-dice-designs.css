@@ -1,6 +1,34 @@
-/* DiceDuel V28.3.0 – rendered dice collection */
+/* DiceDuel V28.3.8 – rendered dice collection */
 
-/* ---------- Rendered faces in the regular 3D/2D battle dice ---------- */
+/* Art dice are full-cube PNGs. Do not map them onto CSS 3D faces — that
+   composites to empty/invisible on mobile. Show one sprite per die instead. */
+.die.theme-art-die{
+  background:transparent!important;
+  border-color:transparent!important;
+  box-shadow:none!important;
+  overflow:visible!important;
+}
+.die.theme-art-die>.die-cube,
+.die.theme-art-die>.die-flat-face{display:none!important}
+.die.theme-art-die>.die-art-sprite{
+  position:absolute;
+  z-index:1;
+  inset:-12%;
+  width:124%;
+  height:124%;
+  object-fit:contain;
+  pointer-events:none;
+  user-select:none;
+  -webkit-user-drag:none;
+  filter:drop-shadow(0 6px 8px rgba(0,0,0,.32));
+}
+.die.theme-art-die.selected>.die-art-sprite{
+  filter:drop-shadow(0 0 10px var(--dice-glow,rgba(104,167,255,.7))) drop-shadow(0 8px 10px rgba(0,0,0,.28));
+}
+.die.theme-art-die.locked::after,
+.die.theme-art-die.attack-hit::after{z-index:3}
+
+/* ---------- Rendered faces kept for 3D fallback / specials ---------- */
 .die.theme-classic-v2{--dice-accent:#45b9ff;--dice-glow:rgba(69,185,255,.88)}
 .die.theme-sapphire-crown{--dice-accent:#53d9ff;--dice-glow:rgba(83,217,255,.9)}
 .die.theme-amethyst-rift{--dice-accent:#c36bff;--dice-glow:rgba(195,107,255,.9)}
@@ -11,7 +39,7 @@
   background-color:transparent!important;
   background-repeat:no-repeat!important;
   background-position:center!important;
-  background-size:118% 118%!important;
+  background-size:contain!important;
   box-shadow:none!important;
 }
 .die.theme-art-die .die-face::after{display:none!important}
@@ -32,7 +60,7 @@ html.legacy-flat-dice .die.theme-art-die{
 .die.theme-art-die .die-flat-face{
   inset:0!important;
   border-radius:15%!important;
-  background:var(--die-art-current) center/118% 118% no-repeat!important;
+  background:var(--die-art-current) center/contain no-repeat!important;
 }
 .die.theme-art-die .die-flat-face::after,
 .die.theme-art-die .die-flat-pips,
@@ -46,7 +74,7 @@ html.legacy-flat-dice .die.theme-art-die{
   background-image:var(--die-art-current)!important;
   background-repeat:no-repeat!important;
   background-position:center!important;
-  background-size:118% 118%!important;
+  background-size:contain!important;
   color:transparent!important;
   text-shadow:none!important;
   box-shadow:0 15px 30px rgba(0,0,0,.28),0 0 24px var(--dice-glow,rgba(104,167,255,.3))!important;
