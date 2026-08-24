@@ -1,107 +1,113 @@
-/* V28.3.3 — UI hotfix
-   FIX: abilitiesScreen darf .hidden nicht mit display:flex!important killen
-   1) Jitter: nodePulse tot
-   2) Kampagnen-Fähigkeiten weg
-   3) Alle-Fähigkeiten: Scroll nur wenn Screen offen
+/* V28.3.4 — UI hotfix
+   Jitter: nodePulse tot + Selected-Frames ohne Filter-Repaint + Map clippt Glow
+   Scroll: abilitiesScreen Rahmen innen größer, Liste strikt im Frame
+   Kampagnen-Fähigkeiten: weg
+   L1/L2: unangetastet
 */
 
-/* ---------- 1) Jitter kill ---------- */
+/* ===== 1) JITTER ===== */
+
+/* Prestige nodePulse tot (falls noch irgendwo referenziert) */
+html[data-v28-rework="2"] .campaign-node.current,
+html[data-v28-rework="2"] .campaign-node.selected,
 html[data-v28-rework="2"] .campaign-hub .campaign-node.current,
 html[data-v28-rework="2"] .campaign-hub .campaign-node.selected,
 html[data-v28-rework="2"] .campaign-hub .campaign-node.boss.current,
-html[data-v28-rework="2"] .campaign-hub .campaign-node.boss.selected,
-html[data-v28-rework="2"] .campaign-node.current,
-html[data-v28-rework="2"] .campaign-node.selected{
+html[data-v28-rework="2"] .campaign-hub .campaign-node.boss.selected{
   animation:none!important;
-  transition:box-shadow 0s, filter 0s, transform 0s, scale 0s!important;
+  transition:none!important;
   transform:none!important;
   scale:1!important;
   will-change:auto!important;
+  filter:none!important;
 }
 
+/* Selected-Rahmen: kein drop-shadow (Filter = Scroll-Jitter auf Mobile) */
 html[data-v28-rework="2"] .campaign-hub .campaign-node.current::before,
 html[data-v28-rework="2"] .campaign-hub .campaign-node.selected::before,
 html[data-v28-rework="2"] .campaign-hub .campaign-node.current::after,
-html[data-v28-rework="2"] .campaign-hub .campaign-node.selected::after{
+html[data-v28-rework="2"] .campaign-hub .campaign-node.selected::after,
+html[data-v28-rework="2"] .campaign-node.current::after,
+html[data-v28-rework="2"] .campaign-node.selected::after{
   animation:none!important;
   transition:none!important;
+  filter:none!important;
 }
 
+/* Boss-Glow-PNG: fest, kein Blend/Filter-Pulse */
 html[data-v28-rework="2"] .campaign-hub .campaign-node.boss>.p8-boss-selected-glow,
 html[data-v28-rework="2"] .campaign-hub .campaign-node.boss.p6-farm-node>.p8-boss-selected-glow{
   position:absolute!important;
   z-index:-1!important;
-  inset:-8px!important;
-  width:calc(100% + 16px)!important;
-  height:calc(100% + 16px)!important;
-  max-width:none!important;
-  max-height:none!important;
+  inset:-6px!important;
+  width:calc(100% + 12px)!important;
+  height:calc(100% + 12px)!important;
   object-fit:contain!important;
   object-position:center!important;
   pointer-events:none!important;
-  user-select:none!important;
-  -webkit-user-drag:none!important;
-  mix-blend-mode:screen!important;
-  opacity:.94!important;
+  mix-blend-mode:normal!important;
+  opacity:.9!important;
   transform:none!important;
-  rotate:0deg!important;
-  scale:1!important;
   animation:none!important;
   transition:none!important;
-  filter:drop-shadow(0 0 5px rgba(23,240,106,.28))!important;
+  filter:none!important;
   will-change:auto!important;
-}
-html[data-v28-rework="2"] .campaign-hub .campaign-node.boss.p6-farm-node>.p8-boss-selected-glow{
-  inset:-7px!important;
-  width:calc(100% + 14px)!important;
-  height:calc(100% + 14px)!important;
 }
 
+/* Map: mehr Innenabstand damit Selected-Glow nicht am Rand „atmet“, Glow clippen */
+html[data-v28-rework="2"] .campaign-hub .campaign-node-map,
+html[data-v28-rework="2"] .campaign-node-map{
+  overflow:hidden!important;
+  padding:22px 14px!important;
+  contain:paint!important;
+}
+
+html[data-v28-rework="2"] .campaign-hub .campaign-node,
+html[data-v28-rework="2"] .campaign-node{
+  contain:layout style!important;
+  backface-visibility:hidden;
+}
+
+/* Detail-Card stabil */
 html[data-v28-rework="2"] .campaign-node-detail,
-html[data-v28-rework="2"] .campaign-node-detail *,
-html[data-v28-rework="2"] .campaign-node-detail::before,
-html[data-v28-rework="2"] .campaign-node-detail::after{
+html[data-v28-rework="2"] .campaign-node-detail *{
   animation:none!important;
   transition:none!important;
   will-change:auto!important;
-}
-html[data-v28-rework="2"] .campaign-node-detail{
-  transform:none!important;
-  scale:1!important;
 }
 
 @keyframes nodePulse{
-  0%,50%,100%{box-shadow:0 0 0 3px rgba(255,200,87,.12),0 0 16px rgba(255,200,87,.18)}
+  0%,50%,100%{box-shadow:0 0 0 3px rgba(255,200,87,.12),0 0 14px rgba(255,200,87,.16)}
 }
 @keyframes p8BossSelectedPulse{
-  0%,50%,100%{opacity:.94;filter:drop-shadow(0 0 5px rgba(23,240,106,.28))}
+  0%,50%,100%{opacity:.9;filter:none}
 }
 
-/* ---------- 2) Kampagnen-Fähigkeiten weg ---------- */
+/* ===== 2) Kampagnen-Fähigkeiten weg ===== */
 .campaign-unlocks,
 #campaignAbilityGrid{
   display:none!important;
   height:0!important;
   margin:0!important;
   padding:0!important;
-  border:0!important;
   overflow:hidden!important;
   visibility:hidden!important;
   pointer-events:none!important;
 }
 
-/* ---------- 3) Alle Fähigkeiten: Scroll im Rahmen — NUR wenn nicht .hidden ---------- */
-/* WICHTIG: nie display:flex!important ohne :not(.hidden) — sonst bleibt Screen im Menü sichtbar */
+/* ===== 3) Alle Fähigkeiten: größerer Innenrahmen, Scroll nur innen ===== */
+#abilitiesScreen.hidden{
+  display:none!important;
+}
+
 #abilitiesScreen.screen-card:not(.hidden){
   display:flex!important;
   flex-direction:column!important;
-  max-height:calc(100dvh - 20px)!important;
+  max-height:calc(100dvh - 16px)!important;
   overflow:hidden!important;
   box-sizing:border-box!important;
-}
-
-#abilitiesScreen.hidden{
-  display:none!important;
+  /* mehr Innenfläche = dekorativer Rahmen „größer“ relativ zum Content */
+  padding:18px 16px 22px!important;
 }
 
 #abilitiesScreen:not(.hidden) .screen-topbar,
@@ -117,7 +123,7 @@ html[data-v28-rework="2"] .campaign-node-detail{
   overflow-y:auto!important;
   -webkit-overflow-scrolling:touch;
   overscroll-behavior:contain;
-  padding-bottom:10px!important;
+  padding:4px 4px 16px!important;
   margin:0!important;
   box-sizing:border-box!important;
 }
@@ -126,6 +132,14 @@ html[data-v28-rework="2"] .campaign-node-detail{
   max-width:100%!important;
   box-sizing:border-box!important;
   overflow:hidden!important;
+}
+
+/* border-image Screens: Content darf nicht über die Slice-Zone malen */
+html[data-v28-rework="2"] #abilitiesScreen.screen-card:not(.hidden){
+  /* etwas dickere border-image-width = optisch größerer Rahmen */
+  border-width:36px 30px!important;
+  border-image-width:36px 30px!important;
+  padding:8px 6px 12px!important;
 }
 
 html[data-v28-rework="2"] .campaign-hub.screen-card{
