@@ -270,11 +270,60 @@ html[data-v28-rework="2"] .campaign-hub .campaign-node.boss>.p8-boss-selected-gl
 }
 
 html[data-v28-rework="2"] .campaign-hub .campaign-node-map{
-  overflow:hidden!important;
-  padding:24px 16px!important;
+  overflow:visible!important;
 }
 
 @keyframes nodePulse{
   0%,50%,100%{box-shadow:0 0 0 3px rgba(255,200,87,.12),0 0 14px rgba(255,200,87,.16)}
 }
+
+/* V28.3.7 — generic ability/select picker stays inside the 9-slice frame */
+html.wd-picker-open,
+html.wd-picker-open body{
+  overflow:hidden!important;
+  overscroll-behavior:none!important;
+}
+.dd-select-picker{
+  overflow:hidden!important;
+  overscroll-behavior:none!important;
+}
+.dd-select-picker .dd-select-panel,
+html[data-v28-rework="2"] .dd-select-panel{
+  display:flex!important;
+  flex-direction:column!important;
+  max-height:min(78dvh,720px)!important;
+  min-height:0!important;
+  overflow:hidden!important;
+}
+.dd-select-picker .dd-select-options,
+html[data-v28-rework="2"] .dd-select-options{
+  flex:1 1 auto!important;
+  min-height:0!important;
+  max-height:calc(78dvh - 118px)!important;
+  overflow-x:hidden!important;
+  overflow-y:auto!important;
+  overscroll-behavior:contain!important;
+  -webkit-overflow-scrolling:touch;
+  padding:4px 2px 18px!important;
+  touch-action:pan-y;
+  scrollbar-gutter:stable;
+  mask-image:linear-gradient(to bottom,#000 0,#000 calc(100% - 14px),transparent 100%);
+  -webkit-mask-image:linear-gradient(to bottom,#000 0,#000 calc(100% - 14px),transparent 100%);
+}
+.v28-ability-picker{
+  overflow:hidden!important;
+}
+.v28-ability-picker-panel{
+  display:flex!important;
+  flex-direction:column!important;
+  max-height:min(78dvh,720px)!important;
+  overflow:hidden!important;
+}
+.v28-ability-picker-list{
+  flex:1 1 auto!important;
+  min-height:0!important;
+  overflow-y:auto!important;
+  overscroll-behavior:contain!important;
+}
+
 
