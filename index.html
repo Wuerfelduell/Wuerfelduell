@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta name="wd-build" content="28.3.0" />
+  <meta name="wd-build" content="28.3.5" />
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <meta name="theme-color" content="#e8f2f6" />
@@ -11,11 +11,11 @@
   <link rel="manifest" href="manifest.json" />
   <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png" />
   <link rel="apple-touch-icon" sizes="192x192" href="icon-192.png" />
-  <title>DiceDuel · V28.3.0</title>
+  <title>DiceDuel · V28.3.5</title>
     <link rel="stylesheet" href="css/01-base-ui.css?v=28.2.1" />
   <link rel="stylesheet" href="css/02-battle.css?v=28.2.1" />
   <link rel="stylesheet" href="css/03-campaign.css?v=28.2.1" />
-  <link rel="stylesheet" href="css/04-prestige-polish.css?v=28.2.1" />
+  <link rel="stylesheet" href="css/04-prestige-polish.css?v=28.3.5" />
   <link rel="stylesheet" href="css/05-online.css?v=28.2.1" />
   <link rel="stylesheet" href="css/06-v275.css?v=28.2.1" />
   <link rel="stylesheet" href="css/07-v2751.css?v=28.2.1" />
@@ -36,12 +36,12 @@
   <link rel="stylesheet" href="css/20-v28-ui-phase5.css?v=28.2.5">
   <link rel="stylesheet" href="css/21-v28-ui-phase6.css?v=28.2.6">
   <link rel="stylesheet" href="css/22-v28-ui-phase7.css?v=28.2.7">
-  <link rel="stylesheet" href="css/23-v28-ui-phase8.css?v=28.2.8">
+  <link rel="stylesheet" href="css/23-v28-ui-phase8.css?v=28.3.5">
   <link rel="stylesheet" href="css/24-v28-ui-phase9.css?v=28.2.9">
   <link rel="stylesheet" href="css/25-v28-ui-phase10.css?v=28.2.10">
   <link rel="stylesheet" href="css/26-v28-ui-phase11.css?v=28.2.11">
-  <link rel="stylesheet" href="css/28-v28-ui-phase12.css?v=28.3.4">
   <link rel="stylesheet" href="css/27-v28-dice-designs.css?v=28.3.0">
+  <link rel="stylesheet" href="css/28-v28-ui-phase12.css?v=28.3.5">
   <script type="importmap">
   {
     "imports": {
@@ -224,7 +224,7 @@
       <button id="menuRulesBtn"><span class="menu-icon">📖</span> Regeln</button>
       <button id="menuChangelogBtn"><span class="menu-icon">📝</span> Changelog</button>
     </div>
-    <div class="version-footer">DICEDUEL · VERSION 28.3.0</div>
+    <div class="version-footer">DICEDUEL · VERSION 28.3.5</div>
   </section>
 
 
@@ -466,14 +466,17 @@
   </section>
 
   <section id="abilitiesScreen" class="card screen-card hidden">
-    <div class="screen-topbar"><button id="abilitiesBackBtn">←</button><h2 class="screen-title">⚡ Alle Fähigkeiten</h2></div>
-    <div class="screen-subtitle">Der komplette aktuelle W25-Pool inklusive Freie Wahl.</div>
-    <div id="allAbilitiesList" class="ability-list"></div>
+    <div class="screen-scroll-inner">
+      <div class="screen-topbar"><button id="abilitiesBackBtn">←</button><h2 class="screen-title">⚡ Alle Fähigkeiten</h2></div>
+      <div class="screen-subtitle">Der komplette aktuelle W25-Pool inklusive Freie Wahl.</div>
+      <div id="allAbilitiesList" class="ability-list"></div>
+    </div>
   </section>
 
   <section id="changelogScreen" class="card screen-card hidden">
     <div class="screen-topbar"><button class="menuBackBtn">←</button><h2 class="screen-title">📝 Changelog</h2></div>
     <div class="screen-subtitle">Die großen Versionssprünge, ohne jeden Mini-Hotfix.</div>
+    <div class="changelog-entry"><div class="changelog-version">V28.3.5</div><ul><li>Alle-Fähigkeiten-Liste scrollt nur noch innerhalb des Ornament-Rahmens</li><li>Campaign-Node Jitter beim Scrollen entfernt (Pulse/Filter/Glow tot)</li><li>Kampagnen-Fähigkeiten-Strip im Hub ausgeblendet</li></ul></div>
     <div class="changelog-entry"><div class="changelog-version">V28.3.0</div><ul><li>Drei neue gerenderte Würfeldesigns mit echten Flächen 1–6, eigener Fragezeichen-Fläche und Shop-Vorschau</li><li>ClassicV2 (Elfenbein/Gold) ist für alle bestehenden und neuen Profile von Anfang an freigeschaltet</li><li>Sapphire Crown wird durch den Solo-Welt-3-Boss Zero Regent freigeschaltet; Amethyst Rift durch den Solo-Welt-4-Boss Abyss Throne</li><li>Boss-Freischaltungen gelten rückwirkend und werden bei bereits abgeschlossenen Welten automatisch nachgetragen</li><li>Neue Würfel-Kollektion im Profil sowie Artwork-Unterstützung für Hauptwürfel, Spezialwürfe, Counterattack, Online-Snapshots und Physics-Test-Lab</li></ul></div>
     <div class="changelog-entry"><div class="changelog-version">V28.2.11</div><ul><li>Fähigkeitsauswahl kompakter skaliert, damit Kartenfeld und Fähigkeitsicon dieselbe visuelle Geometrie verwenden</li><li>Quit-Dialog ohne roten nativen Rechteck-Layer; Titel und Buttontext vertikal nachzentriert</li><li>Boss-Level-Zahlen bleiben auch mit vorangestelltem Selected-Glow fest zentriert und ungedreht</li><li>Pulse- und Transform-Konflikte an Campaign-Nodes und Encounter-Details entfernt</li><li>Gameplay-, Save-, Campaign- und Online-Logik unverändert</li></ul></div>
     <div class="changelog-entry"><div class="changelog-version">V28.2.10</div><ul><li>Fähigkeits-Bonus nutzt jetzt die eingebaute Titelplakette des Modal-Rahmens</li><li>Fähigkeitsicon links im Navy-Feld, Fähigkeitszahl rechts im vorgesehenen Ring und Name sauber dazwischen ausgerichtet</li><li>Aktiver Spieler-Glow deckt normale und Boss-Spielerkarten wieder exakt bis zum Außenrahmen ab</li><li>Grüner Boss-Level-Glow liegt direkt unter dem Premium-Rahmen; Farm-XP-Badges sind mittig verankert</li><li>Gameplay-, Save-, Campaign- und Online-Logik unverändert</li></ul></div>
@@ -744,6 +747,7 @@
 <script src="js/31-v28-ui-phase4.js?v=28.2.4"></script>
 <script src="js/32-v28-ui-phase5.js?v=28.2.5"></script>
 <script src="js/33-v28-ui-phase6.js?v=28.2.6"></script>
-<script src="js/34-v28-ui-phase8.js?v=28.3.4"></script>
+<script src="js/34-v28-ui-phase8.js?v=28.3.5"></script>
+<script src="js/35-v28-ui-phase12.js?v=28.3.5"></script>
 </body>
 </html>
