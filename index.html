@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="de" class="wd-booting">
 <head>
-  <meta name="wd-build" content="28.3.22" />
+  <meta name="wd-build" content="28.3.24" />
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <meta name="theme-color" content="#e8f2f6" />
@@ -11,7 +11,7 @@
   <link rel="manifest" href="manifest.json" />
   <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png" />
   <link rel="apple-touch-icon" sizes="192x192" href="icon-192.png" />
-  <title>DiceDuel · V28.3.22</title>
+  <title>DiceDuel · V28.3.24</title>
   <link rel="preload" as="image" href="assets/ui/v28/bg-main-palace.png">
   <style>
     html.wd-booting,body.wd-booting{overflow:hidden!important;overscroll-behavior:none}
@@ -33,7 +33,7 @@
   <link rel="stylesheet" href="css/05-online.css?v=28.2.1" />
   <link rel="stylesheet" href="css/06-v275.css?v=28.2.1" />
   <link rel="stylesheet" href="css/07-v2751.css?v=28.2.1" />
-  <link rel="stylesheet" href="css/08-v276.css?v=28.2.1" />
+  <link rel="stylesheet" href="css/08-v276.css?v=28.3.23" />
 
   <link rel="stylesheet" href="css/09-test-lab.css?v=28.2.1">
   <link rel="stylesheet" href="css/10-dice-tray-lab.css?v=28.2.1">
@@ -55,6 +55,7 @@
   <link rel="stylesheet" href="css/25-v28-ui-phase10.css?v=28.2.10">
   <link rel="stylesheet" href="css/26-v28-ui-phase11.css?v=28.3.15">
   <link rel="stylesheet" href="css/27-v28-dice-designs.css?v=28.3.20">
+  <link rel="stylesheet" href="css/29-v28-ui-hotfix.css?v=28.3.24">
   <script type="importmap">
   {
     "imports": {
@@ -499,6 +500,8 @@
     <div class="screen-topbar"><button class="menuBackBtn">←</button><h2 class="screen-title">Changelog</h2></div>
     <div class="screen-subtitle">Die großen Versionssprünge, ohne jeden Mini-Hotfix.</div>
     <div class="screen-scroll-body">
+    <div class="changelog-entry"><div class="changelog-version">V28.3.24</div><ul><li>Regeln-Karten laufen nicht mehr ineinander</li><li>Trophy Shop zeigt echte Namen statt IDs, Kickers lesbar</li><li>Rest würfeln / Basiswurf ohne Emoji, mit Dice-Icon</li><li>Würfeldesign- und Angriffseffekt-Dropdowns nutzen Würfel- und Attack-Icons</li></ul></div>
+    <div class="changelog-entry"><div class="changelog-version">V28.3.23</div><ul><li>Cosmetic Randomizer und Achievement-Anzeige sitzen hinter einem Kosmetik-Untermenü in den Profilen</li></ul></div>
     <div class="changelog-entry"><div class="changelog-version">V28.3.22</div><ul><li>Hauptmenü, Profile, Regeln, Stats und Trophy Shop nutzen vorhandene V28-SVGs statt Emojis</li></ul></div>
     <div class="changelog-entry"><div class="changelog-version">V28.3.21</div><ul><li>Boot-Gate lädt Würfel, Kampf-, Kampagnen- und restliche UI-Assets, nicht nur das Hauptmenü</li></ul></div>
     <div class="changelog-entry"><div class="changelog-version">V28.3.20</div><ul><li>Art-Würfel füllen denselben Slot wie Classic; Spin 0.42s / 11 Frames wie die normalen Würfel</li></ul></div>
@@ -741,7 +744,7 @@
 <script src="lang/de.js?v=28.2.1"></script>
 <script src="lang/en.js?v=28.2.1"></script>
 <script src="js/00-i18n.js?v=28.3.15"></script>
-<script src="js/01-config.js?v=28.3.22"></script>
+<script src="js/01-config.js?v=28.3.24"></script>
 <script src="js/02-campaign-solo-data.js?v=28.2.1"></script>
 <script src="js/03-campaign-duo-data.js?v=28.2.1"></script>
 <script src="js/03b-campaign-trio-data.js?v=28.2.1"></script>
@@ -749,11 +752,11 @@
 <script src="js/05-game-data-state.js?v=28.3.0"></script>
 <script src="js/06-campaign.js?v=28.3.0"></script>
 <script src="js/07-tutorial.js?v=28.2.1"></script>
-<script src="js/08-profiles-stats.js?v=28.3.22"></script>
+<script src="js/08-profiles-stats.js?v=28.3.24"></script>
 <script src="js/09-battle-stats.js?v=28.2.1"></script>
 <script src="js/10-bots.js?v=28.2.1"></script>
 <script src="js/11-setup.js?v=28.3.15"></script>
-<script src="js/12-battle-ui.js?v=28.3.20"></script>
+<script src="js/12-battle-ui.js?v=28.3.24"></script>
 <script src="js/13-battle-actions.js?v=28.3.15"></script>
 <script src="js/14-round-flow.js?v=28.3.15"></script>
 <script src="js/15-app.js?v=28.3.15"></script>
@@ -762,7 +765,7 @@
 <script src="js/17-online-bridge.js?v=28.3.15"></script>
 <script type="module" src="js/online/01-online.js?v=28.2.1"></script>
 <script src="js/19-build-integrity.js?v=28.3.15"></script>
-<script src="js/20-v276.js?v=28.2.1"></script>
+<script src="js/20-v276.js?v=28.3.23"></script>
 <script src="js/21-test-lab.js?v=28.2.1"></script>
 <script type="module" src="js/22-dice-tray-lab.js?v=28.3.0"></script>
 <script src="js/23-mastery.js?v=28.2.1"></script>
@@ -770,8 +773,8 @@
 <script src="js/25-cloud-account.js?v=28.2.1"></script>
   <script src="js/26-v28-ui.js?v=28.2.1"></script>
 <script src="js/27-v28-asset-polish.js?v=28.3.22"></script>
-<script src="js/28-v28-ui-rework.js?v=28.3.15"></script>
-<script src="js/29-v28-ui-phase1.js?v=28.3.22"></script>
+<script src="js/28-v28-ui-rework.js?v=28.3.24"></script>
+<script src="js/29-v28-ui-phase1.js?v=28.3.24"></script>
 <script src="js/30-v28-ui-phase2.js?v=28.3.15"></script>
 <script src="js/31-v28-ui-phase4.js?v=28.3.22"></script>
 <script src="js/32-v28-ui-phase5.js?v=28.2.5"></script>
