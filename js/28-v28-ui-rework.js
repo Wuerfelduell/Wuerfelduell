@@ -327,6 +327,7 @@
     trigger?.setAttribute("aria-expanded", "false");
     activeGenericSelect = null;
     document.body.style.overflow = previousBodyOverflow;
+    document.documentElement.classList.remove("wd-picker-open");
     trigger?.focus({preventScroll:true});
   }
 
@@ -394,10 +395,27 @@
     select.__ddSelectTrigger?.setAttribute("aria-expanded", "true");
     previousBodyOverflow = document.body.style.overflow;
     document.body.style.overflow = "hidden";
+    document.documentElement.classList.add("wd-picker-open");
     requestAnimationFrame(() => {
+      const panel = picker.querySelector(".dd-select-panel");
+      const head = picker.querySelector(".dd-select-head");
+      const max = Math.min(Math.round(window.innerHeight * 0.78), 720);
+      if(panel){
+        panel.style.maxHeight = max + "px";
+        panel.style.overflow = "hidden";
+      }
+      const headH = head ? head.getBoundingClientRect().height : 40;
+      const room = Math.max(140, max - headH - 78);
+      options.style.maxHeight = room + "px";
+      options.style.overflowY = "auto";
+      options.style.overflowX = "hidden";
+      options.style.webkitOverflowScrolling = "touch";
       const selected = options.querySelector(".selected") || options.querySelector("button:not(:disabled)");
-      selected?.scrollIntoView({block:"center"});
-      selected?.focus({preventScroll:true});
+      if(selected){
+        const top = selected.offsetTop - (options.clientHeight / 2) + (selected.offsetHeight / 2);
+        options.scrollTop = Math.max(0, top);
+        selected.focus({preventScroll:true});
+      }
     });
   }
 
