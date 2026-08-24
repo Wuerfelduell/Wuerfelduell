@@ -1,104 +1,40 @@
-/* DiceDuel V28.3.9 – rendered dice collection */
-
-/* Art dice are full-cube PNGs, shown as one sprite per slot. */
-.die.theme-art-die{
-  background:transparent!important;
-  border-color:transparent!important;
-  box-shadow:none!important;
-  overflow:visible!important;
-  perspective:520px;
-}
-.die.theme-art-die>.die-cube,
-.die.theme-art-die>.die-flat-face{display:none!important}
-.die.theme-art-die>.die-art-sprite{
-  position:absolute;
-  z-index:1;
-  inset:-12%;
-  width:124%;
-  height:124%;
-  object-fit:contain;
-  pointer-events:none;
-  user-select:none;
-  -webkit-user-drag:none;
-  transform-origin:center center;
-  filter:drop-shadow(0 6px 8px rgba(0,0,0,.32));
-}
-.die.theme-art-die.selected>.die-art-sprite{
-  filter:drop-shadow(0 0 10px var(--dice-glow,rgba(104,167,255,.7))) drop-shadow(0 8px 10px rgba(0,0,0,.28));
-}
-.die.theme-art-die.locked::after,
-.die.theme-art-die.attack-hit::after{z-index:3}
-
-.die.theme-art-die.rolling{
-  animation:none!important;
-  transform:none!important;
-}
-.die.theme-art-die.rolling>.die-art-sprite{
-  animation:artDieTumble .42s linear both;
-}
-@keyframes artDieTumble{
-  0%{transform:rotateX(0deg) rotateY(0deg) scale(1)}
-  18%{transform:rotateX(62deg) rotateY(80deg) scale(.9)}
-  36%{transform:rotateX(140deg) rotateY(168deg) scale(1.06)}
-  54%{transform:rotateX(218deg) rotateY(252deg) scale(.92)}
-  72%{transform:rotateX(292deg) rotateY(328deg) scale(1.04)}
-  88%{transform:rotateX(348deg) rotateY(392deg) scale(.98)}
-  100%{transform:rotateX(360deg) rotateY(420deg) scale(1)}
-}
-body.fast-animations .die.theme-art-die.rolling>.die-art-sprite{animation-duration:.24s}
-
-/* Insurance / Gambling / High Stakes / Perfect 25 D6 */
-:is(.special-big-die,.gambling-die).theme-art-die:not(.d4){
-  position:relative!important;
-  appearance:none!important;
-  overflow:visible!important;
-  border-color:transparent!important;
-  background:transparent!important;
-  color:transparent!important;
-  font-size:0!important;
-  text-shadow:none!important;
-  box-shadow:none!important;
-}
-:is(.special-big-die,.gambling-die).theme-art-die:not(.d4)>.die-art-sprite{
-  position:absolute;
-  z-index:1;
-  inset:-6%;
-  width:112%;
-  height:112%;
-  object-fit:contain;
-  pointer-events:none;
-  filter:drop-shadow(0 14px 18px rgba(0,0,0,.35));
-}
-:is(.special-big-die,.gambling-die).theme-art-die:not(.d4).rolling{
-  animation:none!important;
-  transform:none!important;
-}
-:is(.special-big-die,.gambling-die).theme-art-die:not(.d4).rolling>.die-art-sprite{
-  animation:artDieTumble .55s linear infinite;
-}
+/* DiceDuel V28.3.10 – rendered dice collection
+   face-1..6 are flat square textures (96px pad on 1024). Map them onto the
+   existing CSS 3D cube. beauty.png stays shop-only. */
 
 .die.theme-classic-v2{--dice-accent:#45b9ff;--dice-glow:rgba(69,185,255,.88)}
 .die.theme-sapphire-crown{--dice-accent:#53d9ff;--dice-glow:rgba(83,217,255,.9)}
 .die.theme-amethyst-rift{--dice-accent:#c36bff;--dice-glow:rgba(195,107,255,.9)}
 
-.die.theme-art-die .die-face{
+.theme-art-die{
+  background:transparent!important;
+  border-color:transparent!important;
+  box-shadow:none!important;
+  overflow:visible!important;
+  isolation:auto!important;
+  transform-style:preserve-3d;
+}
+.die.theme-art-die{perspective:520px}
+.theme-art-die>.die-art-sprite{display:none!important}
+
+.theme-art-die .die-face{
   border:0!important;
-  border-radius:15%!important;
+  border-radius:16%!important;
   background-color:transparent!important;
   background-repeat:no-repeat!important;
   background-position:center!important;
-  background-size:contain!important;
+  background-size:124% 124%!important;
   box-shadow:none!important;
 }
-.die.theme-art-die .die-face::after{display:none!important}
-.die.theme-art-die .die-face-1{background-image:var(--die-art-face-1)!important}
-.die.theme-art-die .die-face-2{background-image:var(--die-art-face-2)!important}
-.die.theme-art-die .die-face-3{background-image:var(--die-art-face-3)!important}
-.die.theme-art-die .die-face-4{background-image:var(--die-art-face-4)!important}
-.die.theme-art-die .die-face-5{background-image:var(--die-art-face-5)!important}
-.die.theme-art-die .die-face-6{background-image:var(--die-art-face-6)!important}
-.die.theme-art-die[data-value=""] .die-face{background-image:var(--die-art-question)!important}
-.die.theme-art-die :is(.die-pips,.die-question){display:none!important}
+.theme-art-die .die-face::after{display:none!important}
+.theme-art-die .die-face-1{background-image:var(--die-art-face-1)!important}
+.theme-art-die .die-face-2{background-image:var(--die-art-face-2)!important}
+.theme-art-die .die-face-3{background-image:var(--die-art-face-3)!important}
+.theme-art-die .die-face-4{background-image:var(--die-art-face-4)!important}
+.theme-art-die .die-face-5{background-image:var(--die-art-face-5)!important}
+.theme-art-die .die-face-6{background-image:var(--die-art-face-6)!important}
+.theme-art-die[data-value=""] .die-face{background-image:var(--die-art-question)!important}
+.theme-art-die :is(.die-pips,.die-question){display:none!important}
 
 html.legacy-flat-dice .die.theme-art-die{
   border-color:transparent!important;
@@ -107,12 +43,34 @@ html.legacy-flat-dice .die.theme-art-die{
 }
 .die.theme-art-die .die-flat-face{
   inset:0!important;
-  border-radius:15%!important;
-  background:var(--die-art-current) center/contain no-repeat!important;
+  border-radius:16%!important;
+  background:var(--die-art-current) center/124% 124% no-repeat!important;
 }
 .die.theme-art-die .die-flat-face::after,
 .die.theme-art-die .die-flat-pips,
 .die.theme-art-die .die-flat-question{display:none!important}
+
+:is(.special-big-die,.gambling-die).theme-art-die:not(.d4){
+  position:relative!important;
+  appearance:none!important;
+  perspective:720px!important;
+  background:transparent!important;
+  border-color:transparent!important;
+  color:transparent!important;
+  font-size:0!important;
+  box-shadow:none!important;
+  overflow:visible!important;
+}
+:is(.special-big-die,.gambling-die).theme-art-die:not(.d4)>.die-cube{
+  inset:4px;
+}
+:is(.special-big-die,.gambling-die).theme-art-die:not(.d4).rolling{
+  animation:die3dShell .55s linear!important;
+  transform:none;
+}
+:is(.special-big-die,.gambling-die).theme-art-die:not(.d4).rolling>.die-cube{
+  animation:die3dSpin .55s linear both!important;
+}
 
 .special-big-die.d4.theme-classic-v2{background:linear-gradient(145deg,#fffdf7,#e9dac0)!important;color:#123765!important;border-color:#e8b33e!important}
 .special-big-die.d4.theme-sapphire-crown{background:linear-gradient(145deg,#174eb5,#061d68)!important;color:#ffd75e!important;border-color:#e9b635!important}
