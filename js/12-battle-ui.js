@@ -217,10 +217,24 @@
     return cube;
   }
 
+  function ensureArtSprite(el,designKey,value){
+    let img=el.querySelector(":scope > img.die-art-sprite");
+    if(!img){
+      img=document.createElement("img");
+      img.className="die-art-sprite";
+      img.alt="";
+      img.draggable=false;
+      img.setAttribute("aria-hidden","true");
+      el.appendChild(img);
+    }
+    const next=diceArtworkAsset(designKey,value==null?"question":value);
+    if(img.getAttribute("src")!==next) img.src=next;
+  }
+
   function applyArtCube(el,designKey,value){
     applyDiceArtwork(el,designKey,value);
-    el.querySelector(":scope > img.die-art-sprite")?.remove();
     stampArtFaces(el,designKey,value);
+    ensureArtSprite(el,designKey,value);
     const dieWidth=el.getBoundingClientRect().width;
     if(dieWidth>0) el.style.setProperty("--die-half",`${Math.max(10,dieWidth*0.36)}px`);
     const rotation=DIE_3D_ROTATION[value]||DIE_3D_ROTATION[1];
@@ -246,11 +260,11 @@
   }
 
   function render3DDieNode(el,value,designKey="classic"){
-    el.querySelector(":scope > img.die-art-sprite")?.remove();
     if(DICE_DESIGNS[designKey]?.artKey && !galaxyA50CompatibilityMode()){
       applyArtCube(el,designKey,value);
       return;
     }
+    el.querySelector(":scope > img.die-art-sprite")?.remove();
     el.querySelectorAll("img.die-face-art").forEach(n=>n.remove());
     applyDiceArtwork(el,designKey,value);
     if(galaxyA50CompatibilityMode()){
