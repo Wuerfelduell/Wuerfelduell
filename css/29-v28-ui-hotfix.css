@@ -1,4 +1,4 @@
-/* DiceDuel 28.3.25 — quit red rect, scrolls, ability picker clip, frame jitter, primaryBtn .hidden */
+/* DiceDuel 28.3.26 — real front-screen scroll + quit/combat/frame polish */
 
 /* ---- Rules: auto-height cards, no text bleed ---- */
 html[data-v28-rework="2"] #rulesScreen .menu-list{
@@ -22,7 +22,7 @@ html[data-v28-rework="2"] #rulesScreen .menu-info-card .small{
   margin-top:6px!important;
 }
 
-/* ---- Trophy shop (keep 24 polish) ---- */
+/* ---- Trophy shop chips ---- */
 html[data-v28-rework="2"] #prestigeShopScreen .prestige-item-kicker{
   color:#e2b44a!important;
   letter-spacing:.04em!important;
@@ -44,7 +44,7 @@ html[data-v28-rework="2"] #prestigeShopScreen .prestige-active-chip b{
   color:#e2b44a;font-size:10px;letter-spacing:.04em;text-transform:uppercase;font-weight:800;
 }
 
-/* ---- PrimaryBtn: never force display when .hidden (regression fix) ---- */
+/* ---- PrimaryBtn: respect .hidden ---- */
 html[data-v28-rework="2"] body.playing #primaryBtn.p1-action-button:not(.hidden){
   display:flex!important;
   align-items:center!important;
@@ -58,7 +58,7 @@ html[data-v28-rework="2"] body.playing #primaryBtn .p1-action-icon{
   width:22px;height:22px;margin:0!important;flex:0 0 22px;
 }
 
-/* ---- Quit modal: kill native red rectangle under ornate leave button ---- */
+/* ---- Quit modal: no native red rect under leave button ---- */
 html[data-v28-rework="2"] #quitModal #quitConfirmBtn,
 html[data-v28-rework="2"] #quitModal #quitConfirmBtn.blood,
 html[data-v28-rework="2"] #quitModal #quitConfirmBtn:hover,
@@ -88,33 +88,47 @@ html[data-v28-rework="2"] #quitModal .utility-actions{
   isolation:isolate;
 }
 
-/* ---- Stats / Settings / Profiles: real inner scroll (no screen-scroll-body in HTML) ---- */
+/* ---- Front screens: height frame from phase11 stays; list bodies scroll via JS ----
+   Stats/Settings have no list body → whole card scrolls (override phase11 overflow:hidden).
+   Profiles / Achievements / Shop same: whole card scrollable so content is never clipped. */
 html[data-v28-rework="2"] #statsScreen.screen-card:not(.hidden),
 html[data-v28-rework="2"] #settingsScreen.screen-card:not(.hidden),
 html[data-v28-rework="2"] #profilesScreen.screen-card:not(.hidden),
 html[data-v28-rework="2"] #achievementsScreen.screen-card:not(.hidden),
 html[data-v28-rework="2"] #prestigeShopScreen.screen-card:not(.hidden){
-  display:flex!important;
-  flex-direction:column!important;
   height:calc(100dvh - 12px)!important;
   max-height:calc(100dvh - 12px)!important;
   min-height:0!important;
-  overflow:hidden!important;
-  box-sizing:border-box!important;
-}
-html[data-v28-rework="2"] #statsScreen:not(.hidden),
-html[data-v28-rework="2"] #settingsScreen:not(.hidden),
-html[data-v28-rework="2"] #profilesScreen:not(.hidden),
-html[data-v28-rework="2"] #achievementsScreen:not(.hidden),
-html[data-v28-rework="2"] #prestigeShopScreen:not(.hidden){
   overflow-x:hidden!important;
   overflow-y:auto!important;
   -webkit-overflow-scrolling:touch;
   overscroll-behavior:contain;
-  padding-bottom:18px!important;
+  box-sizing:border-box!important;
+  display:block!important;
+  padding-bottom:16px!important;
 }
 
-/* ---- Cosmetic overlay: scroll body + close control ---- */
+/* Rules / Abilities / Changelog keep phase11 frame lock; JS sizes .menu-list / .ability-list / .screen-scroll-body */
+html[data-v28-rework="2"] #rulesScreen.screen-card:not(.hidden),
+html[data-v28-rework="2"] #abilitiesScreen.screen-card:not(.hidden),
+html[data-v28-rework="2"] #changelogScreen.screen-card:not(.hidden){
+  height:calc(100dvh - 12px)!important;
+  max-height:calc(100dvh - 12px)!important;
+  overflow:hidden!important;
+}
+
+html[data-v28-rework="2"] #rulesScreen:not(.hidden) .menu-list,
+html[data-v28-rework="2"] #abilitiesScreen:not(.hidden) .ability-list,
+html[data-v28-rework="2"] #abilitiesScreen:not(.hidden) #allAbilitiesList,
+html[data-v28-rework="2"] #changelogScreen:not(.hidden) .screen-scroll-body{
+  overflow-x:hidden!important;
+  overflow-y:auto!important;
+  -webkit-overflow-scrolling:touch;
+  overscroll-behavior:contain;
+  min-height:0!important;
+}
+
+/* ---- Cosmetic overlay ---- */
 #cosmeticMenu .cosmetic-menu-panel{
   max-height:min(82vh,760px)!important;
   overflow:hidden!important;
@@ -156,7 +170,7 @@ html[data-v28-rework="2"] #prestigeShopScreen:not(.hidden){
   cursor:pointer;
 }
 
-/* ---- Ability picker: keep list inside ornate frame ---- */
+/* ---- Ability picker stays inside ornate frame ---- */
 html[data-v28-rework="2"] .dd-select-panel,
 .dd-select-picker .dd-select-panel,
 html[data-v28-rework="2"] .v28-ability-picker-panel{
@@ -177,7 +191,7 @@ html[data-v28-rework="2"] .v28-ability-picker-options{
   box-sizing:border-box!important;
 }
 
-/* ---- Combat frame jitter on prestige frames (enemies + self) ---- */
+/* ---- Combat prestige-frame jitter off ---- */
 html[data-v28-rework="2"] body.playing .player.frame-rift,
 html[data-v28-rework="2"] body.playing .player.frame-void,
 html[data-v28-rework="2"] body.playing .player.frame-crown,
