@@ -1,4 +1,104 @@
-/* DiceDuel 28.3.29 — campaign node jitter nuclear kill (no attr gate) */
+/* DiceDuel 28.3.30 — detail text + GESCHAFFT sprite scale kill + node frame freeze */
+
+
+/* ============================================================
+   28.3.30 — The House text scale: title/sub + GESCHAFFT sprite
+   Root cause: detail panel toggles border-image-width (20→30px)
+   when .v28-boss-detail / .v28-prestige-detail is applied, and
+   any residual transform/animation on text or state icon reads
+   as continuous grow/shrink of "The House" / "2 gegen 1".
+   ============================================================ */
+
+/* Freeze ALL detail panel content: no anim, no transform, no scale */
+.campaign-node-detail,
+.campaign-node-detail *,
+.campaign-node-detail::before,
+.campaign-node-detail::after,
+html[data-v28-rework="2"] .campaign-node-detail,
+html[data-v28-rework="2"] .campaign-node-detail *,
+html[data-v28-rework="2"] .campaign-node-detail::before,
+html[data-v28-rework="2"] .campaign-node-detail::after{
+  animation:none!important;
+  transition:none!important;
+  transform:none!important;
+  scale:1!important;
+  will-change:auto!important;
+}
+
+/* Title + subtitle: locked font metrics (no optical scale) */
+.campaign-node-detail .node-detail-title,
+.campaign-node-detail .node-detail-sub,
+html[data-v28-rework="2"] .campaign-node-detail .node-detail-title,
+html[data-v28-rework="2"] .campaign-node-detail .node-detail-sub{
+  font-size:inherit!important;
+  line-height:1.25!important;
+  transform:none!important;
+  scale:1!important;
+  animation:none!important;
+  transition:none!important;
+  text-size-adjust:100%!important;
+  -webkit-text-size-adjust:100%!important;
+}
+.campaign-node-detail .node-detail-title,
+html[data-v28-rework="2"] .campaign-node-detail .node-detail-title{
+  font-size:19px!important;
+}
+.campaign-node-detail .node-detail-sub,
+html[data-v28-rework="2"] .campaign-node-detail .node-detail-sub{
+  font-size:11px!important;
+}
+
+/* GESCHAFFT / FARM / GESPERRT state pill + completed.svg sprite */
+.campaign-node-detail .node-detail-state,
+.campaign-node-detail .node-detail-state *,
+.campaign-node-detail .node-detail-state img,
+.campaign-node-detail .ddStateIcon,
+.campaign-node-detail img.ddStateIcon,
+html[data-v28-rework="2"] .campaign-node-detail .node-detail-state,
+html[data-v28-rework="2"] .campaign-node-detail .node-detail-state *,
+html[data-v28-rework="2"] .campaign-node-detail .node-detail-state img,
+html[data-v28-rework="2"] .campaign-node-detail .ddStateIcon{
+  animation:none!important;
+  transition:none!important;
+  transform:none!important;
+  scale:1!important;
+  filter:none!important;
+  will-change:auto!important;
+}
+.campaign-node-detail .node-detail-state img,
+.campaign-node-detail .ddStateIcon,
+html[data-v28-rework="2"] .campaign-node-detail .node-detail-state img,
+html[data-v28-rework="2"] .campaign-node-detail .ddStateIcon{
+  width:14px!important;
+  height:14px!important;
+  max-width:14px!important;
+  max-height:14px!important;
+  object-fit:contain!important;
+}
+
+/* CRITICAL: one fixed border-image footprint for ALL detail states.
+   Boss/prestige class toggles must NOT change content box size. */
+.campaign-node-detail,
+.campaign-node-detail.v28-boss-detail,
+.campaign-node-detail.v28-prestige-detail,
+html[data-v28-rework="2"] .campaign-node-detail,
+html[data-v28-rework="2"] .campaign-node-detail.v28-boss-detail,
+html[data-v28-rework="2"] .campaign-node-detail.v28-prestige-detail,
+html[data-v28-rework="2"] .campaign-node-detail.v28-prestige-detail:not(.v28-boss-detail){
+  border-width:24px 38px!important;
+  border-style:solid!important;
+  border-color:transparent!important;
+  border-image-width:24px 38px!important;
+  border-image-repeat:stretch!important;
+  padding:14px 8px 16px!important;
+  min-height:0!important;
+  box-sizing:border-box!important;
+  contain:layout style paint!important;
+  overflow:hidden!important;
+  transform:none!important;
+  scale:1!important;
+}
+
 
 /* Map clips glow layers; no layout expand from selected frames */
 .campaign-hub .campaign-node-map,
