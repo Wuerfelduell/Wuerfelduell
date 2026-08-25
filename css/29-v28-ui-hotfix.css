@@ -1,4 +1,11 @@
-/* DiceDuel 28.3.27 — rules cards, shop full-card scroll, combat dice stay on screen */
+/* DiceDuel 28.3.28 — phase12 map clip reinforced; rules/shop/combat from .27 */
+
+/* ---- Campaign map: clip selected-glow so nodes don't layout-jitter ---- */
+html[data-v28-rework="2"] .campaign-hub .campaign-node-map{
+  overflow:hidden!important;
+  padding:24px 16px!important;
+}
+
 
 /* ---- Rules: cards grow with text, no overlap onto the next card ---- */
 html[data-v28-rework="2"] #rulesScreen .menu-list{
