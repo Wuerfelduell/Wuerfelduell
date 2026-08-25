@@ -1,4 +1,4 @@
-/* DiceDuel 28.3.33 — global selected-frame size lock (same inset as idle); no filter shimmer */
+/* DiceDuel 28.3.34 — remove broken title max-width (caused vertical letter collapse) */
 
 /* ============================================================
    MAP NODES — static selected ring (no pulse, fixed inset/filter)
@@ -114,27 +114,15 @@ html[data-v28-rework="2"] .campaign-hub .campaign-node-map{
    28.3.30 forced one border-width for boss/normal → 10x worse
    ============================================================ */
 .campaign-node-detail .node-detail-title,
-html[data-v28-rework="2"] .campaign-node-detail .node-detail-title{
-  font-size: 19px !important;
-  line-height: 1.25 !important;
-  transform: none !important;
-  scale: 1 !important;
-  animation: none !important;
-  transition: none !important;
-  -webkit-text-size-adjust: 100% !important;
-  text-size-adjust: 100% !important;
-}
 .campaign-node-detail .node-detail-sub,
+html[data-v28-rework="2"] .campaign-node-detail .node-detail-title,
 html[data-v28-rework="2"] .campaign-node-detail .node-detail-sub{
-  font-size: 11px !important;
-  line-height: 1.3 !important;
   transform: none !important;
   scale: 1 !important;
   animation: none !important;
   transition: none !important;
-  -webkit-text-size-adjust: 100% !important;
-  text-size-adjust: 100% !important;
 }
+/* Let phase2 grid handle title width — do NOT set max-width on title */
 .campaign-node-detail .node-detail-state,
 .campaign-node-detail .node-detail-state *,
 .campaign-node-detail .node-detail-state img,
@@ -183,21 +171,18 @@ html[data-v28-rework="2"] .campaign-hub .campaign-node::after{
   -webkit-backdrop-filter: none !important;
 }
 
-/* Detail panel: stable width, no subpixel reflow on title */
-.campaign-node-detail,
-html[data-v28-rework="2"] .campaign-node-detail{
-  width: 100% !important;
+
+/* Restore phase2 title layout: grid column may shrink, title ellipsizes inside */
+html[data-v28-rework="2"] .campaign-node-detail .node-detail-head > div:first-child{
+  min-width: 0 !important;
   max-width: 100% !important;
-  box-sizing: border-box !important;
-  transform: none !important;
-  filter: none !important;
+  overflow: hidden !important;
 }
-.campaign-node-detail .node-detail-title,
 html[data-v28-rework="2"] .campaign-node-detail .node-detail-title{
   overflow: hidden !important;
   text-overflow: ellipsis !important;
   white-space: nowrap !important;
-  max-width: calc(100% - 110px) !important;
+  max-width: 100% !important; /* of parent column, NOT calc(100%-110px) */
 }
 
 /* ---- Rules: cards grow with text, no overlap onto the next card ---- */
