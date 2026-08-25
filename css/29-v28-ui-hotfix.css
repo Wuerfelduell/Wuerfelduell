@@ -1,4 +1,4 @@
-/* DiceDuel 28.3.32 — combat scroll softer; selected glow PNG off; map layout locked */
+/* DiceDuel 28.3.33 — global selected-frame size lock (same inset as idle); no filter shimmer */
 
 /* ============================================================
    MAP NODES — static selected ring (no pulse, fixed inset/filter)
@@ -40,16 +40,41 @@ html[data-v28-rework="2"] .campaign-hub .campaign-node.selected{
   box-shadow: 0 0 0 3px rgba(255,200,87,.14), 0 0 16px rgba(255,200,87,.18) !important;
 }
 
+/* CRITICAL: selected must use SAME inset as idle (-6px).
+   Phase3 used -8px for selected → continuous optical grow/shrink on mobile. */
+.campaign-hub .campaign-node::before,
+html[data-v28-rework="2"] .campaign-hub .campaign-node::before{
+  inset: -6px !important;
+  filter: none !important;
+  transform: none !important;
+  scale: 1 !important;
+  animation: none !important;
+  transition: none !important;
+}
 .campaign-hub .campaign-node.current::before,
 .campaign-hub .campaign-node.selected::before,
 html[data-v28-rework="2"] .campaign-hub .campaign-node.current::before,
 html[data-v28-rework="2"] .campaign-hub .campaign-node.selected::before{
-  inset: -8px !important;
+  inset: -6px !important;
   transform: none !important;
   scale: 1 !important;
-  filter: drop-shadow(0 0 8px rgba(255,209,87,.28)) !important;
+  filter: none !important;
   animation: none !important;
   transition: none !important;
+  /* keep selected art if present, but no drop-shadow shimmer */
+  background-size: contain !important;
+  background-position: center !important;
+  background-repeat: no-repeat !important;
+}
+/* farm selected also same footprint */
+.campaign-hub .campaign-node.p6-farm-node::before,
+.campaign-hub .campaign-node.p6-farm-node.current::before,
+.campaign-hub .campaign-node.p6-farm-node.selected::before,
+html[data-v28-rework="2"] .campaign-hub .campaign-node.p6-farm-node::before,
+html[data-v28-rework="2"] .campaign-hub .campaign-node.p6-farm-node.current::before,
+html[data-v28-rework="2"] .campaign-hub .campaign-node.p6-farm-node.selected::before{
+  inset: -6px !important;
+  filter: none !important;
 }
 
 .campaign-hub .campaign-node.boss > .p8-boss-selected-glow,
@@ -141,6 +166,38 @@ html[data-v28-rework="2"] .campaign-node-detail,
 html[data-v28-rework="2"] .campaign-node-detail *{
   animation: none !important;
   transition: none !important;
+}
+
+
+/* Global: no filter on any campaign node layer (GPU shimmer → optical scale) */
+.campaign-hub .campaign-node,
+.campaign-hub .campaign-node *,
+.campaign-hub .campaign-node::before,
+.campaign-hub .campaign-node::after,
+html[data-v28-rework="2"] .campaign-hub .campaign-node,
+html[data-v28-rework="2"] .campaign-hub .campaign-node *,
+html[data-v28-rework="2"] .campaign-hub .campaign-node::before,
+html[data-v28-rework="2"] .campaign-hub .campaign-node::after{
+  filter: none !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+
+/* Detail panel: stable width, no subpixel reflow on title */
+.campaign-node-detail,
+html[data-v28-rework="2"] .campaign-node-detail{
+  width: 100% !important;
+  max-width: 100% !important;
+  box-sizing: border-box !important;
+  transform: none !important;
+  filter: none !important;
+}
+.campaign-node-detail .node-detail-title,
+html[data-v28-rework="2"] .campaign-node-detail .node-detail-title{
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  white-space: nowrap !important;
+  max-width: calc(100% - 110px) !important;
 }
 
 /* ---- Rules: cards grow with text, no overlap onto the next card ---- */
