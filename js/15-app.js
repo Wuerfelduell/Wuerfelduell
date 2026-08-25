@@ -70,10 +70,10 @@
     const topbar = inner.querySelector(".screen-topbar");
     const sub = inner.querySelector(".screen-subtitle");
     const body = inner.querySelector(
-      ".ability-list, .screen-scroll-body, .menu-list, .profile-list, .achievement-list, .prestige-shop-list"
+      ".ability-list, .screen-scroll-body, .menu-list, .profile-list, .achievement-list"
     );
     let createH = 0;
-    inner.querySelectorAll(".profile-create, .prestige-shop-head, .prestige-equipped").forEach(el=>{
+    inner.querySelectorAll(".profile-create").forEach(el=>{
       createH += el.offsetHeight || 0;
     });
 
