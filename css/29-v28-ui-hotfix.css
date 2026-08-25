@@ -1,183 +1,145 @@
-/* DiceDuel 28.3.30 — detail text + GESCHAFFT sprite scale kill + node frame freeze */
-
+/* DiceDuel 28.3.31 — revert 30 border-freeze; static selected nodes; text metrics only */
 
 /* ============================================================
-   28.3.30 — The House text scale: title/sub + GESCHAFFT sprite
-   Root cause: detail panel toggles border-image-width (20→30px)
-   when .v28-boss-detail / .v28-prestige-detail is applied, and
-   any residual transform/animation on text or state icon reads
-   as continuous grow/shrink of "The House" / "2 gegen 1".
+   MAP NODES — static selected ring (no pulse, fixed inset/filter)
    ============================================================ */
-
-/* Freeze ALL detail panel content: no anim, no transform, no scale */
-.campaign-node-detail,
-.campaign-node-detail *,
-.campaign-node-detail::before,
-.campaign-node-detail::after,
-html[data-v28-rework="2"] .campaign-node-detail,
-html[data-v28-rework="2"] .campaign-node-detail *,
-html[data-v28-rework="2"] .campaign-node-detail::before,
-html[data-v28-rework="2"] .campaign-node-detail::after{
-  animation:none!important;
-  transition:none!important;
-  transform:none!important;
-  scale:1!important;
-  will-change:auto!important;
-}
-
-/* Title + subtitle: locked font metrics (no optical scale) */
-.campaign-node-detail .node-detail-title,
-.campaign-node-detail .node-detail-sub,
-html[data-v28-rework="2"] .campaign-node-detail .node-detail-title,
-html[data-v28-rework="2"] .campaign-node-detail .node-detail-sub{
-  font-size:inherit!important;
-  line-height:1.25!important;
-  transform:none!important;
-  scale:1!important;
-  animation:none!important;
-  transition:none!important;
-  text-size-adjust:100%!important;
-  -webkit-text-size-adjust:100%!important;
-}
-.campaign-node-detail .node-detail-title,
-html[data-v28-rework="2"] .campaign-node-detail .node-detail-title{
-  font-size:19px!important;
-}
-.campaign-node-detail .node-detail-sub,
-html[data-v28-rework="2"] .campaign-node-detail .node-detail-sub{
-  font-size:11px!important;
-}
-
-/* GESCHAFFT / FARM / GESPERRT state pill + completed.svg sprite */
-.campaign-node-detail .node-detail-state,
-.campaign-node-detail .node-detail-state *,
-.campaign-node-detail .node-detail-state img,
-.campaign-node-detail .ddStateIcon,
-.campaign-node-detail img.ddStateIcon,
-html[data-v28-rework="2"] .campaign-node-detail .node-detail-state,
-html[data-v28-rework="2"] .campaign-node-detail .node-detail-state *,
-html[data-v28-rework="2"] .campaign-node-detail .node-detail-state img,
-html[data-v28-rework="2"] .campaign-node-detail .ddStateIcon{
-  animation:none!important;
-  transition:none!important;
-  transform:none!important;
-  scale:1!important;
-  filter:none!important;
-  will-change:auto!important;
-}
-.campaign-node-detail .node-detail-state img,
-.campaign-node-detail .ddStateIcon,
-html[data-v28-rework="2"] .campaign-node-detail .node-detail-state img,
-html[data-v28-rework="2"] .campaign-node-detail .ddStateIcon{
-  width:14px!important;
-  height:14px!important;
-  max-width:14px!important;
-  max-height:14px!important;
-  object-fit:contain!important;
-}
-
-/* CRITICAL: one fixed border-image footprint for ALL detail states.
-   Boss/prestige class toggles must NOT change content box size. */
-.campaign-node-detail,
-.campaign-node-detail.v28-boss-detail,
-.campaign-node-detail.v28-prestige-detail,
-html[data-v28-rework="2"] .campaign-node-detail,
-html[data-v28-rework="2"] .campaign-node-detail.v28-boss-detail,
-html[data-v28-rework="2"] .campaign-node-detail.v28-prestige-detail,
-html[data-v28-rework="2"] .campaign-node-detail.v28-prestige-detail:not(.v28-boss-detail){
-  border-width:24px 38px!important;
-  border-style:solid!important;
-  border-color:transparent!important;
-  border-image-width:24px 38px!important;
-  border-image-repeat:stretch!important;
-  padding:14px 8px 16px!important;
-  min-height:0!important;
-  box-sizing:border-box!important;
-  contain:layout style paint!important;
-  overflow:hidden!important;
-  transform:none!important;
-  scale:1!important;
-}
-
-
-/* Map clips glow layers; no layout expand from selected frames */
-.campaign-hub .campaign-node-map,
-html[data-v28-rework="2"] .campaign-hub .campaign-node-map{
-  overflow:hidden!important;
-  padding:24px 16px!important;
-  contain:layout paint!important;
-}
-
-/* Kill every animation/transition on nodes + pseudos + glow, with and without rework attr */
 .campaign-hub .campaign-node,
 .campaign-hub .campaign-node.current,
 .campaign-hub .campaign-node.selected,
 .campaign-hub .campaign-node.boss,
 .campaign-hub .campaign-node.world-boss,
 .campaign-hub .campaign-node.p6-farm-node,
-.campaign-hub .campaign-node.done,
-.campaign-hub .campaign-node.locked,
 .campaign-hub .campaign-node *,
 .campaign-hub .campaign-node::before,
 .campaign-hub .campaign-node::after,
 .campaign-hub .campaign-node.current::before,
 .campaign-hub .campaign-node.selected::before,
-.campaign-hub .campaign-node.current::after,
-.campaign-hub .campaign-node.selected::after,
-.campaign-hub .campaign-node.p6-farm-node::before,
-.campaign-hub .campaign-node.p6-farm-node.current::before,
-.campaign-hub .campaign-node.p6-farm-node.selected::before,
-.campaign-hub .campaign-node.boss>.p8-boss-selected-glow,
-.campaign-hub .p8-boss-selected-glow{
-  animation:none!important;
-  transition:none!important;
-  will-change:auto!important;
+.campaign-hub .campaign-node.boss > .p8-boss-selected-glow,
+.campaign-hub .p8-boss-selected-glow,
+html[data-v28-rework="2"] .campaign-hub .campaign-node,
+html[data-v28-rework="2"] .campaign-hub .campaign-node.current,
+html[data-v28-rework="2"] .campaign-hub .campaign-node.selected,
+html[data-v28-rework="2"] .campaign-hub .campaign-node::before,
+html[data-v28-rework="2"] .campaign-hub .campaign-node.current::before,
+html[data-v28-rework="2"] .campaign-hub .campaign-node.selected::before,
+html[data-v28-rework="2"] .campaign-hub .campaign-node.boss > .p8-boss-selected-glow,
+html[data-v28-rework="2"] .campaign-hub .p8-boss-selected-glow{
+  animation: none !important;
+  transition: none !important;
+  will-change: auto !important;
 }
 
-/* Freeze selected frame size — no grow/shrink via inset/filter */
-.campaign-hub .campaign-node.current::before,
-.campaign-hub .campaign-node.selected::before{
-  inset:-8px!important;
-  transform:none!important;
-  scale:1!important;
-  filter:drop-shadow(0 0 8px rgba(255,209,87,.28))!important;
-}
-.campaign-hub .campaign-node.p6-farm-node.current::before,
-.campaign-hub .campaign-node.p6-farm-node.selected::before{
-  inset:-7px!important;
-  filter:drop-shadow(0 0 10px rgba(255,214,91,.36))!important;
-}
-
-/* Boss selected glow: static, no filter pulse, fixed footprint */
-.campaign-hub .campaign-node.boss>.p8-boss-selected-glow,
-.campaign-hub .p8-boss-selected-glow{
-  position:absolute!important;
-  inset:-6px!important;
-  width:calc(100% + 12px)!important;
-  height:calc(100% + 12px)!important;
-  transform:none!important;
-  scale:1!important;
-  filter:none!important;
-  opacity:.92!important;
-  animation:none!important;
-  transition:none!important;
-  pointer-events:none!important;
-}
-
-/* Static current glow — kill any leftover box-shadow pulse from prestige sheet */
 .campaign-hub .campaign-node.current,
-.campaign-hub .campaign-node.selected{
-  box-shadow:none!important;
+.campaign-hub .campaign-node.selected,
+html[data-v28-rework="2"] .campaign-hub .campaign-node.current,
+html[data-v28-rework="2"] .campaign-hub .campaign-node.selected{
+  transform: none !important;
+  scale: 1 !important;
+  filter: none !important;
+  /* static gold ring — no box-shadow animation */
+  box-shadow: 0 0 0 3px rgba(255,200,87,.14), 0 0 16px rgba(255,200,87,.18) !important;
 }
 
-/* Keyframes stay defined but resolve to identical frames (belt+suspenders) */
+.campaign-hub .campaign-node.current::before,
+.campaign-hub .campaign-node.selected::before,
+html[data-v28-rework="2"] .campaign-hub .campaign-node.current::before,
+html[data-v28-rework="2"] .campaign-hub .campaign-node.selected::before{
+  inset: -8px !important;
+  transform: none !important;
+  scale: 1 !important;
+  filter: drop-shadow(0 0 8px rgba(255,209,87,.28)) !important;
+  animation: none !important;
+  transition: none !important;
+}
+
+.campaign-hub .campaign-node.boss > .p8-boss-selected-glow,
+.campaign-hub .p8-boss-selected-glow,
+html[data-v28-rework="2"] .campaign-hub .campaign-node.boss > .p8-boss-selected-glow,
+html[data-v28-rework="2"] .campaign-hub .p8-boss-selected-glow{
+  position: absolute !important;
+  inset: -6px !important;
+  width: calc(100% + 12px) !important;
+  height: calc(100% + 12px) !important;
+  transform: none !important;
+  scale: 1 !important;
+  opacity: 0.92 !important;
+  filter: none !important;
+  animation: none !important;
+  transition: none !important;
+  mix-blend-mode: normal !important;
+  pointer-events: none !important;
+}
+
+.campaign-hub .campaign-node-map,
+html[data-v28-rework="2"] .campaign-hub .campaign-node-map{
+  overflow: hidden !important;
+}
+
 @keyframes nodePulse{
-  0%,50%,100%{box-shadow:none;filter:none;transform:none}
+  0%,50%,100%{ box-shadow: 0 0 0 3px rgba(255,200,87,.14), 0 0 16px rgba(255,200,87,.18); filter:none; transform:none; }
 }
 @keyframes p8BossSelectedPulse{
-  0%,50%,100%{opacity:.92;filter:none;transform:none}
+  0%,50%,100%{ opacity:0.92; filter:none; transform:none; }
 }
 
+/* ============================================================
+   DETAIL TEXT — font lock only (NO border-image override)
+   28.3.30 forced one border-width for boss/normal → 10x worse
+   ============================================================ */
+.campaign-node-detail .node-detail-title,
+html[data-v28-rework="2"] .campaign-node-detail .node-detail-title{
+  font-size: 19px !important;
+  line-height: 1.25 !important;
+  transform: none !important;
+  scale: 1 !important;
+  animation: none !important;
+  transition: none !important;
+  -webkit-text-size-adjust: 100% !important;
+  text-size-adjust: 100% !important;
+}
+.campaign-node-detail .node-detail-sub,
+html[data-v28-rework="2"] .campaign-node-detail .node-detail-sub{
+  font-size: 11px !important;
+  line-height: 1.3 !important;
+  transform: none !important;
+  scale: 1 !important;
+  animation: none !important;
+  transition: none !important;
+  -webkit-text-size-adjust: 100% !important;
+  text-size-adjust: 100% !important;
+}
+.campaign-node-detail .node-detail-state,
+.campaign-node-detail .node-detail-state *,
+.campaign-node-detail .node-detail-state img,
+.campaign-node-detail .ddStateIcon,
+html[data-v28-rework="2"] .campaign-node-detail .node-detail-state,
+html[data-v28-rework="2"] .campaign-node-detail .node-detail-state *,
+html[data-v28-rework="2"] .campaign-node-detail .node-detail-state img,
+html[data-v28-rework="2"] .campaign-node-detail .ddStateIcon{
+  animation: none !important;
+  transition: none !important;
+  transform: none !important;
+  scale: 1 !important;
+  filter: none !important;
+}
+.campaign-node-detail .node-detail-state img,
+.campaign-node-detail .ddStateIcon,
+html[data-v28-rework="2"] .campaign-node-detail .node-detail-state img,
+html[data-v28-rework="2"] .campaign-node-detail .ddStateIcon{
+  width: 14px !important;
+  height: 14px !important;
+  max-width: 14px !important;
+  max-height: 14px !important;
+  object-fit: contain !important;
+}
+/* No animation on detail, but do NOT touch border-image sizes */
+.campaign-node-detail,
+.campaign-node-detail *,
+html[data-v28-rework="2"] .campaign-node-detail,
+html[data-v28-rework="2"] .campaign-node-detail *{
+  animation: none !important;
+  transition: none !important;
+}
 
 /* ---- Rules: cards grow with text, no overlap onto the next card ---- */
 html[data-v28-rework="2"] #rulesScreen .menu-list{
