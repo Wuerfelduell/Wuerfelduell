@@ -1,25 +1,35 @@
-/* DiceDuel 28.3.26 — real front-screen scroll + quit/combat/frame polish */
+/* DiceDuel 28.3.27 — rules cards, shop full-card scroll, combat dice stay on screen */
 
-/* ---- Rules: auto-height cards, no text bleed ---- */
+/* ---- Rules: cards grow with text, no overlap onto the next card ---- */
 html[data-v28-rework="2"] #rulesScreen .menu-list{
-  gap:14px!important;
-  align-items:stretch!important;
+  display:grid!important;
+  grid-auto-rows:max-content!important;
+  align-items:start!important;
+  gap:16px!important;
 }
 html[data-v28-rework="2"] #rulesScreen .menu-info-card{
-  height:auto!important;
-  min-height:0!important;
-  overflow:visible!important;
+  height:max-content!important;
+  min-height:min-content!important;
+  max-height:none!important;
+  overflow:hidden!important;
   display:flex!important;
   flex-direction:column!important;
+  justify-content:flex-start!important;
   padding:16px 20px 18px!important;
+  flex-shrink:0!important;
 }
-html[data-v28-rework="2"] #rulesScreen .menu-info-card>strong{flex:0 0 auto}
+html[data-v28-rework="2"] #rulesScreen .menu-info-card>strong{
+  flex:0 0 auto;
+}
 html[data-v28-rework="2"] #rulesScreen .menu-info-card .small{
   display:block!important;
+  position:static!important;
   overflow:visible!important;
   max-height:none!important;
+  height:auto!important;
   white-space:normal!important;
   margin-top:6px!important;
+  flex:0 0 auto!important;
 }
 
 /* ---- Trophy shop chips ---- */
@@ -42,6 +52,10 @@ html[data-v28-rework="2"] #prestigeShopScreen .prestige-active-chip{
 }
 html[data-v28-rework="2"] #prestigeShopScreen .prestige-active-chip b{
   color:#e2b44a;font-size:10px;letter-spacing:.04em;text-transform:uppercase;font-weight:800;
+}
+html[data-v28-rework="2"] #prestigeShopScreen .prestige-shop-list{
+  overflow:visible!important;
+  max-height:none!important;
 }
 
 /* ---- PrimaryBtn: respect .hidden ---- */
@@ -88,9 +102,7 @@ html[data-v28-rework="2"] #quitModal .utility-actions{
   isolation:isolate;
 }
 
-/* ---- Front screens: height frame from phase11 stays; list bodies scroll via JS ----
-   Stats/Settings have no list body → whole card scrolls (override phase11 overflow:hidden).
-   Profiles / Achievements / Shop same: whole card scrollable so content is never clipped. */
+/* ---- Front screens: Settings/Stats/Profile stay as in 26. Shop = whole card. ---- */
 html[data-v28-rework="2"] #statsScreen.screen-card:not(.hidden),
 html[data-v28-rework="2"] #settingsScreen.screen-card:not(.hidden),
 html[data-v28-rework="2"] #profilesScreen.screen-card:not(.hidden),
@@ -108,7 +120,6 @@ html[data-v28-rework="2"] #prestigeShopScreen.screen-card:not(.hidden){
   padding-bottom:16px!important;
 }
 
-/* Rules / Abilities / Changelog keep phase11 frame lock; JS sizes .menu-list / .ability-list / .screen-scroll-body */
 html[data-v28-rework="2"] #rulesScreen.screen-card:not(.hidden),
 html[data-v28-rework="2"] #abilitiesScreen.screen-card:not(.hidden),
 html[data-v28-rework="2"] #changelogScreen.screen-card:not(.hidden){
@@ -204,4 +215,65 @@ html[data-v28-rework="2"] body.playing .player.frame-void::before,
 html[data-v28-rework="2"] body.playing .player.frame-crown::before,
 html[data-v28-rework="2"] body.playing .player.frame-brass::before{
   animation:none!important;
+}
+
+/* ---- Combat: player cards scroll in the top pane, dice/controls stay on screen ---- */
+html[data-v28-rework="2"] body.playing{
+  height:100dvh!important;
+  max-height:100dvh!important;
+  overflow:hidden!important;
+}
+html[data-v28-rework="2"] body.playing .app{
+  height:100dvh!important;
+  max-height:100dvh!important;
+  overflow:hidden!important;
+  display:flex!important;
+  flex-direction:column!important;
+  padding-bottom:max(8px,env(safe-area-inset-bottom))!important;
+}
+html[data-v28-rework="2"] body.playing #game:not(.hidden){
+  flex:1 1 auto!important;
+  min-height:0!important;
+  height:auto!important;
+  max-height:100%!important;
+  display:flex!important;
+  flex-direction:column!important;
+  overflow:hidden!important;
+}
+html[data-v28-rework="2"] body.playing #game>.card:first-child{
+  flex:0 1 auto!important;
+  min-height:0!important;
+  max-height:36dvh!important;
+  overflow-x:hidden!important;
+  overflow-y:auto!important;
+  -webkit-overflow-scrolling:touch;
+  overscroll-behavior:contain;
+}
+html[data-v28-rework="2"] body.playing .rotation-shell,
+html[data-v28-rework="2"] body.playing .rotating-board{
+  flex:1 1 auto!important;
+  min-height:0!important;
+  height:auto!important;
+  max-height:none!important;
+  overflow:hidden!important;
+  display:flex!important;
+  flex-direction:column!important;
+}
+html[data-v28-rework="2"] body.playing #game .turn-card{
+  flex:1 1 auto!important;
+  min-height:0!important;
+  overflow-x:hidden!important;
+  overflow-y:auto!important;
+  -webkit-overflow-scrolling:touch;
+}
+html[data-v28-rework="2"] body.playing #game .dice,
+html[data-v28-rework="2"] body.playing #game .controls{
+  flex-shrink:0!important;
+  position:sticky!important;
+  bottom:0;
+  z-index:6;
+}
+html[data-v28-rework="2"] body.playing #game .controls{
+  padding-top:8px;
+  background:linear-gradient(180deg,transparent,rgba(8,27,56,.92) 28%);
 }
