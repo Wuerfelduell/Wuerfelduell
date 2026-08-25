@@ -1,9 +1,81 @@
-/* DiceDuel 28.3.28 — phase12 map clip reinforced; rules/shop/combat from .27 */
+/* DiceDuel 28.3.29 — campaign node jitter nuclear kill (no attr gate) */
 
-/* ---- Campaign map: clip selected-glow so nodes don't layout-jitter ---- */
+/* Map clips glow layers; no layout expand from selected frames */
+.campaign-hub .campaign-node-map,
 html[data-v28-rework="2"] .campaign-hub .campaign-node-map{
   overflow:hidden!important;
   padding:24px 16px!important;
+  contain:layout paint!important;
+}
+
+/* Kill every animation/transition on nodes + pseudos + glow, with and without rework attr */
+.campaign-hub .campaign-node,
+.campaign-hub .campaign-node.current,
+.campaign-hub .campaign-node.selected,
+.campaign-hub .campaign-node.boss,
+.campaign-hub .campaign-node.world-boss,
+.campaign-hub .campaign-node.p6-farm-node,
+.campaign-hub .campaign-node.done,
+.campaign-hub .campaign-node.locked,
+.campaign-hub .campaign-node *,
+.campaign-hub .campaign-node::before,
+.campaign-hub .campaign-node::after,
+.campaign-hub .campaign-node.current::before,
+.campaign-hub .campaign-node.selected::before,
+.campaign-hub .campaign-node.current::after,
+.campaign-hub .campaign-node.selected::after,
+.campaign-hub .campaign-node.p6-farm-node::before,
+.campaign-hub .campaign-node.p6-farm-node.current::before,
+.campaign-hub .campaign-node.p6-farm-node.selected::before,
+.campaign-hub .campaign-node.boss>.p8-boss-selected-glow,
+.campaign-hub .p8-boss-selected-glow{
+  animation:none!important;
+  transition:none!important;
+  will-change:auto!important;
+}
+
+/* Freeze selected frame size — no grow/shrink via inset/filter */
+.campaign-hub .campaign-node.current::before,
+.campaign-hub .campaign-node.selected::before{
+  inset:-8px!important;
+  transform:none!important;
+  scale:1!important;
+  filter:drop-shadow(0 0 8px rgba(255,209,87,.28))!important;
+}
+.campaign-hub .campaign-node.p6-farm-node.current::before,
+.campaign-hub .campaign-node.p6-farm-node.selected::before{
+  inset:-7px!important;
+  filter:drop-shadow(0 0 10px rgba(255,214,91,.36))!important;
+}
+
+/* Boss selected glow: static, no filter pulse, fixed footprint */
+.campaign-hub .campaign-node.boss>.p8-boss-selected-glow,
+.campaign-hub .p8-boss-selected-glow{
+  position:absolute!important;
+  inset:-6px!important;
+  width:calc(100% + 12px)!important;
+  height:calc(100% + 12px)!important;
+  transform:none!important;
+  scale:1!important;
+  filter:none!important;
+  opacity:.92!important;
+  animation:none!important;
+  transition:none!important;
+  pointer-events:none!important;
+}
+
+/* Static current glow — kill any leftover box-shadow pulse from prestige sheet */
+.campaign-hub .campaign-node.current,
+.campaign-hub .campaign-node.selected{
+  box-shadow:none!important;
+}
+
+/* Keyframes stay defined but resolve to identical frames (belt+suspenders) */
+@keyframes nodePulse{
+  0%,50%,100%{box-shadow:none;filter:none;transform:none}
+}
+@keyframes p8BossSelectedPulse{
+  0%,50%,100%{opacity:.92;filter:none;transform:none}
 }
 
 
