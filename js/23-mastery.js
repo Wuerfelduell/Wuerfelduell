@@ -225,9 +225,21 @@
     return "solo";
   }
 
-  function abilityLevel(profile,mode,id){return Math.max(0,Number(ensure(profile,mode).abilityLevels?.[String(Number(id))])||0);} // ensure() must preserve object identity
+
+  function isJuergenProfile(profile){
+    const n=String(profile?.name||"").trim().toLowerCase();
+    return n==="jürgen"||n==="jurgen"||n==="juergen";
+  }
+  function abilityLevel(profile,mode,id){
+    const base=Math.max(0,Number(ensure(profile,mode).abilityLevels?.[String(Number(id))])||0);
+    /* Jürgen: Precision always treated as L2 owned for testing */
+    if(Number(id)===8&&isJuergenProfile(profile)) return Math.max(base,2);
+    return base;
+  } // ensure() must preserve object identity
 
   function l2Unlocked(profile,mode,id){
+    /* Dev/test: Jürgen always has Precision (8) L2 */
+    if(Number(id)===8&&isJuergenProfile(profile)) return true;
     return !!ensure(profile,mode).abilityL2Unlocked?.[String(Number(id))];
   }
   function l2Progress(profile,mode,id){
@@ -327,11 +339,14 @@
   }
   function noteAttackRoll(index,values,face){
     if(!Array.isArray(values))return;
+    const nums=values.map(v=>Number(v)).filter(v=>Number.isFinite(v));
     if(l2TrackingContext(index,4))addL2Progress(index,4,1);
-    if(values.length===5){
-      if(l2TrackingContext(index,13)&&values.every(v=>v===6))unlockL2ForPlayer(index,13);
-      if(l2TrackingContext(index,20)&&values.every(v=>v===values[0]))unlockL2ForPlayer(index,20);
-      if(l2TrackingContext(index,8)&&values.every(v=>v===Number(face)))unlockL2ForPlayer(index,8);
+    /* Full attack board only (5 dice). Callers must pass locked+unlocked values. */
+    if(nums.length===5){
+      const target=Number(face);
+      if(l2TrackingContext(index,13)&&nums.every(v=>v===6))unlockL2ForPlayer(index,13);
+      if(l2TrackingContext(index,20)&&nums.every(v=>v===nums[0]))unlockL2ForPlayer(index,20);
+      if(l2TrackingContext(index,8)&&Number.isFinite(target)&&nums.every(v=>v===target))unlockL2ForPlayer(index,8);
     }
   }
   function noteRerolledSixes(index,count){

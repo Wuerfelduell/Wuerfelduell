@@ -1083,7 +1083,8 @@
         }
       }
       const attackRollValues=indices.map(i=>dice[i].value);
-      window.WDMastery?.noteAttackRoll?.(current,attackRollValues,attackFace);
+      /* L2 checks need the full board (locked + new), not only unlocked dice */
+      window.WDMastery?.noteAttackRoll?.(current,dice.map(d=>d.value),attackFace);
       if(indices.length===5){
         if(isStraightFive(attackRollValues)) unlockAchievementForPlayer(current,"royal_flush_attack");
         if(isFullHouseFive(attackRollValues)) unlockAchievementForPlayer(current,"full_house_attack");
@@ -1142,7 +1143,7 @@
     markCampaignAbilityUse(current,4);
     addLog(`⚡ ${players[current].name} nutzt Zweite Chance: alle Nicht-Treffer werden neu gewürfelt.`);
     animateIndices(indices,()=>{
-      window.WDMastery?.noteAttackRoll?.(current,indices.map(i=>dice[i].value),attackFace);
+      window.WDMastery?.noteAttackRoll?.(current,dice.map(d=>d.value),attackFace);
       let bonusHits=0;
       indices.forEach(i=>{
         const isNormal=isNormalAttackHitValue(dice[i].value);
