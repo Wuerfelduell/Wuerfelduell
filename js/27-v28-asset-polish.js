@@ -114,9 +114,8 @@
     if(!el) return;
     const subtitle=(el.querySelector(".node-detail-sub")?.textContent||"").toLowerCase();
     const all=(el.textContent||"").toLowerCase();
-    const boss=/\bboss\b|kapitel-boss|welt-boss|final boss|chapter boss|world boss/.test(subtitle);
-    const prestige=/trophy farm|prestige|farm trophy|trophäen/.test(all);
-    /* only toggle when value actually changes — avoids style recalc thrash */
+    const boss=/\bboss\b|kapitel-boss|welt-boss|duo-boss|final boss|chapter boss|world boss/.test(subtitle);
+    const prestige=/trophy farm|prestige|farm trophy|trophäen|mastery xp/.test(all);
     if(el.classList.contains("v28-boss-detail") !== boss){
       el.classList.toggle("v28-boss-detail", boss);
     }
@@ -129,10 +128,14 @@
     for(const id of ["campaignEncounterDetail","duoCampaignEncounterDetail","trioCampaignEncounterDetail"]){
       const el=document.getElementById(id);
       if(!el) continue;
-      const run=()=>classifyCampaignDetail(el);
+      let timer=null;
+      const run=()=>{
+        if(timer) return;
+        timer=setTimeout(()=>{ timer=null; classifyCampaignDetail(el); }, 50);
+      };
       const observer=new MutationObserver(run);
       observer.observe(el,{childList:true,subtree:true,characterData:true});
-      run();
+      classifyCampaignDetail(el);
     }
   }
 
