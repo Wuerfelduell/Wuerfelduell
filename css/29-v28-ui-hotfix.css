@@ -1,4 +1,4 @@
-/* DiceDuel 28.3.31 — revert 30 border-freeze; static selected nodes; text metrics only */
+/* DiceDuel 28.3.32 — combat scroll softer; selected glow PNG off; map layout locked */
 
 /* ============================================================
    MAP NODES — static selected ring (no pulse, fixed inset/filter)
@@ -56,18 +56,20 @@ html[data-v28-rework="2"] .campaign-hub .campaign-node.selected::before{
 .campaign-hub .p8-boss-selected-glow,
 html[data-v28-rework="2"] .campaign-hub .campaign-node.boss > .p8-boss-selected-glow,
 html[data-v28-rework="2"] .campaign-hub .p8-boss-selected-glow{
-  position: absolute !important;
-  inset: -6px !important;
-  width: calc(100% + 12px) !important;
-  height: calc(100% + 12px) !important;
-  transform: none !important;
-  scale: 1 !important;
-  opacity: 0.92 !important;
-  filter: none !important;
+  /* PNG glow caused layout shimmer — use static box-shadow on node instead */
+  display: none !important;
   animation: none !important;
-  transition: none !important;
-  mix-blend-mode: normal !important;
+  opacity: 0 !important;
   pointer-events: none !important;
+}
+
+/* Absorb any absolute glow/frame in the map without growing the grid */
+.campaign-hub .campaign-node-map,
+html[data-v28-rework="2"] .campaign-hub .campaign-node-map,
+.campaign-node-map{
+  overflow: hidden !important;
+  contain: layout paint !important;
+  padding: 22px 14px !important;
 }
 
 .campaign-hub .campaign-node-map,
@@ -358,7 +360,7 @@ html[data-v28-rework="2"] body.playing .player.frame-brass::before{
   animation:none!important;
 }
 
-/* ---- Combat: player cards scroll in the top pane, dice/controls stay on screen ---- */
+/* ---- Combat: softer player area (36dvh was too tight for 3 players) ---- */
 html[data-v28-rework="2"] body.playing{
   height:100dvh!important;
   max-height:100dvh!important;
@@ -381,10 +383,11 @@ html[data-v28-rework="2"] body.playing #game:not(.hidden){
   flex-direction:column!important;
   overflow:hidden!important;
 }
+/* More room for Mario+Seb+Boss; still scrollable if needed */
 html[data-v28-rework="2"] body.playing #game>.card:first-child{
   flex:0 1 auto!important;
   min-height:0!important;
-  max-height:36dvh!important;
+  max-height:50dvh!important;
   overflow-x:hidden!important;
   overflow-y:auto!important;
   -webkit-overflow-scrolling:touch;
