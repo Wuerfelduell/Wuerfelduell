@@ -463,3 +463,31 @@ html[data-v28-rework="2"] body.playing #game .controls{
   padding-top:8px;
   background:linear-gradient(180deg,transparent,rgba(8,27,56,.92) 28%);
 }
+
+
+/* ---- Stats readability: light beige text on dark rows ---- */
+#statsScreen .ability-stat-row,
+#statsScreen .ability-stat-row span,
+#statsScreen .ability-stat-name{
+  color: #f0e6d2 !important;
+}
+#statsScreen .ability-stat-row.header,
+#statsScreen .ability-stat-row.header span{
+  color: #e8d4a8 !important;
+  background: #2a3344 !important;
+}
+#statsScreen .stats-kpi-label{
+  color: #d4c4a8 !important;
+}
+#statsScreen .stats-kpi-value{
+  color: #f5edd9 !important;
+}
+#statsScreen .profile-stats-card,
+#statsScreen .profile-stats-card strong,
+#statsScreen .profile-stats-line,
+#statsScreen .profile-stats-line span{
+  color: #f0e6d2 !important;
+}
+#statsScreen .battle-tag{
+  color: #c8b898 !important;
+}
