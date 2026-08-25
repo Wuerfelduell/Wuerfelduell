@@ -259,8 +259,12 @@
       const text = detail.textContent.toLowerCase();
       const boss = !!node?.classList.contains("boss") || /boss-phase|bossphase|boss phase|final boss|welt-boss|world boss/.test(text);
       const prestige = /trophy farm|prestige|farm trophy|trophäen/.test(text);
-      detail.classList.toggle("v28-boss-detail", boss);
-      detail.classList.toggle("v28-prestige-detail", prestige);
+      if(detail.classList.contains("v28-boss-detail") !== boss){
+        detail.classList.toggle("v28-boss-detail", boss);
+      }
+      if(detail.classList.contains("v28-prestige-detail") !== prestige){
+        detail.classList.toggle("v28-prestige-detail", prestige);
+      }
 
       const state = detail.querySelector(".node-detail-state");
       if(state && !state.dataset.ddStateIcon){

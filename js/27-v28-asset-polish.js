@@ -116,8 +116,13 @@
     const all=(el.textContent||"").toLowerCase();
     const boss=/\bboss\b|kapitel-boss|welt-boss|final boss|chapter boss|world boss/.test(subtitle);
     const prestige=/trophy farm|prestige|farm trophy|trophäen/.test(all);
-    el.classList.toggle("v28-boss-detail",boss);
-    el.classList.toggle("v28-prestige-detail",prestige);
+    /* only toggle when value actually changes — avoids style recalc thrash */
+    if(el.classList.contains("v28-boss-detail") !== boss){
+      el.classList.toggle("v28-boss-detail", boss);
+    }
+    if(el.classList.contains("v28-prestige-detail") !== prestige){
+      el.classList.toggle("v28-prestige-detail", prestige);
+    }
   }
 
   function setupCampaignDetailObservers(){
