@@ -359,7 +359,7 @@ html[data-v28-rework="2"] #changelogScreen:not(.hidden) .screen-scroll-body{
   padding:0!important;
   border:0!important;
   border-radius:0!important;
-  background:url("assets/ui/v28/png/components/close-button.png") center/contain no-repeat!important;
+  background:url("../assets/ui/v28/png/components/close-button.png") center/contain no-repeat!important;
   color:transparent!important;
   font-size:0!important;
   box-shadow:none!important;
@@ -501,7 +501,7 @@ html[data-v28-rework="2"] .v28-ability-trigger{
   padding:0 28px 0 52px!important;
   overflow:visible!important;
   border:17px 26px 17px 42px solid transparent!important;
-  border-image-source:var(--p9-ability-choice, var(--p1-ability-card, url("assets/ui/v28/png/frames/ability-choice-card.png")))!important;
+  border-image-source:var(--p9-ability-choice, var(--p1-ability-card, url("../assets/ui/v28/png/frames/ability-choice-card.png")))!important;
   border-image-slice:84 165 84 230 fill!important;
   border-image-width:17px 26px 17px 42px!important;
   border-image-repeat:stretch!important;
@@ -598,7 +598,7 @@ html[data-v28-rework="2"] .v28-ability-option .v28-check{
   pointer-events:none;
 }
 html[data-v28-rework="2"] .v28-ability-option.selected .v28-check{
-  background:url("assets/ui/v28/png/components/completed-check-medallion.png") center/contain no-repeat!important;
+  background:url("../assets/ui/v28/png/components/completed-check-medallion.png") center/contain no-repeat!important;
   color:transparent!important;
 }
 html[data-v28-rework="2"] .v28-ability-trigger{
@@ -643,7 +643,7 @@ html[data-v28-rework="2"] .v28-ability-picker-close.secondary{
   padding:10px 28px!important;
   border:0!important;
   border-radius:0!important;
-  background:url("assets/ui/v28/png/frames/navy-button-horizontal.png") center/100% 100% no-repeat!important;
+  background:url("../assets/ui/v28/png/frames/navy-button-horizontal.png") center/100% 100% no-repeat!important;
   color:#fff2ca!important;
   box-shadow:none!important;
   font:800 16px/1 Georgia,"Times New Roman",serif!important;
@@ -680,7 +680,7 @@ html[data-v28-rework="2"] #prestigeShopScreen .prestige-active-chip{
   padding:8px 22px!important;
   border:0!important;
   border-radius:0!important;
-  background:url("assets/ui/v28/png/frames/navy-button-horizontal.png") center/100% 100% no-repeat!important;
+  background:url("../assets/ui/v28/png/frames/navy-button-horizontal.png") center/100% 100% no-repeat!important;
   color:#f4ead0!important;
   box-shadow:none!important;
 }
@@ -688,7 +688,7 @@ html[data-v28-rework="2"] #prestigeShopScreen .prestige-item>button:disabled,
 html[data-v28-rework="2"] #prestigeShopScreen .prestige-item.expensive>button:disabled,
 html[data-v28-rework="2"] #prestigeShopScreen .prestige-item.owned>button:disabled{
   color:#102c51!important;
-  background:url("assets/ui/v28/png/frames/gold-special-button.png") center/100% 100% no-repeat!important;
+  background:url("../assets/ui/v28/png/frames/gold-special-button.png") center/100% 100% no-repeat!important;
   opacity:1!important;
   filter:none!important;
 }

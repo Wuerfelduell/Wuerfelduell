@@ -1,0 +1,155 @@
+/* 28.3.52 — marked screenshot pass. Loads last. Paths relative to /css. */
+
+/* ---- Rot: Setup-Ready-Text weg ---- */
+html[data-v28-rework="2"] #setupStatus.setup-status:not(.error),
+html[data-v28-rework="2"] #setup #setupStatus:not(.error){
+  display:none!important;
+}
+
+/* ---- Orange: Setup-Karten nicht aus dem Elfenbein raus ---- */
+html[data-v28-rework="2"] #setup .setup-player{
+  overflow:visible!important;
+  padding:12px 14px 14px!important;
+  min-width:0!important;
+}
+html[data-v28-rework="2"] #setup .setup-player .setup-row,
+html[data-v28-rework="2"] #setup .setup-player .setup-grid{
+  min-width:0!important;
+  max-width:100%!important;
+}
+html[data-v28-rework="2"] #setup .setup-dice-readonly{
+  box-sizing:border-box!important;
+  width:100%!important;
+  max-width:100%!important;
+  min-height:56px!important;
+  padding:10px 16px!important;
+  border:0!important;
+  border-radius:0!important;
+  overflow:hidden!important;
+  white-space:nowrap!important;
+  text-overflow:ellipsis!important;
+  color:#fff2ca!important;
+  background:var(--p4-navy-button, var(--dd-frame-button-navy)) center/100% 100% no-repeat!important;
+  box-shadow:none!important;
+}
+html[data-v28-rework="2"] #setup .v28-ability-trigger{
+  margin-left:18px!important;
+  width:calc(100% - 18px)!important;
+  max-width:calc(100% - 18px)!important;
+}
+
+/* ---- Grün: Cancel in der Ability-Wahl = Navy-Button-Sprite ---- */
+html[data-v28-rework="2"] .v28-ability-picker .v28-ability-picker-close,
+html[data-v28-rework="2"] .v28-ability-picker-close.secondary,
+html[data-v28-rework="2"] button.v28-ability-picker-close{
+  box-sizing:border-box!important;
+  display:block!important;
+  width:calc(100% - 32px)!important;
+  min-height:58px!important;
+  margin:6px 16px 18px!important;
+  padding:12px 28px!important;
+  border:0!important;
+  border-radius:0!important;
+  background:var(--p4-navy-button, var(--dd-frame-button-navy)) center/100% 100% no-repeat!important;
+  color:#fff2ca!important;
+  box-shadow:none!important;
+  filter:none!important;
+  font:800 16px/1 Georgia,"Times New Roman",serif!important;
+}
+
+/* ---- Grün: Shop Active-Chips mit Navy-Button ---- */
+html[data-v28-rework="2"] #prestigeShopScreen .prestige-active-list{
+  display:flex!important;
+  flex-wrap:wrap!important;
+  gap:8px!important;
+}
+html[data-v28-rework="2"] #prestigeShopScreen .prestige-active-chip{
+  display:inline-flex!important;
+  align-items:center!important;
+  gap:7px!important;
+  min-height:44px!important;
+  padding:8px 22px!important;
+  border:0!important;
+  border-radius:0!important;
+  background:var(--p4-navy-button, var(--dd-frame-button-navy)) center/100% 100% no-repeat!important;
+  color:#f4ead0!important;
+  box-shadow:none!important;
+}
+html[data-v28-rework="2"] #prestigeShopScreen .prestige-item>button:disabled{
+  min-height:52px!important;
+  border:0!important;
+  border-radius:0!important;
+  color:#102c51!important;
+  background:var(--p4-gold-button, var(--dd-frame-button-gold)) center/100% 100% no-repeat!important;
+  opacity:1!important;
+  filter:none!important;
+  box-shadow:none!important;
+}
+
+/* ---- Orange: Shop-Text aus dem Goldornament raus ---- */
+html[data-v28-rework="2"] #prestigeShopScreen .prestige-item,
+html[data-v28-rework="2"] #prestigeShopScreen .prestige-item.owned,
+html[data-v28-rework="2"] #prestigeShopScreen .prestige-item.expensive{
+  padding:20px 28px 18px!important;
+}
+html[data-v28-rework="2"] #prestigeShopScreen .prestige-item.owned,
+html[data-v28-rework="2"] #prestigeShopScreen .prestige-item.expensive{
+  padding:26px 32px 22px!important;
+}
+html[data-v28-rework="2"] #prestigeShopScreen .prestige-item-kicker,
+html[data-v28-rework="2"] #prestigeShopScreen .prestige-item-name,
+html[data-v28-rework="2"] #prestigeShopScreen .prestige-item-desc{
+  position:relative!important;
+  left:auto!important;
+  top:auto!important;
+  margin-left:0!important;
+  padding-left:4px!important;
+}
+
+/* ---- Orange+Grün: Achievement-Karten + Owner-Sprites ---- */
+html[data-v28-rework="2"] #achievementsScreen .achievement-card{
+  padding:24px 28px 22px!important;
+}
+html[data-v28-rework="2"] #achievementsScreen .achievement-card.dd-achieved{
+  padding:28px 34px 26px!important;
+}
+html[data-v28-rework="2"] #achievementsScreen .achievement-owners{
+  display:flex!important;
+  flex-wrap:wrap!important;
+  gap:8px!important;
+  margin-top:12px!important;
+}
+html[data-v28-rework="2"] #achievementsScreen .achievement-owner{
+  display:inline-flex!important;
+  align-items:center!important;
+  gap:6px!important;
+  min-height:36px!important;
+  padding:4px 14px 4px 6px!important;
+  border:0!important;
+  border-radius:0!important;
+  background:var(--p4-navy-button, var(--dd-frame-button-navy)) center/100% 100% no-repeat!important;
+  color:#e8eef6!important;
+  box-shadow:none!important;
+}
+html[data-v28-rework="2"] #achievementsScreen .achievement-owner.done{
+  color:#e9ffe9!important;
+}
+html[data-v28-rework="2"] #achievementsScreen .achievement-owner>.dd-inline-icon{
+  display:none!important;
+}
+html[data-v28-rework="2"] #achievementsScreen .achievement-owner-mark{
+  width:22px!important;
+  height:22px!important;
+  object-fit:contain!important;
+  flex:0 0 22px;
+}
+html[data-v28-rework="2"] #achievementsScreen .achievement-owner:not(:has(.achievement-owner-mark))::before{
+  content:"";
+  width:22px;
+  height:22px;
+  flex:0 0 22px;
+  background:url("../assets/ui/v28/png/components/locked-padlock-overlay.png") center/contain no-repeat;
+}
+html[data-v28-rework="2"] #achievementsScreen .achievement-owner.done:not(:has(.achievement-owner-mark))::before{
+  background-image:url("../assets/ui/v28/png/components/completed-check-medallion.png");
+}
