@@ -1,10 +1,11 @@
-/* DiceDuel 28.3.40 — combat lock
-   Dice + action button stay on screen. Player strip and challenge may scroll.
-   Challenge panel LOOK is left alone (phase1 navy card).
-   Long names ellipsis; no sideways overflow.
+/* DiceDuel 28.3.41 — combat lock
+   Player cards get the space. Turn card shrink-wraps (not a giant empty panel).
+   Dice + button stay visible. Dice frames are NOT clipped.
+   Matchbar does not scroll away. Names ellipsis, no sideways overflow.
+   Challenge panel LOOK is left alone.
 */
 
-/* Viewport lock */
+/* Viewport lock so the PAGE does not steal the dice */
 html:has(body.playing),
 body.playing,
 html[data-v28-rework="2"] body.playing{
@@ -43,36 +44,45 @@ html[data-v28-rework="2"] body.playing #game:not(.hidden){
   margin:0!important;
   width:100%!important;
   max-width:100%!important;
-  padding:8px 8px 10px!important;
+  padding:6px 8px 8px!important;
   box-sizing:border-box!important;
 }
 
-/* Top player strip: vertical scroll only, never sideways */
+/* Top card: grows to show opponents. Matchbar stays. Only #players may scroll. */
 body.playing #game>.card:first-child,
 html[data-v28-rework="2"] body.playing #game>.card:first-child{
-  flex:0 1 auto!important;
+  flex:1 1 auto!important;
   min-height:0!important;
   min-width:0!important;
   width:100%!important;
   max-width:100%!important;
-  max-height:min(32dvh,260px)!important;
+  max-height:none!important;
   overflow-x:hidden!important;
-  overflow-y:auto!important;
-  -webkit-overflow-scrolling:touch;
-  overscroll-behavior:contain;
+  overflow-y:hidden!important;
+  display:flex!important;
+  flex-direction:column!important;
   box-sizing:border-box!important;
 }
-body.playing #game.trio-game>.card:first-child,
-html[data-v28-rework="2"] body.playing #game.trio-game>.card:first-child{
-  max-height:min(36dvh,300px)!important;
+body.playing #game>.card:first-child .matchbar,
+html[data-v28-rework="2"] body.playing #game>.card:first-child .matchbar{
+  flex:0 0 auto!important;
+}
+body.playing #game>.card:first-child .encounter-rule-banner,
+html[data-v28-rework="2"] body.playing #game>.card:first-child .encounter-rule-banner{
+  flex:0 0 auto!important;
 }
 body.playing #players,
 body.playing .players,
 html[data-v28-rework="2"] body.playing #players,
 html[data-v28-rework="2"] body.playing .players{
+  flex:1 1 auto!important;
   min-width:0!important;
+  min-height:0!important;
   max-width:100%!important;
   overflow-x:hidden!important;
+  overflow-y:auto!important;
+  -webkit-overflow-scrolling:touch;
+  overscroll-behavior:contain;
   grid-template-columns:repeat(2,minmax(0,1fr))!important;
 }
 
@@ -127,9 +137,7 @@ html[data-v28-rework="2"] body.playing #players .profile-title-badge{
   text-overflow:ellipsis!important;
   white-space:nowrap!important;
 }
-body.playing #players .ability-tag{
-  color:#6e4a14!important;
-}
+body.playing #players .ability-tag{ color:#6e4a14!important; }
 body.playing #players .hp,
 body.playing #players .hp strong,
 html[data-v28-rework="2"] body.playing #players .hp,
@@ -137,7 +145,6 @@ html[data-v28-rework="2"] body.playing #players .hp strong{
   color:#1a3058!important;
 }
 
-/* Boss cards stay light-on-dark */
 body.playing #players .player.v28-boss-player,
 body.playing #players .player.v28-boss-player .player-name,
 body.playing #players .player.v28-boss-player .hp,
@@ -158,45 +165,49 @@ html[data-v28-rework="2"] body.playing #players .player.v28-boss-player .battle-
   color:#e7d7b0!important;
 }
 
-/* Turn column: info/challenge scroll, dice glued to the bottom */
+/* Turn card: shrink-wrap. No giant empty navy. Dice stay in this card. */
 body.playing .rotation-shell,
 body.playing .rotating-board,
 html[data-v28-rework="2"] body.playing .rotation-shell,
 html[data-v28-rework="2"] body.playing .rotating-board{
-  flex:1 1 auto!important;
+  flex:0 0 auto!important;
   min-height:0!important;
   height:auto!important;
   max-height:none!important;
-  overflow:hidden!important;
+  overflow:visible!important;
   display:flex!important;
   flex-direction:column!important;
   min-width:0!important;
 }
 body.playing #game .turn-card,
 html[data-v28-rework="2"] body.playing #game .turn-card{
-  flex:1 1 auto!important;
+  flex:0 0 auto!important;
   min-height:0!important;
   min-width:0!important;
   width:100%!important;
   max-width:100%!important;
+  max-height:none!important;
   overflow-x:hidden!important;
-  overflow-y:hidden!important;
+  overflow-y:visible!important;
   display:flex!important;
   flex-direction:column!important;
   box-sizing:border-box!important;
+  padding-top:4px!important;
+  padding-bottom:8px!important;
 }
 body.playing #game .turn-scroll,
 html[data-v28-rework="2"] body.playing #game .turn-scroll{
-  flex:1 1 auto!important;
+  flex:0 1 auto!important;
   min-height:0!important;
   min-width:0!important;
+  max-height:min(22dvh,170px)!important;
   overflow-x:hidden!important;
   overflow-y:auto!important;
   -webkit-overflow-scrolling:touch;
   overscroll-behavior:contain;
 }
 
-/* Dice + controls never share the scroll */
+/* Dice: never clip the gold frames */
 body.playing #game #dice,
 body.playing #game .dice,
 html[data-v28-rework="2"] body.playing #game #dice,
@@ -206,18 +217,24 @@ html[data-v28-rework="2"] body.playing #game .dice{
   bottom:auto!important;
   top:auto!important;
   z-index:5;
-  margin:6px 0 4px!important;
-  overflow:hidden!important;
+  margin:4px 0 2px!important;
+  padding:6px 2px 4px!important;
+  overflow:visible!important;
   min-width:0!important;
 }
 body.playing #game .dice .die,
 html[data-v28-rework="2"] body.playing #game .dice .die{
-  max-height:min(72px,18vw)!important;
+  max-height:none!important;
+  overflow:visible!important;
+}
+body.playing #game .die.theme-art-die,
+html[data-v28-rework="2"] body.playing #game .die.theme-art-die{
+  overflow:visible!important;
 }
 body.playing #game #campaignTargetBox,
 html[data-v28-rework="2"] body.playing #game #campaignTargetBox{
   flex:0 0 auto!important;
-  max-height:22dvh;
+  max-height:18dvh;
   overflow:auto;
 }
 body.playing #game .controls,
@@ -227,8 +244,8 @@ html[data-v28-rework="2"] body.playing #game .controls{
   bottom:auto!important;
   top:auto!important;
   z-index:6;
-  margin-top:4px!important;
-  padding-top:4px!important;
+  margin-top:2px!important;
+  padding-top:2px!important;
   background:transparent!important;
   display:flex!important;
   flex-wrap:wrap!important;
@@ -237,20 +254,5 @@ html[data-v28-rework="2"] body.playing #game .controls{
 body.playing #game .controls>button,
 html[data-v28-rework="2"] body.playing #game .controls>button{
   flex:1 1 140px;
-  min-height:48px!important;
-}
-
-@media(max-width:540px){
-  body.playing #game>.card:first-child,
-  html[data-v28-rework="2"] body.playing #game>.card:first-child{
-    max-height:min(30dvh,240px)!important;
-  }
-  body.playing #game.trio-game>.card:first-child,
-  html[data-v28-rework="2"] body.playing #game.trio-game>.card:first-child{
-    max-height:min(34dvh,280px)!important;
-  }
-  body.playing #game .dice .die,
-  html[data-v28-rework="2"] body.playing #game .dice .die{
-    max-height:min(64px,16vw)!important;
-  }
+  min-height:46px!important;
 }
