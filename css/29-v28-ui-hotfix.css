@@ -477,11 +477,11 @@ html[data-v28-rework="2"] .v28-ability-picker-list{
   flex:1 1 auto!important;
   min-height:0!important;
   display:grid!important;
-  gap:10px!important;
+  gap:12px!important;
   align-content:start!important;
   overflow-x:visible!important;
   overflow-y:auto!important;
-  padding:8px 10px 16px 40px!important;
+  padding:10px 28px 18px 48px!important;
 }
 html[data-v28-rework="2"] .v28-ability-picker-close{
   flex:0 0 auto!important;
@@ -491,15 +491,14 @@ html[data-v28-rework="2"] .v28-ability-picker-close{
 html[data-v28-rework="2"] .v28-ability-option,
 html[data-v28-rework="2"] .v28-ability-trigger{
   --p11-choice-icon-size:64px;
+  position:relative!important;
   box-sizing:border-box!important;
   width:100%!important;
   min-height:84px!important;
-  height:auto!important;
-  display:grid!important;
-  grid-template-columns:24px minmax(0,1fr) 28px!important;
+  height:84px!important;
+  display:flex!important;
   align-items:center!important;
-  gap:0 8px!important;
-  padding:0 18px 0 8px!important;
+  padding:0 40px 0 52px!important;
   overflow:visible!important;
   border:17px 26px 17px 42px solid transparent!important;
   border-image-source:var(--p9-ability-choice, var(--p1-ability-card, url("assets/ui/v28/png/frames/ability-choice-card.png")))!important;
@@ -520,57 +519,81 @@ html[data-v28-rework="2"] .v28-ability-option.selected{
 html[data-v28-rework="2"] .v28-ability-option .v28-icon,
 html[data-v28-rework="2"] .v28-ability-trigger .dd-trigger-icon,
 html[data-v28-rework="2"] .v28-ability-trigger img{
-  position:relative!important;
+  position:absolute!important;
   left:-44px!important;
-  grid-column:1!important;
+  top:50%!important;
+  transform:translateY(-50%)!important;
   width:var(--p11-choice-icon-size)!important;
   height:var(--p11-choice-icon-size)!important;
   max-width:none!important;
   max-height:none!important;
   margin:0!important;
+  padding:0!important;
   background:none!important;
   border:0!important;
   border-radius:0!important;
   object-fit:contain!important;
   z-index:2;
+  pointer-events:none;
 }
 html[data-v28-rework="2"] .v28-ability-option .v28-icon img{
-  width:var(--p11-choice-icon-size)!important;
-  height:var(--p11-choice-icon-size)!important;
+  position:static!important;
+  transform:none!important;
+  left:auto!important;
+  top:auto!important;
+  width:100%!important;
+  height:100%!important;
   object-fit:contain!important;
 }
 html[data-v28-rework="2"] .v28-ability-option .v28-name,
 html[data-v28-rework="2"] .v28-ability-trigger span{
-  grid-column:2!important;
+  position:relative!important;
+  z-index:1;
   min-width:0!important;
+  flex:1 1 auto!important;
   color:#082a55!important;
   font:800 18px/1.1 Georgia,"Times New Roman",serif!important;
   white-space:nowrap!important;
   overflow:hidden!important;
   text-overflow:ellipsis!important;
   text-align:left!important;
+  padding-right:8px!important;
 }
 html[data-v28-rework="2"] .v28-ability-option .v28-check{
-  grid-column:3!important;
+  position:absolute!important;
+  right:-14px!important;
+  top:50%!important;
+  transform:translateY(-50%)!important;
+  width:36px!important;
+  height:36px!important;
+  margin:0!important;
+  padding:0!important;
+  font-size:0!important;
+  line-height:0!important;
   color:transparent!important;
+  background:none!important;
+  z-index:3;
+  pointer-events:none;
 }
 html[data-v28-rework="2"] .v28-ability-option.selected .v28-check{
-  color:#0a2d5b!important;
+  background:url("assets/ui/v28/png/components/completed-check-medallion.png") center/contain no-repeat!important;
+  color:transparent!important;
 }
 html[data-v28-rework="2"] .v28-ability-trigger{
-  grid-template-columns:24px minmax(0,1fr)!important;
   margin-top:10px!important;
 }
 html[data-v28-rework="2"] .v28-ability-trigger::after{
   display:none!important;
 }
-html[data-v28-rework="2"] .v28-ability-trigger>span{
-  display:contents!important;
+html[data-v28-rework="2"] .v28-ability-trigger.hidden,
+html[data-v28-rework="2"] .ability-choice.hidden + .v28-ability-trigger,
+html[data-v28-rework="2"] .v28-native-ability-select.hidden + .v28-ability-trigger{
+  display:none!important;
 }
 
 html[data-v28-rework="2"] #setup .setup-player{
   overflow:visible!important;
-  padding-left:28px!important;
+  padding-left:36px!important;
 }
 html[data-v28-rework="2"] #setup .ability-choice.v28-native-ability-select{
   position:absolute!important;
@@ -579,5 +602,16 @@ html[data-v28-rework="2"] #setup .ability-choice.v28-native-ability-select{
   opacity:0!important;
   pointer-events:none!important;
 }
+
+/* Duo: Unlock-Kasten weg. Trio: Reward-Kasten weg. Team wird breiter. */
+html[data-v28-rework="2"] #duoCampaignScreen .campaign-top .menu-info-card:nth-child(3),
+html[data-v28-rework="2"] #trioCampaignScreen .campaign-top .menu-info-card:nth-child(3){
+  display:none!important;
+}
+html[data-v28-rework="2"] #duoCampaignScreen .campaign-top,
+html[data-v28-rework="2"] #trioCampaignScreen .campaign-top{
+  grid-template-columns:minmax(0,1fr)!important;
+}
+
 
 
