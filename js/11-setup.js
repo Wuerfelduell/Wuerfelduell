@@ -132,12 +132,9 @@
     if(!profilesValid){
       setupStatus.textContent=saveData.profiles.length?"⚠️ Jeder menschliche Spieler braucht ein eigenes Profil.":(rules.allowBots?"⚠️ Erstelle zuerst ein Profil oder stelle die Plätze auf Bots.":"⚠️ Erstelle zuerst genügend Spielerprofile.");
       setupStatus.className="setup-status error";
-    }else if(!abilitiesReady){
-      setupStatus.textContent=rules.id==="classic"?"Profile/Bots und Sitzplätze stehen. Jetzt noch die Fähigkeiten auswürfeln.":`Profile und Sitzplätze stehen. Jetzt ${rules.startAbilityCount} Startfähigkeiten pro Spieler auswürfeln.`;
-      setupStatus.className="setup-status";
     }else{
-      setupStatus.textContent=`✅ ${rules.name}: Spieler, Sitzplätze und Fähigkeiten bereit.`;
-      setupStatus.className="setup-status";
+      setupStatus.textContent="";
+      setupStatus.className="setup-status hidden";
     }
     startGameBtn.disabled=!(abilitiesReady&&profilesValid);
   }
