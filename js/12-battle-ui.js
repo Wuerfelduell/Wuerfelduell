@@ -65,7 +65,7 @@
       el.id="playerCard"+i;
       el.className="player"+(p.cosmeticFrame?` frame-${p.cosmeticFrame}`:"")+(i===current&&p.hp>0?" active":"")+(p.hp<=0?" dead":"");
       const campaignCompact=campaignMode;
-      el.innerHTML=`<div class="player-name">${escapeHtml(p.name)}${p.battleTag?` <span class="battle-tag">${escapeHtml(p.battleTag)}</span>`:""}</div>${p.cosmeticTitle?`<div class="profile-title-badge">${escapeHtml(p.cosmeticTitle)}</div>`:""}
+      el.innerHTML=`<div class="player-name"><span class="player-name-text">${escapeHtml(p.name)}</span>${p.battleTag?` <span class="battle-tag">${escapeHtml(p.battleTag)}</span>`:""}</div>${p.cosmeticTitle?`<div class="profile-title-badge">${escapeHtml(p.cosmeticTitle)}</div>`:""}
         ${!campaignCompact&&p.botLevel&&p.botLevel!=="human"?`<div class="bot-tag">🤖 ${escapeHtml(BOT_LEVELS[p.botLevel]?.name.replace("Bot · ","")||"Bot")}</div>`:""}
         <div class="hp">❤️ <strong>${Math.max(0,p.hp)}</strong> / ${maxHpForPlayer(p)}</div>
         <div class="ability-tag">⚡ ${escapeHtml(ABILITIES[p.ability].name)}</div>
@@ -92,7 +92,7 @@
     // auch während Würfelanimationen pixelstabil. Local Battle behält die Sitzrotation.
     if(campaignMode){
       rotatingBoard.style.transform="rotate(0deg) scale(1)";
-      rotationShell.style.height="auto";
+      rotationShell.style.removeProperty("height");
       return;
     }
 

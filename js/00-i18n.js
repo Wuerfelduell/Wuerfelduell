@@ -28,6 +28,14 @@
       const tail = raw.slice(raw.indexOf(trimmed) + trimmed.length);
       return lead + pack.exact[trimmed] + tail;
     }
+    try {
+      const stripped = trimmed.replace(/^[^\p{L}\p{N}]+/u, "").trim();
+      if (stripped && stripped !== trimmed && Object.prototype.hasOwnProperty.call(pack.exact || {}, stripped)) {
+        const idx = raw.indexOf(stripped);
+        return raw.slice(0, idx) + pack.exact[stripped] + raw.slice(idx + stripped.length);
+      }
+    } catch (_e) {}
+
 
     // High-frequency dynamic campaign/challenge sentences. These preserve the exact
     // numbers/names instead of relying on word-by-word fallback translation.
@@ -73,12 +81,41 @@
       [/^Beide Spieler müssen ihren Bonus-Draft auslösen UND die ersten (\d+) Duo-Angriffe müssen alternieren\.$/i, m=>`Both players must trigger their bonus draft AND the first ${m[1]} duo attacks must alternate.`],
       [/^Beide Spieler müssen ihren Bonus-Draft auslösen UND beim Sieg darf exakt 1 Duo-Spieler noch leben\.$/i, ()=>`Both players must trigger their bonus draft AND exactly 1 duo player may still be alive when you win.`],
       [/^Die ersten (\d+) Angriffe müssen (.+) als Ziel wählen\.$/i, m=>`The first ${m[1]} attacks must target ${m[2]}.`],
-      [/^(Der|Die) (.+)$/i, m=>`The ${translate(m[2],target)}`],
+      [/^(Der|Die) ([A-ZÄÖÜ][^.]{0,32})$/u, m=>`The ${translate(m[2],target)}`],
       [/^Welt (\d+) · (.+)$/i, m=>`World ${m[1]} · ${m[2]}`],
       [/^(\d+) gegen (\d+)(.*)$/i, m=>`${m[1]} vs ${m[2]}${m[3]||''}`],
-      [/^Nach (.+)$/i, m=>`After ${translate(m[1],target)}`],
+      [/^Nach ([A-ZÄÖÜ][^.]{0,32})$/u, m=>`After ${translate(m[1],target)}`],
       [/^Profil erforderlich\.?$/i, ()=>`Profile required.`],
-      [/^Profile erforderlich\.?$/i, ()=>`Profiles required.`]
+      [/^Profile erforderlich\.?$/i, ()=>`Profiles required.`],
+      [/^Verfügbar: (\d+) XP → danach (\d+) XP$/i, m=>`Available: ${m[1]} XP → then ${m[2]} XP`],
+      [/^Verfügbar: (\d+) XP\.$/i, m=>`Available: ${m[1]} XP.`],
+      [/^(\d+) HP pro Einsatz$/i, m=>`${m[1]} HP per use`],
+      [/^Kosmetik · (.+)$/i, m=>`Cosmetics · ${m[1]}`],
+      [/^Mastery XP: (\d+) XP je Profil beim Erstclear$/i, m=>`Mastery XP: ${m[1]} XP per profile on first clear`],
+      [/^Mastery XP: (\d+) XP je Profil bei Wiederholung$/i, m=>`Mastery XP: ${m[1]} XP per profile on replay`],
+      [/^Mastery XP: (\d+) XP je profile beim first clear$/i, m=>`Mastery XP: ${m[1]} XP per profile on first clear`],
+      [/^Mastery XP: (\d+) XP je profile bei repeat$/i, m=>`Mastery XP: ${m[1]} XP per profile on replay`],
+      [/^reward: 1 trophy je profile beim first clear$/i, ()=>`Reward: 1 trophy per profile on first clear`],
+      [/^reward: first clear bereits abgeschlossen$/i, ()=>`Reward: first clear already completed`],
+      [/^Serie (\d+) · Bonus \+(\d+) pro Treffer$/i, m=>`Streak ${m[1]} · bonus +${m[2]} per hit`],
+      [/^(\d+)\/(\d+) verfügbar$/i, m=>`${m[1]}/${m[2]} available`],
+      [/^(\d+)\/(\d+) Rettungen verfügbar$/i, m=>`${m[1]}/${m[2]} saves available`],
+      [/^(\d+)\/(\d+) pro Basiszug verfügbar$/i, m=>`${m[1]}/${m[2]} available per base turn`],
+      [/^Runden (\d+) · Siege (\d+) · (\d+)%$/i, m=>`Rounds ${m[1]} · wins ${m[2]} · ${m[3]}%`],
+      [/^aktuell (\d+) · Ziel ≥(\d+)$/i, m=>`now ${m[1]} · target ≥${m[2]}`],
+      [/^aktuell (.+)$/i, m=>`now ${m[1]}`],
+      [/^P(\d+) eliminiert (.+)$/i, m=>`P${m[1]} eliminates ${m[2]}`],
+      [/^Alle greifen (.+) an$/i, m=>`Everyone attacks ${m[1]}`],
+      [/^Erster Kill: (.+)$/i, m=>`First kill: ${m[1]}`],
+      [/^Letzter Kill: (.+)$/i, m=>`Last kill: ${m[1]}`],
+      [/^(.+) benutzt$/i, m=>`${translate(m[1],target)} used`],
+      [/^(.+) erfolgreich$/i, m=>`${translate(m[1],target)} successful`],
+      [/^(.+) je Spieler$/i, m=>`${translate(m[1],target)} per player`],
+      [/^Dir fehlen (\d+) XP\.$/i, m=>`You are short ${m[1]} XP.`],
+      [/^Freischaltung: (.+) abschließen\.$/i, m=>`Unlock: complete ${m[1]}.`],
+      [/^Verfügbar: (\d+) XP$/i, m=>`Available: ${m[1]} XP`],
+      [/^⭐ (\d+) XP$/i, m=>`⭐ ${m[1]} XP`],
+      [/^🔒 (\d+) XP$/i, m=>`🔒 ${m[1]} XP`]
     ];
     for (const [re,fn] of patterns) {
       const m = trimmed.match(re);
@@ -91,19 +128,21 @@
     }
 
     let out = raw;
-    const escapeRegex = value => String(value).replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-    const tokenChars = 'A-Za-zÄÖÜäöüß0-9_';
-    for (const [from,to] of (pack.replacements || [])) {
-      if (!out.includes(from)) continue;
-      if (/^[A-Za-zÄÖÜäöüß]+$/.test(from)) {
-        const re = new RegExp(`(^|[^${tokenChars}])(${escapeRegex(from)})(?=$|[^${tokenChars}])`, 'g');
-        out = out.replace(re, (m,prefix)=>prefix+to);
-      } else {
-        out = replaceAllLiteral(out, from, to);
+    const skipWordReplace = trimmed.length > 24 || /[.!?]/.test(trimmed);
+    if (!skipWordReplace) {
+      const escapeRegex = value => String(value).replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+      const tokenChars = 'A-Za-zÄÖÜäöüß0-9_';
+      for (const [from,to] of (pack.replacements || [])) {
+        if (!out.includes(from)) continue;
+        if (/^[A-Za-zÄÖÜäöüß]+$/.test(from)) {
+          const re = new RegExp(`(^|[^${tokenChars}])(${escapeRegex(from)})(?=$|[^${tokenChars}])`, 'g');
+          out = out.replace(re, (m,prefix)=>prefix+to);
+        } else {
+          out = replaceAllLiteral(out, from, to);
+        }
       }
     }
 
-    // No generic der/die/das rewrite: that produced mixed DE/EN copy.
     out = out.replace(/\s{2,}/g, ' ');
 
     return out;

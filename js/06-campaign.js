@@ -1,4 +1,6 @@
   function currentEncounterObject(){return trioCampaignMode?trioEncounterById(trioCampaignEncounterId):(duoCampaignMode?duoEncounterById(duoCampaignEncounterId):campaignEncounterById(campaignEncounterId));}
+  function tx(s){ if(s==null||s==="") return s; try{ return window.t ? window.t(String(s)) : String(s); } catch{ return String(s); } }
+
   function resetEncounterRuntime(encounter){encounterRuntime={ruleIds:[...(ENCOUNTER_SPECIAL_RULES[encounter?.id]||[])],phaseRuleIds:[],phaseTriggered:false,firstStrikeUsed:new Set(),armorUsed:new Set(),turnStarts:{}};}
   function encounterRuleActive(id){return !!campaignMode && (encounterRuntime.ruleIds.includes(id)||encounterRuntime.phaseRuleIds.includes(id));}
   function encounterRuleText(encounter){const ids=ENCOUNTER_SPECIAL_RULES[encounter?.id]||[];return ids.map(id=>SPECIAL_RULES[id]).filter(Boolean);}
@@ -91,7 +93,7 @@
     const need=n=>Math.max(0,Number(n)||0);
     const abilityName=id=>ABILITIES[id]?.name||`Fähigkeit ${id}`;
     let label=c?.text||c?.type||"Aufgabe",value="",failed=false;
-    if(!c)return {label:"Aufgabe",value:"–",failed:false};
+    if(!c)return {label:tx("Aufgabe"),value:"–",failed:false};
     switch(c.type){
       case "win": label=c.progressLabel||"Encounter gewinnen";value="am Ende";break;
       case "base_over_25": label="Basiswurf über 25";value=campaignMetrics.baseOver25?"geschafft":"offen";break;
@@ -143,7 +145,7 @@
       case "team_distinct_abilities_min": {const used=Object.entries(campaignMetrics.abilityUses||{}).filter(([,count])=>(Number(count)||0)>0);label="Verschiedene Fähigkeiten benutzt";value=`${used.length} / ${need(c.value)}`;break;}
       case "attack_hero_pattern": {const pat=Array.isArray(c.pattern)?c.pattern:[],actual=(campaignMetrics.attackSequence||[]).slice(0,pat.length).map(a=>heroes.indexOf(Number(a.hero))+1),m=campaignMatchedPrefix(actual,pat);label="Angriffs-Reihenfolge";value=`${m} / ${pat.length}`;failed=actual.length>m;break;}
     }
-    return {label,value,failed};
+    return {label:tx(label),value:tx(value),failed};
   }
 
   function renderCampaignTaskProgress(){
@@ -159,7 +161,7 @@
     const overall=campaignChallengeRuleMet(encounter.challenge,heroIndex);
     campaignTaskProgress.classList.remove("hidden");
     campaignTaskProgress.title=encounter.challenge.text||"";
-    campaignTaskProgress.innerHTML=`<div class="campaign-task-head"><span>🎯 Aufgabenfortschritt</span><strong>${overall?"ERFÜLLT":"LIVE"}</strong></div>${rows}`;
+    campaignTaskProgress.innerHTML=`<div class="campaign-task-head"><span>${tx("🎯 Aufgabenfortschritt")}</span><strong>${overall?tx("ERFÜLLT"):"LIVE"}</strong></div>${rows}`;
   }
 
   function checkBossPhase(targetIndex,beforeHp,afterHp){

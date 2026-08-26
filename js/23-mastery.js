@@ -612,14 +612,14 @@
     modal.className="mastery-purchase-confirm hidden";
     modal.innerHTML=`
       <div class="mastery-purchase-card">
-        <div class="mastery-kicker">MASTERY KAUF BESTÄTIGEN</div>
+        <div class="mastery-kicker">${window.t ? window.t("MASTERY KAUF BESTÄTIGEN") : "MASTERY KAUF BESTÄTIGEN"}</div>
         <h3></h3>
         <p class="mastery-purchase-desc"></p>
         <div class="mastery-purchase-price"></div>
         <div class="mastery-purchase-balance"></div>
         <div class="mastery-purchase-actions">
-          <button type="button" class="secondary mastery-purchase-cancel">Abbrechen</button>
-          <button type="button" class="good mastery-purchase-buy">Kaufen</button>
+          <button type="button" class="secondary mastery-purchase-cancel">${window.t ? window.t("Abbrechen") : "Abbrechen"}</button>
+          <button type="button" class="good mastery-purchase-buy">${window.t ? window.t("Kaufen") : "Kaufen"}</button>
         </div>
       </div>`;
     document.getElementById("masteryModal")?.appendChild(modal);
@@ -634,10 +634,10 @@
     const state=ensure(profile,transaction.mode);
 
     modal.dataset.tx=JSON.stringify({...transaction,title});
-    modal.querySelector("h3").textContent=title;
-    modal.querySelector(".mastery-purchase-desc").textContent=desc||"";
+    modal.querySelector("h3").textContent=window.t?window.t(title):title;
+    modal.querySelector(".mastery-purchase-desc").textContent=window.t?window.t(desc||""): (desc||"");
     modal.querySelector(".mastery-purchase-price").textContent=`⭐ ${cost} XP`;
-    modal.querySelector(".mastery-purchase-balance").textContent=`Verfügbar: ${state.xp} XP → danach ${Math.max(0,state.xp-cost)} XP`;
+    modal.querySelector(".mastery-purchase-balance").textContent=window.t?window.t(`Verfügbar: ${state.xp} XP → danach ${Math.max(0,state.xp-cost)} XP`):`Verfügbar: ${state.xp} XP → danach ${Math.max(0,state.xp-cost)} XP`;
     modal.classList.remove("hidden");
   }
 
@@ -726,9 +726,10 @@
   }
 
   function showAbilityInfo(title,desc,cost,note){
+    const tr=s=>window.t?window.t(s):s;
     let p=document.getElementById("masteryLockedInfo");
     if(!p){p=document.createElement("div");p.id="masteryLockedInfo";p.className="mastery-locked-info hidden";p.innerHTML=`<div class="mastery-locked-card"><button type="button">✕</button><div class="mastery-kicker">ABILITY MASTERY</div><h3></h3><div class="mastery-locked-cost"></div><p></p><small></small></div>`;document.getElementById("masteryModal")?.appendChild(p);p.querySelector("button").onclick=()=>p.classList.add("hidden");p.onclick=e=>{if(e.target===p)p.classList.add("hidden")};}
-    p.querySelector("h3").textContent=title;p.querySelector(".mastery-locked-cost").textContent=cost;p.querySelector("p").textContent=desc;p.querySelector("small").textContent=note||"";p.classList.remove("hidden");
+    p.querySelector("h3").textContent=tr(title);p.querySelector(".mastery-locked-cost").textContent=tr(cost);p.querySelector("p").textContent=tr(desc);p.querySelector("small").textContent=tr(note||"");p.classList.remove("hidden");
   }
   function renderAbilitySheet(profile){
     const sheet=document.getElementById("masteryAbilitySheet"),ordered=ABILITY_ORDER.map(id=>ABILITY_SHEET.find(a=>a[0]===id)).filter(Boolean),chunks=[];
