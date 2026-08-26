@@ -48,7 +48,7 @@ html[data-v28-rework="2"] body.playing #game:not(.hidden){
   box-sizing:border-box!important;
 }
 
-/* Top card: grows to show opponents. Matchbar stays. NO scroll — glow stays intact. */
+/* Top card: matchbar stays. BIG player-grid may scroll. Individual cards NEVER scroll. */
 body.playing #game>.card:first-child,
 html[data-v28-rework="2"] body.playing #game>.card:first-child{
   flex:1 1 auto!important;
@@ -78,18 +78,21 @@ html[data-v28-rework="2"] body.playing .players{
   min-width:0!important;
   min-height:0!important;
   max-width:100%!important;
-  overflow:visible!important;
-  padding:20px 22px 22px!important;
+  overflow-x:hidden!important;
+  overflow-y:auto!important;
+  -webkit-overflow-scrolling:touch;
+  overscroll-behavior:contain;
+  padding:16px 14px 18px!important;
   gap:10px!important;
   grid-template-columns:repeat(2,minmax(0,1fr))!important;
-  grid-auto-rows:minmax(0,1fr)!important;
-  align-content:stretch;
+  grid-auto-rows:auto!important;
+  align-content:start;
 }
 
 body.playing #players .player,
 html[data-v28-rework="2"] body.playing #players .player{
   min-width:0!important;
-  min-height:0!important;
+  min-height:128px!important;
   max-width:100%!important;
   height:auto!important;
   overflow:visible!important;
@@ -99,12 +102,6 @@ body.playing #players .player.active,
 html[data-v28-rework="2"] body.playing #players .player.active{
   overflow:visible!important;
   z-index:3;
-}
-body.playing #players::-webkit-scrollbar,
-html[data-v28-rework="2"] body.playing #players::-webkit-scrollbar{
-  display:none!important;
-  width:0!important;
-  height:0!important;
 }
 
 /* Name + tags stay inside the card */
