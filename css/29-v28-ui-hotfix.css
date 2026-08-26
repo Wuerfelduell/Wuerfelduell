@@ -498,7 +498,7 @@ html[data-v28-rework="2"] .v28-ability-trigger{
   height:84px!important;
   display:flex!important;
   align-items:center!important;
-  padding:0 28px 0 8px!important;
+  padding:0 28px 0 52px!important;
   overflow:visible!important;
   border:17px 26px 17px 42px solid transparent!important;
   border-image-source:var(--p9-ability-choice, var(--p1-ability-card, url("assets/ui/v28/png/frames/ability-choice-card.png")))!important;
