@@ -76,7 +76,7 @@
       const btn=document.createElement("button");
       btn.type="button";
       btn.className="v28-ability-option"+(String(select.value)===String(opt.value)?" selected":"");
-      btn.innerHTML=`<span class="v28-icon">${ABILITY_ICONS[id]||"✦"}</span><span class="v28-name">${id} · ${escapeText(name)}</span><span class="v28-check">✓</span>`;
+      btn.innerHTML=`<span class="v28-icon">${ABILITY_ICONS[id]||"✦"}</span><span class="v28-name">${id} · ${escapeText(name)}</span><span class="v28-check" aria-hidden="true"></span>`;
       btn.addEventListener("click",()=>{
         select.value=opt.value;
         select.dispatchEvent(new Event("change",{bubbles:true}));
