@@ -402,7 +402,8 @@ html[data-v28-rework="2"] body.playing .player.frame-brass::before{
   animation:none!important;
 }
 
-/* ---- Combat: softer player area (36dvh was too tight for 3 players) ---- */
+/* ---- Combat: layout lives in 30-v28-combat-lock.css (28.3.40).
+   Do not let the turn-card scroll the dice away, and do not pin them sticky. ---- */
 html[data-v28-rework="2"] body.playing{
   height:100dvh!important;
   max-height:100dvh!important;
@@ -419,75 +420,41 @@ html[data-v28-rework="2"] body.playing .app{
 html[data-v28-rework="2"] body.playing #game:not(.hidden){
   flex:1 1 auto!important;
   min-height:0!important;
-  height:auto!important;
-  max-height:100%!important;
-  display:flex!important;
-  flex-direction:column!important;
   overflow:hidden!important;
-}
-/* More room for Mario+Seb+Boss; still scrollable if needed */
-html[data-v28-rework="2"] body.playing #game>.card:first-child{
-  flex:0 1 auto!important;
-  min-height:0!important;
-  max-height:50dvh!important;
-  overflow-x:hidden!important;
-  overflow-y:auto!important;
-  -webkit-overflow-scrolling:touch;
-  overscroll-behavior:contain;
-}
-html[data-v28-rework="2"] body.playing .rotation-shell,
-html[data-v28-rework="2"] body.playing .rotating-board{
-  flex:1 1 auto!important;
-  min-height:0!important;
-  height:auto!important;
-  max-height:none!important;
-  overflow:hidden!important;
-  display:flex!important;
-  flex-direction:column!important;
 }
 html[data-v28-rework="2"] body.playing #game .turn-card{
-  flex:1 1 auto!important;
-  min-height:0!important;
-  overflow-x:hidden!important;
-  overflow-y:auto!important;
-  -webkit-overflow-scrolling:touch;
-}
-html[data-v28-rework="2"] body.playing #game .dice,
-html[data-v28-rework="2"] body.playing #game .controls{
-  flex-shrink:0!important;
-  position:sticky!important;
-  bottom:0;
-  z-index:6;
-}
-html[data-v28-rework="2"] body.playing #game .controls{
-  padding-top:8px;
-  background:linear-gradient(180deg,transparent,rgba(8,27,56,.92) 28%);
+  overflow-y:hidden!important;
 }
 
 
-/* ---- Stats readability: light beige text on dark rows ---- */
-#statsScreen .ability-stat-row,
+/* ---- Stats: dark ink on ivory (beige-on-cream was unreadable) ---- */
+#statsScreen .ability-stat-row{
+  background: rgba(255,246,224,.72) !important;
+  color: #1a140c !important;
+  border: 1px solid rgba(90,60,20,.18) !important;
+}
 #statsScreen .ability-stat-row span,
 #statsScreen .ability-stat-name{
-  color: #f0e6d2 !important;
+  color: #1a140c !important;
 }
 #statsScreen .ability-stat-row.header,
 #statsScreen .ability-stat-row.header span{
-  color: #e8d4a8 !important;
-  background: #2a3344 !important;
+  background: #2a1c10 !important;
+  color: #f5e6c8 !important;
 }
 #statsScreen .stats-kpi-label{
-  color: #d4c4a8 !important;
+  color: #5c3d14 !important;
 }
 #statsScreen .stats-kpi-value{
-  color: #f5edd9 !important;
+  color: #1a140c !important;
 }
 #statsScreen .profile-stats-card,
 #statsScreen .profile-stats-card strong,
 #statsScreen .profile-stats-line,
 #statsScreen .profile-stats-line span{
-  color: #f0e6d2 !important;
+  color: #1a140c !important;
 }
 #statsScreen .battle-tag{
-  color: #c8b898 !important;
+  color: #5c3d14 !important;
 }
+
