@@ -375,7 +375,7 @@ html[data-v28-rework="2"] .v28-ability-picker-panel{
 }
 html[data-v28-rework="2"] .dd-select-options,
 .dd-select-picker .dd-select-options,
-html[data-v28-rework="2"] .v28-ability-picker-options{
+html[data-v28-rework="2"] .v28-ability-picker-list{
   overflow-x:hidden!important;
   overflow-y:auto!important;
   overscroll-behavior:contain!important;
@@ -383,7 +383,7 @@ html[data-v28-rework="2"] .v28-ability-picker-options{
   max-height:calc(78dvh - 150px)!important;
   mask-image:none!important;
   -webkit-mask-image:none!important;
-  padding:6px 8px 22px!important;
+  padding:6px 8px 22px 36px!important;
   box-sizing:border-box!important;
 }
 
@@ -457,4 +457,127 @@ html[data-v28-rework="2"] body.playing #game .turn-card{
 #statsScreen .battle-tag{
   color: #5c3d14 !important;
 }
+
+/* ---- Classic Freie Wahl: same ability-choice cards as campaign ---- */
+html[data-v28-rework="2"] .v28-ability-picker{
+  overflow:hidden!important;
+}
+html[data-v28-rework="2"] .v28-ability-picker-panel{
+  display:flex!important;
+  flex-direction:column!important;
+  max-height:min(78dvh,720px)!important;
+  min-height:0!important;
+  overflow:hidden!important;
+  isolation:isolate!important;
+}
+html[data-v28-rework="2"] .v28-ability-picker-head{
+  flex:0 0 auto!important;
+}
+html[data-v28-rework="2"] .v28-ability-picker-list{
+  flex:1 1 auto!important;
+  min-height:0!important;
+  display:grid!important;
+  gap:10px!important;
+  align-content:start!important;
+  overflow-x:visible!important;
+  overflow-y:auto!important;
+  padding:8px 10px 16px 40px!important;
+}
+html[data-v28-rework="2"] .v28-ability-picker-close{
+  flex:0 0 auto!important;
+  margin:4px 16px 16px!important;
+}
+
+html[data-v28-rework="2"] .v28-ability-option,
+html[data-v28-rework="2"] .v28-ability-trigger{
+  --p11-choice-icon-size:64px;
+  box-sizing:border-box!important;
+  width:100%!important;
+  min-height:84px!important;
+  height:auto!important;
+  display:grid!important;
+  grid-template-columns:24px minmax(0,1fr) 28px!important;
+  align-items:center!important;
+  gap:0 8px!important;
+  padding:0 18px 0 8px!important;
+  overflow:visible!important;
+  border:17px 26px 17px 42px solid transparent!important;
+  border-image-source:var(--p9-ability-choice, var(--p1-ability-card, url("assets/ui/v28/png/frames/ability-choice-card.png")))!important;
+  border-image-slice:84 165 84 230 fill!important;
+  border-image-width:17px 26px 17px 42px!important;
+  border-image-repeat:stretch!important;
+  border-radius:0!important;
+  background:transparent!important;
+  color:#082a55!important;
+  box-shadow:none!important;
+  filter:none!important;
+}
+html[data-v28-rework="2"] .v28-ability-option.selected{
+  background:transparent!important;
+  color:#082a55!important;
+  filter:drop-shadow(0 0 8px rgba(37,117,206,.28))!important;
+}
+html[data-v28-rework="2"] .v28-ability-option .v28-icon,
+html[data-v28-rework="2"] .v28-ability-trigger .dd-trigger-icon,
+html[data-v28-rework="2"] .v28-ability-trigger img{
+  position:relative!important;
+  left:-44px!important;
+  grid-column:1!important;
+  width:var(--p11-choice-icon-size)!important;
+  height:var(--p11-choice-icon-size)!important;
+  max-width:none!important;
+  max-height:none!important;
+  margin:0!important;
+  background:none!important;
+  border:0!important;
+  border-radius:0!important;
+  object-fit:contain!important;
+  z-index:2;
+}
+html[data-v28-rework="2"] .v28-ability-option .v28-icon img{
+  width:var(--p11-choice-icon-size)!important;
+  height:var(--p11-choice-icon-size)!important;
+  object-fit:contain!important;
+}
+html[data-v28-rework="2"] .v28-ability-option .v28-name,
+html[data-v28-rework="2"] .v28-ability-trigger span{
+  grid-column:2!important;
+  min-width:0!important;
+  color:#082a55!important;
+  font:800 18px/1.1 Georgia,"Times New Roman",serif!important;
+  white-space:nowrap!important;
+  overflow:hidden!important;
+  text-overflow:ellipsis!important;
+  text-align:left!important;
+}
+html[data-v28-rework="2"] .v28-ability-option .v28-check{
+  grid-column:3!important;
+  color:transparent!important;
+}
+html[data-v28-rework="2"] .v28-ability-option.selected .v28-check{
+  color:#0a2d5b!important;
+}
+html[data-v28-rework="2"] .v28-ability-trigger{
+  grid-template-columns:24px minmax(0,1fr)!important;
+  margin-top:10px!important;
+}
+html[data-v28-rework="2"] .v28-ability-trigger::after{
+  display:none!important;
+}
+html[data-v28-rework="2"] .v28-ability-trigger>span{
+  display:contents!important;
+}
+
+html[data-v28-rework="2"] #setup .setup-player{
+  overflow:visible!important;
+  padding-left:28px!important;
+}
+html[data-v28-rework="2"] #setup .ability-choice.v28-native-ability-select{
+  position:absolute!important;
+  width:1px!important;
+  height:1px!important;
+  opacity:0!important;
+  pointer-events:none!important;
+}
+
 
