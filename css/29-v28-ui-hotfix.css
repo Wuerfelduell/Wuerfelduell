@@ -615,7 +615,11 @@ html[data-v28-rework="2"] .v28-native-ability-select.hidden + .v28-ability-trigg
 
 html[data-v28-rework="2"] #setup .setup-player{
   overflow:visible!important;
-  padding-left:36px!important;
+  padding:11px 13px 13px!important;
+}
+html[data-v28-rework="2"] #setup .v28-ability-trigger{
+  margin-left:20px!important;
+  width:calc(100% - 20px)!important;
 }
 html[data-v28-rework="2"] #setup .ability-choice.v28-native-ability-select{
   position:absolute!important;
@@ -624,6 +628,105 @@ html[data-v28-rework="2"] #setup .ability-choice.v28-native-ability-select{
   opacity:0!important;
   pointer-events:none!important;
 }
+
+/* Ready-Status im Setup komplett weg. Fehler bleiben. */
+html[data-v28-rework="2"] #setupStatus.setup-status:not(.error){
+  display:none!important;
+}
+
+/* Cancel in der Ability-Wahl: Navy-Button-Sprite */
+html[data-v28-rework="2"] .v28-ability-picker-close,
+html[data-v28-rework="2"] .v28-ability-picker-close.secondary{
+  box-sizing:border-box!important;
+  min-height:56px!important;
+  margin:4px 16px 16px!important;
+  padding:10px 28px!important;
+  border:0!important;
+  border-radius:0!important;
+  background:url("assets/ui/v28/png/frames/navy-button-horizontal.png") center/100% 100% no-repeat!important;
+  color:#fff2ca!important;
+  box-shadow:none!important;
+  font:800 16px/1 Georgia,"Times New Roman",serif!important;
+}
+
+/* Trophy-Shop: Text nicht in den 9-Slice, Chips + Aktiv mit Frame */
+html[data-v28-rework="2"] #prestigeShopScreen .prestige-item,
+html[data-v28-rework="2"] #prestigeShopScreen .prestige-item.owned,
+html[data-v28-rework="2"] #prestigeShopScreen .prestige-item.expensive{
+  padding:22px 26px 18px!important;
+  overflow:visible!important;
+}
+html[data-v28-rework="2"] #prestigeShopScreen .prestige-item-kicker{
+  position:relative!important;
+  left:auto!important;
+  top:auto!important;
+  margin:0 0 4px!important;
+  padding:0!important;
+}
+html[data-v28-rework="2"] #prestigeShopScreen .prestige-item-name{
+  margin:2px 0 0!important;
+  padding:0!important;
+  overflow-wrap:anywhere;
+}
+html[data-v28-rework="2"] #prestigeShopScreen .prestige-item-desc{
+  margin:6px 0 12px!important;
+  padding:0!important;
+}
+html[data-v28-rework="2"] #prestigeShopScreen .prestige-active-chip{
+  display:inline-flex!important;
+  align-items:center!important;
+  gap:7px!important;
+  min-height:42px!important;
+  padding:8px 22px!important;
+  border:0!important;
+  border-radius:0!important;
+  background:url("assets/ui/v28/png/frames/navy-button-horizontal.png") center/100% 100% no-repeat!important;
+  color:#f4ead0!important;
+  box-shadow:none!important;
+}
+html[data-v28-rework="2"] #prestigeShopScreen .prestige-item>button:disabled,
+html[data-v28-rework="2"] #prestigeShopScreen .prestige-item.expensive>button:disabled,
+html[data-v28-rework="2"] #prestigeShopScreen .prestige-item.owned>button:disabled{
+  color:#102c51!important;
+  background:url("assets/ui/v28/png/frames/gold-special-button.png") center/100% 100% no-repeat!important;
+  opacity:1!important;
+  filter:none!important;
+}
+
+/* Achievements: Inhalt im Rahmen, Owner-Chips mit Medaillon */
+html[data-v28-rework="2"] #achievementsScreen .achievement-card{
+  padding:22px 26px 24px!important;
+  overflow:visible!important;
+}
+html[data-v28-rework="2"] #achievementsScreen .achievement-owners{
+  display:flex!important;
+  flex-wrap:wrap!important;
+  gap:8px!important;
+  margin-top:12px!important;
+}
+html[data-v28-rework="2"] #achievementsScreen .achievement-owner{
+  display:inline-flex!important;
+  align-items:center!important;
+  gap:6px!important;
+  min-height:34px!important;
+  padding:4px 12px 4px 6px!important;
+  border:1px solid rgba(214,165,60,.42)!important;
+  border-radius:999px!important;
+  background:rgba(4,22,49,.72)!important;
+  color:#dce5ef!important;
+}
+html[data-v28-rework="2"] #achievementsScreen .achievement-owner.done{
+  border-color:rgba(77,209,125,.55)!important;
+  background:rgba(12,72,44,.42)!important;
+  color:#d8ffe6!important;
+}
+html[data-v28-rework="2"] #achievementsScreen .achievement-owner-mark{
+  width:22px!important;
+  height:22px!important;
+  object-fit:contain!important;
+  flex:0 0 22px;
+}
+
 
 /* Duo: Unlock-Kasten weg. Trio: Reward-Kasten weg. Team wird breiter. */
 html[data-v28-rework="2"] #duoCampaignScreen .campaign-top .menu-info-card:nth-child(3),
