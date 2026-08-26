@@ -520,7 +520,7 @@ html[data-v28-rework="2"] .v28-ability-option .v28-icon,
 html[data-v28-rework="2"] .v28-ability-trigger .dd-trigger-icon,
 html[data-v28-rework="2"] .v28-ability-trigger img{
   position:absolute!important;
-  left:-20px!important;
+  left:-12px!important;
   top:50%!important;
   transform:translateY(-50%)!important;
   width:var(--p11-choice-icon-size)!important;
@@ -545,8 +545,7 @@ html[data-v28-rework="2"] .v28-ability-option .v28-icon img{
   height:100%!important;
   object-fit:contain!important;
 }
-html[data-v28-rework="2"] .v28-ability-option .v28-name,
-html[data-v28-rework="2"] .v28-ability-trigger span{
+html[data-v28-rework="2"] .v28-ability-option .v28-name{
   position:relative!important;
   z-index:1;
   min-width:0!important;
@@ -558,6 +557,29 @@ html[data-v28-rework="2"] .v28-ability-trigger span{
   text-overflow:ellipsis!important;
   text-align:left!important;
   padding-right:8px!important;
+}
+/* Trigger: wrapper span must NOT be the containing block, else icon sits on the text. */
+html[data-v28-rework="2"] .v28-ability-trigger>span{
+  position:static!important;
+  display:flex!important;
+  align-items:center!important;
+  width:100%!important;
+  min-width:0!important;
+  flex:1 1 auto!important;
+  padding:0!important;
+  overflow:hidden!important;
+  transform:none!important;
+}
+html[data-v28-rework="2"] .v28-ability-trigger>span>span{
+  position:static!important;
+  min-width:0!important;
+  flex:1 1 auto!important;
+  color:#082a55!important;
+  font:800 18px/1.1 Georgia,"Times New Roman",serif!important;
+  white-space:nowrap!important;
+  overflow:hidden!important;
+  text-overflow:ellipsis!important;
+  text-align:left!important;
 }
 html[data-v28-rework="2"] .v28-ability-option .v28-check{
   position:absolute!important;
