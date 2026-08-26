@@ -125,26 +125,29 @@ html[data-v28-rework="2"] #prestigeShopScreen .prestige-item-desc{
   max-width:100%!important;
 }
 
-/* ========== Achievements: Karten komplett im Screen, nicht am Rand abschneiden ========== */
+/* ========== Achievements: Goldrahmen nicht am Screen-Rand abschneiden ========== */
+html[data-v28-rework="2"] #achievementsScreen.screen-card,
 html[data-v28-rework="2"] #achievementsScreen.screen-card:not(.hidden){
-  padding-left:16px!important;
-  padding-right:16px!important;
+  clip-path:none!important;
+  padding:12px 18px 20px!important;
+  overflow-x:hidden!important;
+  overflow-y:auto!important;
 }
 html[data-v28-rework="2"] #achievementsScreen .achievement-list{
-  padding-inline:8px!important;
+  display:grid!important;
+  gap:16px!important;
+  padding:4px 4px 12px!important;
   overflow:visible!important;
-  gap:14px!important;
 }
 html[data-v28-rework="2"] #achievementsScreen .achievement-card,
-html[data-v28-rework="2"] #achievementsScreen .achievement-card.dd-achieved{
-  width:100%!important;
-  max-width:100%!important;
-  margin-inline:0!important;
+html[data-v28-rework="2"] #achievementsScreen .achievement-card.dd-achieved,
+html[data-v28-rework="2"] #achievementsScreen .achievement-card.secret-achievement{
   box-sizing:border-box!important;
-  padding:24px 28px 22px!important;
-}
-html[data-v28-rework="2"] #achievementsScreen .achievement-card.dd-achieved{
-  padding:28px 32px 24px!important;
+  min-width:0!important;
+  width:auto!important;
+  max-width:100%!important;
+  margin:0!important;
+  justify-self:stretch!important;
 }
 html[data-v28-rework="2"] #achievementsScreen .achievement-owners{
   display:flex!important;
