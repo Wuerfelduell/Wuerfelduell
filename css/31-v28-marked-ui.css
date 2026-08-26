@@ -125,8 +125,22 @@ html[data-v28-rework="2"] #prestigeShopScreen .prestige-item-desc{
   max-width:100%!important;
 }
 
-/* ========== Achievements: kleine Pills, Medaillon/Schloss — kein gestreckter Navy-Button ========== */
-html[data-v28-rework="2"] #achievementsScreen .achievement-card{
+/* ========== Achievements: Karten komplett im Screen, nicht am Rand abschneiden ========== */
+html[data-v28-rework="2"] #achievementsScreen.screen-card:not(.hidden){
+  padding-left:16px!important;
+  padding-right:16px!important;
+}
+html[data-v28-rework="2"] #achievementsScreen .achievement-list{
+  padding-inline:8px!important;
+  overflow:visible!important;
+  gap:14px!important;
+}
+html[data-v28-rework="2"] #achievementsScreen .achievement-card,
+html[data-v28-rework="2"] #achievementsScreen .achievement-card.dd-achieved{
+  width:100%!important;
+  max-width:100%!important;
+  margin-inline:0!important;
+  box-sizing:border-box!important;
   padding:24px 28px 22px!important;
 }
 html[data-v28-rework="2"] #achievementsScreen .achievement-card.dd-achieved{
