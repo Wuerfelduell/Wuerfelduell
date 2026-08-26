@@ -85,18 +85,21 @@ html[data-v28-rework="2"] body.playing .players{
   padding:16px 14px 18px!important;
   gap:10px!important;
   grid-template-columns:repeat(2,minmax(0,1fr))!important;
-  grid-auto-rows:auto!important;
+  grid-auto-rows:min-content!important;
   align-content:start;
+  align-items:start;
 }
 
 body.playing #players .player,
 html[data-v28-rework="2"] body.playing #players .player{
   min-width:0!important;
-  min-height:0!important;
+  min-height:min-content!important;
   max-width:100%!important;
   height:auto!important;
+  max-height:none!important;
   overflow:visible!important;
   box-sizing:border-box!important;
+  padding-bottom:14px!important;
 }
 body.playing #players .player.active,
 html[data-v28-rework="2"] body.playing #players .player.active{
