@@ -1614,7 +1614,7 @@
 
     const mainTargetKilled=target.hp<=0;
     if(!mainTargetKilled && attackFace===1 && attackHits>0 && hasAbility(1) && hasMasteryUpgrade(1,1,current)){
-      target.masteryPoisonTurns=2;target.masteryPoisonSource=current;window.WDMastery?.notePoison?.(current,attackTarget);addLog(`☠️ 1 for Poison: ${target.name} ist für die nächsten 2 eigenen Züge vergiftet.`);
+      target.masteryPoisonTurns=2;target.masteryPoisonSource=current;window.WDMastery?.notePoison?.(current,attackTarget);addLog(`☠️ 1 for Poison: ${target.name} ist für die nächsten 2 eigenen Züge vergiftet (3 HP/Zug).`);
     }
     if(mainTargetKilled){
       triggerToxicBomb(attackTarget);
@@ -1752,7 +1752,7 @@
 
   function applyMasteryPoisonTurnStart(index){
     const p=players[index];if(!p||p.hp<=0||!(p.masteryPoisonTurns>0))return true;
-    const source=Number(p.masteryPoisonSource);const before=p.hp;const result=applyDamageToPlayer(index,1,"opponent");p.masteryPoisonTurns=Math.max(0,p.masteryPoisonTurns-1);addLog(`☠️ Poison: ${p.name} verliert ${result.lost} HP (${p.masteryPoisonTurns} Tick${p.masteryPoisonTurns===1?"":"s"} übrig).`);
+    const source=Number(p.masteryPoisonSource);const before=p.hp;const result=applyDamageToPlayer(index,3,"opponent");p.masteryPoisonTurns=Math.max(0,p.masteryPoisonTurns-1);addLog(`☠️ Poison: ${p.name} verliert ${result.lost} HP (${p.masteryPoisonTurns} Tick${p.masteryPoisonTurns===1?"":"s"} übrig).`);
     if(p.hp<=0){triggerToxicBomb(index);if(Number.isInteger(source)&&players[source]){if(roundStats[source])roundStats[source].kills++;recordCampaignKill(source,index);if(!maybeTriggerCampaignStandardBonusDraft(source,"kill"))maybeTriggerCampaignKillAbilityDraft(source);}markEliminated(index);addLog(`💀 ${p.name} stirbt am Gift.`);return false;}return true;
   }
 

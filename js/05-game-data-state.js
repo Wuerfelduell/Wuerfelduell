@@ -117,7 +117,7 @@
   const campaignWorldTabs=$("campaignWorldTabs"), campaignWorldDesc=$("campaignWorldDesc");
   const duoCampaignBackBtn=$("duoCampaignBackBtn"), duoCampaignBanner=$("duoCampaignBanner"), duoCampaignWorldTabs=$("duoCampaignWorldTabs"), duoCampaignWorldDesc=$("duoCampaignWorldDesc"), duoTeamSummary=$("duoTeamSummary"), duoProgressSummary=$("duoProgressSummary"), duoUnlockSummary=$("duoUnlockSummary");
   const duoProfile1Select=$("duoProfile1Select"), duoProfile2Select=$("duoProfile2Select"), duoAbility1Select=$("duoAbility1Select"), duoAbility2Select=$("duoAbility2Select"), duoCampaignStartBtn=$("duoCampaignStartBtn"), duoCampaignProfilesBtn=$("duoCampaignProfilesBtn"), duoCampaignPath=$("duoCampaignPath"), duoCampaignEncounterDetail=$("duoCampaignEncounterDetail");
-  const trioCampaignBackBtn=$("trioCampaignBackBtn"), trioCampaignBanner=$("trioCampaignBanner"), trioTeamSummary=$("trioTeamSummary"), trioProgressSummary=$("trioProgressSummary"), trioTrophySummary=$("trioTrophySummary"), trioCampaignPath=$("trioCampaignPath"), trioCampaignEncounterDetail=$("trioCampaignEncounterDetail");
+  const trioCampaignBackBtn=$("trioCampaignBackBtn"), trioCampaignBanner=$("trioCampaignBanner"), trioCampaignWorldTabs=$("trioCampaignWorldTabs"), trioCampaignWorldDesc=$("trioCampaignWorldDesc"), trioTeamSummary=$("trioTeamSummary"), trioProgressSummary=$("trioProgressSummary"), trioTrophySummary=$("trioTrophySummary"), trioCampaignPath=$("trioCampaignPath"), trioCampaignEncounterDetail=$("trioCampaignEncounterDetail");
   const trioProfile1Select=$("trioProfile1Select"), trioProfile2Select=$("trioProfile2Select"), trioProfile3Select=$("trioProfile3Select"), trioAbility1Select=$("trioAbility1Select"), trioAbility2Select=$("trioAbility2Select"), trioAbility3Select=$("trioAbility3Select"), trioCampaignStartBtn=$("trioCampaignStartBtn"), trioCampaignProfilesBtn=$("trioCampaignProfilesBtn");
   const encounterRuleBanner=$("encounterRuleBanner"), campaignTaskProgress=$("campaignTaskProgress");
 
@@ -159,4 +159,4 @@
   let campaignMode=false, duoCampaignMode=false, trioCampaignMode=false, campaignEncounterId=null, campaignProfileId=null, campaignWorldId="house";
   let encounterRuntime={ruleIds:[],phaseRuleIds:[],phaseTriggered:false,firstStrikeUsed:new Set(),armorUsed:new Set(),turnStarts:{}};
   let duoCampaignEncounterId=null, duoProfile1Id=null, duoProfile2Id=null, duoWorldId="covenant";
-  let trioCampaignEncounterId=null, trioProfile1Id=null, trioProfile2Id=null, trioProfile3Id=null;
+  let trioCampaignEncounterId=null, trioProfile1Id=null, trioProfile2Id=null, trioProfile3Id=null, trioWorldId="trinity";

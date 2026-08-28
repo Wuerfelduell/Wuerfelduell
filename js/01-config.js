@@ -13,13 +13,13 @@
   let localModeId="classic";
   function localModeRules(){return LOCAL_MODES[localModeId]||LOCAL_MODES.classic;}
 
-  const GAME_VERSION="28.3.58";
+  const GAME_VERSION="28.4.0";
   const SAVE_KEY="wuerfelduell_save_v1"; // absichtlich stabil: Updates lesen denselben Browser-Save
   // Versionsanzeige immer aus derselben Quelle ziehen, damit Titel/Footer nicht mehr hinterherhinken.
   document.title=`DiceDuel · V${GAME_VERSION}`;
   queueMicrotask(()=>{const footer=document.querySelector(".version-footer");if(footer)footer.textContent=`DICEDUEL · VERSION ${GAME_VERSION}`;});
   const SAVE_SCHEMA_VERSION=9;
-  const CAMPAIGN_VERSION=34;
+  const CAMPAIGN_VERSION=35;
 
   const ACHIEVEMENTS={
     grande:{name:"GRANDE!",desc:"Beende einen Angriff mit allen 5 Würfeln als Treffer.",rewardDice:"gold"},
@@ -141,7 +141,9 @@
     duo_omega_focus_web:["armor_shell"],duo_omega_rush_three:["void_clock"],duo_omega_six_twins:["blood_moon"],duo_omega_pattern_five:["overcharge"],duo_omega_crown_touch:["first_strike"],
     trio_three_tools:["casino_floor"],trio_relay_protocol:["first_strike"],trio_blood_kitchen:["blood_moon"],trio_threefold_verdict:["armor_shell"],
     trio_crossfire_ledger:["armor_shell"],trio_blood_communion:["blood_moon"],trio_focus_chain:["first_strike"],trio_cerberus_gate:["armor_shell"],
-    trio_blood_debt:["blood_moon"],trio_four_before_one:["void_clock"],trio_last_light:["void_clock"],trio_singularity:["armor_shell"]
+    trio_blood_debt:["blood_moon"],trio_four_before_one:["void_clock"],trio_last_light:["void_clock"],trio_singularity:["armor_shell"],
+    trio_helix_marks:["armor_shell"],trio_helix_invoices:["blood_tax"],trio_helix_ledger:["blood_moon"],trio_helix_metronome:["first_strike"],trio_helix_hydra:["armor_shell"],
+    trio_helix_draft:["void_clock"],trio_helix_web:["first_strike"],trio_helix_apex:["armor_shell"]
   };
 
   const BOSS_PHASES={
@@ -158,5 +160,8 @@
     duo_omega_roles_two:{boss:"Delta Seal",threshold:.5,title:"BROKEN SEAL",desc:"Delta Seal heilt 8 HP, erhält Counterattack + High Stakes und aktiviert Blood Tax.",heal:8,ability:21,secondAbility:13,rule:"blood_tax"},
     duo_omega_throne:{boss:"Omega Sovereign",threshold:.5,title:"OMEGA PHASE",desc:"Omega Sovereign heilt 15 HP, wechselt auf High Stakes + Counterattack und startet die Void Clock.",heal:15,ability:13,secondAbility:21,rule:"void_clock"},
     trio_cerberus_gate:{boss:"Cerberus Core",threshold:.5,title:"THREE HEADS, ONE CORE",desc:"Der Core heilt 8 HP, wechselt auf Counterattack + High Stakes und zieht den ganzen Tisch auf Casino Floor.",heal:8,ability:21,secondAbility:13,rule:"casino_floor"},
-    trio_singularity:{boss:"Trinity Singularity",threshold:.5,title:"SINGULARITY OPEN",desc:"Die Singularity heilt 10 HP, wechselt auf High Stakes + Counterattack und aktiviert Overcharge für alle Helden: +2 Rohschaden, danach 1 HP Rückstoß.",heal:10,ability:13,secondAbility:21,rule:"overcharge"}
+    trio_singularity:{boss:"Trinity Singularity",threshold:.5,title:"SINGULARITY OPEN",desc:"Die Singularity heilt 10 HP, wechselt auf High Stakes + Counterattack und aktiviert Overcharge für alle Helden: +2 Rohschaden, danach 1 HP Rückstoß.",heal:10,ability:13,secondAbility:21,rule:"overcharge"},
+    trio_helix_judge:{boss:"Helix Judge",threshold:.5,title:"HELIX DECREE",desc:"Helix Judge heilt 8 HP, wechselt auf Counterattack + High Stakes und legt Armor Shell auf den Tisch.",heal:8,ability:21,secondAbility:13,rule:"armor_shell"},
+    trio_helix_hydra:{boss:"Hydra Heart",threshold:.5,title:"HYDRA PHASE",desc:"Hydra Heart heilt 10 HP, wechselt auf High Stakes + Counterattack und zieht Casino Floor auf den Tisch.",heal:10,ability:13,secondAbility:21,rule:"casino_floor"},
+    trio_helix_apex:{boss:"Helix Apex",threshold:.5,title:"APEX OVERCHARGE",desc:"Helix Apex heilt 12 HP, wechselt auf High Stakes + Counterattack und aktiviert Overcharge für alle Helden.",heal:12,ability:13,secondAbility:21,rule:"overcharge"}
   };

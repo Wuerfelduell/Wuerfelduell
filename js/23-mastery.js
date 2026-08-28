@@ -7,7 +7,7 @@
 
   // [id, name, L1 name, L1 desc, L2 name, L2 desc]
   const ABILITY_SHEET=[
-    [1,"Brutale Einsen","1 for Poison","Erfolgreicher 1er-Angriff: Ziel verliert für die nächsten 2 Runden jeweils 1 HP.","Toxic Bomb","Stirbt ein vergifteter Gegner, verursacht eine einmalige Explosion 3 DMG an allen benachbarten Gegnern."],
+    [1,"Brutale Einsen","1 for Poison","Erfolgreicher 1er-Angriff: Ziel verliert für die nächsten 2 Runden jeweils 3 HP.","Toxic Bomb","Stirbt ein vergifteter Gegner, verursacht eine einmalige Explosion 3 DMG an allen benachbarten Gegnern."],
     [2,"Lifesteal","Borrowing Life","Bei 0 Treffern heilt Lifesteal trotzdem +2 HP.","Overheal","Ein erfolgreicher Lifesteal heilt zusätzlich +3 HP."],
     [3,"Glückswurf","Reroll the Reroll","Die durch Glückswurf neu gewürfelte 1 darf einmal zusätzlich neu gewürfelt werden.","Reroll for Days","Glückswurf kann 2-mal pro Runde triggern."],
     [4,"Second Chance","One More Try","Second Chance darf 2-mal verwendet werden.","Reroll for Damage","Jeder Wurf im aktuellen Turn gibt dem daraus entstehenden Angriff +1 Gesamtschaden. Maximal +5. Nächster Turn startet wieder bei 0."],
@@ -150,10 +150,13 @@
   function modeLabel(mode){return mode==="duo"?"DUO MASTERY":mode==="trio"?"TRIO MASTERY":"SOLO MASTERY";}
   function soloWorldIndex(encounter){return CAMPAIGN_WORLDS.findIndex(w=>w.id===(encounter?.world||"house"));}
   function duoWorldIndex(encounter){return DUO_CAMPAIGN_WORLDS.findIndex(w=>w.id===(encounter?.world||"covenant"));}
+  function trioWorldIndex(encounter){return TRIO_CAMPAIGN_WORLDS.findIndex(w=>w.id===(encounter?.world||"trinity"));}
   function encounterLevelInWorld(encounter,mode){
     if(!encounter) return 0;
     const list=mode==="duo"
       ? DUO_CAMPAIGN_ENCOUNTERS.filter(e=>(e.world||"covenant")===(encounter.world||"covenant"))
+      : mode==="trio"
+        ? TRIO_CAMPAIGN_ENCOUNTERS.filter(e=>(e.world||"trinity")===(encounter.world||"trinity"))
       : CAMPAIGN_ENCOUNTERS.filter(e=>(e.world||"house")===(encounter.world||"house"));
     return list.findIndex(e=>e.id===encounter.id)+1;
   }
@@ -465,6 +468,7 @@
     if(!isBoss)return false;
     if(mode==="solo")return soloWorldIndex(encounter)>=2; // W3+
     if(mode==="duo")return duoWorldIndex(encounter)>=1;   // W2+
+    if(mode==="trio")return trioWorldIndex(encounter)>=1; // W2+
     return false;
   }
 

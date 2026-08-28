@@ -1,10 +1,8 @@
-  const TRIO_CAMPAIGN_WORLD={
-    id:"trinity",
-    name:"Trinity Protocol",
-    shortName:"Trinity",
-    desc:"15 Trio-Encounter für drei echte Profile: Rollen, Fokus-Pässe, gemeinsame Builds, kontrolliertes Risiko und zwei große Bossprüfungen.",
-    finalEncounterId:"trio_singularity"
-  };
+  const TRIO_CAMPAIGN_WORLDS=[
+    {id:"trinity",name:"Trio-Welt 1 · Trinity Protocol",shortName:"Trinity",desc:"15 Trio-Encounter für drei echte Profile: Rollen, Fokus-Pässe, gemeinsame Builds, kontrolliertes Risiko und zwei große Bossprüfungen.",unlockRequires:[],finalEncounterId:"trio_singularity",lockedText:""},
+    {id:"helix",name:"Trio-Welt 2 · Helix Protocol",shortName:"Helix",desc:"15 härtere Trio-Encounter. Jeder muss selbst liefern – Carry wird bestraft. Koordination, Fokus-Pässe und getrennte Rechnungen. Wird nach Trinity Singularity freigeschaltet.",unlockRequires:["trio_singularity"],finalEncounterId:"trio_helix_apex",lockedText:"🔒 Nach Trinity Singularity"}
+  ];
+  const TRIO_CAMPAIGN_WORLD=TRIO_CAMPAIGN_WORLDS[0];
 
   const TRIO_CAMPAIGN_ENCOUNTERS=[
     {
@@ -106,9 +104,10 @@
       ]
     },
     {
-      id:"trio_cerberus_gate",world:"trinity",requires:["trio_three_marks"],title:"10 · Cerberus Gate",subtitle:"Trio-Boss · drei Köpfe · Trophy Farm",
-      desc:"Drei Heads schützen den Cerberus Core. Jeder Spieler muss den Core mindestens einmal markieren und mindestens einen eigenen Finisher setzen. Erst wenn die Köpfe fallen, darf der Core sterben.",
+      id:"trio_cerberus_gate",world:"trinity",requires:["trio_three_marks"],title:"10 · Cerberus Gate",subtitle:"Trio-Boss · Zufalls-Zweitfähigkeit · Trophy Farm",
+      desc:"Drei Heads schützen den Cerberus Core. Jeder startet mit seiner gewählten Fähigkeit plus einer zufälligen Zweitfähigkeit. Die 3. Fähigkeit kommt über den normalen Kill- oder ≤15-HP-Trigger. Jeder muss den Core markieren und selbst finishen; der Core fällt zuletzt.",
       farmTrophy:true,
+      randomStartSecondAbility:true,
       challenge:{type:"all",rules:[{type:"each_hero_attacked_name",name:"Cerberus Core"},{type:"each_hero_kill_min",value:1},{type:"kill_last_name",name:"Cerberus Core"}],text:"Alle drei müssen Cerberus Core angreifen, jeder Spieler braucht mindestens 1 Kill UND Cerberus Core muss zuletzt sterben."},
       enemies:[
         {name:"Cerberus Core",level:"hard",hp:66,ability:22,secondAbility:14},
@@ -171,6 +170,170 @@
         {name:"Seal Red",level:"hard",hp:32,ability:21,secondAbility:24},
         {name:"Seal Blue",level:"hard",hp:32,ability:13,secondAbility:17},
         {name:"Seal Gold",level:"hard",hp:32,ability:19,secondAbility:8}
+      ]
+    },
+
+    {
+      id:"trio_helix_entry",world:"helix",requires:["trio_singularity"],title:"1 · Helix Entry",subtitle:"Härterer Einstieg · alle müssen stehen",
+      desc:"Helix beginnt nicht freundlich. Drei echte Gegner, etwas mehr HP, und die Challenge bleibt klar: Jeder greift an, niemand darf fallen.",
+      challenge:{type:"all",rules:[{type:"each_hero_attack"},{type:"all_heroes_survive"}],text:"Jeder der drei Spieler muss mindestens einmal angreifen UND alle drei müssen überleben."},
+      enemies:[
+        {name:"Helix Spark",level:"hard",hp:24,ability:8},
+        {name:"Helix Rush",level:"hard",hp:24,ability:10},
+        {name:"Helix Tap",level:"hard",hp:24,ability:24}
+      ]
+    },
+    {
+      id:"trio_helix_invoices",world:"helix",requires:["trio_helix_entry"],title:"2 · Three Invoices",subtitle:"Jeder bezahlt selbst",
+      desc:"Keine Team-Summe. Blutpreis und Loaded Dice liegen bereit, Blood Tax macht jede Zahlung teurer. Jeder Spieler muss seine eigene Rechnung von 4 HP begleichen.",
+      grantedThirdAbilities:[11,18,11],
+      challenge:{type:"each_hero_voluntary_hp_min",value:4,text:"Jeder Spieler muss mindestens 4 HP freiwillig für Fähigkeiten bezahlen."},
+      enemies:[
+        {name:"Invoice Red",level:"hard",hp:32,ability:18,secondAbility:19},
+        {name:"Invoice Blue",level:"hard",hp:32,ability:11,secondAbility:23},
+        {name:"Invoice Gold",level:"hard",hp:30,ability:13,secondAbility:2}
+      ]
+    },
+    {
+      id:"trio_helix_pass",world:"helix",requires:["trio_helix_invoices"],title:"3 · Pass the Spindle",subtitle:"Fokus weiterreichen",
+      desc:"Ein Ziel soll wandern. Drei echte Fokus-Pässe, und jeder muss selbst mindestens zweimal angreifen – kein Zuschauen.",
+      challenge:{type:"all",rules:[{type:"focus_passes_min",value:3},{type:"each_hero_attacks_min",value:2}],text:"Erzeugt mindestens 3 Fokus-Pässe UND jeder Spieler muss mindestens 2 eigene Angriffe starten."},
+      enemies:[
+        {name:"Spindle",level:"hard",hp:38,ability:21,secondAbility:19},
+        {name:"Coil Left",level:"hard",hp:30,ability:24,secondAbility:10},
+        {name:"Coil Right",level:"hard",hp:30,ability:13,secondAbility:17}
+      ]
+    },
+    {
+      id:"trio_helix_marks",world:"helix",requires:["trio_helix_pass"],title:"4 · Shared Ledger",subtitle:"Breit markieren · ein gemeinsames Ziel",
+      desc:"Vier Konten. Armor Shell bestraft den ersten Schlag. Jeder muss zwei verschiedene Ziele wählen, mindestens eines davon wirklich zu dritt.",
+      challenge:{type:"all",rules:[{type:"each_hero_targets_min",value:2},{type:"shared_targets_min",value:1}],text:"Jeder Spieler muss mindestens 2 verschiedene Ziele angreifen UND mindestens 1 Gegner muss von allen drei Spielern angegriffen worden sein."},
+      enemies:[
+        {name:"Ledger Helix",level:"hard",hp:32,ability:19,secondAbility:21},
+        {name:"Redline II",level:"hard",hp:26,ability:8},
+        {name:"Bluebook II",level:"hard",hp:26,ability:17},
+        {name:"Margin II",level:"hard",hp:26,ability:10}
+      ]
+    },
+    {
+      id:"trio_helix_judge",world:"helix",requires:["trio_helix_marks"],title:"5 · Helix Judge",subtitle:"Mini-Boss · drei Finisher · Judge zuletzt",
+      desc:"Zwei Wardens halten den Judge. Jeder braucht einen eigenen Kill, und Helix Judge darf erst fallen, wenn die Wardens weg sind.",
+      challenge:{type:"all",rules:[{type:"each_hero_kill_min",value:1},{type:"kill_last_name",name:"Helix Judge"}],text:"Jeder Spieler muss mindestens 1 Kill setzen UND Helix Judge muss zuletzt sterben."},
+      enemies:[
+        {name:"Helix Judge",level:"hard",hp:64,ability:21,secondAbility:14},
+        {name:"Warden Red",level:"hard",hp:30,ability:24,secondAbility:8},
+        {name:"Warden Blue",level:"hard",hp:30,ability:13,secondAbility:17}
+      ]
+    },
+    {
+      id:"trio_helix_counters",world:"helix",requires:["trio_helix_judge"],title:"6 · Counter Spindle",subtitle:"Jeder schlägt selbst zurück",
+      desc:"Alle drei bekommen Counterattack. Die Gegner hauen hart genug, dass jeder seinen eigenen Gegenschlag wirklich auslösen muss.",
+      grantedThirdAbilities:[21,21,21],
+      challenge:{type:"each_hero_ability_use",ability:21,count:1,text:"Jeder der drei Spieler muss Counterattack mindestens einmal auslösen."},
+      enemies:[
+        {name:"Hammer Red",level:"hard",hp:40,ability:8,secondAbility:24},
+        {name:"Hammer Blue",level:"hard",hp:40,ability:1,secondAbility:10},
+        {name:"Hammer Gold",level:"hard",hp:38,ability:13,secondAbility:17}
+      ]
+    },
+    {
+      id:"trio_helix_ledger",world:"helix",requires:["trio_helix_counters"],title:"7 · Blood Helix",subtitle:"Jeder zahlt · jeder heilt",
+      desc:"Blutpreis, Lifesteal, Loaded Dice. Blood Moon hilft, aber Carry ist verboten: Jeder bezahlt 3 HP selbst und holt sich mindestens 4 HP selbst zurück.",
+      grantedThirdAbilities:[11,2,18],
+      challenge:{type:"all",rules:[{type:"each_hero_voluntary_hp_min",value:3},{type:"each_hero_healed_min",value:4}],text:"Jeder Spieler muss mindestens 3 HP freiwillig bezahlen UND mindestens 4 HP selbst heilen."},
+      enemies:[
+        {name:"Vein Red",level:"hard",hp:38,ability:11,secondAbility:23},
+        {name:"Vein White",level:"hard",hp:38,ability:2,secondAbility:9},
+        {name:"Vein Black",level:"hard",hp:36,ability:18,secondAbility:19}
+      ]
+    },
+    {
+      id:"trio_helix_metronome",world:"helix",requires:["trio_helix_ledger"],title:"8 · Helix Metronome",subtitle:"Sechs Angriffe ohne Doppelzug",
+      desc:"First Strike belohnt den Staffelstab. Die ersten sechs Helden-Angriffe dürfen nie zweimal hintereinander vom selben Spieler kommen.",
+      challenge:{type:"attack_heroes_alternate_min",value:6,text:"Die ersten 6 Helden-Angriffe müssen zwischen verschiedenen Spielern alternieren."},
+      enemies:[
+        {name:"Tick",level:"hard",hp:32,ability:10},
+        {name:"Tock",level:"hard",hp:32,ability:24},
+        {name:"Beat",level:"hard",hp:32,ability:17},
+        {name:"Lock",level:"hard",hp:30,ability:21}
+      ]
+    },
+    {
+      id:"trio_helix_finishers",world:"helix",requires:["trio_helix_metronome"],title:"9 · Three Blades",subtitle:"Jeder finish · zwei Ziele pro Kopf",
+      desc:"Drei harte Marken. Jeder muss mindestens zwei verschiedene Ziele angreifen und persönlich mindestens einen Kill setzen.",
+      challenge:{type:"all",rules:[{type:"each_hero_targets_min",value:2},{type:"each_hero_kill_min",value:1}],text:"Jeder Spieler muss mindestens 2 verschiedene Ziele angreifen UND mindestens 1 Kill setzen."},
+      enemies:[
+        {name:"Blade Alpha",level:"hard",hp:36,ability:8,secondAbility:24},
+        {name:"Blade Beta",level:"hard",hp:36,ability:21,secondAbility:19},
+        {name:"Blade Gamma",level:"hard",hp:36,ability:13,secondAbility:14}
+      ]
+    },
+    {
+      id:"trio_helix_hydra",world:"helix",requires:["trio_helix_finishers"],title:"10 · Hydra Gate",subtitle:"Welt-2-Boss · Zufalls-Zweitfähigkeit · Trophy Farm",
+      desc:"Drei Heads schützen das Hydra Heart. Jeder startet mit seiner gewählten Fähigkeit plus einer zufälligen Zweitfähigkeit. Die 3. Fähigkeit kommt über den normalen Kill- oder ≤15-HP-Trigger. Alle drei müssen das Heart markieren, jeder braucht einen eigenen Finisher, und das Heart fällt zuletzt. Phase II zieht Casino Floor auf den Tisch.",
+      farmTrophy:true,
+      randomStartSecondAbility:true,
+      challenge:{type:"all",rules:[{type:"each_hero_attacked_name",name:"Hydra Heart"},{type:"each_hero_kill_min",value:1},{type:"kill_last_name",name:"Hydra Heart"}],text:"Alle drei müssen Hydra Heart angreifen, jeder Spieler braucht mindestens 1 Kill UND Hydra Heart muss zuletzt sterben."},
+      enemies:[
+        {name:"Hydra Heart",level:"hard",hp:80,ability:22,secondAbility:14},
+        {name:"Hydra Red",level:"hard",hp:34,ability:21,secondAbility:24},
+        {name:"Hydra Blue",level:"hard",hp:34,ability:13,secondAbility:17},
+        {name:"Hydra Gold",level:"hard",hp:34,ability:19,secondAbility:8}
+      ]
+    },
+    {
+      id:"trio_helix_draft",world:"helix",requires:["trio_helix_hydra"],title:"11 · Forced Draft",subtitle:"Drei Bonus-Drafts · alle überleben",
+      desc:"Void Clock tickt. Alle drei müssen ihren normalen Bonus-Draft (eigener Kill oder ≤15 HP) auslösen und trotzdem gemeinsam stehen bleiben.",
+      challenge:{type:"all",rules:[{type:"all_heroes_secondary_unlocked"},{type:"all_heroes_survive"}],text:"Alle drei Spieler müssen ihren Bonus-Draft auslösen UND alle drei müssen überleben."},
+      enemies:[
+        {name:"Pressure Helix",level:"hard",hp:44,ability:8,secondAbility:24},
+        {name:"Tax Helix",level:"hard",hp:40,ability:21,secondAbility:19},
+        {name:"Clock Helix",level:"hard",hp:40,ability:13,secondAbility:1}
+      ]
+    },
+    {
+      id:"trio_helix_web",world:"helix",requires:["trio_helix_draft"],title:"12 · Focus Web",subtitle:"6 Pässe · trotzdem breit bleiben",
+      desc:"Ihr müsst dasselbe Ziel oft weiterreichen, dürft euch aber nicht auf einen Gegner versteifen. Sechs Fokus-Pässe, zwei verschiedene Ziele pro Spieler.",
+      challenge:{type:"all",rules:[{type:"focus_passes_min",value:6},{type:"each_hero_targets_min",value:2}],text:"Erzeugt mindestens 6 Fokus-Pässe UND jeder Spieler muss mindestens 2 verschiedene Ziele angreifen."},
+      enemies:[
+        {name:"Web Core",level:"hard",hp:48,ability:21,secondAbility:19},
+        {name:"Web One",level:"hard",hp:32,ability:17},
+        {name:"Web Two",level:"hard",hp:32,ability:24},
+        {name:"Web Three",level:"hard",hp:30,ability:10}
+      ]
+    },
+    {
+      id:"trio_helix_tools",world:"helix",requires:["trio_helix_web"],title:"13 · Four Tools",subtitle:"Vier verschiedene Fähigkeiten",
+      desc:"Zweite Chance, Counterattack und Double Tap liegen zusätzlich auf dem Tisch. Als Team müsst ihr mindestens vier verschiedene Fähigkeiten wirklich benutzen.",
+      grantedThirdAbilities:[4,21,24],
+      challenge:{type:"team_distinct_abilities_min",value:4,text:"Benutzt als Team mindestens 4 verschiedene Fähigkeiten im selben Kampf."},
+      enemies:[
+        {name:"Toolmaster",level:"hard",hp:44,ability:19,secondAbility:13},
+        {name:"Ratchet",level:"hard",hp:40,ability:8,secondAbility:10},
+        {name:"Caliper",level:"hard",hp:40,ability:17,secondAbility:21}
+      ]
+    },
+    {
+      id:"trio_helix_relay",world:"helix",requires:["trio_helix_tools"],title:"14 · Final Spindle",subtitle:"Draft + Rhythmus + drei Finisher",
+      desc:"Letzter Vorraum: Alle drei lösen den Bonus-Draft aus, die ersten sechs Angriffe alternieren, und jeder setzt selbst einen Kill.",
+      challenge:{type:"all",rules:[{type:"all_heroes_secondary_unlocked"},{type:"attack_heroes_alternate_min",value:6},{type:"each_hero_kill_min",value:1}],text:"Alle drei müssen den Bonus-Draft auslösen, die ersten 6 Helden-Angriffe müssen alternieren UND jeder braucht mindestens 1 Kill."},
+      enemies:[
+        {name:"Spindle Prime",level:"hard",hp:50,ability:21,secondAbility:13},
+        {name:"Spindle Left",level:"hard",hp:42,ability:17,secondAbility:24},
+        {name:"Spindle Right",level:"hard",hp:42,ability:1,secondAbility:19}
+      ]
+    },
+    {
+      id:"trio_helix_apex",world:"helix",requires:["trio_helix_relay"],title:"15 · Helix Apex",subtitle:"Trio-Weltboss · Trophy Farm",
+      desc:"Die Apex steht hinter drei Seals. Jeder bekommt eine andere zusätzliche Endgame-Fähigkeit. Alle drei müssen die Apex markieren, jeder braucht einen Kill, drei Fokus-Pässe sind Pflicht, und die Apex fällt zuletzt. Phase II kippt in Overcharge.",
+      grantedThirdAbilities:[14,23,21],
+      farmTrophy:true,
+      challenge:{type:"all",rules:[{type:"each_hero_attacked_name",name:"Helix Apex"},{type:"each_hero_kill_min",value:1},{type:"focus_passes_min",value:3},{type:"kill_last_name",name:"Helix Apex"}],text:"Alle drei müssen Helix Apex angreifen, jeder braucht 1 Kill, mindestens 3 Fokus-Pässe UND Helix Apex muss zuletzt sterben."},
+      enemies:[
+        {name:"Helix Apex",level:"hard",hp:94,ability:22,secondAbility:14},
+        {name:"Seal Crimson",level:"hard",hp:38,ability:21,secondAbility:24},
+        {name:"Seal Azure",level:"hard",hp:38,ability:13,secondAbility:17},
+        {name:"Seal Amber",level:"hard",hp:38,ability:19,secondAbility:8}
       ]
     }
   ];
