@@ -1,7 +1,7 @@
 (() => {
   const MODES=["solo","duo","trio"];
-  const MAX_HP_LEVEL=3;
-  const MAX_DAMAGE_LEVEL=3;
+  const MAX_HP_LEVEL=5;
+  const MAX_DAMAGE_LEVEL=5;
   const MAX_ABILITY_LEVEL=5;
   const ABILITY_ORDER=[1,2,3,4,5,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25];
 
@@ -503,9 +503,9 @@
   function branchData(profile){
     const m=ensure(profile,activeMode);
     return [
-      {key:"hpLevel",icon:"❤️",title:"Vitality",desc:"Mehr Start- und Max-HP.",max:3,level:m.hpLevel,values:["+2 HP","+4 HP","+6 HP"]},
-      {key:"damageLevel",icon:"⚔️",title:"Force",desc:"+1 / +2 / +3 Gesamtschaden pro Angriff.",max:3,level:m.damageLevel,values:["+1 DMG","+2 DMG","+3 DMG"]},
-      {key:"abilityLevel",icon:"✨",title:"Awakening",desc:"Bonus-Draft früher verfügbar.",max:5,level:m.abilityLevel,values:["16 HP","17 HP","18 HP","19 HP","20 HP"]}
+      {key:"hpLevel",icon:"❤️",title:"Vitality",desc:"Mehr Start- und Max-HP.",max:MAX_HP_LEVEL,level:m.hpLevel,values:["+2 HP","+4 HP","+6 HP","+8 HP","+10 HP"]},
+      {key:"damageLevel",icon:"⚔️",title:"Force",desc:"+1 / +2 / +3 / +4 / +5 Gesamtschaden pro Angriff.",max:MAX_DAMAGE_LEVEL,level:m.damageLevel,values:["+1 DMG","+2 DMG","+3 DMG","+4 DMG","+5 DMG"]},
+      {key:"abilityLevel",icon:"✨",title:"Awakening",desc:"Bonus-Draft früher verfügbar.",max:MAX_ABILITY_LEVEL,level:m.abilityLevel,values:["16 HP","17 HP","18 HP","19 HP","20 HP"]}
     ];
   }
   function standardNode(branch,index,xp){
@@ -552,7 +552,7 @@
     if(tx.type==="standard"){
       const branch=String(tx.branch||"");
       const level=Number(tx.level);
-      const caps={hpLevel:3,damageLevel:3,abilityLevel:5};
+      const caps={hpLevel:MAX_HP_LEVEL,damageLevel:MAX_DAMAGE_LEVEL,abilityLevel:MAX_ABILITY_LEVEL};
 
       if(!(branch in caps)||level<1||level>caps[branch]){
         showAbilityInfo(tx.title||"Mastery","Ungültiger Standard-Mastery-Kauf.","⚠️ Kein Kauf","Keine XP abgezogen.");
@@ -650,7 +650,7 @@
     content.innerHTML=branchData(profile).map(branch=>`<section class="mastery-branch branch-${branch.key}"><div class="mastery-branch-head"><span class="mastery-branch-icon">${branch.icon}</span><div><strong>${branch.title}</strong><small>${branch.desc}</small></div><span class="mastery-branch-level">${branch.level}/${branch.max}</span></div><div class="mastery-tree-line">${Array.from({length:branch.max},(_,i)=>standardNode(branch,i,m.xp)).join("")}</div></section>`).join("");
     content.querySelectorAll("[data-standard-branch]").forEach(btn=>btn.addEventListener("click",()=>{
       const p=selectedMasteryProfile();if(!p)return;
-      const state=ensure(p,activeMode),branch=btn.dataset.standardBranch,level=Number(btn.dataset.standardLevel),cost=Number(btn.dataset.standardCost),caps={hpLevel:3,damageLevel:3,abilityLevel:5};
+      const state=ensure(p,activeMode),branch=btn.dataset.standardBranch,level=Number(btn.dataset.standardLevel),cost=Number(btn.dataset.standardCost),caps={hpLevel:MAX_HP_LEVEL,damageLevel:MAX_DAMAGE_LEVEL,abilityLevel:MAX_ABILITY_LEVEL};
       if(!(branch in caps))return;
       if(state[branch]>=level){showAbilityInfo(btn.dataset.standardTitle,"Dieses Standard-Mastery-Level ist bereits aktiv.","✅ Aktiv","Bereits gekauft.");return;}
       if(state[branch]!==level-1){showAbilityInfo(btn.dataset.standardTitle,"Vorherige Stufe zuerst freischalten.",`🔒 ${cost} XP`,"Gesperrt.");return;}

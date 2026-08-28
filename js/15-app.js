@@ -254,7 +254,7 @@
     const rules=localModeRules();
     gameContext={mode:`local-${rules.id}`,returnScreen:"setup",profileId:null,encounterId:null};
     resetTutorialUi();nextRoundPrepBtn.classList.remove("hidden");restartBtn.textContent="Neue Partie";
-    const n=+playerCount.value;if(setupAbilityRolls.some(v=>v==null)) return;if(!rules.allowBots && n>4) return;
+    const n=+playerCount.value;if(setupAbilityRolls.some(v=>v==null)) return;if(!rules.allowBots && n>rules.maxPlayers) return;
 
     clearBotAutomation();
     const seats=Array.from({length:n},(_,i)=>+$("seatChoice"+i).value);

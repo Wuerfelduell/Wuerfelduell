@@ -9,12 +9,12 @@
     classic:{id:"classic",name:"Classic",startHp:25,startAbilityCount:1,bonusThreshold:12,bonusSlot:2,maxPlayers:8,allowBots:true,lastPlaceFreeChoices:1},
     endurance50:{id:"endurance50",name:"Endurance",startHp:50,startAbilityCount:2,bonusThreshold:30,bonusSlot:3,maxPlayers:4,allowBots:false,lastPlaceFreeChoices:2},
     overload75:{id:"overload75",name:"Overload",startHp:75,startAbilityCount:3,bonusThreshold:null,bonusSlot:null,maxPlayers:4,allowBots:false,lastPlaceFreeChoices:1},
-    mayhem:{id:"mayhem",name:"Mayhem",startHp:65,startAbilityCount:2,bonusThreshold:30,bonusSlot:3,maxPlayers:4,allowBots:false,lastPlaceFreeChoices:0,bonusOnKill:true,allMasteryLevel:2}
+    mayhem:{id:"mayhem",name:"Mayhem",startHp:65,startAbilityCount:2,bonusThreshold:30,bonusSlot:3,maxPlayers:6,allowBots:false,lastPlaceFreeChoices:0,bonusOnKill:true,allMasteryLevel:2}
   };
   let localModeId="classic";
   function localModeRules(){return LOCAL_MODES[localModeId]||LOCAL_MODES.classic;}
 
-  const GAME_VERSION="28.5.0";
+  const GAME_VERSION="28.5.1";
   const SAVE_KEY="wuerfelduell_save_v1"; // absichtlich stabil: Updates lesen denselben Browser-Save
   // Versionsanzeige immer aus derselben Quelle ziehen, damit Titel/Footer nicht mehr hinterherhinken.
   document.title=`DiceDuel · V${GAME_VERSION}`;
