@@ -25,14 +25,17 @@
       nextRoundAbilityRolls=Array(players.length).fill(null);
       nextRoundAbilities.innerHTML="";
       nextRoundTitle.textContent=`Runde ${roundNumber+1} · ${rules.name}`;
-      nextRoundInfo.innerHTML=rules.id==="endurance50"
+      const noLastDraw=!(rules.lastPlaceFreeChoices>0);
+      nextRoundInfo.innerHTML=noLastDraw
+        ? `Kein Last-Place-Draw. Jeder bekommt ${rules.startAbilityCount} neue zufällige Startfähigkeiten.`
+        : rules.id==="endurance50"
         ? `<span class="last-place-note">${escapeHtml(players[lastPlaceIndex].name)}</span> startet. Als Letztplatzierter darf diese Person beide Startfähigkeiten frei wählen; alle anderen bekommen 2 neue zufällige Fähigkeiten.`
         : `<span class="last-place-note">${escapeHtml(players[lastPlaceIndex].name)}</span> startet. Als Letztplatzierter darf diese Person genau 1 von 3 Startfähigkeiten frei wählen; die anderen 2 werden beim Start zufällig bestimmt.`;
 
       players.forEach((p,i)=>{
         const box=document.createElement("div");box.className="round-prep-player";
         const title=document.createElement("div");title.innerHTML=`<strong>${escapeHtml(p.name)}</strong>`;box.appendChild(title);
-        const isLast=i===lastPlaceIndex && i!==roundWinnerIndex;
+        const isLast=!noLastDraw && i===lastPlaceIndex && i!==roundWinnerIndex;
         if(isLast){
           const freeCount=Math.min(rules.lastPlaceFreeChoices,rules.startAbilityCount);
           nextRoundAbilityRolls[i]={kind:"SPECIAL_LAST",freeCount};

@@ -435,7 +435,10 @@
 
   function abilityLevelForPlayer(id,index=current){
     try{
-      if(!campaignMode) return 0;
+      if(!campaignMode){
+        const forced=Number(localModeRules?.()?.allMasteryLevel)||0;
+        return forced>0?forced:0;
+      }
       const p=players?.[Number(index)];
       if(!p||p.campaignTeam!=="hero") return 0;
       const profile=getProfile(p.profileId);

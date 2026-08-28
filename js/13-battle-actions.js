@@ -263,9 +263,32 @@
       const slot=campaignBonusDraftSlot(index)||2;
       return {threshold,slot,label:`${slot}. Fähigkeit`};
     }
-    if(localModeId==="classic") return {threshold:SECOND_ABILITY_HP,slot:2,label:"2. Fähigkeit"};
-    if(localModeId==="endurance50") return {threshold:30,slot:3,label:"3. Fähigkeit"};
+    const rules=typeof localModeRules==="function"?localModeRules():null;
+    if(rules?.bonusSlot&&rules.bonusThreshold!=null) return {threshold:rules.bonusThreshold,slot:rules.bonusSlot,label:`${rules.bonusSlot}. Fähigkeit`};
     return null;
+  }
+
+  function maybeTriggerLocalBonusDraft(index,trigger="hp"){
+    if(campaignMode||tutorialMode) return false;
+    const rules=typeof localModeRules==="function"?localModeRules():null;
+    if(!rules?.bonusSlot||rules.bonusThreshold==null) return false;
+    if(trigger==="kill"&&!rules.bonusOnKill) return false;
+    const p=players[index];
+    if(!p||p.hp<=0) return false;
+    const slot=Number(rules.bonusSlot);
+    if(![2,3,4].includes(slot)) return false;
+    if(slot===2&&(p.secondAbility!=null||p.secondAbilityUnlocked)) return false;
+    if(slot===3&&(p.thirdAbility!=null||p.thirdAbilityUnlocked)) return false;
+    if(slot===4&&(p.fourthAbility!=null||p.fourthAbilityUnlocked)) return false;
+    if(slot===2) p.secondAbilityUnlocked=true;
+    else if(slot===3) p.thirdAbilityUnlocked=true;
+    else p.fourthAbilityUnlocked=true;
+    const label=`${slot}. Fähigkeit`;
+    const reason=trigger==="kill"
+      ? `💀 Kill-Bonus: ${p.name} darf die ${label} wählen.`
+      : `❤️ HP-Bonus: ${p.name} fällt auf ${p.hp} HP und darf die ${label} wählen.`;
+    openAbilityDraftForSlot(index,slot,label,reason);
+    return true;
   }
 
   function maybeTriggerSecondAbility(index,oldHp,newHp){
@@ -282,9 +305,8 @@
     const already=rule.slot===3?p.thirdAbilityUnlocked:p.secondAbilityUnlocked;
     if(already) return false;
     if(newHp<=rule.threshold){
-      if(rule.slot===3) p.thirdAbilityUnlocked=true; else p.secondAbilityUnlocked=true;
-      openSecondAbilityDraft(index);
-      return true;
+      if(campaignMode) return maybeTriggerCampaignStandardBonusDraft(index,"hp");
+      return maybeTriggerLocalBonusDraft(index,"hp");
     }
     return false;
   }
@@ -357,6 +379,12 @@
     const label=`${slot}. Fähigkeit`;
     openAbilityDraftForSlot(index,slot,label,`💀 Kill-Bonus: ${p.name} darf nach der Eliminierung eine ${label} wählen.`);
     return true;
+  }
+
+  function maybeTriggerKillBonusDraft(index){
+    if(maybeTriggerCampaignStandardBonusDraft(index,"kill")) return true;
+    if(maybeTriggerLocalBonusDraft(index,"kill")) return true;
+    return maybeTriggerCampaignKillAbilityDraft(index);
   }
 
   function chooseSecondAbility(id){
@@ -502,7 +530,7 @@
         window.WDAttackFx?.kill?.(source,i);
         if(roundStats[source])roundStats[source].kills++;
         recordCampaignKill(source,i);
-        if(!maybeTriggerCampaignStandardBonusDraft(source,"kill"))maybeTriggerCampaignKillAbilityDraft(source);
+        maybeTriggerKillBonusDraft(source);
         markEliminated(i);
         addLog(`💀 ${target.name} fällt durch Toxic Bomb.`);
       }
@@ -1487,7 +1515,7 @@
 
       if(counterKillDraftHeroIndex!=null){
         deferredAttackFinish=true;
-        if(maybeTriggerCampaignStandardBonusDraft(counterKillDraftHeroIndex,"kill") || maybeTriggerCampaignKillAbilityDraft(counterKillDraftHeroIndex)) return;
+        if(maybeTriggerKillBonusDraft(counterKillDraftHeroIndex)) return;
         deferredAttackFinish=false;
       }
 
@@ -1622,7 +1650,7 @@
       if(roundStats[current]) roundStats[current].kills++;
       if(doubleTapApplied) unlockAchievementForPlayer(current,"double_trouble");
       recordCampaignKill(current,attackTarget);
-      if(!maybeTriggerCampaignStandardBonusDraft(current,"kill")) maybeTriggerCampaignKillAbilityDraft(current);
+      maybeTriggerKillBonusDraft(current);
       markEliminated(attackTarget);
       addLog(`💀 ${target.name} ist ausgeschieden.`);
     }
@@ -1653,7 +1681,7 @@
           ricochetTargetKilled=true;
           if(roundStats[current]) roundStats[current].kills++;
           recordCampaignKill(current,ricochetTarget);
-          if(!maybeTriggerCampaignStandardBonusDraft(current,"kill")) maybeTriggerCampaignKillAbilityDraft(current);
+          maybeTriggerKillBonusDraft(current);
           markEliminated(ricochetTarget);
           addLog(`💀 ${players[ricochetTarget].name} ist ausgeschieden.`);
         }
@@ -1680,7 +1708,7 @@
           window.WDAttackFx?.kill?.(current,secondTarget);
           if(roundStats[current])roundStats[current].kills++;
           recordCampaignKill(current,secondTarget);
-          if(!maybeTriggerCampaignStandardBonusDraft(current,"kill"))maybeTriggerCampaignKillAbilityDraft(current);
+          maybeTriggerKillBonusDraft(current);
           markEliminated(secondTarget);
           addLog(`💀 ${players[secondTarget].name} ist durch Chain Reaction ausgeschieden.`);
         }
@@ -1753,7 +1781,7 @@
   function applyMasteryPoisonTurnStart(index){
     const p=players[index];if(!p||p.hp<=0||!(p.masteryPoisonTurns>0))return true;
     const source=Number(p.masteryPoisonSource);const before=p.hp;const result=applyDamageToPlayer(index,3,"opponent");p.masteryPoisonTurns=Math.max(0,p.masteryPoisonTurns-1);addLog(`☠️ Poison: ${p.name} verliert ${result.lost} HP (${p.masteryPoisonTurns} Tick${p.masteryPoisonTurns===1?"":"s"} übrig).`);
-    if(p.hp<=0){triggerToxicBomb(index);if(Number.isInteger(source)&&players[source]){if(roundStats[source])roundStats[source].kills++;recordCampaignKill(source,index);if(!maybeTriggerCampaignStandardBonusDraft(source,"kill"))maybeTriggerCampaignKillAbilityDraft(source);}markEliminated(index);addLog(`💀 ${p.name} stirbt am Gift.`);return false;}return true;
+    if(p.hp<=0){triggerToxicBomb(index);if(Number.isInteger(source)&&players[source]){if(roundStats[source])roundStats[source].kills++;recordCampaignKill(source,index);maybeTriggerKillBonusDraft(source);}markEliminated(index);addLog(`💀 ${p.name} stirbt am Gift.`);return false;}return true;
   }
 
   function advanceTurn(){

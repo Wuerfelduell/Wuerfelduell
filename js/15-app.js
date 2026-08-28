@@ -280,6 +280,7 @@
     logEl.innerHTML="";winnerBox.classList.add("hidden");nextRoundBox.classList.add("hidden");hideFrontScreens();game.classList.remove("hidden","campaign-game","trio-game");document.body.classList.add("playing");window.scrollTo?.(0,0);
 
     if(rules.id==="classic") addLog(`Classic gestartet mit ${n} Teilnehmern. Jeder startet mit ${rules.startHp} Leben.`);
+    else if(rules.id==="mayhem") addLog(`Mayhem gestartet: ${n} Spieler · ${rules.startHp} HP · 2 Startfähigkeiten · alle Masteries L2 · 3. Fähigkeit bei Kill oder ≤30 HP · kein Last-Place-Draw.`);
     else addLog(`${rules.name} gestartet: ${n} lokale Spieler · ${rules.startHp} HP · ${rules.startAbilityCount} Startfähigkeiten · keine Bots.`);
     players.forEach((p,i)=>{
       if(rules.id==="classic"){

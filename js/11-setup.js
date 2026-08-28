@@ -26,6 +26,10 @@
       setupIntro.textContent="Endurance ist ein reiner Local-Modus: nur echte Spielerprofile, keine Bots, maximal 4 Spieler.";
       localModeInfo.innerHTML="50 HP · 2 unterschiedliche zufällige Startfähigkeiten · bei ≤30 HP Auswahl der 3. Fähigkeit · Letztplatzierter wählt zwischen Runden beide Startfähigkeiten frei.";
       rollAbilitiesBtn.textContent="🎲 2 Startfähigkeiten auswürfeln";
+    }else if(rules.id==="mayhem"){
+      setupIntro.textContent="Mayhem ist ein reiner Local-Modus: nur echte Spielerprofile, keine Bots, maximal 4 Spieler. Alle Ability-Masteries laufen auf L2.";
+      localModeInfo.innerHTML="65 HP · 2 zufällige Startfähigkeiten · alle Masteries L2 · 3. Fähigkeit bei Kill oder ≤30 HP · kein Last-Place-Draw.";
+      rollAbilitiesBtn.textContent="🎲 2 Startfähigkeiten auswürfeln";
     }else{
       setupIntro.textContent="Overload ist ein reiner Local-Modus: nur echte Spielerprofile, keine Bots, maximal 4 Spieler.";
       localModeInfo.innerHTML="75 HP · 3 unterschiedliche zufällige Startfähigkeiten · keine weitere HP-Fähigkeit · Letztplatzierter wählt zwischen Runden genau 1 Fähigkeit frei, 2 bleiben random.";
