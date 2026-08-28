@@ -231,15 +231,10 @@
     return n==="jürgen"||n==="jurgen"||n==="juergen";
   }
   function abilityLevel(profile,mode,id){
-    const base=Math.max(0,Number(ensure(profile,mode).abilityLevels?.[String(Number(id))])||0);
-    /* Jürgen: Precision always treated as L2 owned for testing */
-    if(Number(id)===8&&isJuergenProfile(profile)) return Math.max(base,2);
-    return base;
+    return Math.max(0,Number(ensure(profile,mode).abilityLevels?.[String(Number(id))])||0);
   } // ensure() must preserve object identity
 
   function l2Unlocked(profile,mode,id){
-    /* Dev/test: Jürgen always has Precision (8) L2 */
-    if(Number(id)===8&&isJuergenProfile(profile)) return true;
     return !!ensure(profile,mode).abilityL2Unlocked?.[String(Number(id))];
   }
   function l2Progress(profile,mode,id){
@@ -865,6 +860,50 @@
     return granted;
   }
 
+  function findProfileByNames(aliases){
+    const want=(aliases||[]).map(a=>String(a).trim().toLowerCase());
+    return (saveData.profiles||[]).find(p=>want.includes(String(p?.name||"").trim().toLowerCase()))||null;
+  }
+  function stripJuergenPrecisionOnce(){
+    if(!saveData.global||typeof saveData.global!=="object")saveData.global={};
+    if(saveData.global.juergenPrecisionUnbought)return false;
+    (saveData.profiles||[]).forEach(p=>{
+      if(!isJuergenProfile(p))return;
+      ensureModes(p);
+      for(const mode of MODES){
+        const state=ensure(p,mode);
+        if(state.abilityLevels&&Object.prototype.hasOwnProperty.call(state.abilityLevels,"8"))delete state.abilityLevels["8"];
+        if(state.abilityL2Unlocked&&Object.prototype.hasOwnProperty.call(state.abilityL2Unlocked,"8"))delete state.abilityL2Unlocked["8"];
+        if(state.abilityL2Progress&&Object.prototype.hasOwnProperty.call(state.abilityL2Progress,"8"))delete state.abilityL2Progress["8"];
+      }
+    });
+    saveData.global.juergenPrecisionUnbought=true;
+    return true;
+  }
+  function applyTrioThreefoldVerdictRetro(){
+    if(!saveData.global||typeof saveData.global!=="object")saveData.global={};
+    if(saveData.global.trioThreefoldVerdictRetro)return false;
+    const seb=findProfileByNames(["seb"]);
+    const hoada=findProfileByNames(["hoada"]);
+    const juergen=findProfileByNames(["jürgen","jurgen","juergen"]);
+    if(!seb||!hoada||!juergen||new Set([seb.id,hoada.id,juergen.id]).size!==3)return false;
+    if(typeof trioCampaignProgress!=="function")return false;
+    const encounter=(typeof trioEncounterById==="function"&&trioEncounterById("trio_threefold_verdict"))||{id:"trio_threefold_verdict"};
+    const progress=trioCampaignProgress(seb,hoada,juergen,true);
+    if(!progress)return false;
+    let newlyCompleted=false;
+    if(!progress.completedEncounters.includes("trio_threefold_verdict")){
+      progress.completedEncounters.push("trio_threefold_verdict");
+      newlyCompleted=true;
+    }
+    if(newlyCompleted){
+      if(typeof awardTrioCampaignTrophies==="function")awardTrioCampaignTrophies(seb,hoada,juergen,encounter,true);
+      [seb,hoada,juergen].forEach(p=>awardXp(p,"trio",encounter,true));
+    }
+    saveData.global.trioThreefoldVerdictRetro=true;
+    return true;
+  }
+
   function init(){
     try{
       let migrated=false;
@@ -879,6 +918,8 @@
           if(!before)migrated=true;
         }
       });
+      if(applyTrioThreefoldVerdictRetro())migrated=true;
+      if(stripJuergenPrecisionOnce())migrated=true;
       if(migrated)saveGameData();
     }catch(_err){}
     const masteryRoot=document.getElementById("masteryModal");

@@ -64,6 +64,18 @@
   function campaignHeroIndices(){
     return players.map((p,i)=>p?.campaignTeam==="hero"?i:null).filter(i=>i!=null);
   }
+  function campaignHeroFinisherSlots(){
+    const heroes=campaignHeroIndices();
+    const slots=[];
+    (campaignMetrics.killHeroes||[]).forEach(h=>{
+      if(h==null||h==="")return;
+      const n=Number(h);
+      if(!Number.isInteger(n))return;
+      const slot=heroes.indexOf(n)+1;
+      if(slot>0)slots.push(slot);
+    });
+    return slots;
+  }
 
   function campaignAttackSwitchesFor(heroIndex){
     const seq=(campaignMetrics.attackSequence||[]).filter(a=>String(a.hero)===String(heroIndex));
@@ -140,7 +152,7 @@
       case "attack_heroes_alternate_min": {const n=need(c.value||2),seq=(campaignMetrics.attackSequence||[]).slice(0,n),good=seq.every((a,i)=>i===0||a.hero!==seq[i-1].hero);label="Abwechselnde Team-Angriffe";value=`${Math.min(seq.length,n)} / ${n}`;failed=seq.length>1&&!good;break;}
       case "focus_passes_min": label="Fokus-Pässe";value=`${campaignFocusPasses()} / ${need(c.value)}`;break;
       case "hero_kill_name": {const wanted=heroes[(c.hero||1)-1],idx=(campaignMetrics.killOrder||[]).indexOf(c.name),killer=idx>=0?campaignMetrics.killHeroes?.[idx]:null;label=`P${c.hero||1} eliminiert ${c.name}`;value=idx<0?"offen":String(killer)===String(wanted)?"geschafft":"falscher Spieler";failed=idx>=0&&String(killer)!==String(wanted);break;}
-      case "kill_hero_pattern": {const pat=c.pattern||[],actual=(campaignMetrics.killHeroes||[]).slice(0,pat.length).map(h=>heroes.indexOf(Number.isInteger(h)?h:+h)+1),m=campaignMatchedPrefix(actual,pat);label="Finisher-Muster";value=`${m} / ${pat.length}`;failed=actual.length>m;break;}
+      case "kill_hero_pattern": {const pat=c.pattern||[],actual=campaignHeroFinisherSlots().slice(0,pat.length),m=campaignMatchedPrefix(actual,pat);label="Finisher-Muster";value=`${m} / ${pat.length}`;failed=actual.length>m;break;}
       case "each_hero_attacked_name": {const seq=campaignMetrics.attackSequence||[];label=`Alle greifen ${c.name} an`;value=heroes.map((i,n)=>`P${n+1} ${seq.some(a=>String(a.hero)===String(i)&&a.name===c.name)?"✓":"–"}`).join(" · ");break;}
       case "team_distinct_abilities_min": {const used=Object.entries(campaignMetrics.abilityUses||{}).filter(([,count])=>(Number(count)||0)>0);label="Verschiedene Fähigkeiten benutzt";value=`${used.length} / ${need(c.value)}`;break;}
       case "attack_hero_pattern": {const pat=Array.isArray(c.pattern)?c.pattern:[],actual=(campaignMetrics.attackSequence||[]).slice(0,pat.length).map(a=>heroes.indexOf(Number(a.hero))+1),m=campaignMatchedPrefix(actual,pat);label="Angriffs-Reihenfolge";value=`${m} / ${pat.length}`;failed=actual.length>m;break;}
@@ -831,7 +843,7 @@
     if(c.type==="attack_heroes_alternate_min"){const need=c.value||2,seq=(campaignMetrics.attackSequence||[]).slice(0,need);return seq.length>=need&&seq.every((a,i)=>i===0||a.hero!==seq[i-1].hero);}
     if(c.type==="focus_passes_min"){const seq=campaignMetrics.attackSequence||[];let n=0;for(let i=1;i<seq.length;i++)if(seq[i].hero!==seq[i-1].hero&&seq[i].target===seq[i-1].target)n++;return n>=(c.value||0);}
     if(c.type==="hero_kill_name"){const ids=players.map((p,i)=>p.campaignTeam==="hero"?String(i):null).filter(Boolean),wanted=ids[(c.hero||1)-1];if(!wanted)return false;return (campaignMetrics.killOrder||[]).some((name,i)=>name===c.name&&String(campaignMetrics.killHeroes?.[i])===wanted);}
-    if(c.type==="kill_hero_pattern"){const ids=players.map((p,i)=>p.campaignTeam==="hero"?String(i):null).filter(Boolean),pat=Array.isArray(c.pattern)?c.pattern:[],kills=(campaignMetrics.killHeroes||[]).slice(0,pat.length).map(h=>ids.indexOf(String(h))+1);return pat.length>0&&kills.length>=pat.length&&pat.every((v,i)=>kills[i]===v);}
+    if(c.type==="kill_hero_pattern"){const pat=Array.isArray(c.pattern)?c.pattern:[],actual=campaignHeroFinisherSlots();return pat.length>0&&actual.length>=pat.length&&pat.every((v,i)=>actual[i]===v);}
     if(c.type==="each_hero_attacked_name"){const ids=players.map((p,i)=>p.campaignTeam==="hero"?String(i):null).filter(Boolean),seq=campaignMetrics.attackSequence||[];return ids.length>=2&&ids.every(id=>seq.some(a=>String(a.hero)===id&&a.name===c.name));}
     if(c.type==="team_distinct_abilities_min"){const count=Object.values(campaignMetrics.abilityUses||{}).filter(v=>(Number(v)||0)>0).length;return count>=(c.value||0);}
     if(c.type==="attack_hero_pattern"){const ids=players.map((p,i)=>p.campaignTeam==="hero"?String(i):null).filter(Boolean),pat=Array.isArray(c.pattern)?c.pattern:[],actual=(campaignMetrics.attackSequence||[]).slice(0,pat.length).map(a=>ids.indexOf(String(a.hero))+1);return pat.length>0&&actual.length>=pat.length&&pat.every((v,i)=>actual[i]===v);}
