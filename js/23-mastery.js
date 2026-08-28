@@ -693,7 +693,7 @@
     return `${mode==="duo"?"Duo":"Solo"} W${wi+1}L${lv}`;
   }
   function abilityGateReached(mode,id){
-    if(mode==="trio") return false;
+    if(mode==="trio") return true;
     const gate=abilityGate(mode,id);if(!gate)return false;
     return completedSetForMode(mode,profilesForMode(mode)).has(gate.id);
   }
