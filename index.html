@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="de" class="wd-booting">
 <head>
-  <meta name="wd-build" content="28.5.3" />
+  <meta name="wd-build" content="28.6.0" />
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <meta name="theme-color" content="#e8f2f6" />
@@ -11,7 +11,7 @@
   <link rel="manifest" href="manifest.json" />
   <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png" />
   <link rel="apple-touch-icon" sizes="192x192" href="icon-192.png" />
-  <title>DiceDuel · V28.5.3</title>
+  <title>DiceDuel · V28.6.0</title>
   <link rel="preload" as="image" href="assets/ui/v28/bg-main-palace.png">
   <style>
     html.wd-booting,body.wd-booting{overflow:hidden!important;overscroll-behavior:none}
@@ -60,6 +60,7 @@
   <link rel="stylesheet" href="css/30-v28-combat-lock.css?v=28.3.45">
   <link rel="stylesheet" href="css/31-v28-marked-ui.css?v=28.3.56">
   <link rel="stylesheet" href="css/32-emoji-sprite-pass.css?v=28.5.3">
+  <link rel="stylesheet" href="css/33-duo-boss-rush.css?v=28.6.0">
   <script type="importmap">
   {
     "imports": {
@@ -159,6 +160,16 @@
     <div id="secondAbilityTitle" class="second-ability-title">Zweitfähigkeit!</div>
     <div class="second-ability-sub">Wähle eine von zwei zufälligen Fähigkeiten. Diese bleibt bis zum Ende der Runde aktiv.</div>
     <div id="secondAbilityOptions" class="second-ability-options"></div>
+  </div>
+</div>
+
+<div id="duoBossRushRewardModal" class="utility-overlay boss-rush-reward-modal hidden" role="dialog" aria-modal="true" aria-labelledby="duoBossRushRewardTitle">
+  <div class="utility-panel boss-rush-reward-panel">
+    <div id="duoBossRushRewardKicker" class="utility-kicker">BOSS BESIEGT</div>
+    <div id="duoBossRushRewardTitle" class="utility-title">Run-Belohnung</div>
+    <div id="duoBossRushRewardText" class="utility-text"></div>
+    <div id="duoBossRushRewardOptions" class="boss-rush-reward-options"></div>
+    <button id="duoBossRushAbortBtn" type="button" class="secondary boss-rush-abort">Boss Rush aufgeben</button>
   </div>
 </div>
 
@@ -385,8 +396,9 @@
       </div>
       <button id="duoCampaignMasteryBtn" class="purple campaign-mastery-btn" disabled>Mastery</button>
     </div>
-    <div class="campaign-start-row">
+    <div class="campaign-start-row duo-boss-rush-row">
       <button id="duoCampaignStartBtn" class="good">Duo-Encounter starten</button>
+      <button id="duoBossRushStartBtn" class="boss-rush-start">Boss Rush starten</button>
       <button id="duoCampaignProfilesBtn" class="secondary">Profile</button>
     </div>
     <div id="duoCampaignPath" class="campaign-path campaign-node-map duo-node-map"></div>
@@ -506,6 +518,7 @@
     <div class="screen-topbar"><button class="menuBackBtn">←</button><h2 class="screen-title">Changelog</h2></div>
     <div class="screen-subtitle">Die großen Versionssprünge, ohne jeden Mini-Hotfix.</div>
     <div class="screen-scroll-body">
+    <div class="changelog-entry"><div class="changelog-version">V28.6.0</div><ul><li>Neuer Duo Boss Rush mit fünf aufeinanderfolgenden Einzelbossen und fortlaufenden Spieler-HP</li><li>Nach Boss 1–4 wählt jeder Spieler eine eigene temporäre Belohnung aus drei zufälligen Optionen; Effekte sind stapelbar</li><li>Gekaufte Duo-Mastery-Upgrades bleiben aktiv, während Boss Rush weder Kampagnenfortschritt noch XP oder Trophäen vergibt</li></ul></div>
     <div class="changelog-entry"><div class="changelog-version">V28.5.3</div><ul><li>Versteckter Combat-Log wird zentral und dauerhaft emoji-frei geschrieben</li><li>Verbliebene sichtbare Piktogramme außerhalb der Testumgebung verwenden Bright-Arcane-Sprites</li><li>Classic-Spezialwürfel nutzen echte Pips; Royal-Burst- und Crownfall-FX verwenden SVG-Partikel</li></ul></div>
     <div class="changelog-entry"><div class="changelog-version">V28.5.2</div><ul><li>Duo/Trio: Gegnerdruck wird fair auf die Spieler verteilt; überzählige Gegner wechseln ihr Ziel reihum</li><li>Bei weniger Gegnern als Spielern rotiert die Zielwahl ebenfalls; ausgeschiedene Spieler werden übersprungen</li><li>Gegner-Selbstkills zählen für den Spieler, der diesen Gegner zuletzt angegriffen hat</li></ul></div>
     <div class="changelog-entry"><div class="changelog-version">V28.5.1</div><ul><li>Vitality L4/L5: je +2 HP (gesamt +8 / +10) für 400 / 500 XP</li><li>Force L4/L5: +4 DMG / +5 DMG für 400 / 500 XP</li><li>Mayhem: bis 6 menschliche Spieler</li></ul></div>
@@ -786,20 +799,20 @@
 <script src="lang/de.js?v=28.2.1"></script>
 <script src="lang/en.js?v=28.5.1"></script>
 <script src="js/00-i18n.js?v=28.3.40"></script>
-<script src="js/01-config.js?v=28.5.3"></script>
+<script src="js/01-config.js?v=28.6.0"></script>
 <script src="js/02-campaign-solo-data.js?v=28.2.1"></script>
 <script src="js/03-campaign-duo-data.js?v=28.2.1"></script>
 <script src="js/03b-campaign-trio-data.js?v=28.4.0"></script>
 <script src="js/04-save.js?v=28.3.0"></script>
 <script src="js/05-game-data-state.js?v=28.4.0"></script>
-<script src="js/06-campaign.js?v=28.4.0"></script>
+<script src="js/06-campaign.js?v=28.6.0"></script>
 <script src="js/07-tutorial.js?v=28.2.1"></script>
 <script src="js/08-profiles-stats.js?v=28.3.51"></script>
-<script src="js/09-battle-stats.js?v=28.5.2"></script>
+<script src="js/09-battle-stats.js?v=28.6.0"></script>
 <script src="js/10-bots.js?v=28.2.1"></script>
 <script src="js/11-setup.js?v=28.5.1"></script>
 <script src="js/12-battle-ui.js?v=28.5.3"></script>
-<script src="js/13-battle-actions.js?v=28.5.2"></script>
+<script src="js/13-battle-actions.js?v=28.6.0"></script>
 <script src="js/14-round-flow.js?v=28.5.0"></script>
 <script src="js/15-app.js?v=28.5.1"></script>
 <script src="js/16-audio.js?v=28.2.1"></script>
@@ -823,6 +836,7 @@
 <script src="js/33-v28-ui-phase6.js?v=28.2.6"></script>
 <script src="js/34-v28-ui-phase8.js?v=28.3.15"></script>
 <script src="js/36-emoji-sprite-pass.js?v=28.5.3"></script>
+<script src="js/37-duo-boss-rush.js?v=28.6.0"></script>
 <script src="js/35-boot-gate.js?v=28.3.38"></script>
 </body>
 </html>
