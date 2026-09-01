@@ -1,4 +1,4 @@
-/* V28.6.0 · kompakter Duo Boss Rush */
+/* V28.6.1 · kompakter Duo Boss Rush */
 .campaign-hub .duo-boss-rush-row{
   grid-template-columns:minmax(0,1fr) minmax(0,1fr)!important;
   gap:8px!important;
@@ -29,6 +29,19 @@
   filter:saturate(.35)!important;
   opacity:.42!important;
   box-shadow:none!important;
+}
+
+.boss-rush-xp-summary{
+  margin:8px 0 2px;
+  padding:7px 11px;
+  border:1px solid rgba(218,168,73,.34);
+  border-radius:11px;
+  background:rgba(16,35,62,.72);
+  color:#f0c765;
+  font-size:11px;
+  font-weight:900;
+  letter-spacing:.035em;
+  text-align:center;
 }
 
 .boss-rush-live{
@@ -95,6 +108,17 @@
   border-color:#f3c866!important;
   transform:translateY(-2px);
   box-shadow:0 0 0 2px rgba(243,200,102,.15),0 10px 24px rgba(3,15,32,.30)!important;
+}
+
+.boss-rush-reward-card.is-ability{
+  border-color:rgba(171,122,255,.82)!important;
+  background:linear-gradient(160deg,#35215f,#101d3b)!important;
+}
+
+.boss-rush-reward-card.is-ability:hover,
+.boss-rush-reward-card.is-ability:focus-visible{
+  border-color:#c9a6ff!important;
+  box-shadow:0 0 0 2px rgba(171,122,255,.17),0 10px 24px rgba(20,8,49,.34)!important;
 }
 
 .boss-rush-reward-card img{
