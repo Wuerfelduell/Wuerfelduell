@@ -7,7 +7,7 @@
   }
 
   function defaultCampaignProgress(){
-    return {campaignVersion:CAMPAIGN_VERSION,completedEncounters:[],unlockedAbilities:[...CAMPAIGN_START_ABILITIES],unlockedSecondaryAbilities:[],trophies:0,wins:0,losses:0};
+    return {campaignVersion:CAMPAIGN_VERSION,completedEncounters:[],unlockedAbilities:[...CAMPAIGN_START_ABILITIES],unlockedSecondaryAbilities:[],trophies:0,bossRushXp:0,wins:0,losses:0};
   }
 
 
@@ -301,6 +301,7 @@
     p.campaign.unlockedAbilities=[...new Set([...CAMPAIGN_START_ABILITIES,...earnedRewards,...storedCampaignAbilities])];
     p.campaign.unlockedSecondaryAbilities=[...new Set([...earnedSecondaryRewards,...storedSecondaryAbilities,...legacySecondaryFromMain])];
     p.campaign.trophies=Math.max(0,Math.floor(Number(rawCampaign.trophies)||0));
+    p.campaign.bossRushXp=Math.max(0,Math.floor(Number(rawCampaign.bossRushXp)||0));
 
     p.stats={...emptyProfileStats(),...(p.stats||{})};
     p.stats.abilities=(p.stats.abilities&&typeof p.stats.abilities==="object")?p.stats.abilities:{};

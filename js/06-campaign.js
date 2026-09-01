@@ -7,7 +7,10 @@
   function resetEncounterRuntime(encounter){encounterRuntime={ruleIds:[...(ENCOUNTER_SPECIAL_RULES[encounter?.id]||[])],phaseRuleIds:[],phaseTriggered:false,firstStrikeUsed:new Set(),armorUsed:new Set(),turnStarts:{}};}
   function encounterRuleActive(id){return !!campaignMode && (encounterRuntime.ruleIds.includes(id)||encounterRuntime.phaseRuleIds.includes(id));}
   function encounterRuleText(encounter){const ids=ENCOUNTER_SPECIAL_RULES[encounter?.id]||[];return ids.map(id=>SPECIAL_RULES[id]).filter(Boolean);}
-  function bossPhaseFor(encounter){return BOSS_PHASES[encounter?.id]||null;}
+  function bossPhaseFor(encounter){
+    if(encounter&&Object.prototype.hasOwnProperty.call(encounter,"bossRushPhase"))return encounter.bossRushPhase||null;
+    return BOSS_PHASES[encounter?.id]||null;
+  }
   function soloCampaignHpBonusThreshold(){return 15;}
   function duoCampaignHpBonusThreshold(){return 15;}
   function trioCampaignHpBonusThreshold(){return 15;}
@@ -196,6 +199,7 @@
       if(phase.rule&&!encounterRuntime.phaseRuleIds.includes(phase.rule)) encounterRuntime.phaseRuleIds.push(phase.rule);
       if(phase.ability!=null) target.ability=phase.ability;
       if(phase.secondAbility!=null) target.secondAbility=phase.secondAbility;
+      if(Object.prototype.hasOwnProperty.call(phase,"thirdAbility")) target.thirdAbility=phase.thirdAbility;
       if(phase.heal){const before=target.hp;target.hp=Math.min(maxHpForPlayer(target),target.hp+phase.heal);const healed=target.hp-before;if(healed>0) pendingExtraHealFx.push({target:targetIndex,amount:healed});}
       queueEventPopup(`PHASE II · ${phase.title}`,"death");
       addLog(`👹 PHASE II – ${phase.title}: ${phase.desc}`);
@@ -1021,9 +1025,17 @@
     gameContext={mode:bossRush?"duo-boss-rush-game":"duo-campaign-game",returnScreen:"duo",profileIds:[p1.id,p2.id],encounterId:encounter.id};campaignMetrics=freshCampaignMetrics();resetEncounterRuntime(encounter);
     const sharedDuoSecondPool=[...REAL_ABILITY_IDS];
     const baseHeroStartHp=Math.max(1,Number(encounter.playerHp)||START_HP);
-    const makeHero=(profile,ability)=>{const challengeAbility=campaignChallengeGrantedAbility(encounter,[ability]);const normalStartHp=baseHeroStartHp+(window.WDMastery?.hpBonus?.(profile,"duo",encounter)||0),vitals=bossRush?window.WDDuoBossRush.startingVitals(profile,normalStartHp):{hp:normalStartHp,maxHp:normalStartHp};return {name:profile.name,battleTag:`#${profile.tagNumber}`,profileId:profile.id,botLevel:"human",campaignTeam:"hero",hp:vitals.hp,maxHp:vitals.maxHp,campaignStartHp:vitals.maxHp,ability,secondAbility:challengeAbility,thirdAbility:null,fourthAbility:null,secondAbilityUnlocked:challengeAbility!=null||sharedDuoSecondPool.length<2,thirdAbilityUnlocked:false,fourthAbilityUnlocked:false,campaignBonusDraftUsed:false,rolledAbility:"DUO",primaryWasChosen:true,secondAbilityWasChosen:false,thirdAbilityWasChosen:false,fourthAbilityWasChosen:false,seat:0,diceDesign:profile.selectedDice||"classic",...playerCosmeticsFromProfile(profile),wins:0,momentumStreak:0,lastStandUsed:false,roundLastStandTriggered:false,damageSinceLastOwnTurn:false,bloodRushPrimed:false,voluntaryHpPaidThisTurn:false,botBloodUsesThisAttack:0};};
+    const makeHero=(profile,ability)=>{
+      const challengeAbility=campaignChallengeGrantedAbility(encounter,[ability]);
+      const normalStartHp=baseHeroStartHp+(window.WDMastery?.hpBonus?.(profile,"duo",encounter)||0);
+      const vitals=bossRush?window.WDDuoBossRush.startingVitals(profile,normalStartHp):{hp:normalStartHp,maxHp:normalStartHp};
+      const loadout=bossRush
+        ? window.WDDuoBossRush.startingLoadout(profile,ability,challengeAbility)
+        : {secondAbility:challengeAbility,thirdAbility:null,secondAbilityUnlocked:challengeAbility!=null||sharedDuoSecondPool.length<2,thirdAbilityUnlocked:false,campaignBonusDraftUsed:false};
+      return {name:profile.name,battleTag:`#${profile.tagNumber}`,profileId:profile.id,botLevel:"human",campaignTeam:"hero",hp:vitals.hp,maxHp:vitals.maxHp,campaignStartHp:vitals.maxHp,ability,secondAbility:loadout.secondAbility,thirdAbility:loadout.thirdAbility,fourthAbility:null,secondAbilityUnlocked:loadout.secondAbilityUnlocked,thirdAbilityUnlocked:loadout.thirdAbilityUnlocked,fourthAbilityUnlocked:false,campaignBonusDraftUsed:loadout.campaignBonusDraftUsed,rolledAbility:"DUO",primaryWasChosen:true,secondAbilityWasChosen:false,thirdAbilityWasChosen:false,fourthAbilityWasChosen:false,seat:0,diceDesign:profile.selectedDice||"classic",...playerCosmeticsFromProfile(profile),wins:0,momentumStreak:0,lastStandUsed:false,roundLastStandTriggered:false,damageSinceLastOwnTurn:false,bloodRushPrimed:false,voluntaryHpPaidThisTurn:false,botBloodUsesThisAttack:0};
+    };
     const heroes=[makeHero(p1,a1),makeHero(p2,a2)];
-    const enemies=encounter.enemies.map(enemy=>({name:enemy.name,battleTag:"",profileId:null,botLevel:enemy.level||"normal",campaignTeam:"enemy",hp:Number(enemy.hp)||START_HP,maxHp:Number(enemy.hp)||START_HP,ability:Number(enemy.ability)||0,secondAbility:enemy.secondAbility!=null?Number(enemy.secondAbility):null,thirdAbility:null,secondAbilityUnlocked:true,thirdAbilityUnlocked:true,rolledAbility:"DUO",primaryWasChosen:false,seat:0,diceDesign:"classic",wins:0,momentumStreak:0,lastStandUsed:false,roundLastStandTriggered:false,damageSinceLastOwnTurn:false,bloodRushPrimed:false,voluntaryHpPaidThisTurn:false,botBloodUsesThisAttack:0}));
+    const enemies=encounter.enemies.map(enemy=>({name:enemy.name,battleTag:"",profileId:null,botLevel:enemy.level||"normal",campaignTeam:"enemy",hp:Number(enemy.hp)||START_HP,maxHp:Number(enemy.hp)||START_HP,ability:Number(enemy.ability)||0,secondAbility:enemy.secondAbility!=null?Number(enemy.secondAbility):null,thirdAbility:enemy.thirdAbility!=null?Number(enemy.thirdAbility):null,fourthAbility:null,secondAbilityUnlocked:true,thirdAbilityUnlocked:true,fourthAbilityUnlocked:false,rolledAbility:"DUO",primaryWasChosen:false,seat:0,diceDesign:"classic",wins:0,momentumStreak:0,lastStandUsed:false,roundLastStandTriggered:false,damageSinceLastOwnTurn:false,bloodRushPrimed:false,voluntaryHpPaidThisTurn:false,botBloodUsesThisAttack:0}));
     players=[];
     const max=Math.max(heroes.length,enemies.length);for(let i=0;i<max;i++){if(heroes[i])players.push(heroes[i]);if(enemies[i])players.push(enemies[i]);}
     resetRoundStats();current=bossRush?(players.findIndex(player=>player.campaignTeam==="hero"&&player.hp>0)):0;if(current<0)current=0;prepareBloodRushForTurn(current);applyEncounterTurnStartRule(current);dice=freshDice();phase="idle";isAnimating=false;attackFace=null;attackTarget=null;pendingCampaignAttackStart=null;attackHits=0;attackDamage=0;firstAttackRoll=true;currentAttackRollNewHits=0;
@@ -1031,7 +1043,19 @@
     roundNumber=bossRush?window.WDDuoBossRush.stageNumber():Math.max(1,duoEncountersForWorld(encounter.world||"covenant").findIndex(e=>e.id===encounter.id)+1);roundEliminationOrder=[];lastPlaceIndex=null;roundWinnerHandled=false;roundWinnerIndex=null;nextRoundAbilityRolls=[];eventPopupQueue=[];eventPopupBusy=false;secondAbilityDraftBusy=false;secondAbilityDraftIndex=null;deferredBaseAdvance=false;
     gamblingRolling=false;gamblingBaseTotal=null;gamblingRetryActions?.classList.add("hidden");gamblingModal.classList.add("hidden");highStakesRolling=false;highStakesDecisionThisAttack=false;highStakesModal.classList.add("hidden");perfect25Rolling=false;perfect25D4Rolling=false;perfect25BaseTotal=null;pendingPerfect25Total=null;perfect25Modal.classList.add("hidden");perfect25D4Modal.classList.add("hidden");insuranceRolling=false;insuranceContext=null;insuranceModal.classList.add("hidden");counterRolling=false;counterContext=null;counterDiceState=[];counterHits=0;counterFirstRoll=true;pendingCounterattack=null;deferredAttackFinish=false;counterModal.classList.add("hidden");wildcardFace=null;secondAbilityDraftQueue=[];secondAbilityModal.classList.add("hidden");
     logEl.innerHTML="";winnerBox.classList.add("hidden");nextRoundBox.classList.add("hidden");nextRoundPrepBtn.classList.add("hidden");restartBtn.textContent=bossRush?"Boss Rush beenden":"Zur Duo-Kampagne";hideFrontScreens();game.classList.remove("hidden");game.classList.add("campaign-game");game.classList.remove("trio-game");game.classList.toggle("boss-rush-game",bossRush);document.body.classList.add("playing");window.scrollTo?.(0,0);
-    if(bossRush)addLog(`Boss Rush ${roundNumber}/5: ${encounter.title}. Verbleibende HP werden in den nächsten Kampf übernommen.`);else addLog(`🤝 Duo-Kampagne: ${encounter.title} – ${encounter.subtitle}. Challenge: ${encounter.challenge.text}`);if(heroes.some(h=>h.hp!==START_HP))addLog(`Duo-Mastery/Start-HP: ${heroes.map(h=>`${h.name} ${h.hp} HP`).join(" · ")}.`);const duoChallengeAbility=campaignChallengeGrantedAbility(encounter,[]);if(duoChallengeAbility!=null)addLog(`Challenge-Ausrüstung: ${ABILITIES[duoChallengeAbility].name} ist bei beiden Spielern automatisch dabei, sofern sie nicht bereits im Loadout steckt.`);addLog(`Bonus-Draft pro Spieler: erster eigener Gegner-Kill ODER ≤15 HP – was zuerst passiert.`);encounterRuleText(encounter).forEach(r=>addLog(`Sonderregel ${r.name}: ${r.desc}`));if(bossPhaseFor(encounter))addLog(`Bossphase vorbereitet: ${bossPhaseFor(encounter).title} bei ${Math.round((bossPhaseFor(encounter).threshold||.5)*100)} % Boss-HP.`);addLog(`Duo-Vollpool: Alle regulären Hauptfähigkeiten sind verfügbar. ${p1.name}: ${ABILITIES[a1].name} · ${p2.name}: ${ABILITIES[a2].name}.`);addLog(`Fällt einer von euch, läuft der Encounter weiter, solange der andere noch lebt.`);renderAll();return true;
+    if(bossRush)addLog(`Boss Rush ${roundNumber}/5: ${encounter.title}. Verbleibende HP und gewählte Rush-Fähigkeiten werden in den nächsten Kampf übernommen.`);
+    else addLog(`🤝 Duo-Kampagne: ${encounter.title} – ${encounter.subtitle}. Challenge: ${encounter.challenge.text}`);
+    if(heroes.some(h=>h.hp!==START_HP))addLog(`Duo-Mastery/Start-HP: ${heroes.map(h=>`${h.name} ${h.hp} HP`).join(" · ")}.`);
+    const duoChallengeAbility=campaignChallengeGrantedAbility(encounter,[]);
+    if(duoChallengeAbility!=null)addLog(`Challenge-Ausrüstung: ${ABILITIES[duoChallengeAbility].name} ist bei beiden Spielern automatisch dabei, sofern sie nicht bereits im Loadout steckt.`);
+    if(bossRush)addLog(`Boss-Rush-Draft: Die erste Bonuswahl füllt die 2. Fähigkeit dauerhaft. Die 3. Fähigkeit kann einmalig als Level-Belohnung gewählt werden.`);
+    else addLog(`Bonus-Draft pro Spieler: erster eigener Gegner-Kill ODER ≤15 HP – was zuerst passiert.`);
+    encounterRuleText(encounter).forEach(r=>addLog(`Sonderregel ${r.name}: ${r.desc}`));
+    if(bossPhaseFor(encounter))addLog(`Bossphase vorbereitet: ${bossPhaseFor(encounter).title} bei ${Math.round((bossPhaseFor(encounter).threshold||.5)*100)} % Boss-HP.`);
+    if(bossRush)addLog(`Zufalls-Loadouts: ${enemies.map(enemy=>`${enemy.name}: ${[enemy.ability,enemy.secondAbility,enemy.thirdAbility].filter(id=>id!=null).map(id=>ABILITIES[id].name).join(" + ")}`).join(" · ")}.`);
+    addLog(`Duo-Vollpool: Alle regulären Hauptfähigkeiten sind verfügbar. ${p1.name}: ${ABILITIES[a1].name} · ${p2.name}: ${ABILITIES[a2].name}.`);
+    addLog(`Fällt einer von euch, läuft der Encounter weiter, solange der andere noch lebt.`);
+    renderAll();return true;
   }
 
   function finishDuoCampaignEncounter(heroWon){
