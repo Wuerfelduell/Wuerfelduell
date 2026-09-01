@@ -1,0 +1,75 @@
+/* V28.5.3 - runtime emoji-to-sprite pass (Test-Lab selectors excluded in JS). */
+.dd-emoji-sprite{
+  display:inline-block;
+  width:1.14em;
+  height:1.14em;
+  margin:0 .2em 0 .04em;
+  object-fit:contain;
+  vertical-align:-.18em;
+  pointer-events:none;
+  user-select:none;
+  filter:drop-shadow(0 1px 2px rgba(2,15,31,.34));
+}
+
+button>.dd-emoji-sprite,
+.round-stat-label>.dd-emoji-sprite,
+.round-score-name>.dd-emoji-sprite,
+.round-note>.dd-emoji-sprite{
+  width:1.28em;
+  height:1.28em;
+}
+
+.campaign-task-mark>.dd-emoji-sprite,
+.online-ready-chip>.dd-emoji-sprite{
+  width:20px;
+  height:20px;
+  margin:0;
+  vertical-align:middle;
+}
+
+.special-die-flat-face{
+  width:68%;
+  aspect-ratio:1;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  position:relative;
+  color:currentColor;
+}
+
+.special-die-flat-pips{
+  width:100%;
+  height:100%;
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  grid-template-rows:repeat(3,1fr);
+  place-items:center;
+}
+
+.special-die-flat-pip{
+  width:clamp(10px,32%,24px);
+  aspect-ratio:1;
+  border-radius:50%;
+  background:currentColor;
+  opacity:0;
+  box-shadow:inset 0 -1px 0 rgba(255,255,255,.24),0 1px 2px rgba(0,0,0,.42);
+}
+
+.special-die-flat-pip.active{opacity:1}
+.special-die-flat-question{font:900 clamp(58px,18vw,104px)/1 Georgia,serif}
+
+/* Normaler Kampf: Sprite-Medaillon statt Font-Haken. Im Test-Lab bleibt die
+   vorherige Regel aus css/02-battle.css bewusst aktiv. */
+body:not(.test-lab-active) .die.locked::after{
+  content:"";
+  top:2px;
+  right:3px;
+  width:20px;
+  height:20px;
+  background:url("../assets/ui/v28/png/components/completed-check-medallion.png") center/contain no-repeat;
+  filter:drop-shadow(0 1px 3px rgba(0,0,0,.7));
+}
+
+@media(max-width:540px){
+  body:not(.test-lab-active) .die.locked::after{width:17px;height:17px;right:2px}
+}
