@@ -12,6 +12,34 @@
   domLayer.appendChild(canvas);
   const ctx=canvas.getContext("2d");
 
+  const FX_SPRITE_ROOT="assets/ui/v28/svg/";
+  const FX_SPRITE_PATHS={
+    spade:"fx/card-spade.svg",
+    heart:"fx/card-heart.svg",
+    diamond:"fx/card-diamond.svg",
+    club:"fx/card-club.svg",
+    crown:"gameplay/crown.svg"
+  };
+  const fxSprites=Object.fromEntries(Object.entries(FX_SPRITE_PATHS).map(([key,path])=>{
+    const image=new Image();
+    image.decoding="async";
+    image.src=FX_SPRITE_ROOT+path;
+    return [key,image];
+  }));
+
+  function drawFxSprite(key,x,y,size,alpha=1,rotation=0,shadowColor="",shadowBlur=0){
+    const image=fxSprites[key];
+    if(!image?.complete||!image.naturalWidth) return false;
+    ctx.save();
+    ctx.translate(x,y);
+    ctx.rotate(rotation);
+    ctx.globalAlpha=Math.max(0,Math.min(1,alpha));
+    if(shadowColor){ctx.shadowColor=shadowColor;ctx.shadowBlur=shadowBlur;}
+    ctx.drawImage(image,-size/2,-size/2,size,size);
+    ctx.restore();
+    return true;
+  }
+
   let activeLabFx=[];
   let activeKillFx=[];
   let lastPlayedId="";
@@ -280,29 +308,16 @@
     const [c1,c2]=labFxColor('jackpot');
     const p=easeOutCubic(Math.min(1,t*1.02));
     const pos=pointOn(fx.from,fx.to,p);
-    const suits=['♠','♥','♦','♣'];
+    const suits=['spade','heart','diamond','club'];
 
-    ctx.save();
-    ctx.font='bold 24px system-ui';
-    ctx.textAlign='center';
-    ctx.textBaseline='middle';
-    ctx.fillStyle=c1;
-    ctx.globalAlpha=.9;
-    ctx.translate(pos.x,pos.y);
-    ctx.rotate(t*9);
-    ctx.fillText(suits[Math.floor(fx.seed)%4],0,0);
-    ctx.restore();
+    drawFxSprite(suits[Math.floor(fx.seed)%4],pos.x,pos.y,30,.9,t*9,c2,10);
 
     if(t>.55){
       const e=(t-.55)/.45;
-      ctx.font='bold 22px system-ui';
-      ctx.textAlign='center';
       for(let k=0;k<12;k++){
         const a=k*Math.PI*2/12 + (k%2)*.12;
         const d=e*(38+(k%4)*13);
-        ctx.fillStyle=k%2?c1:c2;
-        ctx.globalAlpha=(1-e)*.95;
-        ctx.fillText(suits[k%4],fx.to.x+Math.cos(a)*d,fx.to.y+Math.sin(a)*d);
+        drawFxSprite(suits[k%4],fx.to.x+Math.cos(a)*d,fx.to.y+Math.sin(a)*d,24,(1-e)*.95,a,c1,6);
       }
       ctx.globalAlpha=1;
       impactFlash(fx.to.x,fx.to.y,c1,e,58,.42);
@@ -453,8 +468,7 @@
     const [c1,c2]=labFxColor('crown');
     const e=easeOutCubic(Math.min(1,t/.7));
     const y=lerp(fx.to.y-100,fx.to.y-12,e);
-    ctx.save();ctx.font='bold 34px system-ui';ctx.textAlign='center';ctx.textBaseline='middle';
-    ctx.fillStyle=c1;ctx.shadowColor=c2;ctx.shadowBlur=16;ctx.globalAlpha=.95;ctx.fillText('♛',fx.to.x,y);ctx.restore();
+    drawFxSprite('crown',fx.to.x,y,46,.95,0,c2,16);
     if(t>.58){
       const q=(t-.58)/.42;
       ctx.strokeStyle=c1;ctx.lineWidth=3;ctx.globalAlpha=(1-q)*.8;
@@ -818,15 +832,12 @@
 
   function killJackpot(fx,t){
     const [c1,c2]=labFxColor('jackpot');
-    const e=Math.min(1,t/.95),suits=['♠','♥','♦','♣'];
-    ctx.save();ctx.textAlign='center';ctx.textBaseline='middle';ctx.font='bold 28px system-ui';
+    const e=Math.min(1,t/.95),suits=['spade','heart','diamond','club'];
     for(let k=0;k<24;k++){
       const a=k*Math.PI*2/24+fx.seed;
       const d=e*(42+(k%6)*16);
-      ctx.fillStyle=k%2?c1:c2;ctx.globalAlpha=(1-e)*.95;
-      ctx.fillText(suits[k%4],fx.x+Math.cos(a)*d,fx.y+Math.sin(a)*d);
+      drawFxSprite(suits[k%4],fx.x+Math.cos(a)*d,fx.y+Math.sin(a)*d,30,(1-e)*.95,a,k%2?c1:c2,7);
     }
-    ctx.restore();
     impactFlash(fx.x,fx.y,c1,e,92,.42);impactRing(fx.x,fx.y,c1,e,118,3,.75);
   }
 
@@ -883,8 +894,7 @@
     const [c1,c2]=labFxColor('crown');
     const fall=easeOutCubic(Math.min(1,t/.56));
     const y=lerp(fx.y-180,fx.y-8,fall);
-    ctx.save();ctx.font='bold 58px system-ui';ctx.textAlign='center';ctx.textBaseline='middle';
-    ctx.fillStyle=c1;ctx.shadowColor=c2;ctx.shadowBlur=24;ctx.globalAlpha=.98;ctx.fillText('♛',fx.x,y);ctx.restore();
+    drawFxSprite('crown',fx.x,y,72,.98,0,c2,24);
     const e=Math.max(0,(t-.42)/.58);
     impactFlash(fx.x,fx.y,c1,e,108,.55);impactRing(fx.x,fx.y,c1,e,132,4,.92);
     impactRing(fx.x,fx.y,c2,Math.min(1,e*1.18),92,2.2,.64);impactSparks(fx.x,fx.y,c2,e,18,108);

@@ -331,6 +331,21 @@
     const template=document.createElement("template");
     template.innerHTML=String(html||"");
     template.content.querySelectorAll("*").forEach(el=>{
+      if(el.tagName==="IMG"){
+        const src=String(el.getAttribute("src")||"");
+        const safeSprite=el.classList.contains("dd-emoji-sprite")&&/^assets\/ui\/v28\/svg\/[a-z0-9/_-]+\.svg(?:\?[^\s"'<>]*)?$/i.test(src);
+        if(safeSprite){
+          [...el.attributes].forEach(attr=>{
+            if(!["src","class","alt","aria-hidden","draggable"].includes(attr.name)) el.removeAttribute(attr.name);
+          });
+          el.alt="";
+          el.setAttribute("aria-hidden","true");
+          el.draggable=false;
+          return;
+        }
+        el.remove();
+        return;
+      }
       if(!/^(STRONG|B|EM|BR|SPAN|SMALL|DIV|P|UL|LI)$/i.test(el.tagName)){
         el.replaceWith(...el.childNodes);
         return;

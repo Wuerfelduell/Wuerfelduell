@@ -68,8 +68,22 @@
     }
     return -1;
   }
+
+  // Der Combat-Log ist ein reiner, versteckter Debug-Stream. Emojis werden
+  // deshalb zentral am einzigen Ausgabe-Sink entfernt, auch wenn neue
+  // Logmeldungen spaeter wieder ein Piktogramm im Quelltext mitbringen.
+  const COMBAT_LOG_EMOJI_RE=/(?:[#*0-9]\uFE0F?\u20E3|[\u{1F1E6}-\u{1F1FF}]{2}|\p{Extended_Pictographic}(?:\uFE0E|\uFE0F)?(?:\u200D\p{Extended_Pictographic}(?:\uFE0E|\uFE0F)?)*)/gu;
+  function combatLogText(text){
+    return String(text??"")
+      .replace(COMBAT_LOG_EMOJI_RE,"")
+      .replace(/[\u200D\uFE0E\uFE0F]/g,"")
+      .replace(/[ \t]{2,}/g," ")
+      .trim();
+  }
   function addLog(text){
-    const d=document.createElement("div"); d.textContent=text; logEl.prepend(d);
+    const cleanText=combatLogText(text);
+    if(!cleanText) return;
+    const d=document.createElement("div"); d.textContent=cleanText; logEl.prepend(d);
   }
   function maxHpForPlayer(playerOrIndex){
     const p=typeof playerOrIndex==="number"?players[playerOrIndex]:playerOrIndex;
@@ -174,7 +188,10 @@
     });
   }
 
-  function dieSymbol(v){ return v==null?"?":["⚀","⚁","⚂","⚃","⚄","⚅"][v-1]; }
+  // Nur die bewusst unangetastete Testumgebung nutzt weiterhin die alten
+  // Font-Wuerfel. Im normalen Spiel werden Classic-Spezialwuerfel als Pips
+  // gerendert, damit dort kein Emoji-/Symbol-Fallback mehr sichtbar ist.
+  function testLabDieSymbol(v){ return v==null?"?":["⚀","⚁","⚂","⚃","⚄","⚅"][v-1]; }
 
   const DICE_ART_VARIABLES=["--die-art-question","--die-art-current",...Array.from({length:6},(_,i)=>`--die-art-face-${i+1}`)];
   function diceArtworkAsset(designKey,face="question"){
@@ -224,6 +241,42 @@
   const DIE_PIP_POSITIONS={
     1:[5],2:[1,9],3:[1,5,9],4:[1,3,7,9],5:[1,3,5,7,9],6:[1,3,4,6,7,9]
   };
+
+  function ensureSpecialPipDieStructure(el){
+    let face=el.querySelector(":scope > .special-die-flat-face");
+    if(face) return face;
+    face=document.createElement("span");
+    face.className="special-die-flat-face";
+    const grid=document.createElement("span");
+    grid.className="special-die-flat-pips";
+    for(let pos=1;pos<=9;pos++){
+      const pip=document.createElement("span");
+      pip.className="special-die-flat-pip";
+      pip.dataset.pos=String(pos);
+      grid.appendChild(pip);
+    }
+    const question=document.createElement("span");
+    question.className="special-die-flat-question";
+    question.textContent="?";
+    face.append(grid,question);
+    el.replaceChildren(face);
+    return face;
+  }
+
+  function renderSpecialPipDie(el,value){
+    el.querySelector(":scope > .die-cube")?.remove();
+    el.querySelector(":scope > img.die-art-sprite")?.remove();
+    clearDiceArtwork(el);
+    const face=ensureSpecialPipDieStructure(el);
+    const active=new Set(DIE_PIP_POSITIONS[value]||[]);
+    face.querySelectorAll(".special-die-flat-pip").forEach(pip=>{
+      pip.classList.toggle("active",active.has(Number(pip.dataset.pos)));
+    });
+    face.querySelector(".special-die-flat-pips").classList.toggle("hidden",value==null);
+    face.querySelector(".special-die-flat-question").classList.toggle("hidden",value!=null);
+    el.dataset.value=value==null?"":String(value);
+    el.setAttribute("aria-label",value==null?"Würfel bereit":`Würfel ${value}`);
+  }
 
   function ensure3DDieStructure(el){
     let cube=el.querySelector(":scope > .die-cube");
@@ -301,15 +354,34 @@
   }
 
   function renderSpecialDieFace(el,designKey,value=null){
-    if(el.classList.contains("d4") || !DICE_DESIGNS[designKey]?.artKey){
+    const artKey=DICE_DESIGNS[designKey]?.artKey;
+    const testLabActive=document.body.classList.contains("test-lab-active");
+
+    // Die Testumgebung bleibt exakt auf ihrem bisherigen Renderer.
+    if(testLabActive){
+      if(el.classList.contains("d4") || !artKey){
+        el.querySelector(":scope > .die-cube")?.remove();
+        el.querySelector(":scope > img.die-art-sprite")?.remove();
+        clearDiceArtwork(el);
+        el.dataset.value=value==null?"":String(value);
+        el.textContent=testLabDieSymbol(value);
+        el.setAttribute("aria-label",value==null?"Würfel bereit":`Würfel ${value}`);
+        return;
+      }
+      applyArtCube(el,designKey,value);
+      return;
+    }
+
+    if(el.classList.contains("d4")){
       el.querySelector(":scope > .die-cube")?.remove();
       el.querySelector(":scope > img.die-art-sprite")?.remove();
       clearDiceArtwork(el);
       el.dataset.value=value==null?"":String(value);
-      el.textContent=dieSymbol(value);
+      el.textContent=value==null?"?":String(value);
       el.setAttribute("aria-label",value==null?"Würfel bereit":`Würfel ${value}`);
       return;
     }
+    if(!artKey){renderSpecialPipDie(el,value);return;}
     applyArtCube(el,designKey,value);
   }
 
