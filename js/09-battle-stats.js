@@ -226,6 +226,7 @@
     if(!campaignMode || players[killerIndex]?.campaignTeam!=="hero" || players[targetIndex]?.campaignTeam!=="enemy") return;
     recordCampaignEnemyElimination(targetIndex,killerIndex);
     window.WDMastery?.noteKill?.(killerIndex,targetIndex);
+    window.WDDuoBossRush?.onHeroKill?.(killerIndex,targetIndex);
   }
 
   function recordHealing(index,amount){

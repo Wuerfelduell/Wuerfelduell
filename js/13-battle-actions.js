@@ -1635,6 +1635,11 @@
       rawDamage+=masteryDamageBonus;
       addLog(`⚔️ Mastery · Force: +${masteryDamageBonus} Gesamtschaden.`);
     }
+    const rushDamageBonus=rawDamage>0?window.WDDuoBossRush?.attackDamageBonus?.(current):null;
+    if((rushDamageBonus?.amount||0)>0){
+      rawDamage+=rushDamageBonus.amount;
+      addLog(`Boss Rush: ${rushDamageBonus.parts.join(" · ")}.`);
+    }
     if(rawDamage>=targetHpBefore+10) unlockAchievementForPlayer(current,"overkill");
 
     recordCampaignRawDamage(current,rawDamage);
@@ -1743,6 +1748,8 @@
       const over=p.hp>maxHpForPlayer(p)?` · jetzt ${p.hp}/${maxHpForPlayer(p)} HP`:"";
       addLog(`🩸 Lifesteal: ${p.name} heilt ${actualHeal} Leben${over}.`);
     }
+
+    window.WDDuoBossRush?.afterHeroAttack?.(current,actualDamage+ricochetActual+ricochetSecondActual);
 
     if(campaignMode&&players[current]?.campaignTeam==="hero"&&rawDamage>0&&encounterRuleActive("overcharge")&&players[current].hp>1){const result=applyDamageToPlayer(current,1,"self");const lost=result.lost;if(lost>0){recordSelfDamage(current,lost);players[current].damageSinceLastOwnTurn=true;pendingExtraDamageFx.push({target:current,amount:lost});addLog(`⚡ Overcharge-Rückstoß: ${players[current].name} verliert ${lost} HP.`);}}
 
