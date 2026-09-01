@@ -5,9 +5,63 @@
     do{i=(i+1)%players.length;}while(players[i].hp<=0);
     return i;
   }
+
+  function campaignTeamIndices(team,aliveOnly=false){
+    return players
+      .map((p,i)=>(p?.campaignTeam===team&&(!aliveOnly||p.hp>0))?i:null)
+      .filter(i=>i!=null);
+  }
+
+  function campaignEnemyUsesRotatingTarget(from){
+    if(!campaignMode||players[from]?.campaignTeam!=="enemy") return false;
+    const heroes=campaignTeamIndices("hero");
+    const enemies=campaignTeamIndices("enemy");
+    const enemySlot=enemies.indexOf(from);
+    if(enemySlot<0||!heroes.length) return false;
+
+    // Bei zu wenigen Gegnern rotieren alle, damit kein Spieler dauerhaft
+    // ohne Gegenspieler bleibt. Bei einem Gegner-Ueberschuss werden zuerst
+    // feste 1:1-Paare gebildet; nur die uebrigen Gegner rotieren.
+    return enemies.length<heroes.length||enemySlot>=heroes.length;
+  }
+
+  function campaignEnemyAttackTarget(from){
+    if(!campaignMode||players[from]?.campaignTeam!=="enemy") return -1;
+    const heroes=campaignTeamIndices("hero");
+    const enemies=campaignTeamIndices("enemy");
+    const enemySlot=enemies.indexOf(from);
+    if(enemySlot<0||!heroes.length) return -1;
+
+    const rotating=campaignEnemyUsesRotatingTarget(from);
+    const targetTurns=encounterRuntime?.enemyTargetTurns||{};
+    const turnOffset=rotating?(Math.max(0,Number(targetTurns[String(from)])||0)%heroes.length):0;
+    const baseSlot=rotating&&enemies.length>=heroes.length
+      ? enemySlot-heroes.length
+      : enemySlot;
+
+    // Die urspruenglichen Team-Slots bleiben stabil. Ist der vorgesehene
+    // Spieler bereits ausgeschieden, wird der naechste lebende Spieler in
+    // derselben Rotation genommen.
+    for(let step=0;step<heroes.length;step++){
+      const heroIndex=heroes[(baseSlot+turnOffset+step+heroes.length)%heroes.length];
+      if(players[heroIndex]?.hp>0) return heroIndex;
+    }
+    return -1;
+  }
+
+  function commitCampaignEnemyAttackTarget(from,targetIndex){
+    if(!campaignEnemyUsesRotatingTarget(from)||players[targetIndex]?.campaignTeam!=="hero") return;
+    if(!encounterRuntime.enemyTargetTurns||typeof encounterRuntime.enemyTargetTurns!=="object"){
+      encounterRuntime.enemyTargetTurns={};
+    }
+    const key=String(from);
+    encounterRuntime.enemyTargetTurns[key]=Math.max(0,Number(encounterRuntime.enemyTargetTurns[key])||0)+1;
+  }
+
   function nextAttackTarget(from){
     if(!campaignMode) return nextAlive(from);
     const team=players[from]?.campaignTeam;
+    if(team==="enemy") return campaignEnemyAttackTarget(from);
     for(let step=1;step<=players.length;step++){
       const i=(from+step)%players.length;
       if(players[i]?.hp>0 && players[i].campaignTeam!==team) return i;

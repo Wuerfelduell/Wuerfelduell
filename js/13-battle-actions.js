@@ -521,6 +521,7 @@
       const result=applyDamageToPlayer(i,3,"opponent");
       total+=result.lost;
       if(result.lost>0){
+        noteCampaignHeroAttack(source,i);
         recordDamageDealt(source,result.lost,false);
         pendingExtraDamageFx.push({target:i,amount:result.lost});
         window.WDAttackFx?.emit?.(source,i,"poison",result.lost,1);
@@ -567,7 +568,11 @@
   function initializeAttackAfterTarget(total,source="normal"){
     if(attackTarget==null || players[attackTarget]?.hp<=0) attackTarget=nextAttackTarget(current);
     if(attackTarget===-1 || attackTarget==null){checkWinner();return;}
+    if(campaignMode && players[current]?.campaignTeam==="enemy"){
+      commitCampaignEnemyAttackTarget(current,attackTarget);
+    }
     if(campaignMode && players[current]?.campaignTeam==="hero"){
+      noteCampaignHeroAttack(current,attackTarget);
       const key=String(current),targetKey=String(attackTarget);
       campaignMetrics.heroAttacks[key]=(campaignMetrics.heroAttacks[key]||0)+1;
       if(!campaignMetrics.attackTargetsByHero[key]) campaignMetrics.attackTargetsByHero[key]={};
@@ -903,10 +908,16 @@
 
     if(players[current].hp<=0){
       if(campaignMode && players[current]?.campaignTeam==="enemy"){
-        recordCampaignEnemyElimination(current,null);
-        const heroIndex=campaignHeroIndices().find(i=>players[i]?.hp>0);
-        if(heroIndex!=null) maybeTriggerCampaignKillAbilityDraft(heroIndex);
-        addLog(`💀 ${players[current].name} scheidet durch eigenen Basisschaden aus – die Eliminierung zählt für die Kampagnen-Reihenfolge.`);
+        const heroIndex=campaignLastHeroAttacker(current);
+        if(heroIndex!=null){
+          if(roundStats[heroIndex]) roundStats[heroIndex].kills++;
+          recordCampaignKill(heroIndex,current);
+          maybeTriggerKillBonusDraft(heroIndex);
+          addLog(`💀 ${players[current].name} scheidet durch eigenen Basisschaden aus – der Kill zählt für ${players[heroIndex].name}.`);
+        }else{
+          recordCampaignEnemyElimination(current,null);
+          addLog(`💀 ${players[current].name} scheidet durch eigenen Basisschaden aus – noch kein Spieler hatte diesen Gegner angegriffen.`);
+        }
       }else{
         addLog(`💀 ${players[current].name} ist ausgeschieden.`);
       }
@@ -1412,6 +1423,7 @@
     const attackerIndex=counterContext.attackerIndex;
     const defender=players[defenderIndex];
     const attacker=players[attackerIndex];
+    noteCampaignHeroAttack(defenderIndex,attackerIndex);
 
     const perfectParry=hasMasteryUpgrade(21,2,defenderIndex)&&counterDiceState.length===5&&counterDiceState.every(d=>d.value===1);
     if(perfectParry){
@@ -1697,6 +1709,7 @@
         const before=players[secondTarget].hp;
         const res=applyDamageToPlayer(secondTarget,ric2Damage,"opponent");
         ricochetSecondActual=res.lost;
+        if(ricochetSecondActual>0) noteCampaignHeroAttack(current,secondTarget);
         recordDamageDealt(current,ricochetSecondActual,true);
         if(ricochetSecondActual>0){
           pendingExtraDamageFx.push({target:secondTarget,amount:ricochetSecondActual});
@@ -1780,7 +1793,7 @@
 
   function applyMasteryPoisonTurnStart(index){
     const p=players[index];if(!p||p.hp<=0||!(p.masteryPoisonTurns>0))return true;
-    const source=Number(p.masteryPoisonSource);const before=p.hp;const result=applyDamageToPlayer(index,3,"opponent");p.masteryPoisonTurns=Math.max(0,p.masteryPoisonTurns-1);addLog(`☠️ Poison: ${p.name} verliert ${result.lost} HP (${p.masteryPoisonTurns} Tick${p.masteryPoisonTurns===1?"":"s"} übrig).`);
+    const source=Number(p.masteryPoisonSource);const before=p.hp;const result=applyDamageToPlayer(index,3,"opponent");if(result.lost>0)noteCampaignHeroAttack(source,index);p.masteryPoisonTurns=Math.max(0,p.masteryPoisonTurns-1);addLog(`☠️ Poison: ${p.name} verliert ${result.lost} HP (${p.masteryPoisonTurns} Tick${p.masteryPoisonTurns===1?"":"s"} übrig).`);
     if(p.hp<=0){triggerToxicBomb(index);if(Number.isInteger(source)&&players[source]){if(roundStats[source])roundStats[source].kills++;recordCampaignKill(source,index);maybeTriggerKillBonusDraft(source);}markEliminated(index);addLog(`💀 ${p.name} stirbt am Gift.`);return false;}return true;
   }
 

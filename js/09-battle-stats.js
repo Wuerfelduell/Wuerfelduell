@@ -170,9 +170,36 @@
     }
   }
 
+  function noteCampaignHeroAttack(attackerIndex,targetIndex){
+    if(!campaignMode||players[attackerIndex]?.campaignTeam!=="hero"||players[targetIndex]?.campaignTeam!=="enemy") return;
+    if(!campaignMetrics.lastHeroAttackerByEnemy||typeof campaignMetrics.lastHeroAttackerByEnemy!=="object"){
+      campaignMetrics.lastHeroAttackerByEnemy={};
+    }
+    campaignMetrics.lastHeroAttackerByEnemy[String(targetIndex)]=String(attackerIndex);
+  }
+
+  function campaignLastHeroAttacker(targetIndex){
+    if(!campaignMode||players[targetIndex]?.campaignTeam!=="enemy") return null;
+    const stored=campaignMetrics.lastHeroAttackerByEnemy?.[String(targetIndex)];
+    const storedIndex=Number(stored);
+    if(stored!==undefined&&Number.isInteger(storedIndex)&&players[storedIndex]?.campaignTeam==="hero") return storedIndex;
+
+    // Fallback fuer bereits laufende Encounters/Snapshots, die vor diesem
+    // Patch noch keine direkte Last-Attacker-Map aufgebaut haben.
+    const sequence=campaignMetrics.attackSequence||[];
+    for(let i=sequence.length-1;i>=0;i--){
+      const entry=sequence[i];
+      const heroIndex=Number(entry?.hero);
+      if(String(entry?.target)===String(targetIndex)&&Number.isInteger(heroIndex)&&players[heroIndex]?.campaignTeam==="hero") return heroIndex;
+    }
+    return null;
+  }
+
   function recordCampaignRawDamage(index,amount,targetIndex=attackTarget){
-    if(!campaignMode || index==null || amount<=0 || index!==current) return;
+    if(!campaignMode || index==null || amount<=0) return;
     if(players[index]?.campaignTeam!=="hero") return;
+    noteCampaignHeroAttack(index,targetIndex);
+    if(index!==current) return;
     campaignMetrics.currentRawTurnDamage=(campaignMetrics.currentRawTurnDamage||0)+amount;
     campaignMetrics.maxRawTurnDamage=Math.max(campaignMetrics.maxRawTurnDamage||0,campaignMetrics.currentRawTurnDamage);
     const key=String(index);
@@ -254,4 +281,3 @@
       </div>
     `;
   }
-
