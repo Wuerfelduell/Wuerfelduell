@@ -1,0 +1,157 @@
+/* V28.6.0 · kompakter Duo Boss Rush */
+.campaign-hub .duo-boss-rush-row{
+  grid-template-columns:minmax(0,1fr) minmax(0,1fr)!important;
+  gap:8px!important;
+}
+
+.boss-rush-start{
+  position:relative;
+  min-width:0;
+  border-color:rgba(218,168,73,.82)!important;
+  background:
+    linear-gradient(145deg,rgba(122,29,43,.94),rgba(19,36,65,.98))!important;
+  color:#fff1c7!important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.12),0 8px 20px rgba(73,12,25,.24)!important;
+  letter-spacing:.025em;
+}
+
+.boss-rush-start::before{
+  content:"";
+  display:inline-block;
+  width:20px;
+  height:20px;
+  margin-right:7px;
+  vertical-align:-5px;
+  background:url("../assets/ui/v28/svg/gameplay/boss.svg") center/contain no-repeat;
+}
+
+.boss-rush-start:disabled{
+  filter:saturate(.35)!important;
+  opacity:.42!important;
+  box-shadow:none!important;
+}
+
+.boss-rush-live{
+  display:inline-flex;
+  align-items:center;
+  color:#ffe19a;
+  letter-spacing:.035em;
+}
+
+.boss-rush-live::before{
+  content:"";
+  width:18px;
+  height:18px;
+  margin-right:7px;
+  background:url("../assets/ui/v28/svg/gameplay/boss.svg") center/contain no-repeat;
+}
+
+.boss-rush-reward-modal{
+  z-index:2147482100;
+  padding:18px 14px;
+}
+
+.boss-rush-reward-panel{
+  width:min(620px,calc(100vw - 28px));
+  padding:24px 20px 18px!important;
+}
+
+.boss-rush-reward-panel .utility-title{
+  margin-bottom:5px;
+}
+
+.boss-rush-reward-panel .utility-text{
+  margin-bottom:13px;
+  color:#40526b;
+  font-weight:800;
+}
+
+.boss-rush-reward-options{
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:9px;
+}
+
+.boss-rush-reward-card{
+  min-width:0;
+  min-height:178px;
+  padding:15px 12px 13px;
+  border:1px solid rgba(190,139,48,.62)!important;
+  border-radius:17px!important;
+  background:linear-gradient(160deg,#112846,#07182e)!important;
+  color:#fff3cf!important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.08),0 8px 18px rgba(3,15,32,.22)!important;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:flex-start;
+  gap:10px;
+  text-align:center;
+  white-space:normal;
+}
+
+.boss-rush-reward-card:hover,
+.boss-rush-reward-card:focus-visible{
+  border-color:#f3c866!important;
+  transform:translateY(-2px);
+  box-shadow:0 0 0 2px rgba(243,200,102,.15),0 10px 24px rgba(3,15,32,.30)!important;
+}
+
+.boss-rush-reward-card img{
+  width:42px;
+  height:42px;
+  object-fit:contain;
+  filter:drop-shadow(0 3px 8px rgba(0,0,0,.35));
+}
+
+.boss-rush-reward-copy{
+  display:flex;
+  min-width:0;
+  flex:1;
+  flex-direction:column;
+  align-items:center;
+}
+
+.boss-rush-reward-copy strong{
+  font-size:15px;
+  line-height:1.15;
+}
+
+.boss-rush-reward-copy small{
+  margin-top:7px;
+  color:#c9d7ea;
+  font-size:11px;
+  line-height:1.38;
+  font-weight:700;
+}
+
+.boss-rush-reward-copy em{
+  margin-top:auto;
+  padding-top:9px;
+  color:#f0c765;
+  font-size:9px;
+  line-height:1.2;
+  font-style:normal;
+  font-weight:1000;
+  letter-spacing:.055em;
+  text-transform:uppercase;
+}
+
+.boss-rush-abort{
+  width:100%;
+  margin-top:12px;
+  min-height:42px!important;
+}
+
+@media(max-width:620px){
+  .boss-rush-reward-options{grid-template-columns:1fr;gap:7px}
+  .boss-rush-reward-card{min-height:0;flex-direction:row;text-align:left;padding:11px 12px;gap:11px}
+  .boss-rush-reward-card img{width:36px;height:36px;flex:0 0 auto}
+  .boss-rush-reward-copy{align-items:flex-start}
+  .boss-rush-reward-copy small{margin-top:4px}
+  .boss-rush-reward-copy em{margin-top:5px;padding-top:0}
+}
+
+@media(max-width:430px){
+  .campaign-hub .duo-boss-rush-row{grid-template-columns:1fr!important}
+}
