@@ -16,7 +16,7 @@
       !!ATTACK_FX_STYLES.venom &&
       !!ATTACK_FX_STYLES.crown),
     attackFxEngine: !!window.WDAttackFx,
-    cssPhase11: !!document.querySelector('link[href*="26-v28-ui-phase11.css"]'),
+    cssBundle: !!document.querySelector('link[href*="css/app.css"]'),
     versionFooter: !document.querySelector(".version-footer") || (document.querySelector(".version-footer").textContent||"").includes(EXPECTED)
   };
 
