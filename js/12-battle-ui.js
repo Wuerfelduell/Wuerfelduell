@@ -32,6 +32,18 @@
     const enemySlot=enemies.indexOf(from);
     if(enemySlot<0||!heroes.length) return -1;
 
+    const aliveHeroes=heroes.filter(i=>players[i]?.hp>0);
+    const profile=ENEMY_AI_PROFILES[players[from]?.aiProfile]||ENEMY_AI_PROFILES.standard;
+    if(!aliveHeroes.length)return -1;
+    const activeMark=encounterRuntime?.markTurns>0&&aliveHeroes.includes(encounterRuntime.markedHero);
+    const markForcesTarget=activeMark&&(encounterRuntime.markSource==="hunted"||getActiveWorldRule?.()==="hunters_mark")&&!['support','defensive'].includes(players[from]?.aiProfile);
+    if(markForcesTarget)return encounterRuntime.markedHero;
+    if(profile.target==="marked_player"&&encounterRuntime?.markTurns>0&&aliveHeroes.includes(encounterRuntime.markedHero))return encounterRuntime.markedHero;
+    if(profile.target==="lowest_hp")return [...aliveHeroes].sort((a,b)=>(players[a].hp/Math.max(1,players[a].maxHp))-(players[b].hp/Math.max(1,players[b].maxHp)))[0];
+    if(profile.target==="highest_hp")return [...aliveHeroes].sort((a,b)=>(players[b].hp/Math.max(1,players[b].maxHp))-(players[a].hp/Math.max(1,players[a].maxHp)))[0];
+    if(profile.target==="last_attacker"&&aliveHeroes.includes(encounterRuntime?.lastHeroAttacker))return encounterRuntime.lastHeroAttacker;
+    if(profile.target==="random_valid")return aliveHeroes[Math.floor(Math.random()*aliveHeroes.length)];
+
     const rotating=campaignEnemyUsesRotatingTarget(from);
     const targetTurns=encounterRuntime?.enemyTargetTurns||{};
     const turnOffset=rotating?(Math.max(0,Number(targetTurns[String(from)])||0)%heroes.length):0;
@@ -50,6 +62,12 @@
   }
 
   function commitCampaignEnemyAttackTarget(from,targetIndex){
+    if(campaignMode&&players[from]?.campaignTeam==="enemy"){
+      encounterRuntime.enemyTurnCount=(encounterRuntime.enemyTurnCount||0)+1;
+      if(encounterRuntime.markTurns>0){encounterRuntime.markTurns--;if(encounterRuntime.markTurns<=0){encounterRuntime.markedHero=null;encounterRuntime.markSource=null;}}
+      applyWorldRuleOnEnemyTurn?.();
+      if(getActiveWorldRule?.()!=="final_gravity")updateEncounterEscalation?.();
+    }
     if(!campaignEnemyUsesRotatingTarget(from)||players[targetIndex]?.campaignTeam!=="hero") return;
     if(!encounterRuntime.enemyTargetTurns||typeof encounterRuntime.enemyTargetTurns!=="object"){
       encounterRuntime.enemyTargetTurns={};
@@ -97,6 +115,7 @@
     const p=players[index];
     let heal=Math.max(0,Number(amount)||0);
     if(!p || heal<=0) return 0;
+    if(campaignMode&&p.campaignTeam==="hero"&&currentEncounterObject?.()?.modifier==="no_recovery")heal=Math.max(1,Math.floor(heal*.5));
     if(hasAbility(22,index)&&hasMasteryUpgrade(22,2,index)){
       p.masteryHealEffectCount=(Number(p.masteryHealEffectCount)||0)+1;
       if(p.masteryHealEffectCount%2===0){
@@ -131,10 +150,15 @@
     players.forEach((p,i)=>{
       const el=document.createElement("div");
       el.id="playerCard"+i;
-      el.className="player"+(p.cosmeticFrame?` frame-${p.cosmeticFrame}`:"")+(i===current&&p.hp>0?" active":"")+(p.hp<=0?" dead":"");
+      el.className="player"+(p.cosmeticFrame?` frame-${p.cosmeticFrame}`:"")+(i===current&&p.hp>0?" active":"")+(p.hp<=0?" dead":"")+(p.enemyInstanceId?" campaign-enemy-instance":"")+(attackTarget===i&&p.hp>0?" current-target":"");
+      el.dataset.instanceId=p.enemyInstanceId||`player:${i}`;
+      const mutator=p.mutatorId&&ELITE_MUTATORS[p.mutatorId];
+      const marked=campaignMode&&p.campaignTeam==="hero"&&encounterRuntime?.markTurns>0&&encounterRuntime.markedHero===i;
       const campaignCompact=campaignMode;
       el.innerHTML=`<div class="player-name"><span class="player-name-text">${escapeHtml(p.name)}</span>${p.battleTag?` <span class="battle-tag">${escapeHtml(p.battleTag)}</span>`:""}</div>${p.cosmeticTitle?`<div class="profile-title-badge">${escapeHtml(p.cosmeticTitle)}</div>`:""}
         ${!campaignCompact&&p.botLevel&&p.botLevel!=="human"?`<div class="bot-tag">🤖 ${escapeHtml(BOT_LEVELS[p.botLevel]?.name.replace("Bot · ","")||"Bot")}</div>`:""}
+        ${mutator?`<div class="endgame-combat-badge" title="${escapeHtml(mutator.desc)}">${escapeHtml(mutator.name)}</div>`:""}
+        ${marked?`<div class="endgame-combat-badge mark-badge">${escapeHtml(tx("MARKIERT"))} · ${encounterRuntime.markTurns}</div>`:""}
         <div class="hp">❤️ <strong>${Math.max(0,p.hp)}</strong> / ${maxHpForPlayer(p)}</div>
         <div class="ability-tag">⚡ ${escapeHtml(ABILITIES[p.ability].name)}</div>
         ${p.secondAbility!=null ? `<div class="ability-tag second">✦ ${escapeHtml(ABILITIES[p.secondAbility].name)}</div>` : ""}

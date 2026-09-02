@@ -45,7 +45,8 @@ export const styleOrder = [
   "33-duo-boss-rush.css",
   "35-v28-frame-catchup.css",
   "36-v28-hierarchie.css",
-  "37-v28-feinschliff.css"
+  "37-v28-feinschliff.css",
+  "38-endgame-mechanics.css"
 ];
 
 async function createBundle() {

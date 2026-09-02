@@ -519,6 +519,7 @@
       if(campaignMode&&target.campaignTeam===players[source]?.campaignTeam)return;
       const before=target.hp;
       const result=applyDamageToPlayer(i,3,"opponent");
+      checkBossPhase(i,before,target.hp);
       total+=result.lost;
       if(result.lost>0){
         noteCampaignHeroAttack(source,i);
@@ -542,6 +543,7 @@
 
   function markEliminated(index){
     if(index==null || roundEliminationOrder.includes(index)) return;
+    campaignHandleDeathReaction(index);
     roundEliminationOrder.push(index);
     if(lastPlaceIndex==null) lastPlaceIndex=index;
     queueEventPopup(`${players[index].name} Died!`,"death");
@@ -572,6 +574,7 @@
       commitCampaignEnemyAttackTarget(current,attackTarget);
     }
     if(campaignMode && players[current]?.campaignTeam==="hero"){
+      encounterRuntime.lastHeroAttacker=current;
       noteCampaignHeroAttack(current,attackTarget);
       const key=String(current),targetKey=String(attackTarget);
       campaignMetrics.heroAttacks[key]=(campaignMetrics.heroAttacks[key]||0)+1;
@@ -1621,6 +1624,7 @@
 
   function finalizeAttackDamage(){
     let rawDamage=totalAttackDamage();
+    rawDamage=Math.max(0,rawDamage+campaignOutgoingDamageModifier(current,rawDamage));
     recordCampaignAttackResult(current,attackHits);
     const aliveSnapshot=players.map((p,i)=>p.hp>0?i:null).filter(i=>i!=null);
     const ricochetWillTrigger=hasAbility(16)&&attackHits>0&&aliveSnapshot.length>=3;
@@ -1643,9 +1647,12 @@
     if(rawDamage>=targetHpBefore+10) unlockAchievementForPlayer(current,"overkill");
 
     recordCampaignRawDamage(current,rawDamage);
+    rawDamage=Math.max(0,rawDamage+campaignIncomingDamageModifier(attackTarget,rawDamage));
+    if(campaignMode&&players[current]?.campaignTeam==="enemy"&&(encounterRuntime?.escalationLevel||0)>0)rawDamage+=encounterRuntime.escalationLevel;
     const mainResult=applyDamageToPlayer(attackTarget,rawDamage,"opponent");
     checkBossPhase(attackTarget,targetHpBefore,target.hp);
     const actualDamage=mainResult.lost;
+    commitOneShotDamageBonuses(current,actualDamage);
     recordDamageDealt(current,actualDamage,true);
     if(actualDamage===21) unlockAchievementForPlayer(current,"critical_hit");
     if(Number(attackFace)===1 && actualDamage>=15) unlockAchievementForPlayer(current,"one_or_three");
@@ -1713,6 +1720,7 @@
         const ric2Damage=attackHits;
         const before=players[secondTarget].hp;
         const res=applyDamageToPlayer(secondTarget,ric2Damage,"opponent");
+        checkBossPhase(secondTarget,before,players[secondTarget]?.hp||0);
         ricochetSecondActual=res.lost;
         if(ricochetSecondActual>0) noteCampaignHeroAttack(current,secondTarget);
         recordDamageDealt(current,ricochetSecondActual,true);
@@ -1750,6 +1758,7 @@
     }
 
     window.WDDuoBossRush?.afterHeroAttack?.(current,actualDamage+ricochetActual+ricochetSecondActual);
+    campaignAfterSuccessfulAttack(current,actualDamage+ricochetActual+ricochetSecondActual);
 
     if(campaignMode&&players[current]?.campaignTeam==="hero"&&rawDamage>0&&encounterRuleActive("overcharge")&&players[current].hp>1){const result=applyDamageToPlayer(current,1,"self");const lost=result.lost;if(lost>0){recordSelfDamage(current,lost);players[current].damageSinceLastOwnTurn=true;pendingExtraDamageFx.push({target:current,amount:lost});addLog(`⚡ Overcharge-Rückstoß: ${players[current].name} verliert ${lost} HP.`);}}
 

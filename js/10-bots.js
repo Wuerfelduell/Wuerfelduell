@@ -169,11 +169,12 @@
 
   function botBaseFinalUtility(index,total){
     const p=players[index];
+    const profile=ENEMY_AI_PROFILES[p?.aiProfile]||ENEMY_AI_PROFILES.standard;
     const targetIndex=nextAttackTarget(index);
     const targetHp=targetIndex>=0 ? players[targetIndex].hp : 25;
 
     // Unter 25: echter Eigenschaden. Hard bewertet jeden verlorenen HP deutlich negativ.
-    if(total<25) return -(25-total)*3.4;
+    if(total<25) return -(25-total)*(3.4-(profile.risk*.45));
 
     // Angriffsvorsprung macht bereits 25 zu einem echten Angriff.
     if(total===25){
@@ -203,7 +204,7 @@
     const killPressure=expectedFirstRollDamage>=targetHp ? 4.5 : 0;
 
     // Angriff auslösen ist bereits viel wert; höhere Zielzahlen werden danach belohnt.
-    return 18 + face*4.2 + perHitBonus*2.2 + killPressure;
+    return 18 + face*(4.2+profile.risk*.25) + perHitBonus*2.2 + killPressure;
   }
 
   function botDieProb(index,value){
@@ -617,4 +618,3 @@
     // base_auto_end advances itself after its normal animation delay.
     scheduleBotAction(200);
   }
-

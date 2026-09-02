@@ -1,0 +1,7 @@
+.endgame-combat-badge{display:inline-flex;align-items:center;max-width:100%;margin:.22rem 0;padding:.18rem .48rem;border:1px solid #c6a451;border-radius:999px;background:linear-gradient(135deg,#fff9df,#ead492);color:#182848;font-size:.68rem;font-weight:850;letter-spacing:.045em;text-transform:uppercase;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.endgame-combat-badge.mark-badge{border-color:#d2694f;background:linear-gradient(135deg,#fff2e9,#eab19b);color:#5a1e1e}
+.campaign-enemy-instance.current-target{outline:2px solid #d8b65c;box-shadow:0 0 0 3px rgba(15,34,65,.9),0 0 20px rgba(216,182,92,.5)}
+.endgame-mechanic-row{display:grid;gap:.2rem;border-left:3px solid #c6a451;background:linear-gradient(90deg,rgba(255,247,213,.95),rgba(255,255,255,.78))}
+.endgame-mechanic-row strong{color:#15284a}.endgame-mechanic-row span{font-size:.78rem;line-height:1.35;color:#3d4961}
+.endgame-mechanic-row.modifier{border-left-color:#8c65bc}.endgame-mechanic-row.mutator{border-left-color:#b94f48}
+@media(max-width:560px){.endgame-combat-badge{font-size:.6rem;padding:.15rem .38rem}.endgame-mechanic-row span{font-size:.72rem}}
