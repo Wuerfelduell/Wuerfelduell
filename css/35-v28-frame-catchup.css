@@ -1,0 +1,94 @@
+/* V28.6.3 — Rahmen nachgezogen
+   ============================================================
+   Flächen, die als einzige in ihrem Screen noch ohne Rahmenartwork
+   dastanden. Gefunden über einen Durchlauf durch alle Screens und
+   Popups: gesucht wurde alles mit Hintergrund und Eckenrundung, aber
+   border-image: none.
+
+   Alle Regeln hier folgen dem Muster, das der Bestand für helle Flächen
+   benutzt (siehe .menu-info-card und .profile-name-edit in
+   css/16-v28-ui-phase1.css): ivory-card-small mit Schnitt
+   76 168 76 168 fill, kein eigener Layoutrand, dafür großzügiges
+   Padding. Der Rahmen zeichnet also wie überall sonst ins Padding
+   hinein - so sitzen die neuen Flächen optisch auf derselben Höhe wie
+   die bereits gerahmten.
+
+   Bewusst NICHT gerahmt:
+   - #statsScreen .ability-stat-row (24 Zeilen): eine Tabelle liest sich
+     als Tabelle besser; 24 Ornamentrahmen untereinander wären Krach.
+   - .achievement-owner (48 kleine Marken): dito, zu klein und zu viele.
+   - Die gestrichelten Leerzustände ("Noch kein Profil ..."): die
+     gestrichelte Kontur ist dort die Aussage.
+   ============================================================ */
+
+html[data-v28-rework="2"] #statsScreen .stats-kpi,
+html[data-v28-rework="2"] #settingsScreen .menu-info-card,
+html[data-v28-rework="2"] #accountScreen .cloud-card,
+html[data-v28-rework="2"] #accountScreen .cloud-status-card,
+html[data-v28-rework="2"] #onlineScreen .online-card,
+html[data-v28-rework="2"] #onlineScreen .online-connection{
+  box-sizing:border-box!important;
+  border-image-source:var(--p1-ivory-card)!important;
+  border-image-slice:76 168 76 168 fill!important;
+  border-image-width:12px 19px!important;
+  border-image-repeat:stretch!important;
+  border-radius:0!important;
+  background:var(--p1-ivory)!important;
+  box-shadow:0 5px 14px rgba(28,58,88,.08)!important;
+}
+
+/* Das Artwork trägt oben mittig einen Zier-Diamanten, der über die
+   Rahmenkante hinausragt. Ohne genug Abstand nach oben läuft die erste
+   Textzeile hinein, deshalb ist das Padding oben deutlich größer. */
+html[data-v28-rework="2"] #statsScreen .stats-kpi{
+  min-height:84px!important;
+  padding:20px 20px 12px!important;
+}
+
+html[data-v28-rework="2"] #settingsScreen .menu-info-card{
+  min-height:74px!important;
+  padding:20px 20px 12px!important;
+}
+
+html[data-v28-rework="2"] #accountScreen .cloud-card,
+html[data-v28-rework="2"] #accountScreen .cloud-status-card,
+html[data-v28-rework="2"] #onlineScreen .online-card,
+html[data-v28-rework="2"] #onlineScreen .online-connection{
+  padding:20px 20px 14px!important;
+}
+
+/* Freie Texteingaben in denselben Screens. Das Vorbild ist
+   .profile-name-edit im Profil-Screen, das schon so gerahmt ist. */
+html[data-v28-rework="2"] #settingsScreen input[type="text"],
+html[data-v28-rework="2"] #settingsScreen input:not([type]),
+html[data-v28-rework="2"] #accountScreen input[type="text"],
+html[data-v28-rework="2"] #accountScreen input[type="email"],
+html[data-v28-rework="2"] #accountScreen input[type="password"],
+html[data-v28-rework="2"] #accountScreen input:not([type]),
+html[data-v28-rework="2"] #onlineScreen input[type="text"],
+html[data-v28-rework="2"] #onlineScreen input:not([type]){
+  box-sizing:border-box!important;
+  width:100%!important;
+  min-height:54px!important;
+  padding:8px 18px!important;
+  border-image-source:var(--p1-ivory-card)!important;
+  border-image-slice:76 168 76 168 fill!important;
+  border-image-width:12px 22px!important;
+  border-image-repeat:stretch!important;
+  border-radius:0!important;
+  color:var(--p1-ink)!important;
+  background:var(--p1-ivory)!important;
+  box-shadow:0 4px 12px rgba(29,57,83,.08)!important;
+  font:inherit!important;
+}
+
+@media (max-width:380px){
+  html[data-v28-rework="2"] #statsScreen .stats-kpi,
+  html[data-v28-rework="2"] #settingsScreen .menu-info-card,
+  html[data-v28-rework="2"] #accountScreen .cloud-card,
+  html[data-v28-rework="2"] #accountScreen .cloud-status-card,
+  html[data-v28-rework="2"] #onlineScreen .online-card,
+  html[data-v28-rework="2"] #onlineScreen .online-connection{
+    border-image-width:10px 15px!important;
+  }
+}
