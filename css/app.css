@@ -11601,7 +11601,7 @@ html[data-v28-rework="2"] #onlineScreen .online-connection{
 }
 
 /* ===== 36-v28-hierarchie.css ===== */
-/* V28.7.1 — Rangordnung der Rahmen
+/* V28.7.2 — Rangordnung der Rahmen
    ============================================================
    Gemessen an V28.6.3: der Achievement-Screen zeigte 69 gerahmte Flächen,
    bis zu drei ineinander. Der Setup-Screen kommt bei acht Spielern auf
@@ -11619,7 +11619,7 @@ html[data-v28-rework="2"] #onlineScreen .online-connection{
                         Stufe 2 steckt.
 
    Für Stufe 3 gab es bis V28.6.4 kein Artwork; dort stand deshalb eine
-   Übergangsfassung aus einer schlichten Goldlinie. Seit V28.7.1 gibt es
+   Übergangsfassung aus einer schlichten Goldlinie. Seit V28.7.2 gibt es
    slim-strip, slim-card und slim-pill, dazu die-button für den großen
    Würfel. Alle vier sind verlustfrei konvertiert und innen transparent -
    die Füllfarbe kommt weiterhin von hier, ein Bild trägt damit helle wie
@@ -11636,10 +11636,10 @@ html[data-v28-rework="2"] #onlineScreen .online-connection{
    ============================================================ */
 
 :root{
-  --wd-strip: url("../assets/ui/v28/png/frames/slim-strip.webp?v=28.7.1");
-  --wd-card:  url("../assets/ui/v28/png/frames/slim-card.webp?v=28.7.1");
-  --wd-pill:  url("../assets/ui/v28/png/frames/slim-pill.webp?v=28.7.1");
-  --wd-die:   url("../assets/ui/v28/png/frames/die-button.webp?v=28.7.1");
+  --wd-strip: url("../assets/ui/v28/png/frames/slim-strip.webp?v=28.7.2");
+  --wd-card:  url("../assets/ui/v28/png/frames/slim-card.webp?v=28.7.2");
+  --wd-pill:  url("../assets/ui/v28/png/frames/slim-pill.webp?v=28.7.2");
+  --wd-die:   url("../assets/ui/v28/png/frames/die-button.webp?v=28.7.2");
   --wd-hell:  #f4ece3;
   --wd-navy:  #011b4b;
 }
@@ -11859,7 +11859,7 @@ html[data-v28-rework="2"] #prestigeShopScreen .prestige-active-chip{
 }
 
 /* ===== 37-v28-feinschliff.css ===== */
-/* V28.7.1 — Feinschliff nach dem Rahmen-Durchgang
+/* V28.7.2 — Feinschliff nach dem Rahmen-Durchgang
    ============================================================ */
 
 /* ===== 1 · Inhalt innerhalb des Ornamentrahmens halten =====
@@ -11906,21 +11906,13 @@ html[data-v28-rework="2"] .special-big-die.rolling{
   html[data-v28-rework="2"] .special-big-die.rolling{ animation:none!important; }
 }
 
-/* ===== 4 · Würfeldesign-Vorschau im Profil bekommt einen Rahmen ===== */
-html[data-v28-rework="2"] #profilesScreen .dice-design-preview{
-  box-sizing:border-box!important;
-  border-style:solid!important;
-  border-color:transparent!important;
-  border-width:12px 18px!important;
-  border-image-source:var(--wd-card)!important;
-  border-image-slice:72 120 72 120!important;
-  border-image-width:12px 18px!important;
-  border-image-repeat:stretch!important;
-  border-radius:0!important;
-  background:rgba(2,16,40,.55)!important;
-  box-shadow:none!important;
-  padding:4px 4px 6px!important;
-}
+/* ===== 4 · Würfeldesign-Vorschau bleibt ohne eigenen Rahmen =====
+   Hier stand bis V28.7.1 ein slim-card auf .dice-design-preview. Die
+   Kachel ist aber nur 76px breit; nach 7px Kartenpolster, 2x18px Rahmen
+   und Innenabstand blieben dem Würfelbild 21x32px - das Motiv war
+   zerdrückt statt gerahmt. Die Karte selbst trägt bereits Goldrand und
+   Rundung, ein zweiter Rahmen darin hat auf dieser Größe keinen Platz.
+   Nicht erneut hinzufügen, ohne die Kachel vorher zu vergrößern. */
 
 /* ===== 5 · Aufgabenfortschritt im Kampf ===== */
 html[data-v28-rework="2"] body.playing .campaign-task-progress{
@@ -11964,4 +11956,144 @@ html[data-v28-rework="2"] body.playing #players .player.active::after{
   html[data-v28-rework="2"] body.playing #players .player.active::after{
     inset:-20px -22px!important;
   }
+}
+
+/* ===== 8 · Kampagnenknoten dürfen nicht aus der Karte laufen =====
+   .campaign-node-map stand auf repeat(5,minmax(48px,1fr)). Der Mindestwert
+   gewinnt gegen 1fr, sobald die Karte schmaler wird: bei 360px Fensterbreite
+   waren die fünf Spalten zusammen 278px breit, die Karte innen nur 240px.
+   Der fünfte Knoten jeder Reihe (5, 10, 15) lag unter dem rechten Rahmen,
+   weil die Karte overflow-x:hidden trägt. minmax(0,1fr) lässt die Spalten
+   mitschrumpfen; der Knoten deckelt sich selbst bei 46px. */
+html[data-v28-rework="2"] .campaign-hub .campaign-node-map{
+  grid-template-columns:repeat(5,minmax(0,1fr))!important;
+}
+html[data-v28-rework="2"] .campaign-hub .campaign-node-map .campaign-node{
+  width:min(46px,100%)!important;
+  justify-self:center!important;
+}
+
+/* ===== 9 · Encounter-Details: Beschreibung und Zeilen bekommen Rahmen =====
+   Beide Flächen waren als einzige im Detailpanel noch schmucklos - flache
+   Rechtecke unter einem gerahmten Kopf. Die Beschreibung ist Fließtext und
+   bekommt deshalb die Kartenlinie, die Datenzeilen darunter wiederholen
+   sich und bekommen die schmale Zeilenlinie (Stufe 3).
+   Die Füllfarbe bleibt bewusst unangetastet: das Panel tritt hell wie
+   dunkel auf (.v28-boss-detail, .v28-prestige-detail), und die Rahmen sind
+   innen transparent - sie tragen damit beide Fassungen. */
+html[data-v28-rework="2"] .campaign-node-detail .node-detail-desc{
+  box-sizing:border-box!important;
+  border-style:solid!important;
+  border-color:transparent!important;
+  border-width:13px 21px!important;
+  border-image-source:var(--wd-card)!important;
+  border-image-slice:72 120 72 120!important;
+  border-image-width:13px 21px!important;
+  border-image-repeat:stretch!important;
+  border-radius:0!important;
+  box-shadow:none!important;
+  padding:2px 4px 4px!important;
+}
+html[data-v28-rework="2"] .campaign-node-detail .node-detail-row{
+  box-sizing:border-box!important;
+  border-style:solid!important;
+  border-color:transparent!important;
+  border-width:9px 20px!important;
+  border-image-source:var(--wd-strip)!important;
+  border-image-slice:40 96 40 96!important;
+  border-image-width:9px 20px!important;
+  border-image-repeat:stretch!important;
+  border-radius:0!important;
+  box-shadow:none!important;
+  margin-top:3px!important;
+  padding:3px 4px!important;
+}
+
+/* ===== 10 · Boss Rush =====
+   Der Knopf stand als einzige Fläche der Aktionszeile ohne Rahmen unter
+   dem bereits gerahmten XP-Streifen. Er bekommt die leise Zeilenlinie -
+   der Encounter-Start daneben behält sein volles Ornament, damit die
+   Rangfolge der beiden Aktionen sichtbar bleibt. Der rot-blaue Verlauf
+   aus 33-duo-boss-rush.css bleibt als Füllung stehen. */
+html[data-v28-rework="2"] .boss-rush-start{
+  box-sizing:border-box!important;
+  border-style:solid!important;
+  border-color:transparent!important;
+  border-width:9px 20px!important;
+  border-image-source:var(--wd-strip)!important;
+  border-image-slice:40 96 40 96!important;
+  border-image-width:9px 20px!important;
+  border-image-repeat:stretch!important;
+  border-radius:0!important;
+  box-shadow:none!important;
+  background-origin:border-box!important;
+  min-height:48px!important;
+  padding:4px 6px!important;
+}
+/* Der XP-Streifen trägt seit V28.7.1 die helle Füllung der Stufe 3, seine
+   Schrift stammt aber noch von der dunklen Vorlage: Gold auf Creme war
+   praktisch nicht zu lesen. */
+html[data-v28-rework="2"] #duoCampaignScreen .boss-rush-xp-summary{
+  color:var(--wd-navy)!important;
+}
+
+/* ===== 11 · Mastery-Kaufdialog =====
+   Der Dialog sitzt seit dem Rahmen-Durchgang auf der hellen Modalfläche,
+   seine Innenteile stammen aber noch von der dunklen Karte davor. Preis,
+   Guthaben, Titel und Beschreibung standen hell auf hell. Preis und die
+   beiden Knöpfe bekommen zusätzlich die fehlenden Rahmen. */
+html[data-v28-rework="2"] .mastery-purchase-card h3{
+  color:var(--wd-navy)!important;
+}
+html[data-v28-rework="2"] .mastery-purchase-desc,
+html[data-v28-rework="2"] .mastery-purchase-balance{
+  color:#3f5369!important;
+}
+html[data-v28-rework="2"] .mastery-purchase-price{
+  box-sizing:border-box!important;
+  border-style:solid!important;
+  border-color:transparent!important;
+  border-width:11px 22px!important;
+  border-image-source:var(--wd-pill)!important;
+  border-image-slice:128!important;
+  border-image-width:11px 22px!important;
+  border-image-repeat:stretch!important;
+  border-radius:14px!important;
+  box-shadow:none!important;
+  padding:1px 4px!important;
+  background:rgba(84,44,168,.16)!important;
+  color:#3b1d78!important;
+}
+html[data-v28-rework="2"] .mastery-purchase-actions button{
+  box-sizing:border-box!important;
+  border-style:solid!important;
+  border-color:transparent!important;
+  border-width:9px 20px!important;
+  border-image-source:var(--wd-strip)!important;
+  border-image-slice:40 96 40 96!important;
+  border-image-width:9px 20px!important;
+  border-image-repeat:stretch!important;
+  border-radius:0!important;
+  box-shadow:none!important;
+  background-origin:border-box!important;
+  min-height:46px!important;
+  padding:4px 2px!important;
+}
+
+/* ===== 12 · Namensplaketten der Achievements =====
+   Pro Erfolg steht dort eine Zeile Profilnamen. Sie sind die kleinste
+   wiederkehrende Fläche im Spiel und bekommen deshalb die Pille, nicht die
+   Karte. Die Farben der Zustände (offen / erfüllt) bleiben erhalten. */
+html[data-v28-rework="2"] #achievementsScreen .achievement-owner{
+  box-sizing:border-box!important;
+  border-style:solid!important;
+  border-color:transparent!important;
+  border-width:11px 22px!important;
+  border-image-source:var(--wd-pill)!important;
+  border-image-slice:128!important;
+  border-image-width:11px 22px!important;
+  border-image-repeat:stretch!important;
+  border-radius:14px!important;
+  box-shadow:none!important;
+  padding:0 3px!important;
 }
