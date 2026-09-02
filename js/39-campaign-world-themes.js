@@ -1,10 +1,33 @@
 (() => {
   "use strict";
 
-  const VERSION="28.10.3";
+  const VERSION="28.10.4";
   // These URLs are consumed by declarations in css/app.css. Relative URLs in
   // custom properties resolve against that stylesheet, so step out of /css.
   const ASSET_ROOT="../assets/ui/v28/png/worlds/";
+
+  // Safe inner openings measured from every individual 3:1 frame asset.
+  // Order: top right bottom left. The fill sits slightly under the artwork,
+  // while never reaching the transparent outer corners.
+  const FRAME_INSETS=Object.freeze({
+    "world-solo-house":"22% 7.3% 24.8% 7.3%",
+    "world-solo-rift":"23.2% 7.8% 26.1% 7.8%",
+    "world-solo-zero":"19.5% 9.2% 25.6% 9.2%",
+    "world-solo-abyss":"19.9% 9.5% 33.2% 9.5%",
+    "world-solo-paradox":"23.8% 9.7% 26.1% 9.7%",
+    "world-solo-astral":"26.7% 6.2% 25.2% 6.2%",
+    "world-solo-void":"21.9% 7% 23.2% 7.1%",
+    "world-duo-covenant":"16.8% 8.5% 29.5% 8.6%",
+    "world-duo-fracture":"24.4% 8.2% 27.7% 8.2%",
+    "world-duo-mirror":"20.9% 7.7% 24% 7.7%",
+    "world-duo-omega":"26.3% 8.8% 27.9% 8.8%",
+    "world-duo-eclipse":"24.6% 8.7% 25% 8.9%",
+    "world-duo-bloodmoon":"19.1% 10.5% 34.5% 10.5%",
+    "world-trio-trinity":"17.9% 9% 29.1% 8.9%",
+    "world-trio-helix":"21.3% 7% 29.3% 7.1%",
+    "world-trio-prism":"23% 6.1% 25.6% 6.2%",
+    "world-trio-singularity":"24.2% 6.1% 32% 6.2%"
+  });
 
   const theme=(primary,secondary,surface,glow,asset)=>{
     const stem=String(asset).replace(/\.png$/i,"");
@@ -15,7 +38,8 @@
       glow,
       emblem:`${ASSET_ROOT}${stem}.webp`,
       roundFrame:`${ASSET_ROOT}${stem}-frame.webp`,
-      rectFrame:`${ASSET_ROOT}${stem}-frame-rect.webp`
+      rectFrame:`${ASSET_ROOT}${stem}-frame-rect.webp`,
+      frameInset:FRAME_INSETS[stem]
     });
   };
 
@@ -62,6 +86,7 @@
     setProperty(element,"--world-emblem",`url(\"${value.emblem}?v=${VERSION}\")`);
     setProperty(element,"--world-frame-round",`url(\"${value.roundFrame}?v=${VERSION}\")`);
     setProperty(element,"--world-frame-rect",`url(\"${value.rectFrame}?v=${VERSION}\")`);
+    setProperty(element,"--world-frame-inset",value.frameInset||"23% 9% 27% 9%");
   }
 
   function applyToHub(hub,mode,worldId){

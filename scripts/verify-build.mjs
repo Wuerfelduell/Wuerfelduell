@@ -67,8 +67,13 @@ if (!worldRootMatch) {
     [...worldThemeText.matchAll(/["'](world-(?:solo|duo|trio)-[^"']+)\.png["']/g)]
       .map((match) => match[1])
   );
+  const fittedFrameStems = new Set(
+    [...worldThemeText.matchAll(/["'](world-(?:solo|duo|trio)-[^"']+)["']\s*:\s*["'](?:\d+(?:\.\d+)?%\s+){3}\d+(?:\.\d+)?%["']/g)]
+      .map((match) => match[1])
+  );
   if (!worldStems.size) errors.push("campaign world theme list is empty");
   for (const stem of worldStems) {
+    if (!fittedFrameStems.has(stem)) errors.push(`campaign world frame has no fitted inner opening: ${stem}`);
     for (const suffix of [".webp", "-frame.webp", "-frame-rect.webp"]) {
       const file = path.join(worldRoot, `${stem}${suffix}`);
       if (!(await stat(file).then(() => true).catch(() => false))) {

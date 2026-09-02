@@ -33,10 +33,10 @@
    ============================================================ */
 
 :root{
-  --wd-strip: url("../assets/ui/v28/png/frames/slim-strip.webp?v=28.10.3");
-  --wd-card:  url("../assets/ui/v28/png/frames/slim-card.webp?v=28.10.3");
-  --wd-pill:  url("../assets/ui/v28/png/frames/slim-pill.webp?v=28.10.3");
-  --wd-die:   url("../assets/ui/v28/png/frames/die-button.webp?v=28.10.3");
+  --wd-strip: url("../assets/ui/v28/png/frames/slim-strip.webp?v=28.10.4");
+  --wd-card:  url("../assets/ui/v28/png/frames/slim-card.webp?v=28.10.4");
+  --wd-pill:  url("../assets/ui/v28/png/frames/slim-pill.webp?v=28.10.4");
+  --wd-die:   url("../assets/ui/v28/png/frames/die-button.webp?v=28.10.4");
   --wd-hell:  #f4ece3;
   --wd-navy:  #011b4b;
 }
