@@ -1,90 +1,220 @@
-/* V28.6.4 — Rangordnung der Rahmen
+/* V28.7.0 — Rangordnung der Rahmen
    ============================================================
    Gemessen an V28.6.3: der Achievement-Screen zeigte 69 gerahmte Flächen,
    bis zu drei ineinander. Der Setup-Screen kommt bei acht Spielern auf
-   rund 40 Ornamentrahmen untereinander. Die Ursache ist nicht Übermut,
-   sondern Mangel: es gab nur eine Lautstärke.
+   rund 40 Ornamentrahmen untereinander. Die Ursache war nicht Übermut,
+   sondern Mangel: es gab nur eine Lautstärke, also stand überall die
+   lauteste.
 
-   Diese Datei führt drei ein:
+   Drei Stufen:
 
-     Stufe 1  Ornament   volles Artwork, genau eine Fläche je Bildschirm
-                         (Screen- bzw. Modal-Rahmen). Unverändert.
-     Stufe 2  Kante      Abschnittskarten, Primärbuttons, Weltentabs,
-                         Kampagnenknoten. Unverändert.
-     Stufe 3  Linie      alles, was sich in einer Liste wiederholt oder in
-                         Stufe 2 steckt. Hier bislang gar nichts vorhanden -
-                         deshalb stand dort überall Stufe 1.
+     Stufe 1  Ornament  volles Artwork, eine Fläche je Bildschirm
+                        (Screen- bzw. Modal-Rahmen). Unverändert.
+     Stufe 2  Kante     Abschnittskarten, Primärbuttons, Weltentabs,
+                        Kampagnenknoten. Unverändert.
+     Stufe 3  Linie     alles, was sich in Listen wiederholt oder in
+                        Stufe 2 steckt.
 
-   Was hier passiert, ist die Übergangsfassung von Stufe 3: goldene
-   Haarlinie statt Ornament. Sobald slim-strip.png und slim-card.png da
-   sind, wird nur der Block "STUFE 3" unten auf border-image umgestellt,
-   alle Nutzer erben es über die Variablen.
+   Für Stufe 3 gab es bis V28.6.4 kein Artwork; dort stand deshalb eine
+   Übergangsfassung aus einer schlichten Goldlinie. Seit V28.7.0 gibt es
+   slim-strip, slim-card und slim-pill, dazu die-button für den großen
+   Würfel. Alle vier sind verlustfrei konvertiert und innen transparent -
+   die Füllfarbe kommt weiterhin von hier, ein Bild trägt damit helle wie
+   dunkle Flächen.
 
-   Die Innenfarben stammen aus dem Artwork selbst, damit die leise Fassung
-   genauso aussieht wie bisher - nur ohne Zierrat:
+   Die Innenfarben stammen aus dem alten Artwork, damit sich am Eindruck
+   der Flächen nichts ändert:
      ivory-card-small        Mitte #f4ece3
      achievement-trophy-card Mitte #011b4b
+
+   Die border-Breite steht als Langform, damit der Rahmen echten
+   Layoutplatz bekommt. Die Kurzform "border:8px 19px solid transparent"
+   wäre ungültig und würde verworfen.
    ============================================================ */
 
 :root{
-  --wd-leise-linie:      rgba(170,124,40,.42);   /* Goldlinie auf hellem Grund */
-  --wd-leise-linie-navy: rgba(226,183,92,.34);   /* Goldlinie auf dunklem Grund */
-  --wd-leise-radius:     9px;
-  --wd-leise-hell:       #f4ece3;
-  --wd-leise-navy:       #011b4b;
+  --wd-strip: url("../assets/ui/v28/png/frames/slim-strip.webp?v=28.7.0");
+  --wd-card:  url("../assets/ui/v28/png/frames/slim-card.webp?v=28.7.0");
+  --wd-pill:  url("../assets/ui/v28/png/frames/slim-pill.webp?v=28.7.0");
+  --wd-die:   url("../assets/ui/v28/png/frames/die-button.webp?v=28.7.0");
+  --wd-hell:  #f4ece3;
+  --wd-navy:  #011b4b;
 }
 
-/* ===== STUFE 3 · helle Flächen ===== */
+/* ============ STUFE 3 · slim-strip ============
+   Zeilen und Bedienelemente. Schnitt 40 96 40 96 auf dem 1024x256-Bild. */
 html[data-v28-rework="2"] .dd-select-trigger,
-html[data-v28-rework="2"] #rulesScreen .menu-info-card,
+html[data-v28-rework="2"] #abilitiesScreen .ability-list-item,
+html[data-v28-rework="2"] .campaign-hub .campaign-complete,
+html[data-v28-rework="2"] #duoCampaignScreen .boss-rush-xp-summary,
+html[data-v28-rework="2"] #settingsScreen input[type="text"],
+html[data-v28-rework="2"] #settingsScreen input:not([type]),
+html[data-v28-rework="2"] #accountScreen input[type="text"],
+html[data-v28-rework="2"] #accountScreen input[type="email"],
+html[data-v28-rework="2"] #accountScreen input[type="password"],
+html[data-v28-rework="2"] #accountScreen input:not([type]),
+html[data-v28-rework="2"] #onlineScreen input[type="text"],
+html[data-v28-rework="2"] #onlineScreen input:not([type]){
+  box-sizing:border-box!important;
+  border-style:solid!important;
+  border-color:transparent!important;
+  border-width:9px 20px!important;
+  border-image-source:var(--wd-strip)!important;
+  border-image-slice:40 96 40 96!important;
+  border-image-width:9px 20px!important;
+  border-image-repeat:stretch!important;
+  border-radius:0!important;
+  background:var(--wd-hell)!important;
+  box-shadow:none!important;
+}
+
+/* Die Fähigkeitszeilen im Kampf stehen auf navy. */
+html[data-v28-rework="2"] #game .ability-state{
+  box-sizing:border-box!important;
+  border-style:solid!important;
+  border-color:transparent!important;
+  border-width:9px 20px!important;
+  border-image-source:var(--wd-strip)!important;
+  border-image-slice:40 96 40 96!important;
+  border-image-width:9px 20px!important;
+  border-image-repeat:stretch!important;
+  border-radius:0!important;
+  background:rgba(2,13,32,.5)!important;
+  box-shadow:none!important;
+}
+
+html[data-v28-rework="2"] .dd-select-trigger{ padding:2px 4px!important; }
+html[data-v28-rework="2"] #abilitiesScreen .ability-list-item{ padding:5px 6px!important; }
+html[data-v28-rework="2"] #settingsScreen input[type="text"],
+html[data-v28-rework="2"] #settingsScreen input:not([type]),
+html[data-v28-rework="2"] #accountScreen input[type="text"],
+html[data-v28-rework="2"] #accountScreen input[type="email"],
+html[data-v28-rework="2"] #accountScreen input[type="password"],
+html[data-v28-rework="2"] #accountScreen input:not([type]),
+html[data-v28-rework="2"] #onlineScreen input[type="text"],
+html[data-v28-rework="2"] #onlineScreen input:not([type]){
+  min-height:52px!important;
+  padding:4px 8px!important;
+}
+
+/* ============ STUFE 3 · slim-card ============
+   Karten und Notizflächen. Schnitt 72 120 72 120 auf dem 1024x512-Bild. */
+html[data-v28-rework="2"] #achievementsScreen .achievement-card,
 html[data-v28-rework="2"] #prestigeShopScreen .prestige-item,
-html[data-v28-rework="2"] #settingsScreen input[type="text"],
-html[data-v28-rework="2"] #settingsScreen input:not([type]),
-html[data-v28-rework="2"] #accountScreen input[type="text"],
-html[data-v28-rework="2"] #accountScreen input[type="email"],
-html[data-v28-rework="2"] #accountScreen input[type="password"],
-html[data-v28-rework="2"] #accountScreen input:not([type]),
-html[data-v28-rework="2"] #onlineScreen input[type="text"],
-html[data-v28-rework="2"] #onlineScreen input:not([type]){
+html[data-v28-rework="2"] #rulesScreen .menu-info-card,
+html[data-v28-rework="2"] #settingsScreen .storage-note,
+html[data-v28-rework="2"] #settingsScreen .danger-zone,
+html[data-v28-rework="2"] .mastery-footer-note,
+html[data-v28-rework="2"] #winnerBox .round-score-row,
+html[data-v28-rework="2"] #winnerBox .round-stat,
+html[data-v28-rework="2"] #winnerBox .v276-award,
+html[data-v28-rework="2"] #achievementToastLayer .achievement-toast{
+  box-sizing:border-box!important;
+  border-style:solid!important;
+  border-color:transparent!important;
+  border-width:13px 21px!important;
+  border-image-source:var(--wd-card)!important;
+  border-image-slice:72 120 72 120!important;
+  border-image-width:13px 21px!important;
+  border-image-repeat:stretch!important;
+  border-radius:0!important;
+  box-shadow:none!important;
+  padding:4px 6px!important;
+}
+
+/* Helle Karten */
+html[data-v28-rework="2"] #prestigeShopScreen .prestige-item,
+html[data-v28-rework="2"] #rulesScreen .menu-info-card,
+html[data-v28-rework="2"] #settingsScreen .storage-note,
+html[data-v28-rework="2"] #settingsScreen .danger-zone,
+html[data-v28-rework="2"] #winnerBox .v276-award{
+  background:var(--wd-hell)!important;
+}
+
+/* Dunkle Karten */
+html[data-v28-rework="2"] #achievementsScreen .achievement-card,
+html[data-v28-rework="2"] .mastery-footer-note,
+html[data-v28-rework="2"] #winnerBox .round-score-row,
+html[data-v28-rework="2"] #winnerBox .round-stat,
+html[data-v28-rework="2"] #achievementToastLayer .achievement-toast{
+  background:var(--wd-navy)!important;
+}
+
+/* ============ Die Fähigkeitstabelle ist eine Tabelle ============
+   Ein Rahmen je Zeile stünde hier 21-mal untereinander und zerschlüge
+   genau das Raster, das eine Tabelle lesbar macht. Deshalb trägt die
+   Tabelle EINEN Rahmen, die Zeilen nur eine Trennlinie. Die Kopfzeile
+   bleibt dunkel - ihre Zellen tragen helle Schrift. */
+html[data-v28-rework="2"] #statsScreen #abilityStatsList{
+  box-sizing:border-box!important;
+  border-style:solid!important;
+  border-color:transparent!important;
+  border-width:13px 21px!important;
+  border-image-source:var(--wd-card)!important;
+  border-image-slice:72 120 72 120!important;
+  border-image-width:13px 21px!important;
+  border-image-repeat:stretch!important;
+  border-radius:0!important;
+  background:var(--wd-hell)!important;
+  padding:0!important;
+}
+html[data-v28-rework="2"] #statsScreen .ability-stat-row{
+  border:0!important;
+  border-bottom:1px solid rgba(170,124,40,.20)!important;
   border-image:none!important;
-  border:1px solid var(--wd-leise-linie)!important;
-  border-radius:var(--wd-leise-radius)!important;
-  background:var(--wd-leise-hell)!important;
+  border-radius:0!important;
+  background:transparent!important;
+  padding:7px 8px!important;
+  box-shadow:none!important;
+}
+html[data-v28-rework="2"] #statsScreen .ability-stat-row:last-child{
+  border-bottom:0!important;
+}
+html[data-v28-rework="2"] #statsScreen .ability-stat-row.header{
+  background:var(--wd-navy)!important;
+  border-bottom:0!important;
+}
+
+/* ============ STUFE 3 · slim-pill ============
+   Vollgerundete Statusplakette. Schnitt 128 rundum - oben plus unten
+   ergibt die Bildhöhe, es gibt also keinen vertikalen Mittelstreifen,
+   nur so bleiben die Kappen rund. */
+html[data-v28-rework="2"] .campaign-node-detail .node-detail-state{
+  box-sizing:border-box!important;
+  border-style:solid!important;
+  border-color:transparent!important;
+  border-width:12px 26px!important;
+  border-image-source:var(--wd-pill)!important;
+  border-image-slice:128!important;
+  border-image-width:12px 26px!important;
+  border-image-repeat:stretch!important;
+  border-radius:0!important;
+  background:rgba(2,13,32,.62)!important;
+  box-shadow:none!important;
+  padding:0 2px!important;
+}
+
+/* ============ STUFE 2 · die-button ============
+   Der grosse Wuerfel in Gambling Man, High Stakes, Insurance und
+   Perfect 25. Vorher ein weisses Rechteck mit flacher gelber Kontur. */
+html[data-v28-rework="2"] #gamblingDie,
+html[data-v28-rework="2"] .special-big-die{
+  box-sizing:border-box!important;
+  border-style:solid!important;
+  border-color:transparent!important;
+  border-width:40px!important;
+  border-image-source:var(--wd-die)!important;
+  border-image-slice:150!important;
+  border-image-width:40px!important;
+  border-image-repeat:stretch!important;
+  border-radius:0!important;
+  background:linear-gradient(180deg,#ffffff,#e7ecf3)!important;
   box-shadow:none!important;
 }
 
-/* ===== STUFE 3 · dunkle Flächen auf hellem Grund =====
-   Die Achievement-Karten stehen auf der elfenbeinfarbenen Screen-Fläche.
-   Dort trägt der volle Navy-Ton, die Abgrenzung kommt vom Kontrast. */
-html[data-v28-rework="2"] #achievementsScreen .achievement-card{
-  border-image:none!important;
-  border:1px solid var(--wd-leise-linie-navy)!important;
-  border-radius:var(--wd-leise-radius)!important;
-  background:var(--wd-leise-navy)!important;
-  box-shadow:none!important;
-}
-
-/* Der Zierrat hat bisher den Innenabstand mitbelegt - ohne ihn braucht es
-   deutlich weniger, sonst steht der Text in einem Feld aus Leerraum. */
-html[data-v28-rework="2"] .dd-select-trigger{ padding:10px 14px!important; }
-html[data-v28-rework="2"] #rulesScreen .menu-info-card{ padding:14px 18px!important; }
-html[data-v28-rework="2"] #prestigeShopScreen .prestige-item{ padding:14px 18px!important; }
-html[data-v28-rework="2"] #achievementsScreen .achievement-card{ padding:14px 16px!important; }
-html[data-v28-rework="2"] #settingsScreen input[type="text"],
-html[data-v28-rework="2"] #settingsScreen input:not([type]),
-html[data-v28-rework="2"] #accountScreen input[type="text"],
-html[data-v28-rework="2"] #accountScreen input[type="email"],
-html[data-v28-rework="2"] #accountScreen input[type="password"],
-html[data-v28-rework="2"] #accountScreen input:not([type]),
-html[data-v28-rework="2"] #onlineScreen input[type="text"],
-html[data-v28-rework="2"] #onlineScreen input:not([type]){
-  min-height:48px!important;
-  padding:8px 14px!important;
-}
-
-/* ===== STUFE 3 · Marken innerhalb einer Karte =====
-   Kleine Plaketten, die im Ornamentrahmen der Karte nochmals einen
-   eigenen trugen. Sie behalten ihre Farbe, verlieren aber das Artwork. */
+/* ============ Marken innerhalb einer Karte ============
+   Kleine Plaketten, die im Rahmen der Karte nochmals einen eigenen
+   trugen. Sie behalten ihre Farbe, verlieren aber das Artwork. */
 html[data-v28-rework="2"] #achievementsScreen .achievement-reward,
 html[data-v28-rework="2"] #prestigeShopScreen .prestige-active-chip{
   border-image:none!important;
@@ -99,11 +229,23 @@ html[data-v28-rework="2"] #achievementsScreen .achievement-reward{
 }
 html[data-v28-rework="2"] #prestigeShopScreen .prestige-active-chip{
   background:rgba(3,20,48,.72)!important;
-  border:1px solid var(--wd-leise-linie-navy)!important;
+  border:1px solid rgba(226,183,92,.34)!important;
   color:#f4ead0!important;
 }
 
+/* Auf schmalen Displays werden die Rahmen zurückgenommen, damit vom
+   Inhalt noch genug Breite bleibt. */
 @media (max-width:380px){
-  html[data-v28-rework="2"] #achievementsScreen .achievement-card{ padding:12px 13px!important; }
-  html[data-v28-rework="2"] #prestigeShopScreen .prestige-item{ padding:12px 14px!important; }
+  html[data-v28-rework="2"] .dd-select-trigger,
+  html[data-v28-rework="2"] #abilitiesScreen .ability-list-item,
+  html[data-v28-rework="2"] #game .ability-state{
+    border-width:8px 15px!important;
+    border-image-width:8px 15px!important;
+  }
+  html[data-v28-rework="2"] #achievementsScreen .achievement-card,
+  html[data-v28-rework="2"] #prestigeShopScreen .prestige-item,
+  html[data-v28-rework="2"] #rulesScreen .menu-info-card{
+    border-width:11px 16px!important;
+    border-image-width:11px 16px!important;
+  }
 }
