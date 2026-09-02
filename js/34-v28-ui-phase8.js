@@ -24,6 +24,24 @@
     return `${FX_ROOT}${path}?v=${VERSION}`;
   }
 
+  // classList.add()/remove() serialisieren das class-Attribut auch dann neu,
+  // wenn sich die Token-Menge gar nicht aendert - und jede Serialisierung
+  // erzeugt einen MutationRecord. Der Observer weiter unten filtert genau auf
+  // "class" und hat sich darueber selbst endlos neu getriggert (der
+  // decorating-Guard greift nicht, weil die Records erst nach dem Durchlauf
+  // zugestellt werden). Deshalb hier und bei dataset nur schreiben, wenn sich
+  // der Wert wirklich aendert.
+  function setClass(element, className, on){
+    if(!element) return;
+    if(on){ if(!element.classList.contains(className)) element.classList.add(className); }
+    else if(element.classList.contains(className)) element.classList.remove(className);
+  }
+
+  function setData(element, key, value){
+    if(!element) return;
+    if(element.dataset[key] !== value) element.dataset[key] = value;
+  }
+
   function image(src, className){
     const element = document.createElement("img");
     element.src = src;
@@ -61,18 +79,18 @@
     let overlay = directAsset(host, kind);
     if(!locked){
       overlay?.remove();
-      if(!host.querySelector(":scope > .p8-lock-overlay")) host.classList.remove("p8-lock-host");
+      if(!host.querySelector(":scope > .p8-lock-overlay")) setClass(host, "p8-lock-host", false);
       return;
     }
     if(!overlay){
       overlay = image(
-        component("locked-padlock-overlay.png"),
+        component("locked-padlock-overlay.webp"),
         `p8-lock-overlay ${className}`
       );
       overlay.dataset.p8Lock = kind;
       host.prepend(overlay);
     }
-    host.classList.add("p8-lock-host");
+    setClass(host, "p8-lock-host", true);
   }
 
   function syncCloseButtons(root){
@@ -98,18 +116,18 @@
       }
       let overlay = directAsset(mark, "campaign-node");
       if(!overlay){
-        overlay = image(component("locked-padlock-overlay.png"), "p8-lock-overlay p8-lock-node");
+        overlay = image(component("locked-padlock-overlay.webp"), "p8-lock-overlay p8-lock-node");
         overlay.dataset.p8Lock = "campaign-node";
       }
       if(mark.childNodes.length !== 1 || mark.firstChild !== overlay) mark.replaceChildren(overlay);
-      mark.classList.add("p8-lock-mark");
-      mark.dataset.p4Decorated = "1";
-      mark.dataset.p8LockMark = "1";
+      setClass(mark, "p8-lock-mark", true);
+      setData(mark, "p4Decorated", "1");
+      setData(mark, "p8LockMark", "1");
     }else if(mark?.dataset.p8LockMark === "1"){
       if(mark.dataset.p8Created === "1") mark.remove();
       else{
         directAsset(mark, "campaign-node")?.remove();
-        mark.classList.remove("p8-lock-mark");
+        setClass(mark, "p8-lock-mark", false);
         delete mark.dataset.p8LockMark;
       }
     }
@@ -118,7 +136,7 @@
       && (node.classList.contains("current") || node.classList.contains("selected"));
     let glow = node.querySelector(":scope > .p8-boss-selected-glow");
     if(selectedBoss && !glow){
-      glow = image(effect("premium-card-selected-glow-green.png"), "p8-boss-selected-glow");
+      glow = image(effect("premium-card-selected-glow-green.webp"), "p8-boss-selected-glow");
       glow.dataset.p8Stable = "1";
       glow.setAttribute("aria-hidden", "true");
       node.prepend(glow);

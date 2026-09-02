@@ -206,13 +206,20 @@
       if(!select || !path) return;
       const option = select.options[select.selectedIndex];
       const name = abilityData()[id]?.name || option?.textContent || uiText("Fähigkeit wählen", "Choose ability");
+      // Frueher wurde der Trigger bei jedem Durchlauf per innerHTML="" neu
+      // aufgebaut, auch wenn Icon und Beschriftung schon stimmten. Jeder
+      // Neuaufbau erzeugt childList-Mutationen, die den eigenen Observer wieder
+      // wecken - der Trigger baute sich damit dauerhaft selbst neu.
+      const wantedLabel = `${id} · ${name}`;
+      if(trigger.dataset.ddTriggerState === wantedLabel) return;
       trigger.innerHTML = "";
       const row = document.createElement("span");
       row.append(icon(path, "dd-trigger-icon", name));
       const label = document.createElement("span");
-      label.textContent = `${id} · ${name}`;
+      label.textContent = wantedLabel;
       row.append(label);
       trigger.append(row);
+      trigger.dataset.ddTriggerState = wantedLabel;
     });
   }
 

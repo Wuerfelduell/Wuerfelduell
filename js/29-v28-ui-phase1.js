@@ -111,12 +111,19 @@
     return image;
   }
 
+  // Aufgabe dieser Funktion ist es, einen kaputten Pfad-Prefix zu reparieren -
+  // nicht, den Cache-Buster aller Phasen auf die Version von Phase 1 zu ziehen.
+  // Genau das tat sie vorher: sie schrieb jedes img unter assets/ui/v28/ auf
+  // ?v=28.2.1, waehrend Phase 5/6/8 ihre eigenen Icons auf ihre Versionen
+  // zurueckschrieben. Beide Seiten beobachten Attributaenderungen, also lief das
+  // endlos im Kreis und lud dieselben SVGs immer wieder neu. Ein bereits
+  // vorhandener Query-String bleibt daher jetzt unangetastet.
   function repairAssetUrl(image){
     const raw = image?.getAttribute("src") || "";
     const assetIndex = raw.indexOf(ASSET_ROOT);
     if(assetIndex < 0) return;
-    const base = raw.slice(assetIndex).split(/[?#]/, 1)[0];
-    const wanted = `${base}?v=${VERSION}`;
+    const rest = raw.slice(assetIndex);
+    const wanted = rest.includes("?") ? rest : `${rest}?v=${VERSION}`;
     if(raw !== wanted) image.setAttribute("src", wanted);
   }
 

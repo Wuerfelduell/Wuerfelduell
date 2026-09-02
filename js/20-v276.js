@@ -135,14 +135,42 @@
   function updateHotDice(){
     const dice=$('dice'); if(!dice||typeof players==='undefined'||typeof current==='undefined') return;
     const streak=Number(players[current]?.hotDiceStreak)||0;
+    // Nur schreiben, wenn sich wirklich etwas aendert. Sonst wuerde jeder Lauf
+    // erneut Attribut-Mutationen in #dice erzeugen und sich selbst neu ausloesen.
+    if(dice.dataset.hotStreak===String(streak)) return;
     dice.classList.toggle('hot-dice',streak>=3);
     dice.classList.toggle('hot-dice-strong',streak>=4);
     dice.classList.toggle('hot-dice-max',streak>=5);
     dice.dataset.hotStreak=String(streak);
   }
 
-  const observer=new MutationObserver(()=>{decorateProfiles();decorateAwards();updateHotDice();});
-  observer.observe(document.documentElement,{subtree:true,childList:true,attributes:true,attributeFilter:['class']});
-  setInterval(()=>{decorateProfiles();decorateAwards();updateHotDice();},700);
-  queueMicrotask(()=>{decorateProfiles();decorateAwards();updateHotDice();});
+  // Frueher hing hier ein MutationObserver auf document.documentElement mit
+  // subtree+childList+class-Attributen und ohne jede Entprellung, dazu ein
+  // setInterval(700). Jede Klassenaenderung irgendwo im Dokument - im Kampf
+  // also Wuerfel-Rolling, aktiver Spieler, FX-Layer - liess damit alle drei
+  // Dekorierer samt querySelectorAll und Array-Sorts synchron durchlaufen.
+  //
+  // Jetzt: pro Frame hoechstens ein Durchlauf, und beobachtet werden nur die
+  // drei Container, an denen die Dekorierer ueberhaupt arbeiten.
+  let frame=0;
+  function refresh(){
+    if(frame) return;
+    frame=requestAnimationFrame(()=>{
+      frame=0;
+      decorateProfiles();
+      decorateAwards();
+      updateHotDice();
+    });
+  }
+
+  function watch(id,options){
+    const node=$(id);
+    if(!node) return;
+    new MutationObserver(refresh).observe(node,options);
+  }
+
+  watch('profileList',{childList:true,subtree:true});
+  watch('winnerBox',{childList:true,subtree:true,attributes:true,attributeFilter:['class']});
+  watch('dice',{childList:true,subtree:true,attributes:true,attributeFilter:['class']});
+  queueMicrotask(refresh);
 })();
