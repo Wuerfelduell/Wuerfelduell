@@ -1,0 +1,28 @@
+name: Pro branch transfer
+
+on:
+  push:
+    branches:
+      - codex/v28.10.0-pro
+
+permissions:
+  contents: write
+
+jobs:
+  snapshot:
+    if: contains(github.event.head_commit.message, '[snapshot]')
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Pack repository snapshot
+        run: |
+          tar --exclude=.git --exclude=repo.tar.gz -czf repo.tar.gz .
+      - name: Upload snapshot
+        uses: actions/upload-artifact@v4
+        with:
+          name: pro-base-snapshot
+          path: repo.tar.gz
+          retention-days: 1
+          if-no-files-found: error
