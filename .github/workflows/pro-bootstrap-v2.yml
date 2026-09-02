@@ -1,0 +1,128 @@
+name: Bootstrap DiceDuel Pro v2
+
+on:
+  push:
+    branches:
+      - codex/v28.10.0-pro
+
+permissions:
+  contents: write
+
+concurrency:
+  group: diceduel-pro-bootstrap-v2
+  cancel-in-progress: false
+
+jobs:
+  bootstrap:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Restore Pro payload when transfer is absent
+        shell: bash
+        run: |
+          set -euo pipefail
+          if grep -RIlE 'WDPro|DiceDuel Pro|Battle Vault|Kampfarchiv|proEntitlement|Boss.?Rush.?Chronik' js src 2>/dev/null | grep -q .; then
+            echo 'Pro implementation already present; preserving it.'
+          else
+            python3 - <<'PY'
+          from pathlib import Path
+          import textwrap
+          source=Path('.github/workflows/pro-bootstrap.yml').read_text()
+          blocks=[
+              ("cat > js/38-pro.js <<'JAVASCRIPT'","JAVASCRIPT",Path('js/38-pro.js')),
+              ("cat > css/pro.css <<'CSS'","CSS",Path('css/pro.css')),
+              ("cat > scripts/validate-pro.mjs <<'VALIDATOR'","VALIDATOR",Path('scripts/validate-pro.mjs')),
+              ("cat > docs/PRO_BILLING_INTEGRATION.md <<'DOC'","DOC",Path('docs/PRO_BILLING_INTEGRATION.md')),
+          ]
+          for start,end,target in blocks:
+              marker=start+'\n'
+              i=source.index(marker)+len(marker)
+              j=source.index('\n          '+end, i)
+              payload=textwrap.dedent(source[i:j])
+              target.parent.mkdir(parents=True,exist_ok=True)
+              target.write_text(payload)
+              print('restored',target,len(payload))
+          PY
+          fi
+
+      - name: Integrate Pro module and update V28.10.0 metadata
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+          import json,re
+          v='28.10.0'
+
+          index=Path('index.html')
+          text=index.read_text()
+          text=re.sub(r'([?&]v=)28\.(?:9\.[0-9]+|10\.0)(?=["&])',lambda m:m.group(1)+v,text)
+          if 'css/pro.css?' not in text:
+              text=text.replace('</head>',f'  <link rel="stylesheet" href="css/pro.css?v={v}">\n</head>')
+          else:
+              text=re.sub(r'(css/pro\.css\?v=)[^"\']+',r'\g<1>'+v,text)
+          if 'js/38-pro.js?' not in text:
+              text=text.replace('</body>',f'  <script src="js/38-pro.js?v={v}"></script>\n</body>')
+          else:
+              text=re.sub(r'(js/38-pro\.js\?v=)[^"\']+',r'\g<1>'+v,text)
+          index.write_text(text)
+
+          for name in ('package.json','package-lock.json'):
+              p=Path(name)
+              if not p.exists(): continue
+              obj=json.loads(p.read_text())
+              obj['version']=v
+              if name=='package-lock.json' and isinstance(obj.get('packages'),dict) and isinstance(obj['packages'].get(''),dict):
+                  obj['packages']['']['version']=v
+              if name=='package.json':
+                  scripts=obj.setdefault('scripts',{})
+                  scripts['check:pro']='node scripts/validate-pro.mjs'
+                  check=scripts.get('check','')
+                  if 'validate-pro.mjs' not in check:
+                      scripts['check']=(check+' && ' if check else '')+'node scripts/validate-pro.mjs'
+              p.write_text(json.dumps(obj,ensure_ascii=False,indent=2)+'\n')
+
+          p=Path('version.json')
+          if p.exists():
+              try: obj=json.loads(p.read_text())
+              except Exception: obj={}
+              if not isinstance(obj,dict): obj={}
+              touched=False
+              for key in ('version','build','appVersion'):
+                  if key in obj: obj[key]=v;touched=True
+              if not touched: obj['version']=v
+              p.write_text(json.dumps(obj,ensure_ascii=False,indent=2)+'\n')
+
+          for name in ('sw.js','js/01-config.js'):
+              p=Path(name)
+              if not p.exists(): continue
+              s=p.read_text()
+              s=re.sub(r'(GAME_VERSION\s*=\s*["\'])[^"\']+(["\'])',lambda m:m.group(1)+v+m.group(2),s)
+              s=re.sub(r'(CACHE_VERSION\s*=\s*["\'])[^"\']+(["\'])',lambda m:m.group(1)+v+m.group(2),s)
+              p.write_text(s)
+          PY
+
+      - name: Validate combined game
+        shell: bash
+        run: |
+          set -euo pipefail
+          npm ci --ignore-scripts
+          npm run check
+
+      - name: Commit product changes and remove bootstrap workflows
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -f .github/workflows/pro-bootstrap.yml .github/workflows/pro-bootstrap-v2.yml
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -A
+          if git diff --cached --quiet; then
+            echo 'Nothing to commit.'
+          else
+            git commit -m 'feat: add DiceDuel Pro foundation (V28.10.0)'
+            git push origin HEAD:codex/v28.10.0-pro
+          fi
