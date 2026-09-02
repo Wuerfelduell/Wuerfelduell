@@ -1,10 +1,10 @@
-/* DiceDuel V28.10.2 — menu safe areas and framed utility screens. */
+/* DiceDuel V28.10.3 — menu safe areas and framed utility screens. */
 
 :root{
-  --v2893-achievement-card:url("../assets/ui/v28/png/frames/achievement-trophy-card.webp?v=28.10.2");
-  --v2893-ivory-card:url("../assets/ui/v28/png/frames/ivory-card-small.webp?v=28.10.2");
-  --v2893-navy-button:url("../assets/ui/v28/png/frames/navy-button-horizontal.webp?v=28.10.2");
-  --v2893-green-button:url("../assets/ui/v28/png/components/encounter-button-green.webp?v=28.10.2");
+  --v2893-achievement-card:url("../assets/ui/v28/png/frames/achievement-trophy-card.webp?v=28.10.3");
+  --v2893-ivory-card:url("../assets/ui/v28/png/frames/ivory-card-small.webp?v=28.10.3");
+  --v2893-navy-button:url("../assets/ui/v28/png/frames/navy-button-horizontal.webp?v=28.10.3");
+  --v2893-green-button:url("../assets/ui/v28/png/components/encounter-button-green.webp?v=28.10.3");
 }
 
 /* Main menu: the icon leaves the ornamental end cap and gets its own safe area. */

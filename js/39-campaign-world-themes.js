@@ -1,7 +1,7 @@
 (() => {
   "use strict";
 
-  const VERSION="28.10.2";
+  const VERSION="28.10.3";
   // These URLs are consumed by declarations in css/app.css. Relative URLs in
   // custom properties resolve against that stylesheet, so step out of /css.
   const ASSET_ROOT="../assets/ui/v28/png/worlds/";
