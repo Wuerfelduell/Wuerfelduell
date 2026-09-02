@@ -10,13 +10,14 @@ async function exists(relativePath) {
   return stat(path.join(root, relativePath)).then(() => true).catch(() => false);
 }
 
-const [html, versionText, packageText, configText, workerText, css] = await Promise.all([
+const [html, versionText, packageText, configText, workerText, css, worldThemeText] = await Promise.all([
   readFile(path.join(root, "index.html"), "utf8"),
   readFile(path.join(root, "version.json"), "utf8"),
   readFile(path.join(root, "package.json"), "utf8"),
   readFile(path.join(root, "js", "01-config.js"), "utf8"),
   readFile(path.join(root, "sw.js"), "utf8"),
-  readFile(path.join(root, "css", "app.css"), "utf8")
+  readFile(path.join(root, "css", "app.css"), "utf8"),
+  readFile(path.join(root, "js", "39-campaign-world-themes.js"), "utf8")
 ]);
 const versionData = JSON.parse(versionText);
 const packageData = JSON.parse(packageText);
@@ -52,6 +53,29 @@ for (const match of css.matchAll(/url\(\s*["']?([^"')?#]+)(?:[?#][^"')]*)?["']?\
   if (/^(?:data:|https?:|#)/.test(ref)) continue;
   const resolved = path.relative(root, path.resolve(root, "css", ref));
   if (!(await exists(resolved))) errors.push(`css/app.css references missing file: ${ref}`);
+}
+
+// World image URLs are stored in JS custom properties but consumed by
+// declarations in css/app.css. Browsers therefore resolve them relative to
+// /css, not relative to index.html or the JS file.
+const worldRootMatch = worldThemeText.match(/const ASSET_ROOT\s*=\s*["']([^"']+)["']/);
+if (!worldRootMatch) {
+  errors.push("campaign world ASSET_ROOT is missing");
+} else {
+  const worldRoot = path.resolve(root, "css", worldRootMatch[1]);
+  const worldStems = new Set(
+    [...worldThemeText.matchAll(/["'](world-(?:solo|duo|trio)-[^"']+)\.png["']/g)]
+      .map((match) => match[1])
+  );
+  if (!worldStems.size) errors.push("campaign world theme list is empty");
+  for (const stem of worldStems) {
+    for (const suffix of [".webp", "-frame.webp", "-frame-rect.webp"]) {
+      const file = path.join(worldRoot, `${stem}${suffix}`);
+      if (!(await stat(file).then(() => true).catch(() => false))) {
+        errors.push(`campaign world asset does not resolve from css/app.css: ${path.relative(root, file)}`);
+      }
+    }
+  }
 }
 
 const jsFiles = (await readdir(path.join(root, "js")))
