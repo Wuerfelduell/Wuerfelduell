@@ -187,9 +187,15 @@ html[data-v28-rework="2"] .campaign-mastery-btn{
   box-shadow:none!important;
   text-shadow:0 1px 0 rgba(255,255,255,.72)!important;
 }
+/* #quitConfirmBtn stand hier bis V28.7.3 als dritter Selektor. Er ist
+   entfernt, weil jede der acht Eigenschaften in 18-v28-ui-phase3,
+   20-v28-ui-phase5, 22-v28-ui-phase7, 24-v28-ui-phase9 oder
+   26-v28-ui-phase11 mit gleicher Spezifitaet und !important erneut
+   gesetzt wird; --dd-frame-button-danger erreichte ihn seit Phase 5
+   nicht mehr. Fuer .blood und .profile-delete gilt das nicht - die
+   Regel bleibt fuer sie bestehen. */
 html[data-v28-rework="2"] button.blood,
-html[data-v28-rework="2"] .profile-delete,
-html[data-v28-rework="2"] #quitConfirmBtn{
+html[data-v28-rework="2"] .profile-delete{
   min-height:50px!important;
   padding:10px 38px!important;
   border:0!important;border-radius:0!important;

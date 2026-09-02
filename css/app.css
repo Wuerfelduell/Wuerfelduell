@@ -3945,7 +3945,8 @@ body.playing .die{border-color:rgba(215,173,82,.48);box-shadow:inset 0 -4px 0 rg
 
 /* Danger confirmation */
 #quitModal .utility-actions{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-#quitConfirmBtn{background:linear-gradient(160deg,#c34251,#8d2431)}
+/* #quitConfirmBtn-Verlauf entfernt: wirkte nie, 14-v28-asset-system.css
+   setzt background eine Schicht spaeter mit !important. */
 
 /* Custom compact ability picker: names only, no descriptions */
 .v28-native-ability-select{position:absolute!important;width:1px!important;height:1px!important;opacity:0!important;pointer-events:none!important}
@@ -4923,9 +4924,15 @@ html[data-v28-rework="2"] .campaign-mastery-btn{
   box-shadow:none!important;
   text-shadow:0 1px 0 rgba(255,255,255,.72)!important;
 }
+/* #quitConfirmBtn stand hier bis V28.7.3 als dritter Selektor. Er ist
+   entfernt, weil jede der acht Eigenschaften in 18-v28-ui-phase3,
+   20-v28-ui-phase5, 22-v28-ui-phase7, 24-v28-ui-phase9 oder
+   26-v28-ui-phase11 mit gleicher Spezifitaet und !important erneut
+   gesetzt wird; --dd-frame-button-danger erreichte ihn seit Phase 5
+   nicht mehr. Fuer .blood und .profile-delete gilt das nicht - die
+   Regel bleibt fuer sie bestehen. */
 html[data-v28-rework="2"] button.blood,
-html[data-v28-rework="2"] .profile-delete,
-html[data-v28-rework="2"] #quitConfirmBtn{
+html[data-v28-rework="2"] .profile-delete{
   min-height:50px!important;
   padding:10px 38px!important;
   border:0!important;border-radius:0!important;
@@ -6889,11 +6896,8 @@ html[data-v28-rework="2"] #quitCancelBtn{
   background:var(--p3-navy-button) center/100% 100% no-repeat!important;
   text-shadow:0 1px 3px rgba(2,16,38,.72)!important;
 }
-html[data-v28-rework="2"] #quitConfirmBtn{
-  color:#fff6e9!important;
-  background:var(--p3-danger-button) center/100% 100% no-repeat!important;
-  text-shadow:0 1px 3px rgba(42,2,9,.78)!important;
-}
+/* Quit-Knopf: color, background und text-shadow werden in Phase 5 und 7
+   erneut gesetzt, das Artwork --p3-danger-button erreicht ihn nicht mehr. */
 
 /* ---------- Campaign controls and green primary action ---------- */
 html[data-v28-rework="2"] .campaign-hub .campaign-controls .dd-select-trigger{
@@ -8008,28 +8012,11 @@ html[data-v28-rework="2"] #quitModal .utility-actions{
   gap:10px!important;
   padding:3px 2px!important;
 }
-html[data-v28-rework="2"] #quitConfirmBtn{
-  position:relative!important;
-  isolation:isolate;
-  overflow:visible!important;
-  min-height:76px!important;
-  padding:18px 30px!important;
-  border:0!important;
-  border-radius:0!important;
-  background:transparent!important;
-  box-shadow:none!important;
-  color:#fff7e9!important;
-  text-shadow:0 1px 3px rgba(42,2,9,.82)!important;
-}
-html[data-v28-rework="2"] #quitConfirmBtn::before{
-  content:"";
-  position:absolute;
-  z-index:0;
-  inset:-3px -6px;
-  pointer-events:none;
-  background:var(--p5-danger-button) center/100% 100% no-repeat;
-  filter:drop-shadow(0 6px 10px rgba(54,3,12,.24));
-}
+/* Quit-Knopf: Fassung und ihr ::before entfernt. Geometrie und Farben
+   kommen seit 22-v28-ui-phase7 von dort, Position und Ebenen seit
+   24-v28-ui-phase9; das ::before wird in Phase 7 auf display:none gesetzt
+   und in Phase 9 mit --p9-danger-button und inset:-4px -8px komplett neu
+   aufgebaut. --p5-danger-button wurde damit nie gezeichnet. */
 html[data-v28-rework="2"] #quitConfirmBtn>.p5-button-label{
   position:relative;
   z-index:1;

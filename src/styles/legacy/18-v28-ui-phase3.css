@@ -87,11 +87,8 @@ html[data-v28-rework="2"] #quitCancelBtn{
   background:var(--p3-navy-button) center/100% 100% no-repeat!important;
   text-shadow:0 1px 3px rgba(2,16,38,.72)!important;
 }
-html[data-v28-rework="2"] #quitConfirmBtn{
-  color:#fff6e9!important;
-  background:var(--p3-danger-button) center/100% 100% no-repeat!important;
-  text-shadow:0 1px 3px rgba(42,2,9,.78)!important;
-}
+/* Quit-Knopf: color, background und text-shadow werden in Phase 5 und 7
+   erneut gesetzt, das Artwork --p3-danger-button erreicht ihn nicht mehr. */
 
 /* ---------- Campaign controls and green primary action ---------- */
 html[data-v28-rework="2"] .campaign-hub .campaign-controls .dd-select-trigger{
