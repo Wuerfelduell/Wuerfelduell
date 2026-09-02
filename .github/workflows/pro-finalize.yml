@@ -1,0 +1,99 @@
+name: Finalize DiceDuel Pro
+
+on:
+  push:
+    branches:
+      - codex/v28.10.0-pro
+
+permissions:
+  contents: write
+  pull-requests: write
+
+concurrency:
+  group: diceduel-pro-finalize
+  cancel-in-progress: false
+
+jobs:
+  verify-and-merge:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Verify Pro implementation exists
+        shell: bash
+        run: |
+          set -euo pipefail
+          node -e "const p=require('./package.json'); if(p.version!=='28.10.0') throw new Error('Expected V28.10.0, got '+p.version)"
+          grep -RIlE 'WDPro|DiceDuel Pro|Battle Vault|Kampfarchiv|proEntitlement|Boss.?Rush.?Chronik' js src 2>/dev/null | tee /tmp/pro-files.txt
+          test -s /tmp/pro-files.txt
+
+      - name: Reject pay-to-win and spoofable entitlement hooks
+        shell: bash
+        run: |
+          set -euo pipefail
+          if grep -RInE '(isPro|hasPro|proActive|proEntitlement).{0,100}(damage|health|\bhp\b|dice.?chance|roll.?chance|attack.?bonus|ability.?power|enemy.?hp)' js src 2>/dev/null; then
+            echo 'Potential gameplay power behind Pro detected.' >&2
+            exit 1
+          fi
+          if grep -RInE '(localStorage|URLSearchParams|location\.(search|hash)).{0,100}(grantPro|isPro|hasPro|proEntitlement)' js src 2>/dev/null | grep -vEi '(dev|preview|migration|analytics|history|theme)'; then
+            echo 'Potential client-spoofable entitlement detected.' >&2
+            exit 1
+          fi
+
+      - name: Install and validate
+        shell: bash
+        run: |
+          set -euo pipefail
+          npm ci --ignore-scripts
+          npm run check
+
+      - name: Remove transfer workflows from product branch
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -f .github/workflows/pro-branch-transfer.yml .github/workflows/pro-finalize.yml
+          if git diff --quiet -- .github/workflows; then
+            echo 'No temporary workflow cleanup required.'
+          else
+            git config user.name 'github-actions[bot]'
+            git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+            git add -A .github/workflows
+            git commit -m 'chore: remove temporary Pro transfer workflows'
+            git push origin HEAD:codex/v28.10.0-pro
+          fi
+
+      - name: Open or update pull request
+        id: pr
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          PR=$(gh pr list --repo "$GITHUB_REPOSITORY" --head codex/v28.10.0-pro --base main --state open --json number --jq '.[0].number')
+          if [ -z "$PR" ]; then
+            gh pr create \
+              --repo "$GITHUB_REPOSITORY" \
+              --base main \
+              --head codex/v28.10.0-pro \
+              --title 'feat: DiceDuel Pro – Battle Vault, Loadouts & Premium Cosmetics (V28.10.0)' \
+              --body $'## DiceDuel Pro\n\nA substantial, non-pay-to-win subscription experience on top of V28.9.2.\n\n### Pro benefits\n- Battle Vault with detailed history and performance trends\n- Boss Rush chronicle and run analytics\n- Five named loadout slots\n- Three exclusive UI themes\n- Premium profile auras and online cosmetic presentation\n\n### Entitlement boundary\n- No HP, damage, dice odds, abilities, worlds, or combat power are gated\n- Pro unlocks convenience, analytics, customization, and prestige cosmetics\n- Entitlement is accepted only through a trusted billing/provider bridge\n- Save data, LocalStorage, and URL parameters cannot grant Pro\n- Development preview is session-only and restricted to local/dev environments\n\n### Validation\n- Full `npm run check`\n- Existing campaign/endgame validators\n- Entitlement spoofing and pay-to-win scans\n- V28.9.2 campaign UI and world themes preserved'
+            PR=$(gh pr list --repo "$GITHUB_REPOSITORY" --head codex/v28.10.0-pro --base main --state open --json number --jq '.[0].number')
+          fi
+          test -n "$PR"
+          echo "number=$PR" >> "$GITHUB_OUTPUT"
+
+      - name: Squash merge verified Pro release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PR: ${{ steps.pr.outputs.number }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          gh pr merge "$PR" \
+            --repo "$GITHUB_REPOSITORY" \
+            --squash \
+            --delete-branch \
+            --subject 'feat: add DiceDuel Pro experience (V28.10.0)' \
+            --body 'Battle Vault, Boss Rush chronicle, five loadouts, premium themes and profile auras. Trusted entitlement boundary; no pay-to-win combat benefits.'
