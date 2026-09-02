@@ -1,6 +1,6 @@
-# DiceDuel Supabase foundation
+# DiceDuel Supabase online backend
 
-This release prepares one Supabase project for both DiceDuel accounts/cloud saves and online battles. Local storage remains the offline cache. Firebase remains the active battle transport until the final cutover, so an unfinished Supabase setup cannot break live matches.
+Supabase is the active backend for DiceDuel accounts, cloud saves, private lobbies, Realtime match state, actions, rematches, and reconnects. Local storage remains the offline cache. The previous Firebase implementation stays in the bundle as a config-only fallback.
 
 The already-created `Profiles` table is intentionally preserved. The foundation does not rename, drop, or rewrite it: its visible `id`, `username`, and `level` fields can remain the public game-profile layer. `dd_accounts` is a private Auth mirror and `dd_account_saves` stores the full protected save. Mapping `Profiles.id` to `auth.users.id` and its exact RLS policies should be done only after the complete `Profiles` schema is confirmed.
 
@@ -12,8 +12,9 @@ The already-created `Profiles` table is intentionally preserved. The foundation 
 - RLS on every public table. Clients receive `SELECT` only; mutations go through validated RPC functions.
 - Six-character private room codes and atomic create/join/ready/start/leave functions.
 - Sequence and interaction-owner validation before an online action is queued.
-- JWT-checked `battle-action` Edge Function.
-- Realtime subscription adapter that refreshes one authorized room snapshot.
+- Protected action RPC used directly by the browser; the optional JWT-checked `battle-action` Edge Function remains available for a later server-engine phase.
+- Realtime subscription adapter that refreshes one authorized room snapshot plus recent actions and visual events.
+- Automatic reconnect to the latest active lobby or match for the current Supabase identity.
 - Anonymous Supabase identities prepared for players who want to play online without creating an email account.
 - Browser and Edge Function clients pinned to `@supabase/supabase-js` 2.114.0.
 
@@ -25,10 +26,11 @@ Choose a European Supabase region. With the Supabase CLI installed:
 supabase login
 supabase link --project-ref YOUR_PROJECT_REF
 supabase db push
-supabase functions deploy battle-action --no-verify-jwt
 ```
 
-The function uses `--no-verify-jwt` because it validates the bearer token itself with `auth.getUser()` before calling the protected database RPC. It never uses a service-role key.
+If the Edge Function is wanted for future server-side battle work, deploy it separately with `supabase functions deploy battle-action --no-verify-jwt`. The current lobby and match transport does not require that deployment: it calls the same protected action RPC directly.
+
+Without the CLI, run `supabase/manual/diceduel_backend_foundation_batch_1.sql` and then `supabase/manual/diceduel_backend_foundation_batch_2.sql` once in the SQL Editor.
 
 ## 2. Configure Auth
 
@@ -53,7 +55,7 @@ Edit `js/backend-config.js`:
 ```js
 window.DICEDUEL_BACKEND_CONFIG={
   accountProvider:"supabase",
-  onlineProvider:"firebase",
+  onlineProvider:"supabase",
   supabase:{
     projectUrl:"https://YOUR_PROJECT_REF.supabase.co",
     publishableKey:"YOUR_PUBLISHABLE_OR_ANON_KEY",
@@ -72,13 +74,13 @@ Once these public values exist, the Account screen automatically replaces the lo
 `window.WDSupabaseBattleBackend` exposes:
 
 - `identity()`
-- `createRoom()` / `joinRoom()` / `leaveRoom()`
+- `createRoom()` / `joinRoom()` / `reconnectRoom()` / `leaveRoom()`
 - `getSnapshot()` / `subscribeRoom()`
 - `setReady()` / `startMatch()` / `resetLobby()`
 - `submitAction()` / `publishState()` / `resolveAction()`
 - `emitEvent()` / `setPostMatchChoice()`
 
-The existing `WDOnlineBridge` and host battle engine are unchanged. The next backend phase connects the current lobby controller to this adapter and then moves rule resolution from the host device into the Edge Function. Until that cutover is tested on two devices, `onlineProvider` must stay `firebase`.
+The existing `WDOnlineBridge` and host battle engine remain authoritative. Supabase validates room membership, the exact state sequence, and the current interaction owner before queuing a guest action. The host executes DiceDuel rules and publishes the next protected state. Set `onlineProvider` back to `firebase` only as an emergency rollback.
 
 ## Security model
 
@@ -97,4 +99,5 @@ The existing `WDOnlineBridge` and host battle engine are unchanged. The next bac
 3. Create a room with an anonymous session and join it from a second browser.
 4. Verify a non-member cannot select any room table rows.
 5. Verify a guest cannot start a room, publish state, or act for another user.
-6. Verify a stale `baseSeq` returns HTTP 409 from `battle-action`.
+6. Reload one device during a running match and verify it restores the latest state.
+7. Verify a stale `baseSeq` is rejected by `dd_submit_battle_action`.

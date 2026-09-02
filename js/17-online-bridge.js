@@ -839,6 +839,10 @@
       addLog(`${p.name}: ${abilityText} · 🎲 ${DICE_DESIGNS[p.diceDesign]?.name||"Classic"} · ✨ ${ATTACK_FX_STYLES[p.attackFx]?.name||"Arc Shot"}.`);
     });
     renderAll();enforceOnlineControls();
+    // Reconnect kann mitten in einem laufenden Match landen. In diesem Fall ist der
+    // Snapshot bereits neuer als der leere Startzustand und muss sofort vollständig
+    // wiederhergestellt werden – auch auf dem autoritativen Host-Gerät.
+    if((Number(match?.state?.seq)||0)>0) applyStateNow(match.state,null);
     addLog(`🌐 V27.6.0: Online-Modi · 2–4 Spieler · profilgebundene Combat-FX.`);
     return true;
   }

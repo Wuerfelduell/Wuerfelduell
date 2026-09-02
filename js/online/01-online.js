@@ -1,12 +1,19 @@
-import { initializeApp } from "https://www.gstatic.com/firebasejs/12.17.1/firebase-app.js";
-import { getAuth, onAuthStateChanged, signInAnonymously } from "https://www.gstatic.com/firebasejs/12.17.1/firebase-auth.js";
-import {
-  getDatabase, ref, get, set, update, remove, onValue, onChildAdded,
-  onDisconnect, runTransaction, serverTimestamp
-} from "https://www.gstatic.com/firebasejs/12.17.1/firebase-database.js";
+const isSupabaseOnline=window.WDBackendConfig?.onlineProvider==="supabase";
+let initializeApp,getAuth,onAuthStateChanged,signInAnonymously,getDatabase,ref,get,set,update,remove,onValue,onChildAdded,onDisconnect,runTransaction,serverTimestamp;
 
-// Firebase bleibt bewusst nur Transport + Raum-/Presence-Layer.
-// Die eigentliche DiceDuel-Engine läuft weiterhin auf dem Host-Gerät.
+// Firebase wird nur noch beim ausdrücklichen Fallback geladen. Dadurch hängt der
+// Supabase-Start weder funktional noch beim CDN-Laden vom alten Transport ab.
+if(!isSupabaseOnline){
+  const [appModule,authModule,databaseModule]=await Promise.all([
+    import("https://www.gstatic.com/firebasejs/12.17.1/firebase-app.js"),
+    import("https://www.gstatic.com/firebasejs/12.17.1/firebase-auth.js"),
+    import("https://www.gstatic.com/firebasejs/12.17.1/firebase-database.js")
+  ]);
+  ({initializeApp}=appModule);
+  ({getAuth,onAuthStateChanged,signInAnonymously}=authModule);
+  ({getDatabase,ref,get,set,update,remove,onValue,onChildAdded,onDisconnect,runTransaction,serverTimestamp}=databaseModule);
+}
+
 const firebaseConfig={
   apiKey:"AIzaSyDWVildqD4Hx8JpuY87blbcdJYawluDJ5Y",
   authDomain:"wuerfelduell-35558.firebaseapp.com",
@@ -17,10 +24,15 @@ const firebaseConfig={
   appId:"1:204749035054:web:1a2f95da48d98b67b671bf"
 };
 
-const app=initializeApp(firebaseConfig);
-const auth=getAuth(app);
-const db=getDatabase(app);
+const app=isSupabaseOnline?null:initializeApp(firebaseConfig);
+const auth=isSupabaseOnline?null:getAuth(app);
+const db=isSupabaseOnline?null:getDatabase(app);
 const bridge=window.WDOnlineBridge;
+let supabaseBackend=window.WDSupabaseBattleBackend;
+function getSupabaseBackend(){
+  supabaseBackend=supabaseBackend||window.WDSupabaseBattleBackend||null;
+  return supabaseBackend;
+}
 const $=id=>document.getElementById(id);
 
 const mainMenu=$("mainMenu"),onlineScreen=$("onlineScreen"),menuOnlineBtn=$("menuOnlineBtn"),onlineBackBtn=$("onlineBackBtn");
@@ -34,12 +46,13 @@ const onlineMainMenuBtn=$("onlineMainMenuBtn"),onlinePostMatchStatus=$("onlinePo
 
 let uid=null;
 let currentRoomCode=null;
+let currentRoomId=null;
 let currentRoom=null;
 let currentIsHost=false;
 let currentHostUid="";
 let currentMatchId="";
 let authReady=false;
-let firebaseConnected=false;
+let transportConnected=false;
 let busy=false;
 let matchStartBusy=false;
 let enteredMatchId=null;
@@ -63,6 +76,7 @@ let lastVisualId="";
 let hostActionQueue=[];
 let hostEngineDraining=false;
 let hostQueuedActionIds=new Set();
+let hostProcessedActionIds=new Set();
 let hostPublishChain=Promise.resolve();
 let hostStateSeq=0;
 let localStateSeq=0;
@@ -70,6 +84,11 @@ let localProfileId=null;
 let postMatchEnded=false;
 let postMatchTransitionBusy=false;
 let postMatchChoices={};
+let handledSupabaseEvents=new Set();
+let handledSupabaseRejections=new Set();
+let resumeAttempted=false;
+let supabaseAuthSubscription=null;
+let supabaseAuthPromise=null;
 
 function escapeHtml(value){return String(value??"").replace(/[&<>'"]/g,ch=>({"&":"&amp;","<":"&lt;",">":"&gt;","'":"&#39;",'"':"&quot;"}[ch]));}
 function normalizeCode(value){return String(value||"").toUpperCase().replace(/[^A-Z2-9]/g,"").slice(0,6);}
@@ -96,6 +115,18 @@ function selectedProfile(){
   const profiles=bridge?.getProfiles?.()||[];
   return profiles.find(p=>p.id===onlineProfileSelect.value)||profiles[0]||null;
 }
+function onlineProfilePayload(profile){
+  const resolved=bridge?.resolveProfileCosmetics?.(profile?.id)||{dice:profile?.selectedDice||"classic",attackFx:profile?.selectedAttackFx||"classic"};
+  return {
+    profileId:String(profile?.id||""),
+    name:String(profile?.name||"Spieler").slice(0,24),
+    tagNumber:String(profile?.tagNumber||"0000").padStart(4,"0").slice(-4),
+    diceDesign:resolved.dice||profile?.selectedDice||"classic",
+    attackFx:resolved.attackFx||profile?.selectedAttackFx||"classic",
+    cosmeticTitle:profile?.cosmeticTitle||"",
+    cosmeticFrame:profile?.cosmeticFrame||""
+  };
+}
 function setNotice(text,type=""){
   onlineNotice.textContent=text||"";
   onlineNotice.className=`online-notice${type?` ${type}`:""}${text?"":" hidden"}`;
@@ -106,10 +137,10 @@ function setConnection(label,state="pending"){
 }
 function setBusy(value){
   busy=!!value;
-  onlineCreateBtn.disabled=busy||!authReady||!firebaseConnected||!selectedProfile();
+  onlineCreateBtn.disabled=busy||!authReady||!transportConnected||!selectedProfile();
   if(onlineMaxPlayersSelect) onlineMaxPlayersSelect.disabled=busy;
   if(onlineModeSelect) onlineModeSelect.disabled=busy||!!currentRoomCode;
-  onlineJoinBtn.disabled=busy||!authReady||!firebaseConnected||!selectedProfile()||normalizeCode(onlineJoinCode.value).length!==6;
+  onlineJoinBtn.disabled=busy||!authReady||!transportConnected||!selectedProfile()||normalizeCode(onlineJoinCode.value).length!==6;
   if(currentRoomCode&&currentRoom?.meta?.status==="lobby") onlineReadyBtn.disabled=busy;
 }
 function refreshProfiles(){
@@ -140,11 +171,29 @@ function showOnlineHome(){
   onlineLobbyState.textContent="";
   refreshProfiles();
 }
-function openOnline(){
+async function resumeSupabaseSession(){
+  if(!isSupabaseOnline||resumeAttempted||currentRoomCode||!getSupabaseBackend()) return;
+  resumeAttempted=true;
+  try{
+    const active=await supabaseBackend.reconnectRoom();
+    if(!active) return;
+    uid=String(active.uid||uid||"");
+    authReady=!!uid;
+    setNotice("Laufende Supabase-Lobby wird wieder verbunden …");
+    await enterRoom(String(active.code||active.snapshot?.code||""),String(active.snapshot?.meta?.hostUid||"")===uid,{roomId:active.id,snapshot:active.snapshot});
+  }catch(error){
+    console.warn("Supabase reconnect",error);
+  }
+}
+async function openOnline(){
   refreshProfiles();
   mainMenu.classList.add("hidden");
   onlineScreen.classList.remove("hidden");
   window.scrollTo?.(0,0);
+  if(isSupabaseOnline){
+    if(!authReady) await startSupabaseAuth();
+    if(authReady) await resumeSupabaseSession();
+  }
 }
 async function closeOnline(){
   if(currentRoomCode) await leaveRoom({showHome:false});
@@ -172,14 +221,16 @@ function detachMatchListeners(){
 }
 
 async function prepareDisconnect(code,isHost){
+  if(isSupabaseOnline) return;
   if(disconnectOp){try{await disconnectOp.cancel();}catch(_){} disconnectOp=null;}
   disconnectOp=onDisconnect(isHost?roomRef(code):playerRef(code));
   // V27.4: Lobby/Match ist weiter hostgebunden. Host weg = Raum weg; Gast weg = Gast weg.
   await disconnectOp.remove();
 }
 
-async function enterRoom(code,isHost){
+async function enterRoom(code,isHost,{roomId=null,snapshot=null}={}){
   currentRoomCode=code;
+  currentRoomId=roomId||snapshot?.id||currentRoomId;
   currentIsHost=!!isHost;
   onlineHome.classList.add("hidden");
   onlineLobby.classList.remove("hidden");
@@ -187,6 +238,31 @@ async function enterRoom(code,isHost){
   setNotice("");
   await prepareDisconnect(code,isHost);
   detachLobbyListener();
+  if(isSupabaseOnline){
+    if(!getSupabaseBackend()||!currentRoomId) throw new Error("SUPABASE_BATTLE_BACKEND_MISSING");
+    if(snapshot) handleSupabaseSnapshot(snapshot);
+    roomUnsubscribe=await supabaseBackend.subscribeRoom(currentRoomId,handleSupabaseSnapshot,(status,error)=>{
+      if(status==="SUBSCRIBED"){
+        transportConnected=true;
+        setConnection("Supabase Live verbunden","online");
+        bridge?.setConnected?.(true);
+      }else if(["CHANNEL_ERROR","TIMED_OUT","CLOSED","ERROR"].includes(String(status||""))){
+        transportConnected=false;
+        setConnection("Supabase Live getrennt","offline");
+        bridge?.setConnected?.(false);
+        if(error){
+          console.error("Supabase room subscription",error);
+          if(/DD_NOT_ROOM_MEMBER|DD_ROOM_NOT_FOUND/i.test(String(error?.message||""))){
+            resetRoomState();
+            showOnlineHome();
+            setNotice("Die Lobby wurde geschlossen.","warn");
+          }
+        }
+      }
+      setBusy(false);
+    });
+    return;
+  }
   roomUnsubscribe=onValue(roomRef(code),snapshot=>{
     if(!snapshot.exists()){
       if(currentRoomCode===code){
@@ -202,6 +278,32 @@ async function enterRoom(code,isHost){
     console.error("Lobby listener",err);
     setNotice("Lobby-Synchronisierung fehlgeschlagen.","error");
   });
+}
+
+function handleSupabaseSnapshot(snapshot){
+  if(!isSupabaseOnline) return;
+  if(!snapshot){
+    if(currentRoomCode){
+      resetRoomState();
+      showOnlineHome();
+      setNotice("Die Lobby wurde geschlossen.","warn");
+    }
+    return;
+  }
+  currentRoom=snapshot;
+  currentRoomId=String(snapshot.id||currentRoomId||"");
+  currentRoomCode=String(snapshot.code||currentRoomCode||"");
+  currentHostUid=String(snapshot.meta?.hostUid||currentHostUid||"");
+  currentIsHost=currentHostUid===String(uid||"");
+  if(snapshot.meta?.status==="lobby"&&enteredMatchId){
+    transitionBackToLobbyView().catch(err=>console.error("Return to Supabase lobby",err));
+    return;
+  }
+  if(snapshot.meta?.status==="playing"&&enteredMatchId){
+    handleSupabaseMatchSnapshot(snapshot);
+    return;
+  }
+  renderLobby();
 }
 
 function randomOnlineAbility(){
@@ -238,6 +340,10 @@ async function startMatchIfReady(players){
   onlineLobbyHint.textContent=`⚡ Alle ${expected} bereit – Match wird gestartet …`;
   try{
     const candidate=buildMatch(players);
+    if(isSupabaseOnline){
+      await supabaseBackend.startMatch(currentRoomId,candidate);
+      return;
+    }
     const result=await runTransaction(roomRef(),room=>{
       if(!room||room.meta?.status!=="lobby") return;
       const livePlayers=Object.entries(room.players||{}).map(([id,p])=>({uid:id,...p}));
@@ -257,9 +363,13 @@ async function startMatchIfReady(players){
 
 function publishVisual(request){
   if(!currentRoomCode||!request?.id) return;
-  const visual={id:String(request.id),type:String(request.type||""),actorUid:String(request.actorUid||""),baseSeq:Number(request.baseSeq)||0,startedAt:Date.now()};
+  const visual={kind:"action_visual",id:String(request.id),type:String(request.type||""),actorUid:String(request.actorUid||""),baseSeq:Number(request.baseSeq)||0,startedAt:Date.now()};
   // Kleine Fire-and-forget-Nachricht: Gegner startet Animation sofort, während der
   // Host die echte Engine berechnet. Kein Warten auf diesen Write.
+  if(isSupabaseOnline){
+    supabaseBackend.emitEvent(currentRoomId,visual).catch(err=>console.warn("Supabase visual",err));
+    return;
+  }
   set(visualRef(),visual).catch(err=>console.warn("Online visual",err));
 }
 
@@ -279,18 +389,27 @@ function stageHostState(rawState,request){
 
   hostPublishChain=hostPublishChain.then(async()=>{
     if(!currentRoomCode||!enteredMatchId) return;
+    if(isSupabaseOnline){
+      await supabaseBackend.publishState(currentRoomId,{seq,state,actionId:state.actionId,actionType:state.actionType});
+      return;
+    }
     await update(matchRef(),{state,currentPlayerUid:nextUid,turnNumber:Number(state?.battle?.roundNumber)||1,lastStateAt:serverTimestamp()});
   }).catch(err=>{
     console.error("Host state publish",err);
     bridge?.setConnected?.(false);
-    setNotice("Match-State konnte nicht zu Firebase gesendet werden. Match wurde eingefroren.","error");
+    setNotice(`Match-State konnte nicht zu ${isSupabaseOnline?"Supabase":"Firebase"} gesendet werden. Match wurde eingefroren.`,"error");
   });
   return state;
 }
 
-async function rejectHostAction(request,reason){
+async function rejectHostAction(request,reason,{fromSupabase=false}={}){
   console.warn("Online action rejected",request?.type,reason);
   const actor=String(request?.actorUid||"");
+  if(fromSupabase){
+    await supabaseBackend.resolveAction(currentRoomId,String(request?.id||""),"rejected",String(reason?.message||reason||"ACTION_REJECTED")).catch(()=>{});
+    if(actor===uid) bridge?.rejectAction?.(String(request?.id||""),"🌐 Aktion konnte nicht ausgeführt werden.");
+    return;
+  }
   if(actor&&actor!==uid){
     await set(ackRef(currentRoomCode,actor),{id:String(request?.id||""),status:"error",reason:String(reason?.message||reason||"ACTION_REJECTED"),at:serverTimestamp()}).catch(()=>{});
   }else{
@@ -298,17 +417,18 @@ async function rejectHostAction(request,reason){
   }
 }
 
-function enqueueHostAction(request,{fromFirebase=false,actionKey=""}={}){
+function enqueueHostAction(request,{fromFirebase=false,fromSupabase=false,actionKey=""}={}){
   if(!request?.id||!enteredMatchId||!currentIsHost) return false;
   const id=String(request.id);
-  if(id===lastProcessedActionId||hostQueuedActionIds.has(id)) return false;
+  if(id===lastProcessedActionId||hostQueuedActionIds.has(id)||hostProcessedActionIds.has(id)) return false;
   const actor=String(request.actorUid||"");
   if(!actor||!currentRoom?.players?.[actor]){
     if(fromFirebase) remove(actionItemRef(actionKey||id)).catch(()=>{});
+    if(fromSupabase) supabaseBackend.resolveAction(currentRoomId,id,"rejected","DD_UNKNOWN_ACTOR").catch(()=>{});
     return false;
   }
   hostQueuedActionIds.add(id);
-  hostActionQueue.push({request,fromFirebase,actionKey:String(actionKey||id)});
+  hostActionQueue.push({request,fromFirebase,fromSupabase,actionKey:String(actionKey||id)});
 
   // Jede Gast-Aktion besitzt ihren eigenen Firebase-Knoten. Dadurch können schnelle
   // Folgeaktionen niemals eine noch nicht gelöschte Vorgängeraktion überschreiben.
@@ -331,7 +451,7 @@ async function drainHostActionQueue(){
         // Gäste dürfen nur auf genau dem State handeln, den sie zuletzt bestätigt
         // bekommen haben. Lokale Host-Aktionen dürfen dagegen bereits auf einem neu
         // entstandenen Modal klicken, während dessen Snapshot noch zu Firebase fließt.
-        if(item.fromFirebase && baseSeq!==hostStateSeq) throw new Error(`STALE_STATE_${baseSeq}_${hostStateSeq}`);
+        if((item.fromFirebase||item.fromSupabase) && baseSeq!==hostStateSeq) throw new Error(`STALE_STATE_${baseSeq}_${hostStateSeq}`);
         publishVisual(request);
         const rawState=await bridge?.hostExecuteAction?.(request);
         if(!rawState) throw new Error("HOST_STATE_EMPTY");
@@ -339,8 +459,9 @@ async function drainHostActionQueue(){
         lastProcessedActionId=id;
       }catch(err){
         console.error("Host execute online action",err);
-        await rejectHostAction(request,err);
+        await rejectHostAction(request,err,{fromSupabase:item.fromSupabase});
       }finally{
+        hostProcessedActionIds.add(id);
         hostQueuedActionIds.delete(id);
         processingActionId=null;
       }
@@ -404,12 +525,20 @@ async function transitionBackToLobbyView(){
   bridge?.stopMatch?.();
   currentMatchId="";enteredMatchId=null;processingActionId=null;lastProcessedActionId="";lastVisualId="";
   hostStateSeq=0;localStateSeq=0;hostActionQueue=[];hostEngineDraining=false;hostQueuedActionIds.clear();hostPublishChain=Promise.resolve();
+  hostProcessedActionIds.clear();
   hidePostMatchControls();
   winnerBox?.classList.add("hidden");
   game?.classList.add("hidden");
   document.body.classList.remove("playing","bot-acting","online-roll-window","online-remote-roll-preview","online-dice-snap");
   mainMenu?.classList.add("hidden");
   onlineScreen?.classList.remove("hidden");
+  if(isSupabaseOnline){
+    onlineHome?.classList.add("hidden");
+    onlineLobby?.classList.remove("hidden");
+    if(onlineRoomCode) onlineRoomCode.textContent=code;
+    renderLobby();
+    return;
+  }
   await enterRoom(code,isHost);
 }
 
@@ -418,6 +547,10 @@ async function resetFinishedMatchToLobby({rematch=false,force=false}={}){
   postMatchTransitionBusy=true;
   try{
     const expectedMatchId=String(enteredMatchId);
+    if(isSupabaseOnline){
+      await supabaseBackend.resetLobby(currentRoomId,{matchId:expectedMatchId,rematch,force});
+      return;
+    }
     const result=await runTransaction(roomRef(),room=>{
       if(!room||room.meta?.status!=="playing") return;
       const liveMatchId=String(room.meta?.matchId||room.match?.id||"");
@@ -461,6 +594,11 @@ async function choosePostMatch(choice){
   try{
     postMatchChoices={...(postMatchChoices||{}),[uid]:choice};
     renderPostMatchControls();
+    if(isSupabaseOnline){
+      await supabaseBackend.setPostMatchChoice(currentRoomId,choice);
+      if(currentIsHost) await evaluatePostMatchChoices();
+      return;
+    }
     await set(postMatchChoiceRef(),choice);
     if(currentIsHost) await evaluatePostMatchChoices();
   }catch(err){
@@ -482,10 +620,70 @@ async function exitOnlineToMainMenu(){
   }
 }
 
+function handleSupabaseMatchSnapshot(room){
+  if(!isSupabaseOnline||!enteredMatchId||!room) return;
+  const match=room.match||{};
+  currentRoom=room;
+  currentHostUid=String(room.meta?.hostUid||currentHostUid||"");
+  currentIsHost=currentHostUid===String(uid||"");
+
+  const livePlayers=room.players&&typeof room.players==="object"?room.players:{};
+  const expectedPlayers=Math.max(2,Array.isArray(match.players)?match.players.length:clampLobbySize(room.meta?.maxPlayers||2));
+  if(Object.keys(livePlayers).length<expectedPlayers){
+    if(postMatchEnded&&currentIsHost){
+      resetFinishedMatchToLobby({rematch:false,force:true}).catch(err=>console.error("Opponent left after Supabase match",err));
+    }else{
+      bridge?.setConnected?.(false);
+      setNotice("Ein Spieler hat das Match verlassen. Das Match wurde eingefroren.","warn");
+    }
+  }
+
+  const state=match.state;
+  const seq=Number(state?.seq)||0;
+  if(state&&seq>localStateSeq){
+    localStateSeq=seq;
+    if(currentIsHost) hostStateSeq=Math.max(hostStateSeq,seq);
+    bridge?.applyState?.(state);
+    syncPostMatchState(state);
+  }
+
+  for(const event of Array.isArray(room.events)?room.events:[]){
+    const rowId=String(event?.rowId||event?.id||"");
+    if(!rowId||handledSupabaseEvents.has(rowId)) continue;
+    handledSupabaseEvents.add(rowId);
+    const eventBase=Number(event?.baseSeq)||0;
+    if(event?.kind==="action_visual"&&eventBase>=localStateSeq){
+      lastVisualId=String(event.id||lastVisualId||"");
+      bridge?.previewAction?.(event);
+    }
+  }
+
+  for(const action of Array.isArray(room.actions)?room.actions:[]){
+    const id=String(action?.id||"");
+    if(!id) continue;
+    if(action.status==="rejected"&&action.actorUid===uid&&!handledSupabaseRejections.has(id)){
+      handledSupabaseRejections.add(id);
+      if((Number(action.baseSeq)||0)>=localStateSeq){
+        bridge?.rejectAction?.(id,"🌐 Aktion war nicht mehr gültig. Zustand wurde neu synchronisiert.");
+      }
+    }
+    if(currentIsHost&&action.status==="queued") enqueueHostAction(action,{fromSupabase:true});
+  }
+
+  postMatchChoices=room.postMatch&&typeof room.postMatch==="object"?room.postMatch:{};
+  if(postMatchEnded) renderPostMatchControls();
+  if(currentIsHost&&postMatchEnded) evaluatePostMatchChoices().catch(err=>console.warn("Supabase post-match choices",err));
+}
+
 function attachMatchListeners(match){
   detachMatchListeners();
   hostStateSeq=Number(match?.state?.seq)||0;
   localStateSeq=hostStateSeq;
+
+  if(isSupabaseOnline){
+    handleSupabaseMatchSnapshot(currentRoom);
+    return;
+  }
 
   metaUnsubscribe=onValue(metaRef(),snap=>{
     if(!snap.exists()){
@@ -569,7 +767,9 @@ function enterStartedMatch(room){
   const match=room?.match;
   const matchId=String(match?.id||room?.meta?.matchId||"");
   if(!match||!matchId||enteredMatchId===matchId) return;
-  const profile=selectedProfile();
+  const memberProfileId=String(room?.players?.[uid]?.profileId||"");
+  const profiles=bridge?.getProfiles?.()||[];
+  const profile=profiles.find(entry=>String(entry?.id||"")===memberProfileId)||selectedProfile();
   localProfileId=profile?.id||null;
   currentHostUid=String(room?.meta?.hostUid||"");
   currentIsHost=currentHostUid===String(uid||"");
@@ -581,9 +781,11 @@ function enterStartedMatch(room){
   localStateSeq=hostStateSeq;
   matchStartBusy=false;
   postMatchEnded=false;postMatchTransitionBusy=false;postMatchChoices={};hidePostMatchControls();
+  syncPostMatchState(match?.state||{});
 
-  // Ab Matchstart kein full-room onValue mehr: Lobby-Daten sind statisch genug.
-  detachLobbyListener();
+  // Firebase trennt ab Matchstart den großen Raum-Listener. Supabase behält einen
+  // gebündelten Realtime-Snapshot für State, Actions, Events und Reconnect.
+  if(!isSupabaseOnline) detachLobbyListener();
   attachMatchListeners(match);
 }
 
@@ -618,7 +820,7 @@ function renderLobby(){
 }
 
 async function requestAction(type,payload={},baseSeq=0){
-  if(!currentRoomCode||!uid||!enteredMatchId||!firebaseConnected) throw new Error("NO_ONLINE_MATCH");
+  if(!currentRoomCode||!uid||!enteredMatchId||!transportConnected) throw new Error("NO_ONLINE_MATCH");
   const actionType=String(type||"");
   if(!actionType) throw new Error("EMPTY_ACTION");
   const id=requestId();
@@ -629,6 +831,11 @@ async function requestAction(type,payload={},baseSeq=0){
     // Spezialbutton darf schon reagieren, während ältere States seriell publishen.
     if(!enqueueHostAction(request,{fromFirebase:false})) throw new Error("HOST_ACTION_QUEUE_REJECTED");
     return {requestId:id,fastPath:true};
+  }
+
+  if(isSupabaseOnline){
+    await supabaseBackend.submitAction(currentRoomId,request);
+    return {requestId:id,fastPath:false};
   }
 
   // Gast schreibt nur ~200 Bytes auf einen dedizierten Action-Pfad. Kein Transaction
@@ -643,33 +850,53 @@ window.WDOnlineTransport=Object.freeze({requestAction});
 
 async function createRoom(){
   const profile=selectedProfile();
-  if(!uid||!profile||busy||!firebaseConnected) return;
+  if(!uid||!profile||busy||!transportConnected) return;
   setBusy(true);setNotice("Lobby wird erstellt …");
   try{
+    if(isSupabaseOnline){
+      const created=await supabaseBackend.createRoom({
+        maxPlayers:desiredLobbySize(),
+        modeId:desiredMode(),
+        gameVersion:bridge?.getVersion?.()||"unknown",
+        profile:onlineProfilePayload(profile)
+      });
+      await enterRoom(String(created.code||created.snapshot?.code||""),true,{roomId:created.id,snapshot:created.snapshot});
+      return;
+    }
     let code=null;
     const maxPlayers=desiredLobbySize();
     for(let attempt=0;attempt<12&&!code;attempt++){
       const candidate=makeCode();
-      const resolved=bridge?.resolveProfileCosmetics?.(profile.id)||{dice:profile.selectedDice||"classic",attackFx:profile.selectedAttackFx||"classic"};
       const initial={
         meta:{hostUid:uid,status:"lobby",version:bridge?.getVersion?.()||"27.6.0",createdAt:Date.now(),maxPlayers,modeId:desiredMode(),syncSchema:7},
-        players:{[uid]:{name:profile.name,tagNumber:profile.tagNumber,diceDesign:resolved.dice||profile.selectedDice||"classic",attackFx:resolved.attackFx||profile.selectedAttackFx||"classic",cosmeticTitle:profile.cosmeticTitle||"",cosmeticFrame:profile.cosmeticFrame||"",ready:false,joinedAt:Date.now(),joinedOrder:0}}
+        players:{[uid]:{...onlineProfilePayload(profile),ready:false,joinedAt:Date.now(),joinedOrder:0}}
       };
       const result=await runTransaction(roomRef(candidate),current=>current===null?initial:undefined,{applyLocally:false});
       if(result.committed) code=candidate;
     }
     if(!code) throw new Error("Kein freier Raumcode gefunden");
     await enterRoom(code,true);
-  }catch(err){console.error("Create room",err);setNotice("Lobby konnte nicht erstellt werden. Prüfe Internet/Firebase und versuche es erneut.","error");}
+  }catch(err){console.error("Create room",err);setNotice(`Lobby konnte nicht erstellt werden. Prüfe Internet/${isSupabaseOnline?"Supabase":"Firebase"} und versuche es erneut.`,"error");}
   finally{setBusy(false);}
 }
 
 async function joinRoom(){
   const profile=selectedProfile();
   const code=normalizeCode(onlineJoinCode.value);
-  if(!uid||!profile||code.length!==6||busy||!firebaseConnected) return;
+  if(!uid||!profile||code.length!==6||busy||!transportConnected) return;
   setBusy(true);setNotice("Lobby wird gesucht …");
   try{
+    if(isSupabaseOnline){
+      let joined;
+      try{joined=await supabaseBackend.joinRoom(code,onlineProfilePayload(profile));}
+      catch(error){
+        if(!/DD_ROOM_STARTED/i.test(String(error?.message||""))) throw error;
+        joined=await supabaseBackend.reconnectRoom(code);
+        if(!joined) throw error;
+      }
+      await enterRoom(String(joined.code||code),String(joined.snapshot?.meta?.hostUid||"")===uid,{roomId:joined.id,snapshot:joined.snapshot});
+      return;
+    }
     const roomSnapshot=await get(roomRef(code));
     if(!roomSnapshot.exists()) throw new Error("ROOM_NOT_FOUND");
     const room=roomSnapshot.val();
@@ -679,8 +906,7 @@ async function joinRoom(){
     if(!existingPlayers[uid]&&Object.keys(existingPlayers).length>=maxPlayers) throw new Error("ROOM_FULL");
 
     const joinedOrder=existingPlayers[uid]?.joinedOrder??Object.keys(existingPlayers).length;
-    const resolved=bridge?.resolveProfileCosmetics?.(profile.id)||{dice:profile.selectedDice||"classic",attackFx:profile.selectedAttackFx||"classic"};
-    const playerData={name:profile.name,tagNumber:profile.tagNumber,diceDesign:resolved.dice||profile.selectedDice||"classic",attackFx:resolved.attackFx||profile.selectedAttackFx||"classic",cosmeticTitle:profile.cosmeticTitle||"",cosmeticFrame:profile.cosmeticFrame||"",ready:false,joinedAt:Date.now(),joinedOrder};
+    const playerData={...onlineProfilePayload(profile),ready:false,joinedAt:Date.now(),joinedOrder};
     // Nur den eigenen UID-Knoten schreiben. Das passt zu den sicheren Firebase-Rules
     // und verhindert, dass ein Gast jemals die Daten des Hosts überschreibt.
     await set(playerRef(code,uid),playerData);
@@ -691,7 +917,8 @@ async function joinRoom(){
   }catch(err){
     console.error("Join room",err);
     const codeText=String(err?.code||"").toLowerCase();
-    const msg=err?.message==="ROOM_NOT_FOUND"?"Raumcode nicht gefunden.":err?.message==="ROOM_FULL"?"Diese Lobby ist bereits voll.":err?.message==="ROOM_STARTED"?"Diese Lobby ist nicht mehr offen.":codeText.includes("permission")?"Firebase verweigert den Schreibzugriff. Prüfe die Realtime-Database-Regeln.":"Beitreten fehlgeschlagen. Prüfe Verbindung und versuche es erneut.";
+    const errorText=String(err?.message||"");
+    const msg=/ROOM_NOT_FOUND/i.test(errorText)?"Raumcode nicht gefunden.":/ROOM_FULL/i.test(errorText)?"Diese Lobby ist bereits voll.":/ROOM_STARTED/i.test(errorText)?"Diese Lobby läuft bereits und kann nur von vorhandenen Spielern wieder verbunden werden.":codeText.includes("permission")||/permission denied/i.test(errorText)?`${isSupabaseOnline?"Supabase":"Firebase"} verweigert den Zugriff. Bitte erneut anmelden.`:"Beitreten fehlgeschlagen. Prüfe Verbindung und versuche es erneut.";
     setNotice(msg,"error");
   }finally{setBusy(false);}
 }
@@ -701,7 +928,10 @@ async function toggleReady(){
   const me=currentRoom?.players?.[uid];
   if(!me) return;
   setBusy(true);
-  try{await update(playerRef(),{ready:!me.ready,readyChangedAt:serverTimestamp()});}
+  try{
+    if(isSupabaseOnline) await supabaseBackend.setReady(currentRoomId,!me.ready);
+    else await update(playerRef(),{ready:!me.ready,readyChangedAt:serverTimestamp()});
+  }
   catch(err){console.error("Ready",err);setNotice("Bereit-Status konnte nicht gespeichert werden.","error");}
   finally{setBusy(false);}
 }
@@ -710,19 +940,24 @@ function resetRoomState(){
   detachLobbyListener();detachMatchListeners();
   if(disconnectOp){disconnectOp.cancel().catch(()=>{});disconnectOp=null;}
   bridge?.stopMatch?.();
-  currentRoomCode=null;currentRoom=null;currentIsHost=false;currentHostUid="";currentMatchId="";enteredMatchId=null;
+  currentRoomCode=null;currentRoomId=null;currentRoom=null;currentIsHost=false;currentHostUid="";currentMatchId="";enteredMatchId=null;
   processingActionId=null;lastProcessedActionId="";lastVisualId="";hostStateSeq=0;localStateSeq=0;localProfileId=null;matchStartBusy=false;
   postMatchEnded=false;postMatchTransitionBusy=false;postMatchChoices={};hidePostMatchControls();
-  hostActionQueue=[];hostEngineDraining=false;hostQueuedActionIds.clear();hostPublishChain=Promise.resolve();
+  handledSupabaseEvents.clear();handledSupabaseRejections.clear();
+  hostActionQueue=[];hostEngineDraining=false;hostQueuedActionIds.clear();hostProcessedActionIds.clear();hostPublishChain=Promise.resolve();
 }
 async function leaveRoom({showHome=true}={}){
   if(!currentRoomCode||!uid){resetRoomState();if(showHome)showOnlineHome();return;}
   const code=currentRoomCode;
   const isHost=currentIsHost||currentHostUid===uid;
   try{
+    if(isSupabaseOnline){
+      await supabaseBackend.leaveRoom(currentRoomId);
+    }else{
     if(disconnectOp){await disconnectOp.cancel().catch(()=>{});disconnectOp=null;}
     if(isHost) await remove(roomRef(code));
     else await remove(playerRef(code));
+    }
   }catch(err){console.warn("Leave room",err);}
   resetRoomState();
   if(showHome) showOnlineHome();
@@ -761,14 +996,16 @@ onlineCopyCodeBtn?.addEventListener("click",async()=>{
 });
 
 // Wenn man im laufenden Online-Fight über das bestehende Spielmenü quittet, wird
-// der Firebase-Raum jetzt ebenfalls sauber beendet statt als Zombie-Lobby zu bleiben.
+// der aktive Backend-Raum ebenfalls sauber verlassen.
 quitConfirmBtn?.addEventListener("click",()=>{
   if(enteredMatchId) leaveRoom({showHome:false}).catch(err=>console.warn("Online quit",err));
 },true);
 
-onAuthStateChanged(auth,user=>{
-  if(user){uid=user.uid;authReady=true;setBusy(false);}
-});
+if(!isSupabaseOnline){
+  onAuthStateChanged(auth,user=>{
+    if(user){uid=user.uid;authReady=true;setBusy(false);}
+  });
+}
 
 function firebaseErrorDetails(err){
   const code=String(err?.code||"unknown");
@@ -812,16 +1049,98 @@ async function startAnonymousAuth({retry=false}={}){
   }
 }
 
-startAnonymousAuth();
+async function startSupabaseAuth(){
+  if(supabaseAuthPromise) return supabaseAuthPromise;
+  supabaseAuthPromise=(async()=>{
+    setConnection("Supabase verbindet …","pending");
+    setBusy(false);
+    try{
+      if(!getSupabaseBackend()) throw new Error("SUPABASE_BATTLE_BACKEND_MISSING");
+      const identity=await supabaseBackend.identity();
+      uid=String(identity?.uid||"");
+      if(!uid) throw new Error("SUPABASE_IDENTITY_MISSING");
+      authReady=true;
+      transportConnected=navigator.onLine!==false;
+      setConnection(identity?.anonymous?"Supabase verbunden · Gastkonto":"Supabase verbunden","online");
+      bridge?.setConnected?.(true);
+    }catch(error){
+      console.error("Supabase online auth",error);
+      authReady=false;
+      transportConnected=false;
+      setConnection("Supabase-Verbindung fehlgeschlagen","offline");
+      setNotice(`Supabase-Anmeldung fehlgeschlagen · ${String(error?.message||error||"Unbekannter Fehler")}`,"error");
+    }
+    setBusy(false);
+  })();
+  try{await supabaseAuthPromise;}finally{supabaseAuthPromise=null;}
+}
 
-// .info/connected ist genauer als nur navigator.onLine: Es zeigt, ob die echte
-// Realtime-Database-Verbindung steht. Im Match sperrt die Bridge Eingaben sofort,
-// statt Aktionen in einem unbekannten Zustand weiterlaufen zu lassen.
-connectedUnsubscribe=onValue(ref(db,".info/connected"),snap=>{
-  firebaseConnected=snap.val()===true;
-  if(firebaseConnected){setConnection("Firebase verbunden","online");bridge?.setConnected?.(true);}
-  else{setConnection("Firebase getrennt","offline");bridge?.setConnected?.(false);}
-  setBusy(false);
+async function primeSupabaseAuth(){
+  try{
+    const root=window.WDSupabase;
+    if(!root?.configured) return;
+    const session=await root.getSession();
+    const user=session?.user||null;
+    if(user){
+      uid=String(user.id||"");
+      authReady=!!uid;
+      transportConnected=authReady&&navigator.onLine!==false;
+      setConnection(user.is_anonymous?"Supabase verbunden · Gastkonto":"Supabase verbunden",transportConnected?"online":"offline");
+    }else{
+      setConnection("Supabase bereit","pending");
+    }
+    const client=await root.getClient();
+    supabaseAuthSubscription=client.auth.onAuthStateChange((_event,nextSession)=>{
+      const nextUser=nextSession?.user||null;
+      const nextUid=String(nextUser?.id||"");
+      if(currentRoomCode&&uid&&nextUid!==uid){
+        resetRoomState();
+        showOnlineHome();
+        setNotice("Account gewechselt. Die vorige Online-Lobby wurde lokal getrennt.","warn");
+      }
+      uid=nextUid||null;
+      authReady=!!nextUid;
+      transportConnected=authReady&&navigator.onLine!==false;
+      resumeAttempted=false;
+      if(authReady) setConnection(nextUser?.is_anonymous?"Supabase verbunden · Gastkonto":"Supabase verbunden",transportConnected?"online":"offline");
+      else setConnection("Supabase bereit","pending");
+      bridge?.setConnected?.(transportConnected);
+      setBusy(false);
+    }).data?.subscription||null;
+  }catch(error){
+    console.warn("Supabase session probe",error);
+    setConnection("Supabase bereit","pending");
+  }
+}
+
+if(isSupabaseOnline){
+  primeSupabaseAuth();
+  window.addEventListener("online",()=>{
+    transportConnected=true;
+    bridge?.setConnected?.(true);
+    startSupabaseAuth();
+  });
+  window.addEventListener("offline",()=>{
+    transportConnected=false;
+    setConnection("Offline","offline");
+    bridge?.setConnected?.(false);
+    setBusy(false);
+  });
+}else{
+  startAnonymousAuth();
+
+  // .info/connected ist genauer als nur navigator.onLine: Es zeigt, ob die echte
+  // Realtime-Database-Verbindung steht. Im Match sperrt die Bridge Eingaben sofort,
+  // statt Aktionen in einem unbekannten Zustand weiterlaufen zu lassen.
+  connectedUnsubscribe=onValue(ref(db,".info/connected"),snap=>{
+    transportConnected=snap.val()===true;
+    if(transportConnected){setConnection("Firebase verbunden","online");bridge?.setConnected?.(true);}
+    else{setConnection("Firebase getrennt","offline");bridge?.setConnected?.(false);}
+    setBusy(false);
+  });
+}
+
+window.addEventListener("beforeunload",()=>{
+  try{connectedUnsubscribe?.();}catch(_){}
+  try{supabaseAuthSubscription?.unsubscribe?.();}catch(_){}
 });
-
-window.addEventListener("beforeunload",()=>{try{connectedUnsubscribe?.();}catch(_){}});

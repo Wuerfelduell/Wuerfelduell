@@ -24,8 +24,16 @@
 
   function sessionShape(session){
     const user=session?.user;
-    if(!user) return null;
+    // Online-Gäste benutzen ebenfalls Supabase Auth, sind aber kein Cloud-Account.
+    if(!user||user.is_anonymous) return null;
     return {uid:user.id,email:String(user.email||""),name:displayName(user)};
+  }
+
+  async function clearAnonymousSession(client){
+    const session=await root.getSession();
+    if(!session?.user?.is_anonymous) return;
+    const {error}=await client.auth.signOut();
+    if(error) throw error;
   }
 
   function mapSave(row){
@@ -54,6 +62,7 @@
       if(!/^\S+@\S+\.\S+$/.test(email)) throw new Error("Enter a valid email.");
       if(password.length<8) throw new Error("Password must have at least 8 characters.");
       const client=await root.getClient();
+      await clearAnonymousSession(client);
       const {data,error}=await client.auth.signUp({email,password,options:{data:{display_name:name}}});
       if(error) throw error;
       return {
@@ -65,6 +74,7 @@
     },
     async login({email,password}){
       const client=await root.getClient();
+      await clearAnonymousSession(client);
       const {data,error}=await client.auth.signInWithPassword({
         email:String(email||"").trim().toLowerCase(),
         password:String(password||"")
