@@ -57,30 +57,10 @@ html[data-v28-rework="2"] #onlineScreen .online-connection{
   padding:20px 20px 14px!important;
 }
 
-/* Freie Texteingaben in denselben Screens. Das Vorbild ist
-   .profile-name-edit im Profil-Screen, das schon so gerahmt ist. */
-html[data-v28-rework="2"] #settingsScreen input[type="text"],
-html[data-v28-rework="2"] #settingsScreen input:not([type]),
-html[data-v28-rework="2"] #accountScreen input[type="text"],
-html[data-v28-rework="2"] #accountScreen input[type="email"],
-html[data-v28-rework="2"] #accountScreen input[type="password"],
-html[data-v28-rework="2"] #accountScreen input:not([type]),
-html[data-v28-rework="2"] #onlineScreen input[type="text"],
-html[data-v28-rework="2"] #onlineScreen input:not([type]){
-  box-sizing:border-box!important;
-  width:100%!important;
-  min-height:54px!important;
-  padding:8px 18px!important;
-  border-image-source:var(--p1-ivory-card)!important;
-  border-image-slice:76 168 76 168 fill!important;
-  border-image-width:12px 22px!important;
-  border-image-repeat:stretch!important;
-  border-radius:0!important;
-  color:var(--p1-ink)!important;
-  background:var(--p1-ivory)!important;
-  box-shadow:0 4px 12px rgba(29,57,83,.08)!important;
-  font:inherit!important;
-}
+/* Die freien Texteingaben standen hier zunächst ebenfalls mit
+   Elfenbein-Rahmen. Sie sitzen aber in einer bereits gerahmten Karte und
+   sind damit Stufe 3 - sie werden jetzt in css/36-v28-hierarchie.css
+   leise gesetzt. */
 
 @media (max-width:380px){
   html[data-v28-rework="2"] #statsScreen .stats-kpi,
