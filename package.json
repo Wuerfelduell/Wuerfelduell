@@ -1,13 +1,14 @@
 {
   "name": "wuerfelduell",
   "private": true,
-  "version": "28.9.4",
+  "version": "28.10.0",
   "type": "module",
   "scripts": {
     "build": "npm run build:styles",
     "build:styles": "node scripts/build-styles.mjs",
-    "check": "node scripts/build-styles.mjs --check && node scripts/verify-build.mjs && node scripts/validate-endgame.mjs",
-    "check:endgame": "node scripts/validate-endgame.mjs"
+    "check": "node scripts/build-styles.mjs --check && node scripts/verify-build.mjs && node scripts/validate-endgame.mjs && node scripts/validate-supabase.mjs",
+    "check:endgame": "node scripts/validate-endgame.mjs",
+    "check:supabase": "node scripts/validate-supabase.mjs"
   },
   "engines": {
     "node": ">=20"

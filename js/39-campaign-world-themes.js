@@ -1,7 +1,7 @@
 (() => {
   "use strict";
 
-  const VERSION="28.9.4";
+  const VERSION="28.10.0";
   const ASSET_ROOT="assets/ui/v28/png/worlds/";
 
   const theme=(primary,secondary,surface,glow,asset)=>Object.freeze({
