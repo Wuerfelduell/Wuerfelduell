@@ -47,7 +47,8 @@ export const styleOrder = [
   "36-v28-hierarchie.css",
   "37-v28-feinschliff.css",
   "38-endgame-mechanics.css",
-  "39-v28-campaign-polish.css"
+  "39-v28-campaign-polish.css",
+  "40-v28-screen-restoration.css"
 ];
 
 async function createBundle() {

@@ -614,6 +614,7 @@
     modal.className="mastery-purchase-confirm hidden";
     modal.innerHTML=`
       <div class="mastery-purchase-card">
+        <div class="mastery-purchase-banner">MASTERY</div>
         <div class="mastery-kicker">${window.t ? window.t("MASTERY KAUF BESTÄTIGEN") : "MASTERY KAUF BESTÄTIGEN"}</div>
         <h3></h3>
         <p class="mastery-purchase-desc"></p>
@@ -638,8 +639,10 @@
     modal.dataset.tx=JSON.stringify({...transaction,title});
     modal.querySelector("h3").textContent=window.t?window.t(title):title;
     modal.querySelector(".mastery-purchase-desc").textContent=window.t?window.t(desc||""): (desc||"");
-    modal.querySelector(".mastery-purchase-price").textContent=`⭐ ${cost} XP`;
-    modal.querySelector(".mastery-purchase-balance").textContent=window.t?window.t(`Verfügbar: ${state.xp} XP → danach ${Math.max(0,state.xp-cost)} XP`):`Verfügbar: ${state.xp} XP → danach ${Math.max(0,state.xp-cost)} XP`;
+    const after=Math.max(0,state.xp-cost);
+    const tr=window.t?window.t:(value=>value);
+    modal.querySelector(".mastery-purchase-price").innerHTML=`<img src="assets/ui/v28/svg/gameplay/xp-star.svg?v=${GAME_VERSION}" alt="" aria-hidden="true"><span><small>${escapeHtml(tr("Kosten"))}</small><strong>${cost} XP</strong></span>`;
+    modal.querySelector(".mastery-purchase-balance").innerHTML=`<span class="mastery-balance-value"><small>${escapeHtml(tr("Verfügbar"))}</small><strong>${state.xp} XP</strong></span><span class="mastery-balance-arrow" aria-hidden="true">→</span><span class="mastery-balance-value after"><small>${escapeHtml(tr("Danach"))}</small><strong>${after} XP</strong></span>`;
     modal.classList.remove("hidden");
   }
 

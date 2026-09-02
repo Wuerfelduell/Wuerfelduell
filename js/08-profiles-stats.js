@@ -221,6 +221,7 @@
 
   function renderStats(){
     const profiles=saveData.profiles;
+    const tFn=typeof window.t==="function"?window.t:(s=>s);
     const totals=aggregateAbilityStats();
     const totalRounds=saveData.global?.completedRounds||0;
     const totalWins=profiles.reduce((s,p)=>s+p.stats.wins,0);
@@ -239,9 +240,28 @@
       <div class="stats-kpi"><div class="stats-kpi-label">Meiste Siege</div><div class="stats-kpi-value">${mostWins&&mostWins.wins?escapeHtml(ABILITIES[mostWins.id].name):"–"}</div></div>
       <div class="stats-kpi"><div class="stats-kpi-label">Best Winrate ≥3</div><div class="stats-kpi-value">${bestRate?`${escapeHtml(ABILITIES[bestRate.id].name)} ${Math.round(bestRate.rate*100)}%`:"–"}</div></div>`;
 
+    const statCell=(icon,label,value)=>`<span class="profile-stat-item">${uiIcon(icon)}<span class="profile-stat-copy"><small>${escapeHtml(tFn(label))}</small><b>${escapeHtml(String(value))}</b></span></span>`;
     profileStatsList.innerHTML=profiles.length?profiles.map(p=>{
       const wr=p.stats.rounds?Math.round(p.stats.wins/p.stats.rounds*100):0;
-      return `<div class="profile-stats-card"><strong>${escapeHtml(p.name)} <span class="battle-tag">#${escapeHtml(p.tagNumber)}</span></strong><div class="profile-stats-line"><span>Runden ${p.stats.rounds} · Siege ${p.stats.wins} · ${wr}%</span><span>${uiIcon("gameplay/trophy.svg")} ${Object.keys(p.achievements).length}</span></div><div class="profile-stats-line"><span>${uiIcon("gameplay/damage-sword.svg")} ${p.stats.damageDealt} Schaden · ${uiIcon("gameplay/attack.svg")} ${p.stats.kills} Kills</span><span>${uiIcon("gameplay/dice.svg")} ${p.stats.sixes} Sechsen · ${p.stats.ones} Einser</span></div><div class="profile-stats-line"><span>${uiIcon("gameplay/heal.svg")} ${p.stats.healed} geheilt · ${uiIcon("gameplay/heart-hp.svg")} ${p.stats.damageTaken} kassiert</span><span>${uiIcon("gameplay/self-damage-blood.svg")} ${p.stats.selfDamage} · Peak ${p.stats.maxTurnDamage}</span></div></div>`;
+      return `<div class="profile-stats-card">
+        <div class="profile-stats-head"><strong class="profile-stats-name">${escapeHtml(p.name)} <span class="battle-tag">#${escapeHtml(p.tagNumber)}</span></strong></div>
+        <div class="profile-stat-overview">
+          ${statCell("stats/dice.svg","Runden",p.stats.rounds)}
+          ${statCell("stats/crown.svg","Siege",p.stats.wins)}
+          ${statCell("stats/mastery.svg","Winrate",`${wr}%`)}
+          ${statCell("gameplay/trophy.svg","Achievements",Object.keys(p.achievements).length)}
+        </div>
+        <div class="profile-stat-grid">
+          ${statCell("stats/sword-damage.svg","Schaden",p.stats.damageDealt)}
+          ${statCell("gameplay/attack.svg","Kills",p.stats.kills)}
+          ${statCell("stats/dice.svg","Sechsen",p.stats.sixes)}
+          ${statCell("gameplay/dice.svg","Einser",p.stats.ones)}
+          ${statCell("gameplay/heal.svg","Geheilt",p.stats.healed)}
+          ${statCell("stats/shield.svg","Kassiert",p.stats.damageTaken)}
+          ${statCell("gameplay/self-damage-blood.svg","Eigenschaden",p.stats.selfDamage)}
+          ${statCell("stats/xp.svg","Peak",p.stats.maxTurnDamage)}
+        </div>
+      </div>`;
     }).join(""):`<div class="profile-empty">Noch keine abgeschlossenen Profil-Runden.</div>`;
 
     const rows=REAL_ABILITY_IDS.map(id=>({id,...totals[id]})).sort((a,b)=>b.equipped-a.equipped||a.id-b.id);
