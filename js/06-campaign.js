@@ -4,7 +4,7 @@
   }
   function tx(s){ if(s==null||s==="") return s; try{ return window.t ? window.t(String(s)) : String(s); } catch{ return String(s); } }
 
-  function resetEncounterRuntime(encounter){encounterRuntime={ruleIds:[...(ENCOUNTER_SPECIAL_RULES[encounter?.id]||[])],phaseRuleIds:[],phaseTriggered:false,firstStrikeUsed:new Set(),armorUsed:new Set(),turnStarts:{}};}
+  function resetEncounterRuntime(encounter){encounterRuntime={ruleIds:[...(ENCOUNTER_SPECIAL_RULES[encounter?.id]||[])],phaseRuleIds:[],phaseTriggered:false,phaseTriggeredIds:[],firstStrikeUsed:new Set(),armorUsed:new Set(),turnStarts:{},enemyTurnCount:0,lastHeroAttacker:null,markedHero:null,markTurns:0,markSource:null,escalationLevel:0,precisionUsed:new Set(),lastLightUsed:new Set(),arcaneUsed:new Set(),pendingOneShotDamage:{},worldMomentum:{}};}
   function encounterRuleActive(id){return !!campaignMode && (encounterRuntime.ruleIds.includes(id)||encounterRuntime.phaseRuleIds.includes(id));}
   function encounterRuleText(encounter){const ids=ENCOUNTER_SPECIAL_RULES[encounter?.id]||[];return ids.map(id=>SPECIAL_RULES[id]).filter(Boolean);}
   function bossPhaseFor(encounter){
@@ -64,9 +64,26 @@
     if(!campaignMode){encounterRuleBanner.classList.add("hidden");encounterRuleBanner.innerHTML="";return;}
     const enc=currentEncounterObject(),staticRules=encounterRuleText(enc),phase=bossPhaseFor(enc);
     const parts=staticRules.map(r=>`<strong>⚙ ${escapeHtml(r.name)}:</strong> ${escapeHtml(r.desc)}`);
+    for(const mechanic of campaignMechanicSummary?.(enc)||[]){
+      if(mechanic.kind==="mutator")continue;
+      const label=mechanic.kind==="rule"?tx("Weltregel"):tx("Aktive Mechanik");
+      // Im mobilen Combat-HUD bleibt nur das aktive Label; die vollständige
+      // Erklärung steht bereits in Welt- und Encounter-Detail.
+      parts.push(`<strong>${escapeHtml(label)} · ${escapeHtml(tx(mechanic.name))}</strong>`);
+    }
     const rushStatus=window.WDDuoBossRush?.statusText?.();
     if(rushStatus)parts.unshift(`<strong class="boss-rush-live">${escapeHtml(rushStatus)}</strong>`);
-    if(phase) parts.push(encounterRuntime.phaseTriggered?`<span class="phase-live">👹 PHASE II AKTIV · ${escapeHtml(phase.title)}</span>`:`👹 Phase II bei ${Math.round((phase.threshold||.5)*100)} % Boss-HP · ${escapeHtml(phase.title)}`);
+    if(phase){
+      const phases=Array.isArray(phase.phases)?phase.phases:[phase];
+      const triggered=new Set(encounterRuntime.phaseTriggeredIds||[]);
+      const next=phases.map((entry,index)=>({entry,index})).filter(item=>!triggered.has(item.index)).sort((a,b)=>(b.entry.threshold||.5)-(a.entry.threshold||.5))[0];
+      const currentNumber=Math.min(phases.length+1,triggered.size+1);
+      if(next){
+        parts.push(`<span class="phase-live">👹 ${escapeHtml(tx(`Phase ${currentNumber}`))} · ${escapeHtml(tx("Nächster Übergang"))}: ${Math.round((next.entry.threshold||.5)*100)} % · ${escapeHtml(next.entry.title)}</span>`);
+      }else{
+        parts.push(`<span class="phase-live">👹 ${escapeHtml(tx("Finalphase aktiv"))}</span>`);
+      }
+    }
     encounterRuleBanner.classList.toggle("hidden",parts.length===0);encounterRuleBanner.innerHTML=parts.join("<br>");
   }
   function campaignHeroIndices(){
@@ -185,24 +202,33 @@
   }
 
   function checkBossPhase(targetIndex,beforeHp,afterHp){
-    if(!campaignMode||encounterRuntime.phaseTriggered) return false;
-    const enc=currentEncounterObject(),phase=bossPhaseFor(enc),target=players[targetIndex];
-    if(!phase||!target||target.campaignTeam!=="enemy"||target.name!==phase.boss) return false;
-    const threshold=Math.floor(maxHpForPlayer(target)*(phase.threshold||.5));
-    if(beforeHp>threshold && afterHp<=threshold){
-      encounterRuntime.phaseTriggered=true;
+    if(!campaignMode) return false;
+    const enc=currentEncounterObject(),definition=bossPhaseFor(enc),target=players[targetIndex];
+    if(!definition||!target||target.campaignTeam!=="enemy"||target.name!==definition.boss) return false;
+    const phases=Array.isArray(definition.phases)?definition.phases:[definition];
+    const maxHp=maxHpForPlayer(target);
+    // Alle mit demselben Schadensereignis überschrittenen Schwellen werden vor
+    // der Verarbeitung ermittelt. So kann Heilung in Phase I Phase II nicht
+    // nachträglich verschlucken.
+    const crossed=bossPhaseThresholdsCrossed(phases,encounterRuntime.phaseTriggeredIds,beforeHp,afterHp,maxHp).map(index=>({phase:phases[index],index}));
+    if(!crossed.length)return false;
 
-      // Ein ausreichend großer Treffer darf eine Bossphase nicht überspringen.
-      // Fällt der Boss beim Threshold-Treffer auf 0, steht er für die Phase zunächst mit 1 HP wieder auf.
-      if(target.hp<=0) target.hp=1;
-
+    // Ein tödlicher Phasen-Treffer startet zunächst alle fälligen Übergänge.
+    // Der Boss bleibt für die definierte Transition am Leben; Phasenheilung
+    // kann anschließend regulär greifen.
+    if(target.hp<=0)target.hp=1;
+    crossed.forEach(({phase,index:phaseIndex})=>{
+      encounterRuntime.phaseTriggered=true;encounterRuntime.phaseTriggeredIds.push(phaseIndex);
       if(phase.rule&&!encounterRuntime.phaseRuleIds.includes(phase.rule)) encounterRuntime.phaseRuleIds.push(phase.rule);
       if(phase.ability!=null) target.ability=phase.ability;
       if(phase.secondAbility!=null) target.secondAbility=phase.secondAbility;
       if(Object.prototype.hasOwnProperty.call(phase,"thirdAbility")) target.thirdAbility=phase.thirdAbility;
       if(phase.heal){const before=target.hp;target.hp=Math.min(maxHpForPlayer(target),target.hp+phase.heal);const healed=target.hp-before;if(healed>0) pendingExtraHealFx.push({target:targetIndex,amount:healed});}
-      queueEventPopup(`PHASE II · ${phase.title}`,"death");
-      addLog(`👹 PHASE II – ${phase.title}: ${phase.desc}`);
+      if(phase.aiProfile)target.aiProfile=phase.aiProfile;
+      if(phase.mutator&&ELITE_MUTATORS[phase.mutator])target.mutatorId=phase.mutator;
+      if(phase.markTurns){const hero=campaignHeroIndices().filter(i=>players[i]?.hp>0).sort((a,b)=>players[a].hp-players[b].hp)[0];if(hero!=null){encounterRuntime.markedHero=hero;encounterRuntime.markTurns=phase.markTurns;encounterRuntime.markSource="boss_phase";}}
+      queueEventPopup(`${tx("PHASENWECHSEL")} · ${phase.title}`,"death");
+      addLog(`${tx("PHASENWECHSEL")} – ${phase.title}: ${phase.desc}`);
 
       if(phase.heroBonusDraft){
         const heroIndex=campaignHeroIndices().find(i=>players[i]?.hp>0);
@@ -212,10 +238,11 @@
         }
       }
 
-      renderEncounterRuleBanner();renderPlayers();
-      return true;
-    }
-    return false;
+    });
+    // Defensive Normalisierung schützt Achievement/UI vor doppelten IDs.
+    encounterRuntime.phaseTriggeredIds=[...new Set(encounterRuntime.phaseTriggeredIds)];
+    renderEncounterRuleBanner();renderPlayers();
+    return true;
   }
   function applyEncounterTurnStartRule(index){
     if(!campaignMode||players[index]?.campaignTeam!=="hero"||!encounterRuleActive("void_clock")) return;
@@ -580,7 +607,7 @@
     campaignWorldTabs.querySelectorAll("[data-world-id]").forEach(btn=>{
       btn.onclick=()=>{campaignWorldId=btn.dataset.worldId;campaignEncounterId=null;renderCampaign();};
     });
-    campaignWorldDesc.textContent=world.desc;
+    campaignWorldDesc.textContent=campaignWorldDescription(world);
 
     campaignProfileSummary.textContent=profile?profileLabel(profile):"Profil erforderlich";
     campaignProgressSummary.textContent=`${completed} / ${worldEncounters.length} Encounter`;
@@ -660,6 +687,7 @@
     });
     if(selectedEncounter){const done=!!progress?.completedEncounters?.includes(selectedEncounter.id),available=!!profile&&campaignEncounterAvailable(profile,selectedEncounter),reward=campaignRewardLabel(profile,selectedEncounter),masteryXp=campaignMasteryXpReward("solo",selectedEncounter,done),rules=encounterRuleText(selectedEncounter),phase=bossPhaseFor(selectedEncounter),assistText=campaignAssistText(selectedEncounter),grantedSecond=campaignGrantedSecondAbility(selectedEncounter),bonusSlot=soloCampaignHpBonusSlot(selectedEncounter),masteryThreshold=window.WDMastery?.abilityThreshold?.(profile,"solo",selectedEncounter)??15,grantedText=grantedSecond!=null?`${ABILITIES[grantedSecond]?.name||grantedSecond} startet fest als 2. Fähigkeit; erster eigener Kill ODER ≤${masteryThreshold} HP öffnet danach den nächsten freien Draft.`:"",challengeGear=campaignChallengeGrantedAbility(selectedEncounter,[grantedSecond].filter(x=>x!=null)),challengeGearText=challengeGear!=null?`${ABILITIES[challengeGear]?.name||challengeGear} wird zusätzlich zu deiner Hauptfähigkeit gestellt.`:"";campaignEncounterDetail.innerHTML=`<div class="node-detail-head"><div><div class="node-detail-title">${escapeHtml(selectedEncounter.title)}</div><div class="node-detail-sub">${escapeHtml(selectedEncounter.subtitle)}</div></div><div class="node-detail-state">${done?(selectedEncounter.farmTrophy?"🏆 FARM":"✓ GESCHAFFT"):available?"OFFEN":"🔒 GESPERRT"}</div></div><div class="node-detail-desc">${escapeHtml(selectedEncounter.desc)}</div><div class="node-detail-row">🎯 <strong>Challenge:</strong> ${escapeHtml(selectedEncounter.challenge.text)}</div><div class="node-detail-row">🎁 <strong>Belohnung:</strong> ${escapeHtml(reward)}</div>${masteryXp?`<div class="node-detail-row node-detail-xp">⭐ <strong>Mastery XP:</strong> +${masteryXp} XP ${done?"bei Wiederholung":"beim Erstclear"}</div>`:""}${assistText?`<div class="node-detail-row node-detail-phase">⚡ <strong>Encounter-Fähigkeit:</strong> ${escapeHtml(assistText)}</div>`:""}${grantedText?`<div class="node-detail-row node-detail-phase">🩸 <strong>Encounter-Fähigkeit:</strong> ${escapeHtml(grantedText)}</div>`:""}${challengeGearText?`<div class="node-detail-row node-detail-phase">🎯 <strong>Challenge-Ausrüstung:</strong> ${escapeHtml(challengeGearText)}</div>`:""}${REAL_ABILITY_IDS.includes(Number(selectedEncounter.forcedHeroAbility))?`<div class="node-detail-row node-detail-phase">⚡ <strong>Startfähigkeit:</strong> ${escapeHtml(ABILITIES[Number(selectedEncounter.forcedHeroAbility)]?.name||String(selectedEncounter.forcedHeroAbility))} ist fest vorgegeben.</div>`:""}${selectedEncounter.disableBonusDraft?`<div class="node-detail-row node-detail-rule">🚫 <strong>Fähigkeits-Drafts:</strong> In diesem Encounter deaktiviert.</div>`:`<div class="node-detail-row node-detail-phase">✨ <strong>Bonus-Draft:</strong> erster eigener Gegner-Kill oder ≤${masteryThreshold} HP – was zuerst passiert.</div>`}${rules.map(r=>`<div class="node-detail-row node-detail-rule">⚙ <strong>${escapeHtml(r.name)}:</strong> ${escapeHtml(r.desc)}</div>`).join("")}${phase?`<div class="node-detail-row node-detail-phase">👹 <strong>Boss-Phase bei ${Math.round((phase.threshold||.5)*100)} %:</strong> ${escapeHtml(phase.title)} · ${escapeHtml(phase.desc)}</div>`:""}`;}else campaignEncounterDetail.innerHTML="";
 
+    if(selectedEncounter)campaignEncounterDetail.insertAdjacentHTML("beforeend",campaignMechanicDetailHtml(selectedEncounter));
     const secondaryUnlocked=new Set(progress?.unlockedSecondaryAbilities||[]);
     campaignAbilityGrid.innerHTML=REAL_ABILITY_IDS.map(id=>{
       const secondOnly=CAMPAIGN_SECONDARY_ONLY_ABILITY_IDS.includes(id);
@@ -714,7 +742,7 @@
       return `<button type="button" class="campaign-world-btn${active?" active":""}${done?" done":""}" data-duo-world-id="${w.id}" ${unlocked?"":"disabled"}><span class="campaign-world-kicker">W${wi+1}</span><span class="campaign-world-name">${escapeHtml(campaignWorldNodeName(w))}</span><span class="campaign-world-state">${escapeHtml(state)}</span></button>`;
     }).join("");
     duoCampaignWorldTabs.querySelectorAll("[data-duo-world-id]").forEach(btn=>btn.onclick=()=>{duoWorldId=btn.dataset.duoWorldId;duoCampaignEncounterId=null;renderDuoCampaign();});
-    duoCampaignWorldDesc.textContent=world.desc;
+    duoCampaignWorldDesc.textContent=campaignWorldDescription(world);
 
     duoTeamSummary.textContent=validPair?`${p1.name} + ${p2.name}`:(profiles.length<2?"2 Profile erforderlich":"Zwei verschiedene Profile wählen");
     duoProgressSummary.textContent=`${completed} / ${worldEncounters.length} Encounter`;
@@ -740,6 +768,7 @@
     }).join("");
     duoCampaignPath.querySelectorAll("[data-duo-campaign-id]").forEach(btn=>btn.onclick=()=>{duoCampaignEncounterId=btn.dataset.duoCampaignId;duoWorldId=duoEncounterById(duoCampaignEncounterId)?.world||"covenant";renderDuoCampaign();});
     if(encounter){const done=!!progress?.completedEncounters?.includes(encounter.id),available=validPair&&duoEncounterAvailable(p1,p2,encounter),masteryXp=campaignMasteryXpReward("duo",encounter,done),worldBoss=encounter.id===world.finalEncounterId,progression=worldBoss?"Duo-Welt abschließen":"Nächsten Duo-Encounter freischalten",trophy=done?(worldBoss?"🏆 +1 Trophäe je Profil pro erfolgreichem Clear":"Erstclear bereits abgeschlossen"):`🏆 +1 Trophäe je Profil beim Erstclear`,reward=`${trophy} · ${progression}`,rules=encounterRuleText(encounter),phase=bossPhaseFor(encounter),challengeGear=campaignChallengeDefaultAbility(encounter);duoCampaignEncounterDetail.innerHTML=`<div class="node-detail-head"><div><div class="node-detail-title">${escapeHtml(encounter.title)}</div><div class="node-detail-sub">${escapeHtml(encounter.subtitle)}</div></div><div class="node-detail-state">${done?"✓ GESCHAFFT":available?"OFFEN":"🔒 GESPERRT"}</div></div><div class="node-detail-desc">${escapeHtml(encounter.desc)}</div><div class="node-detail-row">🎯 <strong>Challenge:</strong> ${escapeHtml(encounter.challenge.text)}</div><div class="node-detail-row">🤝 <strong>Belohnung:</strong> ${escapeHtml(reward)}</div>${masteryXp?`<div class="node-detail-row node-detail-xp">⭐ <strong>Mastery XP:</strong> +${masteryXp} XP je Profil ${done?"bei Wiederholung":"beim Erstclear"}</div>`:""}${challengeGear!=null?`<div class="node-detail-row node-detail-phase">🎯 <strong>Challenge-Ausrüstung:</strong> ${escapeHtml(ABILITIES[challengeGear]?.name||String(challengeGear))} wird beiden Spielern zusätzlich gestellt.</div>`:""}<div class="node-detail-row node-detail-phase">✨ <strong>Bonus-Draft je Spieler:</strong> erster eigener Gegner-Kill oder ≤15 HP – was zuerst passiert.</div>${rules.map(r=>`<div class="node-detail-row node-detail-rule">⚙ <strong>${escapeHtml(r.name)}:</strong> ${escapeHtml(r.desc)}</div>`).join("")}${phase?`<div class="node-detail-row node-detail-phase">👹 <strong>Boss-Phase bei ${Math.round((phase.threshold||.5)*100)} %:</strong> ${escapeHtml(phase.title)} · ${escapeHtml(phase.desc)}</div>`:""}`;}else duoCampaignEncounterDetail.innerHTML="";
+    if(encounter)duoCampaignEncounterDetail.insertAdjacentHTML("beforeend",campaignMechanicDetailHtml(encounter));
     duoCampaignStartBtn.disabled=!baseUnlocked||!worldUnlocked||!encounter||!duoEncounterAvailable(p1,p2,encounter)||!duoAbility1Select.value||!duoAbility2Select.value;window.WDMastery?.refreshAll?.();window.WDDuoBossRush?.refreshButton?.();
   }
 
@@ -766,7 +795,7 @@
       }).join("");
       trioCampaignWorldTabs.querySelectorAll("[data-trio-world-id]").forEach(btn=>btn.onclick=()=>{trioWorldId=btn.dataset.trioWorldId;trioCampaignEncounterId=null;renderTrioCampaign();});
     }
-    if(trioCampaignWorldDesc) trioCampaignWorldDesc.textContent=world.desc;
+    if(trioCampaignWorldDesc) trioCampaignWorldDesc.textContent=campaignWorldDescription(world);
     trioTeamSummary.textContent=validTeam?`${p1.name} + ${p2.name} + ${p3.name}`:(profiles.length<3?"3 Profile erforderlich":"Drei verschiedene Profile wählen");
     trioProgressSummary.textContent=`${completed} / ${worldEncounters.length} Encounter`;
     trioTrophySummary.textContent="🏆 +1 je Profil / Erstclear · L10/L15 farmbar";
@@ -782,6 +811,7 @@
     trioCampaignPath.innerHTML=worldEncounters.map((e,i)=>{const done=!!progress?.completedEncounters?.includes(e.id),available=validTeam&&trioEncounterAvailable(p1,p2,p3,e),current=available&&e.id===trioCampaignEncounterId,num=i+1,isBoss=num===10||num===15,isWorldBoss=num===15,mark=done?(e.farmTrophy?"🏆":"✓"):available?(current?"▶":""):"🔒";return `<button type="button" class="campaign-node${done?" done":""}${current?" current":""}${available?"":" locked"}${isBoss?" boss":""}${isWorldBoss?" world-boss":""}" data-trio-campaign-id="${e.id}" ${available?"":"disabled"}><span>${num}</span>${mark?`<span class="node-mark">${mark}</span>`:""}${campaignMasteryXpBadge("trio",e,done)}</button>`;}).join("");trioCampaignPath.querySelectorAll("[data-trio-campaign-id]").forEach(btn=>btn.onclick=()=>{trioCampaignEncounterId=btn.dataset.trioCampaignId;trioWorldId=trioEncounterById(trioCampaignEncounterId)?.world||"trinity";renderTrioCampaign();});
     const abilitySelects=[trioAbility1Select,trioAbility2Select,trioAbility3Select],primaryOk=!required||required.length!==3||required.every((id,i)=>+abilitySelects[i].value===id);
     if(encounter){const done=!!progress?.completedEncounters?.includes(encounter.id),available=validTeam&&trioEncounterAvailable(p1,p2,p3,encounter),masteryXp=campaignMasteryXpReward("trio",encounter,done),rules=encounterRuleText(encounter),phase=bossPhaseFor(encounter),grants=Array.isArray(encounter.grantedThirdAbilities)?encounter.grantedThirdAbilities.map((id,i)=>`P${i+1}: ${ABILITIES[id]?.name||id}`).join(" · "):"",reqText=required&&required.length===3?`P1 ${ABILITIES[required[0]]?.name} · P2 ${ABILITIES[required[1]]?.name} · P3 ${ABILITIES[required[2]]?.name}`:"",reward=done?(encounter.farmTrophy?"🏆 +1 Trophäe je Profil pro erfolgreichem Clear":"Erstclear bereits abgeschlossen"):`🏆 +1 Trophäe je Profil beim Erstclear`,challengeGear=campaignChallengeDefaultAbility(encounter),randomSecond=!!encounter.randomStartSecondAbility;trioCampaignEncounterDetail.innerHTML=`<div class="node-detail-head"><div><div class="node-detail-title">${escapeHtml(encounter.title)}</div><div class="node-detail-sub">${escapeHtml(encounter.subtitle)}</div></div><div class="node-detail-state">${done?(encounter.farmTrophy?"🏆 FARM":"✓ GESCHAFFT"):available?"OFFEN":"🔒 GESPERRT"}</div></div><div class="node-detail-desc">${escapeHtml(encounter.desc)}</div><div class="node-detail-row">🎯 <strong>Challenge:</strong> ${escapeHtml(encounter.challenge.text)}</div><div class="node-detail-row">🏆 <strong>Belohnung:</strong> ${escapeHtml(reward)}</div>${masteryXp?`<div class="node-detail-row node-detail-xp">⭐ <strong>Mastery XP:</strong> +${masteryXp} XP je Profil ${done?"bei Wiederholung":"beim Erstclear"}</div>`:""}${challengeGear!=null?`<div class="node-detail-row node-detail-phase">🎯 <strong>Challenge-Ausrüstung:</strong> ${escapeHtml(ABILITIES[challengeGear]?.name||String(challengeGear))} wird allen drei Spielern zusätzlich gestellt.</div>`:""}${randomSecond?`<div class="node-detail-row node-detail-phase">🎲 <strong>Zufalls-Start:</strong> Jeder bekommt zusätzlich zur gewählten Fähigkeit eine zufällige 2. Fähigkeit. Die 3. kommt über Kill oder ≤15 HP.</div>`:`<div class="node-detail-row node-detail-phase">✨ <strong>Bonus-Draft je Spieler:</strong> erster eigener Gegner-Kill oder ≤15 HP – was zuerst passiert.</div>`}${grants?`<div class="node-detail-row node-detail-phase">🎁 <strong>Extra-Fähigkeiten:</strong> ${escapeHtml(grants)}</div>`:""}${reqText?`<div class="node-detail-row node-detail-rule">🔐 <strong>Pflicht-Loadout:</strong> ${escapeHtml(reqText)}</div>`:""}${rules.map(r=>`<div class="node-detail-row node-detail-rule">⚙ <strong>${escapeHtml(r.name)}:</strong> ${escapeHtml(r.desc)}</div>`).join("")}${phase?`<div class="node-detail-row node-detail-phase">👹 <strong>Boss-Phase bei ${Math.round((phase.threshold||.5)*100)} %:</strong> ${escapeHtml(phase.title)} · ${escapeHtml(phase.desc)}</div>`:""}`;}else trioCampaignEncounterDetail.innerHTML="";
+    if(encounter)trioCampaignEncounterDetail.insertAdjacentHTML("beforeend",campaignMechanicDetailHtml(encounter));
     trioCampaignStartBtn.disabled=!validTeam||!worldUnlocked||!encounter||!trioEncounterAvailable(p1,p2,p3,encounter)||!primaryOk;trioCampaignStartBtn.title=!primaryOk?"Für diesen Encounter gilt das angezeigte Pflicht-Loadout.":"";window.WDMastery?.refreshAll?.();
   }
   function openTrioCampaignScreen(){clearBotAutomation();tutorialMode=false;campaignMode=false;duoCampaignMode=false;trioCampaignMode=false;campaignMetrics=freshCampaignMetrics();document.body.classList.remove("playing","bot-acting");game.classList.add("hidden");game.classList.remove("campaign-game","trio-game");winnerBox.classList.add("hidden");nextRoundBox.classList.add("hidden");gameContext={mode:"trio-campaign-map",returnScreen:"trio",profileIds:[trioProfile1Id,trioProfile2Id,trioProfile3Id].filter(Boolean),encounterId:trioCampaignEncounterId};renderTrioCampaign();openFrontScreen(trioCampaignScreen);}
@@ -958,6 +988,7 @@
   function awardCampaignTrophy(profile,encounter){
     const progress=campaignProgress(profile);
     if(!progress || !encounter) return 0;
+    awardEndgameEncounterAchievements(encounter,true,true);
     // Royal Flush und Rift Sovereign sind ausdrücklich immer farmbar.
     // Nach Freischaltung aller regulären Hauptfähigkeiten wird jeder erfolgreiche Clear zu Prestige.
     if(!encounter.farmTrophy && !campaignHasAllMainAbilities(profile)) return 0;
@@ -971,6 +1002,7 @@
 
   function awardDuoCampaignTrophies(profile1,profile2,encounter,newlyCompleted){
     if(!profile1||!profile2||!encounter) return 0;
+    awardEndgameEncounterAchievements(encounter,true,true);
     if(!newlyCompleted && !isDuoWorldBossEncounter(encounter)) return 0;
     [profile1,profile2].forEach(profile=>{
       const progress=campaignProgress(profile);
@@ -979,7 +1011,7 @@
     return 1;
   }
 
-  function awardTrioCampaignTrophies(profile1,profile2,profile3,encounter,newlyCompleted){if(!profile1||!profile2||!profile3||!encounter)return 0;if(!newlyCompleted&&!encounter.farmTrophy)return 0;[profile1,profile2,profile3].forEach(profile=>{const progress=campaignProgress(profile);progress.trophies=Math.max(0,Math.floor(Number(progress.trophies)||0))+1;});return 1;}
+  function awardTrioCampaignTrophies(profile1,profile2,profile3,encounter,newlyCompleted){if(!profile1||!profile2||!profile3||!encounter)return 0;awardEndgameEncounterAchievements(encounter,true,true);if(!newlyCompleted&&!encounter.farmTrophy)return 0;[profile1,profile2,profile3].forEach(profile=>{const progress=campaignProgress(profile);progress.trophies=Math.max(0,Math.floor(Number(progress.trophies)||0))+1;});return 1;}
   function startTrioCampaignEncounter(){
     const p1=getProfile(trioProfile1Select.value),p2=getProfile(trioProfile2Select.value),p3=getProfile(trioProfile3Select.value),encounter=trioEncounterById(trioCampaignEncounterId);if(!p1||!p2||!p3||new Set([p1.id,p2.id,p3.id]).size!==3||!encounter||!trioEncounterAvailable(p1,p2,p3,encounter))return;
     let selected=[+trioAbility1Select.value,+trioAbility2Select.value,+trioAbility3Select.value].map(id=>CHOOSABLE_ABILITY_IDS.includes(id)?id:(CHOOSABLE_ABILITY_IDS[0]||3));const required=Array.isArray(encounter.requiredPrimaryAbilities)?encounter.requiredPrimaryAbilities.map(Number):null;const trioChallengeStandard=campaignChallengeDefaultAbility(encounter);if((!required||required.length!==3)&&trioChallengeStandard!=null)selected=selected.map(id=>id===trioChallengeStandard?(CHOOSABLE_ABILITY_IDS.find(x=>x!==trioChallengeStandard)??id):id);if(required&&required.length===3&&!required.every((id,i)=>selected[i]===id)){renderTrioCampaign();return;}
@@ -1003,7 +1035,7 @@
       }
       const heroStartHp=START_HP+(window.WDMastery?.hpBonus?.(profile,"trio",encounter)||0);
       return {name:profile.name,battleTag:`#${profile.tagNumber}`,profileId:profile.id,botLevel:"human",campaignTeam:"hero",hp:heroStartHp,maxHp:heroStartHp,campaignStartHp:heroStartHp,ability,secondAbility:second,thirdAbility:third,fourthAbility:null,secondAbilityUnlocked:second!=null,thirdAbilityUnlocked:third!=null,fourthAbilityUnlocked:false,campaignBonusDraftUsed:false,rolledAbility:"TRIO",primaryWasChosen:true,secondAbilityWasChosen:false,thirdAbilityWasChosen:false,fourthAbilityWasChosen:false,seat:0,diceDesign:profile.selectedDice||"classic",...playerCosmeticsFromProfile(profile),wins:0,momentumStreak:0,lastStandUsed:false,roundLastStandTriggered:false,damageSinceLastOwnTurn:false,bloodRushPrimed:false,voluntaryHpPaidThisTurn:false,botBloodUsesThisAttack:0};
-    };const heroes=[makeHero(p1,selected[0],0),makeHero(p2,selected[1],1),makeHero(p3,selected[2],2)];const enemies=encounter.enemies.map(enemy=>({name:enemy.name,battleTag:"",profileId:null,botLevel:enemy.level||"normal",campaignTeam:"enemy",hp:Number(enemy.hp)||START_HP,maxHp:Number(enemy.hp)||START_HP,ability:Number(enemy.ability)||0,secondAbility:enemy.secondAbility!=null?Number(enemy.secondAbility):null,thirdAbility:null,secondAbilityUnlocked:true,thirdAbilityUnlocked:true,rolledAbility:"TRIO",primaryWasChosen:false,seat:0,diceDesign:"classic",wins:0,momentumStreak:0,lastStandUsed:false,roundLastStandTriggered:false,damageSinceLastOwnTurn:false,bloodRushPrimed:false,voluntaryHpPaidThisTurn:false,botBloodUsesThisAttack:0}));players=[];const max=Math.max(heroes.length,enemies.length);for(let i=0;i<max;i++){if(heroes[i])players.push(heroes[i]);if(enemies[i])players.push(enemies[i]);}
+    };const heroes=[makeHero(p1,selected[0],0),makeHero(p2,selected[1],1),makeHero(p3,selected[2],2)];const enemies=encounter.enemies.map((enemy,i)=>buildCampaignEnemyPlayer(enemy,encounter,i));players=[];const max=Math.max(heroes.length,enemies.length);for(let i=0;i<max;i++){if(heroes[i])players.push(heroes[i]);if(enemies[i])players.push(enemies[i]);}initializeEncounterMechanics();
     resetRoundStats();current=0;prepareBloodRushForTurn(current);applyEncounterTurnStartRule(current);dice=freshDice();phase="idle";isAnimating=false;attackFace=null;attackTarget=null;pendingCampaignAttackStart=null;attackHits=0;attackDamage=0;firstAttackRoll=true;currentAttackRollNewHits=0;baseRerollUsed=false;luckRerollIndex=null;luckRerollSecondUsed=false;luckRerollUses=0;loadedDiceUsed=false;loadedDiceUses=0;lastBaseRollIndices=[];attackPowerUsed=false;attackPowerUses=0;precisionUses=0;momentumBonus=0;bloodPriceNeighbors=[];bloodPricePaidThisRoll=0;bloodPriceWasPreActivatedThisRoll=false;bloodRushActiveThisAttack=false;doubleTapApplied=false;lastAttackRollIndices=[];attackRollCount=0;attackMasteryRollCount=0;normalAttackHitsThisAttack=0;exactFaceHitsThisAttack=0;wildcardAttackHitsThisAttack=0;wildcardTriggeredThisAttack=false;masteryL2AttackBonusesApplied=false;wildcardSecondRollArmed=false;currentAttackSource="normal";currentAttackBaseTotal=null;gamblingRetryUsed=false;gamblingRetryPending=false;pendingDamage=null;pendingHeal=null;pendingExtraDamageFx=[];pendingExtraHealFx=[];roundNumber=Math.max(1,trioEncountersForWorld(encounter.world||"trinity").findIndex(e=>e.id===encounter.id)+1);roundEliminationOrder=[];lastPlaceIndex=null;roundWinnerHandled=false;roundWinnerIndex=null;nextRoundAbilityRolls=[];eventPopupQueue=[];eventPopupBusy=false;secondAbilityDraftBusy=false;secondAbilityDraftIndex=null;deferredBaseAdvance=false;gamblingRolling=false;gamblingBaseTotal=null;gamblingRetryActions?.classList.add("hidden");gamblingModal.classList.add("hidden");highStakesRolling=false;highStakesDecisionThisAttack=false;highStakesModal.classList.add("hidden");perfect25Rolling=false;perfect25D4Rolling=false;perfect25BaseTotal=null;pendingPerfect25Total=null;perfect25Modal.classList.add("hidden");perfect25D4Modal.classList.add("hidden");insuranceRolling=false;insuranceContext=null;insuranceModal.classList.add("hidden");counterRolling=false;counterContext=null;counterDiceState=[];counterHits=0;counterFirstRoll=true;pendingCounterattack=null;deferredAttackFinish=false;counterModal.classList.add("hidden");wildcardFace=null;secondAbilityDraftQueue=[];secondAbilityModal.classList.add("hidden");
     logEl.innerHTML="";winnerBox.classList.add("hidden");nextRoundBox.classList.add("hidden");nextRoundPrepBtn.classList.add("hidden");restartBtn.textContent="Zur Trio-Kampagne";hideFrontScreens();game.classList.remove("hidden");game.classList.add("campaign-game","trio-game");document.body.classList.add("playing");window.scrollTo?.(0,0);addLog(`💪 Trio-Kampagne: ${encounter.title} – ${encounter.subtitle}. Challenge: ${encounter.challenge.text}`);const trioChallengeAbility=campaignChallengeGrantedAbility(encounter,[]);if(trioChallengeAbility!=null)addLog(`🎯 Challenge-Ausrüstung: ${ABILITIES[trioChallengeAbility].name} wird automatisch mitgegeben, sofern das Encounter-Loadout sie nicht bereits enthält.`);addLog(`✨ Bonus-Draft pro Spieler: erster eigener Gegner-Kill ODER ≤15 HP – was zuerst passiert.`);if(encounter.randomStartSecondAbility)addLog(`🎲 Zufalls-Start: Jeder startet mit einer zusätzlichen zufälligen 2. Fähigkeit. Der Trigger füllt die 3.`);encounterRuleText(encounter).forEach(r=>addLog(`⚙ Sonderregel ${r.name}: ${r.desc}`));if(bossPhaseFor(encounter))addLog(`👹 Bossphase vorbereitet: ${bossPhaseFor(encounter).title} bei ${Math.round((bossPhaseFor(encounter).threshold||.5)*100)} % Boss-HP.`);const extra=heroes.map(h=>[h.secondAbility,h.thirdAbility].filter(x=>x!=null).map(id=>ABILITIES[id].name).join(" + ")).map((txt,i)=>txt?`${heroes[i].name}: ${txt}`:null).filter(Boolean);if(extra.length)addLog(`🎁 Encounter-Fähigkeiten: ${extra.join(" · ")}.`);addLog(`💀 Verloren ist erst, wenn alle drei Helden gefallen sind.`);renderAll();
   }
@@ -1035,20 +1067,20 @@
       return {name:profile.name,battleTag:`#${profile.tagNumber}`,profileId:profile.id,botLevel:"human",campaignTeam:"hero",hp:vitals.hp,maxHp:vitals.maxHp,campaignStartHp:vitals.maxHp,ability,secondAbility:loadout.secondAbility,thirdAbility:loadout.thirdAbility,fourthAbility:null,secondAbilityUnlocked:loadout.secondAbilityUnlocked,thirdAbilityUnlocked:loadout.thirdAbilityUnlocked,fourthAbilityUnlocked:false,campaignBonusDraftUsed:loadout.campaignBonusDraftUsed,rolledAbility:"DUO",primaryWasChosen:true,secondAbilityWasChosen:false,thirdAbilityWasChosen:false,fourthAbilityWasChosen:false,seat:0,diceDesign:profile.selectedDice||"classic",...playerCosmeticsFromProfile(profile),wins:0,momentumStreak:0,lastStandUsed:false,roundLastStandTriggered:false,damageSinceLastOwnTurn:false,bloodRushPrimed:false,voluntaryHpPaidThisTurn:false,botBloodUsesThisAttack:0};
     };
     const heroes=[makeHero(p1,a1),makeHero(p2,a2)];
-    const enemies=encounter.enemies.map(enemy=>({name:enemy.name,battleTag:"",profileId:null,botLevel:enemy.level||"normal",campaignTeam:"enemy",hp:Number(enemy.hp)||START_HP,maxHp:Number(enemy.hp)||START_HP,ability:Number(enemy.ability)||0,secondAbility:enemy.secondAbility!=null?Number(enemy.secondAbility):null,thirdAbility:enemy.thirdAbility!=null?Number(enemy.thirdAbility):null,fourthAbility:null,secondAbilityUnlocked:true,thirdAbilityUnlocked:true,fourthAbilityUnlocked:false,rolledAbility:"DUO",primaryWasChosen:false,seat:0,diceDesign:"classic",wins:0,momentumStreak:0,lastStandUsed:false,roundLastStandTriggered:false,damageSinceLastOwnTurn:false,bloodRushPrimed:false,voluntaryHpPaidThisTurn:false,botBloodUsesThisAttack:0}));
+    const enemies=encounter.enemies.map((enemy,i)=>buildCampaignEnemyPlayer(enemy,encounter,i));
     players=[];
-    const max=Math.max(heroes.length,enemies.length);for(let i=0;i<max;i++){if(heroes[i])players.push(heroes[i]);if(enemies[i])players.push(enemies[i]);}
+    const max=Math.max(heroes.length,enemies.length);for(let i=0;i<max;i++){if(heroes[i])players.push(heroes[i]);if(enemies[i])players.push(enemies[i]);}initializeEncounterMechanics();
     resetRoundStats();current=bossRush?(players.findIndex(player=>player.campaignTeam==="hero"&&player.hp>0)):0;if(current<0)current=0;prepareBloodRushForTurn(current);applyEncounterTurnStartRule(current);dice=freshDice();phase="idle";isAnimating=false;attackFace=null;attackTarget=null;pendingCampaignAttackStart=null;attackHits=0;attackDamage=0;firstAttackRoll=true;currentAttackRollNewHits=0;
     baseRerollUsed=false;luckRerollIndex=null;luckRerollSecondUsed=false;luckRerollUses=0;loadedDiceUsed=false;loadedDiceUses=0;lastBaseRollIndices=[];attackPowerUsed=false;attackPowerUses=0;precisionUses=0;momentumBonus=0;bloodPriceNeighbors=[];bloodPricePaidThisRoll=0;bloodPriceWasPreActivatedThisRoll=false;bloodRushActiveThisAttack=false;doubleTapApplied=false;lastAttackRollIndices=[];attackRollCount=0;attackMasteryRollCount=0;normalAttackHitsThisAttack=0;exactFaceHitsThisAttack=0;wildcardAttackHitsThisAttack=0;wildcardTriggeredThisAttack=false;masteryL2AttackBonusesApplied=false;wildcardSecondRollArmed=false;currentAttackSource="normal";currentAttackBaseTotal=null;gamblingRetryUsed=false;gamblingRetryPending=false;pendingDamage=null;pendingHeal=null;pendingExtraDamageFx=[];pendingExtraHealFx=[];
     roundNumber=bossRush?window.WDDuoBossRush.stageNumber():Math.max(1,duoEncountersForWorld(encounter.world||"covenant").findIndex(e=>e.id===encounter.id)+1);roundEliminationOrder=[];lastPlaceIndex=null;roundWinnerHandled=false;roundWinnerIndex=null;nextRoundAbilityRolls=[];eventPopupQueue=[];eventPopupBusy=false;secondAbilityDraftBusy=false;secondAbilityDraftIndex=null;deferredBaseAdvance=false;
     gamblingRolling=false;gamblingBaseTotal=null;gamblingRetryActions?.classList.add("hidden");gamblingModal.classList.add("hidden");highStakesRolling=false;highStakesDecisionThisAttack=false;highStakesModal.classList.add("hidden");perfect25Rolling=false;perfect25D4Rolling=false;perfect25BaseTotal=null;pendingPerfect25Total=null;perfect25Modal.classList.add("hidden");perfect25D4Modal.classList.add("hidden");insuranceRolling=false;insuranceContext=null;insuranceModal.classList.add("hidden");counterRolling=false;counterContext=null;counterDiceState=[];counterHits=0;counterFirstRoll=true;pendingCounterattack=null;deferredAttackFinish=false;counterModal.classList.add("hidden");wildcardFace=null;secondAbilityDraftQueue=[];secondAbilityModal.classList.add("hidden");
     logEl.innerHTML="";winnerBox.classList.add("hidden");nextRoundBox.classList.add("hidden");nextRoundPrepBtn.classList.add("hidden");restartBtn.textContent=bossRush?"Boss Rush beenden":"Zur Duo-Kampagne";hideFrontScreens();game.classList.remove("hidden");game.classList.add("campaign-game");game.classList.remove("trio-game");game.classList.toggle("boss-rush-game",bossRush);document.body.classList.add("playing");window.scrollTo?.(0,0);
-    if(bossRush)addLog(`Boss Rush ${roundNumber}/5: ${encounter.title}. Verbleibende HP und gewählte Rush-Fähigkeiten werden in den nächsten Kampf übernommen.`);
+    if(bossRush)addLog(`Boss Rush ${roundNumber}/10: ${encounter.title}. Verbleibende HP und gewählte Rush-Fähigkeiten werden in den nächsten Kampf übernommen.`);
     else addLog(`🤝 Duo-Kampagne: ${encounter.title} – ${encounter.subtitle}. Challenge: ${encounter.challenge.text}`);
     if(heroes.some(h=>h.hp!==START_HP))addLog(`Duo-Mastery/Start-HP: ${heroes.map(h=>`${h.name} ${h.hp} HP`).join(" · ")}.`);
     const duoChallengeAbility=campaignChallengeGrantedAbility(encounter,[]);
     if(duoChallengeAbility!=null)addLog(`Challenge-Ausrüstung: ${ABILITIES[duoChallengeAbility].name} ist bei beiden Spielern automatisch dabei, sofern sie nicht bereits im Loadout steckt.`);
-    if(bossRush)addLog(`Boss-Rush-Draft: Die erste Bonuswahl füllt die 2. Fähigkeit dauerhaft. Die 3. Fähigkeit kann einmalig als Level-Belohnung gewählt werden.`);
+    if(bossRush)addLog(`Boss-Rush-Draft: Die erste Bonuswahl füllt die 2. Fähigkeit. Nach jeder Stufe stehen drei Belohnungen bereit; Ability-Angebote können die 3. Fähigkeit für die nächsten Kämpfe neu ausrichten.`);
     else addLog(`Bonus-Draft pro Spieler: erster eigener Gegner-Kill ODER ≤15 HP – was zuerst passiert.`);
     encounterRuleText(encounter).forEach(r=>addLog(`Sonderregel ${r.name}: ${r.desc}`));
     if(bossPhaseFor(encounter))addLog(`Bossphase vorbereitet: ${bossPhaseFor(encounter).title} bei ${Math.round((bossPhaseFor(encounter).threshold||.5)*100)} % Boss-HP.`);
@@ -1147,13 +1179,8 @@
       seat:0,diceDesign:profile.selectedDice||"classic",...playerCosmeticsFromProfile(profile),wins:0,momentumStreak:0,lastStandUsed:false,roundLastStandTriggered:false,
       damageSinceLastOwnTurn:false,bloodRushPrimed:false,voluntaryHpPaidThisTurn:false,botBloodUsesThisAttack:0
     };
-    const enemies=encounter.enemies.map((enemy,i)=>({
-      name:enemy.name,battleTag:"",profileId:null,botLevel:enemy.level||"normal",campaignTeam:"enemy",hp:Number(enemy.hp)||START_HP,maxHp:Number(enemy.hp)||START_HP,
-      ability:enemy.ability==="mirror"?heroAbility:(Number(enemy.ability)||0),secondAbility:enemy.secondAbility==="mirror"?heroAbility:(enemy.secondAbility!=null?Number(enemy.secondAbility):null),secondAbilityUnlocked:true,rolledAbility:"CAMPAIGN",primaryWasChosen:false,
-      seat:0,diceDesign:"classic",wins:0,momentumStreak:0,lastStandUsed:false,roundLastStandTriggered:false,
-      damageSinceLastOwnTurn:false,bloodRushPrimed:false,voluntaryHpPaidThisTurn:false,botBloodUsesThisAttack:0
-    }));
-    players=[hero,...enemies];
+    const enemies=encounter.enemies.map((enemy,i)=>{const built=buildCampaignEnemyPlayer(enemy,encounter,i);if(enemy.ability==="mirror")built.ability=heroAbility;if(enemy.secondAbility==="mirror")built.secondAbility=heroAbility;return built;});
+    players=[hero,...enemies];initializeEncounterMechanics();
 
     resetRoundStats();
     current=0;prepareBloodRushForTurn(current);applyEncounterTurnStartRule(current);dice=freshDice();phase="idle";isAnimating=false;

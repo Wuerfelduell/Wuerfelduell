@@ -12,9 +12,9 @@ raten.
 
 | | |
 |---|---|
-| Version | **28.7.3** |
+| Version | **28.9.1** |
 | Branch | `main`, gespiegelt auf `claude/repo-dateibearbeitung-9wfyhe` |
-| Letzte Schritte | V28.7.2 fehlende Rahmen · V28.7.3 englisches Sprachpaket · Bestandsaufnahme der CSS-Schichten |
+| Letzte Schritte | V28.9.1 Hardening · faire Hunted-Zielwahl · Damage-Commit für einmalige Angriffsboni |
 
 ---
 
