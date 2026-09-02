@@ -24,5 +24,5 @@
   .i{fill:url(#ivory);stroke:url(#gold);stroke-width:2.2;stroke-linejoin:round}
   .b{fill:#27a9ff;stroke:#d8f6ff;stroke-width:1}
   .r{fill:#a8182e;stroke:url(#gold);stroke-width:1.5}
-</style><g filter="url(#shadow)"><circle class="f" cx="23" cy="19" r="9"/><circle class="f" cx="43" cy="19" r="9"/><path class="f" d="M5 55c1-13 7-20 18-20 7 0 12 3 15 9 2-6 7-9 13-9 6 0 10 7 11 20H5Z"/><path class="n" d="m25 38 7 7 7-7 5 5-12 12-12-12 5-5Z"/></g>
+</style><g filter="url(#shadow)"><circle class="f" cx="23" cy="19" r="9"/><circle class="f" cx="43" cy="19" r="9"/><path class="f" d="M5 55c1-13 7-20 18-20 7 0 12 3 15 9 2-6 7-9 13-9 6 0 10 7 11 20H5Z"/></g>
 </svg>

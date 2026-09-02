@@ -21,12 +21,26 @@
       <feDropShadow dx="0" dy="1.4" stdDeviation="1.25" flood-color="#06152e" flood-opacity="0.58"/>
     </filter>
   </defs><style>
-    .s{fill:none;stroke:url(#gold);stroke-width:3;stroke-linecap:round;stroke-linejoin:round}
-    .t{fill:none;stroke:url(#gold);stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
-    .f{fill:url(#gold);stroke:#6f4314;stroke-width:1.2;stroke-linejoin:round}
-    .n{fill:url(#blue);stroke:url(#gold);stroke-width:2.2;stroke-linejoin:round}
-    .i{fill:url(#ivory);stroke:url(#gold);stroke-width:2.2;stroke-linejoin:round}
-    .b{fill:#27a9ff;stroke:#d8f6ff;stroke-width:1}
+    .blade{fill:url(#ivory);stroke:url(#gold);stroke-width:2;stroke-linejoin:round}
+    .ridge{fill:none;stroke:#fff8d8;stroke-width:1;stroke-linecap:round}
+    .guard{fill:url(#gold);stroke:#6f4314;stroke-width:1.1;stroke-linejoin:round}
+    .grip{fill:url(#blue);stroke:url(#gold);stroke-width:1.3;stroke-linejoin:round}
+    .pommel{fill:url(#gold);stroke:#6f4314;stroke-width:1}
   </style>
-  <g filter="url(#shadow)"><path class="s" d="M17 51 47 13M13 17l8-4 30 30-4 8L17 21l-4-4Zm30 34 8-4L21 13l-8 4 34 34Z"/><path class="f" d="m13 17 7-7 3 9-4 4-6-6Zm38 0-7-7-3 9 4 4 6-6Z"/></g>
+  <g filter="url(#shadow)">
+    <g transform="rotate(-43 32 32)">
+      <path class="blade" d="M28.5 38 29.8 13 32 5l2.2 8 1.3 25Z"/>
+      <path class="ridge" d="M32 9v28"/>
+      <path class="guard" d="M20.5 37.5h23l-3.2 5h-16.6Z"/>
+      <path class="grip" d="M28.8 42h6.4v11h-6.4Z"/>
+      <circle class="pommel" cx="32" cy="56" r="3.2"/>
+    </g>
+    <g transform="rotate(43 32 32)">
+      <path class="blade" d="M28.5 38 29.8 13 32 5l2.2 8 1.3 25Z"/>
+      <path class="ridge" d="M32 9v28"/>
+      <path class="guard" d="M20.5 37.5h23l-3.2 5h-16.6Z"/>
+      <path class="grip" d="M28.8 42h6.4v11h-6.4Z"/>
+      <circle class="pommel" cx="32" cy="56" r="3.2"/>
+    </g>
+  </g>
 </svg>
