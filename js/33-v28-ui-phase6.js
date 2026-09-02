@@ -19,46 +19,6 @@
     return element;
   }
 
-  function encounterList(type){
-    try{
-      if(type === "solo" && typeof CAMPAIGN_ENCOUNTERS !== "undefined") return CAMPAIGN_ENCOUNTERS;
-      if(type === "duo" && typeof DUO_CAMPAIGN_ENCOUNTERS !== "undefined") return DUO_CAMPAIGN_ENCOUNTERS;
-      if(type === "trio" && typeof TRIO_CAMPAIGN_ENCOUNTERS !== "undefined") return TRIO_CAMPAIGN_ENCOUNTERS;
-    }catch(_error){
-      return [];
-    }
-    return [];
-  }
-
-  function encounterContextForNode(node){
-    let type = "";
-    let id = "";
-    if(node.hasAttribute("data-campaign-id")){
-      type = "solo";
-      id = node.dataset.campaignId;
-    }else if(node.hasAttribute("data-duo-campaign-id")){
-      type = "duo";
-      id = node.dataset.duoCampaignId;
-    }else if(node.hasAttribute("data-trio-campaign-id")){
-      type = "trio";
-      id = node.dataset.trioCampaignId;
-    }
-    const encounter = encounterList(type).find(entry => String(entry?.id) === String(id)) || null;
-    return {type, encounter};
-  }
-
-  function isFarmEncounter(type, encounter){
-    if(!encounter) return false;
-    if(encounter.farmTrophy) return true;
-    if(type !== "duo") return false;
-    try{
-      return typeof DUO_CAMPAIGN_WORLDS !== "undefined"
-        && DUO_CAMPAIGN_WORLDS.some(world => String(world?.finalEncounterId) === String(encounter.id));
-    }catch(_error){
-      return false;
-    }
-  }
-
   function decorateCompletedMark(node){
     if(!node.classList.contains("done")) return;
     const mark = node.querySelector(":scope > .node-mark");
@@ -84,20 +44,11 @@
 
   function decorateCampaignNodes(){
     document.querySelectorAll(".campaign-hub .campaign-node").forEach(node => {
-      const {type, encounter} = encounterContextForNode(node);
-      const farm = isFarmEncounter(type, encounter);
-      node.classList.toggle("p6-farm-node", farm);
-
-      let label = node.querySelector(":scope > .p6-farm-label");
-      if(farm && !label){
-        label = document.createElement("span");
-        label.className = "p6-farm-label";
-        label.textContent = "FARM";
-        label.setAttribute("aria-hidden", "true");
-        node.append(label);
-      }else if(!farm && label){
-        label.remove();
-      }
+      // Wiederholbare Belohnungen bleiben Teil der Spielmechanik, erhalten in
+      // der Weltkarte aber keinen abweichenden Rahmen und kein FARM-Label mehr.
+      // So haben Level 10/15 dieselbe saubere Geometrie wie alle anderen Nodes.
+      node.classList.remove("p6-farm-node");
+      node.querySelector(":scope > .p6-farm-label")?.remove();
 
       decorateCompletedMark(node);
       decorateXpBadge(node);

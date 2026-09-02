@@ -1,0 +1,175 @@
+/* DiceDuel V28.9.2 — menu/campaign polish and data-driven world colors. */
+
+:root{
+  --world-primary:#d5a642;
+  --world-secondary:#fff0b5;
+  --world-surface:#17365b;
+  --world-glow:rgba(213,166,66,.28);
+}
+
+/* Main menu: every primary icon uses one restrained, matching footprint. */
+html[data-v28-rework="2"] #mainMenu .menu-actions button.menu-play .menu-icon,
+html[data-v28-rework="2"] #mainMenu .menu-actions button.menu-online .menu-icon,
+html[data-v28-rework="2"] #mainMenu .menu-actions button.menu-campaign .menu-icon,
+html[data-v28-rework="2"] #mainMenu .menu-actions button.menu-tutorial .menu-icon{
+  width:54px!important;
+  height:54px!important;
+  transform:translateX(7px)!important;
+}
+html[data-v28-rework="2"] #mainMenu .menu-actions button.menu-play .menu-icon img,
+html[data-v28-rework="2"] #mainMenu .menu-actions button.menu-online .menu-icon img,
+html[data-v28-rework="2"] #mainMenu .menu-actions button.menu-campaign .menu-icon img,
+html[data-v28-rework="2"] #mainMenu .menu-actions button.menu-tutorial .menu-icon img{
+  display:block!important;
+  width:48px!important;
+  height:48px!important;
+  margin:3px!important;
+  object-fit:contain!important;
+}
+html[data-v28-rework="2"] #mainMenu #menuOnlineBtn .menu-icon img,
+html[data-v28-rework="2"] #mainMenu #menuCampaignBtn .menu-icon img,
+html[data-v28-rework="2"] #mainMenu #menuTutorialBtn .menu-icon img{
+  width:44px!important;
+  height:44px!important;
+  margin:5px!important;
+}
+
+/* World tabs: active and idle share exactly one box and one gold frame. */
+html[data-v28-rework="2"] .campaign-hub .campaign-world-btn,
+html[data-v28-rework="2"] .campaign-hub .campaign-world-btn.active{
+  position:relative!important;
+  isolation:isolate!important;
+  overflow:hidden!important;
+  flex:0 0 108px!important;
+  width:108px!important;
+  min-height:78px!important;
+  box-sizing:border-box!important;
+  border-style:solid!important;
+  border-color:transparent!important;
+  border-width:13px 18px!important;
+  border-image-source:var(--p1-ivory-card)!important;
+  border-image-slice:76 168 76 168 fill!important;
+  border-image-width:13px 18px!important;
+  border-image-repeat:stretch!important;
+  border-radius:0!important;
+  padding:0!important;
+  background:transparent!important;
+  transform:none!important;
+  box-shadow:0 5px 13px var(--world-glow)!important;
+}
+html[data-v28-rework="2"] .campaign-hub .campaign-world-btn.active::before{
+  content:"";
+  position:absolute;
+  z-index:0;
+  inset:-1px -5px;
+  border:1px solid rgba(255,236,173,.55);
+  border-radius:5px;
+  background:linear-gradient(155deg,#145aa8 0%,#0b3978 52%,#061d48 100%);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.2),inset 0 -3px 12px rgba(0,0,0,.24);
+  pointer-events:none;
+}
+html[data-v28-rework="2"] .campaign-hub .campaign-world-btn::after{
+  content:"";
+  position:absolute;
+  z-index:2;
+  left:25%;
+  right:25%;
+  bottom:1px;
+  height:2px;
+  border-radius:999px;
+  background:var(--world-primary);
+  box-shadow:0 0 7px var(--world-glow);
+  pointer-events:none;
+}
+html[data-v28-rework="2"] .campaign-hub .campaign-world-btn>span,
+html[data-v28-rework="2"] .campaign-hub .campaign-world-btn>img{
+  position:relative;
+  z-index:1;
+}
+html[data-v28-rework="2"] .campaign-hub .campaign-world-btn:not(.active) .campaign-world-kicker{
+  color:var(--world-primary)!important;
+}
+html[data-v28-rework="2"] .campaign-hub .campaign-world-btn.active .campaign-world-name,
+html[data-v28-rework="2"] .campaign-hub .campaign-world-btn.active .campaign-world-kicker,
+html[data-v28-rework="2"] .campaign-hub .campaign-world-btn.active .campaign-world-state{
+  color:#fff2cf!important;
+  text-shadow:0 1px 3px rgba(0,12,36,.72)!important;
+}
+html[data-v28-rework="2"] .campaign-hub .campaign-world-btn.done:not(.active){
+  filter:none!important;
+  box-shadow:0 5px 13px var(--world-glow)!important;
+}
+
+/* Current world's palette accents the map and detail shell without changing layout. */
+html[data-v28-rework="2"] .campaign-hub .campaign-node-map{
+  box-shadow:0 0 0 1px var(--world-primary),0 12px 26px var(--world-glow)!important;
+}
+html[data-v28-rework="2"] .campaign-hub .campaign-node.current,
+html[data-v28-rework="2"] .campaign-hub .campaign-node.selected{
+  box-shadow:0 0 0 3px var(--world-glow),0 0 18px var(--world-primary)!important;
+}
+html[data-v28-rework="2"] .campaign-hub .campaign-node-detail{
+  box-shadow:0 0 0 1px var(--world-primary),0 10px 22px var(--world-glow)!important;
+}
+
+/* Solo overview: keep the selected profile, drop the obsolete Prestige tile. */
+html[data-v28-rework="2"] #campaignScreen .campaign-top{
+  grid-template-columns:1fr!important;
+}
+
+/* XP, Mastery and Encounter actions now share the same full-width geometry. */
+html[data-v28-rework="2"] .campaign-hub .campaign-mastery-strip{
+  grid-template-columns:1fr!important;
+  align-items:stretch!important;
+}
+html[data-v28-rework="2"] .campaign-hub .campaign-mastery-xp,
+html[data-v28-rework="2"] .campaign-hub .campaign-mastery-btn,
+html[data-v28-rework="2"] .campaign-hub .campaign-start-row .good{
+  box-sizing:border-box!important;
+  width:100%!important;
+  min-height:64px!important;
+  height:64px!important;
+}
+
+/* Farm rewards remain functional, but no node gets a special protruding frame. */
+html[data-v28-rework="2"] .campaign-hub .p6-farm-label,
+html[data-v28-rework="2"] .campaign-hub .p8-boss-selected-glow{
+  display:none!important;
+}
+
+/* Guarantee a complete frame around the first narrative block in every detail. */
+html[data-v28-rework="2"] .campaign-node-detail .node-detail-desc{
+  box-sizing:border-box!important;
+  border-style:solid!important;
+  border-color:transparent!important;
+  border-width:13px 21px!important;
+  border-image-source:var(--wd-card)!important;
+  border-image-slice:72 120 72 120!important;
+  border-image-width:13px 21px!important;
+  border-image-repeat:stretch!important;
+  border-radius:0!important;
+  padding:2px 4px 4px!important;
+}
+
+@media(max-width:540px){
+  html[data-v28-rework="2"] #mainMenu .menu-actions button.menu-play .menu-icon,
+  html[data-v28-rework="2"] #mainMenu .menu-actions button.menu-online .menu-icon,
+  html[data-v28-rework="2"] #mainMenu .menu-actions button.menu-campaign .menu-icon,
+  html[data-v28-rework="2"] #mainMenu .menu-actions button.menu-tutorial .menu-icon{
+    width:50px!important;
+    height:50px!important;
+    transform:translateX(7px)!important;
+  }
+  html[data-v28-rework="2"] #mainMenu .menu-actions button.menu-play .menu-icon img{
+    width:46px!important;
+    height:46px!important;
+    margin:2px!important;
+  }
+  html[data-v28-rework="2"] #mainMenu #menuOnlineBtn .menu-icon img,
+  html[data-v28-rework="2"] #mainMenu #menuCampaignBtn .menu-icon img,
+  html[data-v28-rework="2"] #mainMenu #menuTutorialBtn .menu-icon img{
+    width:42px!important;
+    height:42px!important;
+    margin:4px!important;
+  }
+}
