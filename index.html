@@ -26,7 +26,7 @@
     #wdBootGate.is-done{opacity:0;pointer-events:none;transition:opacity .35s ease}
     body.wd-booting>#wdBootGate~*{pointer-events:none!important}
   </style>
-  <link rel="stylesheet" href="css/app.css?v=28.9.2" />
+  <link rel="stylesheet" href="css/app.css?v=28.10.0" />
   <script type="importmap">
   {
     "imports": {
@@ -35,6 +35,7 @@
     }
   }
   </script>
+  <link rel="stylesheet" href="css/pro.css?v=28.10.0">
 </head>
 <body class="wd-booting">
 <div id="wdBootGate" role="progressbar" aria-busy="true" aria-label="DiceDuel wird geladen">
@@ -774,53 +775,54 @@
      vorher zuletzt (Module sind implizit deferred), und mit defer auf den
      klassischen Scripts wuerde ein haengender CDN-Fetch sonst alles danach
      blockieren. -->
-<script defer src="lang/de.js?v=28.9.2"></script>
-<script defer src="lang/en.js?v=28.9.2"></script>
-<script defer src="lang/en-campaign.js?v=28.9.2"></script>
-<script defer src="js/00-i18n.js?v=28.9.2"></script>
-<script defer src="js/01-config.js?v=28.9.2"></script>
-<script defer src="js/02-campaign-solo-data.js?v=28.9.2"></script>
-<script defer src="js/03-campaign-duo-data.js?v=28.9.2"></script>
-<script defer src="js/03b-campaign-trio-data.js?v=28.9.2"></script>
-<script defer src="js/03c-campaign-endgame-data.js?v=28.9.2"></script>
-<script defer src="js/03d-endgame-mechanics.js?v=28.9.2"></script>
-<script defer src="js/04-save.js?v=28.9.2"></script>
-<script defer src="js/05-game-data-state.js?v=28.9.2"></script>
-<script defer src="js/06-campaign.js?v=28.9.2"></script>
-<script defer src="js/07-tutorial.js?v=28.9.2"></script>
-<script defer src="js/08-profiles-stats.js?v=28.9.2"></script>
-<script defer src="js/09-battle-stats.js?v=28.9.2"></script>
-<script defer src="js/10-bots.js?v=28.9.2"></script>
-<script defer src="js/11-setup.js?v=28.9.2"></script>
-<script defer src="js/12-battle-ui.js?v=28.9.2"></script>
-<script defer src="js/13-battle-actions.js?v=28.9.2"></script>
-<script defer src="js/14-round-flow.js?v=28.9.2"></script>
-<script defer src="js/15-app.js?v=28.9.2"></script>
-<script defer src="js/16-audio.js?v=28.9.2"></script>
-<script defer src="js/18-attack-fx.js?v=28.9.2"></script>
-<script defer src="js/17-online-bridge.js?v=28.9.2"></script>
-<script defer src="js/19-build-integrity.js?v=28.9.2"></script>
-<script defer src="js/20-v276.js?v=28.9.2"></script>
-<script defer src="js/21-test-lab.js?v=28.9.2"></script>
-<script defer src="js/23-mastery.js?v=28.9.2"></script>
-<script defer src="js/24-ability-mastery-lab.js?v=28.9.2"></script>
-<script defer src="js/25-cloud-account.js?v=28.9.2"></script>
-<script defer src="js/26-v28-ui.js?v=28.9.2"></script>
-<script defer src="js/27-v28-asset-polish.js?v=28.9.2"></script>
-<script defer src="js/28-v28-ui-rework.js?v=28.9.2"></script>
-<script defer src="js/29-v28-ui-phase1.js?v=28.9.2"></script>
-<script defer src="js/30-v28-ui-phase2.js?v=28.9.2"></script>
-<script defer src="js/31-v28-ui-phase4.js?v=28.9.2"></script>
-<script defer src="js/32-v28-ui-phase5.js?v=28.9.2"></script>
-<script defer src="js/33-v28-ui-phase6.js?v=28.9.2"></script>
-<script defer src="js/34-v28-ui-phase8.js?v=28.9.2"></script>
-<script defer src="js/36-emoji-sprite-pass.js?v=28.9.2"></script>
-<script defer src="js/37-duo-boss-rush.js?v=28.9.2"></script>
-<script defer src="js/39-campaign-world-themes.js?v=28.9.2"></script>
-<script defer src="js/35-boot-gate.js?v=28.9.2"></script>
-<script defer src="js/38-sw-register.js?v=28.9.2"></script>
+<script defer src="lang/de.js?v=28.10.0"></script>
+<script defer src="lang/en.js?v=28.10.0"></script>
+<script defer src="lang/en-campaign.js?v=28.10.0"></script>
+<script defer src="js/00-i18n.js?v=28.10.0"></script>
+<script defer src="js/01-config.js?v=28.10.0"></script>
+<script defer src="js/02-campaign-solo-data.js?v=28.10.0"></script>
+<script defer src="js/03-campaign-duo-data.js?v=28.10.0"></script>
+<script defer src="js/03b-campaign-trio-data.js?v=28.10.0"></script>
+<script defer src="js/03c-campaign-endgame-data.js?v=28.10.0"></script>
+<script defer src="js/03d-endgame-mechanics.js?v=28.10.0"></script>
+<script defer src="js/04-save.js?v=28.10.0"></script>
+<script defer src="js/05-game-data-state.js?v=28.10.0"></script>
+<script defer src="js/06-campaign.js?v=28.10.0"></script>
+<script defer src="js/07-tutorial.js?v=28.10.0"></script>
+<script defer src="js/08-profiles-stats.js?v=28.10.0"></script>
+<script defer src="js/09-battle-stats.js?v=28.10.0"></script>
+<script defer src="js/10-bots.js?v=28.10.0"></script>
+<script defer src="js/11-setup.js?v=28.10.0"></script>
+<script defer src="js/12-battle-ui.js?v=28.10.0"></script>
+<script defer src="js/13-battle-actions.js?v=28.10.0"></script>
+<script defer src="js/14-round-flow.js?v=28.10.0"></script>
+<script defer src="js/15-app.js?v=28.10.0"></script>
+<script defer src="js/16-audio.js?v=28.10.0"></script>
+<script defer src="js/18-attack-fx.js?v=28.10.0"></script>
+<script defer src="js/17-online-bridge.js?v=28.10.0"></script>
+<script defer src="js/19-build-integrity.js?v=28.10.0"></script>
+<script defer src="js/20-v276.js?v=28.10.0"></script>
+<script defer src="js/21-test-lab.js?v=28.10.0"></script>
+<script defer src="js/23-mastery.js?v=28.10.0"></script>
+<script defer src="js/24-ability-mastery-lab.js?v=28.10.0"></script>
+<script defer src="js/25-cloud-account.js?v=28.10.0"></script>
+<script defer src="js/26-v28-ui.js?v=28.10.0"></script>
+<script defer src="js/27-v28-asset-polish.js?v=28.10.0"></script>
+<script defer src="js/28-v28-ui-rework.js?v=28.10.0"></script>
+<script defer src="js/29-v28-ui-phase1.js?v=28.10.0"></script>
+<script defer src="js/30-v28-ui-phase2.js?v=28.10.0"></script>
+<script defer src="js/31-v28-ui-phase4.js?v=28.10.0"></script>
+<script defer src="js/32-v28-ui-phase5.js?v=28.10.0"></script>
+<script defer src="js/33-v28-ui-phase6.js?v=28.10.0"></script>
+<script defer src="js/34-v28-ui-phase8.js?v=28.10.0"></script>
+<script defer src="js/36-emoji-sprite-pass.js?v=28.10.0"></script>
+<script defer src="js/37-duo-boss-rush.js?v=28.10.0"></script>
+<script defer src="js/39-campaign-world-themes.js?v=28.10.0"></script>
+<script defer src="js/35-boot-gate.js?v=28.10.0"></script>
+<script defer src="js/38-sw-register.js?v=28.10.0"></script>
 <!-- Module zuletzt: three/cannon bzw. Firebase haengen am CDN. -->
-<script type="module" src="js/online/01-online.js?v=28.9.2"></script>
-<script type="module" src="js/22-dice-tray-lab.js?v=28.9.2"></script>
+<script type="module" src="js/online/01-online.js?v=28.10.0"></script>
+<script type="module" src="js/22-dice-tray-lab.js?v=28.10.0"></script>
+  <script src="js/38-pro.js?v=28.10.0"></script>
 </body>
 </html>

@@ -1,0 +1,17 @@
+import fs from 'node:fs';
+const read=p=>fs.readFileSync(p,'utf8');
+const fail=m=>{console.error(`❌ Pro validator: ${m}`);process.exitCode=1;};
+const js=read('js/38-pro.js');
+const html=read('index.html');
+const css=read('css/pro.css');
+if(!js.includes("const VERSION = '28.10.0'"))fail('module version missing');
+if(!js.includes('diceduel_pro_monthly')||!js.includes('diceduel_pro_yearly'))fail('store product IDs missing');
+if(!js.includes('TRUSTED_SOURCES')||!js.includes('verified === true'))fail('trusted entitlement verification missing');
+if(/localStorage\.(?:getItem|setItem)\([^)]*(?:entitlement|isPro|hasPro)/i.test(js))fail('entitlement must not use LocalStorage');
+if(/URLSearchParams|location\.(?:search|hash).*pro/i.test(js))fail('URL must not grant Pro');
+for(const feature of ['Battle Vault','Kampfarchiv','Boss Rush chronicle','5 loadout slots','Premium themes','Profile auras'])if(!js.includes(feature))fail(`feature text missing: ${feature}`);
+if(!html.includes('css/pro.css?v=28.10.0'))fail('Pro CSS not loaded');
+if(!html.includes('js/38-pro.js?v=28.10.0'))fail('Pro JS not loaded');
+if(css.length<5000)fail('Pro CSS unexpectedly small');
+if(/(?:isPro|hasPro|proEntitlement).{0,100}(?:damage|health|\bhp\b|dice.?chance|attack.?bonus|ability.?power|enemy.?hp)/i.test(js))fail('potential pay-to-win hook');
+if(!process.exitCode)console.log('✅ DiceDuel Pro validator passed.');
