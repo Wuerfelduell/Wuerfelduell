@@ -6,8 +6,8 @@ window.DICEDUEL_BACKEND_CONFIG=Object.freeze({
   // Firebase remains the live online transport until the Supabase battle cutover.
   onlineProvider:"firebase",
   supabase:Object.freeze({
-    projectUrl:"",
-    publishableKey:"",
+    projectUrl:"https://gwjmemntmldzkynyxnvd.supabase.co",
+    publishableKey:"sb_publishable_FQ6oHTqpoDACjw3XeFAUoQ_hDB-jm-t",
     battleActionFunction:"battle-action",
     anonymousOnlineAuth:true
   })
