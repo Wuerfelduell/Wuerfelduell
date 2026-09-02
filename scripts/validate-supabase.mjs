@@ -12,6 +12,7 @@ const files={
   core:await read("js/41-supabase-core.js"),
   account:await read("js/42-supabase-account.js"),
   battle:await read("js/43-supabase-battle.js"),
+  online:await read("js/online/01-online.js"),
   migration:await read("supabase/migrations/20260902170000_diceduel_backend_foundation.sql"),
   edge:await read("supabase/functions/battle-action/index.ts"),
   supabaseConfig:await read("supabase/config.toml")
@@ -32,11 +33,12 @@ expect(scriptOrder.every(index=>index>=0),"one or more backend scripts are missi
 expect(scriptOrder.every((index,i)=>i===0||index>scriptOrder[i-1]),"backend scripts load in an unsafe order");
 
 expect(/accountProvider:\s*"supabase"/.test(files.publicConfig),"account provider is not prepared for Supabase");
-expect(/onlineProvider:\s*"firebase"/.test(files.publicConfig),"Firebase battle fallback must remain active during foundation phase");
+expect(/onlineProvider:\s*"supabase"/.test(files.publicConfig),"Supabase online provider is not active");
 expect(/service[_-]?role/.test(files.runtimeConfig),"runtime config does not reject service-role browser keys");
 expect(/signInAnonymously/.test(files.core),"anonymous online identity support is missing");
 expect(/dd_put_account_save/.test(files.account),"Supabase account adapter does not use protected save RPC");
 expect(/DD_SAVE_CONFLICT/.test(files.account),"cloud save conflict handling is missing");
+expect(/user\.is_anonymous/.test(files.account),"anonymous online identities leak into the cloud-account UI");
 expect(/dd_submit_battle_action/.test(files.edge),"Edge Function does not submit through the validated action RPC");
 expect(/auth\.getUser\(token\)/.test(files.edge),"Edge Function does not validate the caller JWT");
 expect(/verify_jwt\s*=\s*false/.test(files.supabaseConfig)&&/auth\.getUser\(token\)/.test(files.edge),"manual JWT mode is not paired with explicit token validation");
@@ -55,7 +57,11 @@ expect(/revoke all on public\.dd_accounts,public\.dd_account_saves/.test(files.m
 expect(/grant select on public\.dd_accounts,public\.dd_account_saves/.test(files.migration),"authorized Realtime/select access is missing");
 expect(/interactionOwnerUid/.test(files.migration)&&/DD_STALE_STATE/.test(files.migration),"battle action ownership/sequence validation is missing");
 expect(/revision=v_revision\+1/.test(files.migration),"cloud save revision increment is missing");
-expect(/stage:"foundation"/.test(files.battle),"battle adapter phase marker is missing");
+expect(/stage:"online-ready"/.test(files.battle),"battle adapter is not marked online-ready");
+expect(/reconnectRoom/.test(files.battle)&&/dd_battle_members/.test(files.battle),"Supabase battle reconnect support is missing");
+expect(/dd_submit_battle_action/.test(files.battle)&&!/functions\.invoke/.test(files.battle),"browser battle actions are not using the protected RPC directly");
+expect(/isSupabaseOnline/.test(files.online)&&/subscribeRoom/.test(files.online)&&/handleSupabaseMatchSnapshot/.test(files.online),"online controller is not connected to Supabase Realtime");
+expect(/if\(!isSupabaseOnline\)[\s\S]*import\("https:\/\/www\.gstatic\.com\/firebasejs/.test(files.online),"Firebase fallback is not lazy-loaded behind the provider switch");
 
 function runRuntimeConfig(supplied){
   const context={
@@ -78,5 +84,5 @@ if(errors.length){
   console.error(errors.map(error=>`- ${error}`).join("\n"));
   process.exitCode=1;
 }else{
-  console.log(`Supabase foundation verified: ${tables.length} RLS tables, ${rpcs.length} protected RPCs, JWT action gateway, safe fallbacks.`);
+  console.log(`Supabase online verified: ${tables.length} RLS tables, ${rpcs.length} protected RPCs, Realtime lobby/match/reconnect, safe Firebase fallback.`);
 }

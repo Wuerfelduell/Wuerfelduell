@@ -2,7 +2,6 @@
   "use strict";
 
   const root=window.WDSupabase;
-  const config=window.WDBackendConfig?.supabase||{};
   if(!root?.configured) return;
 
   const first=value=>Array.isArray(value)?(value[0]||null):(value||null);
@@ -20,8 +19,53 @@
     return {uid:user.id,email:String(user.email||""),anonymous:!!user.is_anonymous};
   }
 
+  function mapAction(row){
+    return {
+      id:String(row?.client_action_id||""),
+      rowId:String(row?.id||""),
+      type:String(row?.action_type||""),
+      payload:row?.payload&&typeof row.payload==="object"?row.payload:{},
+      actorUid:String(row?.actor_user_id||""),
+      baseSeq:Number(row?.base_seq)||0,
+      status:String(row?.status||""),
+      reason:String(row?.error_message||""),
+      requestedAt:Date.parse(row?.created_at||"")||0,
+      resolvedAt:Date.parse(row?.resolved_at||"")||0
+    };
+  }
+
+  function mapEvent(row){
+    const event=row?.event&&typeof row.event==="object"?row.event:{};
+    return {
+      ...event,
+      rowId:String(row?.id||""),
+      actorUid:String(event.actorUid||row?.actor_user_id||""),
+      createdAt:Date.parse(row?.created_at||"")||Number(event.startedAt)||0
+    };
+  }
+
   async function getSnapshot(roomId){
-    return first(await rpc("dd_get_battle_snapshot",{p_room_id:String(roomId||"")}));
+    const id=String(roomId||"");
+    const client=await root.getClient();
+    const [snapshotResult,actionsResult,eventsResult]=await Promise.all([
+      client.rpc("dd_get_battle_snapshot",{p_room_id:id}),
+      client.from("dd_battle_actions")
+        .select("id,client_action_id,actor_user_id,base_seq,action_type,payload,status,error_message,created_at,resolved_at")
+        .eq("room_id",id).order("created_at",{ascending:false}).limit(96),
+      client.from("dd_battle_events")
+        .select("id,actor_user_id,event,created_at")
+        .eq("room_id",id).order("created_at",{ascending:false}).limit(48)
+    ]);
+    if(snapshotResult.error) throw snapshotResult.error;
+    if(actionsResult.error) throw actionsResult.error;
+    if(eventsResult.error) throw eventsResult.error;
+    const snapshot=first(snapshotResult.data);
+    if(!snapshot) return null;
+    return {
+      ...snapshot,
+      actions:(actionsResult.data||[]).slice().reverse().map(mapAction),
+      events:(eventsResult.data||[]).slice().reverse().map(mapEvent)
+    };
   }
 
   async function createRoom({maxPlayers=2,modeId="classic",gameVersion="unknown",profile={}}={}){
@@ -46,6 +90,29 @@
     return {...room,uid:user.uid,snapshot:await getSnapshot(room.id)};
   }
 
+  async function reconnectRoom(code=""){
+    const user=await identity();
+    const client=await root.getClient();
+    let query=client.from("dd_battle_members")
+      .select("room_id,joined_at")
+      .eq("user_id",user.uid)
+      .order("joined_at",{ascending:false})
+      .limit(8);
+    const {data,error}=await query;
+    if(error) throw error;
+    const wanted=String(code||"").trim().toUpperCase();
+    for(const row of data||[]){
+      try{
+        const snapshot=await getSnapshot(row.room_id);
+        if(!snapshot) continue;
+        if(wanted&&String(snapshot.code||"")!==wanted) continue;
+        if(!["lobby","playing"].includes(String(snapshot.meta?.status||""))) continue;
+        return {id:snapshot.id,code:snapshot.code,uid:user.uid,snapshot};
+      }catch(_error){}
+    }
+    return null;
+  }
+
   async function setReady(roomId,ready){
     return first(await rpc("dd_set_battle_ready",{p_room_id:String(roomId||""),p_ready:!!ready}));
   }
@@ -58,13 +125,13 @@
   }
 
   async function submitAction(roomId,{id,type,payload={},baseSeq=0}={}){
-    const client=await root.getClient();
-    const {data,error}=await client.functions.invoke(config.battleActionFunction||"battle-action",{
-      body:{roomId:String(roomId||""),actionId:String(id||globalThis.crypto?.randomUUID?.()||Date.now()),type:String(type||""),payload,baseSeq:Number(baseSeq)||0}
-    });
-    if(error) throw error;
-    if(!data?.ok) throw new Error(String(data?.error||"SUPABASE_ACTION_REJECTED"));
-    return data.action;
+    return first(await rpc("dd_submit_battle_action",{
+      p_room_id:String(roomId||""),
+      p_client_action_id:String(id||globalThis.crypto?.randomUUID?.()||Date.now()),
+      p_base_seq:Number(baseSeq)||0,
+      p_action_type:String(type||""),
+      p_payload:payload&&typeof payload==="object"?payload:{}
+    }));
   }
 
   async function publishState(roomId,{seq,state,actionId="",actionType=""}={}){
@@ -155,10 +222,11 @@
 
   const backend=Object.freeze({
     kind:"supabase",
-    stage:"foundation",
+    stage:"online-ready",
     identity,
     createRoom,
     joinRoom,
+    reconnectRoom,
     getSnapshot,
     subscribeRoom,
     setReady,
