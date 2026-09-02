@@ -8,9 +8,9 @@
    ============================================================ */
 
 :root{
-  --p8-close-button:url("../assets/ui/v28/png/components/close-button.png?v=28.2.8");
-  --p8-lock-overlay:url("../assets/ui/v28/png/components/locked-padlock-overlay.png?v=28.2.8");
-  --p8-boss-selected-glow:url("../assets/ui/v28/png/fx/premium-card-selected-glow-green.png?v=28.2.8");
+  --p8-close-button:url("../assets/ui/v28/png/components/close-button.webp?v=28.2.8");
+  --p8-lock-overlay:url("../assets/ui/v28/png/components/locked-padlock-overlay.webp?v=28.2.8");
+  --p8-boss-selected-glow:url("../assets/ui/v28/png/fx/premium-card-selected-glow-green.webp?v=28.2.8");
 }
 
 /* ---------- One rendered X medallion for every real close action ---------- */

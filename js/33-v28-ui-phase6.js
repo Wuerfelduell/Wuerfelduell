@@ -63,7 +63,7 @@
     if(!node.classList.contains("done")) return;
     const mark = node.querySelector(":scope > .node-mark");
     if(!mark || mark.dataset.p6Completed === "1") return;
-    mark.replaceChildren(image("completed-check-medallion.png", "p6-completed-medallion"));
+    mark.replaceChildren(image("completed-check-medallion.webp", "p6-completed-medallion"));
     mark.dataset.p4Decorated = "1";
     mark.dataset.p6Completed = "1";
   }
@@ -75,7 +75,7 @@
       .replace(/^\s*(?:⭐|XP)\s*/u, "")
       .trim() || "+0";
     badge.replaceChildren(
-      image("xp-badge.png", "p6-xp-badge-art"),
+      image("xp-badge.webp", "p6-xp-badge-art"),
       document.createTextNode(amount)
     );
     badge.dataset.p4Decorated = "1";
@@ -109,11 +109,11 @@
       let medallion = host.querySelector(":scope > .p6-hp-medallion");
       if(!medallion){
         const previous = host.querySelector(":scope > .dd-inline-icon");
-        medallion = image("hp-heart-medallion.png", "dd-inline-icon p6-hp-medallion");
+        medallion = image("hp-heart-medallion.webp", "dd-inline-icon p6-hp-medallion");
         if(previous) previous.replaceWith(medallion);
         else host.prepend(medallion);
       }else{
-        const wanted = component("hp-heart-medallion.png");
+        const wanted = component("hp-heart-medallion.webp");
         if(medallion.getAttribute("src") !== wanted) medallion.setAttribute("src", wanted);
       }
       host.dataset.ddHpIcon = "1";
@@ -125,7 +125,7 @@
     if(!host || host.querySelector(":scope > .p6-hp-branch-medallion")) return;
     host.replaceChildren(
       image(
-        "hp-heart-medallion.png",
+        "hp-heart-medallion.webp",
         "p5-mastery-branch-sprite p6-hp-branch-medallion"
       )
     );

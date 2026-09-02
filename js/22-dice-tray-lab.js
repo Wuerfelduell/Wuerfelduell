@@ -137,7 +137,7 @@ if(!bridge){
     const artwork=ART_DICE_DESIGNS[design];
     if(artwork){
       return FACE_BY_MATERIAL.map(value=>{
-        const path=`assets/ui/v28/png/dice-designs/${artwork.artKey}/${artwork.artKey}-face-${value}.png?v=28.3.0`;
+        const path=`assets/ui/v28/png/dice-designs/${artwork.artKey}/${artwork.artKey}-face-${value}.webp?v=28.3.0`;
         const texture=artworkTextureLoader.load(path);
         texture.colorSpace=THREE.SRGBColorSpace;
         texture.anisotropy=8;

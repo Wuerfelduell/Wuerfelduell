@@ -9,12 +9,12 @@
    ============================================================ */
 
 :root{
-  --p6-farm-node:url("../assets/ui/v28/png/components/campaign-node-farm-frame.png?v=28.2.6");
-  --p6-xp-badge:url("../assets/ui/v28/png/components/xp-badge.png?v=28.2.6");
-  --p6-encounter-button:url("../assets/ui/v28/png/components/encounter-button-green.png?v=28.2.6");
-  --p6-hp-medallion:url("../assets/ui/v28/png/components/hp-heart-medallion.png?v=28.2.6");
-  --p6-completed-medallion:url("../assets/ui/v28/png/components/completed-check-medallion.png?v=28.2.6");
-  --p6-back-button:url("../assets/ui/v28/png/components/back-button.png?v=28.2.6");
+  --p6-farm-node:url("../assets/ui/v28/png/components/campaign-node-farm-frame.webp?v=28.2.6");
+  --p6-xp-badge:url("../assets/ui/v28/png/components/xp-badge.webp?v=28.2.6");
+  --p6-encounter-button:url("../assets/ui/v28/png/components/encounter-button-green.webp?v=28.2.6");
+  --p6-hp-medallion:url("../assets/ui/v28/png/components/hp-heart-medallion.webp?v=28.2.6");
+  --p6-completed-medallion:url("../assets/ui/v28/png/components/completed-check-medallion.webp?v=28.2.6");
+  --p6-back-button:url("../assets/ui/v28/png/components/back-button.webp?v=28.2.6");
 }
 
 /* ---------- One rendered back control on every real back action ---------- */

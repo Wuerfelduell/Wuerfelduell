@@ -39,9 +39,9 @@
 
   /* ---- CRITICAL: only what the main menu + first interaction need ---- */
   [
-    "assets/ui/v28/bg-main-palace.png",
-    "assets/ui/v28/crest-diceduel.png",
-    "assets/ui/v28/png/backgrounds/main-menu.png",
+    "assets/ui/v28/bg-main-palace.webp",
+    "assets/ui/v28/crest-diceduel.webp",
+    "assets/ui/v28/png/backgrounds/main-menu.webp",
     "assets/ui/v28/svg/navigation/back.svg",
     "assets/ui/v28/svg/navigation/close-x.svg",
     "assets/ui/v28/svg/navigation/chevron-down.svg",
@@ -51,9 +51,9 @@
   /* Default dice set only (classic_v2 / ivory-royal) — other designs load when equipped */
   const defaultArt = "ivory-royal";
   ["1", "2", "3", "4", "5", "6", "question"].forEach((face) => {
-    add(critical, `assets/ui/v28/png/dice-designs/${defaultArt}/${defaultArt}-face-${face}.png?v=${version}`);
+    add(critical, `assets/ui/v28/png/dice-designs/${defaultArt}/${defaultArt}-face-${face}.webp?v=${version}`);
   });
-  add(critical, `assets/ui/v28/png/dice-designs/${defaultArt}/${defaultArt}-beauty.png?v=${version}`);
+  add(critical, `assets/ui/v28/png/dice-designs/${defaultArt}/${defaultArt}-beauty.webp?v=${version}`);
 
   /* DOM images already on the first paint (menu) */
   document.querySelectorAll("#mainMenu img[src], #wdBootGate img[src], img.preload-critical[src]").forEach((node) => {
@@ -67,37 +67,37 @@
       if (!artKey || artKey === defaultArt) return;
       if (design.previewAsset) add(background, design.previewAsset);
       ["1", "2", "3", "4", "5", "6", "question"].forEach((face) => {
-        add(background, `assets/ui/v28/png/dice-designs/${artKey}/${artKey}-face-${face}.png?v=${version}`);
+        add(background, `assets/ui/v28/png/dice-designs/${artKey}/${artKey}-face-${face}.webp?v=${version}`);
       });
     });
   } else {
     ["sapphire-crown", "amethyst-rift"].forEach((key) => {
       ["1", "2", "3", "4", "5", "6", "question"].forEach((face) => {
-        add(background, `assets/ui/v28/png/dice-designs/${key}/${key}-face-${face}.png?v=${version}`);
+        add(background, `assets/ui/v28/png/dice-designs/${key}/${key}-face-${face}.webp?v=${version}`);
       });
-      add(background, `assets/ui/v28/png/dice-designs/${key}/${key}-beauty.png?v=${version}`);
+      add(background, `assets/ui/v28/png/dice-designs/${key}/${key}-beauty.webp?v=${version}`);
     });
   }
 
   [
-    "assets/ui/v28/png/backgrounds/combat.png",
-    "assets/ui/v28/png/backgrounds/campaign-mastery-light.png",
-    "assets/ui/v28/png/backgrounds/navy-lobby-profile.png",
-    "assets/ui/v28/png/backgrounds/boss-finale.png",
-    "assets/ui/v28/png/frames/player-card-combat.png",
-    "assets/ui/v28/png/frames/boss-player-card.png",
-    "assets/ui/v28/png/frames/active-player-glow.png",
-    "assets/ui/v28/png/components/campaign-node-farm-frame.png",
-    "assets/ui/v28/png/components/encounter-button-green.png",
-    "assets/ui/v28/png/components/xp-badge.png",
-    "assets/ui/v28/png/components/hp-heart-medallion.png",
-    "assets/ui/v28/png/components/completed-check-medallion.png",
-    "assets/ui/v28/png/components/locked-padlock-overlay.png",
-    "assets/ui/v28/png/components/close-button.png",
-    "assets/ui/v28/png/components/back-button.png",
-    "assets/ui/v28/png/fx/premium-card-selected-glow-green.png",
-    "assets/ui/v28/png/fx/arcane-halo-blue.png",
-    "assets/ui/v28/png/fx/divine-burst-gold.png"
+    "assets/ui/v28/png/backgrounds/combat.webp",
+    "assets/ui/v28/png/backgrounds/campaign-mastery-light.webp",
+    "assets/ui/v28/png/backgrounds/navy-lobby-profile.webp",
+    "assets/ui/v28/png/backgrounds/boss-finale.webp",
+    "assets/ui/v28/png/frames/player-card-combat.webp",
+    "assets/ui/v28/png/frames/boss-player-card.webp",
+    "assets/ui/v28/png/frames/active-player-glow.webp",
+    "assets/ui/v28/png/components/campaign-node-farm-frame.webp",
+    "assets/ui/v28/png/components/encounter-button-green.webp",
+    "assets/ui/v28/png/components/xp-badge.webp",
+    "assets/ui/v28/png/components/hp-heart-medallion.webp",
+    "assets/ui/v28/png/components/completed-check-medallion.webp",
+    "assets/ui/v28/png/components/locked-padlock-overlay.webp",
+    "assets/ui/v28/png/components/close-button.webp",
+    "assets/ui/v28/png/components/back-button.webp",
+    "assets/ui/v28/png/fx/premium-card-selected-glow-green.webp",
+    "assets/ui/v28/png/fx/arcane-halo-blue.webp",
+    "assets/ui/v28/png/fx/divine-burst-gold.webp"
   ].forEach((p) => add(background, p));
 
   let done = 0;

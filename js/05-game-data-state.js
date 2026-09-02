@@ -35,9 +35,9 @@
 
   const DICE_DESIGNS = {
     classic:{name:"Classic",className:"theme-classic"},
-    classic_v2:{name:"ClassicV2",className:"theme-classic-v2 theme-art-die",artKey:"ivory-royal",previewAsset:"assets/ui/v28/png/dice-designs/ivory-royal/ivory-royal-beauty.png",unlockText:"Von Anfang an"},
-    sapphire_crown:{name:"Sapphire Crown",className:"theme-sapphire-crown theme-art-die",artKey:"sapphire-crown",previewAsset:"assets/ui/v28/png/dice-designs/sapphire-crown/sapphire-crown-beauty.png",unlockText:"Solo · Welt 3 Boss"},
-    amethyst_rift:{name:"Amethyst Rift",className:"theme-amethyst-rift theme-art-die",artKey:"amethyst-rift",previewAsset:"assets/ui/v28/png/dice-designs/amethyst-rift/amethyst-rift-beauty.png",unlockText:"Solo · Welt 4 Boss"},
+    classic_v2:{name:"ClassicV2",className:"theme-classic-v2 theme-art-die",artKey:"ivory-royal",previewAsset:"assets/ui/v28/png/dice-designs/ivory-royal/ivory-royal-beauty.webp",unlockText:"Von Anfang an"},
+    sapphire_crown:{name:"Sapphire Crown",className:"theme-sapphire-crown theme-art-die",artKey:"sapphire-crown",previewAsset:"assets/ui/v28/png/dice-designs/sapphire-crown/sapphire-crown-beauty.webp",unlockText:"Solo · Welt 3 Boss"},
+    amethyst_rift:{name:"Amethyst Rift",className:"theme-amethyst-rift theme-art-die",artKey:"amethyst-rift",previewAsset:"assets/ui/v28/png/dice-designs/amethyst-rift/amethyst-rift-beauty.webp",unlockText:"Solo · Welt 4 Boss"},
     obsidian:{name:"Obsidian",className:"theme-obsidian"},
     gold:{name:"Gold",className:"theme-gold"},
     blood:{name:"Blood",className:"theme-blood"},

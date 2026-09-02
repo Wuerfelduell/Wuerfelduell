@@ -3,19 +3,19 @@
    Asset-driven presentation only. No gameplay rules are changed here.
    ============================================================ */
 :root{
-  --dd-bg-main:url("../assets/ui/v28/png/backgrounds/main-menu.png");
-  --dd-bg-light:url("../assets/ui/v28/png/backgrounds/campaign-mastery-light.png");
-  --dd-bg-combat:url("../assets/ui/v28/png/backgrounds/combat.png");
-  --dd-crest:url("../assets/ui/v28/png/emblems/diceduel-crest.png");
-  --dd-frame-ivory-button:url("../assets/ui/v28/png/frames/ivory-button.png");
-  --dd-frame-navy-tile:url("../assets/ui/v28/png/frames/navy-tile.png");
-  --dd-frame-panel:url("../assets/ui/v28/png/frames/panel-large.png");
-  --dd-frame-modal:url("../assets/ui/v28/png/frames/modal-popup.png");
-  --dd-frame-boss:url("../assets/ui/v28/png/frames/boss.png");
-  --dd-frame-mastery:url("../assets/ui/v28/png/frames/mastery.png");
-  --dd-frame-prestige:url("../assets/ui/v28/png/frames/prestige.png");
-  --dd-fx-halo:url("../assets/ui/v28/png/fx/arcane-halo-blue.png");
-  --dd-fx-burst:url("../assets/ui/v28/png/fx/divine-burst-gold.png");
+  --dd-bg-main:url("../assets/ui/v28/png/backgrounds/main-menu.webp");
+  --dd-bg-light:url("../assets/ui/v28/png/backgrounds/campaign-mastery-light.webp");
+  --dd-bg-combat:url("../assets/ui/v28/png/backgrounds/combat.webp");
+  --dd-crest:url("../assets/ui/v28/png/emblems/diceduel-crest.webp");
+  --dd-frame-ivory-button:url("../assets/ui/v28/png/frames/ivory-button.webp");
+  --dd-frame-navy-tile:url("../assets/ui/v28/png/frames/navy-tile.webp");
+  --dd-frame-panel:url("../assets/ui/v28/png/frames/panel-large.webp");
+  --dd-frame-modal:url("../assets/ui/v28/png/frames/modal-popup.webp");
+  --dd-frame-boss:url("../assets/ui/v28/png/frames/boss.webp");
+  --dd-frame-mastery:url("../assets/ui/v28/png/frames/mastery.webp");
+  --dd-frame-prestige:url("../assets/ui/v28/png/frames/prestige.webp");
+  --dd-fx-halo:url("../assets/ui/v28/png/fx/arcane-halo-blue.webp");
+  --dd-fx-burst:url("../assets/ui/v28/png/fx/divine-burst-gold.webp");
   --dd-navy:#071f4b;
   --dd-navy-2:#0b3568;
   --dd-navy-3:#06162f;

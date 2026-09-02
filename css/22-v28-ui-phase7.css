@@ -8,10 +8,10 @@
    ============================================================ */
 
 :root{
-  --p7-encounter-button:url("../assets/ui/v28/png/components/encounter-button-green.png?v=28.2.7");
-  --p7-completed-medallion:url("../assets/ui/v28/png/components/completed-check-medallion.png?v=28.2.7");
-  --p7-danger-button:url("../assets/ui/v28/png/frames/danger-button.png?v=28.2.7");
-  --p7-navy-button:url("../assets/ui/v28/png/frames/navy-button-horizontal.png?v=28.2.7");
+  --p7-encounter-button:url("../assets/ui/v28/png/components/encounter-button-green.webp?v=28.2.7");
+  --p7-completed-medallion:url("../assets/ui/v28/png/components/completed-check-medallion.webp?v=28.2.7");
+  --p7-danger-button:url("../assets/ui/v28/png/frames/danger-button.webp?v=28.2.7");
+  --p7-navy-button:url("../assets/ui/v28/png/frames/navy-button-horizontal.webp?v=28.2.7");
 }
 
 /* ---------- Campaign header and primary encounter action ---------- */

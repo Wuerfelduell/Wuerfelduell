@@ -8,17 +8,17 @@
    ============================================================ */
 
 :root{
-  --p1-ivory-card:url("../assets/ui/v28/png/frames/ivory-card-small.png?v=28.2.1");
-  --p1-navy-button:url("../assets/ui/v28/png/frames/navy-button-horizontal.png?v=28.2.1");
-  --p1-gold-button:url("../assets/ui/v28/png/frames/gold-special-button.png?v=28.2.1");
-  --p1-danger-button:url("../assets/ui/v28/png/frames/danger-button.png?v=28.2.1");
-  --p1-ability-card:url("../assets/ui/v28/png/frames/ability-choice-card.png?v=28.2.1");
-  --p1-player-card:url("../assets/ui/v28/png/frames/player-card-combat.png?v=28.2.1");
-  --p1-player-active:url("../assets/ui/v28/png/frames/active-player-glow.png?v=28.2.1");
-  --p1-boss-player:url("../assets/ui/v28/png/frames/boss-player-card.png?v=28.2.1");
-  --p1-boss-bar:url("../assets/ui/v28/png/frames/boss.png?v=28.2.1");
-  --p1-achievement:url("../assets/ui/v28/png/frames/achievement-trophy-card.png?v=28.2.1");
-  --p1-selected-node:url("../assets/ui/v28/png/frames/campaign-node-selected.png?v=28.2.1");
+  --p1-ivory-card:url("../assets/ui/v28/png/frames/ivory-card-small.webp?v=28.2.1");
+  --p1-navy-button:url("../assets/ui/v28/png/frames/navy-button-horizontal.webp?v=28.2.1");
+  --p1-gold-button:url("../assets/ui/v28/png/frames/gold-special-button.webp?v=28.2.1");
+  --p1-danger-button:url("../assets/ui/v28/png/frames/danger-button.webp?v=28.2.1");
+  --p1-ability-card:url("../assets/ui/v28/png/frames/ability-choice-card.webp?v=28.2.1");
+  --p1-player-card:url("../assets/ui/v28/png/frames/player-card-combat.webp?v=28.2.1");
+  --p1-player-active:url("../assets/ui/v28/png/frames/active-player-glow.webp?v=28.2.1");
+  --p1-boss-player:url("../assets/ui/v28/png/frames/boss-player-card.webp?v=28.2.1");
+  --p1-boss-bar:url("../assets/ui/v28/png/frames/boss.webp?v=28.2.1");
+  --p1-achievement:url("../assets/ui/v28/png/frames/achievement-trophy-card.webp?v=28.2.1");
+  --p1-selected-node:url("../assets/ui/v28/png/frames/campaign-node-selected.webp?v=28.2.1");
   --p1-gold:#d6a53c;
   --p1-gold-light:#ffe59a;
   --p1-ink:#082a55;

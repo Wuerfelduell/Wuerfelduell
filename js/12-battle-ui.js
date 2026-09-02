@@ -198,7 +198,7 @@
     const artKey=DICE_DESIGNS[designKey]?.artKey;
     if(!artKey) return "";
     const suffix=face==="question"?"question":String(Math.max(1,Math.min(6,Number(face)||1)));
-    return `assets/ui/v28/png/dice-designs/${artKey}/${artKey}-face-${suffix}.png?v=${GAME_VERSION}`;
+    return `assets/ui/v28/png/dice-designs/${artKey}/${artKey}-face-${suffix}.webp?v=${GAME_VERSION}`;
   }
   function clearDiceArtwork(el){
     el.classList.remove("theme-art-die");

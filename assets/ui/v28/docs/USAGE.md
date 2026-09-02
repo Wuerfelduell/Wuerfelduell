@@ -74,7 +74,7 @@ Levelnummer und FARM/BOSS/CHALLENGE vollständig dynamisch und übersetzbar.
 
 ```html
 <article class="campaign-node farm-node">
-  <img src="assets/png/components/campaign-node-farm-frame.png" alt="">
+  <img src="assets/png/components/campaign-node-farm-frame.webp" alt="">
   <strong class="node-number">15</strong>
   <span class="node-name">Farm</span>
 </article>

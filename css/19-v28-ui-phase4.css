@@ -6,14 +6,14 @@
    ============================================================ */
 
 :root{
-  --p4-ivory-card:url("../assets/ui/v28/png/frames/ivory-card-small.png?v=28.2.4");
-  --p4-panel:url("../assets/ui/v28/png/frames/panel-large.png?v=28.2.4");
-  --p4-navy-button:url("../assets/ui/v28/png/frames/navy-button-horizontal.png?v=28.2.4");
-  --p4-gold-button:url("../assets/ui/v28/png/frames/gold-special-button.png?v=28.2.4");
-  --p4-navy-tile:url("../assets/ui/v28/png/frames/navy-tile.png?v=28.2.4");
-  --p4-achievement:url("../assets/ui/v28/png/frames/achievement-trophy-card.png?v=28.2.4");
-  --p4-round-frame:url("../assets/ui/v28/png/frames/icon-frame-round.png?v=28.2.4");
-  --p4-boss-bar:url("../assets/ui/v28/png/frames/boss.png?v=28.2.4");
+  --p4-ivory-card:url("../assets/ui/v28/png/frames/ivory-card-small.webp?v=28.2.4");
+  --p4-panel:url("../assets/ui/v28/png/frames/panel-large.webp?v=28.2.4");
+  --p4-navy-button:url("../assets/ui/v28/png/frames/navy-button-horizontal.webp?v=28.2.4");
+  --p4-gold-button:url("../assets/ui/v28/png/frames/gold-special-button.webp?v=28.2.4");
+  --p4-navy-tile:url("../assets/ui/v28/png/frames/navy-tile.webp?v=28.2.4");
+  --p4-achievement:url("../assets/ui/v28/png/frames/achievement-trophy-card.webp?v=28.2.4");
+  --p4-round-frame:url("../assets/ui/v28/png/frames/icon-frame-round.webp?v=28.2.4");
+  --p4-boss-bar:url("../assets/ui/v28/png/frames/boss.webp?v=28.2.4");
   --p4-back:url("../assets/ui/v28/svg/navigation/back.svg?v=28.2.4");
   --p4-close:url("../assets/ui/v28/svg/navigation/close-x.svg?v=28.2.4");
 }

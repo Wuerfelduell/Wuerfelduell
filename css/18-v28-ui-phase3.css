@@ -8,15 +8,15 @@
    ============================================================ */
 
 :root{
-  --p3-ivory-card:url("../assets/ui/v28/png/frames/ivory-card-small.png?v=28.2.3");
-  --p3-panel:url("../assets/ui/v28/png/frames/panel-large.png?v=28.2.3");
-  --p3-navy-button:url("../assets/ui/v28/png/frames/navy-button-horizontal.png?v=28.2.3");
-  --p3-danger-button:url("../assets/ui/v28/png/frames/danger-button.png?v=28.2.3");
-  --p3-navy-tile:url("../assets/ui/v28/png/frames/navy-tile.png?v=28.2.3");
-  --p3-round-frame:url("../assets/ui/v28/png/frames/icon-frame-round.png?v=28.2.3");
-  --p3-selected-node:url("../assets/ui/v28/png/frames/campaign-node-selected.png?v=28.2.3");
-  --p3-player-frame:url("../assets/ui/v28/png/frames/player-card-combat.png?v=28.2.3");
-  --p3-boss-bar:url("../assets/ui/v28/png/frames/boss.png?v=28.2.3");
+  --p3-ivory-card:url("../assets/ui/v28/png/frames/ivory-card-small.webp?v=28.2.3");
+  --p3-panel:url("../assets/ui/v28/png/frames/panel-large.webp?v=28.2.3");
+  --p3-navy-button:url("../assets/ui/v28/png/frames/navy-button-horizontal.webp?v=28.2.3");
+  --p3-danger-button:url("../assets/ui/v28/png/frames/danger-button.webp?v=28.2.3");
+  --p3-navy-tile:url("../assets/ui/v28/png/frames/navy-tile.webp?v=28.2.3");
+  --p3-round-frame:url("../assets/ui/v28/png/frames/icon-frame-round.webp?v=28.2.3");
+  --p3-selected-node:url("../assets/ui/v28/png/frames/campaign-node-selected.webp?v=28.2.3");
+  --p3-player-frame:url("../assets/ui/v28/png/frames/player-card-combat.webp?v=28.2.3");
+  --p3-boss-bar:url("../assets/ui/v28/png/frames/boss.webp?v=28.2.3");
   --p3-back:url("../assets/ui/v28/svg/navigation/back.svg?v=28.2.3");
 }
 

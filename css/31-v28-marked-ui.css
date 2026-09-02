@@ -1,9 +1,9 @@
 /* 28.3.53 — marked screenshot pass. LAST stylesheet. Paths are ../assets from /css. */
 html[data-v28-rework="2"]{
-  --p53-navy:url("../assets/ui/v28/png/frames/navy-button-horizontal.png");
-  --p53-gold:url("../assets/ui/v28/png/frames/gold-special-button.png");
-  --p53-check:url("../assets/ui/v28/png/components/completed-check-medallion.png");
-  --p53-lock:url("../assets/ui/v28/png/components/locked-padlock-overlay.png");
+  --p53-navy:url("../assets/ui/v28/png/frames/navy-button-horizontal.webp");
+  --p53-gold:url("../assets/ui/v28/png/frames/gold-special-button.webp");
+  --p53-check:url("../assets/ui/v28/png/components/completed-check-medallion.webp");
+  --p53-lock:url("../assets/ui/v28/png/components/locked-padlock-overlay.webp");
 }
 
 /* ========== ROT: Setup-Ready-Text weg. Fehler bleiben. ========== */

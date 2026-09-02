@@ -137,7 +137,7 @@
     profileList.innerHTML=saveData.profiles.map(p=>{
       const featuredDice=Object.entries(DICE_DESIGNS).filter(([,d])=>d.previewAsset).map(([key,d])=>{
         const unlockedNow=p.unlockedDice.includes(key),selected=p.selectedDice===key;
-        const stateAsset=unlockedNow?"assets/ui/v28/png/components/completed-check-medallion.png":"assets/ui/v28/png/components/locked-padlock-overlay.png";
+        const stateAsset=unlockedNow?"assets/ui/v28/png/components/completed-check-medallion.webp":"assets/ui/v28/png/components/locked-padlock-overlay.webp";
         const stateLabel=selected?"Aktiv":unlockedNow?"Freigeschaltet":d.unlockText||"Gesperrt";
         return `<button type="button" class="dice-design-card${unlockedNow?" unlocked":" locked"}${selected?" selected":""}" data-dice-design="${escapeHtml(key)}"${unlockedNow?"":" disabled"} aria-label="${escapeHtml(`${d.name}: ${stateLabel}`)}"><span class="dice-design-preview"><img class="dice-design-beauty" src="${escapeHtml(d.previewAsset)}?v=${GAME_VERSION}" alt="" loading="lazy"><img class="dice-design-state" src="${stateAsset}?v=28.3.0" alt="" aria-hidden="true"></span><span class="dice-design-name">${escapeHtml(d.name)}</span><span class="dice-design-meta">${escapeHtml(stateLabel)}</span></button>`;
       }).join("");
@@ -200,7 +200,7 @@
       const rewards=[];if(a.rewardDice)rewards.push(`${uiIcon("gameplay/dice.svg")} ${escapeHtml(DICE_DESIGNS[a.rewardDice]?.name||a.rewardDice)}`);if(a.rewardFx)rewards.push(`${uiIcon("gameplay/attack.svg")} ${escapeHtml(ATTACK_FX_STYLES[a.rewardFx]?.name||a.rewardFx)}`);const reward=!hidden&&rewards.length?`<span class="achievement-reward">${rewards.join(" · ")}</span>`:"";
       const owners=profiles.length?profiles.map(p=>{
         const earned=!!p.achievements[id];
-        const mark=earned?"assets/ui/v28/png/components/completed-check-medallion.png":"assets/ui/v28/png/components/locked-padlock-overlay.png";
+        const mark=earned?"assets/ui/v28/png/components/completed-check-medallion.webp":"assets/ui/v28/png/components/locked-padlock-overlay.webp";
         return `<span class="achievement-owner${earned?" done":""}"><img class="achievement-owner-mark" src="${mark}" alt="" draggable="false"><span class="achievement-owner-name">${escapeHtml(p.name)} <span class="battle-tag">#${escapeHtml(p.tagNumber)}</span></span></span>`;
       }).join(""):`<span class="achievement-owner">${tFn("Noch keine Profile")}</span>`;
       return `<div class="achievement-card${hidden?" secret-achievement":""}"><div class="achievement-head"><div class="achievement-name">${escapeHtml(hidden?"???":a.name)}</div>${reward}</div><div class="achievement-desc">${escapeHtml(hidden?tFn("Geheimes Achievement"):a.desc)}</div><div class="achievement-owners">${owners}</div></div>`;

@@ -4,19 +4,19 @@
    ============================================================ */
 
 :root{
-  --dd-bg-lobby:url("../assets/ui/v28/png/backgrounds/navy-lobby-profile.png");
-  --dd-bg-boss:url("../assets/ui/v28/png/backgrounds/boss-finale.png");
-  --dd-frame-card-small:url("../assets/ui/v28/png/frames/ivory-card-small.png");
-  --dd-frame-button-navy:url("../assets/ui/v28/png/frames/navy-button-horizontal.png");
-  --dd-frame-button-gold:url("../assets/ui/v28/png/frames/gold-special-button.png");
-  --dd-frame-button-danger:url("../assets/ui/v28/png/frames/danger-button.png");
-  --dd-frame-icon-round:url("../assets/ui/v28/png/frames/icon-frame-round.png");
-  --dd-frame-ability-choice:url("../assets/ui/v28/png/frames/ability-choice-card.png");
-  --dd-frame-player:url("../assets/ui/v28/png/frames/player-card-combat.png");
-  --dd-frame-player-active:url("../assets/ui/v28/png/frames/active-player-glow.png");
-  --dd-frame-player-boss:url("../assets/ui/v28/png/frames/boss-player-card.png");
-  --dd-frame-node-selected:url("../assets/ui/v28/png/frames/campaign-node-selected.png");
-  --dd-frame-achievement:url("../assets/ui/v28/png/frames/achievement-trophy-card.png");
+  --dd-bg-lobby:url("../assets/ui/v28/png/backgrounds/navy-lobby-profile.webp");
+  --dd-bg-boss:url("../assets/ui/v28/png/backgrounds/boss-finale.webp");
+  --dd-frame-card-small:url("../assets/ui/v28/png/frames/ivory-card-small.webp");
+  --dd-frame-button-navy:url("../assets/ui/v28/png/frames/navy-button-horizontal.webp");
+  --dd-frame-button-gold:url("../assets/ui/v28/png/frames/gold-special-button.webp");
+  --dd-frame-button-danger:url("../assets/ui/v28/png/frames/danger-button.webp");
+  --dd-frame-icon-round:url("../assets/ui/v28/png/frames/icon-frame-round.webp");
+  --dd-frame-ability-choice:url("../assets/ui/v28/png/frames/ability-choice-card.webp");
+  --dd-frame-player:url("../assets/ui/v28/png/frames/player-card-combat.webp");
+  --dd-frame-player-active:url("../assets/ui/v28/png/frames/active-player-glow.webp");
+  --dd-frame-player-boss:url("../assets/ui/v28/png/frames/boss-player-card.webp");
+  --dd-frame-node-selected:url("../assets/ui/v28/png/frames/campaign-node-selected.webp");
+  --dd-frame-achievement:url("../assets/ui/v28/png/frames/achievement-trophy-card.webp");
   --dd-shadow-soft:0 12px 32px rgba(5,32,65,.16);
   --dd-shadow-deep:0 22px 58px rgba(2,14,34,.38);
 }

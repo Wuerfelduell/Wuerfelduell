@@ -7,10 +7,10 @@
    ============================================================ */
 
 :root{
-  --p2-navy-button:url("../assets/ui/v28/png/frames/navy-button-horizontal.png?v=28.2.2");
-  --p2-gold-button:url("../assets/ui/v28/png/frames/gold-special-button.png?v=28.2.2");
-  --p2-boss-bar:url("../assets/ui/v28/png/frames/boss.png?v=28.2.2");
-  --p2-node-current:url("../assets/ui/v28/png/frames/campaign-node-selected.png?v=28.2.2");
+  --p2-navy-button:url("../assets/ui/v28/png/frames/navy-button-horizontal.webp?v=28.2.2");
+  --p2-gold-button:url("../assets/ui/v28/png/frames/gold-special-button.webp?v=28.2.2");
+  --p2-boss-bar:url("../assets/ui/v28/png/frames/boss.webp?v=28.2.2");
+  --p2-node-current:url("../assets/ui/v28/png/frames/campaign-node-selected.webp?v=28.2.2");
 }
 
 /* ---------- Global frame exterior fix ----------

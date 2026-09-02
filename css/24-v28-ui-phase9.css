@@ -8,12 +8,12 @@
    ============================================================ */
 
 :root{
-  --p9-ability-choice:url("../assets/ui/v28/png/frames/ability-choice-card.png?v=28.2.9");
-  --p9-gold-button:url("../assets/ui/v28/png/frames/gold-special-button.png?v=28.2.9");
-  --p9-danger-button:url("../assets/ui/v28/png/frames/danger-button.png?v=28.2.9");
-  --p9-active-player:url("../assets/ui/v28/png/frames/active-player-glow.png?v=28.2.9");
-  --p9-close-button:url("../assets/ui/v28/png/components/close-button.png?v=28.2.9");
-  --p9-completed-medallion:url("../assets/ui/v28/png/components/completed-check-medallion.png?v=28.2.9");
+  --p9-ability-choice:url("../assets/ui/v28/png/frames/ability-choice-card.webp?v=28.2.9");
+  --p9-gold-button:url("../assets/ui/v28/png/frames/gold-special-button.webp?v=28.2.9");
+  --p9-danger-button:url("../assets/ui/v28/png/frames/danger-button.webp?v=28.2.9");
+  --p9-active-player:url("../assets/ui/v28/png/frames/active-player-glow.webp?v=28.2.9");
+  --p9-close-button:url("../assets/ui/v28/png/components/close-button.webp?v=28.2.9");
+  --p9-completed-medallion:url("../assets/ui/v28/png/components/completed-check-medallion.webp?v=28.2.9");
 }
 
 /* ---------- Ability bonus: only icon, number and name ----------
