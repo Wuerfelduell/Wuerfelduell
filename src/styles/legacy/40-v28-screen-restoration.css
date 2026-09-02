@@ -1,11 +1,10 @@
-/* DiceDuel V28.9.3 — menu safe areas and framed utility screens. */
+/* DiceDuel V28.9.4 — menu safe areas and framed utility screens. */
 
 :root{
-  --v2893-achievement-card:url("../assets/ui/v28/png/frames/achievement-trophy-card.webp?v=28.9.3");
-  --v2893-ivory-card:url("../assets/ui/v28/png/frames/ivory-card-small.webp?v=28.9.3");
-  --v2893-navy-button:url("../assets/ui/v28/png/frames/navy-button-horizontal.webp?v=28.9.3");
-  --v2893-green-button:url("../assets/ui/v28/png/components/encounter-button-green.webp?v=28.9.3");
-  --v2893-pill:url("../assets/ui/v28/png/frames/slim-pill.webp?v=28.9.3");
+  --v2893-achievement-card:url("../assets/ui/v28/png/frames/achievement-trophy-card.webp?v=28.9.4");
+  --v2893-ivory-card:url("../assets/ui/v28/png/frames/ivory-card-small.webp?v=28.9.4");
+  --v2893-navy-button:url("../assets/ui/v28/png/frames/navy-button-horizontal.webp?v=28.9.4");
+  --v2893-green-button:url("../assets/ui/v28/png/components/encounter-button-green.webp?v=28.9.4");
 }
 
 /* Main menu: the icon leaves the ornamental end cap and gets its own safe area. */
@@ -15,6 +14,18 @@ html[data-v28-rework="2"] #mainMenu .menu-actions button.menu-campaign,
 html[data-v28-rework="2"] #mainMenu .menu-actions button.menu-tutorial{
   position:relative!important;
   isolation:isolate!important;
+  display:block!important;
+  text-align:center!important;
+}
+html[data-v28-rework="2"] #mainMenu .menu-actions .menu-primary-label{
+  position:absolute!important;
+  z-index:1!important;
+  left:50%!important;
+  top:50%!important;
+  display:block!important;
+  margin:0!important;
+  transform:translate(-50%,-50%)!important;
+  white-space:nowrap!important;
 }
 html[data-v28-rework="2"] #mainMenu .menu-actions button.menu-play .menu-icon,
 html[data-v28-rework="2"] #mainMenu .menu-actions button.menu-online .menu-icon,
@@ -279,11 +290,11 @@ html[data-v28-rework="2"] #prestigeShopScreen .prestige-item.owned,
 html[data-v28-rework="2"] #prestigeShopScreen .prestige-item.expensive{
   box-sizing:border-box!important;
   width:100%!important;
-  min-height:188px!important;
+  min-height:214px!important;
   display:grid!important;
   grid-template-rows:auto auto minmax(0,1fr) auto!important;
   margin:0!important;
-  padding:31px 31px 29px!important;
+  padding:56px 31px 31px!important;
   overflow:hidden!important;
   border:0!important;
   border-width:0!important;
@@ -323,9 +334,9 @@ html[data-v28-rework="2"] #achievementsScreen .achievement-card.dd-achieved,
 html[data-v28-rework="2"] #achievementsScreen .achievement-card.secret-achievement{
   box-sizing:border-box!important;
   width:100%!important;
-  min-height:184px!important;
+  min-height:210px!important;
   margin:0!important;
-  padding:31px 31px 29px!important;
+  padding:54px 31px 31px!important;
   overflow:hidden!important;
   border:0!important;
   border-width:0!important;
@@ -365,18 +376,18 @@ html[data-v28-rework="2"] .mastery-purchase-card{
 html[data-v28-rework="2"] .mastery-purchase-banner{
   position:absolute!important;
   z-index:2!important;
-  top:-39px!important;
+  top:-27px!important;
   left:50%!important;
   width:min(72%,270px)!important;
-  height:28px!important;
+  height:19px!important;
   display:flex!important;
   align-items:center!important;
   justify-content:center!important;
   transform:translateX(-50%)!important;
   overflow:hidden!important;
   color:#fff0c3!important;
-  font:800 13px/1 Georgia,"Times New Roman",serif!important;
-  letter-spacing:.15em!important;
+  font:800 10px/1 Georgia,"Times New Roman",serif!important;
+  letter-spacing:.13em!important;
   text-shadow:0 1px 3px rgba(0,14,38,.8)!important;
 }
 html[data-v28-rework="2"] .mastery-purchase-card>.mastery-kicker{
@@ -397,28 +408,26 @@ html[data-v28-rework="2"] .mastery-purchase-desc{
 }
 html[data-v28-rework="2"] .mastery-purchase-price{
   box-sizing:border-box!important;
-  width:100%!important;
-  min-height:66px!important;
+  width:min(64%,220px)!important;
+  min-height:46px!important;
   display:flex!important;
   align-items:center!important;
   justify-content:center!important;
   gap:10px!important;
-  margin:0!important;
-  padding:11px 30px!important;
+  margin:0 auto!important;
+  padding:7px 25px!important;
   border:0!important;
   border-width:0!important;
   border-image:none!important;
   border-radius:0!important;
-  background:
-    var(--v2893-pill) center/100% 100% no-repeat,
-    linear-gradient(145deg,#0d3d73,#061f46)!important;
+  background:var(--v2893-navy-button) center/100% 100% no-repeat!important;
   color:#fff0c8!important;
   box-shadow:0 6px 16px rgba(4,28,61,.18)!important;
 }
 html[data-v28-rework="2"] .mastery-purchase-price img{
-  width:29px!important;
-  height:29px!important;
-  flex:0 0 29px!important;
+  width:22px!important;
+  height:22px!important;
+  flex:0 0 22px!important;
   object-fit:contain!important;
 }
 html[data-v28-rework="2"] .mastery-purchase-price>span{
@@ -436,17 +445,17 @@ html[data-v28-rework="2"] .mastery-purchase-price small{
 }
 html[data-v28-rework="2"] .mastery-purchase-price strong{
   color:#fff0c8!important;
-  font:800 18px/1 Georgia,"Times New Roman",serif!important;
+  font:800 14px/1 Georgia,"Times New Roman",serif!important;
 }
 html[data-v28-rework="2"] .mastery-purchase-balance{
   box-sizing:border-box!important;
-  width:100%!important;
-  min-height:56px!important;
+  width:min(88%,310px)!important;
+  min-height:50px!important;
   display:grid!important;
   grid-template-columns:1fr auto 1fr!important;
   align-items:center!important;
   gap:9px!important;
-  margin:9px 0 0!important;
+  margin:8px auto 0!important;
   padding:8px 12px!important;
   border:1px solid rgba(167,120,34,.28)!important;
   border-radius:10px!important;
@@ -519,7 +528,7 @@ html[data-v28-rework="2"] .mastery-purchase-actions .mastery-purchase-buy{
   html[data-v28-rework="2"] #achievementsScreen .achievement-card,
   html[data-v28-rework="2"] #achievementsScreen .achievement-card.dd-achieved,
   html[data-v28-rework="2"] #achievementsScreen .achievement-card.secret-achievement{
-    padding:29px 27px 27px!important;
+    padding:54px 27px 30px!important;
   }
 }
 
