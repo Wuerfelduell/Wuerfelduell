@@ -125,6 +125,22 @@ zu viel davon nur durch das Auge zu prüfen. Sinnvoll ist elementweise:
 Ein Element pro Commit. Wer mehrere bündelt, kann bei einer Abweichung
 nicht mehr sagen, welche Entfernung sie verursacht hat.
 
+**Vor dem Entfernen prüfen, ob der Selektor allein steht.** Viele Regeln
+sind Sammelregeln (`button.blood, .profile-delete, #quitConfirmBtn { … }`).
+Wird der ganze Block gelöscht, verlieren die übrigen Selektoren ihre
+Deklarationen — und schlimmer: sie hängen sich an die folgende Regel und
+erben deren Werte. Genau das ist beim Quit-Knopf passiert; die
+Löschen-Knöpfe hätten `opacity:.48` bekommen. Kein Screenshot des
+bearbeiteten Elements hätte das gezeigt, der Wertevergleich schon.
+
+---
+
+## Erledigt
+
+| Element | Entfernt aus | Nachweis |
+|---|---|---|
+| `#quitConfirmBtn` (V28.7.3) | 13-bright-arcane, 15-ui-rework, 18-phase3, 20-phase5 | alle berechneten Eigenschaften von Knopf, `::before`, `::after` und Label bei 360/412/1280 px identisch |
+
 **Nicht anfassen, solange der Stapel steht:** die Reihenfolge in
 `styleOrder`. Sie ist die einzige Stelle, an der die Kaskade
 festgeschrieben ist; eine Umsortierung ändert unabsehbar viel.
