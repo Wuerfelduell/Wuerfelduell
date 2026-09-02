@@ -48,6 +48,20 @@
 
   function ensureIcon(element, path, className, position="prepend"){
     if(!element) return null;
+    // cleanTextNodes() raeumt Emoji nur aus Textknoten. Hat
+    // js/36-emoji-sprite-pass.js das fuehrende Emoji vorher schon in ein
+    // <img class="dd-emoji-sprite"> verwandelt, bleibt es sonst neben dem
+    // Icon stehen, das hier gleich gesetzt wird. Nur die fuehrende Position
+    // wird geraeumt - Sprites mitten im Text sind gewollt.
+    if(position === "prepend"){
+      for(const node of [...element.childNodes]){
+        if(node.nodeType === Node.TEXT_NODE){
+          if(!node.nodeValue.trim()) continue;
+          break;
+        }
+        if(node.nodeType === Node.ELEMENT_NODE && node.classList?.contains("dd-emoji-sprite")) node.remove();
+      }
+    }
     let image = element.querySelector(`:scope > .${className}`);
     if(!image){
       image = icon(path, className);

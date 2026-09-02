@@ -83,6 +83,16 @@
       return;
     }
     if(!overlay){
+      // Das Schloss ersetzt hier ein 🔒 aus dem Text. Hat
+      // js/36-emoji-sprite-pass.js daraus schon ein <img class="dd-emoji-sprite">
+      // gemacht, stuende es sonst als zweites Schloss daneben.
+      for(const node of [...host.childNodes]){
+        if(node.nodeType === Node.TEXT_NODE){
+          if(!node.nodeValue.trim()) continue;
+          break;
+        }
+        if(node.nodeType === Node.ELEMENT_NODE && node.classList?.contains("dd-emoji-sprite")) node.remove();
+      }
       overlay = image(
         component("locked-padlock-overlay.webp"),
         `p8-lock-overlay ${className}`
@@ -187,8 +197,15 @@
   }
 
   function syncProfileLocks(root){
+    // js/08-profiles-stats.js baut die Chips bereits mit einem eigenen Icon:
+    // gesperrt bekommt locked.svg, freigeschaltet completed.svg - beide als
+    // dd-inline-icon in derselben Groesse. Das Schloss von hier kam als
+    // zweites, deutlich groesseres Medaillon davor. In einer Liste aus 30
+    // Chips fiel das aus dem Raster, deshalb bleibt das Chip-eigene Icon.
+    // syncInlineLock mit false statt gar keinem Aufruf, damit ein bereits
+    // gesetztes Medaillon auch wieder verschwindet.
     around(root, "#profilesScreen .unlock-chip").forEach(chip => {
-      syncInlineLock(chip, chip.classList.contains("locked"), "profile-unlock", "p8-lock-inline");
+      syncInlineLock(chip, false, "profile-unlock", "p8-lock-inline");
     });
   }
 
