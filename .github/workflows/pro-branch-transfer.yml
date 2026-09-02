@@ -18,11 +18,11 @@ jobs:
           fetch-depth: 0
       - name: Pack repository snapshot
         run: |
-          tar --exclude=.git --exclude=repo.tar.gz -czf repo.tar.gz .
+          tar --exclude=.git -czf /tmp/repo.tar.gz .
       - name: Upload snapshot
         uses: actions/upload-artifact@v4
         with:
           name: pro-base-snapshot
-          path: repo.tar.gz
+          path: /tmp/repo.tar.gz
           retention-days: 1
           if-no-files-found: error
