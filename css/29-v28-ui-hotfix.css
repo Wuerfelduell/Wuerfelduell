@@ -156,7 +156,6 @@ html[data-v28-rework="2"] .campaign-node-detail *{
   transition: none !important;
 }
 
-
 /* Global: no filter on any campaign node layer (GPU shimmer → optical scale) */
 .campaign-hub .campaign-node,
 .campaign-hub .campaign-node *,
@@ -170,7 +169,6 @@ html[data-v28-rework="2"] .campaign-hub .campaign-node::after{
   backdrop-filter: none !important;
   -webkit-backdrop-filter: none !important;
 }
-
 
 /* Restore phase2 title layout: grid column may shrink, title ellipsizes inside */
 html[data-v28-rework="2"] .campaign-node-detail .node-detail-head > div:first-child{
@@ -426,7 +424,6 @@ html[data-v28-rework="2"] body.playing #game .turn-card{
   overflow-y:hidden!important;
 }
 
-
 /* ---- Stats: dark ink on ivory (beige-on-cream was unreadable) ---- */
 #statsScreen .ability-stat-row{
   background: rgba(255,246,224,.72) !important;
@@ -500,7 +497,7 @@ html[data-v28-rework="2"] .v28-ability-trigger{
   align-items:center!important;
   padding:0 28px 0 52px!important;
   overflow:visible!important;
-  border:17px 26px 17px 42px solid transparent!important;
+
   border-image-source:var(--p9-ability-choice, var(--p1-ability-card, url("../assets/ui/v28/png/frames/ability-choice-card.webp")))!important;
   border-image-slice:84 165 84 230 fill!important;
   border-image-width:17px 26px 17px 42px!important;
@@ -727,7 +724,6 @@ html[data-v28-rework="2"] #achievementsScreen .achievement-owner-mark{
   flex:0 0 22px;
 }
 
-
 /* Duo: Unlock-Kasten weg. Trio: Reward-Kasten weg. Team wird breiter. */
 html[data-v28-rework="2"] #duoCampaignScreen .campaign-top .menu-info-card:nth-child(3),
 html[data-v28-rework="2"] #trioCampaignScreen .campaign-top .menu-info-card:nth-child(3){
@@ -737,6 +733,4 @@ html[data-v28-rework="2"] #duoCampaignScreen .campaign-top,
 html[data-v28-rework="2"] #trioCampaignScreen .campaign-top{
   grid-template-columns:minmax(0,1fr)!important;
 }
-
-
 

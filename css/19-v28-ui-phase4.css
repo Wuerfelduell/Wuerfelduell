@@ -160,7 +160,7 @@ html[data-v28-rework="2"] #prestigeShopScreen .prestige-equipped{
   box-sizing:border-box!important;
   margin:0 0 12px!important;
   padding:15px 22px 17px!important;
-  border:16px 21px solid transparent!important;
+
   border-image-source:var(--p4-navy-tile)!important;
   border-image-slice:150 fill!important;
   border-image-width:16px 21px!important;
@@ -277,7 +277,7 @@ html[data-v28-rework="2"] #profilesScreen .unlock-strip{
   box-sizing:border-box!important;
   margin:0!important;
   padding:13px 17px!important;
-  border:16px 19px solid transparent!important;
+
   border-image-source:var(--p4-navy-tile)!important;
   border-image-slice:150 fill!important;
   border-image-width:16px 19px!important;
@@ -298,7 +298,7 @@ html[data-v28-rework="2"] #achievementsScreen .achievement-card.dd-achieved{
   min-height:166px!important;
   margin-inline:3px!important;
   padding:15px 12px 17px!important;
-  border:24px 29px solid transparent!important;
+
   border-image-source:var(--p4-achievement)!important;
   border-image-slice:140 155 128 155 fill!important;
   border-image-width:24px 29px!important;

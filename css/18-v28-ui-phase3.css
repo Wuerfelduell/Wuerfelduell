@@ -122,7 +122,7 @@ html[data-v28-rework="2"] #duoCampaignStartBtn,
 html[data-v28-rework="2"] #trioCampaignStartBtn{
   box-sizing:border-box!important;
   min-height:70px!important;
-  border:18px 29px solid transparent!important;
+
   border-image-source:var(--p3-navy-button)!important;
   border-image-slice:118 168 118 168!important;
   border-image-width:18px 29px!important;
@@ -227,7 +227,7 @@ html[data-v28-rework="2"] #masteryModal .mastery-mode-bar{
 }
 html[data-v28-rework="2"] #masteryModal .mastery-summary{
   box-sizing:border-box!important;
-  border:14px 22px solid transparent!important;
+
   border-image-source:var(--p3-ivory-card)!important;
   border-image-slice:76 168 76 168 fill!important;
   border-image-width:14px 22px!important;
@@ -357,7 +357,7 @@ html[data-v28-rework="2"] #masteryModal .mastery-ability-pair{
 }
 html[data-v28-rework="2"] #masteryModal .mastery-ability-branch{
   box-sizing:border-box!important;
-  border:15px 19px solid transparent!important;
+
   border-image-source:var(--p3-player-frame)!important;
   border-image-slice:96 122 96 122 fill!important;
   border-image-width:15px 19px!important;
@@ -472,7 +472,7 @@ html[data-v28-rework="2"] body.playing .encounter-rule-banner.hidden{
 html[data-v28-rework="2"] #profilesScreen .profile-card{
   box-sizing:border-box!important;
   overflow:hidden!important;
-  border:22px 20px solid transparent!important;
+
   border-image-source:var(--p3-panel)!important;
   border-image-slice:96 82 96 82 fill!important;
   border-image-width:22px 20px!important;

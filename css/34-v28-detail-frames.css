@@ -10,11 +10,10 @@
    border-image-slice rechnet in Quellpixeln; navy-tile.webp ist 768x768
    und der Bestand schneidet es überall mit "150 fill", also hier auch.
 
-   Die border-Breite steht bewusst als Langform. Der Bestand schreibt an
-   vielen Stellen "border:16px 21px solid transparent" - diese Kurzform
-   ist ungültig, der Parser verwirft sie, und der Rahmen reserviert dann
-   keinen Layoutplatz. Hier soll er es, deshalb border-style/-width/-color
-   getrennt und das Padding entsprechend kleiner.
+   Die border-Breite steht bewusst als Langform, damit der Rahmen echten
+   Layoutplatz reserviert; das Padding ist entsprechend kleiner. Die
+   Kurzform "border:16px 21px solid transparent" wäre ungültig - sie nimmt
+   nur eine Breite - und würde vom Parser verworfen.
    ============================================================ */
 
 html[data-v28-rework="2"] .campaign-node-detail .node-detail-desc,

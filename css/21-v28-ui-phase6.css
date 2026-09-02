@@ -57,7 +57,7 @@ html[data-v28-rework="2"] #trioCampaignStartBtn{
   box-sizing:border-box!important;
   min-height:84px!important;
   padding:8px 14px!important;
-  border:30px 68px solid transparent!important;
+
   border-image-source:var(--p6-encounter-button)!important;
   border-image-slice:130 260 130 260 fill!important;
   border-image-width:30px 68px!important;

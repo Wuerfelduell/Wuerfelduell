@@ -268,7 +268,7 @@ html[data-v28-rework="2"] select.dd-native-select{
   width:min(560px,100%);max-height:min(82dvh,760px);
   display:flex;flex-direction:column;
   color:var(--dd-ink);
-  border:44px 24px 34px solid transparent;
+
   border-image-source:var(--dd-frame-modal);
   border-image-slice:150 92 104 92 fill;
   border-image-width:44px 24px 34px;
@@ -309,7 +309,7 @@ html[data-v28-rework="2"] #setup .local-mode-card,
 html[data-v28-rework="2"] #setup .setup-player{
   box-sizing:border-box;
   color:var(--dd-ink)!important;
-  border:20px 34px solid transparent!important;
+
   border-image-source:var(--dd-frame-card-small)!important;
   border-image-slice:76 168 76 168 fill!important;
   border-image-width:20px 34px!important;
@@ -343,7 +343,7 @@ html[data-v28-rework="2"] #setup .ability-roll .ability-desc{
 /* ---------- Campaign worlds, nodes and details ---------- */
 html[data-v28-rework="2"] .campaign-hub .campaign-world-btn{
   min-height:78px!important;
-  border:20px 34px solid transparent!important;
+
   border-image-source:var(--dd-frame-card-small)!important;
   border-image-slice:76 168 76 168 fill!important;
   border-image-width:20px 34px!important;
@@ -372,7 +372,7 @@ html[data-v28-rework="2"] .campaign-node.current::after{
 html[data-v28-rework="2"] .campaign-node-detail{
   box-sizing:border-box;
   overflow:visible!important;
-  border:20px 34px solid transparent!important;
+
   border-image-source:var(--dd-frame-card-small)!important;
   border-image-slice:76 168 76 168 fill!important;
   border-image-width:20px 34px!important;
@@ -384,7 +384,7 @@ html[data-v28-rework="2"] .campaign-node-detail{
 }
 /* Boss frame is a genuine border-image layout surface. It never floats over text. */
 html[data-v28-rework="2"] .campaign-node-detail.v28-boss-detail{
-  border:30px 45px solid transparent!important;
+
   border-image-source:var(--dd-frame-boss)!important;
   border-image-slice:122 190 122 190 fill!important;
   border-image-width:30px 45px!important;
@@ -401,7 +401,7 @@ html[data-v28-rework="2"] .campaign-node-detail.v28-boss-detail .node-detail-row
   border-color:rgba(242,190,92,.23)!important;
 }
 html[data-v28-rework="2"] .campaign-node-detail.v28-prestige-detail:not(.v28-boss-detail){
-  border:30px 48px solid transparent!important;
+
   border-image-source:var(--dd-frame-prestige)!important;
   border-image-slice:154 270 154 270 fill!important;
   border-image-width:30px 48px!important;
@@ -469,7 +469,7 @@ html[data-v28-rework="2"] .second-ability-card{
   align-items:center!important;
   column-gap:7px!important;row-gap:5px!important;
   padding:20px 24px 16px 30px!important;
-  border:22px 34px 22px 48px solid transparent!important;
+
   border-image-source:var(--dd-frame-ability-choice)!important;
   border-image-slice:84 165 84 230 fill!important;
   border-image-width:22px 34px 22px 48px!important;
@@ -506,7 +506,7 @@ html[data-v28-rework="2"] .v28-ability-option{
   grid-template-columns:48px minmax(0,1fr) 24px!important;
   gap:10px!important;
   padding:7px 14px!important;
-  border:20px 28px 20px 42px solid transparent!important;
+
   border-image-source:var(--dd-frame-ability-choice)!important;
   border-image-slice:84 165 84 230 fill!important;
   border-image-width:20px 28px 20px 42px!important;
@@ -524,7 +524,7 @@ html[data-v28-rework="2"] .v28-icon img{width:48px;height:48px;object-fit:contai
 html[data-v28-rework="2"] .v28-ability-trigger{
   min-height:54px!important;
   padding:7px 18px!important;
-  border:20px 30px 20px 42px solid transparent!important;
+
   border-image-source:var(--dd-frame-ability-choice)!important;
   border-image-slice:84 165 84 230 fill!important;
   border-image-width:20px 30px 20px 42px!important;
@@ -544,7 +544,7 @@ html[data-v28-rework="2"] .profile-card,
 html[data-v28-rework="2"] .achievement-card,
 html[data-v28-rework="2"] .prestige-item{
   box-sizing:border-box;
-  border:20px 34px solid transparent!important;
+
   border-image-source:var(--dd-frame-card-small)!important;
   border-image-slice:76 168 76 168 fill!important;
   border-image-width:20px 34px!important;
@@ -557,7 +557,7 @@ html[data-v28-rework="2"] .prestige-item{
 html[data-v28-rework="2"] .achievement-card.dd-achieved,
 html[data-v28-rework="2"] .prestige-item.owned,
 html[data-v28-rework="2"] .prestige-item.expensive{
-  border:30px 38px solid transparent!important;
+
   border-image-source:var(--dd-frame-achievement)!important;
   border-image-slice:140 155 128 155 fill!important;
   border-image-width:30px 38px!important;
@@ -577,7 +577,7 @@ html[data-v28-rework="2"] body.playing .player{
   position:relative;
   isolation:isolate;
   overflow:visible!important;
-  border:24px 30px solid transparent!important;
+
   border-image-source:var(--dd-frame-player)!important;
   border-image-slice:96 122 96 122 fill!important;
   border-image-width:24px 30px!important;
@@ -595,7 +595,7 @@ html[data-v28-rework="2"] body.playing .player.active::after{
   filter:drop-shadow(0 0 8px rgba(39,169,255,.30));
 }
 html[data-v28-rework="2"] body.playing .player.v28-boss-player{
-  border:26px 32px solid transparent!important;
+
   border-image-source:var(--dd-frame-player-boss)!important;
   border-image-slice:110 140 110 140 fill!important;
   border-image-width:26px 32px!important;
