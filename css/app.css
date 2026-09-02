@@ -11623,10 +11623,10 @@ html[data-v28-rework="2"] #onlineScreen .online-connection{
    ============================================================ */
 
 :root{
-  --wd-strip: url("../assets/ui/v28/png/frames/slim-strip.webp?v=28.9.4");
-  --wd-card:  url("../assets/ui/v28/png/frames/slim-card.webp?v=28.9.4");
-  --wd-pill:  url("../assets/ui/v28/png/frames/slim-pill.webp?v=28.9.4");
-  --wd-die:   url("../assets/ui/v28/png/frames/die-button.webp?v=28.9.4");
+  --wd-strip: url("../assets/ui/v28/png/frames/slim-strip.webp?v=28.10.0");
+  --wd-card:  url("../assets/ui/v28/png/frames/slim-card.webp?v=28.10.0");
+  --wd-pill:  url("../assets/ui/v28/png/frames/slim-pill.webp?v=28.10.0");
+  --wd-die:   url("../assets/ui/v28/png/frames/die-button.webp?v=28.10.0");
   --wd-hell:  #f4ece3;
   --wd-navy:  #011b4b;
 }
@@ -12095,7 +12095,7 @@ html[data-v28-rework="2"] #achievementsScreen .achievement-owner{
 @media(max-width:560px){.endgame-combat-badge{font-size:.6rem;padding:.15rem .38rem}.endgame-mechanic-row span{font-size:.72rem}}
 
 /* ===== 39-v28-campaign-polish.css ===== */
-/* DiceDuel V28.9.4 — menu/campaign polish and data-driven world colors. */
+/* DiceDuel V28.10.0 — menu/campaign polish and data-driven world colors. */
 
 :root{
   --world-primary:#d5a642;
@@ -12272,13 +12272,13 @@ html[data-v28-rework="2"] .campaign-node-detail .node-detail-desc{
 }
 
 /* ===== 40-v28-screen-restoration.css ===== */
-/* DiceDuel V28.9.4 — menu safe areas and framed utility screens. */
+/* DiceDuel V28.10.0 — menu safe areas and framed utility screens. */
 
 :root{
-  --v2893-achievement-card:url("../assets/ui/v28/png/frames/achievement-trophy-card.webp?v=28.9.4");
-  --v2893-ivory-card:url("../assets/ui/v28/png/frames/ivory-card-small.webp?v=28.9.4");
-  --v2893-navy-button:url("../assets/ui/v28/png/frames/navy-button-horizontal.webp?v=28.9.4");
-  --v2893-green-button:url("../assets/ui/v28/png/components/encounter-button-green.webp?v=28.9.4");
+  --v2893-achievement-card:url("../assets/ui/v28/png/frames/achievement-trophy-card.webp?v=28.10.0");
+  --v2893-ivory-card:url("../assets/ui/v28/png/frames/ivory-card-small.webp?v=28.10.0");
+  --v2893-navy-button:url("../assets/ui/v28/png/frames/navy-button-horizontal.webp?v=28.10.0");
+  --v2893-green-button:url("../assets/ui/v28/png/components/encounter-button-green.webp?v=28.10.0");
 }
 
 /* Main menu: the icon leaves the ornamental end cap and gets its own safe area. */

@@ -378,6 +378,7 @@
       saveData.schemaVersion=Math.max(Number(saveData.schemaVersion)||1,SAVE_SCHEMA_VERSION);
       saveData.campaignVersion=Math.max(Number(saveData.campaignVersion)||1,CAMPAIGN_VERSION);
       saveData.lastGameVersion=GAME_VERSION;
+      try{window.WDCloudAccount?.noteLocalSave?.(saveData);}catch(_err){}
       localStorage.setItem(SAVE_KEY,JSON.stringify(saveData));
       storageAvailable=true;
       return true;
