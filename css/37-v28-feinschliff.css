@@ -1,0 +1,106 @@
+/* V28.7.1 — Feinschliff nach dem Rahmen-Durchgang
+   ============================================================ */
+
+/* ===== 1 · Inhalt innerhalb des Ornamentrahmens halten =====
+   .screen-card zeichnet seinen Rahmen mit border-image-width 22px 17px,
+   reserviert horizontal aber nur 6px Padding. Der Inhalt lag damit
+   konstruktionsbedingt 11px je Seite unter dem Rahmen - auf jedem Gerät,
+   auch am Desktop. Aufgefallen ist es erst, seit die inneren Flächen
+   eigene Rahmen tragen und die Kollision sichtbar wurde. */
+html[data-v28-rework="2"] .screen-card{
+  padding-left:19px!important;
+  padding-right:19px!important;
+}
+@media (max-width:380px){
+  html[data-v28-rework="2"] .screen-card{
+    padding-left:15px!important;
+    padding-right:15px!important;
+  }
+}
+
+/* ===== 2 · Trophy Shop: erworbene Einträge bleiben dunkel =====
+   Phase 4 gibt .owned und .expensive helle Schrift, weil sie dort eine
+   dunkle Karte haben. Die helle Grundfläche aus der leisen Stufe machte
+   die Schrift damit unlesbar - "High Roller" war praktisch unsichtbar. */
+html[data-v28-rework="2"] #prestigeShopScreen .prestige-item.owned,
+html[data-v28-rework="2"] #prestigeShopScreen .prestige-item.expensive{
+  background:#0a2b58!important;
+}
+
+/* ===== 3 · Spezialwürfel: ruhigere Bewegung =====
+   Der Wurf drehte den kompletten Knopf um 360 Grad und skalierte ihn
+   dabei. Mit dem Rahmen darauf dreht sich jetzt auch das Ornament mit -
+   das ist unruhig bis unangenehm. Die Bewegung bleibt, wird aber zu einem
+   Pulsieren ohne Drehung. */
+@keyframes wdWuerfelPuls{
+  0%,100%{ transform:scale(1); }
+  50%    { transform:scale(.945); }
+}
+html[data-v28-rework="2"] #gamblingDie.rolling,
+html[data-v28-rework="2"] .special-big-die.rolling{
+  animation:wdWuerfelPuls .5s ease-in-out infinite!important;
+}
+@media (prefers-reduced-motion:reduce){
+  html[data-v28-rework="2"] #gamblingDie.rolling,
+  html[data-v28-rework="2"] .special-big-die.rolling{ animation:none!important; }
+}
+
+/* ===== 4 · Würfeldesign-Vorschau im Profil bekommt einen Rahmen ===== */
+html[data-v28-rework="2"] #profilesScreen .dice-design-preview{
+  box-sizing:border-box!important;
+  border-style:solid!important;
+  border-color:transparent!important;
+  border-width:12px 18px!important;
+  border-image-source:var(--wd-card)!important;
+  border-image-slice:72 120 72 120!important;
+  border-image-width:12px 18px!important;
+  border-image-repeat:stretch!important;
+  border-radius:0!important;
+  background:rgba(2,16,40,.55)!important;
+  box-shadow:none!important;
+  padding:4px 4px 6px!important;
+}
+
+/* ===== 5 · Aufgabenfortschritt im Kampf ===== */
+html[data-v28-rework="2"] body.playing .campaign-task-progress{
+  box-sizing:border-box!important;
+  border-style:solid!important;
+  border-color:transparent!important;
+  border-width:9px 20px!important;
+  border-image-source:var(--wd-strip)!important;
+  border-image-slice:40 96 40 96!important;
+  border-image-width:9px 20px!important;
+  border-image-repeat:stretch!important;
+  border-radius:0!important;
+  background:rgba(2,13,32,.5)!important;
+  box-shadow:none!important;
+  padding:5px 6px!important;
+}
+
+/* ===== 6 · Mastery: "Profil" nicht mehr neben das Auswahlfeld quetschen =====
+   Die Zeile war ein flex mit 7px Abstand; auf schmalen Breiten stand das
+   Wort gequetscht links vom Feld. Es steht jetzt darüber, wie die übrigen
+   Beschriftungen im Spiel. */
+html[data-v28-rework="2"] .mastery-profile-picker{
+  display:grid!important;
+  grid-template-columns:minmax(0,1fr)!important;
+  gap:4px!important;
+  font-size:10px!important;
+  letter-spacing:.08em!important;
+  text-transform:uppercase!important;
+}
+
+/* ===== 7 · Aktiv-Glow auf die Kartenkante legen =====
+   Die Spielerkarte hat einen echten Rand (border-width), auf dem ihr
+   Rahmenartwork sitzt. Das ::after mit inset:0 liegt dagegen auf der
+   Innenbox und war dadurch um genau diese Randbreite zu klein - der Glow
+   saß sichtbar innerhalb des Goldrahmens statt auf ihm. Die Werte
+   entsprechen der Randbreite der Karte in beiden Breakpoints. */
+html[data-v28-rework="2"] body.playing #players .player.active::after{
+  inset:-17px!important;
+}
+@media (max-width:540px){
+  html[data-v28-rework="2"] body.playing #players .player.active::after{
+    inset:-20px -22px!important;
+  }
+}
