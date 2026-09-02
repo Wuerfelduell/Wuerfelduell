@@ -11601,7 +11601,7 @@ html[data-v28-rework="2"] #onlineScreen .online-connection{
 }
 
 /* ===== 36-v28-hierarchie.css ===== */
-/* V28.7.2 — Rangordnung der Rahmen
+/* V28.7.3 — Rangordnung der Rahmen
    ============================================================
    Gemessen an V28.6.3: der Achievement-Screen zeigte 69 gerahmte Flächen,
    bis zu drei ineinander. Der Setup-Screen kommt bei acht Spielern auf
@@ -11619,7 +11619,7 @@ html[data-v28-rework="2"] #onlineScreen .online-connection{
                         Stufe 2 steckt.
 
    Für Stufe 3 gab es bis V28.6.4 kein Artwork; dort stand deshalb eine
-   Übergangsfassung aus einer schlichten Goldlinie. Seit V28.7.2 gibt es
+   Übergangsfassung aus einer schlichten Goldlinie. Seit V28.7.3 gibt es
    slim-strip, slim-card und slim-pill, dazu die-button für den großen
    Würfel. Alle vier sind verlustfrei konvertiert und innen transparent -
    die Füllfarbe kommt weiterhin von hier, ein Bild trägt damit helle wie
@@ -11636,10 +11636,10 @@ html[data-v28-rework="2"] #onlineScreen .online-connection{
    ============================================================ */
 
 :root{
-  --wd-strip: url("../assets/ui/v28/png/frames/slim-strip.webp?v=28.7.2");
-  --wd-card:  url("../assets/ui/v28/png/frames/slim-card.webp?v=28.7.2");
-  --wd-pill:  url("../assets/ui/v28/png/frames/slim-pill.webp?v=28.7.2");
-  --wd-die:   url("../assets/ui/v28/png/frames/die-button.webp?v=28.7.2");
+  --wd-strip: url("../assets/ui/v28/png/frames/slim-strip.webp?v=28.7.3");
+  --wd-card:  url("../assets/ui/v28/png/frames/slim-card.webp?v=28.7.3");
+  --wd-pill:  url("../assets/ui/v28/png/frames/slim-pill.webp?v=28.7.3");
+  --wd-die:   url("../assets/ui/v28/png/frames/die-button.webp?v=28.7.3");
   --wd-hell:  #f4ece3;
   --wd-navy:  #011b4b;
 }

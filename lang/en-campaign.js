@@ -373,6 +373,357 @@
       "All three must attack Helix Apex, everyone needs 1 kill, at least 3 focus passes AND Helix Apex must die last."
   });
 
+  /* ---- Encounter-Beschreibungen ----
+     Der laengste Block, und der einzige mit echtem Erzaehlton. Deshalb
+     exakt und nicht Wort fuer Wort: eine halb uebersetzte Beschreibung
+     liest sich schlechter als eine ganz deutsche, und der Fallback in
+     js/00-i18n.js wuerde sie ohnehin durch einen neutralen Satz
+     ersetzen. Fehlt hier ein Encounter, faellt genau dieser Satz ein -
+     sichtbar, aber nie halbdeutsch. */
+  Object.assign(pack.exact, {
+    /* Welt 1 · House Circuit */
+    "Ein sauberer Einstieg gegen einen leichten Gegner. Du spielst diesen Encounter ausschließlich mit Glückswurf; weitere Fähigkeits-Drafts sind deaktiviert.":
+      "A clean start against an easy opponent. You play this encounter with Lucky Roll only; further ability drafts are disabled.",
+    "Sie spielt aggressiver. Zeig, dass du nicht nur auf Sicherheit würfelst.":
+      "She plays more aggressively. Show that you do not only roll for safety.",
+    "Mehr Druck, härtere Entscheidungen. Ein einzelner starker Zug ist jetzt Pflicht.":
+      "More pressure, harder decisions. A single strong turn is required now.",
+    "Der Dealer bezahlt für bessere Treffer mit seinem eigenen Blut. Gewinne, ohne dich komplett zerlegen zu lassen.":
+      "The Dealer pays for better hits with his own blood. Win without letting yourself be torn apart.",
+    "Nach dem House wartet kein Urlaub. Der Schlangenzüchter lebt von chaotischen Basiswürfen – du sollst dagegen möglichst sauber spielen.":
+      "There is no holiday after the House. The Snake Breeder thrives on chaotic base rolls – you are meant to play as cleanly as possible against him.",
+    "Der Spiegel übernimmt exakt deine gewählte Hauptfähigkeit. Deine stärkste Option kann damit plötzlich gegen dich arbeiten.":
+      "The Mirror copies exactly the main ability you picked. Your strongest option can suddenly work against you.",
+    "Zwei abgestimmte Gegner: Einer baut Momentum auf, der andere bestraft exakt zwei Treffer. Du bist wieder allein.":
+      "Two opponents in sync: one builds momentum, the other punishes exactly two hits. You are on your own again.",
+    "Der Leech startet mit mehr Leben und heilt sich über seinen verursachten Schaden zurück. Lange Kämpfe spielen ihm in die Hände.":
+      "The Leech starts with more HP and heals himself back through the damage he deals. Long battles play into his hands.",
+    "Der Pit Boss hat 40 HP, Counterattack und High Stakes. Große Treffer können ihn beenden – oder sofort einen brutalen Gegenschlag auslösen.":
+      "The Pit Boss has 40 HP, Counterattack and High Stakes. Big hits can finish him – or trigger a brutal counterattack right away.",
+    "Der Collector lebt von langen Kämpfen: 30 HP, Lifesteal und Rache. Diesmal reicht Überleben nicht – du musst selbst Leben zurückholen.":
+      "The Collector thrives on long battles: 30 HP, lifesteal and Revenge. Surviving is not enough this time – you have to win HP back yourself.",
+    "Präzision plus Loaded Dice macht jeden kleinen Fehler teuer. Spiele kontrolliert und bezahle nicht dauernd mit deinem eigenen Leben.":
+      "Precision plus Loaded Dice makes every small mistake expensive. Play in control and do not keep paying with your own HP.",
+    "Wildcard und Gambling Man machen seine Angriffe schwer lesbar. Du musst selbst offensiv bleiben, ohne am Ende zerlegt dazustehen.":
+      "Wildcard and Gambling Man make his attacks hard to read. You have to stay offensive yourself without ending up in pieces.",
+    "Drei kleinere Gegner teilen sich den Tisch. Jeder hat nur 15 HP, aber Momentum, Double Tap und Insurance erzeugen konstanten Druck.":
+      "Three smaller opponents share the table. Each has only 15 HP, but Momentum, Double Tap and Insurance create constant pressure.",
+    "Der King spielt mit Präzision und Wildcard, sein Ace mit Brutalen Einsen und Underdog. Royal Flush bleibt nach dem Clear offen: Jeder weitere erfolgreiche Sieg bringt erneut eine Prestige-Trophäe.":
+      "The King plays with Precision and Wildcard, his Ace with Brutal Ones and Underdog. Royal Flush stays open after the clear: every further win brings another prestige trophy.",
+
+    /* Welt 2 · Rift Circuit */
+    "Hinter Black Table öffnet sich ein zweiter Pfad. Der Gatekeeper drückt früh auf 1er-Angriffe und bestraft vorsichtiges Spiel.":
+      "A second path opens behind Black Table. The Gatekeeper pushes attacks on 1s early and punishes cautious play.",
+    "Broker und Loader bezahlen beide Leben für bessere Würfe. Du darfst dich von ihrem Tempo nicht zum selben Fehler zwingen lassen.":
+      "Broker and Loader both pay HP for better rolls. Do not let their pace force you into the same mistake.",
+    "Gambling Man und Wildcard machen seine Angriffszahl unberechenbar. Ein großer eigener Zug ist der sicherste Weg durch das Chaos.":
+      "Gambling Man and Wildcard make his attack number unpredictable. One big turn of your own is the safest way through the chaos.",
+    "Drei kleinere Gegner teilen den Tisch. Der Kampf ist gebaut, um Mehrziel-Schaden und saubere Zielwahl zu belohnen.":
+      "Three smaller opponents share the table. The fight is built to reward multi-target damage and clean target selection.",
+    "Der Rift King heilt über doppelte Sechser und verweigert einmal den Tod. Echo eröffnet Angriffe schon bei 25 und wird stärker, sobald Blut geflossen ist.":
+      "The Rift King heals through double sixes and refuses death once. Echo opens attacks as early as 25 and grows stronger once blood has been drawn.",
+    "The Coil zwingt dich in einen längeren, kontrollierten Kampf. Diesmal zählt nicht nur der Sieg: Du musst Snake Eyes wirklich zum Einsatz bringen. Der Clear schaltet die letzte reguläre Hauptfähigkeit frei und aktiviert Prestige.":
+      "The Coil forces you into a longer, controlled fight. The win alone does not count this time: you have to actually put Snake Eyes to work. The clear unlocks the last regular main ability and activates prestige.",
+    "Der Fixer manipuliert seine Würfe und bestraft Zögern. Ab hier werden Siege zu Prestige-Trophäen, sobald alle regulären Hauptfähigkeiten freigeschaltet sind.":
+      "The Fixer manipulates his rolls and punishes hesitation. From here on wins turn into prestige trophies once every regular main ability is unlocked.",
+    "Der Red Broker macht aus Lebenspunkten Währung. Um ihn zu schlagen, musst du selbst mindestens einmal Blutpreis aktiv einsetzen.":
+      "The Red Broker turns HP into currency. To beat him you have to actively use Blood Price at least once yourself.",
+    "Der Croupier lebt vom Risiko. Ein bloßer Klick auf High Stakes reicht nicht: Mindestens ein Gamble muss mit 4–6 erfolgreich sein.":
+      "The Croupier lives on risk. Merely clicking High Stakes is not enough: at least one gamble has to land on 4–6.",
+    "Der Sovereign und sein Warden spielen maximal aggressiv. Für diesen Boss wählst du direkt beim Kampfbeginn deine Zweitfähigkeit aus dem normalen Kampagnen-Draft. Der Boss bleibt nach dem Clear farmbar. Sein erster erfolgreicher Clear schaltet zusätzlich Glück (BETA) für den Zweitfähigkeits-Pool frei.":
+      "The Sovereign and his Warden play as aggressively as possible. For this boss you pick your second ability from the normal campaign draft right at the start of the battle. The boss stays farmable after the clear. Its first successful clear additionally unlocks Luck (BETA) for the second-ability pool.",
+    "Der Hex Dealer lässt dir kaum saubere Würfe. Gewinne, nachdem du Glückswurf bewusst mindestens einmal eingesetzt hast.":
+      "The Hex Dealer barely leaves you a clean roll. Win after deliberately using Lucky Roll at least once.",
+    "Der Protocoler bestraft schlechte Angriffswürfe. Ein Sieg zählt nur, wenn du Zweite Chance aktiv in einem Angriff verwendest.":
+      "The Protocoler punishes bad attack rolls. A win only counts if you actively use Second Chance in an attack.",
+    "Der Executioner soll dich einmal wirklich an den Rand bringen. Last Stand muss auslösen – und danach musst du den Kampf trotzdem noch drehen.":
+      "The Executioner is meant to push you right to the edge once. Last Stand has to trigger – and you still have to turn the fight around afterwards.",
+    "Broker Prime und the Gambler kombinieren Blutpreis und High Stakes. Wähle eine der beiden Fähigkeiten als Hauptfähigkeit; die jeweils andere wird dir für diesen Encounter als dritte Fähigkeit bereitgestellt.":
+      "Broker Prime and the Gambler combine Blood Price and High Stakes. Pick one of the two as your main ability; the other one is provided as a third ability for this encounter.",
+    "Eclipse und Shard sind der Abschluss des Rift Circuit. Du startest mit 40 HP und wählst direkt zu Kampfbeginn deine 2. Fähigkeit. Dein erster eigener Kill oder ≤15 HP kann die 3. Fähigkeit schon vorher freischalten; spätestens RIFT COLLAPSE bietet sie an, falls der Slot noch frei ist. Der Boss hält 58 HP und kann Last Stand auslösen; Shard setzt dich mit Double Tap und Wildcard unter Druck.":
+      "Eclipse and Shard close out the Rift Circuit. You start with 40 HP and pick your 2nd ability right at the start of the battle. Your first own kill or ≤15 HP can unlock the 3rd ability earlier; RIFT COLLAPSE offers it at the latest, if the slot is still free. The boss holds 58 HP and can trigger Last Stand; Shard pressures you with Double Tap and Wildcard.",
+
+    /* Welt 3 · Zero Circuit */
+    "Der Tollkeeper blockt jeden sicheren Weg. Hier zählt kontrolliertes Risiko: Du musst bewusst Leben als Ressource akzeptieren, statt nur möglichst sauber durchzukommen.":
+      "The Tollkeeper blocks every safe route. Controlled risk is what counts here: you have to accept HP as a resource on purpose instead of just getting through cleanly.",
+    "Threefold singt nur in Paschen. Ein einzelner Snake-Eyes-Trigger reicht hier nicht mehr – du musst die Fähigkeit zweimal wirklich zum Arbeiten bringen.":
+      "Threefold only sings in matching sets. A single Snake Eyes trigger is no longer enough – you have to make the ability work twice.",
+    "Debt Collector und Auditor bestrafen passives Spiel. Für den Clear musst du selbst tief genug in die Tasche greifen – egal ob über Loaded Dice oder Blutpreis.":
+      "Debt Collector and Auditor punish passive play. To clear it you have to dig deep enough yourself – whether through Loaded Dice or Blood Price.",
+    "Echo Six gewinnt lange Kämpfe über kleine Heilimpulse. Du musst dieselbe Mechanik zweimal auslösen: zwei Würfe mit mindestens zwei Sechsern.":
+      "Echo Six wins long fights through small healing pulses. You have to trigger the same mechanic twice: two rolls with at least two sixes.",
+    "Architect Zero interessiert sich nicht für Chip-Damage. Irgendwann in diesem Kampf muss ein Angriff mit allen fünf Würfeln als Treffern enden.":
+      "Architect Zero has no interest in chip damage. At some point in this fight one attack has to end with all five dice as hits.",
+    "Der Beacon verstärkt die Formation. Wenn du blind den nächsten Gegner angreifst, wird der Kampf unnötig lang. Schalte das markierte Ziel zuerst aus.":
+      "The Beacon strengthens the formation. Attacking the nearest opponent blindly makes the fight needlessly long. Take out the marked target first.",
+    "Drei Wächter teilen dieselbe Barriere. Bevor du nur einen fokussierst, musst du allen drei mindestens einmal echten Rohschaden zufügen.":
+      "Three wardens share the same barrier. Before focusing just one, you have to deal real raw damage to all three at least once.",
+    "Der Purist deaktiviert nichts – aber die Challenge tut es. Passive Fähigkeiten sind erlaubt; aktive Knöpfe sollen unangetastet bleiben.":
+      "The Purist disables nothing – but the challenge does. Passive abilities are allowed; active buttons are to stay untouched.",
+    "Breaker prüft deinen Gegenangriff mit Präzision, aber ohne den früheren Double-Tap-Burst. Überlebe seinen Druck und löse Counterattack mindestens einmal tatsächlich aus.":
+      "Breaker tests your counterattack with Precision, but without the earlier Double Tap burst. Survive his pressure and actually trigger Counterattack at least once.",
+    "The Alibi zwingt dich auf die schmale Linie zwischen Sicherheit und Angriff. Perfect 25 muss einen Angriff tatsächlich freigeben.":
+      "The Alibi forces you onto the narrow line between safety and attack. Perfect 25 has to actually release an attack.",
+    "Surgeon Null bestraft Nulltreffer-Würfe. Präzision soll nicht nur ausgerüstet sein – sie muss zwei fehlgeschlagene Angriffswürfe retten.":
+      "Surgeon Null punishes zero-hit rolls. Precision is not meant to just sit equipped – it has to rescue two failed attack rolls.",
+    "Twin Trigger zählt nur saubere Paare. Zwei verschiedene Angriffe müssen jeweils mit exakt zwei Treffern enden und den Double-Tap-Bonus aktivieren.":
+      "Twin Trigger only counts clean pairs. Two different attacks each have to end with exactly two hits and activate the Double Tap bonus.",
+    "Blood Rush wird dir für diesen Encounter direkt als 2. Fähigkeit gestellt. Dein erster eigener Gegner-Kill ODER ≤15 HP löst den Bonus-Draft für eine 3. Fähigkeit aus – was zuerst passiert. Nutze Blood Rush zweimal in echten Angriffen.":
+      "Blood Rush is provided directly as your 2nd ability for this encounter. Your first own opponent kill OR ≤15 HP triggers the bonus draft for a 3rd ability – whichever comes first. Use Blood Rush twice in real attacks.",
+    "Drei Offiziere schützen sich gegenseitig. Du startest mit 30 HP. Die einzige gültige Eliminationsfolge lautet Key → Lock → Crown; auch ein Gegner, der sich selbst ausschaltet, zählt an seiner Position. Nach jeder Eliminierung bekommst du sofort eine neue Fähigkeitswahl, bis du maximal 3 Fähigkeiten besitzt.":
+      "Three officers protect each other. You start with 30 HP. The only valid elimination order is Key → Lock → Crown; an opponent who takes themselves out also counts in their position. After each elimination you immediately get a new ability choice, up to a maximum of 3 abilities.",
+    "Der Regent versteckt sich hinter Warden und Proxy. Du startest mit 30 HP und direkt mit zwei Fähigkeiten. Der globale Kill/≤15-HP-Bonus und danach weitere Gegner-Kills bauen dein Loadout bis auf maximal 4 Fähigkeiten aus. Die Zusatz-Challenge ist bewusst simpel: überlebe den Fight.":
+      "The Regent hides behind Warden and Proxy. You start with 30 HP and two abilities right away. The global kill/≤15 HP bonus and further opponent kills after it build your loadout up to a maximum of 4 abilities. The extra challenge is deliberately simple: survive the fight.",
+
+    /* Welt 4 · Abyss Circuit */
+    "Der Ferryman akzeptiert keinen kostenlosen Durchgang. Zero verlangte sechs Punkte Eigenschaden; der Abyss will zweistelliges Risiko.":
+      "The Ferryman accepts no free passage. Zero asked for six points of self-damage; the Abyss wants double-digit risk.",
+    "Der Crowned Coil gibt dir genug Zeit für einen echten Mastery-Check. Zwei Trigger waren Training – diesmal werden drei verlangt.":
+      "The Crowned Coil gives you enough time for a real mastery check. Two triggers were training – three are asked for this time.",
+    "Der Ledger zählt nur Zahlungen, die du selbst autorisierst. Loaded Dice und Blutpreis werden hier zur gefährlichen Investition.":
+      "The Ledger only counts payments you authorize yourself. Loaded Dice and Blood Price turn into a dangerous investment here.",
+    "Die Balance-Waage verlangt erst den exakten Basiswurf und danach einen echten Angriff. Ein bloßer Perfect-25-Trigger reicht nicht.":
+      "The Balance demands the exact base roll first and a real attack afterwards. A mere Perfect 25 trigger is not enough.",
+    "Der Surgeon aus Zero war nur die Vorlesung. Im Abyss muss Präzision drei Nulltreffer-Würfe retten.":
+      "The Surgeon from Zero was only the lecture. In the Abyss, Precision has to rescue three zero-hit rolls.",
+    "Der Hemomancer will, dass du tief gehst und wieder hochkommst. Schaden allein oder Heilung allein genügt nicht.":
+      "The Hemomancer wants you to go deep and come back up. Damage alone or healing alone is not enough.",
+    "Vier Wächter dürfen nicht ignoriert werden. Die Zielwahl ist hier die eigentliche Mechanik: Jeder Gegner muss echten Rohschaden abbekommen.":
+      "Four wardens cannot be ignored. Target selection is the actual mechanic here: every opponent has to take real raw damage.",
+    "Der Reaper soll Last Stand wirklich brechen – danach musst du dich wieder stabilisieren. Die Challenge prüft den Comeback-Build statt Restleben am Ende.":
+      "The Reaper is meant to genuinely break Last Stand – after that you have to stabilize again. The challenge tests the comeback build rather than your HP at the end.",
+    "Der Pit Oracle duldet kein einmaliges Glück. Zwei High-Stakes-Gambles müssen mit 4–6 durchgehen.":
+      "The Pit Oracle tolerates no one-off luck. Two High Stakes gambles have to land on 4–6.",
+    "Exakt zwei Treffer sind hier kein Zufall, sondern Pflichtprogramm. Drei verschiedene Angriffe müssen den Double-Tap-Bonus auslösen.":
+      "Exactly two hits are no accident here, they are the required routine. Three different attacks have to trigger the Double Tap bonus.",
+    "Die Bellguard schlägt hart genug, um Counterattack zu füttern. Du musst drei echte Gegenschläge überleben und auslösen.":
+      "The Bellguard hits hard enough to feed Counterattack. You have to survive and trigger three real counterattacks.",
+    "Keine aktiven Tricks, aber trotzdem keine Tunnelvision. Passive Fähigkeiten sind erlaubt; drei Ziele müssen Schaden erhalten.":
+      "No active tricks, but no tunnel vision either. Passive abilities are allowed; three targets have to take damage.",
+    "Die Maschine läuft nur auf Doppel-Sechsen. Vier Trigger der Fähigkeit 12 sind ein echter Langzeit-Würfeltest.":
+      "The machine only runs on double sixes. Four triggers of ability 12 are a real long-run dice test.",
+    "Die vier Schlüssel öffnen das Tor nur in einer Reihenfolge. Zielwahl und Finisher müssen perfekt koordiniert sein.":
+      "The four keys only open the gate in one order. Target selection and finishers have to be perfectly coordinated.",
+    "Der Abyss King wartet hinter drei Exarchen. Der finale Clear verlangt drei Dinge: den King bis zuletzt stehen lassen, zweistelligen Eigenschaden akzeptieren und den normalen Kampagnen-Bonus-Draft wirklich auslösen.":
+      "The Abyss King waits behind three exarchs. The final clear asks for three things: leave the King standing until last, accept double-digit self-damage and actually trigger the normal campaign bonus draft.",
+
+    /* Welt 5 · Paradox Circuit */
+    "Paradox beginnt mit Zielwahl statt Schadensrennen. Deine ersten drei eigenen Angriffe müssen drei verschiedene Wächter in einer festgelegten Reihenfolge treffen.":
+      "Paradox begins with target selection instead of a damage race. Your first three attacks have to hit three different wardens in a set order.",
+    "Der Switchboard bestraft Tunnelvision. Du darfst natürlich wieder auf alte Ziele zurückkehren – aber du musst während des Encounters mehrfach bewusst umschalten.":
+      "The Switchboard punishes tunnel vision. You may of course return to earlier targets – but you have to switch deliberately several times during the encounter.",
+    "Vier Sigils müssen zuerst alle aktiviert werden. Der erste Kill darf erst passieren, nachdem jeder Gegner mindestens einmal Rohschaden bekommen hat.":
+      "All four sigils have to be activated first. The first kill may only happen after every opponent has taken raw damage at least once.",
+    "Die Schlange verlangt nicht nur Würfelglück. Du musst Snake Eyes mehrfach erzeugen und trotzdem genug Risiko nehmen, um dir selbst spürbaren Schaden einzuhandeln.":
+      "The serpent asks for more than dice luck. You have to produce Snake Eyes several times and still take enough risk to do noticeable damage to yourself.",
+    "Ein Perfect-25-Versuch reicht nicht; der Erfolg muss in einen längeren offensiven Kampf eingebettet sein.":
+      "One Perfect 25 attempt is not enough; the success has to sit inside a longer offensive fight.",
+    "Der Auditor schlägt hart. Nutze den Druck aktiv: mehrere Counterattacks reichen nicht, du musst daneben selbst offensiv genug bleiben und normale Angriffe starten.":
+      "The Auditor hits hard. Use the pressure actively: several counterattacks are not enough, you also have to stay offensive yourself and start normal attacks.",
+    "Loaded Dice ist stark, aber Paradox will keine Blutorgie. Nutze es mehrfach und halte deinen gesamten selbst verursachten Schaden trotzdem niedrig.":
+      "Loaded Dice is strong, but Paradox does not want a bloodbath. Use it several times and still keep your total self-damage low.",
+    "Der Croupier zwingt lange Gambles. Zwei erfolgreiche High-Stakes-Würfe müssen mit bewusst akzeptiertem Eigenschaden kombiniert werden.":
+      "The Croupier forces long gambles. Two successful High Stakes rolls have to be combined with deliberately accepted self-damage.",
+    "Präzision soll nicht einfach auf ein einziges Ziel gespammt werden. Zwei Einsätze und Schaden an drei verschiedenen Gegnern sind Pflicht.":
+      "Precision is not meant to be spammed onto a single target. Two uses and damage on three different opponents are required.",
+    "Blutpreis gibt dir Kontrolle über Trefferzahlen. Beweise sie nicht nur gegen einen Sack HP, sondern verteilt über mehrere Ziele.":
+      "Blood Price gives you control over hit counts. Prove it across several targets, not just against one sack of HP.",
+    "Zweite Chance soll hier nicht nur einen schlechten Wurf retten. Du musst die Fähigkeit wiederholt nutzen und den Kampf offensiv am Laufen halten.":
+      "Second Chance is not just meant to rescue one bad roll here. You have to use the ability repeatedly and keep the fight offensively alive.",
+    "Drei Double-Tap-Auslösungen reichen nur, wenn du sie nicht als Tunnel-Combo spielst. Der Matrixkern verlangt mehrere Zielwechsel.":
+      "Three Double Tap triggers only count if you do not play them as a tunnel combo. The matrix core demands several target switches.",
+    "Doppel-Sechsen halten dich am Leben; ein Grande beendet die Gleichung. Beides muss im selben Encounter passieren.":
+      "Double sixes keep you alive; a Grande ends the equation. Both have to happen in the same encounter.",
+    "Last Stand ist nicht das Ziel, sondern der Wendepunkt. Nach dem Trigger musst du den Fight weiter aktiv spielen und mehrere Angriffe zustande bringen.":
+      "Last Stand is not the goal, it is the turning point. After the trigger you have to keep playing the fight actively and land several attacks.",
+    "Vier Zeitfragmente schützen die Crown. Du musst zuerst jeden Gegner markieren; erst danach darf der erste fallen. Anschließend gilt eine exakte Kill-Zeitlinie bis zum Boss.":
+      "Four time fragments protect the Crown. You have to mark every opponent first; only then may the first one fall. After that an exact kill timeline applies up to the boss.",
+
+    /* Duo-Welt 1 · Covenant */
+    "Der erste Duo-Test. Zwei Gegner mit überschaubarem Druck – aber beide Spieler müssen den Kampf lebend beenden.":
+      "The first duo test. Two opponents with manageable pressure – but both players have to finish the fight alive.",
+    "Drei kleinere Gegner verteilen konstant Druck. Ein Spieler allein kann den Clear schaffen, aber für die Challenge müssen beide aktiv angreifen.":
+      "Three smaller opponents spread constant pressure. One player alone can manage the clear, but for the challenge both have to attack actively.",
+    "Leech und Broker wollen den Kampf lang ziehen. Mindestens einer von euch sollte bewusst auf Heilung spielen.":
+      "Leech and Broker want to drag the fight out. At least one of you should deliberately play for healing.",
+    "Dieser Encounter zwingt beide Spieler zu einem starken eigenen Zug. Einer kann den anderen retten – aber die Challenge verlangt Leistung von beiden.":
+      "This encounter forces a strong turn out of both players. One can rescue the other – but the challenge asks for output from both.",
+    "Die Serpent Twins spiegeln eure Würfelbilder. Für den Clear müssen beide Spieler Snake Eyes mindestens einmal selbst auslösen.":
+      "The Serpent Twins mirror your dice patterns. For the clear both players have to trigger Snake Eyes at least once themselves.",
+    "Der Pact zählt nur, wenn ihr wirklich etwas riskiert. Eigenschaden beider Spieler wird zusammengezählt.":
+      "The Pact only counts if you actually risk something. The self-damage of both players is added up.",
+    "Drei Gegner verlangen echte Koordination. Jeder von euch muss im Verlauf des Encounters mindestens zwei verschiedene Gegner aktiv als Angriffsziel wählen.":
+      "Three opponents demand real coordination. Over the course of the encounter each of you has to actively pick at least two different opponents as an attack target.",
+    "Die Hammers liefern genug Druck, um Counterattack zu füttern. Beide Spieler starten hier mit 35 HP; jeder muss seinen eigenen Gegenschlag auslösen.":
+      "The Hammers deliver enough pressure to feed Counterattack. Both players start with 35 HP here; each has to trigger their own counterattack.",
+    "Die Nulltwins wollen eure Angriffswürfe auslaufen lassen. Beide Spieler müssen Zweite Chance mindestens einmal wirklich einsetzen.":
+      "The Null Twins want your attack rolls to run dry. Both players have to genuinely use Second Chance at least once.",
+    "Vier kleinere Gegner sind ein Staffelstab. Die ersten zwei Eliminierungen müssen von unterschiedlichen Duo-Spielern kommen.":
+      "Four smaller opponents are a relay baton. The first two eliminations have to come from different duo players.",
+    "Twin Snakes war die Einführung. Jetzt zählt nur Teamgesamtleistung: drei echte Snake-Eyes-Einsätze, egal wie ihr sie verteilt.":
+      "Twin Snakes was the introduction. Only the team total counts now: three genuine Snake Eyes uses, however you split them.",
+    "Drei Elites teilen sich die Arena. Zielwahl und Timing entscheiden, damit nicht ein Spieler versehentlich alle Finisher einsammelt.":
+      "Three elites share the arena. Target selection and timing decide whether one player accidentally collects every finisher.",
+    "Beide Spieler müssen ihren normalen Kampagnen-Bonus-Draft auslösen – durch den ersten eigenen Gegner-Kill oder durch ≤15 HP – und am Ende trotzdem gemeinsam stehen.":
+      "Both players have to trigger their normal campaign bonus draft – through their first own opponent kill or through ≤15 HP – and still be standing together at the end.",
+    "Drei Gegner, aber ihr dürft euch nicht in getrennte Duelle aufteilen. Mindestens zwei Gegner müssen von beiden Spielern aktiv angegriffen worden sein.":
+      "Three opponents, but you may not split into separate duels. At least two opponents have to have been actively attacked by both players.",
+
+    /* Duo-Welt 2 · Fracture Pact */
+    "Fracture beginnt nicht mit Teamgesamtwerten. Beide Spieler müssen selbst Risiko nehmen; einer kann die Challenge nicht für den anderen bezahlen.":
+      "Fracture does not start with team totals. Both players have to take risk themselves; one cannot pay the challenge for the other.",
+    "Die alte Twin-Snakes-Prüfung kehrt härter zurück. Diesmal braucht jeder von euch zwei echte Snake-Eyes-Einsätze.":
+      "The old Twin Snakes trial returns harder. This time each of you needs two genuine Snake Eyes uses.",
+    "Ein Spieler mit Glück reicht dem House nicht. Jeder von euch braucht mindestens einen erfolgreichen 4–6-High-Stakes-Wurf.":
+      "One lucky player is not enough for the House. Each of you needs at least one successful 4–6 High Stakes roll.",
+    "Teamheilung kann sonst von einem Lifesteal-Carry erledigt werden. Fracture verlangt Sustain von beiden Spielern einzeln.":
+      "Team healing can otherwise be handled by a lifesteal carry. Fracture demands sustain from both players individually.",
+    "Nicht Teamgesamt, sondern zwei getrennte Rechnungen: Beide Spieler müssen Fähigkeiten aktiv mit ihrem eigenen Leben bezahlen.":
+      "Not a team total but two separate accounts: both players have to pay for abilities actively with their own HP.",
+    "Zwei Executioner drücken euch beide an die Kante. Der Clear zählt nur, wenn Last Stand bei jedem Spieler tatsächlich auslöst.":
+      "Two Executioners push both of you to the edge. The clear only counts if Last Stand actually triggers for each player.",
+    "Counter Pair war die Einführung. Jetzt muss jeder Spieler zweimal selbst zurückschlagen.":
+      "Counter Pair was the introduction. Now each player has to strike back twice themselves.",
+    "Vier Ziele bilden eine Staffel. Die ersten vier Eliminierungen müssen ohne doppelten Finisher desselben Spielers abwechseln.":
+      "Four targets form a relay. The first four eliminations have to alternate without the same player finishing twice.",
+    "Beide müssen ohne aktive Ability-Buttons spielen und trotzdem breit genug angreifen. Passive Builds und Zielwahl werden wichtiger.":
+      "Both have to play without active ability buttons and still attack widely enough. Passive builds and target selection matter more.",
+    "Schmerz muss bei beiden Spielern in Tempo umgewandelt werden. Jeder braucht zwei echte Blood-Rush-Angriffe.":
+      "Both players have to convert pain into pace. Each needs two genuine Blood Rush attacks.",
+    "Vier saubere Paar-Angriffe sind nötig: jeweils zwei Double-Tap-Trigger von jedem Duo-Spieler.":
+      "Four clean paired attacks are needed: two Double Tap triggers from each duo player.",
+    "Beide Spieler müssen schlechte Angriffswürfe aktiv retten. Zwei Einsätze pro Kopf – kein Carry möglich.":
+      "Both players have to actively rescue bad attack rolls. Two uses each – no carry possible.",
+    "Der Monarch verlangt von beiden den normalen Kampagnen-Bonus-Draft. Er kann durch den ersten eigenen Gegner-Kill oder durch ≤15 HP ausgelöst werden – aber nur einer darf den Kampf lebend beenden und den Clutch setzen.":
+      "The Monarch demands the normal campaign bonus draft from both. It can be triggered through your first own opponent kill or through ≤15 HP – but only one of you may finish the fight alive and land the clutch.",
+
+    /* Duo-Welt 3 · Mirror Pact */
+    "Mirror Pact startet mit einer neuen Teammechanik: Ein Spieler eröffnet auf ein Ziel, der andere übernimmt direkt dasselbe Ziel im nächsten eigenen Angriff.":
+      "Mirror Pact starts with a new team mechanic: one player opens on a target, the other takes over that same target in their next attack.",
+    "Nicht nur Kills, sondern das Angriffstempo selbst muss geteilt werden. Die ersten sechs Duo-Angriffe dürfen nie zweimal hintereinander vom selben Spieler kommen.":
+      "Not only kills but the pace of attacking itself has to be shared. The first six duo attacks may never come from the same player twice in a row.",
+    "Getrennte Duelle sind verboten. Jeder von euch muss alle drei Gegner persönlich als Angriffsziel gehabt haben.":
+      "Separate duels are forbidden. Each of you has to have personally had all three opponents as an attack target.",
+    "Fracture verlangte zwei. Mirror erhöht die echte Würfelprüfung: Beide Spieler brauchen drei Snake-Eyes-Einsätze.":
+      "Fracture asked for two. Mirror raises the real dice trial: both players need three Snake Eyes uses.",
+    "Beide Spieler müssen nicht nur gambeln, sondern jeweils zwei erfolgreiche 4–6-Ergebnisse liefern.":
+      "Both players have to do more than gamble: each has to deliver two successful 4–6 results.",
+    "Die Hammer Mirrors erzeugen genug Druck für echte Gegenschlagketten. Jeder Spieler muss dreimal selbst zurückschlagen.":
+      "The Hammer Mirrors create enough pressure for real counterattack chains. Each player has to strike back three times themselves.",
+    "Jeder muss seinen eigenen Sustain erzeugen. Ein einzelner Heiler kann die Challenge nicht carrien.":
+      "Everyone has to produce their own sustain. A single healer cannot carry the challenge.",
+    "Vier Gegner stehen auf dem Feld, aber drei davon müssen nachweislich von beiden Spielern angegriffen worden sein.":
+      "Four opponents are on the field, but three of them have to be provably attacked by both players.",
+    "Fünf kleine Ziele machen den Kill-Relay länger als je zuvor. Kein Spieler darf zwei aufeinanderfolgende Finisher setzen.":
+      "Five small targets make the kill relay longer than ever. No player may land two consecutive finishers.",
+    "Die Zielwahl wird zur Rollenverteilung: Spieler 1 muss Anchor beenden, Spieler 2 muss Reflection beenden.":
+      "Target selection turns into role distribution: player 1 has to finish Anchor, player 2 has to finish Reflection.",
+    "Ihr dürft die Leibwachen zuerst töten, aber der Mirror Crown muss von beiden Spielern mindestens einmal bewusst angegriffen worden sein und am Ende zuletzt fallen.":
+      "You may kill the bodyguards first, but Mirror Crown has to have been deliberately attacked by both players at least once and fall last in the end.",
+    "Nicht einfach alternieren: Vier Ziele müssen in einem exakten Spieler-Muster fallen.":
+      "Not simply alternating: four targets have to fall in an exact player pattern.",
+    "Beide müssen ihren normalen Bonus-Draft durch eigenen Kill oder ≤15 HP auslösen; gleichzeitig dürfen die ersten vier Teamangriffe nicht aus dem Rhythmus geraten.":
+      "Both have to trigger their normal bonus draft through their own kill or ≤15 HP; at the same time the first four team attacks may not fall out of rhythm.",
+    "Das Heart wird von zwei Shards gespiegelt. Der Boss muss zuletzt fallen; bis dahin müsst ihr mehrfach dasselbe Ziel direkt aneinander übergeben und beide einen Finisher setzen.":
+      "The Heart is mirrored by two Shards. The boss has to fall last; until then you have to hand the same target straight to each other several times and both land a finisher.",
+
+    /* Duo-Welt 4 · Omega Pact */
+    "Omega beginnt mit einer langen Rhythmuskette. Acht aufeinanderfolgende Teamangriffe müssen sauber zwischen euch wechseln.":
+      "Omega begins with a long rhythm chain. Eight consecutive team attacks have to alternate cleanly between you.",
+    "Ihr müsst Ziele gemeinsam übernehmen, dürft euch aber trotzdem nicht auf einen einzigen Gegner einschießen.":
+      "You have to take over targets together, but still may not lock onto a single opponent.",
+    "Fracture verlangte zwei Rettungen. Omega verlangt drei von jedem Spieler.":
+      "Fracture asked for two rescues. Omega asks for three from each player.",
+    "Sechs saubere Paar-Angriffe insgesamt: drei pro Spieler.":
+      "Six clean paired attacks in total: three per player.",
+    "Beide Spieler müssen Schaden oder freiwillige Kosten dreimal in echte Blood-Rush-Angriffe umwandeln.":
+      "Both players have to convert damage or voluntary costs into genuine Blood Rush attacks three times.",
+    "Zum ersten Mal verlangt eine Duo-Prüfung denselben seltenen Perfect-25-Erfolg von beiden Spielern.":
+      "For the first time a duo trial asks for the same rare Perfect 25 success from both players.",
+    "Beide Spieler müssen ihre Treffer selbst chirurgisch korrigieren.":
+      "Both players have to correct their own hits surgically.",
+    "Doppel-Sechsen müssen bei beiden Spielern mehrfach auftauchen. Ein Würfelmonster kann den anderen nicht carrien.":
+      "Double sixes have to show up several times for both players. One dice monster cannot carry the other.",
+    "Vier Gegner, acht persönliche Markierungen: Jeder Spieler muss jeden Gegner mindestens einmal aktiv angreifen.":
+      "Four opponents, eight personal marks: each player has to actively attack every opponent at least once.",
+    "Vier Wächter sind paarweise zugeordnet. Ihr müsst eure Finisher-Rollen exakt erfüllen.":
+      "Four wardens are assigned in pairs. You have to fulfil your finisher roles exactly.",
+    "Fünf Finisher folgen diesmal keinem einfachen Wechsel, sondern einer vorgegebenen Rollenfolge.":
+      "This time five finishers follow no simple alternation but a prescribed role order.",
+    "Ein GRANDE ist stark. Omega verlangt einen von jedem Spieler im selben Encounter.":
+      "One GRANDE is strong. Omega asks for one from each player in the same encounter.",
+    "Bevor ihr die Wachen abräumt, muss der Omega Crown bereits von beiden persönlich angegriffen worden sein. Danach darf er trotzdem erst zuletzt sterben.":
+      "Before you clear the guards, Omega Crown has to have been personally attacked by both of you. Even so, it may only die last.",
+    "Der letzte Vorboss ist eine reine Übergabeprüfung. Ihr müsst sechs Mal ein Ziel direkt an den Partner weiterreichen.":
+      "The last sub-boss is a pure handover trial. You have to pass a target straight to your partner six times.",
+    "Der Omega Sovereign steht hinter drei Thrones. Für den Clear braucht jeder einen GRANDE, die drei Throne müssen in alternierenden Finishern fallen und der Sovereign darf erst ganz am Ende sterben.":
+      "The Omega Sovereign stands behind three Thrones. For the clear each of you needs a GRANDE, the three Thrones have to fall to alternating finishers and the Sovereign may only die at the very end.",
+
+    /* Trio-Welt 1 · Trinity Protocol */
+    "Drei kleine Gegner, drei echte Spieler. Niemand darf sich vom Team tragen lassen: Jeder muss selbst einen Angriff landen und am Ende soll das komplette Trio noch stehen.":
+      "Three small opponents, three real players. Nobody gets carried by the team: everyone has to land an attack themselves and the whole trio should still be standing at the end.",
+    "Jeder Spieler erhält zusätzlich eine andere Einsatz-Fähigkeit: Blutpreis, Loaded Dice und High Stakes. Das Team muss wirklich drei verschiedene Fähigkeiten benutzen; Casino Floor sorgt dabei für kontrolliertes Chaos.":
+      "Each player additionally receives a different staking ability: Blood Price, Loaded Dice and High Stakes. The team really has to use three different abilities; Casino Floor supplies the controlled chaos.",
+    "Der Tisch will Rhythmus. Die ersten drei tatsächlichen Trio-Angriffe müssen sauber von Spieler 1, dann Spieler 2, dann Spieler 3 kommen. First Strike macht jeden gelungenen Staffelstab spürbar.":
+      "The table wants rhythm. The first three actual trio attacks have to come cleanly from player 1, then player 2, then player 3. First Strike makes every successful handover felt.",
+    "Ihr bekommt Blutpreis, Lifesteal und Loaded Dice als zusätzliche Werkzeuge. Bezahlt bewusst Leben und holt es euch mit Blood Moon wieder zurück, während drei Gegner weiter Druck machen.":
+      "You get Blood Price, Lifesteal and Loaded Dice as extra tools. Pay HP deliberately and win it back with Blood Moon while three opponents keep the pressure on.",
+    "Drei Bailiffs schützen den Trinity Judge. P1 spielt Zweite Chance + Counterattack, P2 Blutpreis + Blood Rush und P3 Loaded Dice + Double Tap. Die ersten drei Kills gehören der Reihe nach euch drei; der Judge fällt zuletzt.":
+      "Three Bailiffs protect the Trinity Judge. P1 plays Second Chance + Counterattack, P2 Blood Price + Blood Rush and P3 Loaded Dice + Double Tap. The first three kills belong to the three of you in order; the Judge falls last.",
+    "Vier Konten, drei Spieler. Jeder muss mindestens zwei verschiedene Gegner selbst markieren, aber mindestens ein Ziel muss wirklich von allen drei bearbeitet werden. Armor Shell bestraft stumpfes Eröffnungsfeuer.":
+      "Four accounts, three players. Everyone has to mark at least two different opponents themselves, but at least one target has to be worked on by all three. Armor Shell punishes blunt opening fire.",
+    "Alle drei erhalten Lifesteal als zusätzliche Fähigkeit. Blood Moon verstärkt echte Heilungen, aber die Aufgabe lässt keinen Heiler-Carry zu: Jeder Spieler muss selbst Leben zurückgewinnen.":
+      "All three receive Lifesteal as an extra ability. Blood Moon amplifies real healing, but the challenge allows no healer carry: every player has to win HP back themselves.",
+    "Ein Ziel soll immer wieder von einem anderen Spieler übernommen werden. Fünf echte Fokus-Pässe sind Pflicht; gleichzeitig muss jeder mindestens zwei eigene Angriffe gestartet haben.":
+      "One target is meant to be taken over by a different player again and again. Five genuine focus passes are required; at the same time everyone has to have started at least two attacks of their own.",
+    "Keine komplizierte Reihenfolge, kein Carry: Es stehen exakt drei harte Ziele am Tisch und jeder Spieler muss persönlich mindestens einen Kill setzen.":
+      "No complicated order, no carry: exactly three hard targets stand at the table and every player has to land at least one kill personally.",
+    "Drei Heads schützen den Cerberus Core. Jeder startet mit seiner gewählten Fähigkeit plus einer zufälligen Zweitfähigkeit. Die 3. Fähigkeit kommt über den normalen Kill- oder ≤15-HP-Trigger. Jeder muss den Core markieren und selbst finishen; der Core fällt zuletzt.":
+      "Three Heads protect the Cerberus Core. Everyone starts with their chosen ability plus a random second ability. The 3rd ability comes through the normal kill or ≤15 HP trigger. Everyone has to mark the Core and finish themselves; the Core falls last.",
+    "P1 und P3 bekommen Blutpreis, P2 Loaded Dice. Jeder muss selbst mindestens 3 HP freiwillig bezahlen, aber am Ende sollen trotzdem alle drei noch leben. Blood Moon macht Recovery-Builds wertvoll.":
+      "P1 and P3 get Blood Price, P2 gets Loaded Dice. Everyone has to voluntarily pay at least 3 HP themselves, yet all three should still be alive at the end. Blood Moon makes recovery builds valuable.",
+    "Vier Targets hängen an derselben Matrix. Bevor der erste Gegner fällt, muss das Team alle vier mindestens einmal beschädigt haben. Zusätzlich muss jeder Spieler selbst mindestens zwei verschiedene Ziele angreifen.":
+      "Four targets are linked to the same matrix. Before the first opponent falls, the team has to have damaged all four at least once. On top of that every player has to attack at least two different targets themselves.",
+    "Alle drei erhalten Counterattack als zusätzliche Fähigkeit. Die Gegner schlagen hart genug zurück; jeder Spieler muss mindestens einen eigenen Gegenschlag tatsächlich auslösen.":
+      "All three receive Counterattack as an extra ability. The opponents hit back hard enough; every player has to actually trigger at least one counterattack of their own.",
+    "Der letzte Vorraum verlangt von allen drei Spielern ihren normalen Kampagnen-Bonus-Draft. Er kommt durch den ersten eigenen Gegner-Kill oder durch ≤15 HP – was zuerst passiert – während die ersten sechs Helden-Angriffe ohne Doppelzug desselben Spielers alternieren.":
+      "The last antechamber demands the normal campaign bonus draft from all three players. It comes through their first own opponent kill or through ≤15 HP – whichever comes first – while the first six hero attacks alternate without the same player going twice.",
+    "Die Singularity steht hinter drei Seals. Jeder Spieler erhält eine andere zusätzliche Endgame-Fähigkeit. Alle drei müssen den Boss persönlich markieren, jeder braucht mindestens einen Kill und die Singularity fällt zuletzt. In Phase II kippt der Tisch in Overcharge.":
+      "The Singularity stands behind three Seals. Each player receives a different extra endgame ability. All three have to mark the boss personally, everyone needs at least one kill and the Singularity falls last. In phase II the table tips into Overcharge.",
+
+    /* Trio-Welt 2 · Helix Protocol */
+    "Helix beginnt nicht freundlich. Drei echte Gegner, etwas mehr HP, und die Challenge bleibt klar: Jeder greift an, niemand darf fallen.":
+      "Helix does not begin kindly. Three real opponents, a little more HP, and the challenge stays plain: everyone attacks, nobody may fall.",
+    "Keine Team-Summe. Blutpreis und Loaded Dice liegen bereit, Blood Tax macht jede Zahlung teurer. Jeder Spieler muss seine eigene Rechnung von 4 HP begleichen.":
+      "No team total. Blood Price and Loaded Dice are ready, Blood Tax makes every payment more expensive. Every player has to settle their own bill of 4 HP.",
+    "Ein Ziel soll wandern. Drei echte Fokus-Pässe, und jeder muss selbst mindestens zweimal angreifen – kein Zuschauen.":
+      "One target is meant to travel. Three genuine focus passes, and everyone has to attack at least twice themselves – no spectating.",
+    "Vier Konten. Armor Shell bestraft den ersten Schlag. Jeder muss zwei verschiedene Ziele wählen, mindestens eines davon wirklich zu dritt.":
+      "Four accounts. Armor Shell punishes the first strike. Everyone has to pick two different targets, at least one of them worked on by all three.",
+    "Zwei Wardens halten den Judge. Jeder braucht einen eigenen Kill, und Helix Judge darf erst fallen, wenn die Wardens weg sind.":
+      "Two Wardens hold the Judge. Everyone needs a kill of their own, and Helix Judge may only fall once the Wardens are gone.",
+    "Alle drei bekommen Counterattack. Die Gegner hauen hart genug, dass jeder seinen eigenen Gegenschlag wirklich auslösen muss.":
+      "All three get Counterattack. The opponents hit hard enough that everyone genuinely has to trigger their own counterattack.",
+    "Blutpreis, Lifesteal, Loaded Dice. Blood Moon hilft, aber Carry ist verboten: Jeder bezahlt 3 HP selbst und holt sich mindestens 4 HP selbst zurück.":
+      "Blood Price, Lifesteal, Loaded Dice. Blood Moon helps, but carrying is forbidden: everyone pays 3 HP themselves and wins at least 4 HP back themselves.",
+    "First Strike belohnt den Staffelstab. Die ersten sechs Helden-Angriffe dürfen nie zweimal hintereinander vom selben Spieler kommen.":
+      "First Strike rewards the handover. The first six hero attacks may never come from the same player twice in a row.",
+    "Drei harte Marken. Jeder muss mindestens zwei verschiedene Ziele angreifen und persönlich mindestens einen Kill setzen.":
+      "Three hard marks. Everyone has to attack at least two different targets and land at least one kill personally.",
+    "Drei Heads schützen das Hydra Heart. Jeder startet mit seiner gewählten Fähigkeit plus einer zufälligen Zweitfähigkeit. Die 3. Fähigkeit kommt über den normalen Kill- oder ≤15-HP-Trigger. Alle drei müssen das Heart markieren, jeder braucht einen eigenen Finisher, und das Heart fällt zuletzt. Phase II zieht Casino Floor auf den Tisch.":
+      "Three Heads protect the Hydra Heart. Everyone starts with their chosen ability plus a random second ability. The 3rd ability comes through the normal kill or ≤15 HP trigger. All three have to mark the Heart, everyone needs a finisher of their own, and the Heart falls last. Phase II pulls Casino Floor onto the table.",
+    "Void Clock tickt. Alle drei müssen ihren normalen Bonus-Draft (eigener Kill oder ≤15 HP) auslösen und trotzdem gemeinsam stehen bleiben.":
+      "Void Clock is ticking. All three have to trigger their normal bonus draft (own kill or ≤15 HP) and still be left standing together.",
+    "Ihr müsst dasselbe Ziel oft weiterreichen, dürft euch aber nicht auf einen Gegner versteifen. Sechs Fokus-Pässe, zwei verschiedene Ziele pro Spieler.":
+      "You have to pass the same target on often, but may not fixate on one opponent. Six focus passes, two different targets per player.",
+    "Zweite Chance, Counterattack und Double Tap liegen zusätzlich auf dem Tisch. Als Team müsst ihr mindestens vier verschiedene Fähigkeiten wirklich benutzen.":
+      "Second Chance, Counterattack and Double Tap are additionally on the table. As a team you have to genuinely use at least four different abilities.",
+    "Letzter Vorraum: Alle drei lösen den Bonus-Draft aus, die ersten sechs Angriffe alternieren, und jeder setzt selbst einen Kill.":
+      "Last antechamber: all three trigger the bonus draft, the first six attacks alternate, and everyone lands a kill themselves.",
+    "Die Apex steht hinter drei Seals. Jeder bekommt eine andere zusätzliche Endgame-Fähigkeit. Alle drei müssen die Apex markieren, jeder braucht einen Kill, drei Fokus-Pässe sind Pflicht, und die Apex fällt zuletzt. Phase II kippt in Overcharge.":
+      "The Apex stands behind three Seals. Everyone gets a different extra endgame ability. All three have to mark the Apex, everyone needs a kill, three focus passes are required, and the Apex falls last. Phase II tips into Overcharge."
+  });
+
   /* Satzmuster fuer die zusammengesetzten Werte der Detailzeilen. Sie
      werden angehaengt, damit die bestehenden Muster ihren Vorrang
      behalten und hier nur auffangen, was dort durchfaellt. */
