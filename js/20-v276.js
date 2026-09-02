@@ -1,6 +1,10 @@
 (()=>{
   const $=id=>document.getElementById(id);
-  function esc(v){return String(v??'').replace(/[&<>'"]/g,ch=>({'&':'&','<':'<','>':'>',"'":'&#39;','"':'"'}[ch]));}
+  // Die Map hier war durch ein versehentliches Entity-Decode der Datei zu einer
+  // Identitaets-Abbildung geworden: & < > " blieben unescaped. Spielernamen landen
+  // ueber decorateAwards() per innerHTML im DOM und stammen im Online-Modus vom
+  // Gegner, damit war das eine Stored-XSS-Luecke.
+  function esc(v){return String(v??'').replace(/[&<>'"]/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[ch]));}
 
   function randomPick(list,fallback){return Array.isArray(list)&&list.length?list[Math.floor(Math.random()*list.length)]:fallback;}
   window.WDV276={

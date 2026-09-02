@@ -5,9 +5,16 @@
    L1/L2: unangetastet
 */
 
-/* ===== Page lock while abilities screen is open (set by 35-v28-ui-phase12.js) ===== */
+/* ===== Page lock while abilities screen is open =====
+   Frueher setzte js/35-v28-ui-phase12.js dafuer .wd-abilities-open auf <html>.
+   Das Script ist nicht mehr in index.html eingebunden, die Regel lief also ins
+   Leere. Der Zustand steht ohnehin schon im DOM (#abilitiesScreen.hidden), also
+   wird er direkt per :has() abgefragt statt ueber eine gespiegelte Klasse.
+   .wd-abilities-open bleibt als Selektor stehen, falls das Script zurueckkommt. */
 html.wd-abilities-open,
-html.wd-abilities-open body{
+html.wd-abilities-open body,
+html:has(#abilitiesScreen:not(.hidden)),
+html:has(#abilitiesScreen:not(.hidden)) body{
   overflow:hidden!important;
   height:100dvh!important;
   max-height:100dvh!important;

@@ -2,7 +2,11 @@
   const gate = document.getElementById("wdBootGate");
   const bar = document.getElementById("wdBootBarFill");
   const label = document.getElementById("wdBootLabel");
-  const version = typeof GAME_VERSION === "string" ? GAME_VERSION : "28.3.35";
+  /* Cache-Buster fuer die Wuerfel-URLs. Faellt auf das <meta name="wd-build">
+     zurueck statt auf eine hartkodierte Version, die bei jedem Release veraltet. */
+  const version = typeof GAME_VERSION === "string"
+    ? GAME_VERSION
+    : (document.querySelector('meta[name="wd-build"]')?.content || "0");
 
   /* Block input only while the gate is up */
   const block = (event) => {
@@ -80,7 +84,7 @@
     "assets/ui/v28/png/backgrounds/campaign-mastery-light.png",
     "assets/ui/v28/png/backgrounds/navy-lobby-profile.png",
     "assets/ui/v28/png/backgrounds/boss-finale.png",
-    "assets/ui/v28/png/frames/player-card.png",
+    "assets/ui/v28/png/frames/player-card-combat.png",
     "assets/ui/v28/png/frames/boss-player-card.png",
     "assets/ui/v28/png/frames/active-player-glow.png",
     "assets/ui/v28/png/components/campaign-node-farm-frame.png",

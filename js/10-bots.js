@@ -19,7 +19,7 @@
     return Array.from({length:DICE_COUNT},()=>({value:null,locked:false,selected:false,rolling:false}));
   }
   function escapeHtml(s){
-    return s.replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m]));
+    return String(s??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m]));
   }
 
   function defaultSeatFor(i,n){
