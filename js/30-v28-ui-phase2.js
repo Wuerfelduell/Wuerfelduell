@@ -46,6 +46,16 @@
   }
 
   function stripLeadingDiceEmoji(element){
+    // js/36-emoji-sprite-pass.js bildet 🎲 auf gameplay/dice.svg ab. Ist das
+    // schon passiert, steckt der Wuerfel nicht mehr im Textknoten und stuende
+    // sonst doppelt neben dem Icon, das hier gleich gesetzt wird.
+    for(const node of [...element.childNodes]){
+      if(node.nodeType === Node.TEXT_NODE){
+        if(!node.nodeValue.trim()) continue;
+        break;
+      }
+      if(node.nodeType === Node.ELEMENT_NODE && node.classList?.contains("dd-emoji-sprite")) node.remove();
+    }
     const textNode = [...element.childNodes].find(node =>
       node.nodeType === Node.TEXT_NODE && node.nodeValue.trim()
     );

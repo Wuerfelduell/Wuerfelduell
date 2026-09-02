@@ -82,6 +82,16 @@
 
   function stripLeadingGlyph(element){
     if(!element) return;
+    // js/36-emoji-sprite-pass.js kann das fuehrende Emoji bereits in ein
+    // <img class="dd-emoji-sprite"> verwandelt haben. Dann steht es nicht mehr
+    // im Textknoten und bliebe neben dem hier gesetzten Icon stehen.
+    for(const node of [...element.childNodes]){
+      if(node.nodeType === Node.TEXT_NODE){
+        if(!node.nodeValue.trim()) continue;
+        break;
+      }
+      if(node.nodeType === Node.ELEMENT_NODE && node.classList?.contains("dd-emoji-sprite")) node.remove();
+    }
     const textNode = [...element.childNodes].find(node => node.nodeType === Node.TEXT_NODE && node.nodeValue.trim());
     if(textNode) textNode.nodeValue = textNode.nodeValue.replace(/^\s*[^\p{L}\p{N}]+\s*/u, "");
   }

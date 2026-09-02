@@ -56,6 +56,16 @@
 
   function stripLeadingEmojiFromTitle(title){
     if(!title || title.dataset.v28TitleCleaned) return;
+    // js/36-emoji-sprite-pass.js kann das fuehrende Emoji schon in ein
+    // <img class="dd-emoji-sprite"> verwandelt haben; dann findet die
+    // Textersetzung unten nichts mehr und das Sprite bliebe sichtbar stehen.
+    for(const node of [...title.childNodes]){
+      if(node.nodeType===Node.TEXT_NODE){
+        if(!node.nodeValue.trim()) continue;
+        break;
+      }
+      if(node.nodeType===Node.ELEMENT_NODE && node.classList?.contains("dd-emoji-sprite")) node.remove();
+    }
     const firstText=[...title.childNodes].find(n=>n.nodeType===Node.TEXT_NODE && n.nodeValue.trim());
     if(firstText){
       // Static source titles begin with an emoji. At this point the i18n layer has

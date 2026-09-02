@@ -165,14 +165,18 @@
       syncInlineLock(button, button.disabled, "campaign-mastery", "p8-lock-button");
     });
 
+    // Die Encounter-Detailzeilen und ihre Statuszeile bekommen von
+    // js/29-v28-ui-phase1.js bereits genau ein fuehrendes Icon, und dessen
+    // Zuordnung bildet "Pflicht-Loadout" wie auch "gesperrt" selbst auf
+    // locked.svg ab. Ein zweites Schloss von hier war damit ein Duplikat.
+    // syncInlineLock mit false statt gar keinem Aufruf, damit ein bereits
+    // gesetztes Schloss aus einem frueheren Durchlauf auch wieder verschwindet.
     around(root, ".campaign-hub .node-detail-state").forEach(state => {
-      const locked = containsLockText(state) || /\bGESPERRT\b/iu.test(state.textContent || "");
-      syncInlineLock(state, locked, "campaign-detail", "p8-lock-inline");
+      syncInlineLock(state, false, "campaign-detail", "p8-lock-inline");
     });
 
     around(root, ".campaign-hub .node-detail-row").forEach(row => {
-      const locked = containsLockText(row) || /Pflicht-Loadout/iu.test(row.textContent || "");
-      syncInlineLock(row, locked, "campaign-rule", "p8-lock-inline");
+      syncInlineLock(row, false, "campaign-rule", "p8-lock-inline");
     });
 
     around(root, "#duoUnlockSummary,#duoCampaignBanner,#trioCampaignBanner").forEach(host => {

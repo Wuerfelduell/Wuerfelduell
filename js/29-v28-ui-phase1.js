@@ -83,6 +83,23 @@
 
   function stripLeadingDecoration(element){
     if(!element) return;
+
+    // Seit js/36-emoji-sprite-pass.js kann das fuehrende Emoji schon in ein
+    // <img class="dd-emoji-sprite"> verwandelt worden sein. Dann steht es nicht
+    // mehr im Textknoten, die Ersetzung unten findet nichts, und das Sprite
+    // bleibt neben dem Icon dieser Phase stehen - man sah das Symbol doppelt.
+    // Welche der beiden Phasen zuerst laeuft, entscheidet der Observer, deshalb
+    // trat es nur manchmal auf. Alles vor dem ersten echten Textknoten wird
+    // daher durchgegangen und ein Sprite dort entfernt; andere Elemente
+    // (etwa das eigene Icon aus einem frueheren Durchlauf) bleiben unangetastet.
+    for(const node of [...element.childNodes]){
+      if(node.nodeType === Node.TEXT_NODE){
+        if(!node.nodeValue.trim()) continue;
+        break;
+      }
+      if(node.nodeType === Node.ELEMENT_NODE && node.classList?.contains("dd-emoji-sprite")) node.remove();
+    }
+
     const textNode = [...element.childNodes].find(node =>
       node.nodeType === Node.TEXT_NODE && node.nodeValue.trim()
     );
