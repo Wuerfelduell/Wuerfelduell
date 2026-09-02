@@ -12,9 +12,13 @@ raten.
 
 | | |
 |---|---|
-| Version | **28.9.1** |
-| Branch | `main`, gespiegelt auf `claude/repo-dateibearbeitung-9wfyhe` |
-| Letzte Schritte | V28.9.1 Hardening · faire Hunted-Zielwahl · Damage-Commit für einmalige Angriffsboni |
+| Version | **28.9.4** |
+| Branch | `main` |
+| Letzte Schritte | 28.9.1 Endgame/Boss-Rush gehärtet · 28.9.2 Campaign-UI und Welt-Themes · 28.9.3 gerahmte Utility-Screens wiederhergestellt · 28.9.4 Rahmen-Regressionen behoben |
+
+Alle Versionsmarker geprüft und einheitlich auf 28.9.4: `version.json`,
+`GAME_VERSION`, `CACHE_VERSION`, `wd-build`, `<title>`, Footer, alle 48
+`?v=` in `index.html`, die vier Bild-URLs in `36-v28-hierarchie.css`.
 
 ---
 
@@ -44,21 +48,38 @@ den „Mischbuild", vor dem `js/19-build-integrity.js` warnt.
 **Erledigt (ChatGPT-Cleanup):** der Bauweg. CSS-Quellen gesammelt, ein
 Bündel, Prüfskript, CI-Check.
 
-**Nicht erledigt:** die Schichten selbst. Es sind weiterhin 37 Dateien,
-nur an einem Ort — der Ordner heißt nicht umsonst `legacy`. `js/` ist
-unangetastet, und keine der Grenzen aus `ARCHITECTURE.md` (Engine,
-Persistenz, Firebase hinter einer Schnittstelle, Plattform-Adapter)
-existiert.
+**Nicht erledigt:** die Schichten selbst. `js/` ist unangetastet, und
+keine der Grenzen aus `ARCHITECTURE.md` (Engine, Persistenz, Firebase
+hinter einer Schnittstelle, Plattform-Adapter) existiert.
 
-**Gemessen und aufgeschrieben in `docs/CSS-Schichten.md`:** 12.065
-Zeilen, 13.408 Deklarationen, davon **2.745 (20 %) von einer späteren
-Schicht überschrieben**, 4.269 `!important`. Dort steht auch, welche
-Elemente am häufigsten neu gesetzt werden und in welcher Reihenfolge das
-Zusammenlegen sinnvoll ist. **Das ist der nächste Arbeitsschritt** — die
-Bestandsaufnahme liegt, das Zusammenlegen selbst hat noch nicht begonnen.
+**Der Stapel wächst weiter.** Zahlen aus `docs/CSS-Schichten.md`, neu
+gemessen auf 28.9.4:
+
+| | 28.7.3 | 28.9.4 |
+|---|---|---|
+| Dateien | 37 | **40** |
+| Zeilen | 12.065 | **12.803** |
+| `!important` | 4.269 | **4.680** |
+| von späteren Schichten überschrieben | 2.745 (20 %) | **2.998 (21 %)** |
+
+Dazugekommen sind `38-endgame-mechanics.css`,
+`39-v28-campaign-polish.css` und `40-v28-screen-restoration.css`. Die
+letzten beiden sind Korrekturschichten: 28.9.3 stellt gerahmte
+Utility-Screens wieder her, 28.9.4 behebt Rahmen-Regressionen. Das ist
+kein Vorwurf — bei 40 Schichten und 4.680 `!important` ist eine neue
+Schicht oft der einzige Weg, der in vertretbarer Zeit funktioniert.
+Genau deshalb wird jede Runde teurer.
+
+**Begonnen:** ein Element ist zusammengelegt, `#quitConfirmBtn` in
+V28.7.3 — Fassungen aus vier Dateien entfernt, alle berechneten
+Eigenschaften nachweislich unverändert. Verfahren und Ergebnis stehen in
+`docs/CSS-Schichten.md`, dort auch die nächsten Kandidaten. Größter
+Brocken ist `.special-big-die` (24× je Eigenschaft aus 4 Dateien), aber
+auch der riskanteste, weil das gewählte Würfeldesign daran hängt.
 
 Wichtig dabei: Prüfung über `getComputedStyle` auf **Wertgleichheit**,
-nicht über den Augenschein, und ein Element je Commit.
+nicht über den Augenschein, ein Element je Commit, und vorher prüfen, ob
+der Selektor allein steht oder Teil einer Sammelregel ist.
 
 ---
 

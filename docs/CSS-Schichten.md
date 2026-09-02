@@ -5,7 +5,9 @@ hat den **Bauweg** vereinheitlicht (`src/styles/legacy/` → `css/app.css`),
 die **Schichten selbst** aber unangetastet gelassen. Dieses Dokument misst,
 was da liegt, damit das Zusammenlegen nicht auf Vermutungen aufsetzt.
 
-Stand: V28.7.3, 37 Dateien.
+Stand: V28.9.4, 40 Dateien. Die Messwerte unten stammen von V28.7.3 (37
+Dateien); auf 28.9.4 sind es 12.803 Zeilen, 14.111 Deklarationen, davon
+2.998 (21 %) überschrieben, und 4.680 `!important`.
 
 ---
 
