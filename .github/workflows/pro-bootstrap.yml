@@ -1,0 +1,597 @@
+name: Bootstrap DiceDuel Pro
+
+on:
+  push:
+    branches:
+      - codex/v28.10.0-pro
+
+permissions:
+  contents: write
+
+concurrency:
+  group: diceduel-pro-bootstrap
+  cancel-in-progress: false
+
+jobs:
+  bootstrap:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Detect transferred implementation
+        id: detect
+        shell: bash
+        run: |
+          if grep -RIlE 'WDPro|DiceDuel Pro|Battle Vault|Kampfarchiv|proEntitlement|Boss.?Rush.?Chronik' js src 2>/dev/null | grep -q .; then
+            echo 'present=true' >> "$GITHUB_OUTPUT"
+          else
+            echo 'present=false' >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Build Pro fallback implementation
+        if: steps.detect.outputs.present != 'true'
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p js css scripts docs
+
+          cat > js/38-pro.js <<'JAVASCRIPT'
+          (function DiceDuelProModule(){
+            'use strict';
+
+            const VERSION = '28.10.0';
+            const PRODUCT_IDS = Object.freeze({
+              monthly: 'diceduel_pro_monthly',
+              yearly: 'diceduel_pro_yearly'
+            });
+            const STORAGE_KEY = 'diceduel_pro_features_v1';
+            const DATA_SCHEMA = 1;
+            const MAX_BATTLES = 500;
+            const MAX_RUNS = 150;
+            const TRUSTED_SOURCES = new Set([
+              'google-play', 'app-store', 'stripe-backend',
+              'firebase-functions', 'server', 'test-provider'
+            ]);
+            const DEV_HOSTS = new Set(['localhost', '127.0.0.1', '::1']);
+
+            const translations = {
+              de: {
+                pro: 'PRO', title: 'DiceDuel Pro', subtitle: 'Mehr Überblick. Mehr Style. Keine gekaufte Stärke.',
+                overview: 'Übersicht', vault: 'Kampfarchiv', loadouts: 'Loadouts', style: 'Stil',
+                locked: 'Pro ist nicht aktiv', active: 'Pro ist aktiv', preview: 'Lokale Pro-Vorschau',
+                purchase: 'Pro freischalten', yearly: 'Jahresabo', monthly: 'Monatsabo', restore: 'Käufe wiederherstellen',
+                providerMissing: 'Store-Verbindung noch nicht eingerichtet. Die Oberfläche ist bereit; der Kauf bleibt sicher gesperrt.',
+                providerError: 'Der Store konnte Pro gerade nicht bestätigen.', verified: 'Vom Store bestätigt',
+                benefitVault: 'Kampfarchiv & Trends', benefitVaultText: 'Bis zu 500 Partien, Winrate, Serien, Lieblingsfähigkeiten und exportierbare Daten.',
+                benefitRush: 'Boss-Rush-Chronik', benefitRushText: 'Runs, erreichte Stufen, Builds und persönliche Rekorde auf einen Blick.',
+                benefitLoadouts: '5 Loadout-Slots', benefitLoadoutsText: 'Würfel, Angriffseffekt, Theme, Aura und Lieblingsbuild als Preset speichern.',
+                benefitThemes: 'Exklusive Themes', benefitThemesText: 'Arcane Sapphire, Solar Ivory und Void Amethyst verändern die gesamte Präsentation.',
+                benefitAura: 'Profil-Auren', benefitAuraText: 'Premium-Auren werden im Profil und über den Online-Cosmetic-Payload sichtbar.',
+                fair: 'Fair Play bleibt unangetastet', fairText: 'Keine Welt, Fähigkeit, Würfelchance, HP oder Schadensstärke steckt hinter Pro.',
+                battles: 'Partien', wins: 'Siege', winrate: 'Winrate', streak: 'Beste Serie', avgRounds: 'Ø Runden',
+                noBattles: 'Noch keine Partien im Archiv. Abschlüsse werden automatisch erfasst.',
+                noRuns: 'Noch keine Boss-Rush-Runs erfasst.', bossRush: 'Boss-Rush-Chronik', stage: 'Stufe',
+                victory: 'Sieg', defeat: 'Niederlage', draw: 'Unentschieden', unknown: 'Unbekannt',
+                exportJson: 'JSON exportieren', exportCsv: 'CSV exportieren', clearHistory: 'Archiv leeren',
+                confirmClear: 'Das gesamte lokale Pro-Archiv wirklich löschen?',
+                slot: 'Slot', empty: 'Leer', save: 'Aktuellen Stil speichern', apply: 'Anwenden', remove: 'Leeren', rename: 'Name',
+                loadoutSaved: 'Loadout gespeichert.', loadoutApplied: 'Loadout angewendet.', lockedFeature: 'Mit DiceDuel Pro freischalten',
+                themes: 'Premium-Themes', auras: 'Profil-Auren', defaultTheme: 'Standard', noAura: 'Keine Aura',
+                arcane: 'Arcane Sapphire', solar: 'Solar Ivory', void: 'Void Amethyst',
+                crown: 'Crownfire', pulse: 'Arcane Pulse', eclipse: 'Eclipse Ring',
+                devEnable: 'Vorschau aktivieren', devDisable: 'Vorschau beenden',
+                close: 'Schließen', current: 'Aktiv', select: 'Auswählen',
+                privacy: 'Pro-Daten bleiben lokal. Der Abo-Status wird niemals aus Savegame, LocalStorage oder URL übernommen.',
+                bestStage: 'Beste Stufe', runs: 'Runs', completed: 'Abgeschlossen', date: 'Datum', mode: 'Modus', result: 'Ergebnis', rounds: 'Runden', duration: 'Dauer',
+                seconds: 's', minutes: 'min', favoriteAbility: 'Lieblingsfähigkeit', noData: 'Keine Daten',
+                previewNote: 'Die lokale Vorschau ist nicht persistent und nur in einer Entwicklungsumgebung verfügbar.'
+              },
+              en: {
+                pro: 'PRO', title: 'DiceDuel Pro', subtitle: 'More insight. More style. No purchased power.',
+                overview: 'Overview', vault: 'Battle Vault', loadouts: 'Loadouts', style: 'Style',
+                locked: 'Pro is not active', active: 'Pro is active', preview: 'Local Pro preview',
+                purchase: 'Unlock Pro', yearly: 'Yearly plan', monthly: 'Monthly plan', restore: 'Restore purchases',
+                providerMissing: 'The store connection is not configured yet. The UI is ready; purchasing remains securely locked.',
+                providerError: 'The store could not verify Pro right now.', verified: 'Store verified',
+                benefitVault: 'Battle Vault & trends', benefitVaultText: 'Up to 500 matches, win rate, streaks, favorite abilities, and exportable data.',
+                benefitRush: 'Boss Rush chronicle', benefitRushText: 'Runs, reached stages, builds, and personal records at a glance.',
+                benefitLoadouts: '5 loadout slots', benefitLoadoutsText: 'Save dice, attack effect, theme, aura, and favorite build as presets.',
+                benefitThemes: 'Exclusive themes', benefitThemesText: 'Arcane Sapphire, Solar Ivory, and Void Amethyst reshape the presentation.',
+                benefitAura: 'Profile auras', benefitAuraText: 'Premium auras appear in profiles and the online cosmetic payload.',
+                fair: 'Fair play stays untouched', fairText: 'No world, ability, dice chance, HP, or damage power is locked behind Pro.',
+                battles: 'Matches', wins: 'Wins', winrate: 'Win rate', streak: 'Best streak', avgRounds: 'Avg. rounds',
+                noBattles: 'No matches in the vault yet. Completed games are captured automatically.',
+                noRuns: 'No Boss Rush runs captured yet.', bossRush: 'Boss Rush chronicle', stage: 'Stage',
+                victory: 'Victory', defeat: 'Defeat', draw: 'Draw', unknown: 'Unknown',
+                exportJson: 'Export JSON', exportCsv: 'Export CSV', clearHistory: 'Clear vault',
+                confirmClear: 'Delete the entire local Pro vault?',
+                slot: 'Slot', empty: 'Empty', save: 'Save current style', apply: 'Apply', remove: 'Clear', rename: 'Name',
+                loadoutSaved: 'Loadout saved.', loadoutApplied: 'Loadout applied.', lockedFeature: 'Unlock with DiceDuel Pro',
+                themes: 'Premium themes', auras: 'Profile auras', defaultTheme: 'Default', noAura: 'No aura',
+                arcane: 'Arcane Sapphire', solar: 'Solar Ivory', void: 'Void Amethyst',
+                crown: 'Crownfire', pulse: 'Arcane Pulse', eclipse: 'Eclipse Ring',
+                devEnable: 'Enable preview', devDisable: 'End preview',
+                close: 'Close', current: 'Active', select: 'Select',
+                privacy: 'Pro data stays local. Subscription state is never accepted from saves, LocalStorage, or URL parameters.',
+                bestStage: 'Best stage', runs: 'Runs', completed: 'Completed', date: 'Date', mode: 'Mode', result: 'Result', rounds: 'Rounds', duration: 'Duration',
+                seconds: 's', minutes: 'min', favoriteAbility: 'Favorite ability', noData: 'No data',
+                previewNote: 'Local preview is non-persistent and only available in a development environment.'
+              }
+            };
+
+            const runtime = {
+              entitlement: Object.freeze({ active:false, verified:false, status:'unknown', source:null, expiresAt:null }),
+              preview: false,
+              open: false,
+              tab: 'overview',
+              battleStartedAt: Date.now(),
+              captureTimer: 0,
+              lastCaptureSignature: '',
+              lastCaptureAt: 0,
+              observer: null,
+              providerError: ''
+            };
+
+            function language(){
+              const raw = String(window.WD_LANGUAGE || window.currentLanguage || document.documentElement.lang || safeGet('language') || 'de').toLowerCase();
+              return raw.startsWith('en') ? 'en' : 'de';
+            }
+            function t(key){ return translations[language()][key] || translations.de[key] || key; }
+            function safeGet(key){ try { return localStorage.getItem(key); } catch(_) { return null; } }
+            function safeSet(key,value){ try { localStorage.setItem(key,value); return true; } catch(_) { return false; } }
+            function clone(value){ try { return JSON.parse(JSON.stringify(value)); } catch(_) { return null; } }
+            function uid(prefix){ return `${prefix}_${Date.now().toString(36)}_${Math.random().toString(36).slice(2,9)}`; }
+            function esc(value){ return String(value == null ? '' : value).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+            function number(value, fallback=0){ const n=Number(value); return Number.isFinite(n) ? n : fallback; }
+            function isDev(){ return location.protocol === 'file:' || DEV_HOSTS.has(location.hostname); }
+
+            function defaultData(){
+              return {
+                schema: DATA_SCHEMA,
+                battles: [], bossRushRuns: [],
+                loadouts: Array.from({length:5}, (_,i)=>({ id:`slot_${i+1}`, name:`${t('slot')} ${i+1}`, snapshot:null, updatedAt:0 })),
+                preferences: { theme:'default', aura:'none' }
+              };
+            }
+            function loadData(){
+              const fallback = defaultData();
+              try {
+                const parsed = JSON.parse(safeGet(STORAGE_KEY) || 'null');
+                if(!parsed || typeof parsed !== 'object') return fallback;
+                const slots = Array.isArray(parsed.loadouts) ? parsed.loadouts.slice(0,5) : [];
+                while(slots.length < 5) slots.push(fallback.loadouts[slots.length]);
+                return {
+                  schema: DATA_SCHEMA,
+                  battles: Array.isArray(parsed.battles) ? parsed.battles.slice(0,MAX_BATTLES) : [],
+                  bossRushRuns: Array.isArray(parsed.bossRushRuns) ? parsed.bossRushRuns.slice(0,MAX_RUNS) : [],
+                  loadouts: slots.map((s,i)=>({ id:`slot_${i+1}`, name:String(s?.name || `${t('slot')} ${i+1}`).slice(0,32), snapshot:s?.snapshot || null, updatedAt:number(s?.updatedAt) })),
+                  preferences: { theme:String(parsed.preferences?.theme || 'default'), aura:String(parsed.preferences?.aura || 'none') }
+                };
+              } catch(_) { return fallback; }
+            }
+            let data = loadData();
+            function persist(){ safeSet(STORAGE_KEY, JSON.stringify(data)); }
+
+            function provider(){
+              const p = window.DiceDuelBilling || window.WD_BILLING_PROVIDER || null;
+              if(p && typeof p === 'object') return p;
+              return null;
+            }
+            function normalizeEntitlement(value){
+              if(!value || typeof value !== 'object') return null;
+              const source = String(value.source || '').toLowerCase();
+              const expiresAt = value.expiresAt ? new Date(value.expiresAt).getTime() : null;
+              const active = value.active === true && value.verified === true && TRUSTED_SOURCES.has(source) && (!expiresAt || expiresAt > Date.now());
+              return Object.freeze({ active, verified:value.verified === true, status:active ? 'active' : 'inactive', source, expiresAt:expiresAt || null, productId:String(value.productId || '') });
+            }
+            async function refreshEntitlement(){
+              runtime.providerError = '';
+              const p = provider();
+              if(!p || typeof p.getEntitlement !== 'function'){
+                runtime.entitlement = Object.freeze({ active:false, verified:false, status:'provider-missing', source:null, expiresAt:null });
+                applyPremiumPresentation(); render(); return runtime.entitlement;
+              }
+              try {
+                const result = normalizeEntitlement(await p.getEntitlement({ productIds:Object.values(PRODUCT_IDS), feature:'diceduel-pro' }));
+                runtime.entitlement = result || Object.freeze({ active:false, verified:false, status:'invalid', source:null, expiresAt:null });
+              } catch(error){
+                runtime.providerError = String(error?.message || error || 'provider error');
+                runtime.entitlement = Object.freeze({ active:false, verified:false, status:'error', source:null, expiresAt:null });
+              }
+              applyPremiumPresentation(); render(); emit('diceduel:pro-entitlement', publicEntitlement());
+              return runtime.entitlement;
+            }
+            function hasAccess(){ return runtime.entitlement.active === true || (runtime.preview === true && isDev()); }
+            function publicEntitlement(){ return { active:hasAccess(), storeVerified:runtime.entitlement.active === true, preview:runtime.preview === true && isDev(), status:runtime.entitlement.status, source:runtime.entitlement.source, expiresAt:runtime.entitlement.expiresAt }; }
+            async function purchase(plan){
+              const p=provider();
+              if(!p || typeof p.purchase !== 'function'){ runtime.providerError=t('providerMissing'); render(); return false; }
+              try { await p.purchase({ productId:PRODUCT_IDS[plan === 'yearly' ? 'yearly' : 'monthly'] }); await refreshEntitlement(); return runtime.entitlement.active; }
+              catch(error){ runtime.providerError=String(error?.message || t('providerError')); render(); return false; }
+            }
+            async function restore(){
+              const p=provider();
+              if(!p || typeof p.restore !== 'function'){ runtime.providerError=t('providerMissing'); render(); return false; }
+              try { await p.restore({ productIds:Object.values(PRODUCT_IDS) }); await refreshEntitlement(); return runtime.entitlement.active; }
+              catch(error){ runtime.providerError=String(error?.message || t('providerError')); render(); return false; }
+            }
+
+            function emit(name,detail){ try { window.dispatchEvent(new CustomEvent(name,{detail})); } catch(_){} }
+            function currentMode(){
+              const state = window.state || window.gameState || window.GAME_STATE || {};
+              const raw = state.mode || state.gameMode || state.campaignMode || document.body?.dataset?.mode || '';
+              const text = String(raw || '').toLowerCase();
+              if(text.includes('boss') && text.includes('rush')) return 'boss-rush';
+              if(text.includes('trio')) return 'trio';
+              if(text.includes('duo')) return 'duo';
+              if(text.includes('campaign') || text.includes('solo')) return 'solo';
+              if(text.includes('online')) return 'online';
+              return text || 'local';
+            }
+            function currentPlayers(){
+              const state = window.state || window.gameState || window.GAME_STATE || {};
+              const candidates = [state.players,state.heroes,state.party,window.players,window.heroes];
+              return candidates.find(Array.isArray) || [];
+            }
+            function currentAbilities(){
+              const found=[];
+              for(const p of currentPlayers()){
+                const arr = p?.abilities || p?.abilityIds || p?.skills || [];
+                for(const a of arr){
+                  const name = typeof a === 'string' ? a : (a?.name || a?.id || '');
+                  if(name && !found.includes(String(name))) found.push(String(name));
+                }
+              }
+              return found.slice(0,12);
+            }
+            function inferStats(){
+              const state = window.state || window.gameState || window.GAME_STATE || {};
+              const stats = state.stats || window.gameStats || window.matchStats || {};
+              return {
+                rounds:number(stats.rounds ?? state.round ?? state.roundNumber),
+                damage:number(stats.damageDealt ?? stats.totalDamage ?? state.damageDealt),
+                healing:number(stats.healingDone ?? stats.totalHealing ?? state.healingDone),
+                finalHp:currentPlayers().map(p=>number(p?.hp ?? p?.health)).filter(v=>v>0),
+                abilities:currentAbilities()
+              };
+            }
+            function normalizeBattle(input){
+              const src = input && typeof input === 'object' ? input : {};
+              const stats = inferStats();
+              const resultRaw=String(src.result || src.outcome || 'unknown').toLowerCase();
+              const result = /victory|win|sieg/.test(resultRaw) ? 'victory' : /defeat|loss|niederlage|verloren/.test(resultRaw) ? 'defeat' : /draw|unentschieden/.test(resultRaw) ? 'draw' : 'unknown';
+              return {
+                id:String(src.id || uid('battle')),
+                at:number(src.at,Date.now()),
+                mode:String(src.mode || currentMode()), result,
+                durationMs:Math.max(0,number(src.durationMs,Date.now()-runtime.battleStartedAt)),
+                rounds:number(src.rounds,stats.rounds), damage:number(src.damage,stats.damage), healing:number(src.healing,stats.healing),
+                finalHp:Array.isArray(src.finalHp) ? src.finalHp.map(Number) : stats.finalHp,
+                abilities:Array.isArray(src.abilities) ? src.abilities.map(String).slice(0,12) : stats.abilities,
+                world:String(src.world || src.worldId || ''), encounter:String(src.encounter || src.encounterId || ''),
+                bossRushStage:number(src.bossRushStage ?? src.stage)
+              };
+            }
+            function recordBattle(input){
+              const item=normalizeBattle(input);
+              const signature=[item.mode,item.result,item.world,item.encounter,item.bossRushStage,item.rounds,Math.floor(item.at/15000)].join('|');
+              if(data.battles.some(b=>b.signature===signature)) return null;
+              item.signature=signature;
+              data.battles.unshift(item); data.battles=data.battles.slice(0,MAX_BATTLES);
+              persist(); render(); emit('diceduel:pro-battle-recorded',clone(item));
+              if(item.mode==='boss-rush' && item.bossRushStage>0) recordBossRush({ at:item.at, stage:item.bossRushStage, completed:item.result==='victory' && item.bossRushStage>=10, result:item.result, durationMs:item.durationMs, abilities:item.abilities });
+              return clone(item);
+            }
+            function recordBossRush(input){
+              const src=input && typeof input==='object' ? input : {};
+              const item={ id:String(src.id||uid('rush')), at:number(src.at,Date.now()), stage:Math.max(0,number(src.stage)), completed:src.completed===true, result:String(src.result||'unknown'), durationMs:Math.max(0,number(src.durationMs)), abilities:Array.isArray(src.abilities)?src.abilities.map(String).slice(0,12):currentAbilities() };
+              const sig=[item.stage,item.completed,item.result,Math.floor(item.at/15000)].join('|');
+              if(data.bossRushRuns.some(r=>r.signature===sig)) return null;
+              item.signature=sig; data.bossRushRuns.unshift(item); data.bossRushRuns=data.bossRushRuns.slice(0,MAX_RUNS); persist(); render(); emit('diceduel:pro-bossrush-recorded',clone(item)); return clone(item);
+            }
+            function analytics(){
+              const battles=data.battles; const wins=battles.filter(b=>b.result==='victory').length;
+              let streak=0,best=0;
+              for(const b of [...battles].reverse()){ if(b.result==='victory'){streak++;best=Math.max(best,streak);} else if(b.result==='defeat') streak=0; }
+              const abilityCounts={}; battles.forEach(b=>(b.abilities||[]).forEach(a=>abilityCounts[a]=(abilityCounts[a]||0)+1));
+              const favorite=Object.entries(abilityCounts).sort((a,b)=>b[1]-a[1])[0]?.[0] || '';
+              return { battles:battles.length,wins,winrate:battles.length?Math.round(wins/battles.length*100):0,bestStreak:best,avgRounds:battles.length?(battles.reduce((s,b)=>s+number(b.rounds),0)/battles.length).toFixed(1):'0.0',favoriteAbility:favorite,bestBossRushStage:data.bossRushRuns.reduce((m,r)=>Math.max(m,number(r.stage)),0),bossRushRuns:data.bossRushRuns.length,bossRushCompleted:data.bossRushRuns.filter(r=>r.completed).length };
+            }
+
+            const SNAPSHOT_KEYS = ['selectedDiceDesign','selectedDiceSkin','diceDesign','diceSkin','selectedAttackEffect','attackEffect','attackFx','selectedAbilityLoadout','favoriteAbilities'];
+            function readStateValue(keys){
+              const sources=[window.state,window.gameState,window.profile,window.currentProfile].filter(Boolean);
+              for(const source of sources) for(const key of keys) if(source && source[key]!=null) return clone(source[key]);
+              for(const key of keys){ const v=safeGet(key); if(v!=null){ try{return JSON.parse(v);}catch(_){return v;} } }
+              return null;
+            }
+            function collectLoadout(){
+              return { version:1, savedAt:Date.now(), dice:readStateValue(['selectedDiceDesign','selectedDiceSkin','diceDesign','diceSkin']), attackEffect:readStateValue(['selectedAttackEffect','attackEffect','attackFx']), abilityPreference:readStateValue(['selectedAbilityLoadout','favoriteAbilities']), theme:data.preferences.theme, aura:data.preferences.aura };
+            }
+            function callFirst(names,value){
+              for(const name of names){ if(typeof window[name]==='function'){ try{ window[name](value); return true; }catch(_){} } }
+              return false;
+            }
+            function applySnapshot(snapshot){
+              if(!snapshot || !hasAccess()) return false;
+              if(snapshot.dice!=null) callFirst(['equipDiceDesign','selectDiceDesign','setDiceDesign','setDiceSkin'],clone(snapshot.dice));
+              if(snapshot.attackEffect!=null) callFirst(['equipAttackEffect','selectAttackEffect','setAttackEffect'],clone(snapshot.attackEffect));
+              if(snapshot.abilityPreference!=null) emit('diceduel:pro-ability-preference',{ value:clone(snapshot.abilityPreference) });
+              if(['default','arcane','solar','void'].includes(snapshot.theme)) data.preferences.theme=snapshot.theme;
+              if(['none','crown','pulse','eclipse'].includes(snapshot.aura)) data.preferences.aura=snapshot.aura;
+              persist(); applyPremiumPresentation(); emit('diceduel:pro-loadout-applied',clone(snapshot)); return true;
+            }
+            function saveLoadout(index,name){
+              if(!hasAccess() || index<0 || index>4) return false;
+              const slot=data.loadouts[index]; slot.name=String(name||slot.name||`${t('slot')} ${index+1}`).trim().slice(0,32) || `${t('slot')} ${index+1}`; slot.snapshot=collectLoadout(); slot.updatedAt=Date.now(); persist(); render(); toast(t('loadoutSaved')); return true;
+            }
+            function clearLoadout(index){ if(!hasAccess()||index<0||index>4)return false; data.loadouts[index].snapshot=null;data.loadouts[index].updatedAt=0;persist();render();return true; }
+            function applyLoadout(index){ if(!hasAccess()||!data.loadouts[index]?.snapshot)return false; const ok=applySnapshot(data.loadouts[index].snapshot);render();if(ok)toast(t('loadoutApplied'));return ok; }
+
+            function setTheme(value){ if(!hasAccess())return false; if(!['default','arcane','solar','void'].includes(value))return false; data.preferences.theme=value;persist();applyPremiumPresentation();render();return true; }
+            function setAura(value){ if(!hasAccess())return false; if(!['none','crown','pulse','eclipse'].includes(value))return false; data.preferences.aura=value;persist();applyPremiumPresentation();render();return true; }
+            function applyPremiumPresentation(){
+              const root=document.documentElement;
+              const access=hasAccess();
+              root.dataset.ddPro=access?'active':'locked';
+              root.dataset.ddProTheme=access?data.preferences.theme:'default';
+              root.dataset.ddProAura=access?data.preferences.aura:'none';
+            }
+            function publicCosmetics(){ return hasAccess()?{ pro:true, aura:data.preferences.aura, theme:data.preferences.theme, badge:'diceduel-pro' }:{ pro:false }; }
+            function decorateOnlinePayload(payload){ const next={...(payload||{})}; if(hasAccess()) next.proCosmetics=publicCosmetics(); else delete next.proCosmetics; return next; }
+
+            function formatDuration(ms){ const sec=Math.max(0,Math.round(number(ms)/1000)); return sec>=60?`${Math.floor(sec/60)} ${t('minutes')} ${sec%60} ${t('seconds')}`:`${sec} ${t('seconds')}`; }
+            function dateText(at){ try{return new Intl.DateTimeFormat(language()==='de'?'de-AT':'en',{dateStyle:'medium',timeStyle:'short'}).format(new Date(at));}catch(_){return new Date(at).toLocaleString();} }
+            function resultText(result){ return result==='victory'?t('victory'):result==='defeat'?t('defeat'):result==='draw'?t('draw'):t('unknown'); }
+            function accessPanel(inner){ return hasAccess()?inner:`<div class="dd-pro-lock"><span class="dd-pro-lock-crown">♛</span><strong>${esc(t('lockedFeature'))}</strong></div>${inner.replaceAll('data-pro-action','data-pro-locked')}`; }
+            function statusMarkup(){
+              const e=publicEntitlement();
+              const label=e.storeVerified?t('active'):e.preview?t('preview'):t('locked');
+              const cls=e.active?'is-active':'is-locked';
+              return `<div class="dd-pro-status ${cls}"><span></span><strong>${esc(label)}</strong>${e.storeVerified?`<small>${esc(t('verified'))}</small>`:''}</div>`;
+            }
+            function benefitsMarkup(){
+              const items=[['▦','benefitVault','benefitVaultText'],['♜','benefitRush','benefitRushText'],['▤','benefitLoadouts','benefitLoadoutsText'],['✦','benefitThemes','benefitThemesText'],['◉','benefitAura','benefitAuraText']];
+              return `<div class="dd-pro-benefits">${items.map(([icon,a,b])=>`<article><i>${icon}</i><div><h3>${esc(t(a))}</h3><p>${esc(t(b))}</p></div></article>`).join('')}</div>`;
+            }
+            function overviewMarkup(){
+              const e=publicEntitlement();
+              return `<section class="dd-pro-section"><div class="dd-pro-hero"><div><span class="dd-pro-kicker">DICEDUEL</span><h2>${esc(t('title'))}</h2><p>${esc(t('subtitle'))}</p></div>${statusMarkup()}</div>${benefitsMarkup()}<article class="dd-pro-fair"><strong>✓ ${esc(t('fair'))}</strong><p>${esc(t('fairText'))}</p></article>${!e.storeVerified?`<div class="dd-pro-purchase"><button data-pro-action="purchase-monthly">${esc(t('monthly'))}</button><button class="primary" data-pro-action="purchase-yearly">${esc(t('yearly'))}</button><button class="ghost" data-pro-action="restore">${esc(t('restore'))}</button>${runtime.entitlement.status==='provider-missing'?`<p>${esc(t('providerMissing'))}</p>`:''}${runtime.providerError?`<p class="error">${esc(runtime.providerError)}</p>`:''}</div>`:''}${isDev()?`<div class="dd-pro-dev"><button data-pro-action="toggle-preview">${esc(runtime.preview?t('devDisable'):t('devEnable'))}</button><small>${esc(t('previewNote'))}</small></div>`:''}<p class="dd-pro-privacy">${esc(t('privacy'))}</p></section>`;
+            }
+            function vaultMarkup(){
+              const a=analytics();
+              const battles=data.battles.slice(0,50);
+              const runs=data.bossRushRuns.slice(0,30);
+              const stats=`<div class="dd-pro-stats"><article><strong>${a.battles}</strong><span>${esc(t('battles'))}</span></article><article><strong>${a.wins}</strong><span>${esc(t('wins'))}</span></article><article><strong>${a.winrate}%</strong><span>${esc(t('winrate'))}</span></article><article><strong>${a.bestStreak}</strong><span>${esc(t('streak'))}</span></article><article><strong>${a.avgRounds}</strong><span>${esc(t('avgRounds'))}</span></article></div>`;
+              const table=battles.length?`<div class="dd-pro-table-wrap"><table><thead><tr><th>${esc(t('date'))}</th><th>${esc(t('mode'))}</th><th>${esc(t('result'))}</th><th>${esc(t('rounds'))}</th><th>${esc(t('duration'))}</th></tr></thead><tbody>${battles.map(b=>`<tr><td>${esc(dateText(b.at))}</td><td>${esc(b.mode)}</td><td><span class="result-${esc(b.result)}">${esc(resultText(b.result))}</span></td><td>${number(b.rounds)||'–'}</td><td>${esc(formatDuration(b.durationMs))}</td></tr>`).join('')}</tbody></table></div>`:`<p class="dd-pro-empty">${esc(t('noBattles'))}</p>`;
+              const rush=runs.length?`<div class="dd-pro-runs">${runs.map(r=>`<article><strong>${esc(t('stage'))} ${number(r.stage)}</strong><span>${esc(dateText(r.at))}</span><small>${r.completed?esc(t('completed')):esc(resultText(r.result))} · ${esc(formatDuration(r.durationMs))}</small></article>`).join('')}</div>`:`<p class="dd-pro-empty">${esc(t('noRuns'))}</p>`;
+              return accessPanel(`<section class="dd-pro-section"><h2>${esc(t('vault'))}</h2>${stats}<div class="dd-pro-insight"><span>${esc(t('favoriteAbility'))}</span><strong>${esc(a.favoriteAbility||t('noData'))}</strong></div>${table}<div class="dd-pro-actions"><button data-pro-action="export-json">${esc(t('exportJson'))}</button><button data-pro-action="export-csv">${esc(t('exportCsv'))}</button><button class="danger" data-pro-action="clear-history">${esc(t('clearHistory'))}</button></div><h2>${esc(t('bossRush'))}</h2><div class="dd-pro-stats compact"><article><strong>${a.bestBossRushStage}</strong><span>${esc(t('bestStage'))}</span></article><article><strong>${a.bossRushRuns}</strong><span>${esc(t('runs'))}</span></article><article><strong>${a.bossRushCompleted}</strong><span>${esc(t('completed'))}</span></article></div>${rush}</section>`);
+            }
+            function loadoutsMarkup(){
+              return accessPanel(`<section class="dd-pro-section"><h2>${esc(t('loadouts'))}</h2><div class="dd-pro-loadouts">${data.loadouts.map((slot,i)=>`<article class="${slot.snapshot?'filled':'empty'}"><div><span>${esc(t('slot'))} ${i+1}</span><input maxlength="32" value="${esc(slot.name)}" aria-label="${esc(t('rename'))}" data-loadout-name="${i}"></div><strong>${slot.snapshot?esc([slot.snapshot.theme,slot.snapshot.aura].filter(Boolean).join(' · ')):esc(t('empty'))}</strong><div><button data-pro-action="save-loadout" data-index="${i}">${esc(t('save'))}</button><button class="primary" data-pro-action="apply-loadout" data-index="${i}" ${slot.snapshot?'':'disabled'}>${esc(t('apply'))}</button><button class="ghost" data-pro-action="clear-loadout" data-index="${i}" ${slot.snapshot?'':'disabled'}>${esc(t('remove'))}</button></div></article>`).join('')}</div></section>`);
+            }
+            function choiceCard(type,value,label,current){ return `<button class="dd-pro-choice ${current===value?'selected':''}" data-pro-action="set-${type}" data-value="${esc(value)}"><span class="preview ${type}-${esc(value)}"></span><strong>${esc(label)}</strong><small>${current===value?esc(t('current')):esc(t('select'))}</small></button>`; }
+            function styleMarkup(){
+              const p=data.preferences;
+              return accessPanel(`<section class="dd-pro-section"><h2>${esc(t('themes'))}</h2><div class="dd-pro-choices">${choiceCard('theme','default',t('defaultTheme'),p.theme)}${choiceCard('theme','arcane',t('arcane'),p.theme)}${choiceCard('theme','solar',t('solar'),p.theme)}${choiceCard('theme','void',t('void'),p.theme)}</div><h2>${esc(t('auras'))}</h2><div class="dd-pro-choices">${choiceCard('aura','none',t('noAura'),p.aura)}${choiceCard('aura','crown',t('crown'),p.aura)}${choiceCard('aura','pulse',t('pulse'),p.aura)}${choiceCard('aura','eclipse',t('eclipse'),p.aura)}</div></section>`);
+            }
+            function shell(){
+              return `<div class="dd-pro-backdrop" data-pro-action="close"></div><div class="dd-pro-dialog" role="dialog" aria-modal="true" aria-labelledby="dd-pro-title"><header><div><span class="dd-pro-crown">♛</span><div><strong id="dd-pro-title">${esc(t('title'))}</strong><small>${esc(t('subtitle'))}</small></div></div><button data-pro-action="close" aria-label="${esc(t('close'))}">×</button></header><nav>${['overview','vault','loadouts','style'].map(k=>`<button data-pro-action="tab" data-tab="${k}" class="${runtime.tab===k?'active':''}">${esc(t(k))}</button>`).join('')}</nav><main>${runtime.tab==='vault'?vaultMarkup():runtime.tab==='loadouts'?loadoutsMarkup():runtime.tab==='style'?styleMarkup():overviewMarkup()}</main></div>`;
+            }
+            function ensureRoot(){
+              let root=document.getElementById('dd-pro-root');
+              if(!root){ root=document.createElement('div'); root.id='dd-pro-root'; root.hidden=true; document.body.appendChild(root); }
+              return root;
+            }
+            function ensureEntry(){
+              if(document.getElementById('dd-pro-entry')) return;
+              const button=document.createElement('button'); button.id='dd-pro-entry'; button.type='button'; button.innerHTML='<span>♛</span><strong>PRO</strong>'; button.addEventListener('click',()=>open()); document.body.appendChild(button);
+            }
+            function open(tab){ runtime.open=true; if(tab)runtime.tab=tab; const root=ensureRoot();root.hidden=false;document.body.classList.add('dd-pro-modal-open');render(); }
+            function close(){ runtime.open=false;const root=ensureRoot();root.hidden=true;document.body.classList.remove('dd-pro-modal-open'); }
+            function render(){
+              if(!document.body)return; ensureEntry();applyPremiumPresentation();const root=ensureRoot();if(!runtime.open)return;root.innerHTML=shell();
+            }
+            function toast(message){ let el=document.getElementById('dd-pro-toast');if(!el){el=document.createElement('div');el.id='dd-pro-toast';document.body.appendChild(el);}el.textContent=message;el.classList.add('show');clearTimeout(el._timer);el._timer=setTimeout(()=>el.classList.remove('show'),2200); }
+            function download(name,mime,text){ const blob=new Blob([text],{type:mime});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1000); }
+            function exportJson(){ if(!hasAccess())return;download(`diceduel-pro-vault-${Date.now()}.json`,'application/json',JSON.stringify({version:VERSION,exportedAt:new Date().toISOString(),battles:data.battles,bossRushRuns:data.bossRushRuns},null,2)); }
+            function exportCsv(){ if(!hasAccess())return;const rows=[['date','mode','result','rounds','durationMs','damage','healing','world','encounter','abilities'],...data.battles.map(b=>[new Date(b.at).toISOString(),b.mode,b.result,b.rounds,b.durationMs,b.damage,b.healing,b.world,b.encounter,(b.abilities||[]).join('|')])];const csv=rows.map(r=>r.map(v=>`"${String(v??'').replaceAll('"','""')}"`).join(',')).join('\n');download(`diceduel-pro-vault-${Date.now()}.csv`,'text/csv;charset=utf-8',csv); }
+
+            async function handleAction(target){
+              const action=target.closest('[data-pro-action]')?.dataset.proAction;if(!action)return;
+              const el=target.closest('[data-pro-action]');
+              if(action==='close'){close();return;} if(action==='tab'){runtime.tab=el.dataset.tab;render();return;}
+              if(action==='purchase-monthly'){await purchase('monthly');return;} if(action==='purchase-yearly'){await purchase('yearly');return;} if(action==='restore'){await restore();return;}
+              if(action==='toggle-preview'&&isDev()){runtime.preview=!runtime.preview;applyPremiumPresentation();render();return;}
+              if(!hasAccess()){runtime.tab='overview';render();return;}
+              const index=number(el.dataset.index,-1);
+              if(action==='export-json')exportJson(); else if(action==='export-csv')exportCsv();
+              else if(action==='clear-history'&&confirm(t('confirmClear'))){data.battles=[];data.bossRushRuns=[];persist();render();}
+              else if(action==='save-loadout'){const input=document.querySelector(`[data-loadout-name="${index}"]`);saveLoadout(index,input?.value);}
+              else if(action==='apply-loadout')applyLoadout(index); else if(action==='clear-loadout')clearLoadout(index);
+              else if(action==='set-theme')setTheme(el.dataset.value); else if(action==='set-aura')setAura(el.dataset.value);
+            }
+
+            function visible(node){ if(!(node instanceof Element))return false;const style=getComputedStyle(node);return style.display!=='none'&&style.visibility!=='hidden'&&node.getClientRects().length>0; }
+            function captureFromNode(node){
+              if(!(node instanceof Element)||!visible(node))return;
+              const text=(node.innerText||node.textContent||'').replace(/\s+/g,' ').trim().slice(0,1200);
+              if(text.length<3)return;
+              const lower=text.toLowerCase();
+              const victory=/\b(victory|sieg|gewonnen|erfolg)\b/.test(lower);
+              const defeat=/\b(defeat|niederlage|verloren|game over)\b/.test(lower);
+              const rush=/boss.?rush|run abgeschlossen|run complete/.test(lower);
+              if(!victory&&!defeat&&!rush)return;
+              const now=Date.now();const signature=[victory?'v':'d',rush?'r':'b',currentMode(),text.slice(0,100)].join('|');
+              if(signature===runtime.lastCaptureSignature&&now-runtime.lastCaptureAt<30000)return;
+              runtime.lastCaptureSignature=signature;runtime.lastCaptureAt=now;
+              const stageMatch=text.match(/(?:stufe|stage)\s*(\d{1,2})/i);
+              recordBattle({result:victory?'victory':defeat?'defeat':'unknown',mode:rush?'boss-rush':currentMode(),bossRushStage:stageMatch?number(stageMatch[1]):0});
+            }
+            function scheduleCapture(node){ clearTimeout(runtime.captureTimer);runtime.captureTimer=setTimeout(()=>captureFromNode(node),120); }
+            function installCapture(){
+              ['diceduel:battle-complete','dd:battle-complete','campaign:completed','diceduel:campaign-complete'].forEach(name=>window.addEventListener(name,e=>recordBattle(e.detail||{})));
+              ['diceduel:bossrush-complete','bossrush:completed','dd:bossrush-complete'].forEach(name=>window.addEventListener(name,e=>recordBossRush(e.detail||{})));
+              ['diceduel:battle-start','dd:battle-start'].forEach(name=>window.addEventListener(name,()=>{runtime.battleStartedAt=Date.now();}));
+              if(!('MutationObserver'in window)||runtime.observer)return;
+              runtime.observer=new MutationObserver(records=>{
+                for(const record of records) for(const node of record.addedNodes){ if(!(node instanceof Element))continue; const likely=node.matches?.('[data-result],.victory,.defeat,.game-over,.result-screen,.battle-result,[id*="victory" i],[id*="defeat" i],[id*="result" i]')||node.querySelector?.('[data-result],.victory,.defeat,.game-over,.result-screen,.battle-result,[id*="victory" i],[id*="defeat" i],[id*="result" i]'); if(likely){scheduleCapture(likely===true?node:likely);return;} }
+              });
+              runtime.observer.observe(document.body,{childList:true,subtree:true});
+            }
+
+            document.addEventListener('click',event=>handleAction(event.target));
+            document.addEventListener('keydown',event=>{if(event.key==='Escape'&&runtime.open)close();});
+            window.addEventListener('languagechange',render);
+            window.addEventListener('diceduel:language-changed',render);
+            window.addEventListener('diceduel:online-payload',event=>{ if(event.detail&&typeof event.detail==='object')Object.assign(event.detail,decorateOnlinePayload(event.detail)); });
+
+            const api=Object.freeze({
+              version:VERSION, products:PRODUCT_IDS,
+              hasAccess, getEntitlement:publicEntitlement, refreshEntitlement, purchase, restore,
+              open, close, recordBattle, recordBossRush, getAnalytics:()=>clone(analytics()),
+              getBattleHistory:()=>clone(data.battles), getBossRushHistory:()=>clone(data.bossRushRuns),
+              saveLoadout, applyLoadout, clearLoadout, getLoadouts:()=>clone(data.loadouts),
+              setTheme,setAura,getPublicCosmetics:publicCosmetics,decorateOnlinePayload,
+              enableDevelopmentPreview(){if(!isDev())return false;runtime.preview=true;applyPremiumPresentation();render();return true;},
+              disableDevelopmentPreview(){runtime.preview=false;applyPremiumPresentation();render();}
+            });
+            Object.defineProperty(window,'WDPro',{value:api,writable:false,configurable:false,enumerable:true});
+
+            function init(){ensureRoot();ensureEntry();applyPremiumPresentation();installCapture();refreshEntitlement();render();emit('diceduel:pro-ready',{version:VERSION});}
+            if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init,{once:true});else init();
+          })();
+          JAVASCRIPT
+
+          cat > css/pro.css <<'CSS'
+          #dd-pro-entry{position:fixed;right:max(14px,env(safe-area-inset-right));bottom:max(14px,env(safe-area-inset-bottom));z-index:3200;display:flex;align-items:center;gap:7px;min-width:82px;min-height:42px;padding:8px 14px;border:1px solid rgba(255,222,130,.9);border-radius:999px;background:linear-gradient(145deg,#fff8df 0%,#e9c468 48%,#9a621d 100%);box-shadow:0 8px 25px rgba(4,17,45,.35),inset 0 1px 0 #fff;color:#14244a;font:800 13px/1 system-ui,sans-serif;letter-spacing:.08em;cursor:pointer}#dd-pro-entry span{font-size:19px;color:#6f4214}html[data-dd-pro=active] #dd-pro-entry{box-shadow:0 0 0 2px rgba(255,221,126,.22),0 0 24px rgba(77,159,255,.45),0 8px 25px rgba(4,17,45,.45)}
+          body.dd-pro-modal-open{overflow:hidden}#dd-pro-root{position:fixed;inset:0;z-index:100000;font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:#17264b}#dd-pro-root[hidden]{display:none!important}.dd-pro-backdrop{position:absolute;inset:0;background:rgba(3,11,31,.72);backdrop-filter:blur(8px)}.dd-pro-dialog{position:absolute;left:50%;top:50%;width:min(960px,calc(100vw - 24px));height:min(760px,calc(100dvh - 24px));transform:translate(-50%,-50%);display:grid;grid-template-rows:auto auto 1fr;overflow:hidden;border:2px solid #dbb45d;border-radius:24px;background:linear-gradient(145deg,rgba(255,253,244,.98),rgba(237,242,255,.98));box-shadow:0 26px 100px rgba(0,0,0,.48),inset 0 0 0 1px rgba(255,255,255,.9)}.dd-pro-dialog>header{display:flex;align-items:center;justify-content:space-between;padding:16px 20px;background:linear-gradient(135deg,#112956,#183d79 58%,#0b2048);color:#fff;border-bottom:1px solid #d9b55c}.dd-pro-dialog>header>div{display:flex;align-items:center;gap:12px}.dd-pro-dialog>header strong{display:block;font-family:Georgia,serif;font-size:22px;letter-spacing:.04em}.dd-pro-dialog>header small{display:block;margin-top:3px;color:#dbe8ff}.dd-pro-dialog>header button{width:38px;height:38px;border:1px solid rgba(255,224,140,.75);border-radius:50%;background:rgba(255,255,255,.08);color:#fff;font-size:26px;cursor:pointer}.dd-pro-crown{display:grid;place-items:center;width:46px;height:46px;border-radius:50%;background:radial-gradient(circle at 35% 25%,#fff6b7,#e5ad35 55%,#784414);color:#17254c;font-size:26px;box-shadow:0 0 20px rgba(255,210,88,.5)}.dd-pro-dialog>nav{display:flex;gap:6px;padding:9px 12px;background:#e9edf7;border-bottom:1px solid #c3a45e;overflow:auto}.dd-pro-dialog>nav button{flex:1;min-width:max-content;padding:10px 15px;border:1px solid transparent;border-radius:12px;background:transparent;color:#344264;font-weight:800;cursor:pointer}.dd-pro-dialog>nav button.active{border-color:#c89e43;background:#fff9e7;color:#132855;box-shadow:0 3px 10px rgba(12,31,70,.12)}.dd-pro-dialog>main{overflow:auto;padding:20px}.dd-pro-section{max-width:880px;margin:0 auto}.dd-pro-section>h2{margin:0 0 14px;font:800 21px/1.2 Georgia,serif;color:#142b58}.dd-pro-section>h2:not(:first-child){margin-top:28px}.dd-pro-hero{display:flex;align-items:center;justify-content:space-between;gap:20px;padding:24px;border:1px solid #d3b05b;border-radius:20px;background:radial-gradient(circle at 10% 10%,rgba(255,239,169,.6),transparent 35%),linear-gradient(135deg,#fffefa,#edf3ff)}.dd-pro-kicker{font-size:11px;font-weight:900;letter-spacing:.28em;color:#9b6a1c}.dd-pro-hero h2{margin:5px 0 4px;font:900 32px/1 Georgia,serif;color:#142b58}.dd-pro-hero p{margin:0;color:#56627d}.dd-pro-status{display:grid;grid-template-columns:auto auto;align-items:center;gap:4px 8px;min-width:180px;padding:12px 14px;border-radius:14px;background:#fff;border:1px solid #cbd3e3}.dd-pro-status>span{width:10px;height:10px;border-radius:50%;background:#b35b55}.dd-pro-status.is-active>span{background:#37b46c;box-shadow:0 0 12px #37b46c}.dd-pro-status small{grid-column:2;color:#68748e}.dd-pro-benefits{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin:16px 0}.dd-pro-benefits article{display:flex;gap:13px;padding:17px;border:1px solid #d7c48e;border-radius:16px;background:rgba(255,255,255,.82);box-shadow:0 6px 20px rgba(17,39,82,.08)}.dd-pro-benefits i{display:grid;place-items:center;flex:0 0 42px;height:42px;border-radius:12px;background:linear-gradient(145deg,#1a427f,#0d2450);color:#f0cc70;font-style:normal;font-size:22px}.dd-pro-benefits h3{margin:0 0 5px;font-size:15px}.dd-pro-benefits p,.dd-pro-fair p{margin:0;color:#5d6880;font-size:13px;line-height:1.45}.dd-pro-fair{padding:16px 18px;border:1px solid #9bc9ae;border-radius:15px;background:#effaf3}.dd-pro-fair strong{display:block;margin-bottom:5px;color:#286c45}.dd-pro-purchase,.dd-pro-dev{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin-top:16px;padding:15px;border:1px solid #d4bc7b;border-radius:15px;background:#fff}.dd-pro-purchase p,.dd-pro-dev small{flex-basis:100%;margin:0;color:#67728b;font-size:12px}.dd-pro-purchase .error{color:#a33}.dd-pro-dialog button[data-pro-action],.dd-pro-actions button,.dd-pro-loadouts button{padding:10px 14px;border:1px solid #b98c32;border-radius:11px;background:#fff8e3;color:#18315f;font-weight:800;cursor:pointer}.dd-pro-dialog button.primary{background:linear-gradient(145deg,#1d4f91,#102e61);color:#fff;border-color:#e0b856}.dd-pro-dialog button.ghost{background:#eef2fa;border-color:#b7c1d5}.dd-pro-dialog button.danger{background:#fff0ee;border-color:#c87b73;color:#8f302a}.dd-pro-dialog button:disabled{opacity:.42;cursor:not-allowed}.dd-pro-privacy{margin:15px 4px 0;color:#79839a;font-size:11px}.dd-pro-stats{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px;margin-bottom:16px}.dd-pro-stats.compact{grid-template-columns:repeat(3,minmax(0,1fr))}.dd-pro-stats article{padding:14px;border:1px solid #c9d2e2;border-radius:14px;background:#fff;text-align:center}.dd-pro-stats strong{display:block;font-size:24px;color:#173b74}.dd-pro-stats span{font-size:11px;color:#6d7890}.dd-pro-insight{display:flex;justify-content:space-between;gap:12px;padding:12px 15px;margin-bottom:12px;border-radius:12px;background:#162f5e;color:#fff}.dd-pro-insight span{color:#cddcff}.dd-pro-table-wrap{overflow:auto;border:1px solid #cbd3e2;border-radius:14px;background:#fff}.dd-pro-table-wrap table{width:100%;border-collapse:collapse;min-width:650px}.dd-pro-table-wrap th,.dd-pro-table-wrap td{padding:11px 12px;border-bottom:1px solid #e2e6ef;text-align:left;font-size:12px}.dd-pro-table-wrap th{position:sticky;top:0;background:#edf1f9;color:#44516d}.result-victory{color:#1f874c;font-weight:800}.result-defeat{color:#ad3d36;font-weight:800}.dd-pro-actions{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0 22px}.dd-pro-runs{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.dd-pro-runs article{display:grid;grid-template-columns:1fr auto;gap:4px;padding:13px;border:1px solid #c9d2e2;border-radius:13px;background:#fff}.dd-pro-runs small{grid-column:1/-1;color:#6e7990}.dd-pro-empty{padding:22px;border:1px dashed #b7c1d3;border-radius:14px;text-align:center;color:#78839a}.dd-pro-loadouts{display:grid;gap:12px}.dd-pro-loadouts article{padding:15px;border:1px solid #c9b16b;border-radius:15px;background:#fff}.dd-pro-loadouts article>div:first-child{display:flex;justify-content:space-between;gap:12px;align-items:center}.dd-pro-loadouts article>div:first-child span{font-size:11px;font-weight:900;color:#9a6d22;text-transform:uppercase;letter-spacing:.1em}.dd-pro-loadouts input{width:min(240px,65%);padding:8px 10px;border:1px solid #c7cfdf;border-radius:9px;color:#1a315e;font-weight:800}.dd-pro-loadouts article>strong{display:block;margin:10px 0;color:#57637c;font-size:13px}.dd-pro-loadouts article>div:last-child{display:flex;flex-wrap:wrap;gap:8px}.dd-pro-choices{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}.dd-pro-choice{display:flex!important;flex-direction:column;align-items:stretch;gap:8px!important;padding:10px!important;background:#fff!important;border:1px solid #cbd3e2!important}.dd-pro-choice.selected{border-color:#c79634!important;box-shadow:0 0 0 2px rgba(217,173,73,.2)}.dd-pro-choice .preview{height:80px;border-radius:10px;background:#e8edf7}.preview.theme-arcane{background:radial-gradient(circle at 30% 20%,#7ee8ff,transparent 25%),linear-gradient(145deg,#071b46,#1769aa)}.preview.theme-solar{background:radial-gradient(circle at 30% 20%,#fffbe0,transparent 25%),linear-gradient(145deg,#fffefa,#d8ad45)}.preview.theme-void{background:radial-gradient(circle at 30% 20%,#d699ff,transparent 25%),linear-gradient(145deg,#160d3a,#67318d)}.preview.aura-crown{background:radial-gradient(circle,#fff3a2 0 12%,#efb63a 13% 20%,transparent 22%),radial-gradient(circle,#102952,#07142f)}.preview.aura-pulse{background:repeating-radial-gradient(circle,#5de5ff 0 4px,transparent 6px 14px),#0d2f5f}.preview.aura-eclipse{background:radial-gradient(circle,#0e1834 0 24%,#bf72ff 26% 31%,transparent 33%),#241044}.dd-pro-choice small{color:#727e96}.dd-pro-lock{position:sticky;top:0;z-index:2;display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:14px;padding:14px;border:1px solid #d1ad53;border-radius:14px;background:linear-gradient(145deg,#fff9e8,#e9edf7);box-shadow:0 8px 25px rgba(15,34,72,.13)}.dd-pro-lock-crown{font-size:25px;color:#a66c18}#dd-pro-toast{position:fixed;left:50%;bottom:28px;z-index:100100;transform:translate(-50%,30px);padding:11px 17px;border:1px solid #e2bb59;border-radius:999px;background:#122b58;color:#fff;opacity:0;pointer-events:none;transition:.2s}#dd-pro-toast.show{opacity:1;transform:translate(-50%,0)}
+          html[data-dd-pro-theme=arcane] body:before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;background:radial-gradient(circle at 20% 10%,rgba(58,210,255,.18),transparent 32%),radial-gradient(circle at 80% 70%,rgba(69,116,255,.17),transparent 36%)}html[data-dd-pro-theme=solar] body:before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;background:radial-gradient(circle at 20% 10%,rgba(255,243,177,.36),transparent 36%),radial-gradient(circle at 80% 70%,rgba(222,169,61,.18),transparent 38%)}html[data-dd-pro-theme=void] body:before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;background:radial-gradient(circle at 20% 10%,rgba(170,83,255,.24),transparent 34%),radial-gradient(circle at 80% 70%,rgba(76,35,139,.26),transparent 40%)}html[data-dd-pro-theme=arcane] button,html[data-dd-pro-theme=arcane] .panel,html[data-dd-pro-theme=arcane] .card{--dd-pro-accent:#55d9ff}html[data-dd-pro-theme=solar] button,html[data-dd-pro-theme=solar] .panel,html[data-dd-pro-theme=solar] .card{--dd-pro-accent:#e5b84b}html[data-dd-pro-theme=void] button,html[data-dd-pro-theme=void] .panel,html[data-dd-pro-theme=void] .card{--dd-pro-accent:#ba77ff}html[data-dd-pro=active][data-dd-pro-aura=crown] :is(.profile-avatar,.player-avatar,[data-profile-avatar],.profile-card){filter:drop-shadow(0 0 8px rgba(255,215,91,.75));box-shadow:0 0 0 2px rgba(255,215,91,.45),0 0 22px rgba(255,173,49,.35)}html[data-dd-pro=active][data-dd-pro-aura=pulse] :is(.profile-avatar,.player-avatar,[data-profile-avatar],.profile-card){filter:drop-shadow(0 0 9px rgba(76,221,255,.8));box-shadow:0 0 0 2px rgba(76,221,255,.42),0 0 24px rgba(38,148,255,.4)}html[data-dd-pro=active][data-dd-pro-aura=eclipse] :is(.profile-avatar,.player-avatar,[data-profile-avatar],.profile-card){filter:drop-shadow(0 0 10px rgba(191,101,255,.8));box-shadow:0 0 0 2px rgba(191,101,255,.42),0 0 25px rgba(100,45,174,.48)}
+          @media(max-width:720px){#dd-pro-entry{right:10px;bottom:10px;min-width:68px;padding:7px 11px}.dd-pro-dialog{width:calc(100vw - 10px);height:calc(100dvh - 10px);border-radius:17px}.dd-pro-dialog>header{padding:12px}.dd-pro-dialog>header small{display:none}.dd-pro-dialog>main{padding:12px}.dd-pro-hero{align-items:flex-start;flex-direction:column;padding:18px}.dd-pro-hero h2{font-size:27px}.dd-pro-status{width:100%}.dd-pro-benefits{grid-template-columns:1fr}.dd-pro-stats{grid-template-columns:repeat(2,minmax(0,1fr))}.dd-pro-stats.compact{grid-template-columns:repeat(3,minmax(0,1fr))}.dd-pro-runs{grid-template-columns:1fr}.dd-pro-choices{grid-template-columns:repeat(2,minmax(0,1fr))}.dd-pro-choice .preview{height:62px}.dd-pro-purchase>button{flex:1}.dd-pro-dialog>nav button{padding:9px 12px}.dd-pro-crown{width:39px;height:39px}}
+          @media(prefers-reduced-motion:reduce){#dd-pro-toast{transition:none}}
+          CSS
+
+          cat > scripts/validate-pro.mjs <<'VALIDATOR'
+          import fs from 'node:fs';
+          const read=p=>fs.readFileSync(p,'utf8');
+          const fail=m=>{console.error(`❌ Pro validator: ${m}`);process.exitCode=1;};
+          const js=read('js/38-pro.js');
+          const html=read('index.html');
+          const css=read('css/pro.css');
+          if(!js.includes("const VERSION = '28.10.0'"))fail('module version missing');
+          if(!js.includes('diceduel_pro_monthly')||!js.includes('diceduel_pro_yearly'))fail('store product IDs missing');
+          if(!js.includes('TRUSTED_SOURCES')||!js.includes('verified === true'))fail('trusted entitlement verification missing');
+          if(/localStorage\.(?:getItem|setItem)\([^)]*(?:entitlement|isPro|hasPro)/i.test(js))fail('entitlement must not use LocalStorage');
+          if(/URLSearchParams|location\.(?:search|hash).*pro/i.test(js))fail('URL must not grant Pro');
+          for(const feature of ['Battle Vault','Kampfarchiv','Boss Rush chronicle','5 loadout slots','Premium themes','Profile auras'])if(!js.includes(feature))fail(`feature text missing: ${feature}`);
+          if(!html.includes('css/pro.css?v=28.10.0'))fail('Pro CSS not loaded');
+          if(!html.includes('js/38-pro.js?v=28.10.0'))fail('Pro JS not loaded');
+          if(css.length<5000)fail('Pro CSS unexpectedly small');
+          if(/(?:isPro|hasPro|proEntitlement).{0,100}(?:damage|health|\bhp\b|dice.?chance|attack.?bonus|ability.?power|enemy.?hp)/i.test(js))fail('potential pay-to-win hook');
+          if(!process.exitCode)console.log('✅ DiceDuel Pro validator passed.');
+          VALIDATOR
+
+          cat > docs/PRO_BILLING_INTEGRATION.md <<'DOC'
+          # DiceDuel Pro billing bridge
+
+          The web client never trusts a save file, LocalStorage value, URL parameter, or imported profile as proof of subscription.
+
+          A native/store layer must expose `window.DiceDuelBilling` (or `window.WD_BILLING_PROVIDER`) with:
+
+          ```js
+          {
+            async getEntitlement({ productIds, feature }) {
+              return {
+                active: true,
+                verified: true,
+                source: "google-play", // or app-store / stripe-backend / firebase-functions / server
+                productId: "diceduel_pro_yearly",
+                expiresAt: "2027-09-02T00:00:00.000Z"
+              };
+            },
+            async purchase({ productId }) { /* launch native purchase and verify server-side */ },
+            async restore({ productIds }) { /* restore and verify receipts server-side */ }
+          }
+          ```
+
+          `verified: true` must only be returned after receipt/token verification through a trusted backend or an equally trusted native provider. Do not implement this flag from client-owned storage.
+
+          Product IDs:
+
+          - `diceduel_pro_monthly`
+          - `diceduel_pro_yearly`
+
+          Pro unlocks analytics, local history, loadouts, themes, and profile cosmetics. It must not modify HP, damage, dice odds, abilities, enemy values, campaign access, or matchmaking power.
+          DOC
+
+          python3 - <<'PY'
+          from pathlib import Path
+          import json,re
+          v='28.10.0'
+          index=Path('index.html')
+          text=index.read_text()
+          # Update current build query strings without rewriting historical prose.
+          text=re.sub(r'([?&]v=)28\.9\.2\b',r'\g<1>'+v,text)
+          text=re.sub(r'([?&]v=)28\.9\.1\b',r'\g<1>'+v,text)
+          if 'css/pro.css?' not in text:
+              text=text.replace('</head>',f'  <link rel="stylesheet" href="css/pro.css?v={v}">\n</head>')
+          if 'js/38-pro.js?' not in text:
+              text=text.replace('</body>',f'  <script src="js/38-pro.js?v={v}"></script>\n</body>')
+          index.write_text(text)
+
+          for name in ('package.json','package-lock.json'):
+              p=Path(name)
+              if not p.exists(): continue
+              try:
+                  obj=json.loads(p.read_text())
+              except Exception: continue
+              obj['version']=v
+              if name=='package-lock.json':
+                  if isinstance(obj.get('packages'),dict) and isinstance(obj['packages'].get(''),dict): obj['packages']['']['version']=v
+              if name=='package.json':
+                  scripts=obj.setdefault('scripts',{})
+                  scripts['check:pro']='node scripts/validate-pro.mjs'
+                  check=scripts.get('check','')
+                  if 'validate-pro.mjs' not in check:
+                      scripts['check']=(check+' && ' if check else '')+'node scripts/validate-pro.mjs'
+              p.write_text(json.dumps(obj,ensure_ascii=False,indent=2)+'\n')
+
+          p=Path('version.json')
+          if p.exists():
+              try:
+                  obj=json.loads(p.read_text())
+                  if isinstance(obj,dict):
+                      for key in ('version','build','appVersion'):
+                          if key in obj: obj[key]=v
+                      if not any(k in obj for k in ('version','build','appVersion')): obj['version']=v
+                      p.write_text(json.dumps(obj,ensure_ascii=False,indent=2)+'\n')
+              except Exception:
+                  p.write_text(json.dumps({'version':v},indent=2)+'\n')
+
+          for name in ('sw.js','js/01-config.js'):
+              p=Path(name)
+              if not p.exists(): continue
+              s=p.read_text()
+              s=re.sub(r'(?<=GAME_VERSION\s=\s["\'])28\.9\.2(?=["\'])',v,s)
+              s=re.sub(r'(?<=CACHE_VERSION\s=\s["\'])28\.9\.2(?=["\'])',v,s)
+              s=re.sub(r'(?<=GAME_VERSION\s=\s["\'])28\.9\.1(?=["\'])',v,s)
+              s=re.sub(r'(?<=CACHE_VERSION\s=\s["\'])28\.9\.1(?=["\'])',v,s)
+              p.write_text(s)
+          PY
+
+      - name: Remove bootstrap workflow and commit
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -f .github/workflows/pro-bootstrap.yml
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -A
+          if git diff --cached --quiet; then
+            echo 'Transferred Pro implementation already present; bootstrap removed without product changes.'
+          else
+            git commit -m 'feat: add DiceDuel Pro foundation (V28.10.0)'
+            git push origin HEAD:codex/v28.10.0-pro
+          fi
