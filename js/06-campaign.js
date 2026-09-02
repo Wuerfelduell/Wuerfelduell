@@ -587,6 +587,19 @@
     return subtitle?`<div class="node-detail-sub">${escapeHtml(subtitle)}</div>`:"";
   }
 
+  function campaignWorldTabContent(world,index,state){
+    return `<span class="campaign-world-kicker">W${index+1}</span><span class="campaign-world-art" aria-hidden="true"></span><span class="campaign-world-copy"><span class="campaign-world-name">${escapeHtml(campaignWorldNodeName(world))}</span><span class="campaign-world-state">${escapeHtml(state)}</span></span>`;
+  }
+
+  function renderCampaignWorldBanner(container,world,index,completed,total){
+    if(!container||!world)return;
+    const english=window.WDI18n?.language==="en";
+    const worldLabel=english?"World":"Welt";
+    const encounterLabel=english?"encounters":"Encounter";
+    const desc=campaignWorldDescription(world);
+    container.innerHTML=`<span class="campaign-world-banner-art" aria-hidden="true"></span><span class="campaign-world-banner-copy"><span class="campaign-world-banner-kicker">${worldLabel} ${index+1} · ${completed}/${total} ${encounterLabel}</span><strong>${escapeHtml(campaignWorldNodeName(world))}</strong><span class="campaign-world-banner-desc">${escapeHtml(desc)}</span></span>`;
+  }
+
   function syncCampaignWorldTheme(hub,mode,worldId){
     if(!hub) return;
     const key=`${mode}-${worldId}`;
@@ -627,13 +640,13 @@
       const count=unlocked?campaignCurrentCompletedCount(profile,w.id):0;
       const total=campaignEncountersForWorld(w.id).length;
       const state=unlocked?(done?"✓":`${count}/${total}`):"🔒";
-      return `<button type="button" class="campaign-world-btn${active?" active":""}${done?" done":""}" data-world-id="${w.id}" data-world-theme="solo-${w.id}" ${unlocked?"":"disabled"}><span class="campaign-world-kicker">W${wi+1}</span><span class="campaign-world-name">${escapeHtml(campaignWorldNodeName(w))}</span><span class="campaign-world-state">${escapeHtml(state)}</span></button>`;
+      return `<button type="button" class="campaign-world-btn${active?" active":""}${done?" done":""}" data-world-id="${w.id}" data-world-theme="solo-${w.id}" ${unlocked?"":"disabled"}>${campaignWorldTabContent(w,wi,state)}</button>`;
     }).join("");
     campaignWorldTabs.querySelectorAll("[data-world-id]").forEach(btn=>{
       btn.onclick=()=>{campaignWorldId=btn.dataset.worldId;campaignEncounterId=null;renderCampaign();};
     });
     syncCampaignWorldTheme(campaignScreen,"solo",world.id);
-    campaignWorldDesc.textContent=campaignWorldDescription(world);
+    renderCampaignWorldBanner(campaignWorldDesc,world,CAMPAIGN_WORLDS.indexOf(world),completed,worldEncounters.length);
 
     campaignProfileSummary.textContent=profile?campaignProfileDisplayName(profile):"Profil erforderlich";
     campaignProgressSummary.textContent=`${completed} / ${worldEncounters.length} Encounter`;
@@ -776,11 +789,11 @@
       const count=unlocked?duoEncountersForWorld(w.id).filter(e=>progress?.completedEncounters?.includes(e.id)).length:0;
       const total=duoEncountersForWorld(w.id).length;
       const state=unlocked?(done?"✓":`${count}/${total}`):"🔒";
-      return `<button type="button" class="campaign-world-btn${active?" active":""}${done?" done":""}" data-duo-world-id="${w.id}" data-world-theme="duo-${w.id}" ${unlocked?"":"disabled"}><span class="campaign-world-kicker">W${wi+1}</span><span class="campaign-world-name">${escapeHtml(campaignWorldNodeName(w))}</span><span class="campaign-world-state">${escapeHtml(state)}</span></button>`;
+      return `<button type="button" class="campaign-world-btn${active?" active":""}${done?" done":""}" data-duo-world-id="${w.id}" data-world-theme="duo-${w.id}" ${unlocked?"":"disabled"}>${campaignWorldTabContent(w,wi,state)}</button>`;
     }).join("");
     duoCampaignWorldTabs.querySelectorAll("[data-duo-world-id]").forEach(btn=>btn.onclick=()=>{duoWorldId=btn.dataset.duoWorldId;duoCampaignEncounterId=null;renderDuoCampaign();});
     syncCampaignWorldTheme(duoCampaignScreen,"duo",world.id);
-    duoCampaignWorldDesc.textContent=campaignWorldDescription(world);
+    renderCampaignWorldBanner(duoCampaignWorldDesc,world,DUO_CAMPAIGN_WORLDS.indexOf(world),completed,worldEncounters.length);
 
     duoTeamSummary.textContent=validPair?`${p1.name} + ${p2.name}`:(profiles.length<2?"2 Profile erforderlich":"Zwei verschiedene Profile wählen");
     duoProgressSummary.textContent=`${completed} / ${worldEncounters.length} Encounter`;
@@ -841,12 +854,12 @@
         const count=unlocked?trioEncountersForWorld(w.id).filter(e=>progress?.completedEncounters?.includes(e.id)).length:0;
         const total=trioEncountersForWorld(w.id).length;
         const state=unlocked?(done?"✓":`${count}/${total}`):"🔒";
-        return `<button type="button" class="campaign-world-btn${active?" active":""}${done?" done":""}" data-trio-world-id="${w.id}" data-world-theme="trio-${w.id}" ${unlocked?"":"disabled"}><span class="campaign-world-kicker">W${wi+1}</span><span class="campaign-world-name">${escapeHtml(campaignWorldNodeName(w))}</span><span class="campaign-world-state">${escapeHtml(state)}</span></button>`;
+        return `<button type="button" class="campaign-world-btn${active?" active":""}${done?" done":""}" data-trio-world-id="${w.id}" data-world-theme="trio-${w.id}" ${unlocked?"":"disabled"}>${campaignWorldTabContent(w,wi,state)}</button>`;
       }).join("");
       trioCampaignWorldTabs.querySelectorAll("[data-trio-world-id]").forEach(btn=>btn.onclick=()=>{trioWorldId=btn.dataset.trioWorldId;trioCampaignEncounterId=null;renderTrioCampaign();});
     }
     syncCampaignWorldTheme(trioCampaignScreen,"trio",world.id);
-    if(trioCampaignWorldDesc) trioCampaignWorldDesc.textContent=campaignWorldDescription(world);
+    renderCampaignWorldBanner(trioCampaignWorldDesc,world,TRIO_CAMPAIGN_WORLDS.indexOf(world),completed,worldEncounters.length);
     trioTeamSummary.textContent=validTeam?`${p1.name} + ${p2.name} + ${p3.name}`:(profiles.length<3?"3 Profile erforderlich":"Drei verschiedene Profile wählen");
     trioProgressSummary.textContent=`${completed} / ${worldEncounters.length} Encounter`;
     trioTrophySummary.textContent="🏆 +1 je Profil beim Erstclear";

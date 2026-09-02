@@ -1,12 +1,21 @@
 (() => {
   "use strict";
 
-  const VERSION="28.10.0";
+  const VERSION="28.10.1";
   const ASSET_ROOT="assets/ui/v28/png/worlds/";
 
-  const theme=(primary,secondary,surface,glow,asset)=>Object.freeze({
-    primary,secondary,surface,glow,asset:`${ASSET_ROOT}${asset}`
-  });
+  const theme=(primary,secondary,surface,glow,asset)=>{
+    const stem=String(asset).replace(/\.png$/i,"");
+    return Object.freeze({
+      primary,
+      secondary,
+      surface,
+      glow,
+      emblem:`${ASSET_ROOT}${stem}.webp`,
+      roundFrame:`${ASSET_ROOT}${stem}-frame.webp`,
+      rectFrame:`${ASSET_ROOT}${stem}-frame-rect.webp`
+    });
+  };
 
   const THEMES=Object.freeze({
     "solo-house":theme("#d5a642","#fff0b5","#17365b","rgba(213,166,66,.28)","world-solo-house.png"),
@@ -48,9 +57,9 @@
     setProperty(element,"--world-secondary",value.secondary);
     setProperty(element,"--world-surface",value.surface);
     setProperty(element,"--world-glow",value.glow);
-    // Der Pfad ist bereits Teil des Datenvertrags, wird aber erst von CSS
-    // konsumiert, sobald die finale PNG-Serie im Repository liegt.
-    setProperty(element,"--world-emblem",`url(\"${value.asset}?v=${VERSION}\")`);
+    setProperty(element,"--world-emblem",`url(\"${value.emblem}?v=${VERSION}\")`);
+    setProperty(element,"--world-frame-round",`url(\"${value.roundFrame}?v=${VERSION}\")`);
+    setProperty(element,"--world-frame-rect",`url(\"${value.rectFrame}?v=${VERSION}\")`);
   }
 
   function applyToHub(hub,mode,worldId){

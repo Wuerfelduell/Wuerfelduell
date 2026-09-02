@@ -11623,10 +11623,10 @@ html[data-v28-rework="2"] #onlineScreen .online-connection{
    ============================================================ */
 
 :root{
-  --wd-strip: url("../assets/ui/v28/png/frames/slim-strip.webp?v=28.10.0");
-  --wd-card:  url("../assets/ui/v28/png/frames/slim-card.webp?v=28.10.0");
-  --wd-pill:  url("../assets/ui/v28/png/frames/slim-pill.webp?v=28.10.0");
-  --wd-die:   url("../assets/ui/v28/png/frames/die-button.webp?v=28.10.0");
+  --wd-strip: url("../assets/ui/v28/png/frames/slim-strip.webp?v=28.10.1");
+  --wd-card:  url("../assets/ui/v28/png/frames/slim-card.webp?v=28.10.1");
+  --wd-pill:  url("../assets/ui/v28/png/frames/slim-pill.webp?v=28.10.1");
+  --wd-die:   url("../assets/ui/v28/png/frames/die-button.webp?v=28.10.1");
   --wd-hell:  #f4ece3;
   --wd-navy:  #011b4b;
 }
@@ -12095,7 +12095,7 @@ html[data-v28-rework="2"] #achievementsScreen .achievement-owner{
 @media(max-width:560px){.endgame-combat-badge{font-size:.6rem;padding:.15rem .38rem}.endgame-mechanic-row span{font-size:.72rem}}
 
 /* ===== 39-v28-campaign-polish.css ===== */
-/* DiceDuel V28.10.0 — menu/campaign polish and data-driven world colors. */
+/* DiceDuel V28.10.1 — menu/campaign polish and data-driven world colors. */
 
 :root{
   --world-primary:#d5a642;
@@ -12272,13 +12272,13 @@ html[data-v28-rework="2"] .campaign-node-detail .node-detail-desc{
 }
 
 /* ===== 40-v28-screen-restoration.css ===== */
-/* DiceDuel V28.10.0 — menu safe areas and framed utility screens. */
+/* DiceDuel V28.10.1 — menu safe areas and framed utility screens. */
 
 :root{
-  --v2893-achievement-card:url("../assets/ui/v28/png/frames/achievement-trophy-card.webp?v=28.10.0");
-  --v2893-ivory-card:url("../assets/ui/v28/png/frames/ivory-card-small.webp?v=28.10.0");
-  --v2893-navy-button:url("../assets/ui/v28/png/frames/navy-button-horizontal.webp?v=28.10.0");
-  --v2893-green-button:url("../assets/ui/v28/png/components/encounter-button-green.webp?v=28.10.0");
+  --v2893-achievement-card:url("../assets/ui/v28/png/frames/achievement-trophy-card.webp?v=28.10.1");
+  --v2893-ivory-card:url("../assets/ui/v28/png/frames/ivory-card-small.webp?v=28.10.1");
+  --v2893-navy-button:url("../assets/ui/v28/png/frames/navy-button-horizontal.webp?v=28.10.1");
+  --v2893-green-button:url("../assets/ui/v28/png/components/encounter-button-green.webp?v=28.10.1");
 }
 
 /* Main menu: the icon leaves the ornamental end cap and gets its own safe area. */
@@ -12836,5 +12836,232 @@ html[data-v28-rework="2"] .mastery-purchase-actions .mastery-purchase-buy{
   html[data-v28-rework="2"] #statsScreen .profile-stat-item>.dd-inline-icon{
     width:20px!important;
     height:20px!important;
+  }
+}
+
+/* ===== 41-v28-world-asset-pack.css ===== */
+/* DiceDuel V28.10.1 — all 17 campaign worlds use their own crest and frame set. */
+html[data-v28-rework="2"] .campaign-hub .campaign-world-tabs{
+  gap:10px!important;
+  padding:6px 4px 10px!important;
+}
+html[data-v28-rework="2"] .campaign-hub .campaign-world-btn,
+html[data-v28-rework="2"] .campaign-hub .campaign-world-btn.active{
+  position:relative!important;
+  isolation:isolate!important;
+  flex:0 0 120px!important;
+  width:120px!important;
+  min-height:146px!important;
+  display:flex!important;
+  flex-direction:column!important;
+  align-items:center!important;
+  justify-content:flex-start!important;
+  gap:1px!important;
+  overflow:visible!important;
+  box-sizing:border-box!important;
+  padding:7px 6px 8px!important;
+  border:0!important;
+  border-image:none!important;
+  border-radius:22px!important;
+  background:transparent!important;
+  box-shadow:none!important;
+}
+html[data-v28-rework="2"] .campaign-hub .campaign-world-btn.active::before{
+  content:""!important;
+  position:absolute!important;
+  z-index:0!important;
+  inset:2px!important;
+  border:1px solid color-mix(in srgb,var(--world-primary) 74%,#fff 26%)!important;
+  border-radius:21px!important;
+  background:
+    radial-gradient(circle at 50% 28%,var(--world-glow),transparent 48%),
+    linear-gradient(155deg,var(--world-surface),#06172f 82%)!important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.16),0 7px 18px var(--world-glow)!important;
+  pointer-events:none!important;
+}
+html[data-v28-rework="2"] .campaign-hub .campaign-world-btn::after{
+  left:23%!important;
+  right:23%!important;
+  bottom:4px!important;
+}
+html[data-v28-rework="2"] .campaign-hub .campaign-world-kicker{
+  position:relative!important;
+  z-index:3!important;
+  min-height:13px!important;
+  color:var(--world-primary)!important;
+  font-size:9px!important;
+  line-height:13px!important;
+}
+html[data-v28-rework="2"] .campaign-hub .campaign-world-art{
+  position:relative!important;
+  z-index:2!important;
+  display:block!important;
+  width:84px!important;
+  height:84px!important;
+  flex:0 0 84px!important;
+  margin:-2px auto -3px!important;
+  background-image:var(--world-frame-round),var(--world-emblem)!important;
+  background-position:center,center!important;
+  background-repeat:no-repeat,no-repeat!important;
+  background-size:100% 100%,72% 72%!important;
+  filter:drop-shadow(0 4px 5px rgba(2,17,39,.34))!important;
+  pointer-events:none!important;
+}
+html[data-v28-rework="2"] .campaign-hub .campaign-world-copy{
+  position:relative!important;
+  z-index:3!important;
+  width:100%!important;
+  min-width:0!important;
+  display:flex!important;
+  flex-direction:column!important;
+  align-items:center!important;
+  justify-content:flex-start!important;
+  gap:1px!important;
+}
+html[data-v28-rework="2"] .campaign-hub .campaign-world-name{
+  width:100%!important;
+  color:#183759!important;
+  font-size:12px!important;
+  line-height:1.08!important;
+  text-align:center!important;
+}
+html[data-v28-rework="2"] .campaign-hub .campaign-world-state{
+  min-height:23px!important;
+  color:#62768c!important;
+  font-size:9px!important;
+  line-height:23px!important;
+}
+html[data-v28-rework="2"] .campaign-hub .campaign-world-btn.active .campaign-world-name,
+html[data-v28-rework="2"] .campaign-hub .campaign-world-btn.active .campaign-world-state,
+html[data-v28-rework="2"] .campaign-hub .campaign-world-btn.active .campaign-world-kicker{
+  color:#fff3d1!important;
+}
+html[data-v28-rework="2"] .campaign-hub .campaign-world-btn:disabled .campaign-world-art{
+  opacity:.46!important;
+  filter:grayscale(.5) saturate(.45) brightness(.76) drop-shadow(0 3px 4px rgba(2,17,39,.24))!important;
+}
+
+/* Selected-world counter: one compact 3:1 frame, with the matching crest. */
+html[data-v28-rework="2"] .campaign-hub .campaign-world-desc{
+  position:relative!important;
+  isolation:isolate!important;
+  box-sizing:border-box!important;
+  min-height:108px!important;
+  display:grid!important;
+  grid-template-columns:70px minmax(0,1fr)!important;
+  align-items:center!important;
+  gap:8px!important;
+  margin:0 0 11px!important;
+  padding:18px 36px!important;
+  overflow:hidden!important;
+  border:0!important;
+  border-radius:0!important;
+  background:
+    var(--world-frame-rect) center/100% 100% no-repeat,
+    linear-gradient(155deg,var(--world-surface),#071a38 84%)!important;
+  box-shadow:0 8px 20px var(--world-glow)!important;
+  color:#fff2d2!important;
+}
+html[data-v28-rework="2"] .campaign-hub .campaign-world-banner-art{
+  display:block!important;
+  width:68px!important;
+  height:68px!important;
+  background-image:var(--world-frame-round),var(--world-emblem)!important;
+  background-position:center,center!important;
+  background-repeat:no-repeat,no-repeat!important;
+  background-size:100% 100%,72% 72%!important;
+  filter:drop-shadow(0 4px 6px rgba(0,0,0,.35))!important;
+}
+html[data-v28-rework="2"] .campaign-hub .campaign-world-banner-copy{
+  min-width:0!important;
+  display:flex!important;
+  flex-direction:column!important;
+  gap:2px!important;
+}
+html[data-v28-rework="2"] .campaign-hub .campaign-world-banner-kicker{
+  overflow:hidden!important;
+  color:var(--world-secondary)!important;
+  font-size:8px!important;
+  font-weight:950!important;
+  letter-spacing:.075em!important;
+  line-height:1.2!important;
+  text-overflow:ellipsis!important;
+  text-transform:uppercase!important;
+  white-space:nowrap!important;
+}
+html[data-v28-rework="2"] .campaign-hub .campaign-world-banner-copy>strong{
+  overflow:hidden!important;
+  color:#fff5dc!important;
+  font:900 17px/1.05 Georgia,"Times New Roman",serif!important;
+  text-overflow:ellipsis!important;
+  white-space:nowrap!important;
+  text-shadow:0 1px 3px rgba(0,0,0,.65)!important;
+}
+html[data-v28-rework="2"] .campaign-hub .campaign-world-banner-desc{
+  display:-webkit-box!important;
+  overflow:hidden!important;
+  color:#e8edf5!important;
+  font-size:9px!important;
+  line-height:1.24!important;
+  -webkit-box-orient:vertical!important;
+  -webkit-line-clamp:2!important;
+}
+
+/* Boss cards use the current world's wide frame instead of the generic red bar. */
+html[data-v28-rework="2"] .campaign-hub .campaign-node-detail[data-p4-detail-tone="boss"] .node-detail-head{
+  box-sizing:border-box!important;
+  min-height:98px!important;
+  margin:-3px -3px 11px!important;
+  padding:20px 38px!important;
+  border:0!important;
+  border-radius:0!important;
+  background:
+    var(--world-frame-rect) center/100% 100% no-repeat,
+    linear-gradient(155deg,var(--world-surface),#160713 86%)!important;
+  box-shadow:none!important;
+}
+html[data-v28-rework="2"] .campaign-hub .campaign-node-detail[data-p4-detail-tone="boss"] .node-detail-title{
+  color:#fff5dc!important;
+  text-shadow:0 1px 3px rgba(0,0,0,.7)!important;
+}
+html[data-v28-rework="2"] .campaign-hub .campaign-node-detail[data-p4-detail-tone="boss"] .node-detail-sub{
+  color:var(--world-secondary)!important;
+}
+
+@media(max-width:540px){
+  html[data-v28-rework="2"] .campaign-hub .campaign-world-btn,
+  html[data-v28-rework="2"] .campaign-hub .campaign-world-btn.active{
+    flex-basis:112px!important;
+    width:112px!important;
+    min-height:137px!important;
+  }
+  html[data-v28-rework="2"] .campaign-hub .campaign-world-art{
+    width:78px!important;
+    height:78px!important;
+    flex-basis:78px!important;
+  }
+  html[data-v28-rework="2"] .campaign-hub .campaign-world-desc{
+    min-height:102px!important;
+    grid-template-columns:62px minmax(0,1fr)!important;
+    gap:7px!important;
+    padding:16px 30px!important;
+  }
+  html[data-v28-rework="2"] .campaign-hub .campaign-world-banner-art{
+    width:60px!important;
+    height:60px!important;
+  }
+  html[data-v28-rework="2"] .campaign-hub .campaign-world-banner-copy>strong{
+    font-size:15px!important;
+  }
+  html[data-v28-rework="2"] .campaign-hub .campaign-node-detail[data-p4-detail-tone="boss"] .node-detail-head{
+    min-height:94px!important;
+    padding:18px 31px!important;
+  }
+}
+
+@media(prefers-reduced-motion:reduce){
+  html[data-v28-rework="2"] .campaign-hub .campaign-world-art,
+  html[data-v28-rework="2"] .campaign-hub .campaign-world-banner-art{
+    transition:none!important;
   }
 }
