@@ -1385,7 +1385,11 @@ html[data-v28-rework="2"] body.playing .encounter-rule-banner{
   display:flex!important;
   align-items:center!important;
   justify-content:center!important;
-  background:var(--p3-boss-bar) center/100% 162% no-repeat!important;
+  /* Das Bild traegt einen gemalten roten Schein rund um den Rahmen. Bei
+     162 % Hoehe wurde er um zwei Drittel mitvergroessert und lag als rosa
+     Saum im Banner. Bei 100 % schrumpft er mit dem Bild; wegschneiden
+     laesst er sich nicht, ohne die seitlichen Ornamente zu verlieren. */
+  background:var(--p3-boss-bar) center/100% 100% no-repeat!important;
   font-size:10.5px!important;
   line-height:1.28!important;
   text-align:center}
