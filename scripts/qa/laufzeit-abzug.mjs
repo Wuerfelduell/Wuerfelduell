@@ -203,6 +203,37 @@ const WURZELN = [
   ["faehigkeits-picker", ".v28-ability-picker"]
 ];
 
+/* Der blinde Fleck der Stil-Abzuege, den auch dieses Netz zuerst hatte.
+
+   stil-abzug.mjs und zustands-abzug.mjs entfernen .hidden von allen
+   Elementen, um ueberhaupt jeden Bildschirm messen zu koennen. Damit ist
+   ausgerechnet die Klasse, deren ganze Aufgabe das Verstecken ist, die
+   eine, deren Wirkung sie nie pruefen. Beim !important-Abbau ist genau
+   das passiert: .hidden{display:none} verlor sein !important, verlor
+   damit gegen jedes spaetere display:flex, und 16 Modals lagen
+   gleichzeitig offen - beide Abzuege meldeten trotzdem IDENTISCH.
+
+   Diese Pruefung laeuft deshalb auf der unberuehrten Seite: kein Element
+   mit .hidden darf Flaeche einnehmen. Sie ist absichtlich nicht auf die
+   drei Buehnen beschraenkt - der Boss-Rush-Belohnungskasten lag
+   ausserhalb davon und waere sonst wieder durchgerutscht. */
+async function versteckteSichtbar(seite) {
+  return seite.evaluate(() => {
+    const raus = [];
+    for (const el of document.querySelectorAll(".hidden")) {
+      const c = getComputedStyle(el);
+      const b = el.getBoundingClientRect();
+      if (c.display !== "none" && c.visibility !== "hidden" && b.width > 2 && b.height > 2) {
+        raus.push((el.id ? "#" + el.id : "." + String(el.className).replace(/\s*hidden\s*/, " ").trim().split(" ")[0]) +
+          ` ${c.display} ${Math.round(b.width)}x${Math.round(b.height)}`);
+      }
+    }
+    return raus;
+  });
+}
+
+let versteckFehler = 0;
+
 async function abzug() {
   const alles = {};
   for (const breite of BREITEN) {
@@ -213,6 +244,19 @@ async function abzug() {
       : r.fulfill({ status: 200, contentType: "application/javascript", body: "" }));
     await seite.goto(ADRESSE, { waitUntil: "load" });
     await seite.waitForTimeout(1600);
+
+    // Zuerst auf der unberuehrten Seite: liegt etwas offen, das versteckt sein soll?
+    const offenRuhe = await versteckteSichtbar(seite);
+    await seite.evaluate(() => document.body.classList.add("playing"));
+    await seite.waitForTimeout(400);
+    const offenKampf = await versteckteSichtbar(seite);
+    const offenAlle = [...new Set([...offenRuhe, ...offenKampf])];
+    if (offenAlle.length) {
+      versteckFehler += offenAlle.length;
+      console.log(`  ${breite}px: ${offenAlle.length} Elemente tragen .hidden und nehmen trotzdem Flaeche ein:`);
+      offenAlle.slice(0, 8).forEach(x => console.log(`     ${x}`));
+      if (offenAlle.length > 8) console.log(`     ... und ${offenAlle.length - 8} weitere`);
+    }
 
     await seite.evaluate(buehnenBauen, MARKUP);
     await seite.waitForTimeout(800);
@@ -272,4 +316,11 @@ if (modus !== "pruefen" || !existsSync(REF)) {
     console.log(`${ab} geänderte Werte, ${fehlt} fehlende Knoten, ${neu} neue Knoten`);
     process.exitCode = 1;
   }
+}
+
+if (versteckFehler) {
+  console.log(`\n${versteckFehler} versteckte Elemente sind sichtbar. Das ist unabhaengig vom Vergleich ein Fehler.`);
+  process.exitCode = 1;
+} else {
+  console.log("Versteckte Elemente: keines nimmt Flaeche ein.");
 }

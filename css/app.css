@@ -146,7 +146,14 @@
       cursor:pointer}
 
     button:disabled{cursor:not-allowed}
-    .hidden{display:none}
+    /* Diese Regel MUSS !important tragen. .hidden ist der Schalter, mit dem
+       das ganze Spiel Bildschirme und Modals wegnimmt; sie steht in Schicht 02
+       und verliert ohne !important gegen jedes spaetere display:flex. Ohne sie
+       lagen 16 Modals gleichzeitig offen - Gluecksspiel, High Stakes, Counter,
+       Zweitfaehigkeit, Boss-Rush-Belohnung und die Tutorials uebereinander.
+       Die beiden Stil-Abzuege koennen das nicht bemerken: sie entfernen
+       .hidden von allen Elementen, um ueberhaupt messen zu koennen. */
+    .hidden{display:none!important}
 
     .setup-player{
       margin-top:10px;
@@ -970,11 +977,11 @@
       align-items:center;
       justify-items:center;
       z-index:2}
-    .die-flat-pips.hidden{display:none}
+    .die-flat-pips.hidden{display:none!important}
     .die-flat-pip{width:clamp(5px,2.1vw,12px);aspect-ratio:1/1;border-radius:50%;background:transparent}
     .die-flat-pip.active{background:currentColor;box-shadow:0 1px 2px rgba(0,0,0,.24)}
     .die-flat-question{position:relative;z-index:2;font-size:clamp(32px,9vw,56px);font-weight:1000;line-height:1}
-    .die-flat-question.hidden{display:none}
+    .die-flat-question.hidden{display:none!important}
     html.legacy-flat-dice .die.rolling{animation:legacyFlatDiceRoll .42s linear;will-change:transform}
     @keyframes legacyFlatDiceRoll{
       0%{transform:rotate(0deg) scale(1)}
