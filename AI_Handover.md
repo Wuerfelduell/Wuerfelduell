@@ -12,9 +12,9 @@ raten.
 
 | | |
 |---|---|
-| Version | **28.11.2** |
+| Version | **28.11.3** |
 | Branch | `main` |
-| Letzte Schritte | 28.10/28.11 Supabase und Weltassets (Codex) · Changelog repariert · vier Aufräumschritte an den CSS-Schichten |
+| Letzte Schritte | Welt-Tabs, Rift-Rahmen, Encounter-Köpfe und Boss Rush fertiggestellt · Changelog repariert · vier Aufräumschritte an den CSS-Schichten |
 
 **Zwei Sitzungen arbeiten parallel.** Aufteilung: Codex in
 `39-v28-campaign-polish`, `40-v28-screen-restoration`,
@@ -126,6 +126,29 @@ V28.7.2: **Fließtext bekommt `slim-card`, wiederholte Datenzeilen
 **Regel:** Zierrat gehört in die Ecken, nie in die Kantenmitte. Bei
 9-Slice wird alles zwischen den Ecken gestreckt.
 
+### Weltassets seit 28.11.3
+
+- Die gemalten `world-*-frame-rect.webp` bleiben unzerschnittene
+  3:1-Hintergründe (`background-size: 100% 100%`). Sie sind ausdrücklich
+  **kein** 9-Slice und werden nicht für die hochformatigen Welt-Tabs oder
+  Boss-Rush-Karten missbraucht.
+- Welt-Tabs verwenden den generischen Stufe-2-Rahmen in jedem Zustand.
+  Weltfarbe und Wappen bleiben auch inaktiv sichtbar; gesperrt wird über
+  eine Schlossplakette statt über eine schmutzige Graufilterung gezeigt.
+- Weltbanner und Boss-Detailkopf halten 3:1, solange der Inhalt hineinpasst,
+  und wachsen sonst mit dem Inhalt. Der Rift-Rahmen beschneidet nur seine
+  zwei übermalten Klingenspitzen.
+- `js/29-v28-ui-phase1.js` schreibt den Zustand einer Detailplakette einmal
+  als `data-campaign-state`; Iconwahl und CSS hängen nicht mehr am sichtbaren
+  Wort „GESCHAFFT“. Lange Titel behalten dadurch die ganze Zeilenbreite.
+- Boss Rush weist über `BOSS_RUSH_WORLD_THEME_KEYS` zehn Weltidentitäten
+  deterministisch nach Stufenindex zu. Nur Gegner übernehmen Palette und
+  Wappen; Spielerrahmen bleiben unverändert. Der Live-Status besteht aus
+  vier Feldern: Stufe, Boss, Phase, XP.
+- Browsermessung: 320, 360, 390, 412 und 1280 px. Banner-Contentbox liegt
+  jeweils in der Artwork-Öffnung, Client- und Scrollhöhe sind gleich,
+  Encounter- und Bossnamen sind vollständig.
+
 ---
 
 ## Offen
@@ -162,12 +185,7 @@ V28.7.2: **Fließtext bekommt `slim-card`, wiederholte Datenzeilen
    `26-v28-ui-phase11` — also mitten im Aufräumbereich. Wer das angeht,
    muss die Aufteilung mit der anderen Sitzung neu abstimmen.
 
-4. **Encounter-Titel werden abgeschnitten** — `.node-detail-title` zeigt
-   „5 · Threefold Ver…" statt des vollen Titels. Fiel beim Prüfen von
-   V28.7.2 auf, ist älter als der Rahmen-Durchgang, wurde nicht
-   angefasst.
-
-5. **Rundenauswertung** — Ergebniskarten, Stat-Kacheln und Match-Awards
+4. **Rundenauswertung** — Ergebniskarten, Stat-Kacheln und Match-Awards
    sind inzwischen im echten Rundenende gesehen. Behoben: doppelte
    Pokale (zwei Ursachen) und der ungerahmte „Neue Partie"-Knopf. Offen
    geblieben: Spielernamen und lange Stat-Werte werden abgeschnitten
