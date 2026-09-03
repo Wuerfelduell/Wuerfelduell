@@ -10,8 +10,7 @@
 :root{
   --p8-close-button:url("../assets/ui/v28/png/components/close-button.webp?v=28.2.8");
   --p8-lock-overlay:url("../assets/ui/v28/png/components/locked-padlock-overlay.webp?v=28.2.8");
-  --p8-boss-selected-glow:url("../assets/ui/v28/png/fx/premium-card-selected-glow-green.webp?v=28.2.8");
-}
+  --p8-boss-selected-glow:url("../assets/ui/v28/png/fx/premium-card-selected-glow-green.webp?v=28.2.8")}
 
 /* ---------- One rendered X medallion for every real close action ---------- */
 html[data-v28-rework="2"] .ability-mastery-lab-topbar>button,
@@ -38,15 +37,13 @@ html[data-v28-rework="2"] .aml-info-close{
   text-indent:-9999px;
   appearance:none;
   -webkit-appearance:none;
-  transform:none!important;
-}
+  transform:none!important}
 html[data-v28-rework="2"] .ability-mastery-lab-topbar>button:active,
 html[data-v28-rework="2"] .mastery-locked-card>button:active,
 html[data-v28-rework="2"] .dd-select-close:active,
 html[data-v28-rework="2"] .aml-info-close:active{
   transform:scale(.94)!important;
-  filter:brightness(1.08) drop-shadow(0 3px 6px rgba(2,20,45,.28));
-}
+  filter:brightness(1.08) drop-shadow(0 3px 6px rgba(2,20,45,.28))}
 
 /* ---------- Shared rendered lock layer ---------- */
 html[data-v28-rework="2"] .p8-lock-overlay{
@@ -56,21 +53,17 @@ html[data-v28-rework="2"] .p8-lock-overlay{
   pointer-events:none;
   user-select:none;
   -webkit-user-drag:none;
-  filter:drop-shadow(0 3px 5px rgba(1,15,35,.42));
-}
+  filter:drop-shadow(0 3px 5px rgba(1,15,35,.42))}
 
 /* Locked campaign nodes use the new lock in the centre, not a text mark. */
 html[data-v28-rework="2"] .campaign-hub .campaign-node.locked{
   opacity:1!important;
-  filter:none!important;
-}
+  filter:none!important}
 html[data-v28-rework="2"] .campaign-hub .campaign-node.locked::before{
   opacity:.62!important;
-  filter:grayscale(.38) saturate(.42) brightness(.72) drop-shadow(0 4px 7px rgba(1,13,31,.32))!important;
-}
+  filter:grayscale(.38) saturate(.42) brightness(.72) drop-shadow(0 4px 7px rgba(1,13,31,.32))!important}
 html[data-v28-rework="2"] .campaign-hub .campaign-node.locked>span:first-child{
-  opacity:.30!important;
-}
+  opacity:.30!important}
 html[data-v28-rework="2"] .campaign-hub .campaign-node.locked .node-mark.p8-lock-mark{
   position:absolute!important;
   z-index:8!important;
@@ -80,92 +73,75 @@ html[data-v28-rework="2"] .campaign-hub .campaign-node.locked .node-mark.p8-lock
   display:grid!important;
   place-items:center!important;
   transform:none!important;
-  background:none!important;
-}
+  background:none!important}
 html[data-v28-rework="2"] .campaign-hub .campaign-node.locked .node-mark.p8-lock-mark>.p8-lock-node{
   width:72%!important;
   height:72%!important;
   max-width:none!important;
-  max-height:none!important;
-}
+  max-height:none!important}
 
 /* Compact inline overlays for locked worlds, cosmetics and labels. */
 html[data-v28-rework="2"] .campaign-world-btn:disabled{
   opacity:1!important;
-  filter:none!important;
-}
+  filter:none!important}
 html[data-v28-rework="2"] .campaign-world-btn:disabled .campaign-world-kicker,
 html[data-v28-rework="2"] .campaign-world-btn:disabled .campaign-world-name{
-  opacity:.48!important;
-}
+  opacity:.48!important}
 html[data-v28-rework="2"] .campaign-world-state.p8-lock-host{
   min-height:22px;
   display:flex!important;
   align-items:center!important;
-  justify-content:center!important;
-}
+  justify-content:center!important}
 html[data-v28-rework="2"] .campaign-world-state>.p8-lock-world{
   width:31px;
   height:31px;
-  margin:-6px 0 -5px;
-}
+  margin:-6px 0 -5px}
 html[data-v28-rework="2"] .campaign-ability-chip.locked,
 html[data-v28-rework="2"] #profilesScreen .unlock-chip.locked{
   display:inline-flex!important;
   align-items:center!important;
   opacity:1!important;
-  filter:none!important;
-}
+  filter:none!important}
 html[data-v28-rework="2"] .campaign-ability-chip.locked{
   color:#71849a!important;
-  background:rgba(6,27,55,.42)!important;
-}
+  background:rgba(6,27,55,.42)!important}
 html[data-v28-rework="2"] #profilesScreen .unlock-chip.locked{
-  color:#52677e!important;
-}
+  color:#52677e!important}
 html[data-v28-rework="2"] .p8-lock-inline{
   width:29px;
   height:29px;
   flex:0 0 29px;
   margin:-7px -3px -7px -7px;
-  vertical-align:middle;
-}
+  vertical-align:middle}
 html[data-v28-rework="2"] .campaign-hub .p8-lock-host,
 html[data-v28-rework="2"] #masteryModal .p8-lock-host,
 html[data-v28-rework="2"] #testLab3dLock.p8-lock-host{
-  align-items:center!important;
-}
+  align-items:center!important}
 html[data-v28-rework="2"] .campaign-hub .campaign-value.p8-lock-host,
 html[data-v28-rework="2"] .campaign-hub .campaign-complete.p8-lock-host,
 html[data-v28-rework="2"] .campaign-hub .node-detail-state.p8-lock-host,
 html[data-v28-rework="2"] .campaign-hub .node-detail-row.p8-lock-host{
   display:flex!important;
   justify-content:center!important;
-  gap:3px!important;
-}
+  gap:3px!important}
 html[data-v28-rework="2"] .campaign-hub .node-detail-row.p8-lock-host{
-  justify-content:flex-start!important;
-}
+  justify-content:flex-start!important}
 html[data-v28-rework="2"] .campaign-hub .campaign-mastery-btn:disabled .p5-mastery-button-icon{
-  display:none!important;
-}
+  display:none!important}
 html[data-v28-rework="2"] .campaign-hub .campaign-mastery-btn>.p8-lock-button{
   width:32px;
   height:32px;
   flex:0 0 32px;
-  margin:-8px -3px -8px -8px;
-}
+  margin:-8px -3px -8px -8px}
 
 /* Standard- and Ability-Mastery locks sit directly over their old orbs. */
 html[data-v28-rework="2"] #masteryModal .mastery-node.locked{
   opacity:1!important;
-  filter:none!important;
-}
+  filter:none!important}
 html[data-v28-rework="2"] #masteryModal .mastery-node.locked .mastery-node-orb,
 html[data-v28-rework="2"] #masteryModal .mastery-node.locked .mastery-node-plaque{
   opacity:.48!important;
-  filter:saturate(.45)!important;
-}
+  filter:saturate(.45)!important}
 html[data-v28-rework="2"] #masteryModal .mastery-node.locked>.p8-lock-standard{
   position:absolute;
   z-index:8;
@@ -173,47 +149,39 @@ html[data-v28-rework="2"] #masteryModal .mastery-node.locked>.p8-lock-standard{
   top:50%;
   width:64px;
   height:64px;
-  transform:translateY(-50%);
-}
+  transform:translateY(-50%)}
 html[data-v28-rework="2"] #masteryModal .mastery-ability-locked{
   opacity:1!important;
-  filter:none!important;
-}
+  filter:none!important}
 html[data-v28-rework="2"] #masteryModal .mastery-ability-locked .aml-node-orbit,
 html[data-v28-rework="2"] #masteryModal .mastery-ability-locked .aml-node-core,
 html[data-v28-rework="2"] #masteryModal .mastery-ability-locked .aml-node-tag{
   opacity:.50!important;
-  filter:saturate(.42)!important;
-}
+  filter:saturate(.42)!important}
 html[data-v28-rework="2"] #masteryModal .mastery-ability-locked>.p8-lock-ability{
   position:absolute;
   z-index:8;
   left:0;
   top:5px;
   width:58px;
-  height:58px;
-}
+  height:58px}
 html[data-v28-rework="2"] #masteryModal .mastery-fusion-placeholder>.p5-mastery-lock-icon{
-  display:none!important;
-}
+  display:none!important}
 html[data-v28-rework="2"] #masteryModal .mastery-fusion-placeholder>.p8-lock-fusion{
   width:40px;
   height:40px;
   flex:0 0 40px;
-  margin:-10px -8px -10px -6px;
-}
+  margin:-10px -8px -10px -6px}
 html[data-v28-rework="2"] #masteryModal .mastery-locked-cost.p8-lock-host,
 html[data-v28-rework="2"] #masteryModal .mastery-ability-sheet-head>span.p8-lock-host{
   display:inline-flex!important;
-  gap:3px!important;
-}
+  gap:3px!important}
 html[data-v28-rework="2"] #masteryModal .mastery-locked-cost>.p8-lock-modal,
 html[data-v28-rework="2"] #masteryModal .mastery-ability-sheet-head>span>.p8-lock-note{
   width:34px;
   height:34px;
   flex:0 0 34px;
-  margin:-10px -5px -10px -8px;
-}
+  margin:-10px -5px -10px -8px}
 
 /* Locked Fusion/Keystone placeholders in the visual lab use the same art. */
 html[data-v28-rework="2"] #abilityMasteryLabModal :is(.aml-fusion-node,.aml-keystone-node)>.p8-lock-prototype{
@@ -223,13 +191,11 @@ html[data-v28-rework="2"] #abilityMasteryLabModal :is(.aml-fusion-node,.aml-keys
   top:50%;
   width:82px;
   height:82px;
-  transform:translate(-50%,-50%);
-}
+  transform:translate(-50%,-50%)}
 html[data-v28-rework="2"] #testLab3dLock{
   display:inline-flex!important;
   justify-content:center!important;
-  gap:5px!important;
-}
+  gap:5px!important}
 
 /* ---------- Supplied 1536×1536 boss selection layer ---------- */
 html[data-v28-rework="2"] .campaign-hub .campaign-node.boss>.p8-boss-selected-glow{
@@ -243,15 +209,10 @@ html[data-v28-rework="2"] .campaign-hub .campaign-node.boss>.p8-boss-selected-gl
   object-fit:contain;
   pointer-events:none;
   user-select:none;
-  -webkit-user-drag:none;
-  mix-blend-mode:normal;
-  opacity:.94;
-  animation:none;
-}
+  -webkit-user-drag:none}
 
 html[data-v28-rework="2"] .campaign-hub .campaign-node.p6-farm-node:is(.current,.selected)::before{
-  filter:drop-shadow(0 6px 9px rgba(1,16,39,.36))!important;
-}
+  filter:drop-shadow(0 6px 9px rgba(1,16,39,.36))!important}
 @keyframes p8BossSelectedPulse{
   0%,50%,100%{opacity:.94;filter:none}
 }
@@ -265,23 +226,19 @@ html[data-v28-rework="2"] .campaign-hub .campaign-node.p6-farm-node:is(.current,
     height:47px!important;
     min-width:47px!important;
     min-height:47px!important;
-    flex-basis:47px!important;
-  }
+    flex-basis:47px!important}
   html[data-v28-rework="2"] #masteryModal .mastery-node.locked>.p8-lock-standard{
     left:7px;
     width:56px;
-    height:56px;
-  }
+    height:56px}
   html[data-v28-rework="2"] #masteryModal .mastery-ability-locked>.p8-lock-ability{
     top:8px;
     width:48px;
-    height:48px;
-  }
+    height:48px}
 }
 
 @media(prefers-reduced-motion:reduce){
   html[data-v28-rework="2"] .campaign-hub .campaign-node.boss>.p8-boss-selected-glow{
     animation:none!important;
-    opacity:.94;
-  }
+    opacity:.94}
 }

@@ -18,30 +18,24 @@
   --dd-frame-node-selected:url("../assets/ui/v28/png/frames/campaign-node-selected.webp");
   --dd-frame-achievement:url("../assets/ui/v28/png/frames/achievement-trophy-card.webp");
   --dd-shadow-soft:0 12px 32px rgba(5,32,65,.16);
-  --dd-shadow-deep:0 22px 58px rgba(2,14,34,.38);
-}
+  --dd-shadow-deep:0 22px 58px rgba(2,14,34,.38)}
 
 html[data-v28-rework="2"]{
-  color-scheme:light;
-}
+  color-scheme:light}
 
 /* ---------- Scene system ---------- */
 html[data-v28-rework="2"] body[data-v28-scene="lobby"]{
   color:#fff4d6;
-  background:#06152b var(--dd-bg-lobby) center top/cover fixed no-repeat!important;
-}
+  background:#06152b var(--dd-bg-lobby) center top/cover fixed no-repeat!important}
 html[data-v28-rework="2"] body[data-v28-scene="boss"]{
   color:#fff1dc;
-  background:#070711 var(--dd-bg-boss) center top/cover fixed no-repeat!important;
-}
+  background:#070711 var(--dd-bg-boss) center top/cover fixed no-repeat!important}
 html[data-v28-rework="2"] body[data-v28-scene="lobby"]::before,
 html[data-v28-rework="2"] body[data-v28-scene="boss"]::before{
-  opacity:.06!important;
-}
+  opacity:.06!important}
 html[data-v28-rework="2"] body[data-v28-scene="lobby"]::after,
 html[data-v28-rework="2"] body[data-v28-scene="boss"]::after{
-  opacity:.03!important;
-}
+  opacity:.03!important}
 
 /* ---------- Shared icon language ---------- */
 .dd-inline-icon,
@@ -53,8 +47,7 @@ html[data-v28-rework="2"] body[data-v28-scene="boss"]::after{
   flex:0 0 auto;
   object-fit:contain;
   pointer-events:none;
-  user-select:none;
-}
+  user-select:none}
 .dd-inline-icon{width:1.25em;height:1.25em;margin-right:.36em;vertical-align:-.24em;display:inline-block}
 .dd-option-icon{width:42px;height:42px}
 .dd-trigger-icon{width:30px;height:30px}
@@ -63,13 +56,11 @@ html[data-v28-rework="2"] body[data-v28-scene="boss"]::after{
 
 /* ---------- Main menu: integrated icon plaques ---------- */
 html[data-v28-rework="2"] #mainMenu .menu-actions{
-  gap:7px 6px!important;
-}
+  gap:7px 6px!important}
 html[data-v28-rework="2"] #mainMenu .menu-actions>button{
   position:relative;
   overflow:visible!important;
-  isolation:isolate;
-}
+  isolation:isolate}
 html[data-v28-rework="2"] #mainMenu .menu-actions button.menu-play,
 html[data-v28-rework="2"] #mainMenu .menu-actions button.menu-online,
 html[data-v28-rework="2"] #mainMenu .menu-actions button.menu-campaign,
@@ -81,11 +72,9 @@ html[data-v28-rework="2"] #mainMenu .menu-actions button.menu-tutorial{
   column-gap:5px;
   min-height:82px!important;
   padding:8px 18px 8px 9px!important;
-  line-height:1.05!important;
-}
+  line-height:1.05!important}
 html[data-v28-rework="2"] #mainMenu .menu-actions button.menu-play{
-  min-height:90px!important;
-}
+  min-height:90px!important}
 html[data-v28-rework="2"] #mainMenu .menu-actions button.menu-play .menu-icon,
 html[data-v28-rework="2"] #mainMenu .menu-actions button.menu-online .menu-icon,
 html[data-v28-rework="2"] #mainMenu .menu-actions button.menu-campaign .menu-icon,
@@ -101,14 +90,12 @@ html[data-v28-rework="2"] #mainMenu .menu-actions button.menu-tutorial .menu-ico
   background:none!important;
   box-shadow:none!important;
   transform:none!important;
-  filter:drop-shadow(0 5px 5px rgba(22,55,89,.20));
-}
+  filter:drop-shadow(0 5px 5px rgba(22,55,89,.20))}
 html[data-v28-rework="2"] #mainMenu .menu-actions button.menu-play .menu-icon img,
 html[data-v28-rework="2"] #mainMenu .menu-actions button.menu-online .menu-icon img,
 html[data-v28-rework="2"] #mainMenu .menu-actions button.menu-campaign .menu-icon img,
 html[data-v28-rework="2"] #mainMenu .menu-actions button.menu-tutorial .menu-icon img{
-  width:100%!important;height:100%!important;
-}
+  width:100%!important;height:100%!important}
 html[data-v28-rework="2"] #mainMenu .online-beta-badge{
   grid-column:3;
   grid-row:1;
@@ -121,18 +108,15 @@ html[data-v28-rework="2"] #mainMenu .online-beta-badge{
   box-shadow:none!important;
   display:flex;
   align-items:center;
-  justify-content:center;
-}
+  justify-content:center}
 html[data-v28-rework="2"] #mainMenu .online-beta-badge img{
-  width:100%;height:100%;object-fit:contain;
-}
+  width:100%;height:100%;object-fit:contain}
 html[data-v28-rework="2"] #mainMenu .menu-actions button.menu-play::after,
 html[data-v28-rework="2"] #mainMenu .menu-actions button.menu-campaign::after,
 html[data-v28-rework="2"] #mainMenu .menu-actions button.menu-tutorial::after{
   content:"";
   grid-column:3;
-  width:1px;height:1px;
-}
+  width:1px;height:1px}
 html[data-v28-rework="2"] #mainMenu .menu-actions button.menu-profile,
 html[data-v28-rework="2"] #mainMenu .menu-actions button.menu-account,
 html[data-v28-rework="2"] #mainMenu .menu-actions button.menu-achievements,
@@ -142,9 +126,7 @@ html[data-v28-rework="2"] #mainMenu #menuSettingsBtn,
 html[data-v28-rework="2"] #mainMenu #menuRulesBtn,
 html[data-v28-rework="2"] #mainMenu #menuChangelogBtn{
   min-height:88px!important;
-  padding:10px 8px!important;
-  gap:4px!important;
-}
+  gap:4px!important}
 html[data-v28-rework="2"] #mainMenu .menu-actions button.menu-profile .menu-icon,
 html[data-v28-rework="2"] #mainMenu .menu-actions button.menu-account .menu-icon,
 html[data-v28-rework="2"] #mainMenu .menu-actions button.menu-achievements .menu-icon,
@@ -152,14 +134,11 @@ html[data-v28-rework="2"] #mainMenu .menu-actions button.menu-prestige .menu-ico
 html[data-v28-rework="2"] #mainMenu #menuStatsBtn .menu-icon,
 html[data-v28-rework="2"] #mainMenu #menuSettingsBtn .menu-icon,
 html[data-v28-rework="2"] #mainMenu #menuRulesBtn .menu-icon,
-html[data-v28-rework="2"] #mainMenu #menuChangelogBtn .menu-icon{
-  width:46px!important;height:46px!important;margin:0 auto 2px!important;
-}
+html[data-v28-rework="2"] #mainMenu #menuChangelogBtn .menu-icon{margin:0 auto 2px!important}
 html[data-v28-rework="2"] #mainMenu .menu-account .online-beta-badge{
   position:absolute;
   right:6px;top:5px;
-  width:48px;height:25px;
-}
+  width:48px;height:25px}
 
 /* ---------- Real asset button system ---------- */
 html[data-v28-rework="2"] .screen-card button.good,
@@ -174,8 +153,7 @@ html[data-v28-rework="2"] .cloud-account-shell button.good{
   background:var(--dd-frame-button-navy) center/100% 100% no-repeat!important;
   color:#fff4d5!important;
   box-shadow:none!important;
-  text-shadow:0 1px 3px rgba(2,16,38,.68)!important;
-}
+  text-shadow:0 1px 3px rgba(2,16,38,.68)!important}
 html[data-v28-rework="2"] button.gold,
 html[data-v28-rework="2"] button.purple,
 html[data-v28-rework="2"] .campaign-mastery-btn{
@@ -185,8 +163,7 @@ html[data-v28-rework="2"] .campaign-mastery-btn{
   background:var(--dd-frame-button-gold) center/100% 100% no-repeat!important;
   color:#0b2c59!important;
   box-shadow:none!important;
-  text-shadow:0 1px 0 rgba(255,255,255,.72)!important;
-}
+  text-shadow:0 1px 0 rgba(255,255,255,.72)!important}
 /* #quitConfirmBtn stand hier bis V28.7.3 als dritter Selektor. Er ist
    entfernt, weil jede der acht Eigenschaften in 18-v28-ui-phase3,
    20-v28-ui-phase5, 22-v28-ui-phase7, 24-v28-ui-phase9 oder
@@ -202,12 +179,10 @@ html[data-v28-rework="2"] .profile-delete{
   background:var(--dd-frame-button-danger) center/100% 100% no-repeat!important;
   color:#fff5e8!important;
   box-shadow:none!important;
-  text-shadow:0 1px 3px rgba(38,2,9,.72)!important;
-}
+  text-shadow:0 1px 3px rgba(38,2,9,.72)!important}
 html[data-v28-rework="2"] button:disabled{
   filter:grayscale(.36) saturate(.50)!important;
-  opacity:.48!important;
-}
+  opacity:.48!important}
 
 /* ---------- Navigation buttons with real round frame ---------- */
 html[data-v28-rework="2"] .screen-topbar>button,
@@ -221,14 +196,12 @@ html[data-v28-rework="2"] .mastery-locked-card>button{
     url("../assets/ui/v28/svg/navigation/back.svg") center/39% 39% no-repeat,
     var(--dd-frame-icon-round) center/contain no-repeat!important;
   color:transparent!important;font-size:0!important;
-  box-shadow:0 4px 12px rgba(5,29,61,.18)!important;
-}
+  box-shadow:0 4px 12px rgba(5,29,61,.18)!important}
 html[data-v28-rework="2"] .ability-mastery-lab-topbar>button,
 html[data-v28-rework="2"] .mastery-locked-card>button{
   background:
     url("../assets/ui/v28/svg/navigation/close-x.svg") center/36% 36% no-repeat,
-    var(--dd-frame-icon-round) center/contain no-repeat!important;
-}
+    var(--dd-frame-icon-round) center/contain no-repeat!important}
 
 /* ---------- Custom selects: remove grey Android menus ---------- */
 html[data-v28-rework="2"] select.dd-native-select{
@@ -236,8 +209,7 @@ html[data-v28-rework="2"] select.dd-native-select{
   width:1px!important;height:1px!important;
   opacity:0!important;
   pointer-events:none!important;
-  overflow:hidden!important;
-}
+  overflow:hidden!important}
 .dd-select-trigger{
   width:100%;
   min-height:48px;
@@ -251,13 +223,11 @@ html[data-v28-rework="2"] select.dd-native-select{
   border-radius:12px!important;
   color:var(--dd-ink)!important;
   background:linear-gradient(180deg,#fffdf6,#f0e4ca)!important;
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.90),0 4px 10px rgba(30,58,87,.08)!important;
-}
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.90),0 4px 10px rgba(30,58,87,.08)!important}
 .dd-select-trigger::after{
   content:"";
   width:22px;height:22px;
-  background:url("../assets/ui/v28/svg/navigation/chevron-down.svg") center/contain no-repeat;
-}
+  background:url("../assets/ui/v28/svg/navigation/chevron-down.svg") center/contain no-repeat}
 .dd-select-trigger>span{min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .dd-select-trigger.hidden{display:none!important}
 .dd-select-trigger:disabled{opacity:.48!important}
@@ -267,8 +237,7 @@ html[data-v28-rework="2"] select.dd-native-select{
   padding:max(18px,env(safe-area-inset-top)) 14px max(18px,env(safe-area-inset-bottom));
   background:rgba(4,17,38,.78);
   -webkit-backdrop-filter:blur(10px) saturate(.82);
-  backdrop-filter:blur(10px) saturate(.82);
-}
+  backdrop-filter:blur(10px) saturate(.82)}
 .dd-select-picker.hidden{display:none!important}
 .dd-select-panel{
   width:min(560px,100%);max-height:min(82dvh,760px);
@@ -280,8 +249,7 @@ html[data-v28-rework="2"] select.dd-native-select{
   border-image-width:44px 24px 34px;
   border-image-repeat:stretch;
   background:var(--dd-ivory);
-  box-shadow:var(--dd-shadow-deep);
-}
+  box-shadow:var(--dd-shadow-deep)}
 .dd-select-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:-22px 0 12px;padding:0 2px 10px;border-bottom:1px solid rgba(174,126,40,.24)}
 .dd-select-title{font:800 clamp(21px,5.8vw,29px)/1.05 Georgia,"Times New Roman",serif;color:var(--dd-ink)}
 .dd-select-close{
@@ -289,8 +257,7 @@ html[data-v28-rework="2"] select.dd-native-select{
   background:
     url("../assets/ui/v28/svg/navigation/close-x.svg") center/36% 36% no-repeat,
     var(--dd-frame-icon-round) center/contain no-repeat!important;
-  color:transparent!important;font-size:0!important;box-shadow:none!important;
-}
+  color:transparent!important;font-size:0!important;box-shadow:none!important}
 .dd-select-options{display:grid;gap:5px;overflow:auto;overscroll-behavior:contain;padding:2px 0 8px}
 .dd-select-option{
   min-height:54px;
@@ -301,12 +268,10 @@ html[data-v28-rework="2"] select.dd-native-select{
   text-align:left;
   color:var(--dd-ink)!important;
   background:var(--dd-frame-card-small) center/100% 100% no-repeat!important;
-  border:0!important;border-radius:0!important;box-shadow:none!important;
-}
+  border:0!important;border-radius:0!important;box-shadow:none!important}
 .dd-select-option.selected{
   color:#fff4d5!important;
-  background:var(--dd-frame-button-navy) center/100% 100% no-repeat!important;
-}
+  background:var(--dd-frame-button-navy) center/100% 100% no-repeat!important}
 .dd-select-option .dd-option-check{opacity:0;font-size:20px;color:#f7d77a}
 .dd-select-option.selected .dd-option-check{opacity:1}
 
@@ -317,11 +282,9 @@ html[data-v28-rework="2"] #setup .seat-box{
   min-height:52px;
   padding:11px 18px!important;
   background:var(--dd-frame-button-gold) center/100% 100% no-repeat!important;
-  color:#0c2d59!important;border:0!important;border-radius:0!important;
-}
+  color:#0c2d59!important;border:0!important;border-radius:0!important}
 html[data-v28-rework="2"] #setup .ability-roll .ability-desc{
-  margin-top:8px;padding-top:8px;border-top:1px solid rgba(110,77,21,.22);
-}
+  margin-top:8px;padding-top:8px;border-top:1px solid rgba(110,77,21,.22)}
 
 /* ---------- Campaign worlds, nodes and details ---------- */
 html[data-v28-rework="2"] .campaign-hub .campaign-world-btn{
@@ -334,65 +297,44 @@ html[data-v28-rework="2"] .campaign-hub .campaign-world-btn{
   border-radius:0!important;
   background:var(--dd-ivory)!important;
   box-shadow:none!important;
-  padding:7px 4px!important;
-}
+  padding:7px 4px!important}
 html[data-v28-rework="2"] .campaign-hub .campaign-world-btn.active{
   border:0!important;
   padding:16px 36px!important;
   background:var(--dd-frame-button-navy) center/100% 100% no-repeat!important;
-  color:#fff2ce!important;
-}
+  color:#fff2ce!important}
 html[data-v28-rework="2"] .campaign-node{
   position:relative;
-  isolation:isolate;
-}
+  isolation:isolate}
 html[data-v28-rework="2"] .campaign-node.selected::after,
 html[data-v28-rework="2"] .campaign-node.current::after{
   content:"";position:absolute;z-index:-1;inset:-12px;pointer-events:none;
   background:var(--dd-frame-node-selected) center/contain no-repeat;
-  filter:drop-shadow(0 0 8px rgba(255,213,98,.30));
-}
+  filter:drop-shadow(0 0 8px rgba(255,213,98,.30))}
 html[data-v28-rework="2"] .campaign-node-detail{
-  box-sizing:border-box;
-  overflow:visible!important;
 
   border-image-source:var(--dd-frame-card-small)!important;
   border-image-slice:76 168 76 168 fill!important;
   border-image-width:20px 34px!important;
-  border-image-repeat:stretch!important;
-  border-radius:0!important;
-  background:var(--dd-ivory)!important;
-  padding:12px 6px 14px!important;
-  color:var(--dd-ink)!important;
-}
+  border-image-repeat:stretch!important}
 /* Boss frame is a genuine border-image layout surface. It never floats over text. */
 html[data-v28-rework="2"] .campaign-node-detail.v28-boss-detail{
 
   border-image-source:var(--dd-frame-boss)!important;
   border-image-slice:122 190 122 190 fill!important;
   border-image-width:30px 45px!important;
-  border-image-repeat:stretch!important;
-  background:#2b0d18!important;
-  padding:18px 8px 20px!important;
-  min-height:210px;
-  color:#fff1de!important;
-  box-shadow:0 16px 38px rgba(50,5,16,.22)!important;
-}
+  border-image-repeat:stretch!important}
 
 html[data-v28-rework="2"] .campaign-node-detail.v28-prestige-detail:not(.v28-boss-detail){
 
   border-image-source:var(--dd-frame-prestige)!important;
   border-image-slice:154 270 154 270 fill!important;
   border-image-width:30px 48px!important;
-  border-image-repeat:stretch!important;
-  background:#102652!important;
-  padding:16px 8px 18px!important;
-}
+  border-image-repeat:stretch!important}
 
 /* ---------- Campaign picker: title and options are real layout items ---------- */
 html[data-v28-rework="2"] .campaign-mode-panel{
-  padding:12px 8px 14px!important;
-}
+  padding:12px 8px 14px!important}
 html[data-v28-rework="2"] .campaign-mode-panel>.utility-kicker{
   box-sizing:border-box;
   width:min(340px,92%);
@@ -402,8 +344,7 @@ html[data-v28-rework="2"] .campaign-mode-panel>.utility-kicker{
   padding:12px 42px!important;
   color:#fff2ca!important;
   background:var(--dd-frame-button-navy) center/100% 100% no-repeat!important;
-  text-shadow:0 1px 3px rgba(2,17,41,.70)!important;
-}
+  text-shadow:0 1px 3px rgba(2,17,41,.70)!important}
 html[data-v28-rework="2"] .campaign-mode-grid{gap:10px!important}
 html[data-v28-rework="2"] .campaign-mode-choice{
   box-sizing:border-box;
@@ -417,40 +358,28 @@ html[data-v28-rework="2"] .campaign-mode-choice{
   border:0!important;border-radius:0!important;
   background:var(--dd-frame-card-small) center/100% 100% no-repeat!important;
   box-shadow:none!important;
-  text-align:left!important;
-}
+  text-align:left!important}
 html[data-v28-rework="2"] .campaign-mode-choice>.dd-choice-icon{grid-column:1;grid-row:1/3}
 html[data-v28-rework="2"] .campaign-mode-choice>strong{grid-column:2;grid-row:1;align-self:end}
 html[data-v28-rework="2"] .campaign-mode-choice>span{grid-column:2;grid-row:2;align-self:start}
 
 /* ---------- Ability bonus popup: plaque no longer collides with frame ---------- */
 html[data-v28-rework="2"] .second-ability-panel{
-  padding:12px 7px 14px!important;
-}
+  padding:12px 7px 14px!important}
 html[data-v28-rework="2"] .second-ability-panel>.second-ability-kicker{
   box-sizing:border-box;
-  width:min(390px,94%);
-  min-height:52px;
-  display:flex;align-items:center;justify-content:center;
-  margin:0 auto 14px!important;
-  padding:12px 42px!important;
-  color:#fff2c8!important;
-  background:var(--dd-frame-button-navy) center/100% 100% no-repeat!important;
-  text-shadow:0 1px 3px rgba(2,17,41,.72)!important;
-}
+  text-shadow:0 1px 3px rgba(2,17,41,.72)!important}
 html[data-v28-rework="2"] .second-ability-title{margin-top:0!important}
 
 /* ---------- Ability picker with the 24 real icons ---------- */
 html[data-v28-rework="2"] .v28-ability-picker-head{
-  margin:0!important;padding:2px 4px 13px!important;
-}
+  margin:0!important;padding:2px 4px 13px!important}
 html[data-v28-rework="2"] .v28-ability-picker-kicker{
   width:min(360px,94%);min-height:48px;
   display:flex;align-items:center;justify-content:center;
   margin:0 auto 12px!important;padding:10px 38px!important;
   color:#fff2ca!important;
-  background:var(--dd-frame-button-navy) center/100% 100% no-repeat!important;
-}
+  background:var(--dd-frame-button-navy) center/100% 100% no-repeat!important}
 html[data-v28-rework="2"] .v28-ability-picker-title{margin:0!important}
 html[data-v28-rework="2"] .v28-ability-option{
   min-height:62px!important;
@@ -466,8 +395,7 @@ html[data-v28-rework="2"] .v28-ability-option{
   border-radius:0!important;
   background:var(--dd-ivory)!important;
   color:var(--dd-ink)!important;
-  box-shadow:none!important;
-}
+  box-shadow:none!important}
 
 html[data-v28-rework="2"] .v28-icon{width:48px;height:48px;display:flex;align-items:center;justify-content:center}
 html[data-v28-rework="2"] .v28-icon img{width:48px;height:48px;object-fit:contain}
@@ -482,14 +410,12 @@ html[data-v28-rework="2"] .v28-ability-trigger{
   border-radius:0!important;
   background:var(--dd-ivory)!important;
   color:var(--dd-ink)!important;
-  box-shadow:none!important;
-}
-html[data-v28-rework="2"] .v28-ability-trigger>span{display:flex;align-items:center;gap:9px;min-width:0}
+  box-shadow:none!important}
+html[data-v28-rework="2"] .v28-ability-trigger>span{gap:9px}
 
 /* ---------- Profile, Achievement and Trophy surfaces ---------- */
 html[data-v28-rework="2"] body[data-v28-scene="lobby"] .screen-card{
-  background:rgba(255,249,231,.97)!important;
-}
+  background:rgba(255,249,231,.97)!important}
 html[data-v28-rework="2"] .profile-card,
 html[data-v28-rework="2"] .achievement-card,
 html[data-v28-rework="2"] .prestige-item{
@@ -502,8 +428,7 @@ html[data-v28-rework="2"] .prestige-item{
   border-radius:0!important;
   background:var(--dd-ivory)!important;
   padding:10px 5px 12px!important;
-  box-shadow:var(--dd-shadow-soft)!important;
-}
+  box-shadow:var(--dd-shadow-soft)!important}
 html[data-v28-rework="2"] .achievement-card.dd-achieved,
 html[data-v28-rework="2"] .prestige-item.owned,
 html[data-v28-rework="2"] .prestige-item.expensive{
@@ -514,8 +439,7 @@ html[data-v28-rework="2"] .prestige-item.expensive{
   border-image-repeat:stretch!important;
   background:#0a2b58!important;
   color:#fff2cc!important;
-  padding:10px 2px 14px!important;
-}
+  padding:10px 2px 14px!important}
 html[data-v28-rework="2"] .achievement-card.dd-achieved .achievement-desc,
 html[data-v28-rework="2"] .achievement-card.dd-achieved .battle-tag,
 html[data-v28-rework="2"] .prestige-item.owned .prestige-item-desc,
@@ -535,48 +459,41 @@ html[data-v28-rework="2"] body.playing .player{
   border-radius:0!important;
   background:#082751!important;
   padding:9px 6px 11px!important;
-  box-shadow:none!important;
-}
+  box-shadow:none!important}
 html[data-v28-rework="2"] body.playing .player>*{position:relative;z-index:2}
 html[data-v28-rework="2"] body.playing .player.active::after{
   content:"";position:absolute;z-index:3;inset:-11px;pointer-events:none;
   background:var(--dd-frame-player-active) center/100% 100% no-repeat;
   mix-blend-mode:screen;
-  filter:drop-shadow(0 0 8px rgba(39,169,255,.30));
-}
+  filter:drop-shadow(0 0 8px rgba(39,169,255,.30))}
 html[data-v28-rework="2"] body.playing .player.v28-boss-player{
 
   border-image-source:var(--dd-frame-player-boss)!important;
   border-image-slice:110 140 110 140 fill!important;
   border-image-width:26px 32px!important;
   border-image-repeat:stretch!important;
-  background:#2b0b17!important;
-}
+  background:#2b0b17!important}
 html[data-v28-rework="2"] body.playing .hp,
 html[data-v28-rework="2"] body.playing .ability-tag,
 html[data-v28-rework="2"] body.playing .bot-tag,
 html[data-v28-rework="2"] body.playing .seat-tag,
 html[data-v28-rework="2"] body.playing .score-badge{
-  display:flex;align-items:center;gap:2px;
-}
+  display:flex;align-items:center;gap:2px}
 html[data-v28-rework="2"] body[data-v28-scene="boss"] #game:not(.hidden){
-  background:linear-gradient(180deg,rgba(3,3,10,.18),rgba(19,2,9,.28)),var(--dd-bg-boss) center top/cover fixed no-repeat!important;
-}
+  background:linear-gradient(180deg,rgba(3,3,10,.18),rgba(19,2,9,.28)),var(--dd-bg-boss) center top/cover fixed no-repeat!important}
 html[data-v28-rework="2"] body.playing #primaryBtn{
   min-height:60px!important;
   padding:12px 42px!important;
   border:0!important;border-radius:0!important;
   background:var(--dd-frame-button-navy) center/100% 100% no-repeat!important;
-  color:#fff3cf!important;box-shadow:none!important;
-}
+  color:#fff3cf!important;box-shadow:none!important}
 html[data-v28-rework="2"] body.playing .game-menu-btn{
   display:flex;align-items:center;gap:6px;
   min-height:44px!important;
   border:0!important;border-radius:0!important;
   padding:8px 28px!important;
   background:var(--dd-frame-button-navy) center/100% 100% no-repeat!important;
-  color:#fff2cc!important;box-shadow:none!important;
-}
+  color:#fff2cc!important;box-shadow:none!important}
 
 /* ---------- Mobile density and safe-area tuning ---------- */
 @media(max-width:540px){
@@ -587,8 +504,7 @@ html[data-v28-rework="2"] body.playing .game-menu-btn{
     grid-template-columns:56px minmax(0,1fr) 50px;
     min-height:76px!important;
     padding:7px 12px 7px 7px!important;
-    font-size:clamp(19px,5.5vw,23px)!important;
-  }
+    font-size:clamp(19px,5.5vw,23px)!important}
   html[data-v28-rework="2"] #mainMenu .menu-actions button.menu-play{min-height:82px!important}
   html[data-v28-rework="2"] #mainMenu .menu-actions button.menu-play .menu-icon,
   html[data-v28-rework="2"] #mainMenu .menu-actions button.menu-online .menu-icon,
@@ -608,8 +524,7 @@ html[data-v28-rework="2"] body.playing .game-menu-btn{
     grid-template-columns:44px 34px minmax(0,1fr)!important;
     padding:15px 12px 13px 18px!important;
     border-width:20px 24px 20px 36px!important;
-    border-image-width:20px 24px 20px 36px!important;
-  }
+    border-image-width:20px 24px 20px 36px!important}
   .dd-ability-icon{width:44px;height:44px}
   .dd-select-panel{border-width:40px 18px 30px;border-image-width:40px 18px 30px}
   .dd-select-head{margin-top:-19px}
@@ -617,17 +532,14 @@ html[data-v28-rework="2"] body.playing .game-menu-btn{
   html[data-v28-rework="2"] body.playing .player{
     border-width:20px 22px!important;
     border-image-width:20px 22px!important;
-    padding:7px 2px 9px!important;
-  }
+    padding:7px 2px 9px!important}
   html[data-v28-rework="2"] body.playing .player.v28-boss-player{
     border-width:21px 23px!important;
-    border-image-width:21px 23px!important;
-  }
+    border-image-width:21px 23px!important}
   html[data-v28-rework="2"] .campaign-node-detail.v28-boss-detail{
     border-width:25px 31px!important;
     border-image-width:25px 31px!important;
-    padding:14px 2px 16px!important;
-  }
+    padding:14px 2px 16px!important}
 }
 
 @media(max-width:370px){
@@ -636,8 +548,7 @@ html[data-v28-rework="2"] body.playing .game-menu-btn{
   html[data-v28-rework="2"] #mainMenu .menu-actions button.menu-campaign,
   html[data-v28-rework="2"] #mainMenu .menu-actions button.menu-tutorial{
     grid-template-columns:50px minmax(0,1fr) 44px;
-    font-size:19px!important;
-  }
+    font-size:19px!important}
   html[data-v28-rework="2"] #mainMenu .menu-actions button.menu-play .menu-icon,
   html[data-v28-rework="2"] #mainMenu .menu-actions button.menu-online .menu-icon,
   html[data-v28-rework="2"] #mainMenu .menu-actions button.menu-campaign .menu-icon,

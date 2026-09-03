@@ -14,25 +14,21 @@
 html[data-v28-rework="2"] .second-ability-card{
   --p11-choice-icon-size:64px;
   min-height:84px!important;
-  padding-block:0!important;
-}
+  padding-block:0!important}
 html[data-v28-rework="2"] .second-ability-card>.dd-ability-icon{
   left:-44px!important;
   width:var(--p11-choice-icon-size)!important;
   height:var(--p11-choice-icon-size)!important;
   max-width:none!important;
   max-height:none!important;
-  object-fit:contain!important;
-}
+  object-fit:contain!important}
 html[data-v28-rework="2"] .second-ability-card>.name{
   padding-inline:18px 24px!important;
-  line-height:1.06!important;
-}
+  line-height:1.06!important}
 
 /* ---------- Quit modal: no native/native-theme rectangle below the PNG ---------- */
 html[data-v28-rework="2"] #quitModal .utility-kicker{
-  transform:translateY(11px)!important;
-}
+  transform:translateY(11px)!important}
 html[data-v28-rework="2"] #quitConfirmBtn,
 html[data-v28-rework="2"] #quitConfirmBtn:hover,
 html[data-v28-rework="2"] #quitConfirmBtn:focus,
@@ -46,20 +42,16 @@ html[data-v28-rework="2"] #quitConfirmBtn:active{
   background-image:none!important;
   box-shadow:none!important;
   filter:none!important;
-  -webkit-tap-highlight-color:transparent!important;
-}
+  -webkit-tap-highlight-color:transparent!important}
 html[data-v28-rework="2"] #quitConfirmBtn::before{
   z-index:0!important;
-  background-color:transparent!important;
-}
+  background-color:transparent!important}
 html[data-v28-rework="2"] #quitConfirmBtn::after{
   content:none!important;
   display:none!important;
-  background:none!important;
-}
+  background:none!important}
 html[data-v28-rework="2"] #quitConfirmBtn>.p5-button-label{
-  transform:translateY(2px)!important;
-}
+  transform:translateY(2px)!important}
 
 /* ---------- Campaign nodes: stable number, size and selected state ----------
    Phase 8 prepends the selected-glow image. Therefore :first-child no longer
@@ -73,13 +65,11 @@ html[data-v28-rework="2"] .campaign-hub .campaign-node.world-boss{
   scale:1!important;
   animation:none!important;
   transition:none!important;
-  will-change:auto!important;
-}
+  will-change:auto!important}
 html[data-v28-rework="2"] .campaign-hub .campaign-node.boss,
 html[data-v28-rework="2"] .campaign-hub .campaign-node.world-boss{
   width:min(68px,100%)!important;
-  aspect-ratio:1/1!important;
-}
+  aspect-ratio:1/1!important}
 html[data-v28-rework="2"] .campaign-hub .campaign-node>span:first-of-type{
   position:absolute!important;
   z-index:3!important;
@@ -94,24 +84,16 @@ html[data-v28-rework="2"] .campaign-hub .campaign-node>span:first-of-type{
   transition:none!important;
   font-size:16px!important;
   line-height:1!important;
-  text-align:center!important;
-}
+  text-align:center!important}
 html[data-v28-rework="2"] .campaign-hub .campaign-node.p6-farm-node>span:first-of-type{
   inset:8% 12% 25%!important;
   font-size:18px!important;
   color:#fff0bd!important;
-  text-shadow:0 2px 3px rgba(1,13,31,.86)!important;
-}
+  text-shadow:0 2px 3px rgba(1,13,31,.86)!important}
 html[data-v28-rework="2"] .campaign-hub .campaign-node.boss>.p8-boss-selected-glow{
   opacity:1!important;
-  transform:none!important;
   rotate:0deg!important;
-  scale:1!important;
-  animation:none!important;
-  transition:none!important;
-  filter:drop-shadow(0 0 5px rgba(23,240,106,.30))!important;
-  will-change:auto!important;
-}
+  scale:1!important}
 
 /* The detail panel and its asynchronously decorated contents must not inherit
    generic button/card transitions. This prevents the lower encounter card from
@@ -122,45 +104,35 @@ html[data-v28-rework="2"] .campaign-node-detail::before,
 html[data-v28-rework="2"] .campaign-node-detail::after{
   animation:none!important;
   transition:none!important;
-  will-change:auto!important;
-}
+  will-change:auto!important}
 html[data-v28-rework="2"] .campaign-node-detail{
   transform:none!important;
-  scale:1!important;
-}
+  scale:1!important}
 
 @media(max-width:540px){
   html[data-v28-rework="2"] .second-ability-card{
     --p11-choice-icon-size:60px;
-    min-height:80px!important;
-  }
+    min-height:80px!important}
   html[data-v28-rework="2"] .second-ability-card>.dd-ability-icon{
-    left:-43px!important;
-  }
+    left:-43px!important}
   html[data-v28-rework="2"] .campaign-hub .campaign-node.boss,
   html[data-v28-rework="2"] .campaign-hub .campaign-node.world-boss{
-    width:min(58px,100%)!important;
-  }
+    width:min(58px,100%)!important}
   html[data-v28-rework="2"] .campaign-hub .campaign-node.p6-farm-node>span:first-of-type{
-    font-size:15px!important;
-  }
+    font-size:15px!important}
 }
 
 @media(max-width:390px){
   html[data-v28-rework="2"] .second-ability-card{
     --p11-choice-icon-size:56px;
-    min-height:76px!important;
-  }
+    min-height:76px!important}
   html[data-v28-rework="2"] .second-ability-card>.dd-ability-icon{
-    left:-39px!important;
-  }
+    left:-39px!important}
   html[data-v28-rework="2"] .second-ability-card>.name{
     padding-inline:14px 21px!important;
-    font-size:17px!important;
-  }
+    font-size:17px!important}
   html[data-v28-rework="2"] .campaign-hub .campaign-node>span:first-of-type{
-    font-size:14px!important;
-  }
+    font-size:14px!important}
 }
 
 /* V28.3.6 — contained front screens + campaign jitter (folded into last UI sheet) */
@@ -170,8 +142,7 @@ html.wd-front-scroll-lock body{
   overflow:hidden!important;
   height:100dvh!important;
   max-height:100dvh!important;
-  overscroll-behavior:none!important;
-}
+  overscroll-behavior:none!important}
 
 #abilitiesScreen.hidden,
 #changelogScreen.hidden,
@@ -190,8 +161,7 @@ html.wd-front-scroll-lock body{
   max-height:calc(100dvh - 12px)!important;
   min-height:0!important;
   overflow:hidden!important;
-  box-sizing:border-box!important;
-}
+  box-sizing:border-box!important}
 
 .screen-card:not(.hidden)>.screen-scroll-inner{
   display:flex!important;
@@ -199,8 +169,7 @@ html.wd-front-scroll-lock body{
   flex:1 1 auto!important;
   min-height:0!important;
   height:100%!important;
-  overflow:hidden!important;
-}
+  overflow:hidden!important}
 
 #abilitiesScreen:not(.hidden) .ability-list,
 #abilitiesScreen:not(.hidden) #allAbilitiesList,
@@ -215,8 +184,7 @@ html.wd-front-scroll-lock body{
   -webkit-overflow-scrolling:touch;
   overscroll-behavior:contain;
   padding-bottom:12px!important;
-  box-sizing:border-box!important;
-}
+  box-sizing:border-box!important}
 
 html[data-v28-rework="2"] .campaign-hub .campaign-node,
 html[data-v28-rework="2"] .campaign-hub .campaign-node.current,
@@ -230,8 +198,7 @@ html[data-v28-rework="2"] .campaign-hub .campaign-node.boss .node-mark{
   rotate:0deg!important;
   scale:1!important;
   will-change:auto!important;
-  filter:none!important;
-}
+  filter:none!important}
 
 html[data-v28-rework="2"] .campaign-hub .campaign-node::before,
 html[data-v28-rework="2"] .campaign-hub .campaign-node::after,
@@ -241,8 +208,7 @@ html[data-v28-rework="2"] .campaign-hub .campaign-node.p6-farm-node.current::bef
 html[data-v28-rework="2"] .campaign-hub .campaign-node.p6-farm-node.selected::before{
   animation:none!important;
   transition:none!important;
-  filter:none!important;
-}
+  filter:none!important}
 
 html[data-v28-rework="2"] .campaign-hub .campaign-node.boss>.p8-boss-selected-glow{
   mix-blend-mode:normal!important;
@@ -250,12 +216,10 @@ html[data-v28-rework="2"] .campaign-hub .campaign-node.boss>.p8-boss-selected-gl
   transition:none!important;
   filter:none!important;
   transform:none!important;
-  will-change:auto!important;
-}
+  will-change:auto!important}
 
 html[data-v28-rework="2"] .campaign-hub .campaign-node-map{
-  overflow:visible!important;
-}
+  overflow:visible!important}
 
 @keyframes nodePulse{
   0%,50%,100%{box-shadow:0 0 0 3px rgba(255,200,87,.12),0 0 14px rgba(255,200,87,.16)}
@@ -265,20 +229,17 @@ html[data-v28-rework="2"] .campaign-hub .campaign-node-map{
 html.wd-picker-open,
 html.wd-picker-open body{
   overflow:hidden!important;
-  overscroll-behavior:none!important;
-}
+  overscroll-behavior:none!important}
 .dd-select-picker{
   overflow:hidden!important;
-  overscroll-behavior:none!important;
-}
+  overscroll-behavior:none!important}
 .dd-select-picker .dd-select-panel,
 html[data-v28-rework="2"] .dd-select-panel{
   display:flex!important;
   flex-direction:column!important;
   max-height:min(78dvh,720px)!important;
   min-height:0!important;
-  overflow:hidden!important;
-}
+  overflow:hidden!important}
 .dd-select-picker .dd-select-options,
 html[data-v28-rework="2"] .dd-select-options{
   flex:1 1 auto!important;
@@ -292,21 +253,17 @@ html[data-v28-rework="2"] .dd-select-options{
   touch-action:pan-y;
   scrollbar-gutter:stable;
   mask-image:linear-gradient(to bottom,#000 0,#000 calc(100% - 14px),transparent 100%);
-  -webkit-mask-image:linear-gradient(to bottom,#000 0,#000 calc(100% - 14px),transparent 100%);
-}
+  -webkit-mask-image:linear-gradient(to bottom,#000 0,#000 calc(100% - 14px),transparent 100%)}
 .v28-ability-picker{
-  overflow:hidden!important;
-}
+  overflow:hidden!important}
 .v28-ability-picker-panel{
   display:flex!important;
   flex-direction:column!important;
   max-height:min(78dvh,720px)!important;
-  overflow:hidden!important;
-}
+  overflow:hidden!important}
 .v28-ability-picker-list{
   flex:1 1 auto!important;
   min-height:0!important;
   overflow-y:auto!important;
-  overscroll-behavior:contain!important;
-}
+  overscroll-behavior:contain!important}
 

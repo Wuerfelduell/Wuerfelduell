@@ -12,8 +12,7 @@
     radial-gradient(circle at 50% 15%,rgba(112,76,255,.15),transparent 34%),
     rgba(2,5,10,.86);
   backdrop-filter:blur(10px);
-  -webkit-backdrop-filter:blur(10px);
-}
+  -webkit-backdrop-filter:blur(10px)}
 #abilityMasteryLabModal.hidden{display:none!important}
 body.ability-mastery-lab-open{overflow:hidden!important}
 
@@ -29,8 +28,7 @@ body.ability-mastery-lab-open{overflow:hidden!important}
     linear-gradient(180deg,rgba(27,34,48,.98),rgba(9,14,22,.99));
   box-shadow:
     inset 0 1px 0 rgba(255,255,255,.08),
-    0 28px 100px rgba(0,0,0,.66);
-}
+    0 28px 100px rgba(0,0,0,.66)}
 
 .ability-mastery-lab-topbar{
   flex:0 0 auto;
@@ -39,20 +37,17 @@ body.ability-mastery-lab-open{overflow:hidden!important}
   justify-content:space-between;
   gap:14px;
   padding:16px 18px 11px;
-  border-bottom:1px solid rgba(255,255,255,.07);
-}
+  border-bottom:1px solid rgba(255,255,255,.07)}
 .ability-mastery-lab-kicker{
   color:#8994a9;
   font-size:9px;
   font-weight:1000;
-  letter-spacing:.14em;
-}
+  letter-spacing:.14em}
 .ability-mastery-lab-title{
   margin-top:2px;
   color:#f5f7ff;
   font-size:24px;
-  font-weight:1000;
-}
+  font-weight:1000}
 #abilityMasteryLabClose{
   width:42px;
   height:42px;
@@ -61,16 +56,14 @@ body.ability-mastery-lab-open{overflow:hidden!important}
   border-radius:14px;
   color:#e8ecf6;
   background:rgba(255,255,255,.07);
-  border:1px solid rgba(255,255,255,.09);
-}
+  border:1px solid rgba(255,255,255,.09)}
 
 .ability-mastery-lab-meta{
   flex:0 0 auto;
   display:flex;
   flex-wrap:wrap;
   gap:6px;
-  padding:9px 18px 10px;
-}
+  padding:9px 18px 10px}
 .ability-mastery-lab-meta span,
 .aml-tree-chip{
   padding:4px 8px;
@@ -79,21 +72,16 @@ body.ability-mastery-lab-open{overflow:hidden!important}
   background:rgba(255,255,255,.045);
   color:#aeb8c9;
   font-size:9px;
-  font-weight:900;
-}
+  font-weight:900}
 
 .ability-mastery-lab-viewport{
   flex:1 1 auto;
   overflow:auto;
   overscroll-behavior:contain;
-  padding:0 14px 18px;
-}
+  padding:0 14px 18px}
 .ability-mastery-lab-tree{
-  width:100%;
-  min-width:620px;
   display:grid;
-  gap:18px;
-}
+  gap:18px}
 
 .aml-tree-intro{
   position:sticky;
@@ -104,28 +92,24 @@ body.ability-mastery-lab-open{overflow:hidden!important}
   justify-content:space-between;
   gap:12px;
   padding:10px 8px 12px;
-  background:linear-gradient(180deg,#171e2b 72%,transparent);
-}
+  background:linear-gradient(180deg,#171e2b 72%,transparent)}
 .aml-tree-intro small{
   display:block;
   color:#818ca0;
   font-size:8px;
   letter-spacing:.14em;
-  font-weight:1000;
-}
+  font-weight:1000}
 .aml-tree-intro strong{
   display:block;
   margin-top:2px;
   color:#eef2fa;
-  font-size:14px;
-}
+  font-size:14px}
 
 /* one pair = two ability tracks converging into one fusion */
 .aml-pair{
   --aml-accent:rgba(190,105,255,.78);
   --aml-accent2:rgba(102,183,255,.90);
   position:relative;
-  min-height:530px;
   overflow:hidden;
   border:1px solid rgba(255,255,255,.10);
   border-radius:24px;
@@ -135,84 +119,60 @@ body.ability-mastery-lab-open{overflow:hidden!important}
     linear-gradient(180deg,rgba(255,255,255,.045),rgba(255,255,255,.018));
   box-shadow:
     inset 0 1px 0 rgba(255,255,255,.055),
-    inset 0 -28px 60px rgba(0,0,0,.22);
-}
+    inset 0 -28px 60px rgba(0,0,0,.22)}
 .aml-pair-crimson{
   --aml-accent:rgba(255,83,117,.82);
-  --aml-accent2:rgba(255,181,76,.92);
-}
+  --aml-accent2:rgba(255,181,76,.92)}
 .aml-pair-violet{
   --aml-accent:rgba(178,99,255,.84);
-  --aml-accent2:rgba(96,174,255,.94);
-}
+  --aml-accent2:rgba(96,174,255,.94)}
 .aml-pair-cyan{
   --aml-accent:rgba(77,217,255,.84);
-  --aml-accent2:rgba(95,255,183,.92);
-}
+  --aml-accent2:rgba(95,255,183,.92)}
 
 .aml-links{
   position:absolute;
   inset:0;
   width:100%;
   height:100%;
-  pointer-events:none;
-}
+  pointer-events:none}
 .aml-link{
   fill:none;
   stroke-width:5;
-  stroke-linecap:round;
-}
+  stroke-linecap:round}
 .aml-link-dim{
-  stroke:rgba(255,255,255,.08);
-}
+  stroke:rgba(255,255,255,.08)}
 .aml-link-hot{
   stroke-width:4;
-  opacity:.82;
-}
+  opacity:.82}
 
 .aml-branch{
   position:absolute;
-  top:46px;
-  width:250px;
-  display:grid;
-  gap:68px;
-}
+  display:grid}
 
 .aml-node{
-  position:relative;
-  height:108px;
-}
+  position:relative}
 .aml-node-orbit{
   position:absolute;
-  left:18px;
   top:0;
-  width:94px;
-  height:94px;
   border-radius:50%;
   border:1px solid color-mix(in srgb,var(--aml-accent) 48%,transparent);
   box-shadow:
     0 0 18px color-mix(in srgb,var(--aml-accent) 22%,transparent),
-    inset 0 0 20px rgba(255,255,255,.025);
-}
+    inset 0 0 20px rgba(255,255,255,.025)}
 .aml-node-orbit::before,
 .aml-node-orbit::after{
   content:"";
   position:absolute;
   inset:8px;
   border-radius:50%;
-  border:1px solid rgba(255,255,255,.07);
-}
+  border:1px solid rgba(255,255,255,.07)}
 .aml-node-orbit::after{
   inset:20px;
-  border-color:color-mix(in srgb,var(--aml-accent2) 26%,transparent);
-}
+  border-color:color-mix(in srgb,var(--aml-accent2) 26%,transparent)}
 
 .aml-node-core{
   position:absolute;
-  left:29px;
-  top:11px;
-  width:72px;
-  height:72px;
   display:grid;
   place-items:center;
   align-content:center;
@@ -225,40 +185,28 @@ body.ability-mastery-lab-open{overflow:hidden!important}
     inset 0 5px 9px rgba(255,255,255,.08),
     inset 0 -8px 12px rgba(0,0,0,.48),
     0 0 18px color-mix(in srgb,var(--aml-accent) 22%,transparent),
-    0 10px 18px rgba(0,0,0,.35);
-}
+    0 10px 18px rgba(0,0,0,.35)}
 .aml-node-number{
   color:#fff;
-  font-size:24px;
   line-height:1;
   font-weight:1000;
-  text-shadow:0 2px 5px rgba(0,0,0,.7);
-}
+  text-shadow:0 2px 5px rgba(0,0,0,.7)}
 .aml-node-core small{
   margin-top:2px;
   color:#b8c4d7;
-  font-size:8px;
   font-weight:1000;
-  letter-spacing:.12em;
-}
+  letter-spacing:.12em}
 
 .aml-node-tag{
   position:absolute;
-  left:106px;
-  top:29px;
-  min-width:92px;
   display:flex;
-  align-items:baseline;
-  gap:4px;
-  padding:8px 11px;
   border:1px solid color-mix(in srgb,var(--aml-accent) 30%,rgba(255,255,255,.10));
   border-radius:11px;
   background:
     linear-gradient(180deg,rgba(37,44,58,.96),rgba(15,20,29,.98));
   box-shadow:
     inset 0 1px rgba(255,255,255,.07),
-    0 7px 14px rgba(0,0,0,.25);
-}
+    0 7px 14px rgba(0,0,0,.25)}
 .aml-node-tag::before{
   content:"";
   position:absolute;
@@ -269,79 +217,54 @@ body.ability-mastery-lab-open{overflow:hidden!important}
   transform:translateY(-50%) rotate(45deg);
   background:#202737;
   border-left:1px solid rgba(255,255,255,.08);
-  border-bottom:1px solid rgba(255,255,255,.08);
-}
+  border-bottom:1px solid rgba(255,255,255,.08)}
 .aml-node-tag strong{
-  color:#f1f5ff;
-  font-size:16px;
-}
+  color:#f1f5ff}
 .aml-node-tag span{
   color:#8e9bad;
-  font-size:8px;
-  font-weight:1000;
-}
+  font-weight:1000}
 
 .aml-pair-emblem{
-  position:absolute;
   left:50%;
   top:168px;
-  transform:translateX(-50%);
   display:flex;
   align-items:center;
   gap:8px;
-  padding:7px 11px;
   border-radius:999px;
   border:1px solid rgba(255,255,255,.08);
   background:rgba(7,10,17,.66);
   color:#8f9aad;
-  font-size:10px;
   font-weight:1000;
-  box-shadow:0 7px 18px rgba(0,0,0,.22);
-}
+  box-shadow:0 7px 18px rgba(0,0,0,.22)}
 .aml-pair-emblem i{
   color:color-mix(in srgb,var(--aml-accent2) 78%,white);
-  font-style:normal;
-}
+  font-style:normal}
 
 /* oversized fusion orb */
 .aml-fusion-node{
   position:absolute;
   left:50%;
-  bottom:24px;
-  width:190px;
-  height:150px;
   transform:translateX(-50%);
   display:grid;
-  place-items:center;
-}
+  place-items:center}
 .aml-fusion-halo{
   position:absolute;
   border-radius:50%;
-  border:1px solid color-mix(in srgb,var(--aml-accent) 42%,transparent);
-}
+  border:1px solid color-mix(in srgb,var(--aml-accent) 42%,transparent)}
 .aml-fusion-halo.halo-a{
-  width:142px;
-  height:142px;
   box-shadow:
     0 0 28px color-mix(in srgb,var(--aml-accent) 23%,transparent),
-    inset 0 0 28px color-mix(in srgb,var(--aml-accent2) 10%,transparent);
-}
+    inset 0 0 28px color-mix(in srgb,var(--aml-accent2) 10%,transparent)}
 .aml-fusion-halo.halo-b{
-  width:116px;
-  height:116px;
   border-style:dashed;
   opacity:.68;
-  transform:rotate(18deg);
-}
+  transform:rotate(18deg)}
 .aml-fusion-core{
   position:relative;
   z-index:2;
-  width:94px;
-  height:94px;
   display:grid;
   place-items:center;
   align-content:center;
-  border-radius:28px;
   transform:rotate(45deg);
   background:
     radial-gradient(circle at 25% 18%,rgba(255,255,255,.32),transparent 16%),
@@ -354,29 +277,22 @@ body.ability-mastery-lab-open{overflow:hidden!important}
     inset 0 -10px 16px rgba(0,0,0,.46),
     0 0 18px color-mix(in srgb,var(--aml-accent) 35%,transparent),
     0 0 42px color-mix(in srgb,var(--aml-accent2) 15%,transparent),
-    0 14px 22px rgba(0,0,0,.35);
-}
+    0 14px 22px rgba(0,0,0,.35)}
 .aml-fusion-core > *{
-  transform:rotate(-45deg);
-}
+  transform:rotate(-45deg)}
 .aml-fusion-core small{
   color:#c6d0e0;
   font-size:7px;
   font-weight:1000;
-  letter-spacing:.15em;
-}
+  letter-spacing:.15em}
 .aml-fusion-core strong{
   margin:1px 0;
   color:#fff;
-  font-size:23px;
   line-height:1;
-  text-shadow:0 2px 6px rgba(0,0,0,.7);
-}
+  text-shadow:0 2px 6px rgba(0,0,0,.7)}
 .aml-fusion-core span{
   color:color-mix(in srgb,var(--aml-accent2) 80%,white);
-  font-size:8px;
-  font-weight:1000;
-}
+  font-weight:1000}
 
 .aml-future-node{
   display:flex;
@@ -388,8 +304,7 @@ body.ability-mastery-lab-open{overflow:hidden!important}
   border:1px dashed rgba(255,255,255,.11);
   border-radius:18px;
   color:#778296;
-  background:rgba(255,255,255,.018);
-}
+  background:rgba(255,255,255,.018)}
 .aml-future-node>span{
   display:grid;
   place-items:center;
@@ -398,8 +313,7 @@ body.ability-mastery-lab-open{overflow:hidden!important}
   border-radius:50%;
   border:1px solid rgba(255,255,255,.10);
   font-size:18px;
-  font-weight:1000;
-}
+  font-weight:1000}
 .aml-future-node strong,
 .aml-future-node small{display:block}
 .aml-future-node strong{font-size:10px}
@@ -416,44 +330,36 @@ body.ability-mastery-lab-open{overflow:hidden!important}
   background:rgba(6,9,14,.72);
   color:#9ca7b8;
   font-size:9px;
-  font-weight:900;
-}
+  font-weight:900}
 .aml-dot{
   display:inline-block;
   width:8px;
   height:8px;
   margin-right:4px;
-  border-radius:50%;
-}
+  border-radius:50%}
 .aml-dot-l1{background:#718096}
 .aml-dot-l2{background:#c690ff;box-shadow:0 0 6px #a66cff}
 .aml-dot-fusion{background:#ffcb67;box-shadow:0 0 8px #ffae35}
 
 .test-lab-mastery-preview-btn{
-  grid-column:1/-1;
-}
+  grid-column:1/-1}
 
 /* Mobile: horizontal tree canvas is intentional, but starts centered enough to inspect */
 @media(max-width:700px){
   #abilityMasteryLabModal{
     padding:7px;
-    align-items:flex-end;
-  }
+    align-items:flex-end}
   .ability-mastery-lab-shell{
     max-height:94dvh;
-    border-radius:22px 22px 12px 12px;
-  }
+    border-radius:22px 22px 12px 12px}
   .ability-mastery-lab-title{font-size:21px}
   .ability-mastery-lab-viewport{
     padding-left:8px;
-    padding-right:8px;
-  }
+    padding-right:8px}
   .ability-mastery-lab-tree{
-    min-width:600px;
-  }
+    min-width:600px}
   .aml-pair{
-    min-height:510px;
-  }
+    min-height:510px}
 }
 
 /* =========================================================
@@ -462,12 +368,10 @@ body.ability-mastery-lab-open{overflow:hidden!important}
 
 .ability-mastery-lab-tree{
   min-width:0!important;
-  width:100%!important;
-}
+  width:100%!important}
 
 .aml-pair{
-  min-height:470px!important;
-}
+  min-height:470px!important}
 
 .aml-branch-headings{
   position:absolute;
@@ -478,54 +382,44 @@ body.ability-mastery-lab-open{overflow:hidden!important}
   display:grid;
   grid-template-columns:1fr auto 1fr;
   align-items:start;
-  gap:10px;
-}
+  gap:10px}
 
 .aml-ability-heading{
-  min-width:0;
-}
+  min-width:0}
 .aml-ability-heading-right{
-  text-align:right;
-}
+  text-align:right}
 .aml-ability-heading small{
   display:block;
   color:#7f899d;
   font-size:7px;
   font-weight:1000;
-  letter-spacing:.12em;
-}
+  letter-spacing:.12em}
 .aml-ability-heading strong{
   display:block;
   margin-top:2px;
   color:#f0f3fa;
   font-size:13px;
   font-weight:1000;
-  white-space:nowrap;
-}
+  white-space:nowrap}
 .aml-pair-emblem{
   position:static!important;
   transform:none!important;
   align-self:start;
   margin-top:1px;
   padding:5px 8px!important;
-  font-size:8px!important;
-}
+  font-size:8px!important}
 
 .aml-links{
-  top:0!important;
-}
+  top:0!important}
 
 .aml-branch{
   top:88px!important;
   width:42%!important;
-  gap:48px!important;
-}
+  gap:48px!important}
 .aml-branch-left{
-  left:3%!important;
-}
+  left:3%!important}
 .aml-branch-right{
-  right:3%!important;
-}
+  right:3%!important}
 
 .aml-node{
   height:92px!important;
@@ -534,38 +428,29 @@ body.ability-mastery-lab-open{overflow:hidden!important}
   padding:0!important;
   background:transparent!important;
   text-align:left;
-  cursor:pointer;
-}
+  cursor:pointer}
 
 .aml-node-orbit{
   left:0!important;
   width:78px!important;
-  height:78px!important;
-}
+  height:78px!important}
 .aml-node-core{
   left:9px!important;
   top:9px!important;
   width:60px!important;
-  height:60px!important;
-}
+  height:60px!important}
 .aml-node-number{
-  font-size:20px!important;
-}
+  font-size:20px!important}
 .aml-node-core small{
-  font-size:7px!important;
-}
+  font-size:7px!important}
 
 .aml-node-tag{
   left:68px!important;
   top:23px!important;
-  min-width:72px!important;
-  max-width:calc(100% - 62px)!important;
-  padding:6px 8px!important;
-}
+  padding:6px 8px!important}
 
 .aml-node-tag span{
-  font-size:7px!important;
-}
+  font-size:7px!important}
 
 .aml-fusion-node{
   bottom:16px!important;
@@ -574,33 +459,26 @@ body.ability-mastery-lab-open{overflow:hidden!important}
   border:0!important;
   background:transparent!important;
   padding:0!important;
-  cursor:pointer;
-}
+  cursor:pointer}
 .aml-fusion-halo.halo-a{
   width:116px!important;
-  height:116px!important;
-}
+  height:116px!important}
 .aml-fusion-halo.halo-b{
   width:94px!important;
-  height:94px!important;
-}
+  height:94px!important}
 .aml-fusion-core{
   width:78px!important;
   height:78px!important;
-  border-radius:24px!important;
-}
+  border-radius:24px!important}
 .aml-fusion-core strong{
-  font-size:19px!important;
-}
+  font-size:19px!important}
 .aml-fusion-core span{
-  font-size:7px!important;
-}
+  font-size:7px!important}
 
 .aml-future-node{
   max-width:360px;
   width:100%;
-  box-sizing:border-box;
-}
+  box-sizing:border-box}
 
 /* upgrade description popup */
 .aml-info-popup{
@@ -612,11 +490,9 @@ body.ability-mastery-lab-open{overflow:hidden!important}
   padding:18px;
   background:rgba(2,5,10,.62);
   backdrop-filter:blur(6px);
-  -webkit-backdrop-filter:blur(6px);
-}
+  -webkit-backdrop-filter:blur(6px)}
 .aml-info-popup.hidden{
-  display:none!important;
-}
+  display:none!important}
 .aml-info-card{
   position:relative;
   width:min(380px,100%);
@@ -628,8 +504,7 @@ body.ability-mastery-lab-open{overflow:hidden!important}
     linear-gradient(180deg,#1b2230,#0e141e);
   box-shadow:
     inset 0 1px 0 rgba(255,255,255,.07),
-    0 22px 60px rgba(0,0,0,.52);
-}
+    0 22px 60px rgba(0,0,0,.52)}
 .aml-info-close{
   position:absolute;
   top:10px;
@@ -640,22 +515,19 @@ body.ability-mastery-lab-open{overflow:hidden!important}
   padding:0;
   border-radius:11px;
   background:rgba(255,255,255,.06);
-  border:1px solid rgba(255,255,255,.08);
-}
+  border:1px solid rgba(255,255,255,.08)}
 .aml-info-kicker{
   padding-right:42px;
   color:#8d98aa;
   font-size:8px;
   font-weight:1000;
-  letter-spacing:.13em;
-}
+  letter-spacing:.13em}
 .aml-info-title{
   margin-top:5px;
   padding-right:42px;
   color:#f3f6fc;
   font-size:20px;
-  font-weight:1000;
-}
+  font-weight:1000}
 .aml-info-cost{
   display:inline-block;
   margin-top:9px;
@@ -665,14 +537,12 @@ body.ability-mastery-lab-open{overflow:hidden!important}
   background:rgba(143,91,255,.12);
   border:1px solid rgba(169,120,255,.22);
   font-size:11px;
-  font-weight:1000;
-}
+  font-weight:1000}
 .aml-info-desc{
   margin-top:13px;
   color:#c5cedd;
   font-size:12px;
-  line-height:1.45;
-}
+  line-height:1.45}
 .aml-info-note{
   margin-top:13px;
   padding:8px 9px;
@@ -680,119 +550,91 @@ body.ability-mastery-lab-open{overflow:hidden!important}
   color:#7f8a9d;
   background:rgba(255,255,255,.035);
   font-size:9px;
-  line-height:1.35;
-}
+  line-height:1.35}
 
 @media(max-width:700px){
   .ability-mastery-lab-viewport{
-    overflow-x:hidden!important;
-  }
+    overflow-x:hidden!important}
   .ability-mastery-lab-tree{
-    min-width:0!important;
-  }
+    min-width:0!important}
   .aml-pair{
-    min-height:445px!important;
-  }
+    min-height:445px!important}
   .aml-branch-headings{
     left:10px;
     right:10px;
-    gap:6px;
-  }
+    gap:6px}
   .aml-ability-heading small{
-    display:none;
-  }
+    display:none}
   .aml-ability-heading strong{
-    font-size:11px;
-  }
+    font-size:11px}
   .aml-pair-emblem{
     padding:4px 6px!important;
-    font-size:7px!important;
-  }
+    font-size:7px!important}
   .aml-branch{
     top:76px!important;
     width:45%!important;
-    gap:42px!important;
-  }
+    gap:42px!important}
   .aml-branch-left{
-    left:1%!important;
-  }
+    left:1%!important}
   .aml-branch-right{
-    right:1%!important;
-  }
+    right:1%!important}
   .aml-node{
-    height:86px!important;
-  }
+    height:86px!important}
   .aml-node-orbit{
     width:70px!important;
-    height:70px!important;
-  }
+    height:70px!important}
   .aml-node-core{
     left:8px!important;
     top:8px!important;
     width:54px!important;
-    height:54px!important;
-  }
+    height:54px!important}
   .aml-node-number{
-    font-size:18px!important;
-  }
+    font-size:18px!important}
   .aml-node-tag{
     left:59px!important;
     top:20px!important;
     min-width:60px!important;
-    padding:5px 7px!important;
-  }
+    padding:5px 7px!important}
   .aml-node-tag strong{
-    font-size:12px!important;
-  }
+    font-size:12px!important}
   .aml-fusion-node{
     width:134px!important;
     height:112px!important;
-    bottom:12px!important;
-  }
+    bottom:12px!important}
   .aml-fusion-halo.halo-a{
     width:102px!important;
-    height:102px!important;
-  }
+    height:102px!important}
   .aml-fusion-halo.halo-b{
     width:82px!important;
-    height:82px!important;
-  }
+    height:82px!important}
   .aml-fusion-core{
     width:70px!important;
-    height:70px!important;
-  }
+    height:70px!important}
 }
 
 @media(max-width:390px){
   .ability-mastery-lab-viewport{
     padding-left:4px!important;
-    padding-right:4px!important;
-  }
+    padding-right:4px!important}
   .aml-pair{
-    min-height:425px!important;
-  }
+    min-height:425px!important}
   .aml-branch{
-    width:46%!important;
-  }
+    width:46%!important}
   .aml-node-orbit{
     width:64px!important;
-    height:64px!important;
-  }
+    height:64px!important}
   .aml-node-core{
     left:7px!important;
     top:7px!important;
     width:50px!important;
-    height:50px!important;
-  }
+    height:50px!important}
   .aml-node-tag{
     left:54px!important;
     top:18px!important;
     min-width:55px!important;
-    padding:5px 6px!important;
-  }
+    padding:5px 6px!important}
   .aml-node-tag strong{
-    font-size:11px!important;
-  }
+    font-size:11px!important}
 }
 
 /* V27.8.8 — full content */

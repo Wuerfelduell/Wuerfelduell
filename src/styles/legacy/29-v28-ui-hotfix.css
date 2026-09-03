@@ -26,8 +26,7 @@ html[data-v28-rework="2"] .campaign-hub .campaign-node.boss > .p8-boss-selected-
 html[data-v28-rework="2"] .campaign-hub .p8-boss-selected-glow{
   animation: none !important;
   transition: none !important;
-  will-change: auto !important;
-}
+  will-change: auto !important}
 
 .campaign-hub .campaign-node.current,
 .campaign-hub .campaign-node.selected,
@@ -37,8 +36,7 @@ html[data-v28-rework="2"] .campaign-hub .campaign-node.selected{
   scale: 1 !important;
   filter: none !important;
   /* static gold ring — no box-shadow animation */
-  box-shadow: 0 0 0 3px rgba(255,200,87,.14), 0 0 16px rgba(255,200,87,.18) !important;
-}
+  box-shadow: 0 0 0 3px rgba(255,200,87,.14), 0 0 16px rgba(255,200,87,.18) !important}
 
 /* CRITICAL: selected must use SAME inset as idle (-6px).
    Phase3 used -8px for selected → continuous optical grow/shrink on mobile. */
@@ -49,8 +47,7 @@ html[data-v28-rework="2"] .campaign-hub .campaign-node::before{
   transform: none !important;
   scale: 1 !important;
   animation: none !important;
-  transition: none !important;
-}
+  transition: none !important}
 .campaign-hub .campaign-node.current::before,
 .campaign-hub .campaign-node.selected::before,
 html[data-v28-rework="2"] .campaign-hub .campaign-node.current::before,
@@ -64,8 +61,7 @@ html[data-v28-rework="2"] .campaign-hub .campaign-node.selected::before{
   /* keep selected art if present, but no drop-shadow shimmer */
   background-size: contain !important;
   background-position: center !important;
-  background-repeat: no-repeat !important;
-}
+  background-repeat: no-repeat !important}
 /* farm selected also same footprint */
 .campaign-hub .campaign-node.p6-farm-node::before,
 .campaign-hub .campaign-node.p6-farm-node.current::before,
@@ -74,8 +70,7 @@ html[data-v28-rework="2"] .campaign-hub .campaign-node.p6-farm-node::before,
 html[data-v28-rework="2"] .campaign-hub .campaign-node.p6-farm-node.current::before,
 html[data-v28-rework="2"] .campaign-hub .campaign-node.p6-farm-node.selected::before{
   inset: -6px !important;
-  filter: none !important;
-}
+  filter: none !important}
 
 .campaign-hub .campaign-node.boss > .p8-boss-selected-glow,
 .campaign-hub .p8-boss-selected-glow,
@@ -85,8 +80,7 @@ html[data-v28-rework="2"] .campaign-hub .p8-boss-selected-glow{
   display: none !important;
   animation: none !important;
   opacity: 0 !important;
-  pointer-events: none !important;
-}
+  pointer-events: none !important}
 
 /* Absorb any absolute glow/frame in the map without growing the grid */
 .campaign-hub .campaign-node-map,
@@ -94,19 +88,17 @@ html[data-v28-rework="2"] .campaign-hub .campaign-node-map,
 .campaign-node-map{
   overflow: hidden !important;
   contain: layout paint !important;
-  padding: 22px 14px !important;
-}
+  padding: 22px 14px !important}
 
 .campaign-hub .campaign-node-map,
 html[data-v28-rework="2"] .campaign-hub .campaign-node-map{
-  overflow: hidden !important;
-}
+  overflow: hidden !important}
 
 @keyframes nodePulse{
-  0%,50%,100%{ box-shadow: 0 0 0 3px rgba(255,200,87,.14), 0 0 16px rgba(255,200,87,.18); filter:none; transform:none; }
+  0%,50%,100%{ box-shadow: 0 0 0 3px rgba(255,200,87,.14), 0 0 16px rgba(255,200,87,.18); filter:none; transform:none}
 }
 @keyframes p8BossSelectedPulse{
-  0%,50%,100%{ opacity:0.92; filter:none; transform:none; }
+  0%,50%,100%{ opacity:0.92; filter:none; transform:none}
 }
 
 /* ============================================================
@@ -120,8 +112,7 @@ html[data-v28-rework="2"] .campaign-node-detail .node-detail-sub{
   transform: none !important;
   scale: 1 !important;
   animation: none !important;
-  transition: none !important;
-}
+  transition: none !important}
 /* Let phase2 grid handle title width — do NOT set max-width on title */
 .campaign-node-detail .node-detail-state,
 .campaign-node-detail .node-detail-state *,
@@ -135,8 +126,7 @@ html[data-v28-rework="2"] .campaign-node-detail .ddStateIcon{
   transition: none !important;
   transform: none !important;
   scale: 1 !important;
-  filter: none !important;
-}
+  filter: none !important}
 .campaign-node-detail .node-detail-state img,
 .campaign-node-detail .ddStateIcon,
 html[data-v28-rework="2"] .campaign-node-detail .node-detail-state img,
@@ -145,16 +135,14 @@ html[data-v28-rework="2"] .campaign-node-detail .ddStateIcon{
   height: 14px !important;
   max-width: 14px !important;
   max-height: 14px !important;
-  object-fit: contain !important;
-}
+  object-fit: contain !important}
 /* No animation on detail, but do NOT touch border-image sizes */
 .campaign-node-detail,
 .campaign-node-detail *,
 html[data-v28-rework="2"] .campaign-node-detail,
 html[data-v28-rework="2"] .campaign-node-detail *{
   animation: none !important;
-  transition: none !important;
-}
+  transition: none !important}
 
 /* Global: no filter on any campaign node layer (GPU shimmer → optical scale) */
 .campaign-hub .campaign-node,
@@ -167,15 +155,13 @@ html[data-v28-rework="2"] .campaign-hub .campaign-node::before,
 html[data-v28-rework="2"] .campaign-hub .campaign-node::after{
   filter: none !important;
   backdrop-filter: none !important;
-  -webkit-backdrop-filter: none !important;
-}
+  -webkit-backdrop-filter: none !important}
 
 /* Restore phase2 title layout: grid column may shrink, title ellipsizes inside */
 html[data-v28-rework="2"] .campaign-node-detail .node-detail-head > div:first-child{
   min-width: 0 !important;
   max-width: 100% !important;
-  overflow: hidden !important;
-}
+  overflow: hidden !important}
 html[data-v28-rework="2"] .campaign-node-detail .node-detail-title{
   overflow: hidden !important;
   text-overflow: ellipsis !important;
@@ -188,8 +174,7 @@ html[data-v28-rework="2"] #rulesScreen .menu-list{
   display:grid!important;
   grid-auto-rows:max-content!important;
   align-items:start!important;
-  gap:16px!important;
-}
+  gap:16px!important}
 html[data-v28-rework="2"] #rulesScreen .menu-info-card{
   height:max-content!important;
   min-height:min-content!important;
@@ -199,11 +184,9 @@ html[data-v28-rework="2"] #rulesScreen .menu-info-card{
   flex-direction:column!important;
   justify-content:flex-start!important;
   padding:16px 20px 18px!important;
-  flex-shrink:0!important;
-}
+  flex-shrink:0!important}
 html[data-v28-rework="2"] #rulesScreen .menu-info-card>strong{
-  flex:0 0 auto;
-}
+  flex:0 0 auto}
 html[data-v28-rework="2"] #rulesScreen .menu-info-card .small{
   display:block!important;
   position:static!important;
@@ -212,8 +195,7 @@ html[data-v28-rework="2"] #rulesScreen .menu-info-card .small{
   height:auto!important;
   white-space:normal!important;
   margin-top:6px!important;
-  flex:0 0 auto!important;
-}
+  flex:0 0 auto!important}
 
 /* ---- Trophy shop chips ---- */
 html[data-v28-rework="2"] #prestigeShopScreen .prestige-item-kicker{
@@ -222,38 +204,26 @@ html[data-v28-rework="2"] #prestigeShopScreen .prestige-item-kicker{
   font-size:11px!important;
   overflow:visible!important;
   padding-left:2px;
-  opacity:1!important;
-}
+  opacity:1!important}
 html[data-v28-rework="2"] #prestigeShopScreen .prestige-equipped{overflow:visible!important}
-html[data-v28-rework="2"] #prestigeShopScreen .prestige-active-list{
-  display:flex;flex-wrap:wrap;gap:8px;margin:8px 0 4px;
-}
-html[data-v28-rework="2"] #prestigeShopScreen .prestige-active-chip{
-  display:inline-flex;align-items:center;gap:6px;padding:6px 10px;
-  border:1px solid rgba(214,165,60,.38);border-radius:999px;
-  background:rgba(7,31,75,.38);color:#f4ead0;font-size:12px;font-weight:700;max-width:100%;
-}
+html[data-v28-rework="2"] #prestigeShopScreen .prestige-active-list{margin:8px 0 4px}
+html[data-v28-rework="2"] #prestigeShopScreen .prestige-active-chip{font-size:12px;font-weight:700;max-width:100%}
 html[data-v28-rework="2"] #prestigeShopScreen .prestige-active-chip b{
-  color:#e2b44a;font-size:10px;letter-spacing:.04em;text-transform:uppercase;font-weight:800;
-}
+  color:#e2b44a;font-size:10px;letter-spacing:.04em;text-transform:uppercase;font-weight:800}
 html[data-v28-rework="2"] #prestigeShopScreen .prestige-shop-list{
   overflow:visible!important;
-  max-height:none!important;
-}
+  max-height:none!important}
 
 /* ---- PrimaryBtn: respect .hidden ---- */
 html[data-v28-rework="2"] body.playing #primaryBtn.p1-action-button:not(.hidden){
   display:flex!important;
   align-items:center!important;
   justify-content:center!important;
-  gap:8px!important;
-}
+  gap:8px!important}
 html[data-v28-rework="2"] body.playing #primaryBtn.hidden{
-  display:none!important;
-}
+  display:none!important}
 html[data-v28-rework="2"] body.playing #primaryBtn .p1-action-icon{
-  width:22px;height:22px;margin:0!important;flex:0 0 22px;
-}
+  width:22px;height:22px;margin:0!important;flex:0 0 22px}
 
 /* ---- Quit modal: no native red rect under leave button ---- */
 html[data-v28-rework="2"] #quitModal #quitConfirmBtn,
@@ -270,20 +240,16 @@ html[data-v28-rework="2"] #quitModal #quitConfirmBtn:active{
   outline:0!important;
   box-shadow:none!important;
   filter:none!important;
-  -webkit-tap-highlight-color:transparent!important;
-}
+  -webkit-tap-highlight-color:transparent!important}
 html[data-v28-rework="2"] #quitModal #quitConfirmBtn::before{
-  background-color:transparent!important;
-}
+  background-color:transparent!important}
 html[data-v28-rework="2"] #quitModal #quitConfirmBtn::after{
   content:none!important;
   display:none!important;
   background:none!important;
-  box-shadow:none!important;
-}
+  box-shadow:none!important}
 html[data-v28-rework="2"] #quitModal .utility-actions{
-  isolation:isolate;
-}
+  isolation:isolate}
 
 /* ---- Front screens: Settings/Stats/Profile stay as in 26. Shop = whole card. ---- */
 html[data-v28-rework="2"] #statsScreen.screen-card:not(.hidden),
@@ -300,16 +266,14 @@ html[data-v28-rework="2"] #prestigeShopScreen.screen-card:not(.hidden){
   overscroll-behavior:contain;
   box-sizing:border-box!important;
   display:block!important;
-  padding-bottom:16px!important;
-}
+  padding-bottom:16px!important}
 
 html[data-v28-rework="2"] #rulesScreen.screen-card:not(.hidden),
 html[data-v28-rework="2"] #abilitiesScreen.screen-card:not(.hidden),
 html[data-v28-rework="2"] #changelogScreen.screen-card:not(.hidden){
   height:calc(100dvh - 12px)!important;
   max-height:calc(100dvh - 12px)!important;
-  overflow:hidden!important;
-}
+  overflow:hidden!important}
 
 html[data-v28-rework="2"] #rulesScreen:not(.hidden) .menu-list,
 html[data-v28-rework="2"] #abilitiesScreen:not(.hidden) .ability-list,
@@ -319,8 +283,7 @@ html[data-v28-rework="2"] #changelogScreen:not(.hidden) .screen-scroll-body{
   overflow-y:auto!important;
   -webkit-overflow-scrolling:touch;
   overscroll-behavior:contain;
-  min-height:0!important;
-}
+  min-height:0!important}
 
 /* ---- Cosmetic overlay ---- */
 #cosmeticMenu .cosmetic-menu-panel{
@@ -328,8 +291,7 @@ html[data-v28-rework="2"] #changelogScreen:not(.hidden) .screen-scroll-body{
   overflow:hidden!important;
   display:flex!important;
   flex-direction:column!important;
-  min-height:0!important;
-}
+  min-height:0!important}
 #cosmeticMenu .cosmetic-menu-body{
   flex:1 1 auto!important;
   min-height:0!important;
@@ -338,15 +300,13 @@ html[data-v28-rework="2"] #changelogScreen:not(.hidden) .screen-scroll-body{
   -webkit-overflow-scrolling:touch;
   overscroll-behavior:contain;
   max-height:min(58vh,520px)!important;
-  padding:6px 4px 12px!important;
-}
+  padding:6px 4px 12px!important}
 #cosmeticMenu .cosmetic-menu-head{
   display:flex;
   align-items:center;
   justify-content:space-between;
   gap:10px;
-  margin-bottom:4px;
-}
+  margin-bottom:4px}
 #cosmeticMenu .cosmetic-menu-close-x{
   box-sizing:border-box!important;
   width:44px!important;
@@ -361,16 +321,14 @@ html[data-v28-rework="2"] #changelogScreen:not(.hidden) .screen-scroll-body{
   color:transparent!important;
   font-size:0!important;
   box-shadow:none!important;
-  cursor:pointer;
-}
+  cursor:pointer}
 
 /* ---- Ability picker stays inside ornate frame ---- */
 html[data-v28-rework="2"] .dd-select-panel,
 .dd-select-picker .dd-select-panel,
 html[data-v28-rework="2"] .v28-ability-picker-panel{
   overflow:hidden!important;
-  isolation:isolate!important;
-}
+  isolation:isolate!important}
 html[data-v28-rework="2"] .dd-select-options,
 .dd-select-picker .dd-select-options,
 html[data-v28-rework="2"] .v28-ability-picker-list{
@@ -382,8 +340,7 @@ html[data-v28-rework="2"] .v28-ability-picker-list{
   mask-image:none!important;
   -webkit-mask-image:none!important;
   padding:6px 8px 22px 36px!important;
-  box-sizing:border-box!important;
-}
+  box-sizing:border-box!important}
 
 /* ---- Combat prestige-frame jitter off ---- */
 html[data-v28-rework="2"] body.playing .player.frame-rift,
@@ -391,85 +348,69 @@ html[data-v28-rework="2"] body.playing .player.frame-void,
 html[data-v28-rework="2"] body.playing .player.frame-crown,
 html[data-v28-rework="2"] body.playing .player.frame-brass{
   animation:none!important;
-  filter:none!important;
-}
+  filter:none!important}
 html[data-v28-rework="2"] body.playing .player.frame-rift::before,
 html[data-v28-rework="2"] body.playing .player.frame-void::before,
 html[data-v28-rework="2"] body.playing .player.frame-crown::before,
 html[data-v28-rework="2"] body.playing .player.frame-brass::before{
-  animation:none!important;
-}
+  animation:none!important}
 
 /* ---- Combat: layout lives in 30-v28-combat-lock.css (28.3.40).
    Do not let the turn-card scroll the dice away, and do not pin them sticky. ---- */
 html[data-v28-rework="2"] body.playing{
   height:100dvh!important;
   max-height:100dvh!important;
-  overflow:hidden!important;
-}
+  overflow:hidden!important}
 html[data-v28-rework="2"] body.playing .app{
   height:100dvh!important;
   max-height:100dvh!important;
   overflow:hidden!important;
   display:flex!important;
   flex-direction:column!important;
-  padding-bottom:max(8px,env(safe-area-inset-bottom))!important;
-}
+  padding-bottom:max(8px,env(safe-area-inset-bottom))!important}
 html[data-v28-rework="2"] body.playing #game:not(.hidden){
   flex:1 1 auto!important;
   min-height:0!important;
-  overflow:hidden!important;
-}
+  overflow:hidden!important}
 html[data-v28-rework="2"] body.playing #game .turn-card{
-  overflow-y:hidden!important;
-}
+  overflow-y:hidden!important}
 
 /* ---- Stats: dark ink on ivory (beige-on-cream was unreadable) ---- */
 #statsScreen .ability-stat-row{
   background: rgba(255,246,224,.72) !important;
   color: #1a140c !important;
-  border: 1px solid rgba(90,60,20,.18) !important;
-}
+  border: 1px solid rgba(90,60,20,.18) !important}
 #statsScreen .ability-stat-row span,
 #statsScreen .ability-stat-name{
-  color: #1a140c !important;
-}
+  color: #1a140c !important}
 #statsScreen .ability-stat-row.header,
 #statsScreen .ability-stat-row.header span{
   background: #2a1c10 !important;
-  color: #f5e6c8 !important;
-}
+  color: #f5e6c8 !important}
 #statsScreen .stats-kpi-label{
-  color: #5c3d14 !important;
-}
+  color: #5c3d14 !important}
 #statsScreen .stats-kpi-value{
-  color: #1a140c !important;
-}
+  color: #1a140c !important}
 #statsScreen .profile-stats-card,
 #statsScreen .profile-stats-card strong,
 #statsScreen .profile-stats-line,
 #statsScreen .profile-stats-line span{
-  color: #1a140c !important;
-}
+  color: #1a140c !important}
 #statsScreen .battle-tag{
-  color: #5c3d14 !important;
-}
+  color: #5c3d14 !important}
 
 /* ---- Classic Freie Wahl: same ability-choice cards as campaign ---- */
 html[data-v28-rework="2"] .v28-ability-picker{
-  overflow:hidden!important;
-}
+  overflow:hidden!important}
 html[data-v28-rework="2"] .v28-ability-picker-panel{
   display:flex!important;
   flex-direction:column!important;
   max-height:min(78dvh,720px)!important;
   min-height:0!important;
   overflow:hidden!important;
-  isolation:isolate!important;
-}
+  isolation:isolate!important}
 html[data-v28-rework="2"] .v28-ability-picker-head{
-  flex:0 0 auto!important;
-}
+  flex:0 0 auto!important}
 html[data-v28-rework="2"] .v28-ability-picker-list{
   flex:1 1 auto!important;
   min-height:0!important;
@@ -478,12 +419,10 @@ html[data-v28-rework="2"] .v28-ability-picker-list{
   align-content:start!important;
   overflow-x:visible!important;
   overflow-y:auto!important;
-  padding:10px 18px 18px 22px!important;
-}
+  padding:10px 18px 18px 22px!important}
 html[data-v28-rework="2"] .v28-ability-picker-close{
   flex:0 0 auto!important;
-  margin:4px 16px 16px!important;
-}
+  margin:4px 16px 16px!important}
 
 html[data-v28-rework="2"] .v28-ability-option,
 html[data-v28-rework="2"] .v28-ability-trigger{
@@ -506,13 +445,11 @@ html[data-v28-rework="2"] .v28-ability-trigger{
   background:transparent!important;
   color:#082a55!important;
   box-shadow:none!important;
-  filter:none!important;
-}
+  filter:none!important}
 html[data-v28-rework="2"] .v28-ability-option.selected{
   background:transparent!important;
   color:#082a55!important;
-  filter:drop-shadow(0 0 8px rgba(37,117,206,.28))!important;
-}
+  filter:drop-shadow(0 0 8px rgba(37,117,206,.28))!important}
 html[data-v28-rework="2"] .v28-ability-option .v28-icon,
 html[data-v28-rework="2"] .v28-ability-trigger .dd-trigger-icon,
 html[data-v28-rework="2"] .v28-ability-trigger img{
@@ -531,8 +468,7 @@ html[data-v28-rework="2"] .v28-ability-trigger img{
   border-radius:0!important;
   object-fit:contain!important;
   z-index:2;
-  pointer-events:none;
-}
+  pointer-events:none}
 html[data-v28-rework="2"] .v28-ability-option .v28-icon img{
   position:static!important;
   transform:none!important;
@@ -540,8 +476,7 @@ html[data-v28-rework="2"] .v28-ability-option .v28-icon img{
   top:auto!important;
   width:100%!important;
   height:100%!important;
-  object-fit:contain!important;
-}
+  object-fit:contain!important}
 html[data-v28-rework="2"] .v28-ability-option .v28-name{
   position:relative!important;
   z-index:1;
@@ -553,8 +488,7 @@ html[data-v28-rework="2"] .v28-ability-option .v28-name{
   overflow:hidden!important;
   text-overflow:ellipsis!important;
   text-align:left!important;
-  padding-right:8px!important;
-}
+  padding-right:8px!important}
 /* Trigger: wrapper span must NOT be the containing block, else icon sits on the text. */
 html[data-v28-rework="2"] .v28-ability-trigger>span{
   position:static!important;
@@ -565,8 +499,7 @@ html[data-v28-rework="2"] .v28-ability-trigger>span{
   flex:1 1 auto!important;
   padding:0!important;
   overflow:hidden!important;
-  transform:none!important;
-}
+  transform:none!important}
 html[data-v28-rework="2"] .v28-ability-trigger>span>span{
   position:static!important;
   min-width:0!important;
@@ -576,8 +509,7 @@ html[data-v28-rework="2"] .v28-ability-trigger>span>span{
   white-space:nowrap!important;
   overflow:hidden!important;
   text-overflow:ellipsis!important;
-  text-align:left!important;
-}
+  text-align:left!important}
 html[data-v28-rework="2"] .v28-ability-option .v28-check{
   position:absolute!important;
   right:-14px!important;
@@ -592,41 +524,32 @@ html[data-v28-rework="2"] .v28-ability-option .v28-check{
   color:transparent!important;
   background:none!important;
   z-index:3;
-  pointer-events:none;
-}
+  pointer-events:none}
 html[data-v28-rework="2"] .v28-ability-option.selected .v28-check{
   background:url("../assets/ui/v28/png/components/completed-check-medallion.webp") center/contain no-repeat!important;
-  color:transparent!important;
-}
+  color:transparent!important}
 html[data-v28-rework="2"] .v28-ability-trigger{
-  margin-top:10px!important;
-}
+  margin-top:10px!important}
 html[data-v28-rework="2"] .v28-ability-trigger::after{
-  display:none!important;
-}
+  display:none!important}
 html[data-v28-rework="2"] .v28-ability-trigger.hidden,
 html[data-v28-rework="2"] .ability-choice.hidden + .v28-ability-trigger,
 html[data-v28-rework="2"] .v28-native-ability-select.hidden + .v28-ability-trigger{
-  display:none!important;
-}
+  display:none!important}
 
 html[data-v28-rework="2"] #setup .setup-player{
-  overflow:visible!important;
-  padding:11px 13px 13px!important;
-}
+  overflow:visible!important}
 
 html[data-v28-rework="2"] #setup .ability-choice.v28-native-ability-select{
   position:absolute!important;
   width:1px!important;
   height:1px!important;
   opacity:0!important;
-  pointer-events:none!important;
-}
+  pointer-events:none!important}
 
 /* Ready-Status im Setup komplett weg. Fehler bleiben. */
 html[data-v28-rework="2"] #setupStatus.setup-status:not(.error){
-  display:none!important;
-}
+  display:none!important}
 
 /* Cancel in der Ability-Wahl: Navy-Button-Sprite */
 html[data-v28-rework="2"] .v28-ability-picker-close,
@@ -640,32 +563,27 @@ html[data-v28-rework="2"] .v28-ability-picker-close.secondary{
   background:url("../assets/ui/v28/png/frames/navy-button-horizontal.webp") center/100% 100% no-repeat!important;
   color:#fff2ca!important;
   box-shadow:none!important;
-  font:800 16px/1 Georgia,"Times New Roman",serif!important;
-}
+  font:800 16px/1 Georgia,"Times New Roman",serif!important}
 
 /* Trophy-Shop: Text nicht in den 9-Slice, Chips + Aktiv mit Frame */
 html[data-v28-rework="2"] #prestigeShopScreen .prestige-item,
 html[data-v28-rework="2"] #prestigeShopScreen .prestige-item.owned,
 html[data-v28-rework="2"] #prestigeShopScreen .prestige-item.expensive{
   padding:22px 26px 18px!important;
-  overflow:visible!important;
-}
+  overflow:visible!important}
 html[data-v28-rework="2"] #prestigeShopScreen .prestige-item-kicker{
   position:relative!important;
   left:auto!important;
   top:auto!important;
   margin:0 0 4px!important;
-  padding:0!important;
-}
+  padding:0!important}
 html[data-v28-rework="2"] #prestigeShopScreen .prestige-item-name{
   margin:2px 0 0!important;
   padding:0!important;
-  overflow-wrap:anywhere;
-}
+  overflow-wrap:anywhere}
 html[data-v28-rework="2"] #prestigeShopScreen .prestige-item-desc{
   margin:6px 0 12px!important;
-  padding:0!important;
-}
+  padding:0!important}
 
 html[data-v28-rework="2"] #prestigeShopScreen .prestige-item>button:disabled,
 html[data-v28-rework="2"] #prestigeShopScreen .prestige-item.expensive>button:disabled,
@@ -673,14 +591,12 @@ html[data-v28-rework="2"] #prestigeShopScreen .prestige-item.owned>button:disabl
   color:#102c51!important;
   background:url("../assets/ui/v28/png/frames/gold-special-button.webp") center/100% 100% no-repeat!important;
   opacity:1!important;
-  filter:none!important;
-}
+  filter:none!important}
 
 /* Achievements: Inhalt im Rahmen, Owner-Chips mit Medaillon */
 html[data-v28-rework="2"] #achievementsScreen .achievement-card{
   padding:22px 26px 24px!important;
-  overflow:visible!important;
-}
+  overflow:visible!important}
 
 html[data-v28-rework="2"] #achievementsScreen .achievement-owner{
   display:inline-flex!important;
@@ -691,16 +607,13 @@ html[data-v28-rework="2"] #achievementsScreen .achievement-owner{
   border:1px solid rgba(214,165,60,.42)!important;
   border-radius:999px!important;
   background:rgba(4,22,49,.72)!important;
-  color:#dce5ef!important;
-}
+  color:#dce5ef!important}
 
 /* Duo: Unlock-Kasten weg. Trio: Reward-Kasten weg. Team wird breiter. */
 html[data-v28-rework="2"] #duoCampaignScreen .campaign-top .menu-info-card:nth-child(3),
 html[data-v28-rework="2"] #trioCampaignScreen .campaign-top .menu-info-card:nth-child(3){
-  display:none!important;
-}
+  display:none!important}
 html[data-v28-rework="2"] #duoCampaignScreen .campaign-top,
 html[data-v28-rework="2"] #trioCampaignScreen .campaign-top{
-  grid-template-columns:minmax(0,1fr)!important;
-}
+  grid-template-columns:minmax(0,1fr)!important}
 

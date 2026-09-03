@@ -7,8 +7,7 @@
   border-radius:16px;
   overflow:hidden;
   background:#0c0b10;
-  box-shadow:inset 0 1px rgba(255,255,255,.035),0 10px 28px rgba(0,0,0,.24);
-}
+  box-shadow:inset 0 1px rgba(255,255,255,.035),0 10px 28px rgba(0,0,0,.24)}
 .test-lab-3d-tray.hidden{display:none}
 .test-lab-3d-tray.disabled{opacity:.42}
 .test-lab-3d-head{
@@ -18,8 +17,7 @@
   gap:12px;
   padding:9px 12px;
   border-bottom:1px solid rgba(255,255,255,.08);
-  background:rgba(255,255,255,.025);
-}
+  background:rgba(255,255,255,.025)}
 .test-lab-3d-head>div:first-child{display:flex;flex-direction:column;gap:2px}
 .test-lab-3d-head small{font-size:10px;opacity:.55}
 .test-lab-3d-status{
@@ -29,39 +27,32 @@
   background:rgba(255,255,255,.06);
   font-size:10px;
   font-weight:850;
-  opacity:.75;
-}
+  opacity:.75}
 .test-lab-3d-stage{
   position:relative;
   width:100%;
   height:clamp(235px,35vw,330px);
   touch-action:manipulation;
-  user-select:none;
-}
+  user-select:none}
 .test-lab-3d-stage canvas{display:block;width:100%;height:100%}
 .test-lab-3d-hint{
   padding:6px 10px 8px;
   text-align:center;
   font-size:10px;
-  opacity:.52;
-}
+  opacity:.52}
 .test-lab-3d-controls{
   grid-column:1/-1;
   display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:8px;
-}
+  gap:8px}
 body.test-lab-active.test-lab-dice3d #dice{
   position:absolute!important;
   width:1px!important;
   height:1px!important;
   overflow:hidden!important;
   opacity:0!important;
-  pointer-events:none!important;
-}
+  pointer-events:none!important}
 body.test-lab-active.test-lab-dice3d #testLab3dDiceTray{
-  display:block;
-}
+  display:block}
 @media(max-width:620px){
   .test-lab-3d-stage{height:250px}
   .test-lab-3d-controls{grid-template-columns:1fr}

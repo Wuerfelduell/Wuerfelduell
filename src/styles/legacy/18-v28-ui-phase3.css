@@ -17,8 +17,7 @@
   --p3-selected-node:url("../assets/ui/v28/png/frames/campaign-node-selected.webp?v=28.2.3");
   --p3-player-frame:url("../assets/ui/v28/png/frames/player-card-combat.webp?v=28.2.3");
   --p3-boss-bar:url("../assets/ui/v28/png/frames/boss.webp?v=28.2.3");
-  --p3-back:url("../assets/ui/v28/svg/navigation/back.svg?v=28.2.3");
-}
+  --p3-back:url("../assets/ui/v28/svg/navigation/back.svg?v=28.2.3")}
 
 /* ---------- Purple marks: remove opaque rectangles behind PNG frames ----------
    The border-image assets already paint their centre. Any additional CSS
@@ -35,15 +34,13 @@ html[data-v28-rework="2"] #profilesScreen .profile-name-edit,
 html[data-v28-rework="2"] #setup .local-mode-card,
 html[data-v28-rework="2"] #setup .setup-player{
   background:transparent!important;
-  box-shadow:none!important;
-}
+  box-shadow:none!important}
 
 /* Cut only the one-pixel bitmap halo, never the ornamental frame itself. */
 html[data-v28-rework="2"] body[data-v28-scene] .screen-card,
 html[data-v28-rework="2"] body[data-v28-scene] #setup,
 html[data-v28-rework="2"] body[data-v28-scene] #masteryModal .mastery-panel{
-  clip-path:inset(2px round 10px);
-}
+  clip-path:inset(2px round 10px)}
 
 /* Campaign and mastery back controls use a clean circular ring. The old
    star-frame had points extending beyond its intended hit area. */
@@ -60,15 +57,12 @@ html[data-v28-rework="2"] #masteryCloseBtn{
   background:
     var(--p3-back) center/36% 36% no-repeat,
     radial-gradient(circle at 50% 35%,#174b82 0 42%,#082750 63%,#04172f 100%)!important;
-  box-shadow:0 4px 12px rgba(5,29,61,.20),inset 0 0 0 4px #092650!important;
-}
+  box-shadow:0 4px 12px rgba(5,29,61,.20),inset 0 0 0 4px #092650!important}
 
 /* ---------- Quit modal ---------- */
 
 html[data-v28-rework="2"] #quitModal .utility-actions{
-  gap:5px!important;
-  align-items:stretch;
-}
+  align-items:stretch}
 html[data-v28-rework="2"] #quitCancelBtn,
 html[data-v28-rework="2"] #quitConfirmBtn{
   box-sizing:border-box!important;
@@ -77,13 +71,11 @@ html[data-v28-rework="2"] #quitConfirmBtn{
   border-radius:0!important;
   padding:18px 34px!important;
   box-shadow:none!important;
-  font-size:16px!important;
-}
+  font-size:16px!important}
 html[data-v28-rework="2"] #quitCancelBtn{
   color:#fff4d5!important;
   background:var(--p3-navy-button) center/100% 100% no-repeat!important;
-  text-shadow:0 1px 3px rgba(2,16,38,.72)!important;
-}
+  text-shadow:0 1px 3px rgba(2,16,38,.72)!important}
 /* Quit-Knopf: color, background und text-shadow werden in Phase 5 und 7
    erneut gesetzt, das Artwork --p3-danger-button erreicht ihn nicht mehr. */
 
@@ -94,41 +86,23 @@ html[data-v28-rework="2"] .campaign-hub .campaign-controls .dd-select-trigger{
   gap:4px!important;
   padding:2px!important;
   border-width:8px 12px!important;
-  border-image-width:8px 12px!important;
-}
+  border-image-width:8px 12px!important}
 html[data-v28-rework="2"] .campaign-hub .campaign-controls .dd-trigger-icon{
   width:29px!important;
-  height:29px!important;
-}
+  height:29px!important}
 html[data-v28-rework="2"] .campaign-hub .campaign-controls .dd-select-trigger::after{
   width:18px!important;
-  height:18px!important;
-}
+  height:18px!important}
 html[data-v28-rework="2"] .campaign-hub .campaign-controls .dd-select-trigger>span{
   font-size:13px!important;
-  letter-spacing:-.025em;
-}
+  letter-spacing:-.025em}
 
 /* There is no separate green bitmap in the asset pack. Reuse the real
    Navy/Gold edge without its fill, then paint only the padding box emerald. */
 html[data-v28-rework="2"] #campaignStartBtn,
 html[data-v28-rework="2"] #duoCampaignStartBtn,
 html[data-v28-rework="2"] #trioCampaignStartBtn{
-  box-sizing:border-box!important;
-  min-height:70px!important;
-
-  border-image-source:var(--p3-navy-button)!important;
-  border-image-slice:118 168 118 168!important;
-  border-image-width:18px 29px!important;
-  border-image-repeat:stretch!important;
-  border-radius:0!important;
-  padding:9px 16px!important;
-  color:#fff6d8!important;
-  background:linear-gradient(160deg,#1d8158,#0b5138)!important;
-  background-clip:padding-box!important;
-  box-shadow:0 9px 22px rgba(12,86,55,.22),inset 0 1px 0 rgba(255,255,255,.12)!important;
-  text-shadow:0 1px 3px rgba(2,36,22,.78)!important;
-}
+  background-clip:padding-box!important}
 
 /* ---------- Campaign map and framed nodes ---------- */
 html[data-v28-rework="2"] .campaign-hub .campaign-node-map{
@@ -141,8 +115,7 @@ html[data-v28-rework="2"] .campaign-hub .campaign-node-map{
   border-image-repeat:stretch!important;
   border-radius:0!important;
   background:transparent!important;
-  box-shadow:0 10px 24px rgba(6,30,65,.16)!important;
-}
+  box-shadow:0 10px 24px rgba(6,30,65,.16)!important}
 html[data-v28-rework="2"] .campaign-hub .campaign-node{
   position:relative;
   isolation:isolate;
@@ -151,8 +124,7 @@ html[data-v28-rework="2"] .campaign-hub .campaign-node{
   border:0!important;
   background:transparent!important;
   box-shadow:none!important;
-  color:#fff2ce!important;
-}
+  color:#fff2ce!important}
 html[data-v28-rework="2"] .campaign-hub .campaign-node::before{
   content:"";
   position:absolute;
@@ -160,21 +132,17 @@ html[data-v28-rework="2"] .campaign-hub .campaign-node::before{
   inset:-6px;
   pointer-events:none;
   background:var(--p3-round-frame) center/contain no-repeat;
-  filter:drop-shadow(0 5px 8px rgba(1,13,31,.36));
-}
+  filter:drop-shadow(0 5px 8px rgba(1,13,31,.36))}
 html[data-v28-rework="2"] .campaign-hub .campaign-node.done{
-  color:#91efb1!important;
-}
+  color:#91efb1!important}
 html[data-v28-rework="2"] .campaign-hub .campaign-node.current,
 html[data-v28-rework="2"] .campaign-hub .campaign-node.selected{
-  color:#ffe59b!important;
-}
+  color:#ffe59b!important}
 html[data-v28-rework="2"] .campaign-hub .campaign-node.current::before,
 html[data-v28-rework="2"] .campaign-hub .campaign-node.selected::before{
   inset:-8px;
   background-image:var(--p3-selected-node);
-  filter:drop-shadow(0 0 10px rgba(255,209,87,.32));
-}
+  filter:drop-shadow(0 0 10px rgba(255,209,87,.32))}
 /* Restore the route connector; Phase 2 used ::after for the selected frame. */
 html[data-v28-rework="2"] .campaign-hub .campaign-node::after,
 html[data-v28-rework="2"] .campaign-hub .campaign-node.current::after,
@@ -189,36 +157,29 @@ html[data-v28-rework="2"] .campaign-hub .campaign-node.selected::after{
   transform:none!important;
   background:linear-gradient(90deg,rgba(104,206,146,.58),rgba(126,175,210,.30))!important;
   filter:none!important;
-  pointer-events:none!important;
-}
+  pointer-events:none!important}
 html[data-v28-rework="2"] .campaign-hub .campaign-node:nth-child(5n)::after{
-  display:none!important;
-}
+  display:none!important}
 html[data-v28-rework="2"] .campaign-hub .campaign-node>span{
   position:relative;
-  z-index:2;
-}
+  z-index:2}
 
 /* Compact the boss strip by cropping its transparent source margins. */
 html[data-v28-rework="2"] .campaign-node-detail.v28-boss-detail{
-  padding-top:7px!important;
-}
+  padding-top:7px!important}
 html[data-v28-rework="2"] .campaign-node-detail.v28-boss-detail .node-detail-head{
   min-height:96px!important;
   margin:0 0 8px!important;
   padding:19px 34px!important;
-  background:var(--p3-boss-bar) center/100% 158% no-repeat!important;
-}
+  background:var(--p3-boss-bar) center/100% 158% no-repeat!important}
 
 /* ---------- Mastery summary, branches and real nodes ---------- */
 html[data-v28-rework="2"] #masteryModeBadge{
-  display:none!important;
-}
+  display:none!important}
 html[data-v28-rework="2"] #masteryModal .mastery-mode-bar{
   min-height:0!important;
   justify-content:flex-end!important;
-  margin:0!important;
-}
+  margin:0!important}
 html[data-v28-rework="2"] #masteryModal .mastery-summary{
   box-sizing:border-box!important;
 
@@ -229,8 +190,7 @@ html[data-v28-rework="2"] #masteryModal .mastery-summary{
   border-radius:0!important;
   padding:8px 8px 10px!important;
   background:transparent!important;
-  box-shadow:0 6px 15px rgba(30,58,87,.08)!important;
-}
+  box-shadow:0 6px 15px rgba(30,58,87,.08)!important}
 html[data-v28-rework="2"] #masteryModal .mastery-branch{
   box-sizing:border-box!important;
   overflow:hidden!important;
@@ -242,62 +202,51 @@ html[data-v28-rework="2"] #masteryModal .mastery-branch{
   border-radius:0!important;
   padding:3px 5px 15px!important;
   background:transparent!important;
-  box-shadow:0 10px 24px rgba(5,28,65,.18)!important;
-}
+  box-shadow:0 10px 24px rgba(5,28,65,.18)!important}
 html[data-v28-rework="2"] #masteryModal .mastery-branch-head{
   box-sizing:border-box!important;
   min-height:88px!important;
   margin:0 0 8px!important;
   padding:19px 32px!important;
   border:0!important;
-  background:var(--p3-navy-button) center/100% 100% no-repeat!important;
-}
+  background:var(--p3-navy-button) center/100% 100% no-repeat!important}
 html[data-v28-rework="2"] #masteryModal .mastery-branch-icon{
   width:48px;
   height:48px;
   display:grid;
   place-items:center;
   background:var(--p3-round-frame) center/contain no-repeat;
-  font-size:23px!important;
-}
+  font-size:23px!important}
 html[data-v28-rework="2"] #masteryModal .mastery-branch-level{
   padding:7px 9px!important;
   border:1px solid rgba(239,198,97,.58)!important;
   background:rgba(5,24,52,.76)!important;
   color:#ffe59d!important;
-  box-shadow:inset 0 0 0 1px rgba(255,255,255,.05)!important;
-}
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,.05)!important}
 html[data-v28-rework="2"] #masteryModal .mastery-tree-line{
   margin-top:4px!important;
-  padding-inline:4px!important;
-}
+  padding-inline:4px!important}
 html[data-v28-rework="2"] #masteryModal .mastery-node{
   grid-template-columns:76px minmax(0,1fr)!important;
   width:calc(100% - 8px)!important;
   min-height:82px!important;
-  --shift:-8px;
-}
+  --shift:-8px}
 html[data-v28-rework="2"] #masteryModal .mastery-node:nth-child(even){
-  --shift:8px;
-}
+  --shift:8px}
 html[data-v28-rework="2"] #masteryModal .mastery-node-orb{
   width:72px!important;
   height:72px!important;
   border-radius:0!important;
   background:var(--p3-round-frame) center/contain no-repeat!important;
-  filter:drop-shadow(0 7px 8px rgba(0,0,0,.34))!important;
-}
+  filter:drop-shadow(0 7px 8px rgba(0,0,0,.34))!important}
 html[data-v28-rework="2"] #masteryModal .mastery-node-orb::before{
-  inset:17px!important;
-}
+  inset:17px!important}
 html[data-v28-rework="2"] #masteryModal .mastery-node-orb::after{
-  display:none!important;
-}
+  display:none!important}
 html[data-v28-rework="2"] #masteryModal .mastery-node-dot{
   width:34px!important;
   height:34px!important;
-  font-size:13px!important;
-}
+  font-size:13px!important}
 html[data-v28-rework="2"] #masteryModal .mastery-node-plaque,
 html[data-v28-rework="2"] #masteryModal .mastery-node.owned .mastery-node-plaque,
 html[data-v28-rework="2"] #masteryModal .mastery-node.available .mastery-node-plaque,
@@ -309,11 +258,9 @@ html[data-v28-rework="2"] #masteryModal .mastery-node.locked .mastery-node-plaqu
   border-radius:0!important;
   background:var(--p3-navy-button) center/100% 100% no-repeat!important;
   box-shadow:none!important;
-  opacity:1!important;
-}
+  opacity:1!important}
 html[data-v28-rework="2"] #masteryModal .mastery-node-plaque::before{
-  display:none!important;
-}
+  display:none!important}
 
 /* ---------- Ability Mastery sheet ---------- */
 html[data-v28-rework="2"] #masteryModal .mastery-ability-sheet-head{
@@ -323,19 +270,16 @@ html[data-v28-rework="2"] #masteryModal .mastery-ability-sheet-head{
   margin:20px 0 10px!important;
   padding:18px 34px!important;
   border:0!important;
-  background:var(--p3-navy-button) center/100% 100% no-repeat!important;
-}
+  background:var(--p3-navy-button) center/100% 100% no-repeat!important}
 html[data-v28-rework="2"] #masteryModal .mastery-ability-sheet-head .mastery-kicker,
 html[data-v28-rework="2"] #masteryModal .mastery-ability-sheet-head h3{
   color:#fff4d5!important;
-  text-shadow:0 1px 3px rgba(2,16,38,.72)!important;
-}
+  text-shadow:0 1px 3px rgba(2,16,38,.72)!important}
 html[data-v28-rework="2"] #masteryModal .mastery-ability-sheet-head>span{
   max-width:43%;
   color:#d9e4f2!important;
   text-align:right;
-  line-height:1.25;
-}
+  line-height:1.25}
 html[data-v28-rework="2"] #masteryModal .mastery-ability-pair{
   box-sizing:border-box!important;
   overflow:hidden!important;
@@ -347,8 +291,7 @@ html[data-v28-rework="2"] #masteryModal .mastery-ability-pair{
   border-radius:0!important;
   padding:4px 5px 9px!important;
   background:transparent!important;
-  box-shadow:0 10px 22px rgba(5,28,65,.16)!important;
-}
+  box-shadow:0 10px 22px rgba(5,28,65,.16)!important}
 html[data-v28-rework="2"] #masteryModal .mastery-ability-branch{
   box-sizing:border-box!important;
 
@@ -358,31 +301,26 @@ html[data-v28-rework="2"] #masteryModal .mastery-ability-branch{
   border-image-repeat:stretch!important;
   border-radius:0!important;
   padding:4px 2px 7px!important;
-  background:transparent!important;
-}
+  background:transparent!important}
 html[data-v28-rework="2"] #masteryModal .mastery-ability-name{
   margin:0 5px 6px!important;
-  color:#fff3d3!important;
-}
+  color:#fff3d3!important}
 html[data-v28-rework="2"] #masteryModal .mastery-ability-sheet .aml-node-orbit{
   z-index:2!important;
   border:0!important;
   border-radius:0!important;
   background:var(--p3-round-frame) center/contain no-repeat!important;
-  box-shadow:none!important;
-}
+  box-shadow:none!important}
 html[data-v28-rework="2"] #masteryModal .mastery-ability-sheet .aml-node-orbit::before,
 html[data-v28-rework="2"] #masteryModal .mastery-ability-sheet .aml-node-orbit::after{
-  display:none!important;
-}
+  display:none!important}
 html[data-v28-rework="2"] #masteryModal .mastery-ability-sheet .aml-node-core{
   z-index:3!important;
   width:34px!important;
   height:34px!important;
   left:12px!important;
   top:18px!important;
-  font-size:11px!important;
-}
+  font-size:11px!important}
 html[data-v28-rework="2"] #masteryModal .mastery-ability-sheet .aml-node-tag{
   z-index:1!important;
   box-sizing:border-box!important;
@@ -395,11 +333,9 @@ html[data-v28-rework="2"] #masteryModal .mastery-ability-sheet .aml-node-tag{
   border:0!important;
   border-radius:0!important;
   background:var(--p3-navy-button) center/100% 100% no-repeat!important;
-  box-shadow:none!important;
-}
+  box-shadow:none!important}
 html[data-v28-rework="2"] #masteryModal .mastery-ability-sheet .aml-node-tag::before{
-  display:none!important;
-}
+  display:none!important}
 html[data-v28-rework="2"] #masteryModal .mastery-fusion-placeholder{
   box-sizing:border-box!important;
   width:calc(100% - 34px)!important;
@@ -411,8 +347,7 @@ html[data-v28-rework="2"] #masteryModal .mastery-fusion-placeholder{
   overflow:hidden!important;
   background:var(--p3-navy-button) center/100% 100% no-repeat!important;
   color:#fff1ce!important;
-  box-shadow:none!important;
-}
+  box-shadow:none!important}
 
 /* ---------- Combat: framed outer shells and clean player-card gaps ---------- */
 html[data-v28-rework="2"] body.playing #game>.card:first-child,
@@ -425,24 +360,19 @@ html[data-v28-rework="2"] body.playing #game .turn-card{
   border-image-repeat:stretch!important;
   border-radius:0!important;
   background:transparent!important;
-  box-shadow:0 12px 28px rgba(2,12,30,.30)!important;
-}
+  box-shadow:0 12px 28px rgba(2,12,30,.30)!important}
 html[data-v28-rework="2"] body.playing #game>.card:first-child{
   padding:1px 5px 12px!important;
-  margin-bottom:7px!important;
-}
+  margin-bottom:7px!important}
 html[data-v28-rework="2"] body.playing #game .turn-card{
-  padding:7px 6px 12px!important;
-}
+  padding:7px 6px 12px!important}
 html[data-v28-rework="2"] body.playing #players{
   gap:15px 13px!important;
-  padding:3px!important;
-}
+  padding:3px!important}
 html[data-v28-rework="2"] body.playing #players .player,
 html[data-v28-rework="2"] body.playing #players .player.v28-boss-player{
   background:transparent!important;
-  box-shadow:none!important;
-}
+  box-shadow:none!important}
 
 html[data-v28-rework="2"] body.playing .encounter-rule-banner{
   min-height:64px!important;
@@ -454,11 +384,9 @@ html[data-v28-rework="2"] body.playing .encounter-rule-banner{
   background:var(--p3-boss-bar) center/100% 162% no-repeat!important;
   font-size:10.5px!important;
   line-height:1.28!important;
-  text-align:center;
-}
+  text-align:center}
 html[data-v28-rework="2"] body.playing .encounter-rule-banner.hidden{
-  display:none!important;
-}
+  display:none!important}
 
 /* ---------- Profiles: a real inner panel, clean small inputs ---------- */
 html[data-v28-rework="2"] #profilesScreen .profile-card{
@@ -472,123 +400,96 @@ html[data-v28-rework="2"] #profilesScreen .profile-card{
   border-radius:0!important;
   padding:8px 8px 13px!important;
   background:transparent!important;
-  box-shadow:0 10px 25px rgba(25,58,86,.12)!important;
-}
+  box-shadow:0 10px 25px rgba(25,58,86,.12)!important}
 
 html[data-v28-rework="2"] #profilesScreen .profile-actions .dd-select-trigger,
 html[data-v28-rework="2"] #profilesScreen .profile-name-edit{
   background:transparent!important;
-  box-shadow:none!important;
-}
+  box-shadow:none!important}
 
 @media(max-width:540px){
   html[data-v28-rework="2"] #quitModal .utility-actions{
-    grid-template-columns:1fr 1fr!important;
-  }
+    grid-template-columns:1fr 1fr!important}
   html[data-v28-rework="2"] #quitCancelBtn,
   html[data-v28-rework="2"] #quitConfirmBtn{
     min-height:70px!important;
     padding:16px 27px!important;
-    font-size:14px!important;
-  }
+    font-size:14px!important}
   html[data-v28-rework="2"] .campaign-hub .campaign-node-map{
     padding:19px 8px 21px!important;
     border-width:18px!important;
     border-image-width:18px!important;
-    gap:18px 6px!important;
-  }
+    gap:18px 6px!important}
   html[data-v28-rework="2"] .campaign-hub .campaign-node{
-    width:min(58px,100%)!important;
-  }
+    width:min(58px,100%)!important}
   html[data-v28-rework="2"] .campaign-node-detail.v28-boss-detail .node-detail-head{
     min-height:92px!important;
-    padding:18px 29px!important;
-  }
+    padding:18px 29px!important}
   html[data-v28-rework="2"] #masteryModal .mastery-branch{
     border-width:16px!important;
-    border-image-width:16px!important;
-  }
+    border-image-width:16px!important}
   html[data-v28-rework="2"] #masteryModal .mastery-branch-head{
     min-height:84px!important;
-    padding:18px 28px!important;
-  }
+    padding:18px 28px!important}
   html[data-v28-rework="2"] #masteryModal .mastery-ability-sheet-head{
     min-height:94px!important;
-    padding:20px 28px!important;
-  }
+    padding:20px 28px!important}
   html[data-v28-rework="2"] #masteryModal .mastery-ability-pair{
     border-width:15px!important;
-    border-image-width:15px!important;
-  }
+    border-image-width:15px!important}
   html[data-v28-rework="2"] #masteryModal .mastery-ability-branch{
     border-width:13px 15px!important;
-    border-image-width:13px 15px!important;
-  }
+    border-image-width:13px 15px!important}
   html[data-v28-rework="2"] body.playing #game>.card:first-child,
   html[data-v28-rework="2"] body.playing #game .turn-card{
     border-width:17px!important;
-    border-image-width:17px!important;
-  }
+    border-image-width:17px!important}
   html[data-v28-rework="2"] body.playing #players{
-    gap:13px 11px!important;
-  }
+    gap:13px 11px!important}
   html[data-v28-rework="2"] body.playing .encounter-rule-banner{
-    padding-inline:29px!important;
-  }
+    padding-inline:29px!important}
 }
 
 @media(max-width:390px){
   html[data-v28-rework="2"] .campaign-hub .campaign-controls .dd-select-trigger{
     grid-template-columns:27px minmax(0,1fr) 16px!important;
     border-width:7px 9px!important;
-    border-image-width:7px 9px!important;
-  }
+    border-image-width:7px 9px!important}
   html[data-v28-rework="2"] .campaign-hub .campaign-controls .dd-select-trigger>span{
-    font-size:11px!important;
-  }
+    font-size:11px!important}
   html[data-v28-rework="2"] #masteryModal .mastery-branch-head{
     grid-template-columns:42px minmax(0,1fr) auto!important;
-    padding-inline:23px!important;
-  }
+    padding-inline:23px!important}
   html[data-v28-rework="2"] #masteryModal .mastery-branch-icon{
     width:42px;
     height:42px;
-    font-size:20px!important;
-  }
+    font-size:20px!important}
   html[data-v28-rework="2"] #masteryModal .mastery-node{
     grid-template-columns:66px minmax(0,1fr)!important;
-    --shift:-4px;
-  }
+    --shift:-4px}
   html[data-v28-rework="2"] #masteryModal .mastery-node:nth-child(even){
-    --shift:4px;
-  }
+    --shift:4px}
   html[data-v28-rework="2"] #masteryModal .mastery-node-orb{
     width:64px!important;
-    height:64px!important;
-  }
+    height:64px!important}
   html[data-v28-rework="2"] #masteryModal .mastery-node-plaque,
   html[data-v28-rework="2"] #masteryModal .mastery-node.owned .mastery-node-plaque,
   html[data-v28-rework="2"] #masteryModal .mastery-node.available .mastery-node-plaque,
   html[data-v28-rework="2"] #masteryModal .mastery-node.locked .mastery-node-plaque{
-    padding-inline:24px!important;
-  }
+    padding-inline:24px!important}
   html[data-v28-rework="2"] #masteryModal .mastery-ability-sheet-head{
     align-items:flex-start!important;
     flex-direction:column;
     gap:2px!important;
-    padding:22px 30px!important;
-  }
+    padding:22px 30px!important}
   html[data-v28-rework="2"] #masteryModal .mastery-ability-sheet-head>span{
     max-width:100%;
-    text-align:left;
-  }
+    text-align:left}
   html[data-v28-rework="2"] #masteryModal .mastery-ability-sheet .aml-node-tag{
-    padding-inline:17px!important;
-  }
+    padding-inline:17px!important}
 }
 
 @media(prefers-reduced-motion:reduce){
   html[data-v28-rework="2"] #masteryModal .mastery-node-orb{
-    animation:none!important;
-  }
+    animation:none!important}
 }

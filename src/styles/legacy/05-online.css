@@ -1,9 +1,7 @@
 /* V27.2.0 – isolierter Online-Lobby-Layer. Keine Battle-Styles werden überschrieben. */
 .menu-actions button.menu-online{
-  grid-column:1/-1;justify-content:center;text-align:center;
-  background:linear-gradient(135deg,#203c67,#193c35);border-color:rgba(104,167,255,.35);
-  color:#dcecff;
-}
+  grid-column:1/-1;justify-content:center;text-align:center;border-color:rgba(104,167,255,.35);
+  color:#dcecff}
 .online-shell{display:grid;gap:12px}
 .online-connection{display:flex;align-items:center;gap:8px;padding:10px 12px;border:1px solid var(--border);border-radius:13px;background:#101620;color:var(--muted);font-size:12px;font-weight:900}
 .online-status-dot{width:10px;height:10px;border-radius:50%;background:#ffc857;box-shadow:0 0 12px rgba(255,200,87,.45)}
@@ -25,5 +23,5 @@
 .online-player.ready{border-color:rgba(77,209,125,.35);background:rgba(77,209,125,.06)}.online-player-main{min-width:0}.online-player-main strong{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.online-player-main strong span{color:#78879b;font-size:.72em}.online-player-main small{display:block;color:var(--muted);margin-top:3px}
 .online-ready-chip{flex:0 0 auto;font-size:10px;font-weight:1000;padding:4px 7px;border-radius:999px;background:#202938;color:#8e9aad}.online-player.ready .online-ready-chip{background:rgba(77,209,125,.16);color:#9cf0ba}
 .online-lobby-hint{padding:10px 11px;border-radius:12px;background:#151d28;color:#9da7b8;font-size:11px;line-height:1.45;margin-bottom:10px}
-.online-beta-badge{display:inline-flex;align-items:center;gap:5px;padding:3px 7px;border-radius:999px;background:rgba(184,140,255,.12);border:1px solid rgba(184,140,255,.24);color:#c9a9ff;font-size:9px;font-weight:1000;letter-spacing:.08em;vertical-align:middle;margin-left:5px}
+.online-beta-badge{display:inline-flex;align-items:center;gap:5px;padding:3px 7px;border-radius:999px;font-size:9px;font-weight:1000;letter-spacing:.08em;vertical-align:middle;margin-left:5px}
 @media(max-width:480px){.online-actions{grid-template-columns:1fr}.online-room-head{align-items:flex-start;flex-direction:column}.online-copy{width:100%}}

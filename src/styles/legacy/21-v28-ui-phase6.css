@@ -14,8 +14,7 @@
   --p6-encounter-button:url("../assets/ui/v28/png/components/encounter-button-green.webp?v=28.2.6");
   --p6-hp-medallion:url("../assets/ui/v28/png/components/hp-heart-medallion.webp?v=28.2.6");
   --p6-completed-medallion:url("../assets/ui/v28/png/components/completed-check-medallion.webp?v=28.2.6");
-  --p6-back-button:url("../assets/ui/v28/png/components/back-button.webp?v=28.2.6");
-}
+  --p6-back-button:url("../assets/ui/v28/png/components/back-button.webp?v=28.2.6")}
 
 /* ---------- One rendered back control on every real back action ---------- */
 html[data-v28-rework="2"] .screen-topbar>button,
@@ -36,55 +35,39 @@ html[data-v28-rework="2"] #masteryCloseBtn{
   background:var(--p6-back-button) center/contain no-repeat!important;
   box-shadow:none!important;
   filter:drop-shadow(0 5px 8px rgba(3,24,55,.28));
-  transform:none!important;
-}
+  transform:none!important}
 html[data-v28-rework="2"] .screen-topbar>button:hover,
 html[data-v28-rework="2"] .screen-topbar>button:focus-visible,
 html[data-v28-rework="2"] #masteryCloseBtn:hover,
 html[data-v28-rework="2"] #masteryCloseBtn:focus-visible{
-  filter:brightness(1.07) drop-shadow(0 6px 10px rgba(3,24,55,.34));
-}
+  filter:brightness(1.07) drop-shadow(0 6px 10px rgba(3,24,55,.34))}
 html[data-v28-rework="2"] .screen-topbar>button:focus-visible,
 html[data-v28-rework="2"] #masteryCloseBtn:focus-visible{
   outline:2px solid rgba(88,202,255,.88)!important;
-  outline-offset:2px!important;
-}
+  outline-offset:2px!important}
 
 /* ---------- Real emerald encounter frame; icon and label stay dynamic ---------- */
 html[data-v28-rework="2"] #campaignStartBtn,
 html[data-v28-rework="2"] #duoCampaignStartBtn,
 html[data-v28-rework="2"] #trioCampaignStartBtn{
-  box-sizing:border-box!important;
-  min-height:84px!important;
-  padding:8px 14px!important;
 
   border-image-source:var(--p6-encounter-button)!important;
   border-image-slice:130 260 130 260 fill!important;
   border-image-width:30px 68px!important;
-  border-image-repeat:stretch!important;
-  border-radius:0!important;
-  color:#fff8e8!important;
-  background:transparent!important;
-  box-shadow:none!important;
-  filter:drop-shadow(0 7px 11px rgba(4,58,37,.25));
-  text-shadow:0 1px 3px rgba(1,35,21,.82)!important;
-}
+  border-image-repeat:stretch!important}
 html[data-v28-rework="2"] #campaignStartBtn:not(:disabled):hover,
 html[data-v28-rework="2"] #duoCampaignStartBtn:not(:disabled):hover,
 html[data-v28-rework="2"] #trioCampaignStartBtn:not(:disabled):hover{
-  filter:brightness(1.06) drop-shadow(0 8px 13px rgba(4,58,37,.31));
-}
+  filter:brightness(1.06) drop-shadow(0 8px 13px rgba(4,58,37,.31))}
 html[data-v28-rework="2"] #campaignStartBtn:disabled,
 html[data-v28-rework="2"] #duoCampaignStartBtn:disabled,
 html[data-v28-rework="2"] #trioCampaignStartBtn:disabled{
   opacity:.52!important;
-  filter:grayscale(.58) saturate(.62)!important;
-}
+  filter:grayscale(.58) saturate(.62)!important}
 html[data-v28-rework="2"] .campaign-hub .campaign-start-row .p1-action-icon{
   width:27px!important;
   height:27px!important;
-  flex:0 0 27px!important;
-}
+  flex:0 0 27px!important}
 
 /* ---------- Dynamic farm nodes ---------- */
 html[data-v28-rework="2"] .campaign-hub .campaign-node.p6-farm-node,
@@ -92,25 +75,21 @@ html[data-v28-rework="2"] .campaign-hub .campaign-node.p6-farm-node.boss,
 html[data-v28-rework="2"] .campaign-hub .campaign-node.p6-farm-node.world-boss{
   width:min(68px,100%)!important;
   aspect-ratio:1/1!important;
-  border-radius:0!important;
-}
+  border-radius:0!important}
 html[data-v28-rework="2"] .campaign-hub .campaign-node.p6-farm-node::before,
 html[data-v28-rework="2"] .campaign-hub .campaign-node.p6-farm-node.current::before,
 html[data-v28-rework="2"] .campaign-hub .campaign-node.p6-farm-node.selected::before{
   inset:-7px!important;
   background:var(--p6-farm-node) center/contain no-repeat!important;
-  filter:drop-shadow(0 6px 9px rgba(1,16,39,.36))!important;
-}
+  filter:drop-shadow(0 6px 9px rgba(1,16,39,.36))!important}
 html[data-v28-rework="2"] .campaign-hub .campaign-node.p6-farm-node.current::before,
 html[data-v28-rework="2"] .campaign-hub .campaign-node.p6-farm-node.selected::before{
-  filter:brightness(1.08) drop-shadow(0 0 12px rgba(255,214,91,.44))!important;
-}
+  filter:brightness(1.08) drop-shadow(0 0 12px rgba(255,214,91,.44))!important}
 html[data-v28-rework="2"] .campaign-hub .campaign-node.p6-farm-node>span:first-child{
   inset:8% 12% 25%!important;
   font-size:18px!important;
   color:#fff0bd!important;
-  text-shadow:0 2px 3px rgba(1,13,31,.86)!important;
-}
+  text-shadow:0 2px 3px rgba(1,13,31,.86)!important}
 html[data-v28-rework="2"] .campaign-hub .campaign-node>.p6-farm-label{
   position:absolute!important;
   z-index:4!important;
@@ -124,20 +103,17 @@ html[data-v28-rework="2"] .campaign-hub .campaign-node>.p6-farm-label{
   letter-spacing:.08em!important;
   text-transform:uppercase;
   text-shadow:0 1px 2px rgba(1,29,38,.82)!important;
-  pointer-events:none;
-}
+  pointer-events:none}
 
 /* ---------- Rendered completion and XP components ---------- */
 html[data-v28-rework="2"] .campaign-hub .campaign-node .node-mark img.p6-completed-medallion{
   width:22px!important;
   height:22px!important;
   object-fit:contain!important;
-  filter:drop-shadow(0 2px 3px rgba(0,0,0,.36))!important;
-}
+  filter:drop-shadow(0 2px 3px rgba(0,0,0,.36))!important}
 html[data-v28-rework="2"] .campaign-hub .campaign-node.p6-farm-node .node-mark{
   top:0!important;
-  right:0!important;
-}
+  right:0!important}
 html[data-v28-rework="2"] .campaign-hub .campaign-node .node-xp-badge{
   min-height:19px!important;
   display:inline-flex!important;
@@ -152,19 +128,16 @@ html[data-v28-rework="2"] .campaign-hub .campaign-node .node-xp-badge{
   background:rgba(5,18,40,.96)!important;
   font-size:7px!important;
   line-height:1!important;
-  box-shadow:0 4px 8px rgba(0,0,0,.34)!important;
-}
+  box-shadow:0 4px 8px rgba(0,0,0,.34)!important}
 html[data-v28-rework="2"] .campaign-hub .campaign-node .node-xp-badge>.p6-xp-badge-art{
   width:21px!important;
   height:21px!important;
   flex:0 0 21px!important;
   margin:-2px 0 -2px -2px;
   object-fit:contain;
-  filter:drop-shadow(0 1px 2px rgba(0,0,0,.28));
-}
+  filter:drop-shadow(0 1px 2px rgba(0,0,0,.28))}
 html[data-v28-rework="2"] .campaign-hub .campaign-node.p6-farm-node .node-xp-badge{
-  bottom:-23px!important;
-}
+  bottom:-23px!important}
 
 /* ---------- HP medallions in combat and the Vitality branch ---------- */
 html[data-v28-rework="2"] body.playing #players .hp>.p6-hp-medallion{
@@ -173,32 +146,26 @@ html[data-v28-rework="2"] body.playing #players .hp>.p6-hp-medallion{
   flex:0 0 32px!important;
   margin:0 2px 0 0!important;
   object-fit:contain!important;
-  filter:drop-shadow(0 2px 3px rgba(0,0,0,.34));
-}
+  filter:drop-shadow(0 2px 3px rgba(0,0,0,.34))}
 html[data-v28-rework="2"] #masteryModal .branch-hpLevel .mastery-branch-icon{
-  background:none!important;
-}
+  background:none!important}
 html[data-v28-rework="2"] #masteryModal .branch-hpLevel .p6-hp-branch-medallion{
   width:48px!important;
   height:48px!important;
   object-fit:contain!important;
-  filter:drop-shadow(0 3px 4px rgba(2,15,35,.34))!important;
-}
+  filter:drop-shadow(0 3px 4px rgba(2,15,35,.34))!important}
 
 /* Owned standard-mastery nodes use the supplied completed medallion. */
 html[data-v28-rework="2"] #masteryModal .mastery-node.owned .mastery-node-orb{
   border:0!important;
   background:var(--p6-completed-medallion) center/contain no-repeat!important;
   box-shadow:none!important;
-  filter:drop-shadow(0 6px 8px rgba(0,0,0,.31))!important;
-}
+  filter:drop-shadow(0 6px 8px rgba(0,0,0,.31))!important}
 html[data-v28-rework="2"] #masteryModal .mastery-node.owned .mastery-node-orb::before,
 html[data-v28-rework="2"] #masteryModal .mastery-node.owned .mastery-node-orb::after{
-  display:none!important;
-}
+  display:none!important}
 html[data-v28-rework="2"] #masteryModal .mastery-node.owned .mastery-node-dot{
-  visibility:hidden!important;
-}
+  visibility:hidden!important}
 
 @media(max-width:540px){
   html[data-v28-rework="2"] .screen-topbar>button,
@@ -207,8 +174,7 @@ html[data-v28-rework="2"] #masteryModal .mastery-node.owned .mastery-node-dot{
     height:50px!important;
     min-width:50px!important;
     min-height:50px!important;
-    flex-basis:50px!important;
-  }
+    flex-basis:50px!important}
   html[data-v28-rework="2"] #campaignStartBtn,
   html[data-v28-rework="2"] #duoCampaignStartBtn,
   html[data-v28-rework="2"] #trioCampaignStartBtn{
@@ -216,37 +182,29 @@ html[data-v28-rework="2"] #masteryModal .mastery-node.owned .mastery-node-dot{
     padding:7px 8px!important;
     border-width:25px 48px!important;
     border-image-width:25px 48px!important;
-    font-size:14px!important;
-  }
+    font-size:14px!important}
   html[data-v28-rework="2"] .campaign-hub .campaign-node.p6-farm-node,
   html[data-v28-rework="2"] .campaign-hub .campaign-node.p6-farm-node.boss,
   html[data-v28-rework="2"] .campaign-hub .campaign-node.p6-farm-node.world-boss{
-    width:min(58px,100%)!important;
-  }
+    width:min(58px,100%)!important}
   html[data-v28-rework="2"] .campaign-hub .campaign-node.p6-farm-node>span:first-child{
-    font-size:15px!important;
-  }
+    font-size:15px!important}
   html[data-v28-rework="2"] .campaign-hub .campaign-node>.p6-farm-label{
-    font-size:5px!important;
-  }
+    font-size:5px!important}
   html[data-v28-rework="2"] .campaign-hub .campaign-node .node-xp-badge{
     bottom:-18px!important;
-    font-size:6px!important;
-  }
+    font-size:6px!important}
   html[data-v28-rework="2"] .campaign-hub .campaign-node .node-xp-badge>.p6-xp-badge-art{
     width:19px!important;
     height:19px!important;
-    flex-basis:19px!important;
-  }
+    flex-basis:19px!important}
   html[data-v28-rework="2"] .campaign-hub .campaign-node.p6-farm-node .node-xp-badge{
-    bottom:-21px!important;
-  }
+    bottom:-21px!important}
 }
 
 @media(prefers-reduced-motion:reduce){
   html[data-v28-rework="2"] #campaignStartBtn,
   html[data-v28-rework="2"] #duoCampaignStartBtn,
   html[data-v28-rework="2"] #trioCampaignStartBtn{
-    transition:none!important;
-  }
+    transition:none!important}
 }
