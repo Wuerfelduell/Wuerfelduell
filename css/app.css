@@ -1542,11 +1542,11 @@ html.legacy-flat-dice .attack-fx-beam{box-shadow:0 0 9px rgba(120,205,255,.75)}
 @keyframes wdAttackSourceGold{0%{box-shadow:0 0 0 rgba(255,201,59,0)}35%{box-shadow:0 0 31px rgba(255,201,59,.92)}100%{box-shadow:0 0 0 rgba(255,201,59,0)}}
 
 /* Old Android compatibility: preserve the effect identity, drop particle/filter load. */
-html.legacy-flat-dice .attack-fx-particle,html.legacy-flat-dice .attack-fx-burst{display:none!important}
-html.legacy-flat-dice .attack-fx-lightning{filter:none!important}
-html.legacy-flat-dice .attack-fx-beam{filter:none!important}
+html.legacy-flat-dice .attack-fx-particle,html.legacy-flat-dice .attack-fx-burst{display:none}
+html.legacy-flat-dice .attack-fx-lightning{filter:none}
+html.legacy-flat-dice .attack-fx-beam{filter:none}
 
-@media(prefers-reduced-motion:reduce){.attack-fx-particle,.attack-fx-burst,.attack-fx-ring{animation-duration:.01ms!important;animation-iteration-count:1!important}}
+@media(prefers-reduced-motion:reduce){.attack-fx-particle,.attack-fx-burst,.attack-fx-ring{animation-duration:.01ms;animation-iteration-count:1}}
 
 /* ===== 08-v276.css ===== */
 /* Würfelduell V27.6.0 — progression / multiplayer polish */
