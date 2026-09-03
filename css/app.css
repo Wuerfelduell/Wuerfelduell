@@ -9838,7 +9838,7 @@ html[data-v28-rework="2"] #accountScreen input[type="password"],
 html[data-v28-rework="2"] #accountScreen input:not([type]),
 html[data-v28-rework="2"] #onlineScreen input[type="text"],
 html[data-v28-rework="2"] #onlineScreen input:not([type]){
-  box-sizing:border-box!important;
+  box-sizing:border-box;
   border-style:solid!important;
   border-color:transparent!important;
   border-width:9px 20px!important;
@@ -9848,26 +9848,26 @@ html[data-v28-rework="2"] #onlineScreen input:not([type]){
   border-image-repeat:stretch!important;
   border-radius:0!important;
   background:var(--wd-hell)!important;
-  box-shadow:none!important;
+  box-shadow:none;
 }
 
 /* Die Fähigkeitszeilen im Kampf stehen auf navy. */
 html[data-v28-rework="2"] #game .ability-state{
-  box-sizing:border-box!important;
-  border-style:solid!important;
-  border-color:transparent!important;
-  border-width:9px 20px!important;
-  border-image-source:var(--wd-strip)!important;
-  border-image-slice:40 96 40 96!important;
-  border-image-width:9px 20px!important;
-  border-image-repeat:stretch!important;
-  border-radius:0!important;
-  background:rgba(2,13,32,.5)!important;
-  box-shadow:none!important;
+  box-sizing:border-box;
+  border-style:solid;
+  border-color:transparent;
+  border-width:9px 20px;
+  border-image-source:var(--wd-strip);
+  border-image-slice:40 96 40 96;
+  border-image-width:9px 20px;
+  border-image-repeat:stretch;
+  border-radius:0;
+  background:rgba(2,13,32,.5);
+  box-shadow:none;
 }
 
-html[data-v28-rework="2"] .dd-select-trigger{ padding:2px 4px!important; }
-html[data-v28-rework="2"] #abilitiesScreen .ability-list-item{ padding:5px 6px!important; }
+html[data-v28-rework="2"] .dd-select-trigger{ padding:2px 4px; }
+html[data-v28-rework="2"] #abilitiesScreen .ability-list-item{ padding:5px 6px; }
 html[data-v28-rework="2"] #settingsScreen input[type="text"],
 html[data-v28-rework="2"] #settingsScreen input:not([type]),
 html[data-v28-rework="2"] #accountScreen input[type="text"],
@@ -9876,8 +9876,8 @@ html[data-v28-rework="2"] #accountScreen input[type="password"],
 html[data-v28-rework="2"] #accountScreen input:not([type]),
 html[data-v28-rework="2"] #onlineScreen input[type="text"],
 html[data-v28-rework="2"] #onlineScreen input:not([type]){
-  min-height:52px!important;
-  padding:4px 8px!important;
+  min-height:52px;
+  padding:4px 8px;
 }
 
 /* ============ STUFE 3 · slim-card ============
@@ -9892,17 +9892,17 @@ html[data-v28-rework="2"] #winnerBox .round-score-row,
 html[data-v28-rework="2"] #winnerBox .round-stat,
 html[data-v28-rework="2"] #winnerBox .v276-award,
 html[data-v28-rework="2"] #achievementToastLayer .achievement-toast{
-  box-sizing:border-box!important;
-  border-style:solid!important;
-  border-color:transparent!important;
-  border-width:13px 21px!important;
-  border-image-source:var(--wd-card)!important;
-  border-image-slice:72 120 72 120!important;
-  border-image-width:13px 21px!important;
-  border-image-repeat:stretch!important;
-  border-radius:0!important;
-  box-shadow:none!important;
-  padding:4px 6px!important;
+  box-sizing:border-box;
+  border-style:solid;
+  border-color:transparent;
+  border-width:13px 21px;
+  border-image-source:var(--wd-card);
+  border-image-slice:72 120 72 120;
+  border-image-width:13px 21px;
+  border-image-repeat:stretch;
+  border-radius:0;
+  box-shadow:none;
+  padding:4px 6px;
 }
 
 /* Helle Karten */
@@ -9929,33 +9929,33 @@ html[data-v28-rework="2"] #achievementToastLayer .achievement-toast{
    Tabelle EINEN Rahmen, die Zeilen nur eine Trennlinie. Die Kopfzeile
    bleibt dunkel - ihre Zellen tragen helle Schrift. */
 html[data-v28-rework="2"] #statsScreen #abilityStatsList{
-  box-sizing:border-box!important;
-  border-style:solid!important;
-  border-color:transparent!important;
-  border-width:13px 21px!important;
-  border-image-source:var(--wd-card)!important;
-  border-image-slice:72 120 72 120!important;
-  border-image-width:13px 21px!important;
-  border-image-repeat:stretch!important;
-  border-radius:0!important;
+  box-sizing:border-box;
+  border-style:solid;
+  border-color:transparent;
+  border-width:13px 21px;
+  border-image-source:var(--wd-card);
+  border-image-slice:72 120 72 120;
+  border-image-width:13px 21px;
+  border-image-repeat:stretch;
+  border-radius:0;
   background:var(--wd-hell)!important;
-  padding:0!important;
+  padding:0;
 }
 html[data-v28-rework="2"] #statsScreen .ability-stat-row{
-  border:0!important;
-  border-bottom:1px solid rgba(170,124,40,.20)!important;
-  border-image:none!important;
-  border-radius:0!important;
-  background:transparent!important;
-  padding:7px 8px!important;
-  box-shadow:none!important;
+  border:0;
+  border-bottom:1px solid rgba(170,124,40,.20);
+  border-image:none;
+  border-radius:0;
+  background:transparent;
+  padding:7px 8px;
+  box-shadow:none;
 }
 html[data-v28-rework="2"] #statsScreen .ability-stat-row:last-child{
   border-bottom:0!important;
 }
 html[data-v28-rework="2"] #statsScreen .ability-stat-row.header{
   background:var(--wd-navy)!important;
-  border-bottom:0!important;
+  border-bottom:0;
 }
 
 /* ============ STUFE 3 · slim-pill ============
@@ -9963,18 +9963,18 @@ html[data-v28-rework="2"] #statsScreen .ability-stat-row.header{
    ergibt die Bildhöhe, es gibt also keinen vertikalen Mittelstreifen,
    nur so bleiben die Kappen rund. */
 html[data-v28-rework="2"] .campaign-node-detail .node-detail-state{
-  box-sizing:border-box!important;
-  border-style:solid!important;
-  border-color:transparent!important;
-  border-width:12px 26px!important;
-  border-image-source:var(--wd-pill)!important;
-  border-image-slice:128!important;
-  border-image-width:12px 26px!important;
-  border-image-repeat:stretch!important;
-  border-radius:0!important;
-  background:rgba(2,13,32,.62)!important;
-  box-shadow:none!important;
-  padding:0 2px!important;
+  box-sizing:border-box;
+  border-style:solid;
+  border-color:transparent;
+  border-width:12px 26px;
+  border-image-source:var(--wd-pill);
+  border-image-slice:128;
+  border-image-width:12px 26px;
+  border-image-repeat:stretch;
+  border-radius:0;
+  background:rgba(2,13,32,.62);
+  box-shadow:none;
+  padding:0 2px;
 }
 
 /* ============ STUFE 2 · die-button ============
@@ -9982,22 +9982,22 @@ html[data-v28-rework="2"] .campaign-node-detail .node-detail-state{
    Perfect 25. Vorher ein weisses Rechteck mit flacher gelber Kontur. */
 html[data-v28-rework="2"] #gamblingDie,
 html[data-v28-rework="2"] .special-big-die{
-  box-sizing:border-box!important;
-  border-style:solid!important;
-  border-color:transparent!important;
-  border-width:40px!important;
-  border-image-source:var(--wd-die)!important;
-  border-image-slice:150!important;
-  border-image-width:40px!important;
-  border-image-repeat:stretch!important;
+  box-sizing:border-box;
+  border-style:solid;
+  border-color:transparent;
+  border-width:40px;
+  border-image-source:var(--wd-die);
+  border-image-slice:150;
+  border-image-width:40px;
+  border-image-repeat:stretch;
   /* KEIN background hier: die Wuerfelflaeche kommt aus der Design-Klasse,
      die js/13-battle-actions.js auf den Knopf setzt. Eine feste Farbe an
      dieser Stelle hat das gewaehlte Wuerfeldesign ueberschrieben - der
      Wuerfel war dadurch immer weiss.
      border-radius muss groesser als die Randbreite sein, sonst bleibt die
      Flaeche innen eckig und schaut an den runden Ecken des Rahmens heraus. */
-  border-radius:58px!important;
-  box-shadow:none!important;
+  border-radius:58px;
+  box-shadow:none;
 }
 
 /* ============ Marken innerhalb einer Karte ============
@@ -10005,20 +10005,20 @@ html[data-v28-rework="2"] .special-big-die{
    trugen. Sie behalten ihre Farbe, verlieren aber das Artwork. */
 html[data-v28-rework="2"] #achievementsScreen .achievement-reward,
 html[data-v28-rework="2"] #prestigeShopScreen .prestige-active-chip{
-  border-image:none!important;
-  background-image:none!important;
-  border-radius:999px!important;
-  box-shadow:none!important;
+  border-image:none;
+  background-image:none;
+  border-radius:999px;
+  box-shadow:none;
 }
 html[data-v28-rework="2"] #achievementsScreen .achievement-reward{
   background:linear-gradient(180deg,#f6dd8b,#e2bd5c)!important;
-  border:1px solid rgba(120,84,20,.45)!important;
-  color:#2c1904!important;
+  border:1px solid rgba(120,84,20,.45);
+  color:#2c1904;
 }
 html[data-v28-rework="2"] #prestigeShopScreen .prestige-active-chip{
-  background:rgba(3,20,48,.72)!important;
-  border:1px solid rgba(226,183,92,.34)!important;
-  color:#f4ead0!important;
+  background:rgba(3,20,48,.72);
+  border:1px solid rgba(226,183,92,.34);
+  color:#f4ead0;
 }
 
 /* Auf schmalen Displays werden die Rahmen zurückgenommen, damit vom
@@ -10033,8 +10033,8 @@ html[data-v28-rework="2"] #prestigeShopScreen .prestige-active-chip{
   html[data-v28-rework="2"] #achievementsScreen .achievement-card,
   html[data-v28-rework="2"] #prestigeShopScreen .prestige-item,
   html[data-v28-rework="2"] #rulesScreen .menu-info-card{
-    border-width:11px 16px!important;
-    border-image-width:11px 16px!important;
+    border-width:11px 16px;
+    border-image-width:11px 16px;
   }
 }
 
