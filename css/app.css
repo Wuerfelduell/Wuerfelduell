@@ -2457,8 +2457,8 @@ body.mastery-open{
     rgba(2,5,10,.86);
   backdrop-filter:blur(10px);
   -webkit-backdrop-filter:blur(10px)}
-#abilityMasteryLabModal.hidden{display:none!important}
-body.ability-mastery-lab-open{overflow:hidden!important}
+#abilityMasteryLabModal.hidden{display:none}
+body.ability-mastery-lab-open{overflow:hidden}
 
 .ability-mastery-lab-shell{
   width:min(980px,100%);
@@ -2811,11 +2811,11 @@ body.ability-mastery-lab-open{overflow:hidden!important}
    ========================================================= */
 
 .ability-mastery-lab-tree{
-  min-width:0!important;
-  width:100%!important}
+  min-width:0;
+  width:100%}
 
 .aml-pair{
-  min-height:470px!important}
+  min-height:470px}
 
 .aml-branch-headings{
   position:absolute;
@@ -2846,78 +2846,78 @@ body.ability-mastery-lab-open{overflow:hidden!important}
   font-weight:1000;
   white-space:nowrap}
 .aml-pair-emblem{
-  position:static!important;
-  transform:none!important;
+  position:static;
+  transform:none;
   align-self:start;
   margin-top:1px;
-  padding:5px 8px!important;
-  font-size:8px!important}
+  padding:5px 8px;
+  font-size:8px}
 
 .aml-links{
-  top:0!important}
+  top:0}
 
 .aml-branch{
-  top:88px!important;
-  width:42%!important;
-  gap:48px!important}
+  top:88px;
+  width:42%;
+  gap:48px}
 .aml-branch-left{
-  left:3%!important}
+  left:3%}
 .aml-branch-right{
-  right:3%!important}
+  right:3%}
 
 .aml-node{
-  height:92px!important;
-  width:100%!important;
-  border:0!important;
-  padding:0!important;
-  background:transparent!important;
+  height:92px;
+  width:100%;
+  border:0;
+  padding:0;
+  background:transparent;
   text-align:left;
   cursor:pointer}
 
 .aml-node-orbit{
-  left:0!important;
-  width:78px!important;
-  height:78px!important}
+  left:0;
+  width:78px;
+  height:78px}
 .aml-node-core{
-  left:9px!important;
-  top:9px!important;
-  width:60px!important;
-  height:60px!important}
+  left:9px;
+  top:9px;
+  width:60px;
+  height:60px}
 .aml-node-number{
-  font-size:20px!important}
+  font-size:20px}
 .aml-node-core small{
-  font-size:7px!important}
+  font-size:7px}
 
 .aml-node-tag{
-  left:68px!important;
-  top:23px!important;
-  padding:6px 8px!important}
+  left:68px;
+  top:23px;
+  padding:6px 8px}
 
 .aml-node-tag span{
-  font-size:7px!important}
+  font-size:7px}
 
 .aml-fusion-node{
-  bottom:16px!important;
-  width:150px!important;
-  height:126px!important;
-  border:0!important;
-  background:transparent!important;
-  padding:0!important;
+  bottom:16px;
+  width:150px;
+  height:126px;
+  border:0;
+  background:transparent;
+  padding:0;
   cursor:pointer}
 .aml-fusion-halo.halo-a{
-  width:116px!important;
-  height:116px!important}
+  width:116px;
+  height:116px}
 .aml-fusion-halo.halo-b{
-  width:94px!important;
-  height:94px!important}
+  width:94px;
+  height:94px}
 .aml-fusion-core{
-  width:78px!important;
-  height:78px!important;
-  border-radius:24px!important}
+  width:78px;
+  height:78px;
+  border-radius:24px}
 .aml-fusion-core strong{
-  font-size:19px!important}
+  font-size:19px}
 .aml-fusion-core span{
-  font-size:7px!important}
+  font-size:7px}
 
 .aml-future-node{
   max-width:360px;
@@ -2936,7 +2936,7 @@ body.ability-mastery-lab-open{overflow:hidden!important}
   backdrop-filter:blur(6px);
   -webkit-backdrop-filter:blur(6px)}
 .aml-info-popup.hidden{
-  display:none!important}
+  display:none}
 .aml-info-card{
   position:relative;
   width:min(380px,100%);
@@ -2998,11 +2998,11 @@ body.ability-mastery-lab-open{overflow:hidden!important}
 
 @media(max-width:700px){
   .ability-mastery-lab-viewport{
-    overflow-x:hidden!important}
+    overflow-x:hidden}
   .ability-mastery-lab-tree{
-    min-width:0!important}
+    min-width:0}
   .aml-pair{
-    min-height:445px!important}
+    min-height:445px}
   .aml-branch-headings{
     left:10px;
     right:10px;
@@ -3012,90 +3012,90 @@ body.ability-mastery-lab-open{overflow:hidden!important}
   .aml-ability-heading strong{
     font-size:11px}
   .aml-pair-emblem{
-    padding:4px 6px!important;
-    font-size:7px!important}
+    padding:4px 6px;
+    font-size:7px}
   .aml-branch{
-    top:76px!important;
-    width:45%!important;
-    gap:42px!important}
+    top:76px;
+    width:45%;
+    gap:42px}
   .aml-branch-left{
-    left:1%!important}
+    left:1%}
   .aml-branch-right{
-    right:1%!important}
+    right:1%}
   .aml-node{
-    height:86px!important}
+    height:86px}
   .aml-node-orbit{
-    width:70px!important;
-    height:70px!important}
+    width:70px;
+    height:70px}
   .aml-node-core{
-    left:8px!important;
-    top:8px!important;
-    width:54px!important;
-    height:54px!important}
+    left:8px;
+    top:8px;
+    width:54px;
+    height:54px}
   .aml-node-number{
-    font-size:18px!important}
+    font-size:18px}
   .aml-node-tag{
-    left:59px!important;
-    top:20px!important;
-    min-width:60px!important;
-    padding:5px 7px!important}
+    left:59px;
+    top:20px;
+    min-width:60px;
+    padding:5px 7px}
   .aml-node-tag strong{
-    font-size:12px!important}
+    font-size:12px}
   .aml-fusion-node{
-    width:134px!important;
-    height:112px!important;
-    bottom:12px!important}
+    width:134px;
+    height:112px;
+    bottom:12px}
   .aml-fusion-halo.halo-a{
-    width:102px!important;
-    height:102px!important}
+    width:102px;
+    height:102px}
   .aml-fusion-halo.halo-b{
-    width:82px!important;
-    height:82px!important}
+    width:82px;
+    height:82px}
   .aml-fusion-core{
-    width:70px!important;
-    height:70px!important}
+    width:70px;
+    height:70px}
 }
 
 @media(max-width:390px){
   .ability-mastery-lab-viewport{
-    padding-left:4px!important;
-    padding-right:4px!important}
+    padding-left:4px;
+    padding-right:4px}
   .aml-pair{
-    min-height:425px!important}
+    min-height:425px}
   .aml-branch{
-    width:46%!important}
+    width:46%}
   .aml-node-orbit{
-    width:64px!important;
-    height:64px!important}
+    width:64px;
+    height:64px}
   .aml-node-core{
-    left:7px!important;
-    top:7px!important;
-    width:50px!important;
-    height:50px!important}
+    left:7px;
+    top:7px;
+    width:50px;
+    height:50px}
   .aml-node-tag{
-    left:54px!important;
-    top:18px!important;
-    min-width:55px!important;
-    padding:5px 6px!important}
+    left:54px;
+    top:18px;
+    min-width:55px;
+    padding:5px 6px}
   .aml-node-tag strong{
-    font-size:11px!important}
+    font-size:11px}
 }
 
 /* V27.8.8 — full content */
 .aml-section-title{display:flex;align-items:flex-end;justify-content:space-between;gap:10px;padding:8px 6px 0;color:#dce3ef}
 .aml-section-title span{font-size:10px;font-weight:1000;letter-spacing:.12em}.aml-section-title small{color:#788497;font-size:8px;text-align:right}
-.aml-node-tag{min-width:118px!important;max-width:calc(100% - 58px)!important;flex-direction:column!important;align-items:flex-start!important;gap:1px!important}
-.aml-node-tag strong{display:block;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:10px!important}.aml-node-tag small{color:#8e9bad;font-size:7px;font-weight:1000}
+.aml-node-tag{min-width:118px;max-width:calc(100% - 58px);flex-direction:column;align-items:flex-start;gap:1px}
+.aml-node-tag strong{display:block;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:10px}.aml-node-tag small{color:#8e9bad;font-size:7px;font-weight:1000}
 .aml-node-level{color:#fff;font-size:16px;font-weight:1000;text-shadow:0 2px 5px rgba(0,0,0,.7)}
 .aml-violet{--aml-accent:rgba(178,99,255,.84);--aml-accent2:rgba(96,174,255,.94)}.aml-crimson{--aml-accent:rgba(255,83,117,.82);--aml-accent2:rgba(255,181,76,.92)}.aml-cyan{--aml-accent:rgba(77,217,255,.84);--aml-accent2:rgba(95,255,183,.92)}.aml-gold{--aml-accent:rgba(255,181,62,.86);--aml-accent2:rgba(255,231,128,.94)}.aml-toxic{--aml-accent:rgba(89,232,125,.84);--aml-accent2:rgba(91,255,206,.92)}
 .aml-standalone{--aml-accent:rgba(178,99,255,.84);--aml-accent2:rgba(96,174,255,.94);position:relative;overflow:hidden;border:1px solid rgba(255,255,255,.10);border-radius:24px;background:linear-gradient(180deg,rgba(255,255,255,.045),rgba(255,255,255,.018));padding:18px 16px 22px}
 .aml-standalone-violet{--aml-accent:rgba(178,99,255,.84);--aml-accent2:rgba(96,174,255,.94)}.aml-standalone-toxic{--aml-accent:rgba(89,232,125,.84);--aml-accent2:rgba(91,255,206,.92)}
 .aml-standalone-heading{text-align:center;margin-bottom:14px}.aml-standalone-heading small{display:block;color:#788497;font-size:8px;font-weight:1000;letter-spacing:.12em}.aml-standalone-heading strong{display:block;margin-top:3px;color:#f0f3fa;font-size:16px}
-.aml-standalone-track{display:flex;flex-direction:column;align-items:center;gap:10px}.aml-standalone-track .aml-ability-node{width:min(300px,100%)!important}.aml-standalone-track .aml-node-tag{min-width:150px!important}
+.aml-standalone-track{display:flex;flex-direction:column;align-items:center;gap:10px}.aml-standalone-track .aml-ability-node{width:min(300px,100%)}.aml-standalone-track .aml-node-tag{min-width:150px}
 .aml-standalone-link{width:4px;height:28px;border-radius:999px;background:linear-gradient(180deg,rgba(255,255,255,.08),var(--aml-accent));box-shadow:0 0 10px color-mix(in srgb,var(--aml-accent) 24%,transparent)}.aml-standalone-link-hot{background:linear-gradient(180deg,var(--aml-accent),var(--aml-accent2))}
-.aml-keystone-node{position:relative!important;left:auto!important;bottom:auto!important;transform:none!important;width:170px!important;height:130px!important;border:0!important;padding:0!important;background:transparent!important}
-.aml-keystone-node .aml-fusion-core strong{max-width:92px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:11px!important}
-@media(max-width:700px){.aml-section-title{align-items:flex-start;flex-direction:column;gap:2px}.aml-section-title small{text-align:left}.aml-node-tag{min-width:82px!important}.aml-node-tag strong{font-size:8px!important}.aml-ability-heading strong{font-size:9px!important}.aml-standalone-track .aml-node-tag{min-width:130px!important}}
+.aml-keystone-node{position:relative;left:auto;bottom:auto;transform:none;width:170px;height:130px;border:0;padding:0;background:transparent}
+.aml-keystone-node .aml-fusion-core strong{max-width:92px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:11px}
+@media(max-width:700px){.aml-section-title{align-items:flex-start;flex-direction:column;gap:2px}.aml-section-title small{text-align:left}.aml-node-tag{min-width:82px}.aml-node-tag strong{font-size:8px}.aml-ability-heading strong{font-size:9px}.aml-standalone-track .aml-node-tag{min-width:130px}}
 
 /* ===== 13-v28-grundlage.css ===== */
 /* ============================================================
