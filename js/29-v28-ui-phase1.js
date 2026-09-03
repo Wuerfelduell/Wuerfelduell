@@ -205,6 +205,25 @@
     return CAMPAIGN_DETAIL_ICON_PATHS.find(([pattern]) => pattern.test(text))?.[1] || "navigation/info.svg";
   }
 
+  function campaignDetailStateKind(state){
+    const known = new Set(["farm","locked","completed","open"]);
+    const stored = state?.dataset?.campaignState;
+    if(known.has(stored)) return stored;
+
+    const label = String(state?.textContent || "").trim();
+    const text = label.toLocaleLowerCase();
+    const kind = /farm/.test(text)
+      ? "farm"
+      : /gesperrt|locked/.test(text)
+        ? "locked"
+        : /geschafft|completed/.test(text)
+          ? "completed"
+          : "open";
+    state.dataset.campaignState = kind;
+    if(label && !state.hasAttribute("aria-label")) state.setAttribute("aria-label",label);
+    return kind;
+  }
+
   function ensureCampaignDetailIcons(){
     ["campaignEncounterDetail","duoCampaignEncounterDetail","trioCampaignEncounterDetail"].forEach(id => {
       const detail = document.getElementById(id);
@@ -215,13 +234,13 @@
       });
 
       const state = detail.querySelector(".node-detail-state");
+      const stateKind = state ? campaignDetailStateKind(state) : null;
       if(state && !state.querySelector(":scope > img")){
-        const text = state.textContent.toLocaleLowerCase();
-        const path = /farm/.test(text)
+        const path = stateKind === "farm"
           ? "gameplay/farm.svg"
-          : /gesperrt|locked/.test(text)
+          : stateKind === "locked"
             ? "gameplay/locked.svg"
-            : /geschafft|completed/.test(text)
+            : stateKind === "completed"
               ? "gameplay/completed.svg"
               : "gameplay/encounter.svg";
         ensureLeadingIcon(state, path, "p1-inline-icon");

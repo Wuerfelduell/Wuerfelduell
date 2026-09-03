@@ -42,19 +42,19 @@ html[data-v28-rework="2"] .campaign-hub .campaign-world-btn::before{
   border-image-width:13px 18px!important;
   border-image-repeat:stretch!important;
   background:
-    radial-gradient(circle at 50% 28%,var(--world-glow),transparent 48%) padding-box,
+    radial-gradient(circle at 50% 28%,color-mix(in srgb,var(--world-glow) 88%,transparent),transparent 54%) padding-box,
     linear-gradient(155deg,
-      color-mix(in srgb,var(--world-surface) 30%,#f4ece3 70%),
-      color-mix(in srgb,var(--world-surface) 16%,#f7f1e8 84%)) padding-box!important;
-  filter:saturate(.58) brightness(1.03)!important;
-  opacity:.82!important;
+      color-mix(in srgb,var(--world-surface) 92%,#203650 8%),
+      color-mix(in srgb,var(--world-surface) 78%,#07172b 22%)) padding-box!important;
+  filter:brightness(.92) drop-shadow(0 4px 5px color-mix(in srgb,var(--world-glow) 72%,transparent))!important;
+  opacity:1!important;
   pointer-events:none!important;
 }
 html[data-v28-rework="2"] .campaign-hub .campaign-world-btn.active::before{
   background:
     radial-gradient(circle at 50% 28%,var(--world-glow),transparent 48%) padding-box,
     linear-gradient(155deg,var(--world-surface),#06172f 84%) padding-box!important;
-  filter:drop-shadow(0 7px 9px var(--world-glow)) saturate(1)!important;
+  filter:brightness(1.08) drop-shadow(0 8px 11px var(--world-glow))!important;
   opacity:1!important;
 }
 html[data-v28-rework="2"] .campaign-hub .campaign-world-btn::after{
@@ -82,7 +82,7 @@ html[data-v28-rework="2"] .campaign-hub .campaign-world-art{
   background-position:center,center!important;
   background-repeat:no-repeat,no-repeat!important;
   background-size:100% 100%,72% 72%!important;
-  filter:saturate(.72) opacity(.84) drop-shadow(0 4px 5px rgba(2,17,39,.28))!important;
+  filter:saturate(1.04) drop-shadow(0 4px 5px rgba(2,17,39,.34))!important;
   pointer-events:none!important;
 }
 html[data-v28-rework="2"] .campaign-hub .campaign-world-btn.active .campaign-world-art{
@@ -101,14 +101,14 @@ html[data-v28-rework="2"] .campaign-hub .campaign-world-copy{
 }
 html[data-v28-rework="2"] .campaign-hub .campaign-world-name{
   width:100%!important;
-  color:#183759!important;
+  color:color-mix(in srgb,var(--world-secondary) 78%,#fff 22%)!important;
   font-size:12px!important;
   line-height:1.08!important;
   text-align:center!important;
 }
 html[data-v28-rework="2"] .campaign-hub .campaign-world-state{
   min-height:23px!important;
-  color:#62768c!important;
+  color:color-mix(in srgb,var(--world-primary) 78%,#fff 22%)!important;
   font-size:9px!important;
   line-height:23px!important;
 }
@@ -118,12 +118,38 @@ html[data-v28-rework="2"] .campaign-hub .campaign-world-btn.active .campaign-wor
   color:#fff3d1!important;
 }
 html[data-v28-rework="2"] .campaign-hub .campaign-world-btn:disabled::before{
-  filter:grayscale(.36) saturate(.38) brightness(.98)!important;
-  opacity:.54!important;
+  filter:brightness(.84) drop-shadow(0 3px 4px color-mix(in srgb,var(--world-glow) 54%,transparent))!important;
+  opacity:1!important;
 }
 html[data-v28-rework="2"] .campaign-hub .campaign-world-btn:disabled .campaign-world-art{
-  opacity:.46!important;
-  filter:grayscale(.42) saturate(.42) brightness(.82) drop-shadow(0 3px 4px rgba(2,17,39,.2))!important;
+  opacity:1!important;
+  filter:saturate(1) brightness(.9) drop-shadow(0 3px 4px rgba(2,17,39,.28))!important;
+}
+html[data-v28-rework="2"] .campaign-hub .campaign-world-btn:disabled .campaign-world-state{
+  box-sizing:border-box!important;
+  min-width:29px!important;
+  min-height:21px!important;
+  height:21px!important;
+  display:inline-grid!important;
+  place-items:center!important;
+  margin-top:1px!important;
+  padding:0 6px!important;
+  overflow:hidden!important;
+  border:1px solid color-mix(in srgb,var(--world-secondary) 68%,transparent)!important;
+  border-radius:999px!important;
+  background:linear-gradient(155deg,color-mix(in srgb,var(--world-surface) 88%,#07172b 12%),#071426)!important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.16),0 2px 6px rgba(2,17,39,.28)!important;
+  color:transparent!important;
+  font-size:0!important;
+  line-height:1!important;
+}
+html[data-v28-rework="2"] .campaign-hub .campaign-world-btn:disabled .campaign-world-state::before{
+  content:""!important;
+  width:13px!important;
+  height:13px!important;
+  display:block!important;
+  background:url("../assets/ui/v28/svg/gameplay/locked.svg?v=28.11.2") center/contain no-repeat!important;
+  filter:drop-shadow(0 1px 2px rgba(0,0,0,.42))!important;
 }
 
 /* The painted frame remains whole. A 3:1 preferred aspect ratio keeps its
@@ -142,7 +168,7 @@ html[data-v28-rework="2"] .campaign-hub .campaign-world-desc{
   gap:clamp(7px,2vw,12px)!important;
   margin:0 0 11px!important;
   padding:clamp(15px,4vw,24px) clamp(28px,7vw,44px)!important;
-  overflow:visible!important;
+  overflow:clip!important;
   border:0!important;
   border-image:none!important;
   border-radius:0!important;
@@ -169,6 +195,13 @@ html[data-v28-rework="2"] .campaign-hub .campaign-node-detail[data-p4-detail-ton
   background:var(--world-frame-rect,var(--p1-ivory-card)) center/100% 100% no-repeat!important;
   filter:drop-shadow(0 7px 10px var(--world-glow))!important;
   pointer-events:none!important;
+}
+/* Rift's crossed blades are painted beyond the visual top/bottom rails. Clip
+   only those two outside tips; the rail and the rest of the 3:1 artwork stay
+   intact. */
+html[data-v28-rework="2"] .campaign-hub[data-world-theme="solo-rift"] .campaign-world-desc::after,
+html[data-v28-rework="2"] .campaign-hub[data-world-theme="solo-rift"] .campaign-node-detail[data-p4-detail-tone="boss"] .node-detail-head::after{
+  clip-path:polygon(0 0,62% 0,62% 8%,81% 8%,81% 0,100% 0,100% 100%,36% 100%,36% 92%,19% 92%,19% 100%,0 100%)!important;
 }
 html[data-v28-rework="2"] .campaign-hub .campaign-world-desc>*{
   position:relative!important;
@@ -250,9 +283,13 @@ html[data-v28-rework="2"] .campaign-hub .campaign-node-detail[data-p4-detail-ton
   min-height:0!important;
   height:auto!important;
   aspect-ratio:3 / 1!important;
+  display:grid!important;
+  grid-template-columns:minmax(0,1fr) auto!important;
+  align-items:center!important;
+  gap:clamp(7px,2vw,12px)!important;
   margin:-3px -3px 11px!important;
   padding:clamp(15px,4vw,23px) clamp(29px,9vw,48px)!important;
-  overflow:visible!important;
+  overflow:clip!important;
   border:0!important;
   border-image:none!important;
   border-radius:0!important;
@@ -264,7 +301,12 @@ html[data-v28-rework="2"] .campaign-hub .campaign-node-detail[data-p4-detail-ton
   z-index:2!important;
 }
 html[data-v28-rework="2"] .campaign-hub .campaign-node-detail[data-p4-detail-tone="boss"] .node-detail-title{
+  overflow:visible!important;
   color:#fff5dc!important;
+  line-height:1.08!important;
+  overflow-wrap:anywhere!important;
+  text-overflow:clip!important;
+  white-space:normal!important;
   text-shadow:0 1px 3px rgba(0,0,0,.7)!important;
 }
 html[data-v28-rework="2"] .campaign-hub .campaign-node-detail[data-p4-detail-tone="boss"] .node-detail-sub{
@@ -274,6 +316,28 @@ html[data-v28-rework="2"] .campaign-hub .campaign-node-detail[data-p4-detail-ton
   border-color:color-mix(in srgb,var(--world-secondary) 42%,transparent)!important;
   background:color-mix(in srgb,var(--world-surface) 78%,transparent)!important;
 }
+html[data-v28-rework="2"] .campaign-hub .node-detail-state[data-campaign-state]{
+  box-sizing:border-box!important;
+  width:32px!important;
+  min-width:32px!important;
+  height:32px!important;
+  min-height:32px!important;
+  display:inline-grid!important;
+  place-items:center!important;
+  padding:5px!important;
+  overflow:hidden!important;
+  border-radius:999px!important;
+  color:transparent!important;
+  font-size:0!important;
+  line-height:1!important;
+}
+html[data-v28-rework="2"] .campaign-hub .node-detail-state[data-campaign-state]>img{
+  width:18px!important;
+  height:18px!important;
+  display:block!important;
+  margin:0!important;
+  object-fit:contain!important;
+}
 html[data-v28-rework="2"] .campaign-hub .campaign-node-detail[data-p4-detail-tone="boss"] .node-detail-desc,
 html[data-v28-rework="2"] .campaign-hub .campaign-node-detail[data-p4-detail-tone="boss"] .node-detail-row{
   color:#edf1f7!important;
@@ -281,18 +345,18 @@ html[data-v28-rework="2"] .campaign-hub .campaign-node-detail[data-p4-detail-ton
   background:color-mix(in srgb,var(--world-surface) 52%,transparent)!important;
 }
 
-/* Combat cards are also too tall for the painted 3:1 rectangle. Boss Rush
-   therefore cycles the same tier-2 edge plus the selected world's palette,
-   glow and ring. Normal/player cards keep their existing frame untouched. */
+/* Combat cards are too tall for the painted 3:1 rectangle. Their edge is
+   therefore drawn from the assigned world's palette while the matching ring
+   supplies the crest. Normal/player cards keep their existing frame. */
 html[data-v28-rework="2"] body.playing #game.boss-rush-game #players .player.boss-rush-world-enemy{
-  border-image-source:var(--p1-ivory-card)!important;
-  border-image-slice:76 168 76 168!important;
-  border-image-width:15px 19px!important;
-  border-image-repeat:stretch!important;
+  border:3px solid transparent!important;
+  border-image:none!important;
+  border-radius:16px!important;
   background:
-    radial-gradient(circle at 82% 25%,var(--world-glow),transparent 32%) padding-box,
-    linear-gradient(155deg,var(--world-surface),#071426 88%) padding-box!important;
-  box-shadow:none!important;
+    radial-gradient(circle at 82% 25%,var(--world-glow),transparent 36%) padding-box,
+    linear-gradient(155deg,color-mix(in srgb,var(--world-surface) 94%,#142b47 6%),#050f20 90%) padding-box,
+    linear-gradient(135deg,var(--world-secondary),var(--world-primary) 32%,#071426 58%,var(--world-primary) 78%,var(--world-secondary)) border-box!important;
+  box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--world-secondary) 42%,transparent),0 0 0 1px color-mix(in srgb,var(--world-primary) 68%,transparent),0 8px 18px rgba(1,9,22,.42)!important;
   filter:drop-shadow(0 7px 10px var(--world-glow))!important;
 }
 html[data-v28-rework="2"] body.playing #game.boss-rush-game #players .player.boss-rush-world-enemy::before{
@@ -308,11 +372,71 @@ html[data-v28-rework="2"] body.playing #game.boss-rush-game #players .player.bos
   background-repeat:no-repeat,no-repeat!important;
   background-size:100% 100%,72% 72%!important;
   filter:saturate(.92) drop-shadow(0 3px 5px rgba(0,0,0,.35))!important;
-  opacity:.38!important;
+  opacity:.82!important;
   pointer-events:none!important;
+}
+html[data-v28-rework="2"] body.playing #game.boss-rush-game #players .player.boss-rush-world-enemy>*{
+  position:relative!important;
+  z-index:2!important;
+}
+html[data-v28-rework="2"] body.playing #game.boss-rush-game #players .player.boss-rush-world-enemy .player-name{
+  min-height:2.15em!important;
+  padding-right:46px!important;
+  overflow:visible!important;
+  align-items:flex-start!important;
+}
+html[data-v28-rework="2"] body.playing #game.boss-rush-game #players .player.boss-rush-world-enemy .player-name-text{
+  display:block!important;
+  overflow:visible!important;
+  overflow-wrap:anywhere!important;
+  text-overflow:clip!important;
+  white-space:normal!important;
 }
 html[data-v28-rework="2"] body.playing #game.boss-rush-game #players .player.boss-rush-world-enemy .ability-tag{
   color:var(--world-secondary)!important;
+}
+
+/* JS 37 replaces the run-on sentence with four explicit label/value cells. */
+html[data-v28-rework="2"] body.playing .boss-rush-live.boss-rush-status-items{
+  box-sizing:border-box!important;
+  width:100%!important;
+  display:grid!important;
+  grid-template-columns:repeat(4,minmax(0,1fr))!important;
+  gap:6px!important;
+  letter-spacing:normal!important;
+}
+html[data-v28-rework="2"] body.playing .boss-rush-live.boss-rush-status-items::before{
+  display:none!important;
+}
+html[data-v28-rework="2"] body.playing .boss-rush-status-item{
+  min-width:0!important;
+  display:flex!important;
+  flex-direction:column!important;
+  align-items:flex-start!important;
+  gap:2px!important;
+  padding:6px 7px!important;
+  border:1px solid rgba(240,199,101,.28)!important;
+  border-radius:8px!important;
+  background:rgba(4,22,49,.58)!important;
+}
+html[data-v28-rework="2"] body.playing .boss-rush-status-item>small{
+  color:#9fb3cd!important;
+  font-size:8px!important;
+  font-weight:900!important;
+  letter-spacing:.08em!important;
+  line-height:1!important;
+  text-transform:uppercase!important;
+}
+html[data-v28-rework="2"] body.playing .boss-rush-status-item>b{
+  max-width:100%!important;
+  color:#ffe19a!important;
+  font-size:10px!important;
+  line-height:1.18!important;
+  overflow-wrap:anywhere!important;
+  white-space:normal!important;
+}
+html[data-v28-rework="2"] body.playing .phase-live[data-boss-rush-legacy-phase]{
+  display:none!important;
 }
 
 @media(max-width:540px){
@@ -361,12 +485,17 @@ html[data-v28-rework="2"] body.playing #game.boss-rush-game #players .player.bos
     border-image-width:11px 15px!important;
   }
   html[data-v28-rework="2"] .campaign-hub .campaign-node-detail[data-p4-detail-tone="boss"] .node-detail-head{
+    gap:6px!important;
     padding:14px 27px!important;
   }
   html[data-v28-rework="2"] body.playing #game.boss-rush-game #players .player.boss-rush-world-enemy::before{
     width:36px!important;
     height:36px!important;
-    opacity:.3!important;
+    opacity:.76!important;
+  }
+  html[data-v28-rework="2"] body.playing .boss-rush-live.boss-rush-status-items{
+    grid-template-columns:repeat(2,minmax(0,1fr))!important;
+    gap:5px!important;
   }
 }
 
