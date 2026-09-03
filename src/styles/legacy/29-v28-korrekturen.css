@@ -447,12 +447,19 @@ html[data-v28-rework="2"] .v28-ability-trigger{
   height:84px;
   display:flex;
   align-items:center;
-  padding:0 28px 0 52px;
+  padding:0 35px 0 52px;
   overflow:visible;
 
   border-image-source:var(--p9-ability-choice, var(--p1-ability-card, url("../assets/ui/v28/png/frames/ability-choice-card.webp")));
-  border-image-slice:84 165 84 230 fill;
-  border-image-width:17px 26px 17px 42px;
+  /* Der rechte Slice war 165 und begann damit bei Quellpixel 1371. Die
+     gemalte Fassung im Rahmen liegt aber bei 1327..1417, lag also zur
+     Haelfte im mittleren, gestreckten Bereich - sie wurde je nach
+     Zeilenbreite unterschiedlich breit gezogen und war nie rund.
+     1536-209=1327 holt sie vollstaendig in den rechten Slice; die
+     Rahmenbreite geht von 26 auf 33, damit der Massstab 165/26 = 209/33
+     unveraendert bleibt. Das Innenpolster rechts waechst entsprechend. */
+  border-image-slice:84 209 84 230 fill;
+  border-image-width:17px 33px 17px 42px;
   border-image-repeat:stretch;
   border-radius:0;
   background:transparent!important;
@@ -538,9 +545,25 @@ html[data-v28-rework="2"] .v28-ability-option .v28-check{
   background:none;
   z-index:3;
   pointer-events:none}
+/* Das Haekchen gehoert IN die gemalte Fassung, nicht daneben. Die Fassung
+   ist ein durchsichtiges Loch im Rahmenbild, und CSS malt den Hintergrund
+   vor dem border-image - ein Hintergrundbild scheint also durch das Loch
+   und wird von Gold- und Navyring eingefasst. Als eigenes Element ginge
+   das nicht: ein Kind wird immer ueber den Rahmen gemalt und wuerde die
+   Ringe verdecken.
+   Masse: die Fassung rendert 33..18.6 Pixel vom rechten Rand und
+   33.1..46.6 vom oberen. 23 Pixel Bildbreite fuellen die Oeffnung mit dem
+   gruenen Kern; die vier Sternspitzen des Medaillons verschwinden dabei
+   hinter dem Ring, was so gewollt ist. */
 html[data-v28-rework="2"] .v28-ability-option.selected .v28-check{
-  background:url("../assets/ui/v28/png/components/completed-check-medallion.webp") center/contain no-repeat;
-  color:transparent}
+  display:none}
+html[data-v28-rework="2"] .v28-ability-option.selected{
+  background-image:url("../assets/ui/v28/png/components/completed-check-medallion.webp")!important;
+  background-repeat:no-repeat!important;
+  background-position:right 15.58px top 29.70px!important;
+  background-size:23px 20.30px!important;
+  background-origin:border-box!important;
+  background-clip:border-box!important}
 html[data-v28-rework="2"] .v28-ability-trigger{
   margin-top:10px}
 html[data-v28-rework="2"] .v28-ability-trigger::after{

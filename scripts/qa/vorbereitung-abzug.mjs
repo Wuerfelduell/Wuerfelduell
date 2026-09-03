@@ -21,11 +21,12 @@
      heraus, wo in Wahrheit 4,45 und 2,47 stehen.
 
    - "Ragt über den Rand" und "wird abgeschnitten" werden getrennt
-     gemessen. Symbol und Häkchen ragen absichtlich über die Zeile
-     (left:-12px, right:-14px in 29-v28-korrekturen.css) und liegen auf
-     dem gemalten Rahmen. Das ist Gestaltung. Ein Fehler wäre es erst,
-     wenn ein Vorfahre mit overflow:hidden etwas davon wegschneidet -
-     und genau das wird hier gesucht.
+     gemessen. Das Symbol ragt absichtlich über die Zeile (left:-12px in
+     29-v28-korrekturen.css) und liegt auf dem gemalten Rahmen. Das ist
+     Gestaltung. Ein Fehler wäre es erst, wenn ein Vorfahre mit
+     overflow:hidden etwas davon wegschneidet - und genau das wird hier
+     gesucht. Das Häkchen ist seit V28.11.11 kein Element mehr, sondern
+     der Hintergrund der Zeile, der durch die Fassung im Rahmen scheint.
 
    Voraussetzung: das Spiel muss lokal ausgeliefert werden.
      npx http-server -p 8099 -c-1 --silent .
@@ -126,6 +127,11 @@ function messen() {
   const beschnitten = el => {
     const pos = getComputedStyle(el).position;
     const r = el.getBoundingClientRect();
+    // Ein Element ohne Kaestchen kann nicht beschnitten werden. Ohne diese
+    // Zeile meldete der Test das ausgeblendete Haekchen als beschnitten,
+    // weil ein display:none-Element bei 0,0 mit 0x0 liegt und damit
+    // rechnerisch ausserhalb jedes Kastens.
+    if (r.width < 0.5 && r.height < 0.5) return null;
     let n = el.parentElement;
     let zaehlt = pos !== "absolute" && pos !== "fixed";
     while (n) {
@@ -306,7 +312,8 @@ for (const breite of BREITEN) {
     zeile(m.picker.obenVerdeckt === 0 && m.picker.untenVerdeckt === 0 && m.picker.ueberPanel === 0,
       `Picker-Liste: oben verdeckt ${m.picker.obenVerdeckt}px, unten ${m.picker.untenVerdeckt}px, ueber Panel ${m.picker.ueberPanel}px, scrollt ${m.picker.scrollt}.`);
     zeile(z.ikonBeschnitten === null && z.hakenBeschnitten === null,
-      `Zeilenschmuck: Symbol ${z.ikonUeberZeile}px links, Haken ${z.hakenUeberZeile}px rechts ueber die Zeile (gewollt); ` +
+      `Zeilenschmuck: Symbol ${z.ikonUeberZeile}px links ueber die Zeile (gewollt), ` +
+      `Haken ${z.hakenUeberZeile === 0 ? "als Hintergrund in der Fassung" : z.hakenUeberZeile + "px rechts ueber die Zeile"}; ` +
       `beschnitten: ${z.ikonBeschnitten || "nein"} / ${z.hakenBeschnitten || "nein"}.`);
     zeile(z.ikonUeberPanel === 0 && z.hakenUeberPanel === 0,
       `Ueber den Panelrand hinaus: Symbol ${z.ikonUeberPanel}px, Haken ${z.hakenUeberPanel}px. Soll: 0.`);
