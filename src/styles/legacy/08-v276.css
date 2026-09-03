@@ -1,9 +1,9 @@
 /* Würfelduell V27.6.0 — progression / multiplayer polish */
 .online-mode-label{display:grid;gap:6px;margin:10px 0;font-weight:800}.online-mode-label select{width:100%}
 .secret-achievement{border-style:dashed;filter:saturate(.75)}.secret-achievement .achievement-name{letter-spacing:.08em}
-.v276-profile-extra{display:none!important}
+.v276-profile-extra{display:none}
 .v276-cosmetic-open{
-  display:flex!important;
+  display:flex;
   align-items:center;
   justify-content:center;
   width:100%;
