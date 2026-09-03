@@ -152,6 +152,14 @@
       el.id="playerCard"+i;
       el.className="player"+(p.cosmeticFrame?` frame-${p.cosmeticFrame}`:"")+(i===current&&p.hp>0?" active":"")+(p.hp<=0?" dead":"")+(p.enemyInstanceId?" campaign-enemy-instance":"")+(attackTarget===i&&p.hp>0?" current-target":"");
       el.dataset.instanceId=p.enemyInstanceId||`player:${i}`;
+      const bossRushWorldTheme=p.campaignTeam==="enemy"&&window.WDDuoBossRush?.isActive?.()
+        ?window.WDDuoBossRush.worldThemeKey?.()
+        :null;
+      if(bossRushWorldTheme){
+        el.classList.add("boss-rush-world-enemy");
+        el.dataset.bossRushStage=String(window.WDDuoBossRush.stageNumber?.()||1);
+        window.WDCampaignWorldThemes?.applyTheme?.(el,bossRushWorldTheme);
+      }
       const mutator=p.mutatorId&&ELITE_MUTATORS[p.mutatorId];
       const marked=campaignMode&&p.campaignTeam==="hero"&&encounterRuntime?.markTurns>0&&encounterRuntime.markedHero===i;
       const campaignCompact=campaignMode;

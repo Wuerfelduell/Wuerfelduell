@@ -10,14 +10,17 @@ async function exists(relativePath) {
   return stat(path.join(root, relativePath)).then(() => true).catch(() => false);
 }
 
-const [html, versionText, packageText, configText, workerText, css, worldThemeText] = await Promise.all([
+const [html, versionText, packageText, configText, workerText, css, worldThemeText, worldPackCssText, bossRushText, battleUiText] = await Promise.all([
   readFile(path.join(root, "index.html"), "utf8"),
   readFile(path.join(root, "version.json"), "utf8"),
   readFile(path.join(root, "package.json"), "utf8"),
   readFile(path.join(root, "js", "01-config.js"), "utf8"),
   readFile(path.join(root, "sw.js"), "utf8"),
   readFile(path.join(root, "css", "app.css"), "utf8"),
-  readFile(path.join(root, "js", "39-campaign-world-themes.js"), "utf8")
+  readFile(path.join(root, "js", "39-campaign-world-themes.js"), "utf8"),
+  readFile(path.join(root, "src", "styles", "legacy", "41-v28-world-asset-pack.css"), "utf8"),
+  readFile(path.join(root, "js", "37-duo-boss-rush.js"), "utf8"),
+  readFile(path.join(root, "js", "12-battle-ui.js"), "utf8")
 ]);
 const versionData = JSON.parse(versionText);
 const packageData = JSON.parse(packageText);
@@ -108,22 +111,52 @@ if (!worldRootMatch) {
     [...worldThemeText.matchAll(/["'](world-(?:solo|duo|trio)-[^"']+)\.png["']/g)]
       .map((match) => match[1])
   );
-  const frameInsetBlock = worldThemeText.match(/const FRAME_INSETS=Object\.freeze\(\{([\s\S]*?)\}\);/);
-  const fittedFrameStems = new Set(
-    [...(frameInsetBlock?.[1] || "").matchAll(/["'](world-(?:solo|duo|trio)-[^"']+)["']\s*:\s*["'](?:\d+(?:\.\d+)?%\s+){3}\d+(?:\.\d+)?%["']/g)]
-      .map((match) => match[1])
-  );
-  const fillInsetBlock = worldThemeText.match(/const FRAME_FILL_INSETS=Object\.freeze\(\{([\s\S]*?)\}\);/);
-  const filledFrameStems = new Set(
-    [...(fillInsetBlock?.[1] || "").matchAll(/["'](world-(?:solo|duo|trio)-[^"']+)["']\s*:\s*["'](?:\d+(?:\.\d+)?%\s+){3}\d+(?:\.\d+)?%["']/g)]
+  const themeKeys = new Set(
+    [...worldThemeText.matchAll(/["']((?:solo|duo|trio)-[^"']+)["']\s*:\s*theme\(/g)]
       .map((match) => match[1])
   );
   if (!worldStems.size) errors.push("campaign world theme list is empty");
-  if (!css.includes("--world-frame-fill-inset")) errors.push("campaign world colour fill inset is not consumed by CSS");
-  if (!css.includes("border-image-source:var(--world-frame-rect)")) errors.push("campaign boss detail does not consume the world frame as a border");
+  if (/FRAME_(?:FILL_)?INSETS|--world-frame-(?:fill-)?inset/.test(`${worldThemeText}\n${worldPackCssText}`)) {
+    errors.push("obsolete per-world frame inset workaround is still present");
+  }
+  if (worldPackCssText.includes("border-image-source:var(--world-frame-rect")) {
+    errors.push("painted 3:1 world frame must never be used as border-image");
+  }
+  if (!worldPackCssText.includes("background:var(--world-frame-rect,var(--p1-ivory-card)) center/100% 100% no-repeat")) {
+    errors.push("wide campaign surfaces do not consume the complete world frame with a neutral fallback");
+  }
+  if (!worldPackCssText.includes("aspect-ratio:3 / 1")) errors.push("wide world artwork has no 3:1 preferred aspect ratio");
+  if (!/\.campaign-world-btn::before\s*\{[\s\S]*?border-image-source:var\(--p1-ivory-card\)/.test(worldPackCssText)) {
+    errors.push("all campaign world tabs do not share the tier-2 neutral frame");
+  }
+  const bannerDescription = worldPackCssText.match(/\.campaign-world-banner-desc\s*\{([\s\S]*?)\}/)?.[1] || "";
+  if (!bannerDescription.includes("overflow:visible") || !bannerDescription.includes("-webkit-line-clamp:unset")) {
+    errors.push("campaign world banner description can still be clipped");
+  }
+  if (!/\.campaign-node-detail\[data-p4-detail-tone="boss"\][\s\S]*?border-image-source:var\(--p1-ivory-card\)/.test(worldPackCssText)) {
+    errors.push("tall campaign boss detail has no tier-2 neutral outer frame");
+  }
+
+  const sequenceBlock = bossRushText.match(/const BOSS_RUSH_WORLD_THEME_KEYS=Object\.freeze\(\[([\s\S]*?)\]\);/);
+  const sequence = [...(sequenceBlock?.[1] || "").matchAll(/["']((?:solo|duo|trio)-[^"']+)["']/g)].map((match) => match[1]);
+  if (sequence.length !== 10) errors.push(`Boss Rush world sequence has ${sequence.length} entries, expected 10`);
+  sequence.forEach((key, index) => {
+    if (!themeKeys.has(key)) errors.push(`Boss Rush references unknown world theme: ${key}`);
+    if (index > 0 && sequence[index - 1] === key) errors.push(`Boss Rush repeats world theme on adjacent stages: ${key}`);
+  });
+  if (!bossRushText.includes("BOSS_RUSH_WORLD_THEME_KEYS[index%BOSS_RUSH_WORLD_THEME_KEYS.length]")) {
+    errors.push("Boss Rush world theme is not derived deterministically from the stage index");
+  }
+  if (!/p\.campaignTeam===["']enemy["'][\s\S]*?boss-rush-world-enemy[\s\S]*?applyTheme/.test(battleUiText)) {
+    errors.push("Boss Rush world theme is not scoped to rendered enemy cards");
+  }
+  if (!worldPackCssText.includes("#game.boss-rush-game #players .player.boss-rush-world-enemy")) {
+    errors.push("Boss Rush enemy world-card styling is missing");
+  }
+  if (/body\.playing #game\.boss-rush-game #players \.player\s*\{/.test(worldPackCssText)) {
+    errors.push("Boss Rush world-card styling also targets player cards");
+  }
   for (const stem of worldStems) {
-    if (!fittedFrameStems.has(stem)) errors.push(`campaign world frame has no fitted inner opening: ${stem}`);
-    if (!filledFrameStems.has(stem)) errors.push(`campaign world frame has no fitted colour fill: ${stem}`);
     for (const suffix of [".webp", "-frame.webp", "-frame-rect.webp"]) {
       const file = path.join(worldRoot, `${stem}${suffix}`);
       if (!(await stat(file).then(() => true).catch(() => false))) {

@@ -1,4 +1,7 @@
-/* DiceDuel V28.11.1 — fitted world fills and full boss-detail frames. */
+/* DiceDuel V28.11.2 — aspect-safe world artwork and deterministic Boss Rush themes. */
+
+/* World tabs are portrait cards. The painted 3:1 world frame cannot serve this
+   shape, so every state uses the established tier-2 ivory frame instead. */
 html[data-v28-rework="2"] .campaign-hub .campaign-world-tabs{
   gap:10px!important;
   padding:6px 4px 10px!important;
@@ -17,31 +20,42 @@ html[data-v28-rework="2"] .campaign-hub .campaign-world-btn.active{
   gap:1px!important;
   overflow:visible!important;
   box-sizing:border-box!important;
-  padding:7px 6px 8px!important;
+  padding:7px 8px 9px!important;
   border:0!important;
   border-image:none!important;
-  border-radius:22px!important;
+  border-radius:0!important;
   background:transparent!important;
   box-shadow:none!important;
+  transform:none!important;
 }
-html[data-v28-rework="2"] .campaign-hub .campaign-world-btn.active::before{
+html[data-v28-rework="2"] .campaign-hub .campaign-world-btn::before{
   content:""!important;
   position:absolute!important;
   z-index:0!important;
-  inset:-5px!important;
+  inset:0!important;
   box-sizing:border-box!important;
-  border:12px solid transparent!important;
-  border-width:12px 10px 14px!important;
-  border-image-source:var(--world-frame-rect)!important;
-  border-image-slice:var(--world-frame-inset,23% 9% 27% 9%)!important;
-  border-image-width:12px 10px 14px!important;
+  border-style:solid!important;
+  border-color:transparent!important;
+  border-width:13px 18px!important;
+  border-image-source:var(--p1-ivory-card)!important;
+  border-image-slice:76 168 76 168!important;
+  border-image-width:13px 18px!important;
   border-image-repeat:stretch!important;
-  border-radius:23px!important;
   background:
     radial-gradient(circle at 50% 28%,var(--world-glow),transparent 48%) padding-box,
-    linear-gradient(155deg,var(--world-surface),#06172f 82%) padding-box!important;
-  filter:drop-shadow(0 7px 9px var(--world-glow))!important;
+    linear-gradient(155deg,
+      color-mix(in srgb,var(--world-surface) 30%,#f4ece3 70%),
+      color-mix(in srgb,var(--world-surface) 16%,#f7f1e8 84%)) padding-box!important;
+  filter:saturate(.58) brightness(1.03)!important;
+  opacity:.82!important;
   pointer-events:none!important;
+}
+html[data-v28-rework="2"] .campaign-hub .campaign-world-btn.active::before{
+  background:
+    radial-gradient(circle at 50% 28%,var(--world-glow),transparent 48%) padding-box,
+    linear-gradient(155deg,var(--world-surface),#06172f 84%) padding-box!important;
+  filter:drop-shadow(0 7px 9px var(--world-glow)) saturate(1)!important;
+  opacity:1!important;
 }
 html[data-v28-rework="2"] .campaign-hub .campaign-world-btn::after{
   left:23%!important;
@@ -60,16 +74,19 @@ html[data-v28-rework="2"] .campaign-hub .campaign-world-art{
   position:relative!important;
   z-index:2!important;
   display:block!important;
-  width:84px!important;
-  height:84px!important;
-  flex:0 0 84px!important;
-  margin:-2px auto -3px!important;
+  width:78px!important;
+  height:78px!important;
+  flex:0 0 78px!important;
+  margin:-1px auto -2px!important;
   background-image:var(--world-frame-round),var(--world-emblem)!important;
   background-position:center,center!important;
   background-repeat:no-repeat,no-repeat!important;
   background-size:100% 100%,72% 72%!important;
-  filter:drop-shadow(0 4px 5px rgba(2,17,39,.34))!important;
+  filter:saturate(.72) opacity(.84) drop-shadow(0 4px 5px rgba(2,17,39,.28))!important;
   pointer-events:none!important;
+}
+html[data-v28-rework="2"] .campaign-hub .campaign-world-btn.active .campaign-world-art{
+  filter:saturate(1) opacity(1) drop-shadow(0 4px 6px rgba(2,17,39,.42))!important;
 }
 html[data-v28-rework="2"] .campaign-hub .campaign-world-copy{
   position:relative!important;
@@ -100,25 +117,34 @@ html[data-v28-rework="2"] .campaign-hub .campaign-world-btn.active .campaign-wor
 html[data-v28-rework="2"] .campaign-hub .campaign-world-btn.active .campaign-world-kicker{
   color:#fff3d1!important;
 }
+html[data-v28-rework="2"] .campaign-hub .campaign-world-btn:disabled::before{
+  filter:grayscale(.36) saturate(.38) brightness(.98)!important;
+  opacity:.54!important;
+}
 html[data-v28-rework="2"] .campaign-hub .campaign-world-btn:disabled .campaign-world-art{
   opacity:.46!important;
-  filter:grayscale(.5) saturate(.45) brightness(.76) drop-shadow(0 3px 4px rgba(2,17,39,.24))!important;
+  filter:grayscale(.42) saturate(.42) brightness(.82) drop-shadow(0 3px 4px rgba(2,17,39,.2))!important;
 }
 
-/* Selected-world counter: one compact 3:1 frame, with the matching crest. */
+/* The painted frame remains whole. A 3:1 preferred aspect ratio keeps its
+   centre gems and left-to-right colour ramp legible; content may add height. */
 html[data-v28-rework="2"] .campaign-hub .campaign-world-desc{
   position:relative!important;
   isolation:isolate!important;
   box-sizing:border-box!important;
-  min-height:108px!important;
+  width:100%!important;
+  min-height:0!important;
+  height:auto!important;
+  aspect-ratio:3 / 1!important;
   display:grid!important;
-  grid-template-columns:70px minmax(0,1fr)!important;
+  grid-template-columns:clamp(58px,14vw,76px) minmax(0,1fr)!important;
   align-items:center!important;
-  gap:8px!important;
+  gap:clamp(7px,2vw,12px)!important;
   margin:0 0 11px!important;
-  padding:18px 36px!important;
+  padding:clamp(15px,4vw,24px) clamp(28px,7vw,44px)!important;
   overflow:visible!important;
   border:0!important;
+  border-image:none!important;
   border-radius:0!important;
   background:transparent!important;
   box-shadow:none!important;
@@ -129,8 +155,9 @@ html[data-v28-rework="2"] .campaign-hub .campaign-node-detail[data-p4-detail-ton
   content:""!important;
   position:absolute!important;
   z-index:0!important;
-  inset:var(--world-frame-fill-inset,var(--world-frame-inset,23% 7% 27% 7%))!important;
-  border-radius:clamp(10px,3vw,16px)!important;
+  inset:11% 5.2% 14%!important;
+  border-radius:clamp(12px,3.4vw,22px)!important;
+  background:linear-gradient(155deg,var(--world-surface),#071a38 84%)!important;
   pointer-events:none!important;
 }
 html[data-v28-rework="2"] .campaign-hub .campaign-world-desc::after,
@@ -139,12 +166,9 @@ html[data-v28-rework="2"] .campaign-hub .campaign-node-detail[data-p4-detail-ton
   position:absolute!important;
   z-index:1!important;
   inset:0!important;
-  background:var(--world-frame-rect) center/100% 100% no-repeat!important;
+  background:var(--world-frame-rect,var(--p1-ivory-card)) center/100% 100% no-repeat!important;
   filter:drop-shadow(0 7px 10px var(--world-glow))!important;
   pointer-events:none!important;
-}
-html[data-v28-rework="2"] .campaign-hub .campaign-world-desc::before{
-  background:linear-gradient(155deg,var(--world-surface),#071a38 84%)!important;
 }
 html[data-v28-rework="2"] .campaign-hub .campaign-world-desc>*{
   position:relative!important;
@@ -152,8 +176,8 @@ html[data-v28-rework="2"] .campaign-hub .campaign-world-desc>*{
 }
 html[data-v28-rework="2"] .campaign-hub .campaign-world-banner-art{
   display:block!important;
-  width:68px!important;
-  height:68px!important;
+  width:clamp(56px,14vw,74px)!important;
+  height:clamp(56px,14vw,74px)!important;
   background-image:var(--world-frame-round),var(--world-emblem)!important;
   background-position:center,center!important;
   background-repeat:no-repeat,no-repeat!important;
@@ -167,35 +191,35 @@ html[data-v28-rework="2"] .campaign-hub .campaign-world-banner-copy{
   gap:2px!important;
 }
 html[data-v28-rework="2"] .campaign-hub .campaign-world-banner-kicker{
-  overflow:hidden!important;
   color:var(--world-secondary)!important;
-  font-size:8px!important;
+  font-size:clamp(8px,1.9vw,10px)!important;
   font-weight:950!important;
-  letter-spacing:.075em!important;
+  letter-spacing:.065em!important;
   line-height:1.2!important;
-  text-overflow:ellipsis!important;
   text-transform:uppercase!important;
-  white-space:nowrap!important;
+  white-space:normal!important;
 }
 html[data-v28-rework="2"] .campaign-hub .campaign-world-banner-copy>strong{
   overflow:hidden!important;
   color:#fff5dc!important;
-  font:900 17px/1.05 Georgia,"Times New Roman",serif!important;
+  font:900 clamp(15px,3.8vw,19px)/1.05 Georgia,"Times New Roman",serif!important;
   text-overflow:ellipsis!important;
   white-space:nowrap!important;
   text-shadow:0 1px 3px rgba(0,0,0,.65)!important;
 }
 html[data-v28-rework="2"] .campaign-hub .campaign-world-banner-desc{
-  display:-webkit-box!important;
-  overflow:hidden!important;
+  display:block!important;
+  overflow:visible!important;
   color:#e8edf5!important;
-  font-size:9px!important;
-  line-height:1.24!important;
-  -webkit-box-orient:vertical!important;
-  -webkit-line-clamp:2!important;
+  font-size:clamp(9px,2.15vw,11px)!important;
+  line-height:1.28!important;
+  white-space:normal!important;
+  -webkit-box-orient:initial!important;
+  -webkit-line-clamp:unset!important;
 }
 
-/* Boss cards inherit the active world's complete palette and measured frame. */
+/* A tall boss detail cannot use the painted 3:1 world frame. Its outer edge is
+   the generic tier-2 frame; only the naturally wide header carries world art. */
 html[data-v28-rework="2"] .campaign-hub .campaign-node-detail[data-p4-detail-tone="boss"],
 html[data-v28-rework="2"] .campaign-hub .campaign-node-detail[data-p4-detail-tone="boss"].v28-prestige-detail:not(.v28-boss-detail){
   position:relative!important;
@@ -203,10 +227,10 @@ html[data-v28-rework="2"] .campaign-hub .campaign-node-detail[data-p4-detail-ton
   box-sizing:border-box!important;
   border-style:solid!important;
   border-color:transparent!important;
-  border-width:16px 12px 18px!important;
-  border-image-source:var(--world-frame-rect)!important;
-  border-image-slice:var(--world-frame-inset,23% 9% 27% 9%)!important;
-  border-image-width:16px 12px 18px!important;
+  border-width:13px 18px!important;
+  border-image-source:var(--p1-ivory-card)!important;
+  border-image-slice:76 168 76 168!important;
+  border-image-width:13px 18px!important;
   border-image-outset:0!important;
   border-image-repeat:stretch!important;
   border-radius:0!important;
@@ -222,18 +246,18 @@ html[data-v28-rework="2"] .campaign-hub .campaign-node-detail[data-p4-detail-ton
   position:relative!important;
   isolation:isolate!important;
   box-sizing:border-box!important;
-  min-height:98px!important;
+  width:100%!important;
+  min-height:0!important;
+  height:auto!important;
+  aspect-ratio:3 / 1!important;
   margin:-3px -3px 11px!important;
-  padding-block:20px!important;
-  padding-inline:max(38px,10%)!important;
+  padding:clamp(15px,4vw,23px) clamp(29px,9vw,48px)!important;
   overflow:visible!important;
   border:0!important;
+  border-image:none!important;
   border-radius:0!important;
   background:transparent!important;
   box-shadow:none!important;
-}
-html[data-v28-rework="2"] .campaign-hub .campaign-node-detail[data-p4-detail-tone="boss"] .node-detail-head::before{
-  background:linear-gradient(155deg,var(--world-surface),#07111f 86%)!important;
 }
 html[data-v28-rework="2"] .campaign-hub .campaign-node-detail[data-p4-detail-tone="boss"] .node-detail-head>*{
   position:relative!important;
@@ -257,40 +281,84 @@ html[data-v28-rework="2"] .campaign-hub .campaign-node-detail[data-p4-detail-ton
   background:color-mix(in srgb,var(--world-surface) 52%,transparent)!important;
 }
 
+/* Combat cards are also too tall for the painted 3:1 rectangle. Boss Rush
+   therefore cycles the same tier-2 edge plus the selected world's palette,
+   glow and ring. Normal/player cards keep their existing frame untouched. */
+html[data-v28-rework="2"] body.playing #game.boss-rush-game #players .player.boss-rush-world-enemy{
+  border-image-source:var(--p1-ivory-card)!important;
+  border-image-slice:76 168 76 168!important;
+  border-image-width:15px 19px!important;
+  border-image-repeat:stretch!important;
+  background:
+    radial-gradient(circle at 82% 25%,var(--world-glow),transparent 32%) padding-box,
+    linear-gradient(155deg,var(--world-surface),#071426 88%) padding-box!important;
+  box-shadow:none!important;
+  filter:drop-shadow(0 7px 10px var(--world-glow))!important;
+}
+html[data-v28-rework="2"] body.playing #game.boss-rush-game #players .player.boss-rush-world-enemy::before{
+  content:""!important;
+  position:absolute!important;
+  z-index:1!important;
+  top:7px!important;
+  right:7px!important;
+  width:44px!important;
+  height:44px!important;
+  background-image:var(--world-frame-round),var(--world-emblem)!important;
+  background-position:center,center!important;
+  background-repeat:no-repeat,no-repeat!important;
+  background-size:100% 100%,72% 72%!important;
+  filter:saturate(.92) drop-shadow(0 3px 5px rgba(0,0,0,.35))!important;
+  opacity:.38!important;
+  pointer-events:none!important;
+}
+html[data-v28-rework="2"] body.playing #game.boss-rush-game #players .player.boss-rush-world-enemy .ability-tag{
+  color:var(--world-secondary)!important;
+}
+
 @media(max-width:540px){
   html[data-v28-rework="2"] .campaign-hub .campaign-world-btn,
   html[data-v28-rework="2"] .campaign-hub .campaign-world-btn.active{
     flex-basis:112px!important;
     width:112px!important;
     min-height:137px!important;
+    padding-inline:7px!important;
+  }
+  html[data-v28-rework="2"] .campaign-hub .campaign-world-btn::before{
+    border-width:11px 15px!important;
+    border-image-width:11px 15px!important;
   }
   html[data-v28-rework="2"] .campaign-hub .campaign-world-art{
-    width:78px!important;
-    height:78px!important;
-    flex-basis:78px!important;
+    width:72px!important;
+    height:72px!important;
+    flex-basis:72px!important;
   }
   html[data-v28-rework="2"] .campaign-hub .campaign-world-desc{
-    min-height:102px!important;
-    grid-template-columns:62px minmax(0,1fr)!important;
-    gap:7px!important;
-    padding:16px 30px!important;
+    grid-template-columns:54px minmax(0,1fr)!important;
+    gap:6px!important;
+    padding:14px 23px!important;
   }
   html[data-v28-rework="2"] .campaign-hub .campaign-world-banner-art{
-    width:60px!important;
-    height:60px!important;
+    width:54px!important;
+    height:54px!important;
   }
   html[data-v28-rework="2"] .campaign-hub .campaign-world-banner-copy>strong{
     font-size:15px!important;
   }
-  html[data-v28-rework="2"] .campaign-hub .campaign-node-detail[data-p4-detail-tone="boss"] .node-detail-head{
-    min-height:94px!important;
-    padding-block:18px!important;
-    padding-inline:max(31px,10%)!important;
+  html[data-v28-rework="2"] .campaign-hub .campaign-world-banner-desc{
+    font-size:9px!important;
   }
   html[data-v28-rework="2"] .campaign-hub .campaign-node-detail[data-p4-detail-tone="boss"],
   html[data-v28-rework="2"] .campaign-hub .campaign-node-detail[data-p4-detail-tone="boss"].v28-prestige-detail:not(.v28-boss-detail){
-    border-width:14px 10px 16px!important;
-    border-image-width:14px 10px 16px!important;
+    border-width:11px 15px!important;
+    border-image-width:11px 15px!important;
+  }
+  html[data-v28-rework="2"] .campaign-hub .campaign-node-detail[data-p4-detail-tone="boss"] .node-detail-head{
+    padding:14px 27px!important;
+  }
+  html[data-v28-rework="2"] body.playing #game.boss-rush-game #players .player.boss-rush-world-enemy::before{
+    width:36px!important;
+    height:36px!important;
+    opacity:.3!important;
   }
 }
 

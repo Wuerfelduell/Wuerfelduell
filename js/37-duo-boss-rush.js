@@ -70,6 +70,23 @@
     ]}
   ]);
 
+  // Visual world identities are indexed by stage, never rolled. Repeated
+  // encounter families (Omega, Eclipse, Bloodmoon) deliberately receive an
+  // alternate world on their following stage, so adjacent bosses cannot
+  // share a palette or crest.
+  const BOSS_RUSH_WORLD_THEME_KEYS=Object.freeze([
+    "duo-covenant",
+    "duo-fracture",
+    "duo-mirror",
+    "duo-omega",
+    "solo-paradox",
+    "duo-eclipse",
+    "solo-astral",
+    "trio-helix",
+    "duo-bloodmoon",
+    "trio-singularity"
+  ]);
+
   const BRUTAL_ABILITY_IDS=Object.freeze([1,4,8,9,10,11,13,16,17,18,21,23,24,25]);
   const REWARDS=Object.freeze([
     {kind:"perk",id:"damage",name:"Klingenfokus",icon:"damage-sword.svg",desc:"Alle eigenen Hauptangriffe verursachen dauerhaft +1 Schaden pro Stapel."},
@@ -93,6 +110,11 @@
   const heroState=profileId=>run?.heroes?.[String(profileId)]||null;
   const isActive=()=>!!run?.active;
   const validAbility=id=>REAL_ABILITY_IDS.includes(Number(id))?Number(id):null;
+
+  function worldThemeKey(stageIndex=run?.stage??0){
+    const index=Math.max(0,Math.floor(Number(stageIndex)||0));
+    return BOSS_RUSH_WORLD_THEME_KEYS[index%BOSS_RUSH_WORLD_THEME_KEYS.length];
+  }
 
   function shuffled(items){
     const pool=[...(items||[])];
@@ -172,6 +194,7 @@
       enemies,
       farmTrophy:false,
       bossRush:true,
+      bossRushWorldTheme:worldThemeKey(run.stage),
       bossRushPhase
     };
   }
@@ -557,9 +580,10 @@
   function snapshot(){return run?JSON.parse(JSON.stringify(run)):null;}
   function rewardDefinitions(){return REWARDS.map(reward=>({...reward}));}
   function stageDefinitions(){return STAGES.map(stage=>JSON.parse(JSON.stringify(stage)));}
+  function worldThemeSequence(){return [...BOSS_RUSH_WORLD_THEME_KEYS];}
 
   window.WDDuoBossRush=Object.freeze({
-    start,reset,abort,isActive,currentEncounter,stageNumber,statusText,startingVitals,startingLoadout,
+    start,reset,abort,isActive,currentEncounter,stageNumber,statusText,worldThemeKey,worldThemeSequence,startingVitals,startingLoadout,
     finishEncounter,attackDamageBonus,afterHeroAttack,onHeroKill,refreshButton,snapshot,rewardDefinitions,stageDefinitions,profileBossXp
   });
 
