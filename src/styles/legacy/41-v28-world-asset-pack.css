@@ -1,7 +1,7 @@
-/* DiceDuel V28.11.2 — aspect-safe world artwork and deterministic Boss Rush themes. */
+/* DiceDuel V28.11.4 — world artwork and deterministic Boss Rush themes. */
 
-/* World tabs are portrait cards. The painted 3:1 world frame cannot serve this
-   shape, so every state uses the established tier-2 ivory frame instead. */
+/* Every world tab carries its assigned painted frame as one complete image.
+   The artwork is never sliced; active/locked state changes only its emphasis. */
 html[data-v28-rework="2"] .campaign-hub .campaign-world-tabs{
   gap:10px!important;
   padding:6px 4px 10px!important;
@@ -23,8 +23,13 @@ html[data-v28-rework="2"] .campaign-hub .campaign-world-btn.active{
   padding:7px 8px 9px!important;
   border:0!important;
   border-image:none!important;
-  border-radius:0!important;
-  background:transparent!important;
+  border-radius:22px!important;
+  background:
+    radial-gradient(circle at 50% 28%,color-mix(in srgb,var(--world-glow) 88%,transparent),transparent 54%),
+    linear-gradient(155deg,
+      color-mix(in srgb,var(--world-surface) 92%,#203650 8%),
+      color-mix(in srgb,var(--world-surface) 78%,#07172b 22%))!important;
+  background-clip:padding-box!important;
   box-shadow:none!important;
   transform:none!important;
 }
@@ -33,29 +38,19 @@ html[data-v28-rework="2"] .campaign-hub .campaign-world-btn::before{
   position:absolute!important;
   z-index:0!important;
   inset:0!important;
-  box-sizing:border-box!important;
-  border-style:solid!important;
-  border-color:transparent!important;
-  border-width:13px 18px!important;
-  border-image-source:var(--p1-ivory-card)!important;
-  border-image-slice:76 168 76 168!important;
-  border-image-width:13px 18px!important;
-  border-image-repeat:stretch!important;
-  background:
-    radial-gradient(circle at 50% 28%,color-mix(in srgb,var(--world-glow) 88%,transparent),transparent 54%) padding-box,
-    linear-gradient(155deg,
-      color-mix(in srgb,var(--world-surface) 92%,#203650 8%),
-      color-mix(in srgb,var(--world-surface) 78%,#07172b 22%)) padding-box!important;
+  background:var(--world-frame-rect,var(--p1-ivory-card)) center/100% 100% no-repeat!important;
   filter:brightness(.92) drop-shadow(0 4px 5px color-mix(in srgb,var(--world-glow) 72%,transparent))!important;
   opacity:1!important;
   pointer-events:none!important;
 }
 html[data-v28-rework="2"] .campaign-hub .campaign-world-btn.active::before{
-  background:
-    radial-gradient(circle at 50% 28%,var(--world-glow),transparent 48%) padding-box,
-    linear-gradient(155deg,var(--world-surface),#06172f 84%) padding-box!important;
   filter:brightness(1.08) drop-shadow(0 8px 11px var(--world-glow))!important;
   opacity:1!important;
+}
+html[data-v28-rework="2"] .campaign-hub .campaign-world-btn.active{
+  background:
+    radial-gradient(circle at 50% 28%,var(--world-glow),transparent 48%),
+    linear-gradient(155deg,var(--world-surface),#06172f 84%)!important;
 }
 html[data-v28-rework="2"] .campaign-hub .campaign-world-btn::after{
   left:23%!important;
@@ -345,26 +340,36 @@ html[data-v28-rework="2"] .campaign-hub .campaign-node-detail[data-p4-detail-ton
   background:color-mix(in srgb,var(--world-surface) 52%,transparent)!important;
 }
 
-/* Combat cards are too tall for the painted 3:1 rectangle. Their edge is
-   therefore drawn from the assigned world's palette while the matching ring
-   supplies the crest. Normal/player cards keep their existing frame. */
+/* Boss Rush enemies use the assigned world's complete painted frame. The
+   player side keeps its established combat frame unchanged. */
 html[data-v28-rework="2"] body.playing #game.boss-rush-game #players .player.boss-rush-world-enemy{
-  border:3px solid transparent!important;
+  border:0!important;
   border-image:none!important;
   border-radius:16px!important;
+  padding:clamp(23px,7vw,31px) clamp(14px,4.5vw,19px) clamp(25px,7.5vw,34px)!important;
   background:
-    radial-gradient(circle at 82% 25%,var(--world-glow),transparent 36%) padding-box,
-    linear-gradient(155deg,color-mix(in srgb,var(--world-surface) 94%,#142b47 6%),#050f20 90%) padding-box,
-    linear-gradient(135deg,var(--world-secondary),var(--world-primary) 32%,#071426 58%,var(--world-primary) 78%,var(--world-secondary)) border-box!important;
-  box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--world-secondary) 42%,transparent),0 0 0 1px color-mix(in srgb,var(--world-primary) 68%,transparent),0 8px 18px rgba(1,9,22,.42)!important;
+    radial-gradient(circle at 82% 25%,var(--world-glow),transparent 36%),
+    linear-gradient(155deg,color-mix(in srgb,var(--world-surface) 94%,#142b47 6%),#050f20 90%)!important;
+  box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--world-primary) 24%,transparent),0 8px 18px rgba(1,9,22,.42)!important;
   filter:drop-shadow(0 7px 10px var(--world-glow))!important;
+}
+html[data-v28-rework="2"] body.playing #game.boss-rush-game #players .player.boss-rush-world-enemy::after{
+  content:""!important;
+  position:absolute!important;
+  z-index:3!important;
+  inset:0!important;
+  background:var(--world-frame-rect,var(--p1-ivory-card)) center/100% 100% no-repeat!important;
+  filter:drop-shadow(0 4px 7px var(--world-glow))!important;
+  mix-blend-mode:normal!important;
+  opacity:1!important;
+  pointer-events:none!important;
 }
 html[data-v28-rework="2"] body.playing #game.boss-rush-game #players .player.boss-rush-world-enemy::before{
   content:""!important;
   position:absolute!important;
   z-index:1!important;
-  top:7px!important;
-  right:7px!important;
+  top:24px!important;
+  right:15px!important;
   width:44px!important;
   height:44px!important;
   background-image:var(--world-frame-round),var(--world-emblem)!important;
@@ -447,10 +452,6 @@ html[data-v28-rework="2"] body.playing .phase-live[data-boss-rush-legacy-phase]{
     min-height:137px!important;
     padding-inline:7px!important;
   }
-  html[data-v28-rework="2"] .campaign-hub .campaign-world-btn::before{
-    border-width:11px 15px!important;
-    border-image-width:11px 15px!important;
-  }
   html[data-v28-rework="2"] .campaign-hub .campaign-world-art{
     width:72px!important;
     height:72px!important;
@@ -497,6 +498,8 @@ html[data-v28-rework="2"] body.playing .phase-live[data-boss-rush-legacy-phase]{
   html[data-v28-rework="2"] body.playing #game.boss-rush-game #players .player.boss-rush-world-enemy::before{
     width:36px!important;
     height:36px!important;
+    top:22px!important;
+    right:12px!important;
     opacity:.76!important;
   }
   html[data-v28-rework="2"] body.playing .boss-rush-live.boss-rush-status-items{
