@@ -118,18 +118,45 @@ V28.7.2: **Fließtext bekommt `slim-card`, wiederholte Datenzeilen
    wird im Spiel nicht gebraucht. Der Nutzer weiß davon; er hat weder
    zu- noch abgesagt.
 
-3. **`.setup-dice-readonly`** — im Setup die einzige dunkle Fläche in
-   einer Zeile heller Auswahlfelder. Absicht (Anzeige statt Bedienung)
-   oder angleichen? Nutzer wurde gefragt, keine Antwort.
+3. **Rundenvorbereitung und Fähigkeits-Auswahl** — der Nutzer hält den
+   Bildschirm für stark überarbeitungsbedürftig, „da fehlts an zu vielen
+   enden". Aufgenommen aus Screenshots, im Browser noch nicht
+   nachgemessen (der Picker wird erst beim Öffnen gebaut):
 
-4. **Rundenauswertung** — Ergebniskarten, Stat-Kacheln, Match-Awards und
-   Achievement-Toast tragen seit V28.7.0 `slim-card`, sind aber nur
-   einzeln geprüft, nicht zusammen im echten Rundenende.
+   *Runde vorbereiten:* der Erklärtext presst vier Regeln in einen
+   grauen Absatz; das Symbol der Fähigkeitszeile hängt links aus der
+   Zeile und stößt an den Kartenrand; rechts sitzt ein unstilisierter
+   schwarzer Kreis als Auswahlanzeige; die Karten der beiden Spieler
+   sind unterschiedlich aufgebaut; Hinweistexte grau auf Navy.
 
-5. **Encounter-Titel werden abgeschnitten** — `.node-detail-title` zeigt
+   *Modal „Fähigkeit wählen"* (`js/26-v28-ui.js`, `.v28-ability-picker`):
+   über dem Kicker sitzt eine leere Navy-Plakette; die Liste wird oben
+   vom Kopfbereich angeschnitten und unten vom Abbrechen-Knopf verdeckt,
+   der scrollende Bereich rechnet die feststehenden Elemente nicht ein;
+   Fähigkeitssymbole ragen links aus ihren Zeilen und werden am
+   Panelrand abgeschnitten; die grüne Häkchen-Plakette der Auswahl sitzt
+   halb außerhalb des Zeilenrahmens.
+
+   Betroffene Dateien liegen in `13-v28-bright-arcane`,
+   `14-v28-asset-system`, `15-v28-ui-rework`, `17-v28-ui-phase2`,
+   `26-v28-ui-phase11` — also mitten im Aufräumbereich. Wer das angeht,
+   muss die Aufteilung mit der anderen Sitzung neu abstimmen.
+
+4. **Encounter-Titel werden abgeschnitten** — `.node-detail-title` zeigt
    „5 · Threefold Ver…" statt des vollen Titels. Fiel beim Prüfen von
    V28.7.2 auf, ist älter als der Rahmen-Durchgang, wurde nicht
    angefasst.
+
+5. **Rundenauswertung** — Ergebniskarten, Stat-Kacheln und Match-Awards
+   sind inzwischen im echten Rundenende gesehen. Behoben: doppelte
+   Pokale (zwei Ursachen) und der ungerahmte „Neue Partie"-Knopf. Offen
+   geblieben: Spielernamen und lange Stat-Werte werden abgeschnitten
+   („Jürgen #9…", „Seb · 3 HP k…").
+
+**Entschieden, nicht mehr offen:** Fähigkeitsnamen mischen absichtlich
+Deutsch und Englisch — Eigennamen wie Snake Eyes oder Loaded Dice werden
+nicht eingedeutscht. Das Würfeldesign-Feld im Setup bleibt reine
+Anzeige, trägt seit V28.11.2 aber den Stil seiner Nachbarn.
 
 ---
 
