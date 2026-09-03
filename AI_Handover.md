@@ -12,9 +12,9 @@ raten.
 
 | | |
 |---|---|
-| Version | **28.11.4** |
+| Version | **28.11.5** |
 | Branch | `main` |
-| Letzte Schritte | Echte Weltrahmen auf allen Welt-Tabs und Boss-Rush-Gegnern · Rift-Rahmen und Encounter-Köpfe fertiggestellt · vier Aufräumschritte an den CSS-Schichten |
+| Letzte Schritte | Welt-Tabs ohne Kicker und 13 px niedriger · Banner ohne Doppelwappen · Boss-Fähigkeiten außerhalb des Unterornaments · Statusfelder ohne Innenrahmen |
 
 **Zwei Sitzungen arbeiten parallel.** Aufteilung: Codex in
 `39-v28-campaign-polish`, `40-v28-screen-restoration`,
@@ -157,6 +157,12 @@ V28.7.2: **Fließtext bekommt `slim-card`, wiederholte Datenzeilen
 - Browsermessung: 320, 360, 390, 412 und 1280 px. Banner-Contentbox liegt
   jeweils in der Artwork-Öffnung, Welt- und Gegnerrahmen liegen bei `inset: 0`,
   Client- und Scrollhöhe sind gleich, Encounter- und Bossnamen vollständig.
+- Seit 28.11.5 ist der Welt-Kicker ausgeblendet und reserviert keine Höhe mehr:
+  mobil sind Tabs `112 × 124 px`, ab 541 px `120 × 133 px`. Das doppelte Wappen
+  im Weltbanner ist ausgeblendet; die Textspalte belegt dessen bisherigen Platz.
+- Boss-Rush-Gegner reservieren unten 60 px für das gemalte Ornament. Die vier
+  Statusfelder haben keinen eigenen Border; die dunkle Füllung bleibt wegen des
+  deutlich besseren Kontrasts zum roten Außenornament erhalten.
 
 ---
 
