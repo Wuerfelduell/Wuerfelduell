@@ -1874,7 +1874,7 @@
 
         roundStandings.innerHTML=players.map((p,i)=>`
           <div class="round-score-row${i===winnerIndex?" winner-row":""}">
-            <div class="round-score-name">${escapeHtml(p.name)}${p.battleTag?` <span class="battle-tag">${escapeHtml(p.battleTag)}</span>`:""}</div>
+            <div class="round-score-name">${escapeHtml(p.name)}</div>
             <div class="round-score-meta">${i===winnerIndex?"🏆 Tutorial-Sieger":"Runde beendet"}</div>
           </div>
         `).join("");
@@ -1916,7 +1916,7 @@
       }
 
       const loserName=lastPlaceIndex!=null ? players[lastPlaceIndex].name : "–";
-      winnerText.innerHTML=`🏆 ${escapeHtml(winner.name)}${winner.battleTag?` <span class="battle-tag">${escapeHtml(winner.battleTag)}</span>`:""} gewinnt Runde ${roundNumber}!`;
+      winnerText.innerHTML=`🏆 ${escapeHtml(winner.name)} gewinnt Runde ${roundNumber}!`;
       roundResultText.innerHTML=`Siegstand: <strong>${winner.wins}</strong> für ${escapeHtml(winner.name)}.<br>`+
         `<span class="last-place-note">${escapeHtml(loserName)}</span> wurde Letzter, startet Runde ${roundNumber+1} und darf die nächste Fähigkeit frei wählen.`;
 
@@ -1927,7 +1927,7 @@
         ].filter(Boolean).join(" · ");
         const cls=`round-score-row${i===winnerIndex?" winner-row":""}${i===lastPlaceIndex?" last-row":""}`;
         return `<div class="${cls}">
-          <div class="round-score-name">${escapeHtml(p.name)}${p.battleTag?` <span class="battle-tag">${escapeHtml(p.battleTag)}</span>`:""}</div>
+          <div class="round-score-name">${escapeHtml(p.name)}</div>
           <div class="round-score-meta">🏆 ${p.wins||0} · ${flags||"Runde beendet"}</div>
         </div>`;
       }).join("");

@@ -163,7 +163,7 @@
       const mutator=p.mutatorId&&ELITE_MUTATORS[p.mutatorId];
       const marked=campaignMode&&p.campaignTeam==="hero"&&encounterRuntime?.markTurns>0&&encounterRuntime.markedHero===i;
       const campaignCompact=campaignMode;
-      el.innerHTML=`<div class="player-name"><span class="player-name-text">${escapeHtml(p.name)}</span>${p.battleTag?` <span class="battle-tag">${escapeHtml(p.battleTag)}</span>`:""}</div>${p.cosmeticTitle?`<div class="profile-title-badge">${escapeHtml(p.cosmeticTitle)}</div>`:""}
+      el.innerHTML=`<div class="player-name"><span class="player-name-text">${escapeHtml(p.name)}</span></div>${p.cosmeticTitle?`<div class="profile-title-badge">${escapeHtml(p.cosmeticTitle)}</div>`:""}
         ${!campaignCompact&&p.botLevel&&p.botLevel!=="human"?`<div class="bot-tag">🤖 ${escapeHtml(BOT_LEVELS[p.botLevel]?.name.replace("Bot · ","")||"Bot")}</div>`:""}
         ${mutator?`<div class="endgame-combat-badge" title="${escapeHtml(mutator.desc)}">${escapeHtml(mutator.name)}</div>`:""}
         ${marked?`<div class="endgame-combat-badge mark-badge">${escapeHtml(tx("MARKIERT"))} · ${encounterRuntime.markTurns}</div>`:""}
@@ -538,7 +538,7 @@
   function updateHeader(){
     if(aliveCount()<=1) return;
     const botText=isBotPlayer(current)&&!campaignMode?` · 🤖 ${BOT_LEVELS[players[current].botLevel].name.replace("Bot · ","")}`:"";
-    turnLine.innerHTML=`${escapeHtml(players[current].name)}${players[current].battleTag?` <span class="battle-tag">${escapeHtml(players[current].battleTag)}</span>`:""} ist dran${botText}`;
+    turnLine.innerHTML=`${escapeHtml(players[current].name)} ist dran${botText}`;
 
     if(phase==="idle"){statusEl.textContent="Starte deinen Basiswurf mit 5 Würfeln.";sumLabel.textContent="Summe";}
     else if(phase==="base_select"){statusEl.textContent="Tippe mindestens einen Würfel an und locke ihn ein.";sumLabel.textContent="Aktuelle Summe";}

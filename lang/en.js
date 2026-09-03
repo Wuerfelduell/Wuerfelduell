@@ -1037,6 +1037,11 @@ window.WD_LANG_PACKS.en = {
     /* Rundenauswertung. Der Siegertext und die Notiz darunter sind durch
        <span> und <strong> in mehrere Textknoten zerlegt; uebersetzt wird
        deshalb je Bruchstueck, nicht der ganze Satz. */
+    [/^(.+) gewinnt Runde (\d+)!$/i, (m, tr)=>`${m[1]} wins round ${m[2]}!`],
+    [/^(.+) ist dran(.*)$/i, (m, tr)=>`${m[1]} is up${m[2]}`],
+    /* Ohne die #Nummer steht der Siegertext in einem Stueck. Die alte
+       Bruchstueckform bleibt: eine Online-Partie kann fertiges Markup von
+       einem Mitspieler mit aelterem Stand hereinreichen. */
     [/^gewinnt Runde (\d+)!$/i, (m, tr)=>`wins round ${m[1]}!`],
     [/^für (.+)\.$/i, (m, tr)=>`for ${m[1]}.`],
     [/^wurde Letzter, startet Runde (\d+) und darf die nächste Fähigkeit frei wählen\.$/i,

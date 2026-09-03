@@ -444,13 +444,18 @@
       border-radius:12px;
       padding:8px 9px;
       min-width:0}
+    /* Eine Kachel hat auf dem Telefon rund 88 bis 107 Pixel Innenbreite.
+       Bei 11 und 14 Pixel Schrift ragten Kacheltitel wie "Schadensmagnet"
+       und Namen wie "Bot Ferdinand" darueber hinaus. Zehn und dreizehn
+       Pixel raeumen das ab 412 Pixel Geraetebreite vollstaendig auf und
+       holen dabei rund 34 Pixel Panelhoehe zurueck. */
     .round-stat-label{
       color:var(--muted);
-      font-size:11px;
+      font-size:10px;
       font-weight:800;
       margin-bottom:2px}
     .round-stat-value{
-      font-size:14px;
+      font-size:13px;
       font-weight:1000;
       white-space:nowrap;
       overflow:hidden;
@@ -468,6 +473,7 @@
     .round-score-row.last-row{
       border-color:#8d5360}
     .round-score-name{
+      font-size:13px;
       font-weight:900;
       white-space:nowrap;
       overflow:hidden;

@@ -1,7 +1,7 @@
 {
   "name": "wuerfelduell",
   "private": true,
-  "version": "28.11.6",
+  "version": "28.11.7",
   "type": "module",
   "scripts": {
     "build": "npm run build:styles",
