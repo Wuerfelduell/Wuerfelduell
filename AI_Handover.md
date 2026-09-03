@@ -12,13 +12,16 @@ raten.
 
 | | |
 |---|---|
-| Version | **28.9.4** |
+| Version | **28.11.2** |
 | Branch | `main` |
-| Letzte Schritte | 28.9.1 Endgame/Boss-Rush gehärtet · 28.9.2 Campaign-UI und Welt-Themes · 28.9.3 gerahmte Utility-Screens wiederhergestellt · 28.9.4 Rahmen-Regressionen behoben |
+| Letzte Schritte | 28.10/28.11 Supabase und Weltassets (Codex) · Changelog repariert · vier Aufräumschritte an den CSS-Schichten |
 
-Alle Versionsmarker geprüft und einheitlich auf 28.9.4: `version.json`,
-`GAME_VERSION`, `CACHE_VERSION`, `wd-build`, `<title>`, Footer, alle 48
-`?v=` in `index.html`, die vier Bild-URLs in `36-v28-hierarchie.css`.
+**Zwei Sitzungen arbeiten parallel.** Aufteilung: Codex in
+`39-v28-campaign-polish`, `40-v28-screen-restoration`,
+`41-v28-world-asset-pack`, `js/39-campaign-world-themes.js`,
+`js/37-duo-boss-rush.js` und `assets/ui/v28/png/worlds/`; die
+Aufräumarbeit in `13-v28-bright-arcane` bis `31-v28-marked-ui`, `36` und
+`37`. Vor jedem Push `git pull --rebase`.
 
 ---
 
@@ -70,15 +73,32 @@ kein Vorwurf — bei 40 Schichten und 4.680 `!important` ist eine neue
 Schicht oft der einzige Weg, der in vertretbarer Zeit funktioniert.
 Genau deshalb wird jede Runde teurer.
 
-**Begonnen:** ein Element ist zusammengelegt, `#quitConfirmBtn` in
-V28.7.3 — Fassungen aus vier Dateien entfernt, alle berechneten
-Eigenschaften nachweislich unverändert. Verfahren und Ergebnis stehen in
-`docs/CSS-Schichten.md`, dort auch die nächsten Kandidaten. Größter
-Brocken ist `.special-big-die` (24× je Eigenschaft aus 4 Dateien), aber
-auch der riskanteste, weil das gewählte Würfeldesign daran hängt.
+**Vier Schritte sind gemacht** (Einzelheiten und Nachweise in
+`docs/CSS-Schichten.md`): `#quitConfirmBtn`, die doppelten
+Würfel-Themes, 84 vollständig überdeckte Regeln, 509 einzeln
+überschriebene Deklarationen. Zusammen 777 tote Deklarationen.
 
-Wichtig dabei: Prüfung über `getComputedStyle` auf **Wertgleichheit**,
-nicht über den Augenschein, ein Element je Commit, und vorher prüfen, ob
+| | 28.9.4 | 28.11.2 |
+|---|---|---|
+| Zeilen | 12.803 | **11.447** |
+| `!important` | 4.680 | **4.597** |
+| überschrieben | 2.998 (21 %) | **2.087 (15 %)** |
+| `css/app.css` | 510 KB | **491 KB** |
+
+**Das wichtigste Werkzeug ist der Vollabzug** (`snapshot.mjs`-Muster in
+`docs/CSS-Schichten.md` beschrieben): er liest von jedem Element jedes
+Bildschirms 45 berechnete Eigenschaften samt Pseudoelementen bei drei
+Breiten — rund 472.000 Werte — und vergleicht vor/nach der Änderung.
+Er hält dafür Animationen an und wurde gegen sich selbst geprüft. Ohne
+ihn ist keine dieser Entfernungen zu verantworten.
+
+Was noch liegt: Kurz- gegen Langform. Setzt eine spätere Regel
+`background` und die frühere `background-color`, wird das bisher nicht
+als Deckung gezählt, obwohl die Kurzform sie zurücksetzt. Bewusst
+untererkannt — in dieser Richtung liegt der Fehler richtig.
+
+Wichtig bei allem: Prüfung über `getComputedStyle` auf
+**Wertgleichheit**, nicht über den Augenschein, und vorher prüfen, ob
 der Selektor allein steht oder Teil einer Sammelregel ist.
 
 ---
