@@ -11615,8 +11615,14 @@ html[data-v28-rework="2"] body.playing .phase-live[data-boss-rush-legacy-phase]{
     border-image-width:11px 15px!important;
   }
   html[data-v28-rework="2"] .campaign-hub .campaign-node-detail[data-p4-detail-tone="boss"] .node-detail-head{
+    width:calc(100% + 24px)!important;
+    min-height:94px!important;
     gap:6px!important;
-    padding:14px 27px!important;
+    margin:-3px -12px 11px!important;
+    padding:15px 27px!important;
+  }
+  html[data-v28-rework="2"] .campaign-hub .campaign-node-detail[data-p4-detail-tone="boss"] .node-detail-title{
+    font-size:clamp(15px,4.5vw,18px)!important;
   }
   html[data-v28-rework="2"] body.playing #game.boss-rush-game #players .player.boss-rush-world-enemy::before{
     width:36px!important;
