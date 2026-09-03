@@ -12,9 +12,9 @@ raten.
 
 | | |
 |---|---|
-| Version | **28.11.3** |
+| Version | **28.11.4** |
 | Branch | `main` |
-| Letzte Schritte | Welt-Tabs, Rift-Rahmen, Encounter-Köpfe und Boss Rush fertiggestellt · Changelog repariert · vier Aufräumschritte an den CSS-Schichten |
+| Letzte Schritte | Echte Weltrahmen auf allen Welt-Tabs und Boss-Rush-Gegnern · Rift-Rahmen und Encounter-Köpfe fertiggestellt · vier Aufräumschritte an den CSS-Schichten |
 
 **Zwei Sitzungen arbeiten parallel.** Aufteilung: Codex in
 `39-v28-campaign-polish`, `40-v28-screen-restoration`,
@@ -126,14 +126,14 @@ V28.7.2: **Fließtext bekommt `slim-card`, wiederholte Datenzeilen
 **Regel:** Zierrat gehört in die Ecken, nie in die Kantenmitte. Bei
 9-Slice wird alles zwischen den Ecken gestreckt.
 
-### Weltassets seit 28.11.3
+### Weltassets seit 28.11.4
 
 - Die gemalten `world-*-frame-rect.webp` bleiben unzerschnittene
-  3:1-Hintergründe (`background-size: 100% 100%`). Sie sind ausdrücklich
-  **kein** 9-Slice und werden nicht für die hochformatigen Welt-Tabs oder
-  Boss-Rush-Karten missbraucht.
-- Welt-Tabs verwenden den generischen Stufe-2-Rahmen in jedem Zustand.
-  Weltfarbe und Wappen bleiben auch inaktiv sichtbar; gesperrt wird über
+  Hintergründe (`background-size: 100% 100%`) und ausdrücklich **kein**
+  9-Slice. Auf Nutzerentscheidung tragen Weltbanner, alle Welt-Tabs sowie
+  Boss-Rush-Gegner jeweils das vollständige Bild ihrer zugeordneten Welt.
+- Welt-Tabs zeigen damit in jedem Zustand den eigenen Weltrahmen. Weltfarbe
+  und Wappen bleiben auch inaktiv sichtbar; gesperrt wird zusätzlich über
   eine Schlossplakette statt über eine schmutzige Graufilterung gezeigt.
 - Weltbanner und Boss-Detailkopf halten 3:1, solange der Inhalt hineinpasst,
   und wachsen sonst mit dem Inhalt. Der Rift-Rahmen beschneidet nur seine
@@ -142,12 +142,12 @@ V28.7.2: **Fließtext bekommt `slim-card`, wiederholte Datenzeilen
   als `data-campaign-state`; Iconwahl und CSS hängen nicht mehr am sichtbaren
   Wort „GESCHAFFT“. Lange Titel behalten dadurch die ganze Zeilenbreite.
 - Boss Rush weist über `BOSS_RUSH_WORLD_THEME_KEYS` zehn Weltidentitäten
-  deterministisch nach Stufenindex zu. Nur Gegner übernehmen Palette und
-  Wappen; Spielerrahmen bleiben unverändert. Der Live-Status besteht aus
-  vier Feldern: Stufe, Boss, Phase, XP.
+  deterministisch nach Stufenindex zu. Nur Gegner übernehmen den vollständigen
+  Rechteckrahmen und die Palette; Spielerrahmen bleiben unverändert. Der
+  Live-Status besteht aus vier Feldern: Stufe, Boss, Phase, XP.
 - Browsermessung: 320, 360, 390, 412 und 1280 px. Banner-Contentbox liegt
-  jeweils in der Artwork-Öffnung, Client- und Scrollhöhe sind gleich,
-  Encounter- und Bossnamen sind vollständig.
+  jeweils in der Artwork-Öffnung, Welt- und Gegnerrahmen liegen bei `inset: 0`,
+  Client- und Scrollhöhe sind gleich, Encounter- und Bossnamen vollständig.
 
 ---
 
