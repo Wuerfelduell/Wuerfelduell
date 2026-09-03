@@ -218,22 +218,6 @@ html.wd-front-scroll-lock body{
   box-sizing:border-box!important;
 }
 
-#abilitiesScreen .ability-list-item{
-  max-width:100%!important;
-  box-sizing:border-box!important;
-}
-
-.campaign-unlocks,
-#campaignAbilityGrid{
-  display:none!important;
-  height:0!important;
-  margin:0!important;
-  padding:0!important;
-  overflow:hidden!important;
-  visibility:hidden!important;
-  pointer-events:none!important;
-}
-
 html[data-v28-rework="2"] .campaign-hub .campaign-node,
 html[data-v28-rework="2"] .campaign-hub .campaign-node.current,
 html[data-v28-rework="2"] .campaign-hub .campaign-node.selected,
@@ -325,5 +309,4 @@ html[data-v28-rework="2"] .dd-select-options{
   overflow-y:auto!important;
   overscroll-behavior:contain!important;
 }
-
 

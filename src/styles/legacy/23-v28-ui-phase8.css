@@ -248,11 +248,7 @@ html[data-v28-rework="2"] .campaign-hub .campaign-node.boss>.p8-boss-selected-gl
   opacity:.94;
   animation:none;
 }
-html[data-v28-rework="2"] .campaign-hub .campaign-node.boss.p6-farm-node>.p8-boss-selected-glow{
-  inset:-7px;
-  width:calc(100% + 14px);
-  height:calc(100% + 14px);
-}
+
 html[data-v28-rework="2"] .campaign-hub .campaign-node.p6-farm-node:is(.current,.selected)::before{
   filter:drop-shadow(0 6px 9px rgba(1,16,39,.36))!important;
 }

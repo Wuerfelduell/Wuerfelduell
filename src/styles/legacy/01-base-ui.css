@@ -19,14 +19,14 @@
     .menu-hero{position:relative;overflow:hidden;text-align:center;padding:28px 18px 22px;border:1px solid rgba(255,255,255,.10);border-radius:26px;background:radial-gradient(circle at 50% -10%,rgba(104,167,255,.24),transparent 42%),linear-gradient(155deg,#1d2533,#0d121a 72%);box-shadow:0 24px 70px rgba(0,0,0,.38)}
     .menu-hero::after{content:"";position:absolute;width:180px;height:180px;border-radius:50%;right:-90px;bottom:-110px;background:rgba(255,200,87,.08);filter:blur(2px);pointer-events:none}
     .menu-logo-img{width:88px;height:88px;display:block;object-fit:cover;margin:0 auto 12px;border-radius:24px;box-shadow:0 14px 34px rgba(0,0,0,.42),0 0 0 1px rgba(255,255,255,.10);transform:rotate(-3deg)}
-    .menu-title{margin:0;font-size:clamp(38px,11vw,62px);font-weight:1000;letter-spacing:-.045em;line-height:.95}
+    
     .menu-tagline{margin-top:10px;color:var(--gold);font-size:clamp(15px,4.7vw,20px);font-weight:900;font-style:italic}
     .menu-subline{margin-top:9px;color:var(--muted);font-size:12px;font-weight:700}
     .menu-actions{display:grid;grid-template-columns:1fr 1fr;gap:9px}
     .menu-actions button{min-height:58px;text-align:left;display:flex;align-items:center;gap:10px;padding:13px 15px;color:var(--text);background:#171e29;border:1px solid var(--border);box-shadow:0 8px 20px rgba(0,0,0,.20)}
     .menu-actions button.menu-play{grid-column:1/-1;min-height:66px;justify-content:center;text-align:center;background:linear-gradient(135deg,#68a7ff,#4dd17d);color:#07131b;border:0;font-size:19px}
     .menu-actions button.menu-tutorial{grid-column:1/-1;justify-content:center;text-align:center;background:linear-gradient(135deg,#ffc857,#b88cff);color:#180f1e;border:0}
-    .menu-actions .menu-icon{font-size:21px}
+    
     .version-footer{text-align:center;color:#657186;font-size:11px;font-weight:800;letter-spacing:.06em;margin-top:2px}
     .screen-card{margin:0;min-height:min(82dvh,720px);display:flex;flex-direction:column}
     .screen-topbar{display:flex;align-items:center;gap:10px;margin-bottom:14px}
@@ -53,7 +53,6 @@
     .setup-title{font-size:23px;font-weight:1000;margin:0 0 4px}.setup-intro{color:var(--muted);font-size:12px;line-height:1.4;margin-bottom:13px}
     body.fast-animations .die.rolling{animation-duration:.24s} body.fast-animations .rotating-board{transition-duration:.24s}
     @media (max-width:540px){.setting-row{grid-template-columns:1fr}.screen-card{min-height:calc(100dvh - 28px)}}
-
 
     /* V16 – Profile, Achievements & persistente Stats */
     .menu-actions button.menu-profile,

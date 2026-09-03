@@ -88,9 +88,7 @@ html[data-v28-rework="2"] .second-ability-card>.name{
 }
 
 /* ---------- Combat: align the 1200x704 active canvas to the full card ---------- */
-html[data-v28-rework="2"] body.playing #players .player.active::after{
-  inset:-19px -22px!important;
-}
+
 html[data-v28-rework="2"] body.playing #players .player.v28-boss-player.active::after{
   inset:-20px -23px!important;
 }

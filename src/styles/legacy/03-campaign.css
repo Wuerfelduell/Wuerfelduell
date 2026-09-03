@@ -17,7 +17,7 @@
     .campaign-controls label{display:grid;gap:5px;color:var(--muted);font-size:10px;font-weight:900;text-transform:uppercase;letter-spacing:.05em}
     .campaign-controls select{width:100%;min-width:0}
     .campaign-start-row{display:grid;grid-template-columns:1fr auto;gap:8px;margin-bottom:14px}
-    .campaign-start-row button{min-height:48px}
+    
     .campaign-start-row .secondary{min-width:auto}
     .campaign-path{display:grid;gap:9px}
     .campaign-encounter{position:relative;width:100%;display:block;text-align:left;padding:13px 13px 12px;border-radius:16px;border:1px solid var(--border);background:#101620;color:var(--text);box-shadow:none;overflow:hidden}
@@ -42,12 +42,7 @@
   
     /* V18.3 mobile safety: the match may always scroll vertically.
        Fixed dialogs scroll themselves instead of trapping content outside the viewport. */
-    body.playing{
-      touch-action:pan-y;
-      overflow-y:auto!important;
-      height:auto!important;
-      min-height:100dvh!important;
-    }
+    
     body.playing .app,
     body.playing #game:not(.hidden){
       height:auto!important;
@@ -94,19 +89,17 @@
       margin-bottom:auto;
     }
 
-
     /* V26 – Kampagnenmodus-Wahl + Trio Beta */
     .campaign-mode-panel{width:min(560px,calc(100vw - 28px))}
     .campaign-mode-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px;margin:14px 0 4px}
     .campaign-mode-choice{min-height:108px;padding:14px 10px;border-radius:18px;border:1px solid var(--border);display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;gap:5px;color:var(--text)}
-    .campaign-mode-choice strong{font-size:18px}.campaign-mode-choice span{font-size:10px;color:rgba(255,255,255,.72);line-height:1.3}
+    .campaign-mode-choice span{font-size:10px;color:rgba(255,255,255,.72);line-height:1.3}
     .campaign-mode-choice.solo{background:linear-gradient(145deg,#382752,#20182e)}
     .campaign-mode-choice.duo{background:linear-gradient(145deg,#173453,#25234e)}
     .campaign-mode-choice.trio{background:linear-gradient(145deg,#173f37,#25314f);box-shadow:0 0 26px rgba(77,209,125,.12)}
     .trio-controls{grid-template-columns:repeat(2,minmax(0,1fr))}
     .trio-node-map{grid-template-columns:repeat(5,minmax(0,1fr));align-items:center}
     @media (max-width:540px){.campaign-mode-grid{grid-template-columns:1fr}.campaign-mode-choice{min-height:74px}.trio-controls{grid-template-columns:1fr}.trio-node-map{grid-template-columns:repeat(5,minmax(0,1fr));gap:5px}}
-
 
     /* V26.1 – kompakter Campaign Hub */
     .campaign-hub>.screen-subtitle{display:none}

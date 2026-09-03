@@ -23,14 +23,14 @@
     .menu-hero{position:relative;overflow:hidden;text-align:center;padding:28px 18px 22px;border:1px solid rgba(255,255,255,.10);border-radius:26px;background:radial-gradient(circle at 50% -10%,rgba(104,167,255,.24),transparent 42%),linear-gradient(155deg,#1d2533,#0d121a 72%);box-shadow:0 24px 70px rgba(0,0,0,.38)}
     .menu-hero::after{content:"";position:absolute;width:180px;height:180px;border-radius:50%;right:-90px;bottom:-110px;background:rgba(255,200,87,.08);filter:blur(2px);pointer-events:none}
     .menu-logo-img{width:88px;height:88px;display:block;object-fit:cover;margin:0 auto 12px;border-radius:24px;box-shadow:0 14px 34px rgba(0,0,0,.42),0 0 0 1px rgba(255,255,255,.10);transform:rotate(-3deg)}
-    .menu-title{margin:0;font-size:clamp(38px,11vw,62px);font-weight:1000;letter-spacing:-.045em;line-height:.95}
+    
     .menu-tagline{margin-top:10px;color:var(--gold);font-size:clamp(15px,4.7vw,20px);font-weight:900;font-style:italic}
     .menu-subline{margin-top:9px;color:var(--muted);font-size:12px;font-weight:700}
     .menu-actions{display:grid;grid-template-columns:1fr 1fr;gap:9px}
     .menu-actions button{min-height:58px;text-align:left;display:flex;align-items:center;gap:10px;padding:13px 15px;color:var(--text);background:#171e29;border:1px solid var(--border);box-shadow:0 8px 20px rgba(0,0,0,.20)}
     .menu-actions button.menu-play{grid-column:1/-1;min-height:66px;justify-content:center;text-align:center;background:linear-gradient(135deg,#68a7ff,#4dd17d);color:#07131b;border:0;font-size:19px}
     .menu-actions button.menu-tutorial{grid-column:1/-1;justify-content:center;text-align:center;background:linear-gradient(135deg,#ffc857,#b88cff);color:#180f1e;border:0}
-    .menu-actions .menu-icon{font-size:21px}
+    
     .version-footer{text-align:center;color:#657186;font-size:11px;font-weight:800;letter-spacing:.06em;margin-top:2px}
     .screen-card{margin:0;min-height:min(82dvh,720px);display:flex;flex-direction:column}
     .screen-topbar{display:flex;align-items:center;gap:10px;margin-bottom:14px}
@@ -57,7 +57,6 @@
     .setup-title{font-size:23px;font-weight:1000;margin:0 0 4px}.setup-intro{color:var(--muted);font-size:12px;line-height:1.4;margin-bottom:13px}
     body.fast-animations .die.rolling{animation-duration:.24s} body.fast-animations .rotating-board{transition-duration:.24s}
     @media (max-width:540px){.setting-row{grid-template-columns:1fr}.screen-card{min-height:calc(100dvh - 28px)}}
-
 
     /* V16 – Profile, Achievements & persistente Stats */
     .menu-actions button.menu-profile,
@@ -166,11 +165,9 @@
       border:0;border-radius:13px;padding:12px 15px;font-size:16px;font-weight:800;
       cursor:pointer;background:var(--blue);color:#08111f;box-shadow:0 5px 14px rgba(0,0,0,.18);
     }
-    button.secondary{background:#313949;color:var(--text)}
-    button.good{background:var(--good);color:#07160d}
-    button.gold{background:var(--gold);color:#201500}
-    button.purple{background:var(--purple);color:#160b24}
-    button.blood{background:linear-gradient(145deg,#b62d45,#68111f);color:#fff}
+
+    
+
     button:disabled{opacity:.38;filter:grayscale(.4);cursor:not-allowed}
     .hidden{display:none!important}
 
@@ -201,7 +198,7 @@
       margin-top:8px;padding:9px 10px;border-radius:11px;border:1px solid var(--border);
       background:#0e131c;font-size:14px;line-height:1.4;
     }
-    .ability-roll strong,.seat-box strong{color:var(--gold)}
+    
     .ability-desc{font-size:12px;color:var(--muted);line-height:1.4;margin-top:5px}
     .ability-choice,.seat-choice,.dice-choice{width:100%;margin-top:8px}
     .setup-status{font-size:13px;color:var(--muted);margin-top:10px}
@@ -355,7 +352,6 @@
       background:linear-gradient(145deg,#2f80ed,#08234f);color:#eef7ff;border-color:#4f9df3
     }
 
-
     /* Würfeldesigns gelten auch für Spezialwürfel (High Stakes, Insurance, Gambling usw.). */
     /* Die zehn Wuerfel-Themes obsidian bis sapphire standen hier bis V28.11.1
        ein zweites Mal. 04-prestige-polish.css definiert dieselben zehn
@@ -441,14 +437,10 @@
     .round-note{color:var(--muted);font-size:13px;line-height:1.4;margin-top:6px}
     .last-place-note{color:var(--gold);font-weight:800}
 
-
-
     #game > .card:first-child{padding:9px 11px;margin-bottom:7px}
     #game > .card:first-child .players{gap:6px}
     #game > .card:first-child .player{padding:7px 9px}
     .turn-card .controls{margin-top:7px !important}
-
-
 
     /* Rundenende / Rundenwechsel als echtes Zwischenmenü */
     .round-overlay{
@@ -616,7 +608,6 @@
     .special-actions{display:flex;gap:8px;flex-wrap:wrap}
     .special-actions button{flex:1;min-width:140px}
 
-
     /* Insurance + Counterattack */
 
     /* 12-HP secondary ability draft */
@@ -743,7 +734,6 @@
       .second-ability-card{min-height:108px}
       .setup-grid{grid-template-columns:1fr 1fr}
     }
-
 
     /* Gambling Man */
     #gamblingModal{
@@ -889,7 +879,6 @@
       100%{opacity:0;transform:translate(-50%,-52px) scale(.9)}
     }
 
-
     /* Elimination / round-win popups */
     #eventPopup{
       position:fixed;inset:0;z-index:10020;pointer-events:none;
@@ -940,8 +929,6 @@
       button{font-size:15px}
       .rotation-shell{min-height:0}
     }
-
-
 
     /* V25.2 – echte 3D-Würfel. Der Wrapper behält exakt seine Layout-Größe;
        nur der innere Cube rotiert im 3D-Raum. Dadurch kein Layout-Springen. */
@@ -1119,7 +1106,6 @@
     }
     html.legacy-flat-dice body.fast-animations .die.rolling{animation-duration:.24s!important}
 
-
     /* Theme-Farben werden auf alle sechs Flächen übertragen. */
     .die.theme-classic{--die-bg:linear-gradient(145deg,#ffffff,#dfe4eb);--die-pip:#111827;--die-edge:#c9d0da;background:transparent!important}
     .die.theme-obsidian{--die-bg:linear-gradient(145deg,#303746,#090b10);--die-pip:#f7f8fb;--die-edge:#4b5568;background:transparent!important}
@@ -1156,18 +1142,16 @@
       .campaign-task-line strong{grid-column:2;text-align:left;white-space:normal;color:#dce6f5}
     }
 
-
     /* V26 – Campaign cards stay above the dice but become compact. */
     #game.campaign-game > .card:first-child .player{padding:8px 10px;min-height:0}
     #game.campaign-game > .card:first-child .players{gap:7px}
-    #game.campaign-game .player-name{font-size:16px}
+    
     #game.campaign-game .player .hp{margin-top:3px}
     #game.campaign-game .player .hp strong{font-size:20px}
     #game.campaign-game .player .ability-tag{margin-top:2px;font-size:10px}
     #game.trio-game > .card:first-child .player{padding:7px 9px}
     #game.trio-game .player-name{font-size:15px}
     #game.trio-game .player .hp strong{font-size:19px}
-
 
     /* V26.1 – kompakte Zug-Kopfzeile */
     .turn-head{display:flex;align-items:baseline;justify-content:space-between;gap:12px;min-width:0}
@@ -1190,7 +1174,6 @@
       .turn-total{font-size:19px}
       #game.campaign-game .player{padding:7px 8px}
     }
-
 
     /* V27.4.3 – Online roll smoothing.
        Remote previews keep spinning until the authoritative Firebase result arrives.
@@ -1220,7 +1203,7 @@
     .campaign-controls label{display:grid;gap:5px;color:var(--muted);font-size:10px;font-weight:900;text-transform:uppercase;letter-spacing:.05em}
     .campaign-controls select{width:100%;min-width:0}
     .campaign-start-row{display:grid;grid-template-columns:1fr auto;gap:8px;margin-bottom:14px}
-    .campaign-start-row button{min-height:48px}
+    
     .campaign-start-row .secondary{min-width:auto}
     .campaign-path{display:grid;gap:9px}
     .campaign-encounter{position:relative;width:100%;display:block;text-align:left;padding:13px 13px 12px;border-radius:16px;border:1px solid var(--border);background:#101620;color:var(--text);box-shadow:none;overflow:hidden}
@@ -1245,12 +1228,7 @@
   
     /* V18.3 mobile safety: the match may always scroll vertically.
        Fixed dialogs scroll themselves instead of trapping content outside the viewport. */
-    body.playing{
-      touch-action:pan-y;
-      overflow-y:auto!important;
-      height:auto!important;
-      min-height:100dvh!important;
-    }
+    
     body.playing .app,
     body.playing #game:not(.hidden){
       height:auto!important;
@@ -1297,19 +1275,17 @@
       margin-bottom:auto;
     }
 
-
     /* V26 – Kampagnenmodus-Wahl + Trio Beta */
     .campaign-mode-panel{width:min(560px,calc(100vw - 28px))}
     .campaign-mode-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px;margin:14px 0 4px}
     .campaign-mode-choice{min-height:108px;padding:14px 10px;border-radius:18px;border:1px solid var(--border);display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;gap:5px;color:var(--text)}
-    .campaign-mode-choice strong{font-size:18px}.campaign-mode-choice span{font-size:10px;color:rgba(255,255,255,.72);line-height:1.3}
+    .campaign-mode-choice span{font-size:10px;color:rgba(255,255,255,.72);line-height:1.3}
     .campaign-mode-choice.solo{background:linear-gradient(145deg,#382752,#20182e)}
     .campaign-mode-choice.duo{background:linear-gradient(145deg,#173453,#25234e)}
     .campaign-mode-choice.trio{background:linear-gradient(145deg,#173f37,#25314f);box-shadow:0 0 26px rgba(77,209,125,.12)}
     .trio-controls{grid-template-columns:repeat(2,minmax(0,1fr))}
     .trio-node-map{grid-template-columns:repeat(5,minmax(0,1fr));align-items:center}
     @media (max-width:540px){.campaign-mode-grid{grid-template-columns:1fr}.campaign-mode-choice{min-height:74px}.trio-controls{grid-template-columns:1fr}.trio-node-map{grid-template-columns:repeat(5,minmax(0,1fr));gap:5px}}
-
 
     /* V26.1 – kompakter Campaign Hub */
     .campaign-hub>.screen-subtitle{display:none}
@@ -1632,7 +1608,7 @@
 
 @media(prefers-reduced-motion:reduce){.attack-fx-beam,.attack-fx-lightning,.attack-fx-lightning polyline,.attack-fx-impact,.player.attack-source-flash{animation-duration:.01ms!important;animation-iteration-count:1!important}}
 /* GalaxyA50 compatibility mode keeps the new combat effect but drops the heaviest glow filter. */
-html.legacy-flat-dice .attack-fx-lightning{filter:none}
+
 html.legacy-flat-dice .attack-fx-beam{box-shadow:0 0 9px rgba(120,205,255,.75)}
 
 /* ===== 07-v2751.css ===== */
@@ -1872,7 +1848,6 @@ body.test-lab-active #dice.lab-hot-fire-5 .die{
   position:fixed;inset:0;z-index:9998;pointer-events:none;opacity:0;
   transition:opacity .18s ease
 }
-#testLabFireCanvas.active{opacity:1}
 
 @media(max-width:900px){
   .test-lab-bench-body{grid-template-columns:repeat(2,minmax(0,1fr))}
@@ -2046,12 +2021,7 @@ body.test-lab-active.test-lab-dice3d #testLab3dDiceTray{
   border-radius:inherit;
   background:linear-gradient(90deg,#7b4dff,#d775ff);
 }
-.mastery-summary small{opacity:.58}
-.mastery-content{
-  display:grid;
-  grid-template-columns:repeat(3,minmax(0,1fr));
-  gap:12px;
-}
+
 .mastery-branch{
   position:relative;
   min-width:0;
@@ -2067,7 +2037,7 @@ body.test-lab-active.test-lab-dice3d #testLab3dDiceTray{
   gap:9px;
   min-height:72px;
 }
-.mastery-branch-icon{font-size:22px}
+
 .mastery-branch-head strong{display:block;font-size:15px}
 .mastery-branch-head small{
   display:block;
@@ -2083,21 +2053,7 @@ body.test-lab-active.test-lab-dice3d #testLab3dDiceTray{
   font-size:10px;
   font-weight:900;
 }
-.mastery-tree-line{
-  position:relative;
-  display:grid;
-  gap:8px;
-  margin-top:8px;
-}
-.mastery-tree-line::before{
-  content:"";
-  position:absolute;
-  left:20px;
-  top:20px;
-  bottom:20px;
-  width:2px;
-  background:linear-gradient(rgba(164,105,255,.55),rgba(255,255,255,.07));
-}
+
 .mastery-node{
   position:relative;
   z-index:1;
@@ -2112,35 +2068,7 @@ body.test-lab-active.test-lab-dice3d #testLab3dDiceTray{
   background:rgba(13,12,18,.92);
   border:1px solid rgba(255,255,255,.10);
 }
-.mastery-node-dot{
-  display:grid;
-  place-items:center;
-  width:30px;
-  height:30px;
-  border-radius:50%;
-  border:2px solid rgba(255,255,255,.16);
-  background:#17141d;
-  font-size:11px;
-  font-weight:950;
-}
-.mastery-node-value{font-weight:900;font-size:12px}
-.mastery-node small{font-size:8px;opacity:.46}
-.mastery-node.owned{
-  border-color:rgba(126,232,156,.36);
-  background:rgba(26,74,43,.24);
-}
-.mastery-node.owned .mastery-node-dot{
-  border-color:rgba(126,232,156,.75);
-  background:rgba(54,158,86,.35);
-}
-.mastery-node.available{
-  border-color:rgba(184,120,255,.7);
-  box-shadow:0 0 18px rgba(128,63,220,.17);
-}
-.mastery-node.available .mastery-node-dot{
-  border-color:#b77aff;
-  box-shadow:0 0 14px rgba(181,116,255,.35);
-}
+
 .mastery-node.locked{opacity:.46}
 .mastery-footer-note{
   margin-top:12px;
@@ -2155,7 +2083,6 @@ body.test-lab-active.test-lab-dice3d #testLab3dDiceTray{
   .mastery-content{grid-template-columns:1fr}
   .mastery-branch-head{min-height:0}
 }
-
 
 /* V27.8.1 — compact campaign strip */
 .campaign-mastery-strip{
@@ -2265,17 +2192,9 @@ body.mastery-open{
 .mastery-xp-currency{height:2px;opacity:.35}
 .mastery-node:not(.owned) small{font-weight:900}
 
-
 /* =========================================================
    V27.8.5 — MASTERY TREE VISUAL REBUILD
    ========================================================= */
-
-#masteryModal .mastery-panel{
-  width:min(940px,100%)!important;
-  background:
-    radial-gradient(circle at 50% -10%,rgba(130,92,255,.16),transparent 34%),
-    linear-gradient(180deg,#171e2b 0%,#0d131d 62%,#0a0f17 100%)!important;
-}
 
 .mastery-content{
   display:grid;
@@ -2710,7 +2629,6 @@ body.mastery-open{
 .mastery-ability-pair .aml-node.available{cursor:pointer!important;opacity:1!important;filter:none!important}
 .mastery-ability-pair .aml-node.owned{opacity:1!important;filter:none!important}
 
-
 /* V27.9.4 — clickable unlocked nodes + safe purchase confirmation */
 .mastery-ability-sheet .aml-ability-node{
   position:relative!important;
@@ -2801,7 +2719,6 @@ body.mastery-open{
 .mastery-purchase-actions button{
   min-height:42px;
 }
-
 
 /* V27.10.0 — Ability branch readability: L1/L2 nebeneinander */
 .mastery-ability-branches{
@@ -3044,8 +2961,6 @@ body.ability-mastery-lab-open{overflow:hidden!important}
   display:grid;
   gap:68px;
 }
-.aml-branch-left{left:42px}
-.aml-branch-right{right:42px}
 
 .aml-node{
   position:relative;
@@ -3325,7 +3240,6 @@ body.ability-mastery-lab-open{overflow:hidden!important}
   }
 }
 
-
 /* =========================================================
    V27.8.7 — MOBILE FIT + BRANCH HEADINGS + INFO POPUP
    ========================================================= */
@@ -3432,9 +3346,7 @@ body.ability-mastery-lab-open{overflow:hidden!important}
   max-width:calc(100% - 62px)!important;
   padding:6px 8px!important;
 }
-.aml-node-tag strong{
-  font-size:13px!important;
-}
+
 .aml-node-tag span{
   font-size:7px!important;
 }
@@ -3788,7 +3700,7 @@ button.blood{background:linear-gradient(160deg,#c44655,#8a2130);color:#fff7ef;bo
 button:disabled{opacity:.46;filter:saturate(.45)}
 
 /* Top bars */
-.screen-topbar{padding-bottom:9px;border-bottom:1px solid rgba(170,122,37,.25)}
+
 .screen-topbar button,.game-menu-btn,#masteryCloseBtn{
   background:linear-gradient(160deg,var(--v28-navy-2),var(--v28-navy));
   color:#f8e5a8;
@@ -3860,14 +3772,6 @@ button:disabled{opacity:.46;filter:saturate(.45)}
   border-radius:22px!important;
   box-shadow:0 24px 85px rgba(3,22,42,.42),0 0 0 3px rgba(255,242,202,.35),inset 0 0 0 1px #fff!important;
 }
-.utility-kicker,.round-overlay-kicker,.second-ability-kicker,.special-roll-kicker,.gambling-kicker{
-  color:var(--v28-gold-deep)!important;font-family:Georgia,"Times New Roman",serif;letter-spacing:.16em!important
-}
-.utility-text,.round-note,.second-ability-sub,.special-roll-sub,.gambling-sub{color:var(--v28-muted)!important}
-.campaign-mode-choice{
-  color:var(--v28-ink)!important;background:linear-gradient(180deg,#fffdf7,#eee1c8)!important;border:1px solid var(--v28-gold)!important;border-radius:15px!important;box-shadow:0 6px 14px rgba(90,65,23,.10)!important
-}
-.campaign-mode-choice strong{font-family:Georgia,"Times New Roman",serif;font-size:22px!important}.campaign-mode-choice span{color:var(--v28-muted)!important;font-size:12px!important}
 
 /* Campaign screens */
 .campaign-world-btn{
@@ -3878,11 +3782,10 @@ button:disabled{opacity:.46;filter:saturate(.45)}
 .campaign-world-btn.active .campaign-world-name,.campaign-world-btn.active .campaign-world-kicker{color:#fff1c3!important}
 .campaign-top .menu-info-card:nth-child(3){background:linear-gradient(160deg,#fff7dc,#efe1bf)!important}
 .campaign-start-row .good{background:linear-gradient(160deg,#367b5b,#245a45)}
-.campaign-node-map{background:linear-gradient(155deg,#10365c,#082744)!important;border:1px solid var(--v28-gold)!important;border-radius:18px;padding:12px!important}
+
 .campaign-node,.campaign-node-map button{border-color:rgba(215,173,82,.75)!important}
 .campaign-node-detail{border-radius:17px!important}
 .node-detail-row{border-color:rgba(156,111,31,.20)!important;background:rgba(255,255,255,.32)!important;color:var(--v28-ink)!important}
-.campaign-ability-chip{background:linear-gradient(160deg,#163a60,#0b2948);border-color:rgba(215,173,82,.55);color:#f8e8ba}
 
 /* Battle: deliberately darker than menus so dice & FX remain focal */
 body.playing{
@@ -3903,7 +3806,7 @@ body.playing .matchbar{color:#e9d9b1;border-bottom-color:rgba(215,173,82,.28)}
 body.playing .player{background:linear-gradient(155deg,#12375d,#0a2848);border-color:rgba(215,173,82,.55);color:#fff3d4}
 body.playing .player.active{outline-color:#67b5ff}
 body.playing .player-name,body.playing .hp strong,body.playing .turnline,body.playing .turn-total{color:#fff5db}
-body.playing .ability-tag{color:#f1ca66}
+
 body.playing .status{color:#b8c7d7}
 body.playing .ability-state{background:rgba(4,22,42,.62);border-color:rgba(215,173,82,.28);color:#b9c8d8}
 body.playing .ability-state strong{color:#f0c75e}
@@ -3913,13 +3816,10 @@ body.playing #primaryBtn{background:linear-gradient(160deg,#3c7fd0,#1f5598);colo
 body.playing .die{border-color:rgba(215,173,82,.48);box-shadow:inset 0 -4px 0 rgba(0,0,0,.13),0 7px 14px rgba(0,0,0,.20),0 0 0 1px rgba(255,239,194,.36)}
 
 /* Second ability cards */
-.second-ability-options{gap:12px!important}
+
 .second-ability-card{
   background:linear-gradient(160deg,#12385f,#082747)!important;color:#fff0c6!important;border:1px solid var(--v28-gold)!important;border-radius:16px!important;box-shadow:0 8px 18px rgba(11,41,71,.16)!important
 }
-.second-ability-card .num{background:linear-gradient(160deg,#f0cc6e,#c99935)!important;color:#102b4d!important;border:1px solid #8d641e}
-.second-ability-card .name{font-family:Georgia,"Times New Roman",serif;color:#fff4d5}
-.second-ability-card .desc{color:#d5e0e9!important}
 
 /* Round overlays */
 .round-score-row,.round-stat,.round-prep-player{background:linear-gradient(155deg,#12375d,#0b2847)!important;border-color:rgba(215,173,82,.55)!important;color:#fff1cd!important}
@@ -4030,7 +3930,7 @@ body.playing .die{border-color:rgba(215,173,82,.48);box-shadow:inset 0 -4px 0 rg
   color:#102f55!important;font-family:Georgia,"Times New Roman",serif;font-size:clamp(22px,6.3vw,31px)!important;font-weight:700!important;
   justify-content:center;text-align:center;text-shadow:0 1px 0 #fff;overflow:visible;
 }
-#mainMenu .menu-actions button.menu-play{min-height:clamp(72px,20vw,94px)}
+
 #mainMenu .menu-actions button.menu-play:active,
 #mainMenu .menu-actions button.menu-online:active,
 #mainMenu .menu-actions button.menu-campaign:active,
@@ -5042,30 +4942,7 @@ html[data-v28-rework="2"] select.dd-native-select{
 .dd-select-option.selected .dd-option-check{opacity:1}
 
 /* ---------- Setup ---------- */
-html[data-v28-rework="2"] #setup .local-mode-card,
-html[data-v28-rework="2"] #setup .setup-player{
-  box-sizing:border-box;
-  color:var(--dd-ink)!important;
 
-  border-image-source:var(--dd-frame-card-small)!important;
-  border-image-slice:76 168 76 168 fill!important;
-  border-image-width:20px 34px!important;
-  border-image-repeat:stretch!important;
-  border-radius:0!important;
-  background:var(--dd-ivory)!important;
-  box-shadow:var(--dd-shadow-soft)!important;
-  padding:8px 4px 10px!important;
-}
-html[data-v28-rework="2"] #setup .local-mode-card label,
-html[data-v28-rework="2"] #setup .setup-player label{color:var(--dd-ink)!important}
-html[data-v28-rework="2"] #setup .local-mode-info,
-html[data-v28-rework="2"] #setup .setup-player .ability-desc{color:#5d6e82!important}
-html[data-v28-rework="2"] #setup .setup-dice-readonly{
-  min-height:48px;
-  display:flex;align-items:center;
-  background:linear-gradient(155deg,#123e71,#071f45)!important;
-  color:#fff2c8!important;border:1px solid rgba(215,166,61,.58)!important;
-}
 html[data-v28-rework="2"] #setup .ability-roll,
 html[data-v28-rework="2"] #setup .seat-box{
   min-height:52px;
@@ -5132,11 +5009,7 @@ html[data-v28-rework="2"] .campaign-node-detail.v28-boss-detail{
   color:#fff1de!important;
   box-shadow:0 16px 38px rgba(50,5,16,.22)!important;
 }
-html[data-v28-rework="2"] .campaign-node-detail.v28-boss-detail .node-detail-row{
-  color:#fff1de!important;
-  background:rgba(20,3,9,.24)!important;
-  border-color:rgba(242,190,92,.23)!important;
-}
+
 html[data-v28-rework="2"] .campaign-node-detail.v28-prestige-detail:not(.v28-boss-detail){
 
   border-image-source:var(--dd-frame-prestige)!important;
@@ -5197,33 +5070,6 @@ html[data-v28-rework="2"] .second-ability-panel>.second-ability-kicker{
   text-shadow:0 1px 3px rgba(2,17,41,.72)!important;
 }
 html[data-v28-rework="2"] .second-ability-title{margin-top:0!important}
-html[data-v28-rework="2"] .second-ability-options{gap:10px!important}
-html[data-v28-rework="2"] .second-ability-card{
-  min-height:148px!important;
-  display:grid!important;
-  grid-template-columns:52px 38px minmax(0,1fr)!important;
-  grid-template-rows:auto auto!important;
-  align-items:center!important;
-  column-gap:7px!important;row-gap:5px!important;
-  padding:20px 24px 16px 30px!important;
-
-  border-image-source:var(--dd-frame-ability-choice)!important;
-  border-image-slice:84 165 84 230 fill!important;
-  border-image-width:22px 34px 22px 48px!important;
-  border-image-repeat:stretch!important;
-  border-radius:0!important;
-  background:var(--dd-ivory)!important;
-  color:var(--dd-ink)!important;
-  box-shadow:none!important;
-}
-html[data-v28-rework="2"] .second-ability-card>.dd-ability-icon{grid-column:1;grid-row:1}
-html[data-v28-rework="2"] .second-ability-card>.num{grid-column:2;grid-row:1}
-html[data-v28-rework="2"] .second-ability-card>.name{grid-column:3;grid-row:1;color:var(--dd-ink)!important}
-html[data-v28-rework="2"] .second-ability-card>.desc{
-  grid-column:1/-1;grid-row:2;
-  margin:2px 0 0!important;padding:8px 10px!important;
-  color:#41546b!important;background:rgba(255,252,243,.78)!important;
-}
 
 /* ---------- Ability picker with the 24 real icons ---------- */
 html[data-v28-rework="2"] .v28-ability-picker-head{
@@ -5253,9 +5099,7 @@ html[data-v28-rework="2"] .v28-ability-option{
   color:var(--dd-ink)!important;
   box-shadow:none!important;
 }
-html[data-v28-rework="2"] .v28-ability-option.selected{
-  filter:drop-shadow(0 0 8px rgba(37,117,206,.28));
-}
+
 html[data-v28-rework="2"] .v28-icon{width:48px;height:48px;display:flex;align-items:center;justify-content:center}
 html[data-v28-rework="2"] .v28-icon img{width:48px;height:48px;object-fit:contain}
 html[data-v28-rework="2"] .v28-ability-trigger{
@@ -5705,13 +5549,7 @@ html[data-v28-rework="2"] .campaign-hub .campaign-node-map{
     linear-gradient(155deg,#0b3568,#051936)!important;
   box-shadow:inset 0 0 0 2px rgba(255,255,255,.035),0 9px 24px rgba(8,40,76,.13)!important;
 }
-html[data-v28-rework="2"] .campaign-hub .campaign-node{
-  width:min(61px,100%)!important;
-  border:2px solid rgba(212,164,64,.70)!important;
-  background:linear-gradient(155deg,#154a76,#082a51)!important;
-  color:#fff3ce!important;
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.10),0 6px 13px rgba(2,15,34,.26)!important;
-}
+
 html[data-v28-rework="2"] .campaign-hub .campaign-node.done{
   border-color:#6ccc91!important;
   background:linear-gradient(155deg,#23624a,#113a2f)!important;
@@ -5848,9 +5686,7 @@ html[data-v28-rework="2"] .campaign-node-detail.v28-prestige-detail:not(.v28-bos
 }
 
 /* ---------- Second ability: icon left, selection right ---------- */
-html[data-v28-rework="2"] .second-ability-options{
-  gap:13px!important;
-}
+
 html[data-v28-rework="2"] .second-ability-card{
   box-sizing:border-box!important;
   width:100%!important;
@@ -5878,14 +5714,7 @@ html[data-v28-rework="2"] .second-ability-card>.dd-ability-icon{
   width:56px!important;height:56px!important;
   margin:0!important;
 }
-html[data-v28-rework="2"] .second-ability-card>.num{
-  grid-column:2!important;grid-row:1!important;
-  width:40px!important;height:40px!important;
-  margin:0!important;
-  color:#fff4d3!important;
-  background:#0a2d5b!important;
-  border:1px solid #d3a642!important;
-}
+
 html[data-v28-rework="2"] .second-ability-card>.name{
   grid-column:3!important;grid-row:1!important;
   margin:0!important;
@@ -5940,9 +5769,7 @@ html[data-v28-rework="2"] #settingsScreen .dd-select-trigger{
 }
 
 /* ---------- Rules ---------- */
-html[data-v28-rework="2"] #rulesScreen .menu-list{
-  gap:12px!important;
-}
+
 html[data-v28-rework="2"] #rulesScreen .menu-info-card{
   box-sizing:border-box!important;
   min-height:118px!important;
@@ -6023,20 +5850,12 @@ html[data-v28-rework="2"] #achievementsScreen .achievement-desc{
   color:#e0e6ee!important;
   font-size:13px!important;
 }
-html[data-v28-rework="2"] #achievementsScreen .achievement-owners{
-  gap:6px!important;
-  margin-top:11px!important;
-}
+
 html[data-v28-rework="2"] #achievementsScreen .achievement-owner{
   padding:5px 9px!important;
   border-color:rgba(184,202,225,.22)!important;
   background:rgba(2,15,35,.55)!important;
   color:#a7b5c7!important;
-}
-html[data-v28-rework="2"] #achievementsScreen .achievement-owner.done{
-  color:#aef1c2!important;
-  border-color:rgba(77,209,125,.34)!important;
-  background:rgba(31,102,67,.24)!important;
 }
 
 /* ---------- Profiles ---------- */
@@ -6195,9 +6014,7 @@ html[data-v28-rework="2"] #setup .setup-dice-readonly{
   border-radius:13px!important;
   background:linear-gradient(155deg,#123e71,#071f45)!important;
 }
-html[data-v28-rework="2"] #setup .ability-roll{
-  margin-top:10px!important;
-}
+
 html[data-v28-rework="2"] #setup .controls{
   display:grid!important;
   grid-template-columns:1fr 1fr!important;
@@ -6225,9 +6042,7 @@ html[data-v28-rework="2"] body.playing .encounter-rule-banner{
   font-size:11px!important;
   line-height:1.25!important;
 }
-html[data-v28-rework="2"] body.playing #players{
-  gap:7px!important;
-}
+
 html[data-v28-rework="2"] body.playing #players .player{
   min-height:128px!important;
   padding:8px 5px 10px!important;
@@ -6533,18 +6348,7 @@ html[data-v28-rework="2"] .campaign-hub .campaign-top .menu-info-card:nth-child(
   font-size:12px!important;
   overflow-wrap:anywhere;
 }
-html[data-v28-rework="2"] #campaignStartBtn,
-html[data-v28-rework="2"] #duoCampaignStartBtn,
-html[data-v28-rework="2"] #trioCampaignStartBtn{
-  min-height:64px!important;
-  padding:13px 42px!important;
-  border:0!important;
-  border-radius:0!important;
-  color:#fff3d2!important;
-  background:var(--p2-navy-button) center/100% 100% no-repeat!important;
-  box-shadow:none!important;
-  text-shadow:0 1px 3px rgba(2,16,38,.68)!important;
-}
+
 html[data-v28-rework="2"] .campaign-hub .campaign-node-map{
   padding:17px 9px 19px!important;
 }
@@ -6604,9 +6408,7 @@ html[data-v28-rework="2"] .campaign-node-detail.v28-boss-detail .node-detail-sta
 }
 
 /* ---------- Setup ---------- */
-html[data-v28-rework="2"] #setup #setupBackBtn{
-  transform:translate(-5px,-2px)!important;
-}
+
 html[data-v28-rework="2"] #setup .local-mode-info{
   margin-top:6px!important;
   padding:0 5px 4px!important;
@@ -6867,10 +6669,7 @@ html[data-v28-rework="2"] #masteryCloseBtn{
 }
 
 /* ---------- Quit modal ---------- */
-html[data-v28-rework="2"] #quitModal .utility-kicker{
-  margin:-38px 0 39px!important;
-  transform:translateY(16px);
-}
+
 html[data-v28-rework="2"] #quitModal .utility-actions{
   gap:5px!important;
   align-items:stretch;
@@ -7249,9 +7048,7 @@ html[data-v28-rework="2"] body.playing #players .player.v28-boss-player{
   background:transparent!important;
   box-shadow:none!important;
 }
-html[data-v28-rework="2"] body.playing #players .player.active::after{
-  inset:-5px!important;
-}
+
 html[data-v28-rework="2"] body.playing .encounter-rule-banner{
   min-height:64px!important;
   margin:4px 0 10px!important;
@@ -7282,10 +7079,7 @@ html[data-v28-rework="2"] #profilesScreen .profile-card{
   background:transparent!important;
   box-shadow:0 10px 25px rgba(25,58,86,.12)!important;
 }
-html[data-v28-rework="2"] #profilesScreen .profile-card-top{
-  margin:-8px -8px 13px!important;
-  padding:14px 16px 13px!important;
-}
+
 html[data-v28-rework="2"] #profilesScreen .profile-actions .dd-select-trigger,
 html[data-v28-rework="2"] #profilesScreen .profile-name-edit{
   background:transparent!important;
@@ -7466,10 +7260,7 @@ html[data-v28-rework="2"] #setup #setupBackBtn{
 html[data-v28-rework="2"] .dd-select-panel{
   overflow:hidden!important;
 }
-html[data-v28-rework="2"] .dd-select-close{
-  top:-45px!important;
-  right:-6px!important;
-}
+
 html[data-v28-rework="2"] .dd-select-options{
   min-height:0!important;
   padding:2px 1px 0!important;
@@ -7500,10 +7291,7 @@ html[data-v28-rework="2"] #profilesScreen .profile-card{
 }
 
 /* ---------- Rules ---------- */
-html[data-v28-rework="2"] #rulesScreen .menu-info-card{
-  min-height:0!important;
-  padding:9px 12px 12px!important;
-}
+
 html[data-v28-rework="2"] #rulesScreen .menu-info-card>strong{
   min-height:34px;
   margin:0 0 4px!important;
@@ -8011,10 +7799,6 @@ html[data-v28-rework="2"] #quitModal .utility-actions{
    24-v28-ui-phase9; das ::before wird in Phase 7 auf display:none gesetzt
    und in Phase 9 mit --p9-danger-button und inset:-4px -8px komplett neu
    aufgebaut. --p5-danger-button wurde damit nie gezeichnet. */
-html[data-v28-rework="2"] #quitConfirmBtn>.p5-button-label{
-  position:relative;
-  z-index:1;
-}
 
 /* ---------- Combat: remove obsolete match metadata ---------- */
 html[data-v28-rework="2"] body.playing #winTrackerLabel,
@@ -8024,11 +7808,6 @@ html[data-v28-rework="2"] body.playing #players .score-badge{
 }
 
 /* Keep the animated active-player artwork completely inside its card. */
-html[data-v28-rework="2"] body.playing #players .player.active::after{
-  inset:1px!important;
-  background-size:100% 100%!important;
-  clip-path:inset(0 round 2px);
-}
 
 /* ---------- Mastery: SVG sprites instead of text emoji ---------- */
 html[data-v28-rework="2"] .p5-mastery-title-icon,
@@ -8530,16 +8309,6 @@ html[data-v28-rework="2"] #quitConfirmBtn{
   text-align:center!important;
   text-shadow:0 1px 3px rgba(42,2,9,.82)!important;
 }
-html[data-v28-rework="2"] #quitConfirmBtn::before{
-  content:none!important;
-  display:none!important;
-  background:none!important;
-}
-html[data-v28-rework="2"] #quitConfirmBtn>.p5-button-label{
-  width:100%!important;
-  display:block!important;
-  text-align:center!important;
-}
 
 /* ---------- Active player artwork covers the full player card ---------- */
 html[data-v28-rework="2"] body.playing #players .player.active{
@@ -8887,11 +8656,7 @@ html[data-v28-rework="2"] .campaign-hub .campaign-node.boss>.p8-boss-selected-gl
   opacity:.94;
   animation:none;
 }
-html[data-v28-rework="2"] .campaign-hub .campaign-node.boss.p6-farm-node>.p8-boss-selected-glow{
-  inset:-7px;
-  width:calc(100% + 14px);
-  height:calc(100% + 14px);
-}
+
 html[data-v28-rework="2"] .campaign-hub .campaign-node.p6-farm-node:is(.current,.selected)::before{
   filter:drop-shadow(0 6px 9px rgba(1,16,39,.36))!important;
 }
@@ -9211,9 +8976,7 @@ html[data-v28-rework="2"] .second-ability-card>.name{
 }
 
 /* ---------- Combat: align the 1200x704 active canvas to the full card ---------- */
-html[data-v28-rework="2"] body.playing #players .player.active::after{
-  inset:-19px -22px!important;
-}
+
 html[data-v28-rework="2"] body.playing #players .player.v28-boss-player.active::after{
   inset:-20px -23px!important;
 }
@@ -9494,22 +9257,6 @@ html.wd-front-scroll-lock body{
   overscroll-behavior:contain;
   padding-bottom:12px!important;
   box-sizing:border-box!important;
-}
-
-#abilitiesScreen .ability-list-item{
-  max-width:100%!important;
-  box-sizing:border-box!important;
-}
-
-.campaign-unlocks,
-#campaignAbilityGrid{
-  display:none!important;
-  height:0!important;
-  margin:0!important;
-  padding:0!important;
-  overflow:hidden!important;
-  visibility:hidden!important;
-  pointer-events:none!important;
 }
 
 html[data-v28-rework="2"] .campaign-hub .campaign-node,
@@ -10626,10 +10373,7 @@ html[data-v28-rework="2"] #setup .setup-player{
   overflow:visible!important;
   padding:11px 13px 13px!important;
 }
-html[data-v28-rework="2"] #setup .v28-ability-trigger{
-  margin-left:20px!important;
-  width:calc(100% - 20px)!important;
-}
+
 html[data-v28-rework="2"] #setup .ability-choice.v28-native-ability-select{
   position:absolute!important;
   width:1px!important;
@@ -10681,18 +10425,7 @@ html[data-v28-rework="2"] #prestigeShopScreen .prestige-item-desc{
   margin:6px 0 12px!important;
   padding:0!important;
 }
-html[data-v28-rework="2"] #prestigeShopScreen .prestige-active-chip{
-  display:inline-flex!important;
-  align-items:center!important;
-  gap:7px!important;
-  min-height:42px!important;
-  padding:8px 22px!important;
-  border:0!important;
-  border-radius:0!important;
-  background:url("../assets/ui/v28/png/frames/navy-button-horizontal.webp") center/100% 100% no-repeat!important;
-  color:#f4ead0!important;
-  box-shadow:none!important;
-}
+
 html[data-v28-rework="2"] #prestigeShopScreen .prestige-item>button:disabled,
 html[data-v28-rework="2"] #prestigeShopScreen .prestige-item.expensive>button:disabled,
 html[data-v28-rework="2"] #prestigeShopScreen .prestige-item.owned>button:disabled{
@@ -10707,12 +10440,7 @@ html[data-v28-rework="2"] #achievementsScreen .achievement-card{
   padding:22px 26px 24px!important;
   overflow:visible!important;
 }
-html[data-v28-rework="2"] #achievementsScreen .achievement-owners{
-  display:flex!important;
-  flex-wrap:wrap!important;
-  gap:8px!important;
-  margin-top:12px!important;
-}
+
 html[data-v28-rework="2"] #achievementsScreen .achievement-owner{
   display:inline-flex!important;
   align-items:center!important;
@@ -10723,17 +10451,6 @@ html[data-v28-rework="2"] #achievementsScreen .achievement-owner{
   border-radius:999px!important;
   background:rgba(4,22,49,.72)!important;
   color:#dce5ef!important;
-}
-html[data-v28-rework="2"] #achievementsScreen .achievement-owner.done{
-  border-color:rgba(77,209,125,.55)!important;
-  background:rgba(12,72,44,.42)!important;
-  color:#d8ffe6!important;
-}
-html[data-v28-rework="2"] #achievementsScreen .achievement-owner-mark{
-  width:22px!important;
-  height:22px!important;
-  object-fit:contain!important;
-  flex:0 0 22px;
 }
 
 /* Duo: Unlock-Kasten weg. Trio: Reward-Kasten weg. Team wird breiter. */

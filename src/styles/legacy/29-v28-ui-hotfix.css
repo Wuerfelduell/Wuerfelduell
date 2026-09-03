@@ -614,10 +614,7 @@ html[data-v28-rework="2"] #setup .setup-player{
   overflow:visible!important;
   padding:11px 13px 13px!important;
 }
-html[data-v28-rework="2"] #setup .v28-ability-trigger{
-  margin-left:20px!important;
-  width:calc(100% - 20px)!important;
-}
+
 html[data-v28-rework="2"] #setup .ability-choice.v28-native-ability-select{
   position:absolute!important;
   width:1px!important;
@@ -669,18 +666,7 @@ html[data-v28-rework="2"] #prestigeShopScreen .prestige-item-desc{
   margin:6px 0 12px!important;
   padding:0!important;
 }
-html[data-v28-rework="2"] #prestigeShopScreen .prestige-active-chip{
-  display:inline-flex!important;
-  align-items:center!important;
-  gap:7px!important;
-  min-height:42px!important;
-  padding:8px 22px!important;
-  border:0!important;
-  border-radius:0!important;
-  background:url("../assets/ui/v28/png/frames/navy-button-horizontal.webp") center/100% 100% no-repeat!important;
-  color:#f4ead0!important;
-  box-shadow:none!important;
-}
+
 html[data-v28-rework="2"] #prestigeShopScreen .prestige-item>button:disabled,
 html[data-v28-rework="2"] #prestigeShopScreen .prestige-item.expensive>button:disabled,
 html[data-v28-rework="2"] #prestigeShopScreen .prestige-item.owned>button:disabled{
@@ -695,12 +681,7 @@ html[data-v28-rework="2"] #achievementsScreen .achievement-card{
   padding:22px 26px 24px!important;
   overflow:visible!important;
 }
-html[data-v28-rework="2"] #achievementsScreen .achievement-owners{
-  display:flex!important;
-  flex-wrap:wrap!important;
-  gap:8px!important;
-  margin-top:12px!important;
-}
+
 html[data-v28-rework="2"] #achievementsScreen .achievement-owner{
   display:inline-flex!important;
   align-items:center!important;
@@ -711,17 +692,6 @@ html[data-v28-rework="2"] #achievementsScreen .achievement-owner{
   border-radius:999px!important;
   background:rgba(4,22,49,.72)!important;
   color:#dce5ef!important;
-}
-html[data-v28-rework="2"] #achievementsScreen .achievement-owner.done{
-  border-color:rgba(77,209,125,.55)!important;
-  background:rgba(12,72,44,.42)!important;
-  color:#d8ffe6!important;
-}
-html[data-v28-rework="2"] #achievementsScreen .achievement-owner-mark{
-  width:22px!important;
-  height:22px!important;
-  object-fit:contain!important;
-  flex:0 0 22px;
 }
 
 /* Duo: Unlock-Kasten weg. Trio: Reward-Kasten weg. Team wird breiter. */

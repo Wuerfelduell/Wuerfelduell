@@ -50,11 +50,9 @@
       border:0;border-radius:13px;padding:12px 15px;font-size:16px;font-weight:800;
       cursor:pointer;background:var(--blue);color:#08111f;box-shadow:0 5px 14px rgba(0,0,0,.18);
     }
-    button.secondary{background:#313949;color:var(--text)}
-    button.good{background:var(--good);color:#07160d}
-    button.gold{background:var(--gold);color:#201500}
-    button.purple{background:var(--purple);color:#160b24}
-    button.blood{background:linear-gradient(145deg,#b62d45,#68111f);color:#fff}
+
+    
+
     button:disabled{opacity:.38;filter:grayscale(.4);cursor:not-allowed}
     .hidden{display:none!important}
 
@@ -85,7 +83,7 @@
       margin-top:8px;padding:9px 10px;border-radius:11px;border:1px solid var(--border);
       background:#0e131c;font-size:14px;line-height:1.4;
     }
-    .ability-roll strong,.seat-box strong{color:var(--gold)}
+    
     .ability-desc{font-size:12px;color:var(--muted);line-height:1.4;margin-top:5px}
     .ability-choice,.seat-choice,.dice-choice{width:100%;margin-top:8px}
     .setup-status{font-size:13px;color:var(--muted);margin-top:10px}
@@ -239,7 +237,6 @@
       background:linear-gradient(145deg,#2f80ed,#08234f);color:#eef7ff;border-color:#4f9df3
     }
 
-
     /* Würfeldesigns gelten auch für Spezialwürfel (High Stakes, Insurance, Gambling usw.). */
     /* Die zehn Wuerfel-Themes obsidian bis sapphire standen hier bis V28.11.1
        ein zweites Mal. 04-prestige-polish.css definiert dieselben zehn
@@ -325,14 +322,10 @@
     .round-note{color:var(--muted);font-size:13px;line-height:1.4;margin-top:6px}
     .last-place-note{color:var(--gold);font-weight:800}
 
-
-
     #game > .card:first-child{padding:9px 11px;margin-bottom:7px}
     #game > .card:first-child .players{gap:6px}
     #game > .card:first-child .player{padding:7px 9px}
     .turn-card .controls{margin-top:7px !important}
-
-
 
     /* Rundenende / Rundenwechsel als echtes Zwischenmenü */
     .round-overlay{
@@ -500,7 +493,6 @@
     .special-actions{display:flex;gap:8px;flex-wrap:wrap}
     .special-actions button{flex:1;min-width:140px}
 
-
     /* Insurance + Counterattack */
 
     /* 12-HP secondary ability draft */
@@ -627,7 +619,6 @@
       .second-ability-card{min-height:108px}
       .setup-grid{grid-template-columns:1fr 1fr}
     }
-
 
     /* Gambling Man */
     #gamblingModal{
@@ -773,7 +764,6 @@
       100%{opacity:0;transform:translate(-50%,-52px) scale(.9)}
     }
 
-
     /* Elimination / round-win popups */
     #eventPopup{
       position:fixed;inset:0;z-index:10020;pointer-events:none;
@@ -824,8 +814,6 @@
       button{font-size:15px}
       .rotation-shell{min-height:0}
     }
-
-
 
     /* V25.2 – echte 3D-Würfel. Der Wrapper behält exakt seine Layout-Größe;
        nur der innere Cube rotiert im 3D-Raum. Dadurch kein Layout-Springen. */
@@ -1003,7 +991,6 @@
     }
     html.legacy-flat-dice body.fast-animations .die.rolling{animation-duration:.24s!important}
 
-
     /* Theme-Farben werden auf alle sechs Flächen übertragen. */
     .die.theme-classic{--die-bg:linear-gradient(145deg,#ffffff,#dfe4eb);--die-pip:#111827;--die-edge:#c9d0da;background:transparent!important}
     .die.theme-obsidian{--die-bg:linear-gradient(145deg,#303746,#090b10);--die-pip:#f7f8fb;--die-edge:#4b5568;background:transparent!important}
@@ -1040,18 +1027,16 @@
       .campaign-task-line strong{grid-column:2;text-align:left;white-space:normal;color:#dce6f5}
     }
 
-
     /* V26 – Campaign cards stay above the dice but become compact. */
     #game.campaign-game > .card:first-child .player{padding:8px 10px;min-height:0}
     #game.campaign-game > .card:first-child .players{gap:7px}
-    #game.campaign-game .player-name{font-size:16px}
+    
     #game.campaign-game .player .hp{margin-top:3px}
     #game.campaign-game .player .hp strong{font-size:20px}
     #game.campaign-game .player .ability-tag{margin-top:2px;font-size:10px}
     #game.trio-game > .card:first-child .player{padding:7px 9px}
     #game.trio-game .player-name{font-size:15px}
     #game.trio-game .player .hp strong{font-size:19px}
-
 
     /* V26.1 – kompakte Zug-Kopfzeile */
     .turn-head{display:flex;align-items:baseline;justify-content:space-between;gap:12px;min-width:0}
@@ -1074,7 +1059,6 @@
       .turn-total{font-size:19px}
       #game.campaign-game .player{padding:7px 8px}
     }
-
 
     /* V27.4.3 – Online roll smoothing.
        Remote previews keep spinning until the authoritative Firebase result arrives.

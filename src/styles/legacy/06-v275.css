@@ -35,5 +35,5 @@
 
 @media(prefers-reduced-motion:reduce){.attack-fx-beam,.attack-fx-lightning,.attack-fx-lightning polyline,.attack-fx-impact,.player.attack-source-flash{animation-duration:.01ms!important;animation-iteration-count:1!important}}
 /* GalaxyA50 compatibility mode keeps the new combat effect but drops the heaviest glow filter. */
-html.legacy-flat-dice .attack-fx-lightning{filter:none}
+
 html.legacy-flat-dice .attack-fx-beam{box-shadow:0 0 9px rgba(120,205,255,.75)}

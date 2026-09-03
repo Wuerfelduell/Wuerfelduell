@@ -102,7 +102,7 @@ button.blood{background:linear-gradient(160deg,#c44655,#8a2130);color:#fff7ef;bo
 button:disabled{opacity:.46;filter:saturate(.45)}
 
 /* Top bars */
-.screen-topbar{padding-bottom:9px;border-bottom:1px solid rgba(170,122,37,.25)}
+
 .screen-topbar button,.game-menu-btn,#masteryCloseBtn{
   background:linear-gradient(160deg,var(--v28-navy-2),var(--v28-navy));
   color:#f8e5a8;
@@ -174,14 +174,6 @@ button:disabled{opacity:.46;filter:saturate(.45)}
   border-radius:22px!important;
   box-shadow:0 24px 85px rgba(3,22,42,.42),0 0 0 3px rgba(255,242,202,.35),inset 0 0 0 1px #fff!important;
 }
-.utility-kicker,.round-overlay-kicker,.second-ability-kicker,.special-roll-kicker,.gambling-kicker{
-  color:var(--v28-gold-deep)!important;font-family:Georgia,"Times New Roman",serif;letter-spacing:.16em!important
-}
-.utility-text,.round-note,.second-ability-sub,.special-roll-sub,.gambling-sub{color:var(--v28-muted)!important}
-.campaign-mode-choice{
-  color:var(--v28-ink)!important;background:linear-gradient(180deg,#fffdf7,#eee1c8)!important;border:1px solid var(--v28-gold)!important;border-radius:15px!important;box-shadow:0 6px 14px rgba(90,65,23,.10)!important
-}
-.campaign-mode-choice strong{font-family:Georgia,"Times New Roman",serif;font-size:22px!important}.campaign-mode-choice span{color:var(--v28-muted)!important;font-size:12px!important}
 
 /* Campaign screens */
 .campaign-world-btn{
@@ -192,11 +184,10 @@ button:disabled{opacity:.46;filter:saturate(.45)}
 .campaign-world-btn.active .campaign-world-name,.campaign-world-btn.active .campaign-world-kicker{color:#fff1c3!important}
 .campaign-top .menu-info-card:nth-child(3){background:linear-gradient(160deg,#fff7dc,#efe1bf)!important}
 .campaign-start-row .good{background:linear-gradient(160deg,#367b5b,#245a45)}
-.campaign-node-map{background:linear-gradient(155deg,#10365c,#082744)!important;border:1px solid var(--v28-gold)!important;border-radius:18px;padding:12px!important}
+
 .campaign-node,.campaign-node-map button{border-color:rgba(215,173,82,.75)!important}
 .campaign-node-detail{border-radius:17px!important}
 .node-detail-row{border-color:rgba(156,111,31,.20)!important;background:rgba(255,255,255,.32)!important;color:var(--v28-ink)!important}
-.campaign-ability-chip{background:linear-gradient(160deg,#163a60,#0b2948);border-color:rgba(215,173,82,.55);color:#f8e8ba}
 
 /* Battle: deliberately darker than menus so dice & FX remain focal */
 body.playing{
@@ -217,7 +208,7 @@ body.playing .matchbar{color:#e9d9b1;border-bottom-color:rgba(215,173,82,.28)}
 body.playing .player{background:linear-gradient(155deg,#12375d,#0a2848);border-color:rgba(215,173,82,.55);color:#fff3d4}
 body.playing .player.active{outline-color:#67b5ff}
 body.playing .player-name,body.playing .hp strong,body.playing .turnline,body.playing .turn-total{color:#fff5db}
-body.playing .ability-tag{color:#f1ca66}
+
 body.playing .status{color:#b8c7d7}
 body.playing .ability-state{background:rgba(4,22,42,.62);border-color:rgba(215,173,82,.28);color:#b9c8d8}
 body.playing .ability-state strong{color:#f0c75e}
@@ -227,13 +218,10 @@ body.playing #primaryBtn{background:linear-gradient(160deg,#3c7fd0,#1f5598);colo
 body.playing .die{border-color:rgba(215,173,82,.48);box-shadow:inset 0 -4px 0 rgba(0,0,0,.13),0 7px 14px rgba(0,0,0,.20),0 0 0 1px rgba(255,239,194,.36)}
 
 /* Second ability cards */
-.second-ability-options{gap:12px!important}
+
 .second-ability-card{
   background:linear-gradient(160deg,#12385f,#082747)!important;color:#fff0c6!important;border:1px solid var(--v28-gold)!important;border-radius:16px!important;box-shadow:0 8px 18px rgba(11,41,71,.16)!important
 }
-.second-ability-card .num{background:linear-gradient(160deg,#f0cc6e,#c99935)!important;color:#102b4d!important;border:1px solid #8d641e}
-.second-ability-card .name{font-family:Georgia,"Times New Roman",serif;color:#fff4d5}
-.second-ability-card .desc{color:#d5e0e9!important}
 
 /* Round overlays */
 .round-score-row,.round-stat,.round-prep-player{background:linear-gradient(155deg,#12375d,#0b2847)!important;border-color:rgba(215,173,82,.55)!important;color:#fff1cd!important}
@@ -344,7 +332,7 @@ body.playing .die{border-color:rgba(215,173,82,.48);box-shadow:inset 0 -4px 0 rg
   color:#102f55!important;font-family:Georgia,"Times New Roman",serif;font-size:clamp(22px,6.3vw,31px)!important;font-weight:700!important;
   justify-content:center;text-align:center;text-shadow:0 1px 0 #fff;overflow:visible;
 }
-#mainMenu .menu-actions button.menu-play{min-height:clamp(72px,20vw,94px)}
+
 #mainMenu .menu-actions button.menu-play:active,
 #mainMenu .menu-actions button.menu-online:active,
 #mainMenu .menu-actions button.menu-campaign:active,

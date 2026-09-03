@@ -71,7 +71,6 @@ body.test-lab-active #dice.lab-hot-fire-5 .die{
   position:fixed;inset:0;z-index:9998;pointer-events:none;opacity:0;
   transition:opacity .18s ease
 }
-#testLabFireCanvas.active{opacity:1}
 
 @media(max-width:900px){
   .test-lab-bench-body{grid-template-columns:repeat(2,minmax(0,1fr))}

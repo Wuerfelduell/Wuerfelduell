@@ -311,30 +311,7 @@ html[data-v28-rework="2"] select.dd-native-select{
 .dd-select-option.selected .dd-option-check{opacity:1}
 
 /* ---------- Setup ---------- */
-html[data-v28-rework="2"] #setup .local-mode-card,
-html[data-v28-rework="2"] #setup .setup-player{
-  box-sizing:border-box;
-  color:var(--dd-ink)!important;
 
-  border-image-source:var(--dd-frame-card-small)!important;
-  border-image-slice:76 168 76 168 fill!important;
-  border-image-width:20px 34px!important;
-  border-image-repeat:stretch!important;
-  border-radius:0!important;
-  background:var(--dd-ivory)!important;
-  box-shadow:var(--dd-shadow-soft)!important;
-  padding:8px 4px 10px!important;
-}
-html[data-v28-rework="2"] #setup .local-mode-card label,
-html[data-v28-rework="2"] #setup .setup-player label{color:var(--dd-ink)!important}
-html[data-v28-rework="2"] #setup .local-mode-info,
-html[data-v28-rework="2"] #setup .setup-player .ability-desc{color:#5d6e82!important}
-html[data-v28-rework="2"] #setup .setup-dice-readonly{
-  min-height:48px;
-  display:flex;align-items:center;
-  background:linear-gradient(155deg,#123e71,#071f45)!important;
-  color:#fff2c8!important;border:1px solid rgba(215,166,61,.58)!important;
-}
 html[data-v28-rework="2"] #setup .ability-roll,
 html[data-v28-rework="2"] #setup .seat-box{
   min-height:52px;
@@ -401,11 +378,7 @@ html[data-v28-rework="2"] .campaign-node-detail.v28-boss-detail{
   color:#fff1de!important;
   box-shadow:0 16px 38px rgba(50,5,16,.22)!important;
 }
-html[data-v28-rework="2"] .campaign-node-detail.v28-boss-detail .node-detail-row{
-  color:#fff1de!important;
-  background:rgba(20,3,9,.24)!important;
-  border-color:rgba(242,190,92,.23)!important;
-}
+
 html[data-v28-rework="2"] .campaign-node-detail.v28-prestige-detail:not(.v28-boss-detail){
 
   border-image-source:var(--dd-frame-prestige)!important;
@@ -466,33 +439,6 @@ html[data-v28-rework="2"] .second-ability-panel>.second-ability-kicker{
   text-shadow:0 1px 3px rgba(2,17,41,.72)!important;
 }
 html[data-v28-rework="2"] .second-ability-title{margin-top:0!important}
-html[data-v28-rework="2"] .second-ability-options{gap:10px!important}
-html[data-v28-rework="2"] .second-ability-card{
-  min-height:148px!important;
-  display:grid!important;
-  grid-template-columns:52px 38px minmax(0,1fr)!important;
-  grid-template-rows:auto auto!important;
-  align-items:center!important;
-  column-gap:7px!important;row-gap:5px!important;
-  padding:20px 24px 16px 30px!important;
-
-  border-image-source:var(--dd-frame-ability-choice)!important;
-  border-image-slice:84 165 84 230 fill!important;
-  border-image-width:22px 34px 22px 48px!important;
-  border-image-repeat:stretch!important;
-  border-radius:0!important;
-  background:var(--dd-ivory)!important;
-  color:var(--dd-ink)!important;
-  box-shadow:none!important;
-}
-html[data-v28-rework="2"] .second-ability-card>.dd-ability-icon{grid-column:1;grid-row:1}
-html[data-v28-rework="2"] .second-ability-card>.num{grid-column:2;grid-row:1}
-html[data-v28-rework="2"] .second-ability-card>.name{grid-column:3;grid-row:1;color:var(--dd-ink)!important}
-html[data-v28-rework="2"] .second-ability-card>.desc{
-  grid-column:1/-1;grid-row:2;
-  margin:2px 0 0!important;padding:8px 10px!important;
-  color:#41546b!important;background:rgba(255,252,243,.78)!important;
-}
 
 /* ---------- Ability picker with the 24 real icons ---------- */
 html[data-v28-rework="2"] .v28-ability-picker-head{
@@ -522,9 +468,7 @@ html[data-v28-rework="2"] .v28-ability-option{
   color:var(--dd-ink)!important;
   box-shadow:none!important;
 }
-html[data-v28-rework="2"] .v28-ability-option.selected{
-  filter:drop-shadow(0 0 8px rgba(37,117,206,.28));
-}
+
 html[data-v28-rework="2"] .v28-icon{width:48px;height:48px;display:flex;align-items:center;justify-content:center}
 html[data-v28-rework="2"] .v28-icon img{width:48px;height:48px;object-fit:contain}
 html[data-v28-rework="2"] .v28-ability-trigger{

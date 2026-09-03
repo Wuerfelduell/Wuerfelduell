@@ -126,18 +126,7 @@ html[data-v28-rework="2"] .campaign-hub .campaign-top .menu-info-card:nth-child(
   font-size:12px!important;
   overflow-wrap:anywhere;
 }
-html[data-v28-rework="2"] #campaignStartBtn,
-html[data-v28-rework="2"] #duoCampaignStartBtn,
-html[data-v28-rework="2"] #trioCampaignStartBtn{
-  min-height:64px!important;
-  padding:13px 42px!important;
-  border:0!important;
-  border-radius:0!important;
-  color:#fff3d2!important;
-  background:var(--p2-navy-button) center/100% 100% no-repeat!important;
-  box-shadow:none!important;
-  text-shadow:0 1px 3px rgba(2,16,38,.68)!important;
-}
+
 html[data-v28-rework="2"] .campaign-hub .campaign-node-map{
   padding:17px 9px 19px!important;
 }
@@ -197,9 +186,7 @@ html[data-v28-rework="2"] .campaign-node-detail.v28-boss-detail .node-detail-sta
 }
 
 /* ---------- Setup ---------- */
-html[data-v28-rework="2"] #setup #setupBackBtn{
-  transform:translate(-5px,-2px)!important;
-}
+
 html[data-v28-rework="2"] #setup .local-mode-info{
   margin-top:6px!important;
   padding:0 5px 4px!important;

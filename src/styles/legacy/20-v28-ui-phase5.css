@@ -22,10 +22,6 @@ html[data-v28-rework="2"] #quitModal .utility-actions{
    24-v28-ui-phase9; das ::before wird in Phase 7 auf display:none gesetzt
    und in Phase 9 mit --p9-danger-button und inset:-4px -8px komplett neu
    aufgebaut. --p5-danger-button wurde damit nie gezeichnet. */
-html[data-v28-rework="2"] #quitConfirmBtn>.p5-button-label{
-  position:relative;
-  z-index:1;
-}
 
 /* ---------- Combat: remove obsolete match metadata ---------- */
 html[data-v28-rework="2"] body.playing #winTrackerLabel,
@@ -35,11 +31,6 @@ html[data-v28-rework="2"] body.playing #players .score-badge{
 }
 
 /* Keep the animated active-player artwork completely inside its card. */
-html[data-v28-rework="2"] body.playing #players .player.active::after{
-  inset:1px!important;
-  background-size:100% 100%!important;
-  clip-path:inset(0 round 2px);
-}
 
 /* ---------- Mastery: SVG sprites instead of text emoji ---------- */
 html[data-v28-rework="2"] .p5-mastery-title-icon,

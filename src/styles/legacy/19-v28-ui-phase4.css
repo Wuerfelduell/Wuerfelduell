@@ -59,10 +59,7 @@ html[data-v28-rework="2"] #setup #setupBackBtn{
 html[data-v28-rework="2"] .dd-select-panel{
   overflow:hidden!important;
 }
-html[data-v28-rework="2"] .dd-select-close{
-  top:-45px!important;
-  right:-6px!important;
-}
+
 html[data-v28-rework="2"] .dd-select-options{
   min-height:0!important;
   padding:2px 1px 0!important;
@@ -93,10 +90,7 @@ html[data-v28-rework="2"] #profilesScreen .profile-card{
 }
 
 /* ---------- Rules ---------- */
-html[data-v28-rework="2"] #rulesScreen .menu-info-card{
-  min-height:0!important;
-  padding:9px 12px 12px!important;
-}
+
 html[data-v28-rework="2"] #rulesScreen .menu-info-card>strong{
   min-height:34px;
   margin:0 0 4px!important;

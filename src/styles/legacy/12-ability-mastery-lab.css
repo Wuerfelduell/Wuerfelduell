@@ -177,8 +177,6 @@ body.ability-mastery-lab-open{overflow:hidden!important}
   display:grid;
   gap:68px;
 }
-.aml-branch-left{left:42px}
-.aml-branch-right{right:42px}
 
 .aml-node{
   position:relative;
@@ -458,7 +456,6 @@ body.ability-mastery-lab-open{overflow:hidden!important}
   }
 }
 
-
 /* =========================================================
    V27.8.7 — MOBILE FIT + BRANCH HEADINGS + INFO POPUP
    ========================================================= */
@@ -565,9 +562,7 @@ body.ability-mastery-lab-open{overflow:hidden!important}
   max-width:calc(100% - 62px)!important;
   padding:6px 8px!important;
 }
-.aml-node-tag strong{
-  font-size:13px!important;
-}
+
 .aml-node-tag span{
   font-size:7px!important;
 }

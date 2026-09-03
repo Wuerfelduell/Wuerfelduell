@@ -264,13 +264,7 @@ html[data-v28-rework="2"] .campaign-hub .campaign-node-map{
     linear-gradient(155deg,#0b3568,#051936)!important;
   box-shadow:inset 0 0 0 2px rgba(255,255,255,.035),0 9px 24px rgba(8,40,76,.13)!important;
 }
-html[data-v28-rework="2"] .campaign-hub .campaign-node{
-  width:min(61px,100%)!important;
-  border:2px solid rgba(212,164,64,.70)!important;
-  background:linear-gradient(155deg,#154a76,#082a51)!important;
-  color:#fff3ce!important;
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.10),0 6px 13px rgba(2,15,34,.26)!important;
-}
+
 html[data-v28-rework="2"] .campaign-hub .campaign-node.done{
   border-color:#6ccc91!important;
   background:linear-gradient(155deg,#23624a,#113a2f)!important;
@@ -407,9 +401,7 @@ html[data-v28-rework="2"] .campaign-node-detail.v28-prestige-detail:not(.v28-bos
 }
 
 /* ---------- Second ability: icon left, selection right ---------- */
-html[data-v28-rework="2"] .second-ability-options{
-  gap:13px!important;
-}
+
 html[data-v28-rework="2"] .second-ability-card{
   box-sizing:border-box!important;
   width:100%!important;
@@ -437,14 +429,7 @@ html[data-v28-rework="2"] .second-ability-card>.dd-ability-icon{
   width:56px!important;height:56px!important;
   margin:0!important;
 }
-html[data-v28-rework="2"] .second-ability-card>.num{
-  grid-column:2!important;grid-row:1!important;
-  width:40px!important;height:40px!important;
-  margin:0!important;
-  color:#fff4d3!important;
-  background:#0a2d5b!important;
-  border:1px solid #d3a642!important;
-}
+
 html[data-v28-rework="2"] .second-ability-card>.name{
   grid-column:3!important;grid-row:1!important;
   margin:0!important;
@@ -499,9 +484,7 @@ html[data-v28-rework="2"] #settingsScreen .dd-select-trigger{
 }
 
 /* ---------- Rules ---------- */
-html[data-v28-rework="2"] #rulesScreen .menu-list{
-  gap:12px!important;
-}
+
 html[data-v28-rework="2"] #rulesScreen .menu-info-card{
   box-sizing:border-box!important;
   min-height:118px!important;
@@ -582,20 +565,12 @@ html[data-v28-rework="2"] #achievementsScreen .achievement-desc{
   color:#e0e6ee!important;
   font-size:13px!important;
 }
-html[data-v28-rework="2"] #achievementsScreen .achievement-owners{
-  gap:6px!important;
-  margin-top:11px!important;
-}
+
 html[data-v28-rework="2"] #achievementsScreen .achievement-owner{
   padding:5px 9px!important;
   border-color:rgba(184,202,225,.22)!important;
   background:rgba(2,15,35,.55)!important;
   color:#a7b5c7!important;
-}
-html[data-v28-rework="2"] #achievementsScreen .achievement-owner.done{
-  color:#aef1c2!important;
-  border-color:rgba(77,209,125,.34)!important;
-  background:rgba(31,102,67,.24)!important;
 }
 
 /* ---------- Profiles ---------- */
@@ -754,9 +729,7 @@ html[data-v28-rework="2"] #setup .setup-dice-readonly{
   border-radius:13px!important;
   background:linear-gradient(155deg,#123e71,#071f45)!important;
 }
-html[data-v28-rework="2"] #setup .ability-roll{
-  margin-top:10px!important;
-}
+
 html[data-v28-rework="2"] #setup .controls{
   display:grid!important;
   grid-template-columns:1fr 1fr!important;
@@ -784,9 +757,7 @@ html[data-v28-rework="2"] body.playing .encounter-rule-banner{
   font-size:11px!important;
   line-height:1.25!important;
 }
-html[data-v28-rework="2"] body.playing #players{
-  gap:7px!important;
-}
+
 html[data-v28-rework="2"] body.playing #players .player{
   min-height:128px!important;
   padding:8px 5px 10px!important;

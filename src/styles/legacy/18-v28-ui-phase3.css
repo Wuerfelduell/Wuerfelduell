@@ -64,10 +64,7 @@ html[data-v28-rework="2"] #masteryCloseBtn{
 }
 
 /* ---------- Quit modal ---------- */
-html[data-v28-rework="2"] #quitModal .utility-kicker{
-  margin:-38px 0 39px!important;
-  transform:translateY(16px);
-}
+
 html[data-v28-rework="2"] #quitModal .utility-actions{
   gap:5px!important;
   align-items:stretch;
@@ -446,9 +443,7 @@ html[data-v28-rework="2"] body.playing #players .player.v28-boss-player{
   background:transparent!important;
   box-shadow:none!important;
 }
-html[data-v28-rework="2"] body.playing #players .player.active::after{
-  inset:-5px!important;
-}
+
 html[data-v28-rework="2"] body.playing .encounter-rule-banner{
   min-height:64px!important;
   margin:4px 0 10px!important;
@@ -479,10 +474,7 @@ html[data-v28-rework="2"] #profilesScreen .profile-card{
   background:transparent!important;
   box-shadow:0 10px 25px rgba(25,58,86,.12)!important;
 }
-html[data-v28-rework="2"] #profilesScreen .profile-card-top{
-  margin:-8px -8px 13px!important;
-  padding:14px 16px 13px!important;
-}
+
 html[data-v28-rework="2"] #profilesScreen .profile-actions .dd-select-trigger,
 html[data-v28-rework="2"] #profilesScreen .profile-name-edit{
   background:transparent!important;
