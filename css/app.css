@@ -1886,35 +1886,35 @@ body.test-lab-active.test-lab-dice3d #testLab3dDiceTray{
   font-size:12px;
   font-weight:1000}
 .campaign-mastery-btn{
-  min-width:0!important;
-  width:auto!important;
-  font-size:13px!important;
+  min-width:0;
+  width:auto;
+  font-size:13px;
   white-space:nowrap}
 
 /* V27.8.1 — real modal overlay, independent from page flow */
 #masteryModal{
-  position:fixed!important;
-  inset:0!important;
-  z-index:100000!important;
+  position:fixed;
+  inset:0;
+  z-index:100000;
   display:flex;
   align-items:center;
   justify-content:center;
   padding:12px;
   -webkit-backdrop-filter:blur(8px)}
 #masteryModal.hidden{
-  display:none!important}
+  display:none}
 #masteryModal .mastery-panel{
   position:relative;
-  margin:0!important;
-  max-height:calc(100dvh - 24px)!important;
-  overflow:auto!important;
+  margin:0;
+  max-height:calc(100dvh - 24px);
+  overflow:auto;
   overscroll-behavior:contain;
-  padding:16px!important;
+  padding:16px;
   border:1px solid rgba(255,255,255,.13);
   border-radius:20px;
   box-shadow:0 24px 80px rgba(0,0,0,.62)}
 body.mastery-open{
-  overflow:hidden!important}
+  overflow:hidden}
 
 @media(max-width:620px){
   .campaign-mastery-strip{
@@ -1926,13 +1926,13 @@ body.mastery-open{
   .campaign-mastery-xp strong{
     font-size:11px}
   .campaign-mastery-btn{
-    padding:7px 12px!important;
-    font-size:12px!important}
+    padding:7px 12px;
+    font-size:12px}
   #masteryModal{
     padding:8px;
     align-items:flex-end}
   #masteryModal .mastery-panel{
-    max-height:92dvh!important;
+    max-height:92dvh;
     border-radius:20px 20px 14px 14px}
 }
 
@@ -2046,9 +2046,9 @@ body.mastery-open{
   gap:4px;
   align-items:center;
   overflow:visible;
-  border:0!important;
-  box-shadow:none!important;
-  opacity:1!important;
+  border:0;
+  box-shadow:none;
+  opacity:1;
   transform:translateX(var(--shift));
   transition:transform .16s ease,filter .16s ease}
 .mastery-node:nth-child(even){--shift:20px}
@@ -2110,11 +2110,11 @@ body.mastery-open{
   width:42px;
   height:42px;
   border-radius:50%;
-  border:2px solid rgba(var(--branch-accent-2),.38)!important;
+  border:2px solid rgba(var(--branch-accent-2),.38);
   background:
     linear-gradient(145deg,rgba(255,255,255,.07),rgba(0,0,0,.22)),
-    rgba(15,18,28,.92)!important;
-  color:#d8deeb!important;
+    rgba(15,18,28,.92);
+  color:#d8deeb;
   font-size:15px;
   font-weight:1000;
   text-shadow:0 2px 4px rgba(0,0,0,.65);
@@ -2154,16 +2154,16 @@ body.mastery-open{
   border-bottom:1px solid rgba(255,255,255,.11)}
 
 .mastery-node-value{
-  color:#f5f7ff!important;
-  font-size:14px!important;
-  font-weight:1000!important;
+  color:#f5f7ff;
+  font-size:14px;
+  font-weight:1000;
   letter-spacing:.01em;
   text-shadow:0 1px 2px rgba(0,0,0,.7)}
 .mastery-node small{
-  color:#aeb8ca!important;
-  opacity:1!important;
-  font-size:9px!important;
-  font-weight:950!important;
+  color:#aeb8ca;
+  opacity:1;
+  font-size:9px;
+  font-weight:950;
   letter-spacing:.08em}
 
 /* OWNED: emerald core, but keeps branch identity around it */
@@ -2177,9 +2177,9 @@ body.mastery-open{
     inset 0 -8px 12px rgba(0,0,0,.42),
     0 0 17px rgba(76,220,137,.20)}
 .mastery-node.owned .mastery-node-dot{
-  color:#dffff0!important;
-  border-color:rgba(125,245,175,.78)!important;
-  background:rgba(35,127,79,.54)!important;
+  color:#dffff0;
+  border-color:rgba(125,245,175,.78);
+  background:rgba(35,127,79,.54);
   box-shadow:
     inset 2px 2px 5px rgba(255,255,255,.12),
     0 0 13px rgba(69,223,134,.28)}
@@ -2187,7 +2187,7 @@ body.mastery-open{
   border-color:rgba(86,224,145,.26);
   background:
     linear-gradient(180deg,rgba(31,73,54,.96),rgba(17,38,30,.98))}
-.mastery-node.owned small{color:#8ce8b4!important}
+.mastery-node.owned small{color:#8ce8b4}
 
 /* AVAILABLE: unmistakable purchase node */
 .mastery-node.available{
@@ -2203,8 +2203,8 @@ body.mastery-open{
     0 0 10px rgba(var(--branch-accent),.40),
     0 0 24px rgba(var(--branch-accent),.20)}
 .mastery-node.available .mastery-node-dot{
-  color:#fff!important;
-  border-color:rgba(var(--branch-accent-2),.95)!important;
+  color:#fff;
+  border-color:rgba(var(--branch-accent-2),.95);
   box-shadow:
     inset 2px 2px 5px rgba(255,255,255,.12),
     0 0 16px rgba(var(--branch-accent),.46)}
@@ -2217,8 +2217,8 @@ body.mastery-open{
     0 8px 16px rgba(0,0,0,.30),
     0 0 18px rgba(var(--branch-accent),.13)}
 .mastery-node.available small{
-  color:rgb(var(--branch-accent-2))!important;
-  font-size:10px!important}
+  color:rgb(var(--branch-accent-2));
+  font-size:10px}
 
 /* LOCKED: still readable. No more black-on-black mystery boxes. */
 .mastery-node.locked{
@@ -2226,16 +2226,16 @@ body.mastery-open{
 .mastery-node.locked .mastery-node-orb{
   opacity:.68}
 .mastery-node.locked .mastery-node-dot{
-  color:#8f98a9!important;
-  border-color:rgba(151,160,179,.22)!important}
+  color:#8f98a9;
+  border-color:rgba(151,160,179,.22)}
 .mastery-node.locked .mastery-node-plaque{
   opacity:.76;
   border-color:rgba(255,255,255,.075);
   background:linear-gradient(180deg,rgba(32,38,49,.92),rgba(14,18,27,.96))}
 .mastery-node.locked .mastery-node-value{
-  color:#c4cad6!important}
+  color:#c4cad6}
 .mastery-node.locked small{
-  color:#7f899a!important}
+  color:#7f899a}
 
 @keyframes masteryNodePulse{
   0%,100%{transform:translateY(0) scale(1)}
@@ -2285,7 +2285,7 @@ body.mastery-open{
     min-height:54px;
     padding:8px 10px 8px 12px}
   .mastery-node-value{
-    font-size:13px!important}
+    font-size:13px}
 }
 
 /* V27.9.0 Multi-Campaign Mastery + locked Ability Sheet */
@@ -2298,55 +2298,55 @@ body.mastery-open{
 .mastery-ability-pair{position:relative;padding:12px;border:1px solid rgba(255,255,255,.09);border-radius:18px}
 .mastery-ability-pair-head{display:grid;grid-template-columns:1fr auto 1fr;gap:8px;align-items:center;margin-bottom:8px;color:#e8edf8;font-size:11px}.mastery-ability-pair-head strong:last-child{text-align:right}.mastery-ability-pair-head span{color:#7e899b;font-size:8px}
 .mastery-ability-columns{display:grid;grid-template-columns:1fr 1fr;gap:8px}.mastery-ability-columns>div{display:grid;gap:7px}.mastery-ability-columns.single{grid-template-columns:1fr;max-width:320px;margin:auto}
-.mastery-ability-locked{position:relative!important;transform:none!important;width:100%!important;min-height:70px!important;grid-template-columns:58px minmax(0,1fr)!important;opacity:.72!important;filter:saturate(.55)}
-.mastery-ability-locked .aml-node-orbit{width:58px!important;height:58px!important;left:0!important}.mastery-ability-locked .aml-node-core{width:44px!important;height:44px!important;left:7px!important;top:7px!important}
-.mastery-ability-locked .aml-node-tag{left:52px!important;top:12px!important;min-width:0!important;max-width:calc(100% - 48px)!important}.mastery-ability-locked .aml-node-tag strong{font-size:9px!important}.mastery-ability-locked .aml-node-tag small{font-size:6px!important}
+.mastery-ability-locked{position:relative;transform:none;width:100%;min-height:70px;grid-template-columns:58px minmax(0,1fr);opacity:.72;filter:saturate(.55)}
+.mastery-ability-locked .aml-node-orbit{width:58px;height:58px;left:0}.mastery-ability-locked .aml-node-core{width:44px;height:44px;left:7px;top:7px}
+.mastery-ability-locked .aml-node-tag{left:52px;top:12px;min-width:0;max-width:calc(100% - 48px)}.mastery-ability-locked .aml-node-tag strong{font-size:9px}.mastery-ability-locked .aml-node-tag small{font-size:6px}
 .mastery-fusion-placeholder{display:flex;align-items:center;justify-content:center;gap:7px;width:min(270px,100%);margin:10px auto 0;padding:9px 12px}.mastery-fusion-placeholder strong{font-size:13px}.mastery-fusion-placeholder small{font-size:7px;color:#8d839a}
-.mastery-locked-info{position:absolute;inset:0;z-index:80;display:grid;place-items:center;padding:18px;background:rgba(2,5,10,.68);backdrop-filter:blur(6px)}.mastery-locked-info.hidden{display:none!important}.mastery-locked-card{position:relative;width:min(400px,100%);padding:18px;border:1px solid rgba(255,255,255,.13);border-radius:18px;background:linear-gradient(180deg,#1a2130,#0e141e);box-shadow:0 20px 60px rgba(0,0,0,.55)}.mastery-locked-card>button{position:absolute;right:10px;top:10px;width:34px;height:34px;min-width:34px;padding:0}.mastery-locked-card h3{margin:5px 38px 8px 0}.mastery-locked-cost{display:inline-block;padding:5px 8px;border-radius:999px;background:rgba(150,100,255,.1);font-size:10px}.mastery-locked-card p{font-size:11px;line-height:1.45;color:#c4ccda}.mastery-locked-card small{color:#788497}
+.mastery-locked-info{position:absolute;inset:0;z-index:80;display:grid;place-items:center;padding:18px;background:rgba(2,5,10,.68);backdrop-filter:blur(6px)}.mastery-locked-info.hidden{display:none}.mastery-locked-card{position:relative;width:min(400px,100%);padding:18px;border:1px solid rgba(255,255,255,.13);border-radius:18px;background:linear-gradient(180deg,#1a2130,#0e141e);box-shadow:0 20px 60px rgba(0,0,0,.55)}.mastery-locked-card>button{position:absolute;right:10px;top:10px;width:34px;height:34px;min-width:34px;padding:0}.mastery-locked-card h3{margin:5px 38px 8px 0}.mastery-locked-cost{display:inline-block;padding:5px 8px;border-radius:999px;background:rgba(150,100,255,.1);font-size:10px}.mastery-locked-card p{font-size:11px;line-height:1.45;color:#c4ccda}.mastery-locked-card small{color:#788497}
 @media(max-width:620px){.mastery-ability-columns{grid-template-columns:1fr}.mastery-ability-pair-head{font-size:10px}.mastery-mode-bar{align-items:flex-start;flex-direction:column}.mastery-profile-picker{width:100%}.mastery-profile-picker select{flex:1}}
 
 /* V27.9.2 — Ability L1 progression states */
-.mastery-ability-unlocked{opacity:1!important;filter:none!important;border-color:rgba(128,187,255,.28)!important}
-.mastery-ability-unlocked .aml-node-core{box-shadow:0 0 14px rgba(105,174,255,.18)!important}
-.mastery-ability-unlocked .aml-node-tag{border-color:rgba(128,187,255,.22)!important}
-.mastery-ability-unlocked .aml-node-tag small{color:#8fc4ff!important}
-.mastery-ability-pair .aml-node.available{cursor:pointer!important;opacity:1!important;filter:none!important}
-.mastery-ability-pair .aml-node.owned{opacity:1!important;filter:none!important}
+.mastery-ability-unlocked{opacity:1;filter:none;border-color:rgba(128,187,255,.28)}
+.mastery-ability-unlocked .aml-node-core{box-shadow:0 0 14px rgba(105,174,255,.18)}
+.mastery-ability-unlocked .aml-node-tag{border-color:rgba(128,187,255,.22)}
+.mastery-ability-unlocked .aml-node-tag small{color:#8fc4ff}
+.mastery-ability-pair .aml-node.available{cursor:pointer;opacity:1;filter:none}
+.mastery-ability-pair .aml-node.owned{opacity:1;filter:none}
 
 /* V27.9.4 — clickable unlocked nodes + safe purchase confirmation */
 .mastery-ability-sheet .aml-ability-node{
-  position:relative!important;
-  transform:none!important;
-  width:100%!important;
-  min-height:70px!important;
-  height:70px!important;
-  grid-template-columns:58px minmax(0,1fr)!important;
+  position:relative;
+  transform:none;
+  width:100%;
+  min-height:70px;
+  height:70px;
+  grid-template-columns:58px minmax(0,1fr);
   opacity:1;
-  cursor:pointer!important;
-  pointer-events:auto!important;
+  cursor:pointer;
+  pointer-events:auto;
   touch-action:manipulation}
 .mastery-ability-sheet .aml-ability-node .aml-node-orbit{
-  width:58px!important;
-  height:58px!important;
-  left:0!important;
-  top:5px!important}
+  width:58px;
+  height:58px;
+  left:0;
+  top:5px}
 .mastery-ability-sheet .aml-ability-node .aml-node-core{
-  width:44px!important;
-  height:44px!important;
-  left:7px!important;
-  top:12px!important}
+  width:44px;
+  height:44px;
+  left:7px;
+  top:12px}
 .mastery-ability-sheet .aml-ability-node .aml-node-tag{
-  left:52px!important;
-  top:12px!important;
-  min-width:0!important;
-  max-width:calc(100% - 48px)!important}
+  left:52px;
+  top:12px;
+  min-width:0;
+  max-width:calc(100% - 48px)}
 .mastery-ability-unlocked,
 .mastery-ability-sheet .aml-ability-node.available{
-  cursor:pointer!important;
-  pointer-events:auto!important}
+  cursor:pointer;
+  pointer-events:auto}
 .mastery-ability-unlocked:active,
 .mastery-ability-sheet .aml-ability-node.available:active{
-  transform:scale(.985)!important}
+  transform:scale(.985)}
 
 .mastery-purchase-confirm{
   position:absolute;
@@ -2358,7 +2358,7 @@ body.mastery-open{
   background:rgba(2,5,10,.74);
   backdrop-filter:blur(7px);
   -webkit-backdrop-filter:blur(7px)}
-.mastery-purchase-confirm.hidden{display:none!important}
+.mastery-purchase-confirm.hidden{display:none}
 .mastery-purchase-card{
   width:min(400px,100%);
   padding:18px;
@@ -2412,28 +2412,28 @@ body.mastery-open{
   grid-template-columns:minmax(0,1fr) minmax(0,1fr);
   gap:8px}
 .mastery-ability-node-row .aml-ability-node{
-  min-width:0!important}
+  min-width:0}
 .mastery-ability-node-row .aml-node-tag strong{
-  white-space:normal!important;
+  white-space:normal;
   line-height:1.08}
 .mastery-ability-node-row .aml-node-tag small{
-  white-space:normal!important;
+  white-space:normal;
   line-height:1.08}
 @media(max-width:420px){
   .mastery-ability-branch{padding:8px}
   .mastery-ability-node-row{gap:5px}
   .mastery-ability-sheet .aml-ability-node{
-    min-height:66px!important;
-    height:66px!important;
-    grid-template-columns:46px minmax(0,1fr)!important}
+    min-height:66px;
+    height:66px;
+    grid-template-columns:46px minmax(0,1fr)}
   .mastery-ability-sheet .aml-ability-node .aml-node-orbit{
-    width:48px!important;height:48px!important;top:8px!important}
+    width:48px;height:48px;top:8px}
   .mastery-ability-sheet .aml-ability-node .aml-node-core{
-    width:36px!important;height:36px!important;left:6px!important;top:14px!important}
+    width:36px;height:36px;left:6px;top:14px}
   .mastery-ability-sheet .aml-ability-node .aml-node-tag{
-    left:42px!important;top:10px!important;max-width:calc(100% - 39px)!important}
-  .mastery-ability-sheet .aml-ability-node .aml-node-tag strong{font-size:8px!important}
-  .mastery-ability-sheet .aml-ability-node .aml-node-tag small{font-size:6px!important}
+    left:42px;top:10px;max-width:calc(100% - 39px)}
+  .mastery-ability-sheet .aml-ability-node .aml-node-tag strong{font-size:8px}
+  .mastery-ability-sheet .aml-ability-node .aml-node-tag small{font-size:6px}
 }
 
 /* ===== 12-cloud-account.css ===== */
