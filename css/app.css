@@ -11112,23 +11112,23 @@ html[data-v28-rework="2"] .mastery-purchase-actions .mastery-purchase-buy{
 /* Every world tab carries its assigned painted frame as one complete image.
    The artwork is never sliced; active/locked state changes only its emphasis. */
 html[data-v28-rework="2"] .campaign-hub .campaign-world-tabs{
-  gap:10px!important;
-  padding:6px 4px 10px!important;
+  gap:10px;
+  padding:6px 4px 10px;
 }
 html[data-v28-rework="2"] .campaign-hub .campaign-world-btn,
 html[data-v28-rework="2"] .campaign-hub .campaign-world-btn.active{
-  position:relative!important;
-  isolation:isolate!important;
-  flex:0 0 120px!important;
-  width:120px!important;
-  min-height:133px!important;
-  display:flex!important;
-  flex-direction:column!important;
-  align-items:center!important;
-  justify-content:flex-start!important;
-  gap:1px!important;
-  overflow:visible!important;
-  box-sizing:border-box!important;
+  position:relative;
+  isolation:isolate;
+  flex:0 0 120px;
+  width:120px;
+  min-height:133px;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:flex-start;
+  gap:1px;
+  overflow:visible;
+  box-sizing:border-box;
   padding:7px 8px 9px!important;
   border:0!important;
   border-image:none!important;
@@ -11137,10 +11137,10 @@ html[data-v28-rework="2"] .campaign-hub .campaign-world-btn.active{
     radial-gradient(circle at 50% 28%,color-mix(in srgb,var(--world-glow) 88%,transparent),transparent 54%),
     linear-gradient(155deg,
       color-mix(in srgb,var(--world-surface) 92%,#203650 8%),
-      color-mix(in srgb,var(--world-surface) 78%,#07172b 22%))!important;
+      color-mix(in srgb,var(--world-surface) 78%,#07172b 22%));
   background-clip:padding-box!important;
-  box-shadow:none!important;
-  transform:none!important;
+  box-shadow:none;
+  transform:none;
 }
 html[data-v28-rework="2"] .campaign-hub .campaign-world-btn::before{
   content:""!important;
@@ -11148,13 +11148,13 @@ html[data-v28-rework="2"] .campaign-hub .campaign-world-btn::before{
   z-index:0!important;
   inset:0!important;
   background:var(--world-frame-rect,var(--p1-ivory-card)) center/100% 100% no-repeat!important;
-  filter:brightness(.92) drop-shadow(0 4px 5px color-mix(in srgb,var(--world-glow) 72%,transparent))!important;
-  opacity:1!important;
+  filter:brightness(.92) drop-shadow(0 4px 5px color-mix(in srgb,var(--world-glow) 72%,transparent));
+  opacity:1;
   pointer-events:none!important;
 }
 html[data-v28-rework="2"] .campaign-hub .campaign-world-btn.active::before{
-  filter:brightness(1.08) drop-shadow(0 8px 11px var(--world-glow))!important;
-  opacity:1!important;
+  filter:brightness(1.08) drop-shadow(0 8px 11px var(--world-glow));
+  opacity:1;
 }
 html[data-v28-rework="2"] .campaign-hub .campaign-world-btn.active{
   background:
@@ -11174,80 +11174,80 @@ html[data-v28-rework="2"] .campaign-hub .campaign-world-btn::after{
   bottom:4px!important;
 }
 html[data-v28-rework="2"] .campaign-hub .campaign-world-kicker{
-  display:none!important;
+  display:none;
 }
 html[data-v28-rework="2"] .campaign-hub .campaign-world-art{
-  position:relative!important;
+  position:relative;
   z-index:2!important;
-  display:block!important;
-  width:78px!important;
-  height:78px!important;
-  flex:0 0 78px!important;
-  margin:-1px auto -2px!important;
-  background-image:var(--world-frame-round),var(--world-emblem)!important;
-  background-position:center,center!important;
-  background-repeat:no-repeat,no-repeat!important;
-  background-size:100% 100%,72% 72%!important;
-  filter:saturate(1.04) drop-shadow(0 4px 5px rgba(2,17,39,.34))!important;
-  pointer-events:none!important;
+  display:block;
+  width:78px;
+  height:78px;
+  flex:0 0 78px;
+  margin:-1px auto -2px;
+  background-image:var(--world-frame-round),var(--world-emblem);
+  background-position:center,center;
+  background-repeat:no-repeat,no-repeat;
+  background-size:100% 100%,72% 72%;
+  filter:saturate(1.04) drop-shadow(0 4px 5px rgba(2,17,39,.34));
+  pointer-events:none;
 }
 html[data-v28-rework="2"] .campaign-hub .campaign-world-btn.active .campaign-world-art{
-  filter:saturate(1) opacity(1) drop-shadow(0 4px 6px rgba(2,17,39,.42))!important;
+  filter:saturate(1) opacity(1) drop-shadow(0 4px 6px rgba(2,17,39,.42));
 }
 html[data-v28-rework="2"] .campaign-hub .campaign-world-copy{
-  position:relative!important;
+  position:relative;
   z-index:3!important;
-  width:100%!important;
-  min-width:0!important;
-  display:flex!important;
-  flex-direction:column!important;
-  align-items:center!important;
-  justify-content:flex-start!important;
-  gap:1px!important;
+  width:100%;
+  min-width:0;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:flex-start;
+  gap:1px;
 }
 html[data-v28-rework="2"] .campaign-hub .campaign-world-name{
-  width:100%!important;
-  color:color-mix(in srgb,var(--world-secondary) 78%,#fff 22%)!important;
-  font-size:12px!important;
-  line-height:1.08!important;
-  text-align:center!important;
+  width:100%;
+  color:color-mix(in srgb,var(--world-secondary) 78%,#fff 22%);
+  font-size:12px;
+  line-height:1.08;
+  text-align:center;
 }
 html[data-v28-rework="2"] .campaign-hub .campaign-world-state{
-  min-height:23px!important;
-  color:color-mix(in srgb,var(--world-primary) 78%,#fff 22%)!important;
-  font-size:9px!important;
-  line-height:23px!important;
+  min-height:23px;
+  color:color-mix(in srgb,var(--world-primary) 78%,#fff 22%);
+  font-size:9px;
+  line-height:23px;
 }
 html[data-v28-rework="2"] .campaign-hub .campaign-world-btn.active .campaign-world-name,
 html[data-v28-rework="2"] .campaign-hub .campaign-world-btn.active .campaign-world-state,
 html[data-v28-rework="2"] .campaign-hub .campaign-world-btn.active .campaign-world-kicker{
-  color:#fff3d1!important;
+  color:#fff3d1;
 }
 html[data-v28-rework="2"] .campaign-hub .campaign-world-btn:disabled::before{
   filter:brightness(.84) drop-shadow(0 3px 4px color-mix(in srgb,var(--world-glow) 54%,transparent))!important;
   opacity:1!important;
 }
 html[data-v28-rework="2"] .campaign-hub .campaign-world-btn:disabled .campaign-world-art{
-  opacity:1!important;
-  filter:saturate(1) brightness(.9) drop-shadow(0 3px 4px rgba(2,17,39,.28))!important;
+  opacity:1;
+  filter:saturate(1) brightness(.9) drop-shadow(0 3px 4px rgba(2,17,39,.28));
 }
 html[data-v28-rework="2"] .campaign-hub .campaign-world-btn:disabled .campaign-world-state{
-  box-sizing:border-box!important;
-  min-width:29px!important;
-  min-height:21px!important;
-  height:21px!important;
-  display:inline-grid!important;
-  place-items:center!important;
-  margin-top:1px!important;
-  padding:0 6px!important;
-  overflow:hidden!important;
-  border:1px solid color-mix(in srgb,var(--world-secondary) 68%,transparent)!important;
-  border-radius:999px!important;
+  box-sizing:border-box;
+  min-width:29px;
+  min-height:21px;
+  height:21px;
+  display:inline-grid;
+  place-items:center;
+  margin-top:1px;
+  padding:0 6px;
+  overflow:hidden;
+  border:1px solid color-mix(in srgb,var(--world-secondary) 68%,transparent);
+  border-radius:999px;
   background:linear-gradient(155deg,color-mix(in srgb,var(--world-surface) 88%,#07172b 12%),#071426)!important;
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.16),0 2px 6px rgba(2,17,39,.28)!important;
-  color:transparent!important;
-  font-size:0!important;
-  line-height:1!important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.16),0 2px 6px rgba(2,17,39,.28);
+  color:transparent;
+  font-size:0;
+  line-height:1;
 }
 html[data-v28-rework="2"] .campaign-hub .campaign-world-btn:disabled .campaign-world-state::before{
   content:""!important;
@@ -11261,26 +11261,26 @@ html[data-v28-rework="2"] .campaign-hub .campaign-world-btn:disabled .campaign-w
 /* The painted frame remains whole. A 3:1 preferred aspect ratio keeps its
    centre gems and left-to-right colour ramp legible; content may add height. */
 html[data-v28-rework="2"] .campaign-hub .campaign-world-desc{
-  position:relative!important;
-  isolation:isolate!important;
-  box-sizing:border-box!important;
-  width:100%!important;
-  min-height:min-content!important;
-  height:auto!important;
-  aspect-ratio:3 / 1!important;
-  display:grid!important;
-  grid-template-columns:minmax(0,1fr)!important;
-  align-items:center!important;
-  gap:0!important;
-  margin:0 0 11px!important;
-  padding:clamp(15px,4vw,24px) clamp(28px,5.3vw,66px)!important;
-  overflow:clip!important;
-  border:0!important;
-  border-image:none!important;
-  border-radius:0!important;
-  background:transparent!important;
-  box-shadow:none!important;
-  color:#fff2d2!important;
+  position:relative;
+  isolation:isolate;
+  box-sizing:border-box;
+  width:100%;
+  min-height:min-content;
+  height:auto;
+  aspect-ratio:3 / 1;
+  display:grid;
+  grid-template-columns:minmax(0,1fr);
+  align-items:center;
+  gap:0;
+  margin:0 0 11px;
+  padding:clamp(15px,4vw,24px) clamp(28px,5.3vw,66px);
+  overflow:clip;
+  border:0;
+  border-image:none;
+  border-radius:0;
+  background:transparent;
+  box-shadow:none;
+  color:#fff2d2;
 }
 html[data-v28-rework="2"] .campaign-hub .campaign-world-desc::before,
 html[data-v28-rework="2"] .campaign-hub .campaign-node-detail[data-p4-detail-tone="boss"] .node-detail-head::before{
@@ -11307,301 +11307,301 @@ html[data-v28-rework="2"] .campaign-hub .campaign-node-detail[data-p4-detail-ton
    intact. */
 html[data-v28-rework="2"] .campaign-hub[data-world-theme="solo-rift"] .campaign-world-desc::after,
 html[data-v28-rework="2"] .campaign-hub[data-world-theme="solo-rift"] .campaign-node-detail[data-p4-detail-tone="boss"] .node-detail-head::after{
-  clip-path:polygon(0 0,62% 0,62% 8%,81% 8%,81% 0,100% 0,100% 100%,36% 100%,36% 92%,19% 92%,19% 100%,0 100%)!important;
+  clip-path:polygon(0 0,62% 0,62% 8%,81% 8%,81% 0,100% 0,100% 100%,36% 100%,36% 92%,19% 92%,19% 100%,0 100%);
 }
 html[data-v28-rework="2"] .campaign-hub .campaign-world-desc>*{
-  position:relative!important;
-  z-index:2!important;
+  position:relative;
+  z-index:2;
 }
 html[data-v28-rework="2"] .campaign-hub .campaign-world-banner-art{
-  display:none!important;
+  display:none;
 }
 html[data-v28-rework="2"] .campaign-hub .campaign-world-banner-copy{
-  min-width:0!important;
-  display:flex!important;
-  flex-direction:column!important;
-  gap:2px!important;
+  min-width:0;
+  display:flex;
+  flex-direction:column;
+  gap:2px;
 }
 html[data-v28-rework="2"] .campaign-hub .campaign-world-banner-kicker{
-  color:var(--world-secondary)!important;
-  font-size:clamp(8px,1.9vw,10px)!important;
-  font-weight:950!important;
-  letter-spacing:.065em!important;
-  line-height:1.2!important;
-  text-transform:uppercase!important;
-  white-space:normal!important;
+  color:var(--world-secondary);
+  font-size:clamp(8px,1.9vw,10px);
+  font-weight:950;
+  letter-spacing:.065em;
+  line-height:1.2;
+  text-transform:uppercase;
+  white-space:normal;
 }
 html[data-v28-rework="2"] .campaign-hub .campaign-world-banner-copy>strong{
-  overflow:hidden!important;
-  color:#fff5dc!important;
-  font:900 clamp(15px,3.8vw,19px)/1.05 Georgia,"Times New Roman",serif!important;
-  text-overflow:ellipsis!important;
-  white-space:nowrap!important;
-  text-shadow:0 1px 3px rgba(0,0,0,.65)!important;
+  overflow:hidden;
+  color:#fff5dc;
+  font:900 clamp(15px,3.8vw,19px)/1.05 Georgia,"Times New Roman",serif;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+  text-shadow:0 1px 3px rgba(0,0,0,.65);
 }
 html[data-v28-rework="2"] .campaign-hub .campaign-world-banner-desc{
-  display:block!important;
-  overflow:visible!important;
-  color:#e8edf5!important;
-  font-size:clamp(9px,2.15vw,11px)!important;
-  line-height:1.28!important;
-  white-space:normal!important;
-  -webkit-box-orient:initial!important;
-  -webkit-line-clamp:unset!important;
+  display:block;
+  overflow:visible;
+  color:#e8edf5;
+  font-size:clamp(9px,2.15vw,11px);
+  line-height:1.28;
+  white-space:normal;
+  -webkit-box-orient:initial;
+  -webkit-line-clamp:unset;
 }
 
 /* A tall boss detail cannot use the painted 3:1 world frame. Its outer edge is
    the generic tier-2 frame; only the naturally wide header carries world art. */
 html[data-v28-rework="2"] .campaign-hub .campaign-node-detail[data-p4-detail-tone="boss"],
 html[data-v28-rework="2"] .campaign-hub .campaign-node-detail[data-p4-detail-tone="boss"].v28-prestige-detail:not(.v28-boss-detail){
-  position:relative!important;
-  isolation:isolate!important;
-  box-sizing:border-box!important;
-  border-style:solid!important;
-  border-color:transparent!important;
-  border-width:13px 18px!important;
-  border-image-source:var(--p1-ivory-card)!important;
-  border-image-slice:76 168 76 168!important;
-  border-image-width:13px 18px!important;
-  border-image-outset:0!important;
-  border-image-repeat:stretch!important;
-  border-radius:0!important;
-  color:#f6eee0!important;
+  position:relative;
+  isolation:isolate;
+  box-sizing:border-box;
+  border-style:solid;
+  border-color:transparent;
+  border-width:13px 18px;
+  border-image-source:var(--p1-ivory-card);
+  border-image-slice:76 168 76 168;
+  border-image-width:13px 18px;
+  border-image-outset:0;
+  border-image-repeat:stretch;
+  border-radius:0;
+  color:#f6eee0;
   background:
     radial-gradient(circle at 50% 0%,var(--world-glow),transparent 48%) padding-box,
-    linear-gradient(160deg,color-mix(in srgb,var(--world-surface) 88%,#160713 12%),#07111f) padding-box!important;
-  background-clip:padding-box!important;
-  box-shadow:none!important;
-  filter:drop-shadow(0 12px 16px var(--world-glow))!important;
+    linear-gradient(160deg,color-mix(in srgb,var(--world-surface) 88%,#160713 12%),#07111f) padding-box;
+  background-clip:padding-box;
+  box-shadow:none;
+  filter:drop-shadow(0 12px 16px var(--world-glow));
 }
 html[data-v28-rework="2"] .campaign-hub .campaign-node-detail[data-p4-detail-tone="boss"] .node-detail-head{
-  position:relative!important;
-  isolation:isolate!important;
-  box-sizing:border-box!important;
-  width:100%!important;
-  min-height:0!important;
-  height:auto!important;
-  aspect-ratio:3 / 1!important;
-  display:grid!important;
-  grid-template-columns:minmax(0,1fr) auto!important;
-  align-items:center!important;
-  gap:clamp(7px,2vw,12px)!important;
-  margin:-3px -3px 11px!important;
-  padding:clamp(15px,4vw,23px) clamp(29px,9vw,48px)!important;
-  overflow:clip!important;
-  border:0!important;
-  border-image:none!important;
-  border-radius:0!important;
-  background:transparent!important;
-  box-shadow:none!important;
+  position:relative;
+  isolation:isolate;
+  box-sizing:border-box;
+  width:100%;
+  min-height:0;
+  height:auto;
+  aspect-ratio:3 / 1;
+  display:grid;
+  grid-template-columns:minmax(0,1fr) auto;
+  align-items:center;
+  gap:clamp(7px,2vw,12px);
+  margin:-3px -3px 11px;
+  padding:clamp(15px,4vw,23px) clamp(29px,9vw,48px);
+  overflow:clip;
+  border:0;
+  border-image:none;
+  border-radius:0;
+  background:transparent;
+  box-shadow:none;
 }
 html[data-v28-rework="2"] .campaign-hub .campaign-node-detail[data-p4-detail-tone="boss"] .node-detail-head>*{
-  position:relative!important;
-  z-index:2!important;
+  position:relative;
+  z-index:2;
 }
 html[data-v28-rework="2"] .campaign-hub .campaign-node-detail[data-p4-detail-tone="boss"] .node-detail-title{
-  overflow:visible!important;
-  color:#fff5dc!important;
-  line-height:1.08!important;
-  overflow-wrap:anywhere!important;
-  text-overflow:clip!important;
-  white-space:normal!important;
-  text-shadow:0 1px 3px rgba(0,0,0,.7)!important;
+  overflow:visible;
+  color:#fff5dc;
+  line-height:1.08;
+  overflow-wrap:anywhere;
+  text-overflow:clip;
+  white-space:normal;
+  text-shadow:0 1px 3px rgba(0,0,0,.7);
 }
 html[data-v28-rework="2"] .campaign-hub .campaign-node-detail[data-p4-detail-tone="boss"] .node-detail-sub{
-  color:var(--world-secondary)!important;
+  color:var(--world-secondary);
 }
 html[data-v28-rework="2"] .campaign-hub .campaign-node-detail[data-p4-detail-tone="boss"] .node-detail-state{
-  border-color:color-mix(in srgb,var(--world-secondary) 42%,transparent)!important;
-  background:color-mix(in srgb,var(--world-surface) 78%,transparent)!important;
+  border-color:color-mix(in srgb,var(--world-secondary) 42%,transparent);
+  background:color-mix(in srgb,var(--world-surface) 78%,transparent);
 }
 html[data-v28-rework="2"] .campaign-hub .node-detail-state[data-campaign-state]{
-  box-sizing:border-box!important;
-  width:32px!important;
-  min-width:32px!important;
-  height:32px!important;
-  min-height:32px!important;
-  display:inline-grid!important;
-  place-items:center!important;
-  padding:5px!important;
-  overflow:hidden!important;
-  border-radius:999px!important;
-  color:transparent!important;
-  font-size:0!important;
-  line-height:1!important;
+  box-sizing:border-box;
+  width:32px;
+  min-width:32px;
+  height:32px;
+  min-height:32px;
+  display:inline-grid;
+  place-items:center;
+  padding:5px;
+  overflow:hidden;
+  border-radius:999px;
+  color:transparent;
+  font-size:0;
+  line-height:1;
 }
 html[data-v28-rework="2"] .campaign-hub .node-detail-state[data-campaign-state]>img{
-  width:18px!important;
-  height:18px!important;
-  display:block!important;
-  margin:0!important;
-  object-fit:contain!important;
+  width:18px;
+  height:18px;
+  display:block;
+  margin:0;
+  object-fit:contain;
 }
 html[data-v28-rework="2"] .campaign-hub .campaign-node-detail[data-p4-detail-tone="boss"] .node-detail-desc,
 html[data-v28-rework="2"] .campaign-hub .campaign-node-detail[data-p4-detail-tone="boss"] .node-detail-row{
-  color:#edf1f7!important;
-  border-color:color-mix(in srgb,var(--world-primary) 28%,transparent)!important;
-  background:color-mix(in srgb,var(--world-surface) 52%,transparent)!important;
+  color:#edf1f7;
+  border-color:color-mix(in srgb,var(--world-primary) 28%,transparent);
+  background:color-mix(in srgb,var(--world-surface) 52%,transparent);
 }
 
 /* Boss Rush enemies use the assigned world's complete painted frame. The
    player side keeps its established combat frame unchanged. */
 html[data-v28-rework="2"] body.playing #game.boss-rush-game #players .player.boss-rush-world-enemy{
-  border:0!important;
-  border-image:none!important;
-  border-radius:16px!important;
-  padding:clamp(23px,7vw,31px) clamp(14px,4.5vw,19px) 60px!important;
+  border:0;
+  border-image:none;
+  border-radius:16px;
+  padding:clamp(23px,7vw,31px) clamp(14px,4.5vw,19px) 60px;
   background:
     radial-gradient(circle at 82% 25%,var(--world-glow),transparent 36%),
-    linear-gradient(155deg,color-mix(in srgb,var(--world-surface) 94%,#142b47 6%),#050f20 90%)!important;
-  box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--world-primary) 24%,transparent),0 8px 18px rgba(1,9,22,.42)!important;
-  filter:drop-shadow(0 7px 10px var(--world-glow))!important;
+    linear-gradient(155deg,color-mix(in srgb,var(--world-surface) 94%,#142b47 6%),#050f20 90%);
+  box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--world-primary) 24%,transparent),0 8px 18px rgba(1,9,22,.42);
+  filter:drop-shadow(0 7px 10px var(--world-glow));
 }
 html[data-v28-rework="2"] body.playing #game.boss-rush-game #players .player.boss-rush-world-enemy::after{
-  content:""!important;
-  position:absolute!important;
-  z-index:3!important;
-  inset:0!important;
-  background:var(--world-frame-rect,var(--p1-ivory-card)) center/100% 100% no-repeat!important;
-  filter:drop-shadow(0 4px 7px var(--world-glow))!important;
-  mix-blend-mode:normal!important;
-  opacity:1!important;
-  pointer-events:none!important;
+  content:"";
+  position:absolute;
+  z-index:3;
+  inset:0;
+  background:var(--world-frame-rect,var(--p1-ivory-card)) center/100% 100% no-repeat;
+  filter:drop-shadow(0 4px 7px var(--world-glow));
+  mix-blend-mode:normal;
+  opacity:1;
+  pointer-events:none;
 }
 html[data-v28-rework="2"] body.playing #game.boss-rush-game #players .player.boss-rush-world-enemy::before{
-  content:none!important;
-  display:none!important;
+  content:none;
+  display:none;
 }
 html[data-v28-rework="2"] body.playing #game.boss-rush-game #players .player.boss-rush-world-enemy>*{
-  position:relative!important;
-  z-index:2!important;
+  position:relative;
+  z-index:2;
 }
 html[data-v28-rework="2"] body.playing #game.boss-rush-game #players .player.boss-rush-world-enemy .player-name{
-  min-height:2.15em!important;
-  padding-right:0!important;
-  overflow:visible!important;
-  align-items:flex-start!important;
+  min-height:2.15em;
+  padding-right:0;
+  overflow:visible;
+  align-items:flex-start;
 }
 html[data-v28-rework="2"] body.playing #game.boss-rush-game #players .player.boss-rush-world-enemy .player-name-text{
-  display:block!important;
-  overflow:visible!important;
-  overflow-wrap:normal!important;
-  word-break:normal!important;
-  hyphens:none!important;
-  text-overflow:clip!important;
-  white-space:normal!important;
-  font-size:clamp(12px,3.3vw,15px)!important;
-  line-height:1.14!important;
+  display:block;
+  overflow:visible;
+  overflow-wrap:normal;
+  word-break:normal;
+  hyphens:none;
+  text-overflow:clip;
+  white-space:normal;
+  font-size:clamp(12px,3.3vw,15px);
+  line-height:1.14;
 }
 html[data-v28-rework="2"] body.playing #game.boss-rush-game #players .player.boss-rush-world-enemy .ability-tag{
-  color:var(--world-secondary)!important;
+  color:var(--world-secondary);
 }
 
 /* JS 37 replaces the run-on sentence with four explicit label/value cells. */
 html[data-v28-rework="2"] body.playing .boss-rush-live.boss-rush-status-items{
-  box-sizing:border-box!important;
-  width:100%!important;
-  display:grid!important;
-  grid-template-columns:repeat(4,minmax(0,1fr))!important;
-  gap:6px!important;
-  letter-spacing:normal!important;
+  box-sizing:border-box;
+  width:100%;
+  display:grid;
+  grid-template-columns:repeat(4,minmax(0,1fr));
+  gap:6px;
+  letter-spacing:normal;
 }
 html[data-v28-rework="2"] body.playing .boss-rush-live.boss-rush-status-items::before{
-  display:none!important;
+  display:none;
 }
 html[data-v28-rework="2"] body.playing .boss-rush-status-item{
-  min-width:0!important;
-  display:flex!important;
-  flex-direction:column!important;
-  align-items:flex-start!important;
-  gap:2px!important;
-  padding:6px 7px!important;
+  min-width:0;
+  display:flex;
+  flex-direction:column;
+  align-items:flex-start;
+  gap:2px;
+  padding:6px 7px;
   border:0!important;
-  border-radius:8px!important;
-  background:rgba(4,22,49,.58)!important;
+  border-radius:8px;
+  background:rgba(4,22,49,.58);
 }
 html[data-v28-rework="2"] body.playing .boss-rush-status-item>small{
-  color:#9fb3cd!important;
-  font-size:8px!important;
-  font-weight:900!important;
-  letter-spacing:.08em!important;
-  line-height:1!important;
-  text-transform:uppercase!important;
+  color:#9fb3cd;
+  font-size:8px;
+  font-weight:900;
+  letter-spacing:.08em;
+  line-height:1;
+  text-transform:uppercase;
 }
 html[data-v28-rework="2"] body.playing .boss-rush-status-item>b{
-  max-width:100%!important;
-  color:#ffe19a!important;
-  font-size:10px!important;
-  line-height:1.18!important;
-  overflow-wrap:anywhere!important;
-  white-space:normal!important;
+  max-width:100%;
+  color:#ffe19a;
+  font-size:10px;
+  line-height:1.18;
+  overflow-wrap:anywhere;
+  white-space:normal;
 }
 html[data-v28-rework="2"] body.playing .phase-live[data-boss-rush-legacy-phase]{
-  display:none!important;
+  display:none;
 }
 
 @media(max-width:540px){
   html[data-v28-rework="2"] .campaign-hub .campaign-world-btn,
   html[data-v28-rework="2"] .campaign-hub .campaign-world-btn.active{
-    flex-basis:112px!important;
-    width:112px!important;
-    min-height:124px!important;
+    flex-basis:112px;
+    width:112px;
+    min-height:124px;
     padding-inline:7px!important;
   }
   html[data-v28-rework="2"] .campaign-hub .campaign-world-art{
-    width:72px!important;
-    height:72px!important;
-    flex-basis:72px!important;
+    width:72px;
+    height:72px;
+    flex-basis:72px;
   }
   html[data-v28-rework="2"] .campaign-hub .campaign-world-desc{
-    width:calc(100% + 64px)!important;
-    min-height:100px!important;
-    grid-template-columns:minmax(0,1fr)!important;
-    gap:0!important;
-    margin:0 -32px 11px!important;
-    padding:8px 24px 12px!important;
+    width:calc(100% + 64px);
+    min-height:100px;
+    grid-template-columns:minmax(0,1fr);
+    gap:0;
+    margin:0 -32px 11px;
+    padding:8px 24px 12px;
   }
   html[data-v28-rework="2"] .campaign-hub .campaign-world-banner-kicker{
-    font-size:8px!important;
-    letter-spacing:.04em!important;
+    font-size:8px;
+    letter-spacing:.04em;
   }
   html[data-v28-rework="2"] .campaign-hub .campaign-world-banner-copy>strong{
-    font-size:14px!important;
+    font-size:14px;
   }
   html[data-v28-rework="2"] .campaign-hub .campaign-world-banner-desc{
-    font-size:9px!important;
-    line-height:1.2!important;
+    font-size:9px;
+    line-height:1.2;
   }
   html[data-v28-rework="2"] .campaign-hub .campaign-node-detail[data-p4-detail-tone="boss"],
   html[data-v28-rework="2"] .campaign-hub .campaign-node-detail[data-p4-detail-tone="boss"].v28-prestige-detail:not(.v28-boss-detail){
-    border-width:11px 15px!important;
-    border-image-width:11px 15px!important;
+    border-width:11px 15px;
+    border-image-width:11px 15px;
   }
   html[data-v28-rework="2"] .campaign-hub .campaign-node-detail[data-p4-detail-tone="boss"] .node-detail-head{
-    width:calc(100% + 24px)!important;
-    min-height:94px!important;
-    gap:6px!important;
-    margin:-3px -12px 11px!important;
-    padding:15px 27px!important;
+    width:calc(100% + 24px);
+    min-height:94px;
+    gap:6px;
+    margin:-3px -12px 11px;
+    padding:15px 27px;
   }
   html[data-v28-rework="2"] .campaign-hub .campaign-node-detail[data-p4-detail-tone="boss"] .node-detail-title{
-    font-size:clamp(15px,4.5vw,18px)!important;
+    font-size:clamp(15px,4.5vw,18px);
   }
   html[data-v28-rework="2"] body.playing .boss-rush-live.boss-rush-status-items{
-    grid-template-columns:repeat(2,minmax(0,1fr))!important;
-    gap:5px!important;
+    grid-template-columns:repeat(2,minmax(0,1fr));
+    gap:5px;
   }
 }
 
 @media(max-width:340px){
   html[data-v28-rework="2"] body.playing #game.boss-rush-game #players .player.boss-rush-world-enemy{
-    padding-inline:10px!important;
+    padding-inline:10px;
   }
 }
 
 @media(prefers-reduced-motion:reduce){
   html[data-v28-rework="2"] .campaign-hub .campaign-world-art,
   html[data-v28-rework="2"] .campaign-hub .campaign-world-banner-art{
-    transition:none!important;
+    transition:none;
   }
 }
