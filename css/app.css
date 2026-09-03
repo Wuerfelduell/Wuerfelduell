@@ -11297,7 +11297,7 @@ html[data-v28-rework="2"] .campaign-hub .campaign-world-desc{
   align-items:center!important;
   gap:clamp(7px,2vw,12px)!important;
   margin:0 0 11px!important;
-  padding:clamp(15px,4vw,24px) clamp(28px,7vw,44px)!important;
+  padding:clamp(15px,4vw,24px) clamp(28px,5.3vw,66px)!important;
   overflow:clip!important;
   border:0!important;
   border-image:none!important;
@@ -11592,7 +11592,7 @@ html[data-v28-rework="2"] body.playing .phase-live[data-boss-rush-legacy-phase]{
     grid-template-columns:46px minmax(0,1fr)!important;
     gap:5px!important;
     margin:0 -32px 11px!important;
-    padding:8px 20px 12px!important;
+    padding:8px 24px 12px!important;
   }
   html[data-v28-rework="2"] .campaign-hub .campaign-world-banner-art{
     width:46px!important;
