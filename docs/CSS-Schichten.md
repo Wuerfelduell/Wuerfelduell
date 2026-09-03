@@ -6,13 +6,20 @@ die **Schichten selbst** aber unangetastet gelassen. Dieses Dokument misst,
 was da liegt, damit das Zusammenlegen nicht auf Vermutungen aufsetzt.
 
 Stand: V28.11.2, 41 Dateien. Die Tabellen unten stammen von V28.7.3
-(37 Dateien) und sind als Momentaufnahme zu lesen. Aktuell: 12.892
-Zeilen, 14.071 Deklarationen, davon **2.711 (19 %) überschrieben**,
-4.787 `!important`.
+(37 Dateien) und sind als Momentaufnahme zu lesen.
 
-Der Anteil ist von 21 auf 19 Prozent gefallen, obwohl der Stapel
-gleichzeitig um eine Datei gewachsen ist — die Entfernungen aus den
-Schritten 2 und 3 haben mehr weggenommen, als neu dazugekommen ist.
+| | V28.7.3 | V28.9.4 | jetzt |
+|---|---|---|---|
+| Dateien | 37 | 40 | 41 |
+| Zeilen | 12.065 | 12.803 | **11.447** |
+| Deklarationen | 13.408 | 14.111 | **13.472** |
+| überschrieben | 2.745 (20 %) | 2.998 (21 %) | **2.087 (15 %)** |
+| `!important` | 4.269 | 4.680 | **4.597** |
+| `css/app.css` | — | 510 KB | **491 KB** |
+
+Bemerkenswert an der Spalte rechts: der Anteil toter Deklarationen ist
+von 21 auf 15 Prozent gefallen, obwohl der Stapel in derselben Zeit um
+eine weitere Datei gewachsen ist.
 
 ---
 
@@ -158,6 +165,7 @@ bearbeiteten Elements hätte das gezeigt, der Wertevergleich schon.
 | 1 · V28.7.3 | `#quitConfirmBtn`, Fassungen aus 13-bright-arcane, 15-ui-rework, 18-phase3, 20-phase5 | alle berechneten Eigenschaften von Knopf, `::before`, `::after` und Label bei 360/412/1280 px identisch |
 | 2 · V28.11.2 | die zehn Würfel-Themes in 02-battle, zeichengleich in 04-prestige-polish mit `!important` wiederholt — 30 tote Deklarationen | 143 Varianten aus `.special-big-die` und `.gambling-die` über 19 Eigenschaften, 3 Breiten, identisch |
 | 3 · V28.11.2 | 84 vollständig überdeckte Regeln in 19 Dateien, 238 tote Deklarationen, maschinell ermittelt | Vollabzug: 3.493 Knoten je Bildschirm samt `::before`/`::after`, 45 Eigenschaften, 3 Breiten — rund 472.000 Werte, identisch |
+| 4 · V28.11.2 | 509 einzeln überschriebene Deklarationen in 25 Dateien — Regeln, die selbst stehen bleiben | Vollabzug identisch; dazu Klammernprüfung aller 41 Dateien und eine Gegenprobe im Browser: er akzeptiert 2.697 statt 2.789 Regeln, die Differenz entspricht genau den Schritten 2 und 3 |
 
 ### Der Vollabzug
 
