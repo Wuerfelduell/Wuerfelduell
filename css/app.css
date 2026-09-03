@@ -382,7 +382,7 @@
     .matchbar-actions{display:flex;align-items:center;justify-content:flex-end;gap:7px;min-width:0}
     .game-menu-btn{min-width:auto;padding:5px 8px;border-radius:9px;background:#2a3240;color:var(--text);font-size:12px;box-shadow:none;border:1px solid var(--border)}
     .score-badge{display:inline-flex;align-items:center;gap:4px;margin-top:5px;padding:3px 7px;border-radius:999px;background:#10151e;border:1px solid var(--border);font-size:11px;color:var(--text)}
-    .round-prep-player{margin-top:9px;padding:10px;border:1px solid var(--border);background:#111722;border-radius:12px}
+    .round-prep-player{margin-top:9px;padding:10px 10px 10px 14px;border:1px solid var(--border);background:#111722;border-radius:12px}
     .round-prep-player strong{color:var(--gold)}
     .round-prep-player select{width:100%;margin-top:7px}
     .round-note{color:var(--muted);font-size:13px;line-height:1.4;margin-top:6px}
