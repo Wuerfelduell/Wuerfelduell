@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="de" data-v28-rework="2">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>DiceDuel Boss Rush QA</title>
+<link rel="stylesheet" href="css/app.css?qa=3b960f0">
+<style>
+  html,body{min-height:100%}
+  body.playing{display:block!important;margin:0!important;padding:24px!important;background:#101d32!important;color:#fff!important;font-family:Inter,system-ui,sans-serif!important}
+  .qa-title{margin:0 0 8px;font:900 24px/1.1 Georgia,serif;color:#fff3d1}
+  .qa-note{margin:0 0 20px;color:#bfd0e7;font-size:13px}
+  .qa-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px;max-width:1280px}
+  .qa-panel{padding:14px;border:1px solid rgba(160,200,255,.22);border-radius:16px;background:rgba(3,16,36,.72)}
+  .qa-panel h2{margin:0 0 4px;font-size:16px;color:#fff0bc}
+  .qa-panel p{min-height:36px;margin:0 0 10px;color:#9fb4ce;font-size:11px;line-height:1.35}
+  .qa-panel #game{display:block!important;width:100%!important;min-height:0!important;margin:0!important;padding:11px!important;border-radius:14px!important;background:rgba(1,10,24,.74)!important}
+  .qa-panel #players{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:8px!important}
+  .qa-panel .player.qa-hero{grid-column:1/-1}
+  .qa-panel .player{min-width:0}
+  .qa-stage{display:inline-block;margin-left:5px;padding:2px 7px;border-radius:999px;background:#172d4e;color:#dbeaff;font:800 10px/1.4 system-ui}
+  @media(max-width:900px){.qa-grid{grid-template-columns:1fr}.qa-panel p{min-height:0}}
+</style>
+</head>
+<body class="playing">
+<h1 class="qa-title">Duo Boss Rush · Gegnerrahmen</h1>
+<p class="qa-note">Identischer Spielerrahmen in allen Spalten; nur die Gegnerseite erhält die deterministische Weltstufe.</p>
+<div class="qa-grid">
+  <section class="qa-panel">
+    <h2>Vorher <span class="qa-stage">V28.11.1</span></h2>
+    <p>Jede Bossstufe benutzt denselben roten Bossrahmen.</p>
+    <div id="game" class="campaign-game boss-rush-game">
+      <div id="players" class="players">
+        <div class="player active qa-hero">
+          <div class="player-name"><span class="player-name-text">Seb · Spieler</span></div>
+          <div class="hp">❤️ <strong>20</strong> / 20</div>
+          <div class="ability-tag">⚡ Glückswurf</div>
+        </div>
+        <div class="player v28-boss-player">
+          <div class="player-name"><span class="player-name-text">Stufe 1 · Boss</span></div>
+          <div class="hp">❤️ <strong>34</strong> / 34</div>
+          <div class="ability-tag">⚡ Covenant</div>
+        </div>
+        <div class="player v28-boss-player">
+          <div class="player-name"><span class="player-name-text">Stufe 2 · Boss</span></div>
+          <div class="hp">❤️ <strong>38</strong> / 38</div>
+          <div class="ability-tag">⚡ Fracture</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="qa-panel">
+    <h2>Nachher <span class="qa-stage">Stufe 1 · Covenant</span></h2>
+    <p>Blauer Weltton, Weltglow und Covenant-Wappen; Spieler bleibt gleich.</p>
+    <div id="game" class="campaign-game boss-rush-game">
+      <div id="players" class="players">
+        <div class="player active qa-hero">
+          <div class="player-name"><span class="player-name-text">Seb · Spieler</span></div>
+          <div class="hp">❤️ <strong>20</strong> / 20</div>
+          <div class="ability-tag">⚡ Glückswurf</div>
+        </div>
+        <div class="player v28-boss-player boss-rush-world-enemy" style="--world-primary:#356fc4;--world-secondary:#e7c66e;--world-surface:#102e59;--world-glow:rgba(53,111,196,.29);--world-emblem:url('https://wuerfelduell.github.io/Wuerfelduell/assets/ui/v28/png/worlds/world-duo-covenant.webp?v=28.11.1');--world-frame-round:url('https://wuerfelduell.github.io/Wuerfelduell/assets/ui/v28/png/worlds/world-duo-covenant-frame.webp?v=28.11.1')">
+          <div class="player-name"><span class="player-name-text">Kartenwächter</span></div>
+          <div class="hp">❤️ <strong>34</strong> / 34</div>
+          <div class="ability-tag">⚡ Covenant</div>
+        </div>
+        <div class="player v28-boss-player boss-rush-world-enemy" style="--world-primary:#356fc4;--world-secondary:#e7c66e;--world-surface:#102e59;--world-glow:rgba(53,111,196,.29);--world-emblem:url('https://wuerfelduell.github.io/Wuerfelduell/assets/ui/v28/png/worlds/world-duo-covenant.webp?v=28.11.1');--world-frame-round:url('https://wuerfelduell.github.io/Wuerfelduell/assets/ui/v28/png/worlds/world-duo-covenant-frame.webp?v=28.11.1')">
+          <div class="player-name"><span class="player-name-text">Paktbrecher</span></div>
+          <div class="hp">❤️ <strong>30</strong> / 30</div>
+          <div class="ability-tag">⚡ Covenant</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="qa-panel">
+    <h2>Nachher <span class="qa-stage">Stufe 2 · Fracture</span></h2>
+    <p>Nächster Index, nächstes Weltmotiv; keine zufällige Auswahl.</p>
+    <div id="game" class="campaign-game boss-rush-game">
+      <div id="players" class="players">
+        <div class="player active qa-hero">
+          <div class="player-name"><span class="player-name-text">Seb · Spieler</span></div>
+          <div class="hp">❤️ <strong>20</strong> / 20</div>
+          <div class="ability-tag">⚡ Glückswurf</div>
+        </div>
+        <div class="player v28-boss-player boss-rush-world-enemy" style="--world-primary:#d16b37;--world-secondary:#ffd07c;--world-surface:#4a1e18;--world-glow:rgba(209,107,55,.30);--world-emblem:url('https://wuerfelduell.github.io/Wuerfelduell/assets/ui/v28/png/worlds/world-duo-fracture.webp?v=28.11.1');--world-frame-round:url('https://wuerfelduell.github.io/Wuerfelduell/assets/ui/v28/png/worlds/world-duo-fracture-frame.webp?v=28.11.1')">
+          <div class="player-name"><span class="player-name-text">Rissfürst</span></div>
+          <div class="hp">❤️ <strong>38</strong> / 38</div>
+          <div class="ability-tag">⚡ Fracture</div>
+        </div>
+        <div class="player v28-boss-player boss-rush-world-enemy" style="--world-primary:#d16b37;--world-secondary:#ffd07c;--world-surface:#4a1e18;--world-glow:rgba(209,107,55,.30);--world-emblem:url('https://wuerfelduell.github.io/Wuerfelduell/assets/ui/v28/png/worlds/world-duo-fracture.webp?v=28.11.1');--world-frame-round:url('https://wuerfelduell.github.io/Wuerfelduell/assets/ui/v28/png/worlds/world-duo-fracture-frame.webp?v=28.11.1')">
+          <div class="player-name"><span class="player-name-text">Splitterschlund</span></div>
+          <div class="hp">❤️ <strong>35</strong> / 35</div>
+          <div class="ability-tag">⚡ Fracture</div>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+</body>
+</html>
