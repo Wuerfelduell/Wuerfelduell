@@ -12,7 +12,9 @@
    wirklich benoetigten Gewinner bis zum Fixpunkt wieder als wichtig
    eingesetzt. Das erfasst auch Ketten aus mehreren !important mit
    demselben Selektor. Nur Markierungen ausserhalb dieses Fixpunkts sind
-   Entfernungskandidaten.
+   Entfernungskandidaten. Falls Dateigrenzen einen Abhaengigkeitszyklus
+   bilden, berechnet das Werkzeug zusaetzlich eine sichere Teilmenge je
+   Datei. Dadurch bleibt auch jeder einzelne Datei-Commit wirkungsgleich.
 
    Analysiert werden dieselben drei Breiten wie im Vollabzug sowie :hover,
    :focus und :active fuer dieselbe Menge bedienbarer Elemente wie im
@@ -403,11 +405,33 @@ function bestimmeFixpunkt(faelle) {
   return { behalten, gruende, runden: runde };
 }
 
-function gleicheWirkung(faelle, vorher, nachher) {
-  for (const fall of faelle) {
-    if (gewinner(fall.liste, vorher)?.wert !== gewinner(fall.liste, nachher)?.wert) return false;
+function sichereDateiDemotion(faelle, aktuellWichtig, kandidaten) {
+  const kandidatenSet = new Set(kandidaten);
+  const danach = new Set(aktuellWichtig);
+  for (const id of kandidaten) danach.delete(id);
+
+  let geaendert = true;
+  while (geaendert) {
+    geaendert = false;
+    for (const fall of faelle) {
+      const vorher = gewinner(fall.liste, aktuellWichtig);
+      const nachher = gewinner(fall.liste, danach);
+      if (vorher?.wert === nachher?.wert) continue;
+      if (!vorher?.kandidat || !kandidatenSet.has(vorher.kandidat)) {
+        throw new Error("Datei-Demotion aendert einen Fall ohne entfernten Gewinner.");
+      }
+      if (!danach.has(vorher.kandidat)) {
+        danach.add(vorher.kandidat);
+        geaendert = true;
+      }
+    }
   }
-  return true;
+
+  return {
+    danach,
+    entfernen: kandidaten.filter(id => !danach.has(id)),
+    zusaetzlichBehalten: kandidaten.filter(id => danach.has(id))
+  };
 }
 
 function planeDateiReihenfolge(faelle, dateien, endgueltigBehalten) {
@@ -428,16 +452,20 @@ function planeDateiReihenfolge(faelle, dateien, endgueltigBehalten) {
   while (offen.size) {
     const moeglich = [];
     for (const datei of offen) {
-      const danach = new Set(aktuellWichtig);
-      for (const id of proDatei.get(datei)) danach.delete(id);
-      if (gleicheWirkung(faelle, aktuellWichtig, danach)) {
-        moeglich.push({ datei, danach, anzahl: proDatei.get(datei).length });
-      }
+      const schritt = sichereDateiDemotion(faelle, aktuellWichtig, proDatei.get(datei));
+      if (schritt.entfernen.length) moeglich.push({ datei, ...schritt });
     }
     if (!moeglich.length) break;
-    moeglich.sort((a, b) => b.anzahl - a.anzahl || a.datei.localeCompare(b.datei));
+    moeglich.sort((a, b) =>
+      a.zusaetzlichBehalten.length - b.zusaetzlichBehalten.length ||
+      b.entfernen.length - a.entfernen.length ||
+      a.datei.localeCompare(b.datei));
     const schritt = moeglich[0];
-    reihenfolge.push({ datei: schritt.datei, entfernen: schritt.anzahl });
+    reihenfolge.push({
+      datei: schritt.datei,
+      entfernen: schritt.entfernen,
+      zusaetzlichBehalten: schritt.zusaetzlichBehalten
+    });
     offen.delete(schritt.datei);
     aktuellWichtig.clear();
     for (const id of schritt.danach) aktuellWichtig.add(id);
@@ -548,7 +576,11 @@ function anwenden(datei) {
     throw new Error(`${datei} wurde seit der Analyse geaendert. Bericht neu erzeugen.`);
   }
   let neu = text;
-  const kandidaten = [...eintrag.entfernbar].sort((a, b) => b.offset - a.offset);
+  if (!Array.isArray(eintrag.freigegeben)) {
+    throw new Error("Bericht enthaelt keine dateiweise Freigabe. Analyse neu ausfuehren.");
+  }
+  const kandidaten = [...eintrag.freigegeben].sort((a, b) => b.offset - a.offset);
+  if (!kandidaten.length) throw new Error(`${datei} hat im aktuellen Plan keine sichere Freigabe.`);
   for (const token of kandidaten) {
     if (neu.slice(token.offset, token.offset + 10).toLowerCase() !== "!important") {
       throw new Error(`${datei}:${token.zeile}:${token.spalte}: Token stimmt nicht mehr.`);
@@ -556,7 +588,7 @@ function anwenden(datei) {
     neu = neu.slice(0, token.offset) + neu.slice(token.offset + 10);
   }
   writeFileSync(pfad, neu);
-  console.log(`${datei}: ${kandidaten.length} !important entfernt; ${eintrag.behalten.length} behalten.`);
+  console.log(`${datei}: ${kandidaten.length} !important entfernt; ${eintrag.vorher - kandidaten.length} behalten.`);
 }
 
 const anwendenIndex = process.argv.indexOf("--anwenden");
@@ -576,6 +608,7 @@ const starts = zeilenStarts(bundle);
 const segmente = bundleAbbildung(bundle, dateien);
 const analyse = await browserAnalyse(bundle, starts, segmente, dateien);
 const dateiPlan = planeDateiReihenfolge(analyse.faelleListe, dateien, analyse.behalten);
+const freigaben = new Map(dateiPlan.reihenfolge.map(s => [s.datei, new Set(s.entfernen)]));
 
 const bericht = {
   erzeugt: new Date().toISOString(),
@@ -605,7 +638,9 @@ for (const [datei, quelle] of Object.entries(dateien)) {
     sha256: quelle.sha256,
     vorher: quelle.tokens.length,
     entfernbar,
-    behalten
+    behalten,
+    freigegeben: entfernbar.filter(token =>
+      freigaben.get(datei)?.has(kandidatSchluessel(datei, token.offset)))
   };
   gesamt += quelle.tokens.length;
   entfernbarGesamt += entfernbar.length;
@@ -622,6 +657,9 @@ for (const [datei, eintrag] of Object.entries(bericht.dateien)) {
 }
 console.log(`${"GESAMT".padEnd(42)}${String(gesamt).padStart(7)}${String(entfernbarGesamt).padStart(12)}${String(behaltenGesamt).padStart(10)}`);
 console.log("\nSichere dateiweise Reihenfolge:");
-dateiPlan.reihenfolge.forEach((s, i) => console.log(`${String(i + 1).padStart(2)}. ${s.datei} (${s.entfernen})`));
+dateiPlan.reihenfolge.forEach((s, i) => console.log(
+  `${String(i + 1).padStart(2)}. ${s.datei} (${s.entfernen.length} entfernen, ` +
+  `${s.zusaetzlichBehalten.length} zyklisch behalten)`
+));
 if (dateiPlan.blockiert.length) console.log(`Blockiert: ${dateiPlan.blockiert.join(", ")}`);
 console.log(`Bericht: ${path.relative(wurzel, berichtPfad)}`);
