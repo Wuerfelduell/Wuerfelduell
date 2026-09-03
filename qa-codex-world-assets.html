@@ -31,13 +31,14 @@
       return [`--world-primary:${primary}`,`--world-secondary:${secondary}`,`--world-surface:${surface}`,`--world-glow:${glow}`,`--world-emblem:url(${path}.webp?v=28.11.4)`,`--world-frame-round:url(${path}-frame.webp?v=28.11.4)`,`--world-frame-rect:url(${path}-frame-rect.webp?v=28.11.4)`].join(";");
     }
     function fixture(){
+      const cacheBust=Date.now();
       return `<!doctype html>
 <html lang="de" data-v28-rework="2">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <base href="${ROOT}">
-  <link rel="stylesheet" href="${ROOT}css/app.css?qa=2043b69">
+  <link rel="stylesheet" href="${ROOT}css/app.css?qa=${cacheBust}">
   <style>
     body{margin:0!important;padding:9px!important;background:#dce8f4!important;overflow-x:hidden!important;overflow-y:auto!important;font-family:system-ui,sans-serif!important}
     .qa-label{margin:12px 0 5px;color:#17365b;font-size:11px;font-weight:950;letter-spacing:.07em;text-transform:uppercase}
