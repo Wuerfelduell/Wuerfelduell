@@ -67,13 +67,22 @@ if (!worldRootMatch) {
     [...worldThemeText.matchAll(/["'](world-(?:solo|duo|trio)-[^"']+)\.png["']/g)]
       .map((match) => match[1])
   );
+  const frameInsetBlock = worldThemeText.match(/const FRAME_INSETS=Object\.freeze\(\{([\s\S]*?)\}\);/);
   const fittedFrameStems = new Set(
-    [...worldThemeText.matchAll(/["'](world-(?:solo|duo|trio)-[^"']+)["']\s*:\s*["'](?:\d+(?:\.\d+)?%\s+){3}\d+(?:\.\d+)?%["']/g)]
+    [...(frameInsetBlock?.[1] || "").matchAll(/["'](world-(?:solo|duo|trio)-[^"']+)["']\s*:\s*["'](?:\d+(?:\.\d+)?%\s+){3}\d+(?:\.\d+)?%["']/g)]
+      .map((match) => match[1])
+  );
+  const fillInsetBlock = worldThemeText.match(/const FRAME_FILL_INSETS=Object\.freeze\(\{([\s\S]*?)\}\);/);
+  const filledFrameStems = new Set(
+    [...(fillInsetBlock?.[1] || "").matchAll(/["'](world-(?:solo|duo|trio)-[^"']+)["']\s*:\s*["'](?:\d+(?:\.\d+)?%\s+){3}\d+(?:\.\d+)?%["']/g)]
       .map((match) => match[1])
   );
   if (!worldStems.size) errors.push("campaign world theme list is empty");
+  if (!css.includes("--world-frame-fill-inset")) errors.push("campaign world colour fill inset is not consumed by CSS");
+  if (!css.includes("border-image-source:var(--world-frame-rect)")) errors.push("campaign boss detail does not consume the world frame as a border");
   for (const stem of worldStems) {
     if (!fittedFrameStems.has(stem)) errors.push(`campaign world frame has no fitted inner opening: ${stem}`);
+    if (!filledFrameStems.has(stem)) errors.push(`campaign world frame has no fitted colour fill: ${stem}`);
     for (const suffix of [".webp", "-frame.webp", "-frame-rect.webp"]) {
       const file = path.join(worldRoot, `${stem}${suffix}`);
       if (!(await stat(file).then(() => true).catch(() => false))) {

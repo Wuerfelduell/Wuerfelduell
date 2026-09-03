@@ -1,4 +1,4 @@
-/* DiceDuel V28.10.4 — fitted world frames for tabs, counters and boss cards. */
+/* DiceDuel V28.11.1 — fitted world fills and full boss-detail frames. */
 html[data-v28-rework="2"] .campaign-hub .campaign-world-tabs{
   gap:10px!important;
   padding:6px 4px 10px!important;
@@ -129,8 +129,8 @@ html[data-v28-rework="2"] .campaign-hub .campaign-node-detail[data-p4-detail-ton
   content:""!important;
   position:absolute!important;
   z-index:0!important;
-  inset:var(--world-frame-inset,23% 9% 27% 9%)!important;
-  border-radius:clamp(7px,2vw,14px)!important;
+  inset:var(--world-frame-fill-inset,var(--world-frame-inset,23% 7% 27% 7%))!important;
+  border-radius:clamp(10px,3vw,16px)!important;
   pointer-events:none!important;
 }
 html[data-v28-rework="2"] .campaign-hub .campaign-world-desc::after,
@@ -198,12 +198,25 @@ html[data-v28-rework="2"] .campaign-hub .campaign-world-banner-desc{
 /* Boss cards inherit the active world's complete palette and measured frame. */
 html[data-v28-rework="2"] .campaign-hub .campaign-node-detail[data-p4-detail-tone="boss"],
 html[data-v28-rework="2"] .campaign-hub .campaign-node-detail[data-p4-detail-tone="boss"].v28-prestige-detail:not(.v28-boss-detail){
-  border-color:color-mix(in srgb,var(--world-primary) 58%,transparent)!important;
+  position:relative!important;
+  isolation:isolate!important;
+  box-sizing:border-box!important;
+  border-style:solid!important;
+  border-color:transparent!important;
+  border-width:16px 12px 18px!important;
+  border-image-source:var(--world-frame-rect)!important;
+  border-image-slice:var(--world-frame-inset,23% 9% 27% 9%)!important;
+  border-image-width:16px 12px 18px!important;
+  border-image-outset:0!important;
+  border-image-repeat:stretch!important;
+  border-radius:0!important;
   color:#f6eee0!important;
   background:
-    radial-gradient(circle at 50% 0%,var(--world-glow),transparent 48%),
-    linear-gradient(160deg,color-mix(in srgb,var(--world-surface) 88%,#160713 12%),#07111f)!important;
-  box-shadow:0 14px 30px var(--world-glow)!important;
+    radial-gradient(circle at 50% 0%,var(--world-glow),transparent 48%) padding-box,
+    linear-gradient(160deg,color-mix(in srgb,var(--world-surface) 88%,#160713 12%),#07111f) padding-box!important;
+  background-clip:padding-box!important;
+  box-shadow:none!important;
+  filter:drop-shadow(0 12px 16px var(--world-glow))!important;
 }
 html[data-v28-rework="2"] .campaign-hub .campaign-node-detail[data-p4-detail-tone="boss"] .node-detail-head{
   position:relative!important;
@@ -273,6 +286,11 @@ html[data-v28-rework="2"] .campaign-hub .campaign-node-detail[data-p4-detail-ton
     min-height:94px!important;
     padding-block:18px!important;
     padding-inline:max(31px,10%)!important;
+  }
+  html[data-v28-rework="2"] .campaign-hub .campaign-node-detail[data-p4-detail-tone="boss"],
+  html[data-v28-rework="2"] .campaign-hub .campaign-node-detail[data-p4-detail-tone="boss"].v28-prestige-detail:not(.v28-boss-detail){
+    border-width:14px 10px 16px!important;
+    border-image-width:14px 10px 16px!important;
   }
 }
 
