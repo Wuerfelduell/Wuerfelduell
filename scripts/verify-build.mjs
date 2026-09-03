@@ -40,6 +40,47 @@ for (const match of html.matchAll(/(?:src|href)="([^"#?]+)\?v=([^"&#]+)[^"]*"/g)
 // release-blockierend; das CSS-Bundle selbst muss exakt die App-Version tragen.
 for (const match of css.matchAll(/url\([^)]*\?v=((?:28\.7|28\.8)\.[0-9]+)/g)) errors.push(`stale V28.7/V28.8 CSS asset query: ${match[1]}`);
 
+// Changelog. Bis V28.7.3 wurde eine Version mit einem globalen sed über
+// index.html hochgezogen; das benannte auch die Überschrift des neuesten
+// Eintrags um, sodass derselbe Eintrag zweimal weiterwanderte und die
+// Notizen zu 28.7.1 und 28.7.2 verschwanden. Seither zieht
+// scripts/bump-version.mjs nur benannte Stellen hoch — diese Prüfung
+// stellt sicher, dass es dabei bleibt.
+const changelogVersions = [...html.matchAll(/class="changelog-version">V([\d.]+)</g)].map((m) => m[1]);
+if (!changelogVersions.length) {
+  errors.push("index.html has no changelog entries");
+} else {
+  if (changelogVersions[0] !== version) {
+    errors.push(`newest changelog entry is V${changelogVersions[0]}, but version.json says ${version}`);
+  }
+  const teile = (v) => v.split(".").map(Number);
+  const juenger = (a, b) => {
+    const A = teile(a), B = teile(b);
+    for (let i = 0; i < Math.max(A.length, B.length); i++) {
+      const d = (A[i] || 0) - (B[i] || 0);
+      if (d) return d;
+    }
+    return 0;
+  };
+  for (let i = 1; i < changelogVersions.length; i++) {
+    if (juenger(changelogVersions[i - 1], changelogVersions[i]) < 0) {
+      errors.push(`changelog is out of order: V${changelogVersions[i - 1]} listed above V${changelogVersions[i]}`);
+    }
+  }
+  // Doppelte Etiketten nur ab V28 blockieren. Darunter liegen rund 40
+  // Alteinträge aus der Zeit vor der Versionsdisziplin; sie sind
+  // inhaltlich verschieden, lassen sich aber nicht mehr zuverlässig
+  // einzelnen Releases zuordnen und werden deshalb nicht angefasst.
+  const gesehen = new Map();
+  for (const v of changelogVersions) {
+    if (teile(v)[0] < 28) continue;
+    gesehen.set(v, (gesehen.get(v) || 0) + 1);
+  }
+  for (const [v, anzahl] of gesehen) {
+    if (anzahl > 1) errors.push(`changelog lists V${v} ${anzahl} times`);
+  }
+}
+
 const localRefs = [...html.matchAll(/(?:src|href)="([^"#?]+)(?:[?#][^"]*)?"/g)]
   .map((match) => match[1])
   .filter((ref) => !/^(?:https?:|data:|mailto:|tel:)/.test(ref));
