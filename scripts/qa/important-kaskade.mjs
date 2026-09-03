@@ -403,6 +403,48 @@ function bestimmeFixpunkt(faelle) {
   return { behalten, gruende, runden: runde };
 }
 
+function gleicheWirkung(faelle, vorher, nachher) {
+  for (const fall of faelle) {
+    if (gewinner(fall.liste, vorher)?.wert !== gewinner(fall.liste, nachher)?.wert) return false;
+  }
+  return true;
+}
+
+function planeDateiReihenfolge(faelle, dateien, endgueltigBehalten) {
+  const aktuellWichtig = new Set();
+  const proDatei = new Map();
+  for (const [datei, quelle] of Object.entries(dateien)) {
+    const entfernen = [];
+    for (const token of quelle.tokens) {
+      const id = kandidatSchluessel(datei, token.offset);
+      aktuellWichtig.add(id);
+      if (!endgueltigBehalten.has(id)) entfernen.push(id);
+    }
+    if (entfernen.length) proDatei.set(datei, entfernen);
+  }
+
+  const offen = new Set(proDatei.keys());
+  const reihenfolge = [];
+  while (offen.size) {
+    const moeglich = [];
+    for (const datei of offen) {
+      const danach = new Set(aktuellWichtig);
+      for (const id of proDatei.get(datei)) danach.delete(id);
+      if (gleicheWirkung(faelle, aktuellWichtig, danach)) {
+        moeglich.push({ datei, danach, anzahl: proDatei.get(datei).length });
+      }
+    }
+    if (!moeglich.length) break;
+    moeglich.sort((a, b) => b.anzahl - a.anzahl || a.datei.localeCompare(b.datei));
+    const schritt = moeglich[0];
+    reihenfolge.push({ datei: schritt.datei, entfernen: schritt.anzahl });
+    offen.delete(schritt.datei);
+    aktuellWichtig.clear();
+    for (const id of schritt.danach) aktuellWichtig.add(id);
+  }
+  return { reihenfolge, blockiert: [...offen] };
+}
+
 async function analysiereNode(cdp, nodeId, hilfen) {
   const matched = await cdp.send("CSS.getMatchedStylesForNode", { nodeId });
   const keyframeStyles = (matched.cssKeyframesRules || []).flatMap(regel =>
@@ -492,7 +534,7 @@ async function browserAnalyse(bundle, starts, segmente, dateien) {
   }
   await browser.close();
   const fixpunkt = bestimmeFixpunkt(faelle);
-  return { gesehen, ...fixpunkt, elemente, zustaende, faelle: faelle.length };
+  return { gesehen, ...fixpunkt, elemente, zustaende, faelle: faelle.length, faelleListe: faelle };
 }
 
 function anwenden(datei) {
@@ -533,6 +575,7 @@ const bundle = readFileSync(bundlePfad, "utf8");
 const starts = zeilenStarts(bundle);
 const segmente = bundleAbbildung(bundle, dateien);
 const analyse = await browserAnalyse(bundle, starts, segmente, dateien);
+const dateiPlan = planeDateiReihenfolge(analyse.faelleListe, dateien, analyse.behalten);
 
 const bericht = {
   erzeugt: new Date().toISOString(),
@@ -544,6 +587,8 @@ const bericht = {
   interaktionsKontexte: analyse.zustaende,
   kaskadenFaelle: analyse.faelle,
   fixpunktRunden: analyse.runden,
+  dateiReihenfolge: dateiPlan.reihenfolge,
+  blockierteDateien: dateiPlan.blockiert,
   dateien: {}
 };
 
@@ -576,4 +621,7 @@ for (const [datei, eintrag] of Object.entries(bericht.dateien)) {
   console.log(`${datei.padEnd(42)}${String(eintrag.vorher).padStart(7)}${String(eintrag.entfernbar.length).padStart(12)}${String(eintrag.behalten.length).padStart(10)}`);
 }
 console.log(`${"GESAMT".padEnd(42)}${String(gesamt).padStart(7)}${String(entfernbarGesamt).padStart(12)}${String(behaltenGesamt).padStart(10)}`);
+console.log("\nSichere dateiweise Reihenfolge:");
+dateiPlan.reihenfolge.forEach((s, i) => console.log(`${String(i + 1).padStart(2)}. ${s.datei} (${s.entfernen})`));
+if (dateiPlan.blockiert.length) console.log(`Blockiert: ${dateiPlan.blockiert.join(", ")}`);
 console.log(`Bericht: ${path.relative(wurzel, berichtPfad)}`);
