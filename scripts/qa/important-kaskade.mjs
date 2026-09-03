@@ -250,6 +250,36 @@ function hatLogischenKonflikt(name, alleNamen) {
     n !== name && istLogisch(n) && logischeFamilie(n) === familie));
 }
 
+function kurzformFamilie(name) {
+  if (/^background(?:-|$)/.test(name)) return "background";
+  if (/^border(?:-|$)/.test(name)) return "border";
+  if (/^padding(?:-|$)/.test(name)) return "padding";
+  if (/^margin(?:-|$)/.test(name)) return "margin";
+  if (/^(?:top|right|bottom|left|inset)(?:-|$)/.test(name)) return "inset";
+  if (/^font(?:-|$)/.test(name)) return "font";
+  if (/^flex(?:-|$)/.test(name)) return "flex";
+  if (/^grid(?:-|$)/.test(name)) return "grid";
+  if (/^(?:row-|column-)?gap$/.test(name)) return "gap";
+  if (/^animation(?:-|$)/.test(name)) return "animation";
+  if (/^transition(?:-|$)/.test(name)) return "transition";
+  if (/^outline(?:-|$)/.test(name)) return "outline";
+  if (/^overflow(?:-|$)/.test(name)) return "overflow";
+  if (/^text-decoration(?:-|$)/.test(name)) return "text-decoration";
+  if (/^list-style(?:-|$)/.test(name)) return "list-style";
+  if (/^mask(?:-|$)/.test(name)) return "mask";
+  if (/^offset(?:-|$)/.test(name)) return "offset";
+  if (/^column-rule(?:-|$)/.test(name) || /^columns$/.test(name)) return "columns";
+  if (/^(?:align|justify|place)-(?:content|items|self)$/.test(name)) return "place";
+  return null;
+}
+
+function hatKurzformKonflikt(name, alleNamen) {
+  const familie = kurzformFamilie(name);
+  return [...alleNamen].some(n =>
+    n !== name && UNSICHERE_KURZFORMEN.has(n) &&
+    (n === "all" || (familie && kurzformFamilie(n) === familie)));
+}
+
 function langformen(property) {
   const lang = property.longhandProperties || [];
   if (lang.length) return lang.map(p => ({ name: kanonischerName(p.name), wert: p.value }));
@@ -402,6 +432,7 @@ function analyseKontext({ matches, inlineStyle, attributesStyle, animationen, tr
         istLogisch(eigenschaft) ||
         UNSICHERE_KURZFORMEN.has(eigenschaft) ||
         hatLogischenKonflikt(eigenschaft, eigenschaftsNamen) ||
+        hatKurzformKonflikt(eigenschaft, eigenschaftsNamen) ||
         liste.some(d => d.sonderkaskade)
       )
     });
