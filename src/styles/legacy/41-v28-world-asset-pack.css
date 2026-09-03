@@ -341,7 +341,7 @@ html[data-v28-rework="2"] body.playing #game.boss-rush-game #players .player.bos
   border:0!important;
   border-image:none!important;
   border-radius:16px!important;
-  padding:clamp(23px,7vw,31px) clamp(14px,4.5vw,19px) clamp(25px,7.5vw,34px)!important;
+  padding:clamp(23px,7vw,31px) clamp(14px,4.5vw,19px) 60px!important;
   background:
     radial-gradient(circle at 82% 25%,var(--world-glow),transparent 36%),
     linear-gradient(155deg,color-mix(in srgb,var(--world-surface) 94%,#142b47 6%),#050f20 90%)!important;
