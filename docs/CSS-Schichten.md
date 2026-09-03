@@ -5,20 +5,20 @@ hat den **Bauweg** vereinheitlicht (`src/styles/legacy/` → `css/app.css`),
 die **Schichten selbst** aber unangetastet gelassen. Dieses Dokument misst,
 was da liegt, damit das Zusammenlegen nicht auf Vermutungen aufsetzt.
 
-Stand: V28.11.2, 41 Dateien. Die Tabellen unten stammen von V28.7.3
-(37 Dateien) und sind als Momentaufnahme zu lesen.
+Stand: V28.11.9, 25 Dateien. Die historischen Tabellen unten stammen von
+V28.7.3 (37 Dateien) und sind als Momentaufnahme zu lesen.
 
 | | V28.7.3 | V28.9.4 | jetzt |
 |---|---|---|---|
 | Dateien | 37 | 40 | **25** |
-| Zeilen | 12.065 | 12.803 | **11.586** |
+| Zeilen | 12.065 | 12.803 | **11.549** |
 | überschrieben | 2.745 (20 %) | 2.998 (21 %) | **~15 %** |
-| `!important` | 4.269 | 4.680 | **4.664** |
-| `css/app.css` | — | 510 KB | **485 KB** |
+| `!important` | 4.269 | 4.680 | **252 Texttreffer / 249 Direktiven** |
+| `css/app.css` | — | 510 KB | **452 KB** |
 
-Bemerkenswert an der Spalte rechts: der Anteil toter Deklarationen ist
-von 21 auf 15 Prozent gefallen, obwohl der Stapel in derselben Zeit um
-eine weitere Datei gewachsen ist.
+Bemerkenswert an der Spalte rechts: Der V28-Stapel ist auf 25 Dateien
+geschrumpft, und 94,6 Prozent der echten `!important`-Direktiven des
+V28.11.5-Ausgangsstands konnten ohne berechnete Stiländerung entfallen.
 
 ---
 
@@ -173,6 +173,30 @@ bearbeiteten Elements hätte das gezeigt, der Wertevergleich schon.
 | 4 · V28.11.2 | 509 einzeln überschriebene Deklarationen in 25 Dateien — Regeln, die selbst stehen bleiben | Vollabzug identisch; dazu Klammernprüfung aller 41 Dateien und eine Gegenprobe im Browser: er akzeptiert 2.697 statt 2.789 Regeln, die Differenz entspricht genau den Schritten 2 und 3 |
 | 5 · V28.11.4 | 35 Langformen, die eine spätere Kurzform zurücksetzt (`border:0` löscht `border-image-source`) | Vollabzug identisch. Damit ist die Kategorie „exakt gleicher Selektortext" ausgeschöpft: 812 tote Deklarationen insgesamt |
 | 6 · V28.11.5 | **Der V28-Stapel von 19 auf 3 Dateien zusammengelegt** — 41 Schichten insgesamt auf 25 | Regeltext des Bündels Zeichen für Zeichen identisch (431.786 Zeichen ohne Kommentare, vorher wie nachher); dazu Vollabzug identisch |
+| 7 · V28.11.9 | **4.398 wirkungslose `!important` in 21 Dateien entfernt** — echte Direktiven 4.647 → 249; Texttreffer inklusive drei Kommentaren 4.650 → 252 | Nach jeder Datei: Vollabzug mit 3.523 Knoten je Breite und rund 476.000 Werten `IDENTISCH`; nach dem Rebase zusätzlich gegen den unangetasteten Remote-Stand mit 3.546 Knoten und rund 479.000 Werten `IDENTISCH`. Zustandsabzug jeweils mit 309 Elementen × `hover`/`focus`/`active` × 19 Eigenschaften (17.613 Werte) `IDENTISCH` |
+
+### Der `!important`-Abbau
+
+`scripts/qa/important-kaskade.mjs` liest über
+`CSS.getMatchedStylesForNode` die zutreffenden Regeln in Kaskadenreihenfolge.
+Das Werkzeug berechnet einen Fixpunkt, plant wirkungsgleiche Teilmengen pro
+Datei und behandelt Pseudoelemente, logische Eigenschaften, unaufgelöste
+Kurzformen, Cascade Layers und `@scope` konservativ. Die beiden vorhandenen
+Abzüge bleiben der Beweis; die CDP-Analyse ist nur der Kandidatenplaner.
+
+Diese Trennung hat sich im Lauf selbst bewährt: Drei zu breite Freigaben
+wurden von den unveränderten Abzügen rot gemeldet und vollständig verworfen.
+Betroffen waren eine dateiübergreifende Kaskadenreihenfolge sowie
+`padding`/`padding-inline` und eine im DevTools-Protokoll unaufgelöste
+`background:var(...)`-Kurzform. Erst nach konservativer Modellierung und
+neuer Analyse wurden die betreffenden Dateien committed.
+
+Beim vorgeschriebenen `git pull --rebase` war `origin/main` inzwischen bis
+V28.11.8 weitergelaufen und enthielt eine neue CSS-Deklaration sowie neue
+DOM-Inhalte. Die ursprüngliche Referenz wurde nicht überschrieben. Stattdessen
+wurde der unangetastete neue Remote-Stand in einem separaten Worktree erfasst
+und der rebasede CSS-Stand gegen genau diese zweite Referenz geprüft; beide
+Abzüge waren erneut identisch.
 
 ### Warum das Zusammenlegen risikofrei war
 
