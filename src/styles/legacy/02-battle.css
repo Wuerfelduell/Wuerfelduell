@@ -241,16 +241,10 @@
 
 
     /* Würfeldesigns gelten auch für Spezialwürfel (High Stakes, Insurance, Gambling usw.). */
-    :is(.special-big-die,.gambling-die).theme-obsidian{background:linear-gradient(145deg,#303746,#090b10);color:#f7f8fb;border-color:#4b5568}
-    :is(.special-big-die,.gambling-die).theme-gold{background:linear-gradient(145deg,#ffe38a,#c58b18);color:#2a1b00;border-color:#f8c84e}
-    :is(.special-big-die,.gambling-die).theme-blood{background:linear-gradient(145deg,#ff6673,#6f0713);color:#fff3f4;border-color:#d42c3d}
-    :is(.special-big-die,.gambling-die).theme-arcane{background:linear-gradient(145deg,#b991ff,#35176d);color:#fff;border-color:#9f78ff}
-    :is(.special-big-die,.gambling-die).theme-emerald{background:linear-gradient(145deg,#71f0a3,#075b34);color:#f2fff7;border-color:#42d985}
-    :is(.special-big-die,.gambling-die).theme-frost{background:linear-gradient(145deg,#e8fbff,#68b9d4);color:#083042;border-color:#9deeff}
-    :is(.special-big-die,.gambling-die).theme-pearl{background:linear-gradient(145deg,#fffdf8,#e7cddd);color:#3a2332;border-color:#f5d7e8}
-    :is(.special-big-die,.gambling-die).theme-neon{background:linear-gradient(145deg,#ff4bd8,#2b1173);color:#fff;border-color:#43f4e9}
-    :is(.special-big-die,.gambling-die).theme-void{background:linear-gradient(145deg,#171322,#020205);color:#d7c5ff;border-color:#6c49bb}
-    :is(.special-big-die,.gambling-die).theme-sapphire{background:linear-gradient(145deg,#2f80ed,#08234f);color:#eef7ff;border-color:#4f9df3}
+    /* Die zehn Wuerfel-Themes obsidian bis sapphire standen hier bis V28.11.1
+       ein zweites Mal. 04-prestige-polish.css definiert dieselben zehn
+       Selektoren zeichengleich, aber mit !important - diese Fassung hat damit
+       nie gewonnen. Neue Themes gehoeren nach 04, nicht hierher. */
     .die.selected{
       border-color:#ffffff !important;
       outline:4px solid var(--dice-accent);
