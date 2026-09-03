@@ -224,6 +224,31 @@ function istLogisch(name) {
   return /(^|-)inline($|-)|(^|-)block($|-)|^(?:min-|max-)?(?:inline|block)-size$/.test(name);
 }
 
+const UNSICHERE_KURZFORMEN = new Set([
+  "all", "animation", "background", "border", "border-block", "border-inline",
+  "border-color", "border-style", "border-width", "column-rule", "columns",
+  "flex", "flex-flow", "font", "font-variant", "gap", "grid", "grid-area",
+  "grid-column", "grid-row", "grid-template", "inset", "inset-block", "inset-inline",
+  "list-style", "margin", "margin-block", "margin-inline", "mask", "offset",
+  "outline", "overflow", "padding", "padding-block", "padding-inline",
+  "place-content", "place-items", "place-self", "text-decoration", "transition"
+]);
+
+function logischeFamilie(name) {
+  if (/^padding(?:-|$)/.test(name)) return "padding";
+  if (/^margin(?:-|$)/.test(name)) return "margin";
+  if (/^(?:top|right|bottom|left|inset(?:-|$))/.test(name)) return "inset";
+  if (/^border(?:-|$)/.test(name)) return "border";
+  if (/^(?:min-|max-)?(?:width|height|inline-size|block-size)$/.test(name)) return "size";
+  return null;
+}
+
+function hatLogischenKonflikt(name, alleNamen) {
+  const familie = logischeFamilie(name);
+  return Boolean(familie && [...alleNamen].some(n =>
+    n !== name && istLogisch(n) && logischeFamilie(n) === familie));
+}
+
 function langformen(property) {
   const lang = property.longhandProperties || [];
   if (lang.length) return lang.map(p => ({ name: kanonischerName(p.name), wert: p.value }));
@@ -361,6 +386,7 @@ function analyseKontext({ matches, inlineStyle, attributesStyle, animationen, tr
     if (!proEigenschaft.has(d.name)) proEigenschaft.set(d.name, []);
     proEigenschaft.get(d.name).push(d);
   }
+  const eigenschaftsNamen = new Set(proEigenschaft.keys());
 
   for (const [eigenschaft, liste] of proEigenschaft) {
     if (!liste.some(d => d.kandidat)) continue;
@@ -370,7 +396,13 @@ function analyseKontext({ matches, inlineStyle, attributesStyle, animationen, tr
       breite: hilfen.breite,
       zustand: hilfen.zustand,
       pseudo: pseudo || null,
-      konservativ: Boolean(pseudo || istLogisch(eigenschaft) || liste.some(d => d.sonderkaskade))
+      konservativ: Boolean(
+        pseudo ||
+        istLogisch(eigenschaft) ||
+        UNSICHERE_KURZFORMEN.has(eigenschaft) ||
+        hatLogischenKonflikt(eigenschaft, eigenschaftsNamen) ||
+        liste.some(d => d.sonderkaskade)
+      )
     });
   }
 }
