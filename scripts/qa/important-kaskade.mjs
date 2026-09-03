@@ -28,6 +28,7 @@
 
    Aufruf:
      node scripts/qa/important-kaskade.mjs
+     node scripts/qa/important-kaskade.mjs --fest 03-campaign.css,33-duo-boss-rush.css
      node scripts/qa/important-kaskade.mjs --anwenden 04-prestige-polish.css
 
    Die Analyse schreibt .qa/important-kaskade.json. --anwenden akzeptiert
@@ -466,7 +467,7 @@ function sichereDateiDemotion(faelle, aktuellWichtig, kandidaten) {
   };
 }
 
-function planeDateiReihenfolge(faelle, dateien, endgueltigBehalten) {
+function planeDateiReihenfolge(faelle, dateien, endgueltigBehalten, festeDateien) {
   const aktuellWichtig = new Set();
   const proDatei = new Map();
   for (const [datei, quelle] of Object.entries(dateien)) {
@@ -476,7 +477,7 @@ function planeDateiReihenfolge(faelle, dateien, endgueltigBehalten) {
       aktuellWichtig.add(id);
       if (!endgueltigBehalten.has(id)) entfernen.push(id);
     }
-    if (entfernen.length) proDatei.set(datei, entfernen);
+    if (entfernen.length && !festeDateien.has(datei)) proDatei.set(datei, entfernen);
   }
 
   const offen = new Set(proDatei.keys());
@@ -634,12 +635,26 @@ if (anwendenIndex >= 0) {
   process.exit(0);
 }
 
+const festIndex = process.argv.indexOf("--fest");
+const festeDateien = new Set();
+if (festIndex >= 0) {
+  const wert = process.argv[festIndex + 1] || "";
+  if (!wert) throw new Error("--fest erwartet mindestens eine CSS-Datei.");
+  for (const datei of wert.split(",").filter(Boolean)) {
+    if (path.basename(datei) !== datei || !datei.endsWith(".css") ||
+        !existsSync(path.join(quellOrdner, datei))) {
+      throw new Error(`Ungueltige feste Datei: ${datei || "(leer)"}`);
+    }
+    festeDateien.add(datei);
+  }
+}
+
 const dateien = quellBestand();
 const bundle = readFileSync(bundlePfad, "utf8");
 const starts = zeilenStarts(bundle);
 const segmente = bundleAbbildung(bundle, dateien);
 const analyse = await browserAnalyse(bundle, starts, segmente, dateien);
-const dateiPlan = planeDateiReihenfolge(analyse.faelleListe, dateien, analyse.behalten);
+const dateiPlan = planeDateiReihenfolge(analyse.faelleListe, dateien, analyse.behalten, festeDateien);
 const freigaben = new Map(dateiPlan.reihenfolge.map(s => [s.datei, new Set(s.entfernen)]));
 
 const bericht = {
@@ -652,6 +667,7 @@ const bericht = {
   interaktionsKontexte: analyse.zustaende,
   kaskadenFaelle: analyse.faelle,
   fixpunktRunden: analyse.runden,
+  festeDateien: [...festeDateien],
   dateiReihenfolge: dateiPlan.reihenfolge,
   blockierteDateien: dateiPlan.blockiert,
   dateien: {}
@@ -688,6 +704,7 @@ for (const [datei, eintrag] of Object.entries(bericht.dateien)) {
   console.log(`${datei.padEnd(42)}${String(eintrag.vorher).padStart(7)}${String(eintrag.entfernbar.length).padStart(12)}${String(eintrag.behalten.length).padStart(10)}`);
 }
 console.log(`${"GESAMT".padEnd(42)}${String(gesamt).padStart(7)}${String(entfernbarGesamt).padStart(12)}${String(behaltenGesamt).padStart(10)}`);
+if (festeDateien.size) console.log(`Fest: ${[...festeDateien].join(", ")}`);
 console.log("\nSichere dateiweise Reihenfolge:");
 dateiPlan.reihenfolge.forEach((s, i) => console.log(
   `${String(i + 1).padStart(2)}. ${s.datei} (${s.entfernen.length} entfernen, ` +
