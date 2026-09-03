@@ -9524,18 +9524,18 @@ body:not(.test-lab-active) .die.locked::after{
 /* ===== 33-duo-boss-rush.css ===== */
 /* V28.6.1 · kompakter Duo Boss Rush */
 .campaign-hub .duo-boss-rush-row{
-  grid-template-columns:minmax(0,1fr) minmax(0,1fr)!important;
-  gap:8px!important;
+  grid-template-columns:minmax(0,1fr) minmax(0,1fr);
+  gap:8px;
 }
 
 .boss-rush-start{
   position:relative;
   min-width:0;
-  border-color:rgba(218,168,73,.82)!important;
+  border-color:rgba(218,168,73,.82);
   background:
-    linear-gradient(145deg,rgba(122,29,43,.94),rgba(19,36,65,.98))!important;
-  color:#fff1c7!important;
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.12),0 8px 20px rgba(73,12,25,.24)!important;
+    linear-gradient(145deg,rgba(122,29,43,.94),rgba(19,36,65,.98));
+  color:#fff1c7;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.12),0 8px 20px rgba(73,12,25,.24);
   letter-spacing:.025em;
 }
 
@@ -9550,9 +9550,9 @@ body:not(.test-lab-active) .die.locked::after{
 }
 
 .boss-rush-start:disabled{
-  filter:saturate(.35)!important;
-  opacity:.42!important;
-  box-shadow:none!important;
+  filter:saturate(.35);
+  opacity:.42;
+  box-shadow:none;
 }
 
 .boss-rush-xp-summary{
@@ -9613,11 +9613,11 @@ body:not(.test-lab-active) .die.locked::after{
   min-width:0;
   min-height:178px;
   padding:15px 12px 13px;
-  border:1px solid rgba(190,139,48,.62)!important;
-  border-radius:17px!important;
-  background:linear-gradient(160deg,#112846,#07182e)!important;
-  color:#fff3cf!important;
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.08),0 8px 18px rgba(3,15,32,.22)!important;
+  border:1px solid rgba(190,139,48,.62);
+  border-radius:17px;
+  background:linear-gradient(160deg,#112846,#07182e);
+  color:#fff3cf;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.08),0 8px 18px rgba(3,15,32,.22);
   display:flex;
   flex-direction:column;
   align-items:center;
@@ -9629,20 +9629,20 @@ body:not(.test-lab-active) .die.locked::after{
 
 .boss-rush-reward-card:hover,
 .boss-rush-reward-card:focus-visible{
-  border-color:#f3c866!important;
+  border-color:#f3c866;
   transform:translateY(-2px);
-  box-shadow:0 0 0 2px rgba(243,200,102,.15),0 10px 24px rgba(3,15,32,.30)!important;
+  box-shadow:0 0 0 2px rgba(243,200,102,.15),0 10px 24px rgba(3,15,32,.30);
 }
 
 .boss-rush-reward-card.is-ability{
-  border-color:rgba(171,122,255,.82)!important;
-  background:linear-gradient(160deg,#35215f,#101d3b)!important;
+  border-color:rgba(171,122,255,.82);
+  background:linear-gradient(160deg,#35215f,#101d3b);
 }
 
 .boss-rush-reward-card.is-ability:hover,
 .boss-rush-reward-card.is-ability:focus-visible{
-  border-color:#c9a6ff!important;
-  box-shadow:0 0 0 2px rgba(171,122,255,.17),0 10px 24px rgba(20,8,49,.34)!important;
+  border-color:#c9a6ff;
+  box-shadow:0 0 0 2px rgba(171,122,255,.17),0 10px 24px rgba(20,8,49,.34);
 }
 
 .boss-rush-reward-card img{
@@ -9688,7 +9688,7 @@ body:not(.test-lab-active) .die.locked::after{
 .boss-rush-abort{
   width:100%;
   margin-top:12px;
-  min-height:42px!important;
+  min-height:42px;
 }
 
 @media(max-width:620px){
@@ -9701,7 +9701,7 @@ body:not(.test-lab-active) .die.locked::after{
 }
 
 @media(max-width:430px){
-  .campaign-hub .duo-boss-rush-row{grid-template-columns:1fr!important}
+  .campaign-hub .duo-boss-rush-row{grid-template-columns:1fr}
 }
 
 /* ===== 35-v28-frame-catchup.css ===== */
