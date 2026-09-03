@@ -90,7 +90,11 @@ The existing `WDOnlineBridge` and host battle engine remain authoritative. Supab
 - The host alone may publish authoritative compatibility states or resolve queued actions.
 - Guest actions must match the current sequence and `interactionOwnerUid`.
 - Save uploads use optimistic revisions; a stale device receives `DD_SAVE_CONFLICT` instead of silently overwriting a newer cloud save.
-- Rooms become unjoinable after six hours; expired rooms are opportunistically cascade-deleted when the next room is created.
+- Rooms expire on inactivity, not on a fixed lifetime: 45 minutes idle in the lobby, 2 hours idle during a running match. Every join, ready, guest action and published state pushes the deadline back, so a live match is never cleaned up underneath the players. Expired rooms are opportunistically cascade-deleted when the next room is created.
+- The room row is only rewritten when the deadline is more than five minutes stale, so refreshing it does not add a Realtime message per move.
+- The authoritative match state lives in `dd_battle_states` only. `dd_battle_rooms.match->state` is not written per move; `dd_get_battle_snapshot` fills it in from `dd_battle_states` when a client asks.
+
+Run `bash scripts/qa/supabase-raumtest.sh` to check these rules against a throwaway PostgreSQL instance. It applies the migrations, asserts the room-expiry and state-write behaviour, and verifies itself by rebuilding the naive variant, which must fail.
 
 ## Recommended test order
 
