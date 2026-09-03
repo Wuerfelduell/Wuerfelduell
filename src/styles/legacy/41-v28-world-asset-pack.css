@@ -407,7 +407,7 @@ html[data-v28-rework="2"] body.playing .boss-rush-status-item{
   align-items:flex-start!important;
   gap:2px!important;
   padding:6px 7px!important;
-  border:1px solid rgba(240,199,101,.28)!important;
+  border:0!important;
   border-radius:8px!important;
   background:rgba(4,22,49,.58)!important;
 }
