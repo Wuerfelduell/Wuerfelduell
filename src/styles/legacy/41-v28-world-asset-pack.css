@@ -500,6 +500,12 @@ html[data-v28-rework="2"] body.playing .phase-live[data-boss-rush-legacy-phase]{
   }
 }
 
+@media(max-width:340px){
+  html[data-v28-rework="2"] body.playing #game.boss-rush-game #players .player.boss-rush-world-enemy{
+    padding-inline:10px!important;
+  }
+}
+
 @media(prefers-reduced-motion:reduce){
   html[data-v28-rework="2"] .campaign-hub .campaign-world-art,
   html[data-v28-rework="2"] .campaign-hub .campaign-world-banner-art{
