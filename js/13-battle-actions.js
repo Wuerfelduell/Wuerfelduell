@@ -1922,7 +1922,7 @@
 
       roundStandings.innerHTML=players.map((p,i)=>{
         const flags=[
-          i===winnerIndex ? "🏆 Rundensieger" : "",
+          i===winnerIndex ? "Rundensieger" : "",
           i===lastPlaceIndex ? "🏁 Letzter" : ""
         ].filter(Boolean).join(" · ");
         const cls=`round-score-row${i===winnerIndex?" winner-row":""}${i===lastPlaceIndex?" last-row":""}`;

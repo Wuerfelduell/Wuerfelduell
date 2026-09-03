@@ -43,7 +43,7 @@
     "💺":"gameplay/seat-position.svg",
     "🗺":"gameplay/campaign.svg",
     "🏠":"navigation/back.svg",
-    "🏁":"gameplay/trophy.svg",
+    "🏁":"gameplay/loss.svg",
     "🎓":"menu/tutorial.svg",
     "🧪":"gameplay/challenge.svg",
     "🎨":"gameplay/mastery.svg",

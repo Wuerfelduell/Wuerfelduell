@@ -149,6 +149,28 @@ html[data-v28-rework="2"] #setup .setup-dice-readonly:focus{
   outline:0!important;
 }
 
+/* ===== 14 · Rundenauswertung: der zweite Knopf blieb ungerahmt =====
+   Phase 3 hat die Knöpfe des Beenden-Dialogs gerahmt (#quitCancelBtn mit
+   --p3-navy-button), die Rundenauswertung aber nie mitgezogen. Dort steht
+   "Nächste Runde" mit vollem Goldrahmen neben "Neue Partie" als flachem
+   Rechteck mit 1px Rand - der einzige Knopf im Bildschirm ohne Artwork.
+
+   Er bekommt denselben Navy-Knopf wie der Abbrechen-Knopf im
+   Beenden-Dialog: gleiche Rolle, gleiche Optik. Der Goldrahmen daneben
+   bleibt, damit die Rangfolge der beiden Aktionen sichtbar bleibt. */
+html[data-v28-rework="2"] #winnerBox .controls #restartBtn,
+html[data-v28-rework="2"] #winnerBox .controls #onlineMainMenuBtn{
+  box-sizing:border-box!important;
+  min-height:50px!important;
+  border:0!important;
+  border-radius:0!important;
+  background:var(--p3-navy-button) center/100% 100% no-repeat!important;
+  box-shadow:none!important;
+  color:#fff4d5!important;
+  text-shadow:0 1px 3px rgba(2,16,38,.72)!important;
+  padding:10px 16px!important;
+}
+
 /* ===== 8 · Kampagnenknoten dürfen nicht aus der Karte laufen =====
    .campaign-node-map stand auf repeat(5,minmax(48px,1fr)). Der Mindestwert
    gewinnt gegen 1fr, sobald die Karte schmaler wird: bei 360px Fensterbreite
