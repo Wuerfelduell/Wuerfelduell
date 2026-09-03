@@ -97,6 +97,58 @@ html[data-v28-rework="2"] body.playing #players .player.active::after{
   }
 }
 
+/* ===== 13 · Würfeldesign im Setup: Anzeige, die auch so aussieht =====
+   Das Feld zeigt das Würfeldesign des gewählten Profils an und ist
+   bewusst nicht bedienbar. Es war aber die einzige dunkle Fläche in
+   einer Zeile heller Auswahlfelder und damit die auffälligste - genau
+   umgekehrt zu seiner Bedeutung. Wer es anklickt, bekommt keine
+   Reaktion.
+
+   Es bekommt jetzt Rahmen und Füllung der Nachbarn, damit die Zeile
+   ruhig wird. Dass es keine Auswahl ist, zeigt es über das, was fehlt:
+   kein Chevron, keine Aufhellung beim Überfahren, kein Fokusring - und
+   eine etwas zurückgenommene Schriftfarbe. Bewusst kein eigener Stil:
+   das Feld soll nicht auffallen, sondern mitlaufen. */
+html[data-v28-rework="2"] #setup .setup-dice-readonly{
+  box-sizing:border-box!important;
+  border-style:solid!important;
+  border-color:transparent!important;
+  border-width:8px 12px!important;
+  border-image-source:var(--wd-strip)!important;
+  border-image-slice:40 96 40 96!important;
+  border-image-width:8px 12px!important;
+  border-image-repeat:stretch!important;
+  border-radius:0!important;
+  background:var(--wd-hell)!important;
+  box-shadow:none!important;
+  padding:2px 6px!important;
+  color:#3f5369!important;
+  font-size:12px!important;
+  font-weight:800!important;
+  text-shadow:none!important;
+  cursor:default!important;
+  /* Der Rahmen nimmt 24 px der 152 px Breite. Ohne Kürzung schiebt sich
+     ein langer Designname unter die rechte Rahmenkante statt zu enden. */
+  min-width:0!important;
+  overflow:hidden!important;
+  white-space:nowrap!important;
+  text-overflow:ellipsis!important;
+}
+html[data-v28-rework="2"] #setup .setup-dice-readonly>*{
+  min-width:0!important;
+  overflow:hidden!important;
+  text-overflow:ellipsis!important;
+}
+/* Keine Rückmeldung auf Berührung - das Feld nimmt keine Eingabe an. */
+html[data-v28-rework="2"] #setup .setup-dice-readonly:hover,
+html[data-v28-rework="2"] #setup .setup-dice-readonly:active,
+html[data-v28-rework="2"] #setup .setup-dice-readonly:focus{
+  background:var(--wd-hell)!important;
+  filter:none!important;
+  transform:none!important;
+  outline:0!important;
+}
+
 /* ===== 8 · Kampagnenknoten dürfen nicht aus der Karte laufen =====
    .campaign-node-map stand auf repeat(5,minmax(48px,1fr)). Der Mindestwert
    gewinnt gegen 1fr, sobald die Karte schmaler wird: bei 360px Fensterbreite
