@@ -1638,12 +1638,12 @@ body.test-lab-active .test-lab-workbench{
 
 /* Experimental player banner/background. Only card 0 in Test Lab. */
 body.test-lab-active .test-lab-profile-card[data-lab-banner]:not([data-lab-banner="default"]){
-  background:var(--lab-banner-bg)!important;
-  border-color:color-mix(in srgb,var(--lab-banner-accent) 52%,transparent)!important;
+  background:var(--lab-banner-bg);
+  border-color:color-mix(in srgb,var(--lab-banner-accent) 52%,transparent);
   box-shadow:
     inset 3px 0 0 var(--lab-banner-accent),
     inset 0 1px rgba(255,255,255,.055),
-    0 0 22px color-mix(in srgb,var(--lab-banner-accent) 18%,transparent)!important}
+    0 0 22px color-mix(in srgb,var(--lab-banner-accent) 18%,transparent)}
 body.test-lab-active .test-lab-profile-card[data-lab-banner]:not([data-lab-banner="default"])::after{
   content:"";position:absolute;inset:0;pointer-events:none;border-radius:inherit;
   background:radial-gradient(circle at 85% 15%,color-mix(in srgb,var(--lab-banner-accent) 22%,transparent),transparent 42%);
@@ -1653,14 +1653,14 @@ body.test-lab-active .test-lab-profile-card[data-lab-banner]:not([data-lab-banne
 /* Proper smooth Hot Dice: CSS heat body + canvas flame particles. */
 body.test-lab-active #dice.lab-hot-fire .die{
   position:relative;
-  filter:drop-shadow(0 0 4px rgba(255,45,60,.52)) drop-shadow(0 0 10px rgba(170,0,22,.25))!important;
-  animation:labHeatPulse 1.05s cubic-bezier(.37,0,.63,1) infinite alternate!important}
+  filter:drop-shadow(0 0 4px rgba(255,45,60,.52)) drop-shadow(0 0 10px rgba(170,0,22,.25));
+  animation:labHeatPulse 1.05s cubic-bezier(.37,0,.63,1) infinite alternate}
 body.test-lab-active #dice.lab-hot-fire-4 .die{
-  filter:drop-shadow(0 0 5px rgba(255,45,60,.65)) drop-shadow(0 0 12px rgba(190,0,24,.34))!important;
-  animation-duration:.88s!important}
+  filter:drop-shadow(0 0 5px rgba(255,45,60,.65)) drop-shadow(0 0 12px rgba(190,0,24,.34));
+  animation-duration:.88s}
 body.test-lab-active #dice.lab-hot-fire-5 .die{
-  filter:drop-shadow(0 0 6px rgba(255,55,70,.78)) drop-shadow(0 0 15px rgba(205,0,28,.42))!important;
-  animation-duration:.72s!important}
+  filter:drop-shadow(0 0 6px rgba(255,55,70,.78)) drop-shadow(0 0 15px rgba(205,0,28,.42));
+  animation-duration:.72s}
 
 @keyframes labHeatPulse{
   from{transform:translateY(0) scale(1)}
