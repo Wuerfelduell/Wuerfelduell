@@ -9734,26 +9734,26 @@ html[data-v28-rework="2"] #accountScreen .cloud-card,
 html[data-v28-rework="2"] #accountScreen .cloud-status-card,
 html[data-v28-rework="2"] #onlineScreen .online-card,
 html[data-v28-rework="2"] #onlineScreen .online-connection{
-  box-sizing:border-box!important;
+  box-sizing:border-box;
   border-image-source:var(--p1-ivory-card)!important;
   border-image-slice:76 168 76 168 fill!important;
   border-image-width:12px 19px!important;
   border-image-repeat:stretch!important;
   border-radius:0!important;
   background:var(--p1-ivory)!important;
-  box-shadow:0 5px 14px rgba(28,58,88,.08)!important;
+  box-shadow:0 5px 14px rgba(28,58,88,.08);
 }
 
 /* Das Artwork trägt oben mittig einen Zier-Diamanten, der über die
    Rahmenkante hinausragt. Ohne genug Abstand nach oben läuft die erste
    Textzeile hinein, deshalb ist das Padding oben deutlich größer. */
 html[data-v28-rework="2"] #statsScreen .stats-kpi{
-  min-height:84px!important;
-  padding:20px 20px 12px!important;
+  min-height:84px;
+  padding:20px 20px 12px;
 }
 
 html[data-v28-rework="2"] #settingsScreen .menu-info-card{
-  min-height:74px!important;
+  min-height:74px;
   padding:20px 20px 12px!important;
 }
 
@@ -9761,7 +9761,7 @@ html[data-v28-rework="2"] #accountScreen .cloud-card,
 html[data-v28-rework="2"] #accountScreen .cloud-status-card,
 html[data-v28-rework="2"] #onlineScreen .online-card,
 html[data-v28-rework="2"] #onlineScreen .online-connection{
-  padding:20px 20px 14px!important;
+  padding:20px 20px 14px;
 }
 
 /* Die freien Texteingaben standen hier zunächst ebenfalls mit
