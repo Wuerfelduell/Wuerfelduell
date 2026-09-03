@@ -1751,12 +1751,12 @@ body.test-lab-active [id^="playerCard"].lab-kill-hit{
   display:grid;
   gap:8px}
 body.test-lab-active.test-lab-dice3d #dice{
-  position:absolute!important;
-  width:1px!important;
-  height:1px!important;
-  overflow:hidden!important;
-  opacity:0!important;
-  pointer-events:none!important}
+  position:absolute;
+  width:1px;
+  height:1px;
+  overflow:hidden;
+  opacity:0;
+  pointer-events:none}
 body.test-lab-active.test-lab-dice3d #testLab3dDiceTray{
   display:block}
 @media(max-width:620px){
