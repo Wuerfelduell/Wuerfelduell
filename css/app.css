@@ -10049,13 +10049,13 @@ html[data-v28-rework="2"] #prestigeShopScreen .prestige-active-chip{
    auch am Desktop. Aufgefallen ist es erst, seit die inneren Flächen
    eigene Rahmen tragen und die Kollision sichtbar wurde. */
 html[data-v28-rework="2"] .screen-card{
-  padding-left:19px!important;
-  padding-right:19px!important;
+  padding-left:19px;
+  padding-right:19px;
 }
 @media (max-width:380px){
   html[data-v28-rework="2"] .screen-card{
-    padding-left:15px!important;
-    padding-right:15px!important;
+    padding-left:15px;
+    padding-right:15px;
   }
 }
 
@@ -10065,7 +10065,7 @@ html[data-v28-rework="2"] .screen-card{
    die Schrift damit unlesbar - "High Roller" war praktisch unsichtbar. */
 html[data-v28-rework="2"] #prestigeShopScreen .prestige-item.owned,
 html[data-v28-rework="2"] #prestigeShopScreen .prestige-item.expensive{
-  background:#0a2b58!important;
+  background:#0a2b58;
 }
 
 /* ===== 3 · Spezialwürfel: ruhigere Bewegung =====
@@ -10079,11 +10079,11 @@ html[data-v28-rework="2"] #prestigeShopScreen .prestige-item.expensive{
 }
 html[data-v28-rework="2"] #gamblingDie.rolling,
 html[data-v28-rework="2"] .special-big-die.rolling{
-  animation:wdWuerfelPuls .5s ease-in-out infinite!important;
+  animation:wdWuerfelPuls .5s ease-in-out infinite;
 }
 @media (prefers-reduced-motion:reduce){
   html[data-v28-rework="2"] #gamblingDie.rolling,
-  html[data-v28-rework="2"] .special-big-die.rolling{ animation:none!important; }
+  html[data-v28-rework="2"] .special-big-die.rolling{ animation:none; }
 }
 
 /* ===== 4 · Würfeldesign-Vorschau bleibt ohne eigenen Rahmen =====
@@ -10096,18 +10096,18 @@ html[data-v28-rework="2"] .special-big-die.rolling{
 
 /* ===== 5 · Aufgabenfortschritt im Kampf ===== */
 html[data-v28-rework="2"] body.playing .campaign-task-progress{
-  box-sizing:border-box!important;
-  border-style:solid!important;
-  border-color:transparent!important;
-  border-width:9px 20px!important;
-  border-image-source:var(--wd-strip)!important;
-  border-image-slice:40 96 40 96!important;
-  border-image-width:9px 20px!important;
-  border-image-repeat:stretch!important;
-  border-radius:0!important;
-  background:rgba(2,13,32,.5)!important;
-  box-shadow:none!important;
-  padding:5px 6px!important;
+  box-sizing:border-box;
+  border-style:solid;
+  border-color:transparent;
+  border-width:9px 20px;
+  border-image-source:var(--wd-strip);
+  border-image-slice:40 96 40 96;
+  border-image-width:9px 20px;
+  border-image-repeat:stretch;
+  border-radius:0;
+  background:rgba(2,13,32,.5);
+  box-shadow:none;
+  padding:5px 6px;
 }
 
 /* ===== 6 · Mastery: "Profil" nicht mehr neben das Auswahlfeld quetschen =====
@@ -10115,12 +10115,12 @@ html[data-v28-rework="2"] body.playing .campaign-task-progress{
    Wort gequetscht links vom Feld. Es steht jetzt darüber, wie die übrigen
    Beschriftungen im Spiel. */
 html[data-v28-rework="2"] .mastery-profile-picker{
-  display:grid!important;
-  grid-template-columns:minmax(0,1fr)!important;
-  gap:4px!important;
-  font-size:10px!important;
-  letter-spacing:.08em!important;
-  text-transform:uppercase!important;
+  display:grid;
+  grid-template-columns:minmax(0,1fr);
+  gap:4px;
+  font-size:10px;
+  letter-spacing:.08em;
+  text-transform:uppercase;
 }
 
 /* ===== 7 · Aktiv-Glow auf die Kartenkante legen =====
@@ -10130,11 +10130,11 @@ html[data-v28-rework="2"] .mastery-profile-picker{
    saß sichtbar innerhalb des Goldrahmens statt auf ihm. Die Werte
    entsprechen der Randbreite der Karte in beiden Breakpoints. */
 html[data-v28-rework="2"] body.playing #players .player.active::after{
-  inset:-17px!important;
+  inset:-17px;
 }
 @media (max-width:540px){
   html[data-v28-rework="2"] body.playing #players .player.active::after{
-    inset:-20px -22px!important;
+    inset:-20px -22px;
   }
 }
 
@@ -10151,43 +10151,43 @@ html[data-v28-rework="2"] body.playing #players .player.active::after{
    eine etwas zurückgenommene Schriftfarbe. Bewusst kein eigener Stil:
    das Feld soll nicht auffallen, sondern mitlaufen. */
 html[data-v28-rework="2"] #setup .setup-dice-readonly{
-  box-sizing:border-box!important;
-  border-style:solid!important;
-  border-color:transparent!important;
-  border-width:8px 12px!important;
-  border-image-source:var(--wd-strip)!important;
-  border-image-slice:40 96 40 96!important;
-  border-image-width:8px 12px!important;
-  border-image-repeat:stretch!important;
-  border-radius:0!important;
+  box-sizing:border-box;
+  border-style:solid;
+  border-color:transparent;
+  border-width:8px 12px;
+  border-image-source:var(--wd-strip);
+  border-image-slice:40 96 40 96;
+  border-image-width:8px 12px;
+  border-image-repeat:stretch;
+  border-radius:0;
   background:var(--wd-hell)!important;
-  box-shadow:none!important;
-  padding:2px 6px!important;
-  color:#3f5369!important;
-  font-size:12px!important;
-  font-weight:800!important;
-  text-shadow:none!important;
-  cursor:default!important;
+  box-shadow:none;
+  padding:2px 6px;
+  color:#3f5369;
+  font-size:12px;
+  font-weight:800;
+  text-shadow:none;
+  cursor:default;
   /* Der Rahmen nimmt 24 px der 152 px Breite. Ohne Kürzung schiebt sich
      ein langer Designname unter die rechte Rahmenkante statt zu enden. */
-  min-width:0!important;
-  overflow:hidden!important;
-  white-space:nowrap!important;
-  text-overflow:ellipsis!important;
+  min-width:0;
+  overflow:hidden;
+  white-space:nowrap;
+  text-overflow:ellipsis;
 }
 html[data-v28-rework="2"] #setup .setup-dice-readonly>*{
-  min-width:0!important;
-  overflow:hidden!important;
-  text-overflow:ellipsis!important;
+  min-width:0;
+  overflow:hidden;
+  text-overflow:ellipsis;
 }
 /* Keine Rückmeldung auf Berührung - das Feld nimmt keine Eingabe an. */
 html[data-v28-rework="2"] #setup .setup-dice-readonly:hover,
 html[data-v28-rework="2"] #setup .setup-dice-readonly:active,
 html[data-v28-rework="2"] #setup .setup-dice-readonly:focus{
-  background:var(--wd-hell)!important;
-  filter:none!important;
-  transform:none!important;
-  outline:0!important;
+  background:var(--wd-hell);
+  filter:none;
+  transform:none;
+  outline:0;
 }
 
 /* ===== 14 · Rundenauswertung: der zweite Knopf blieb ungerahmt =====
@@ -10201,15 +10201,15 @@ html[data-v28-rework="2"] #setup .setup-dice-readonly:focus{
    bleibt, damit die Rangfolge der beiden Aktionen sichtbar bleibt. */
 html[data-v28-rework="2"] #winnerBox .controls #restartBtn,
 html[data-v28-rework="2"] #winnerBox .controls #onlineMainMenuBtn{
-  box-sizing:border-box!important;
-  min-height:50px!important;
-  border:0!important;
-  border-radius:0!important;
+  box-sizing:border-box;
+  min-height:50px;
+  border:0;
+  border-radius:0;
   background:var(--p3-navy-button) center/100% 100% no-repeat!important;
-  box-shadow:none!important;
-  color:#fff4d5!important;
-  text-shadow:0 1px 3px rgba(2,16,38,.72)!important;
-  padding:10px 16px!important;
+  box-shadow:none;
+  color:#fff4d5;
+  text-shadow:0 1px 3px rgba(2,16,38,.72);
+  padding:10px 16px;
 }
 
 /* ===== 8 · Kampagnenknoten dürfen nicht aus der Karte laufen =====
@@ -10220,11 +10220,11 @@ html[data-v28-rework="2"] #winnerBox .controls #onlineMainMenuBtn{
    weil die Karte overflow-x:hidden trägt. minmax(0,1fr) lässt die Spalten
    mitschrumpfen; der Knoten deckelt sich selbst bei 46px. */
 html[data-v28-rework="2"] .campaign-hub .campaign-node-map{
-  grid-template-columns:repeat(5,minmax(0,1fr))!important;
+  grid-template-columns:repeat(5,minmax(0,1fr));
 }
 html[data-v28-rework="2"] .campaign-hub .campaign-node-map .campaign-node{
-  width:min(46px,100%)!important;
-  justify-self:center!important;
+  width:min(46px,100%);
+  justify-self:center;
 }
 
 /* ===== 9 · Encounter-Details: Beschreibung und Zeilen bekommen Rahmen =====
@@ -10236,31 +10236,31 @@ html[data-v28-rework="2"] .campaign-hub .campaign-node-map .campaign-node{
    dunkel auf (.v28-boss-detail, .v28-prestige-detail), und die Rahmen sind
    innen transparent - sie tragen damit beide Fassungen. */
 html[data-v28-rework="2"] .campaign-node-detail .node-detail-desc{
-  box-sizing:border-box!important;
-  border-style:solid!important;
-  border-color:transparent!important;
-  border-width:13px 21px!important;
-  border-image-source:var(--wd-card)!important;
-  border-image-slice:72 120 72 120!important;
-  border-image-width:13px 21px!important;
-  border-image-repeat:stretch!important;
-  border-radius:0!important;
-  box-shadow:none!important;
-  padding:2px 4px 4px!important;
+  box-sizing:border-box;
+  border-style:solid;
+  border-color:transparent;
+  border-width:13px 21px;
+  border-image-source:var(--wd-card);
+  border-image-slice:72 120 72 120;
+  border-image-width:13px 21px;
+  border-image-repeat:stretch;
+  border-radius:0;
+  box-shadow:none;
+  padding:2px 4px 4px;
 }
 html[data-v28-rework="2"] .campaign-node-detail .node-detail-row{
-  box-sizing:border-box!important;
-  border-style:solid!important;
-  border-color:transparent!important;
-  border-width:9px 20px!important;
-  border-image-source:var(--wd-strip)!important;
-  border-image-slice:40 96 40 96!important;
-  border-image-width:9px 20px!important;
-  border-image-repeat:stretch!important;
-  border-radius:0!important;
-  box-shadow:none!important;
-  margin-top:3px!important;
-  padding:3px 4px!important;
+  box-sizing:border-box;
+  border-style:solid;
+  border-color:transparent;
+  border-width:9px 20px;
+  border-image-source:var(--wd-strip);
+  border-image-slice:40 96 40 96;
+  border-image-width:9px 20px;
+  border-image-repeat:stretch;
+  border-radius:0;
+  box-shadow:none;
+  margin-top:3px;
+  padding:3px 4px;
 }
 
 /* ===== 10 · Boss Rush =====
@@ -10270,25 +10270,25 @@ html[data-v28-rework="2"] .campaign-node-detail .node-detail-row{
    Rangfolge der beiden Aktionen sichtbar bleibt. Der rot-blaue Verlauf
    aus 33-duo-boss-rush.css bleibt als Füllung stehen. */
 html[data-v28-rework="2"] .boss-rush-start{
-  box-sizing:border-box!important;
-  border-style:solid!important;
-  border-color:transparent!important;
-  border-width:9px 20px!important;
-  border-image-source:var(--wd-strip)!important;
-  border-image-slice:40 96 40 96!important;
-  border-image-width:9px 20px!important;
-  border-image-repeat:stretch!important;
-  border-radius:0!important;
-  box-shadow:none!important;
+  box-sizing:border-box;
+  border-style:solid;
+  border-color:transparent;
+  border-width:9px 20px;
+  border-image-source:var(--wd-strip);
+  border-image-slice:40 96 40 96;
+  border-image-width:9px 20px;
+  border-image-repeat:stretch;
+  border-radius:0;
+  box-shadow:none;
   background-origin:border-box!important;
-  min-height:48px!important;
-  padding:4px 6px!important;
+  min-height:48px;
+  padding:4px 6px;
 }
 /* Der XP-Streifen trägt seit V28.7.1 die helle Füllung der Stufe 3, seine
    Schrift stammt aber noch von der dunklen Vorlage: Gold auf Creme war
    praktisch nicht zu lesen. */
 html[data-v28-rework="2"] #duoCampaignScreen .boss-rush-xp-summary{
-  color:var(--wd-navy)!important;
+  color:var(--wd-navy);
 }
 
 /* ===== 11 · Mastery-Kaufdialog =====
@@ -10297,41 +10297,41 @@ html[data-v28-rework="2"] #duoCampaignScreen .boss-rush-xp-summary{
    Guthaben, Titel und Beschreibung standen hell auf hell. Preis und die
    beiden Knöpfe bekommen zusätzlich die fehlenden Rahmen. */
 html[data-v28-rework="2"] .mastery-purchase-card h3{
-  color:var(--wd-navy)!important;
+  color:var(--wd-navy);
 }
 html[data-v28-rework="2"] .mastery-purchase-desc,
 html[data-v28-rework="2"] .mastery-purchase-balance{
-  color:#3f5369!important;
+  color:#3f5369;
 }
 html[data-v28-rework="2"] .mastery-purchase-price{
-  box-sizing:border-box!important;
-  border-style:solid!important;
-  border-color:transparent!important;
-  border-width:11px 22px!important;
-  border-image-source:var(--wd-pill)!important;
-  border-image-slice:128!important;
-  border-image-width:11px 22px!important;
-  border-image-repeat:stretch!important;
-  border-radius:14px!important;
-  box-shadow:none!important;
-  padding:1px 4px!important;
-  background:rgba(84,44,168,.16)!important;
-  color:#3b1d78!important;
+  box-sizing:border-box;
+  border-style:solid;
+  border-color:transparent;
+  border-width:11px 22px;
+  border-image-source:var(--wd-pill);
+  border-image-slice:128;
+  border-image-width:11px 22px;
+  border-image-repeat:stretch;
+  border-radius:14px;
+  box-shadow:none;
+  padding:1px 4px;
+  background:rgba(84,44,168,.16);
+  color:#3b1d78;
 }
 html[data-v28-rework="2"] .mastery-purchase-actions button{
-  box-sizing:border-box!important;
-  border-style:solid!important;
-  border-color:transparent!important;
-  border-width:9px 20px!important;
-  border-image-source:var(--wd-strip)!important;
-  border-image-slice:40 96 40 96!important;
-  border-image-width:9px 20px!important;
-  border-image-repeat:stretch!important;
-  border-radius:0!important;
-  box-shadow:none!important;
-  background-origin:border-box!important;
-  min-height:46px!important;
-  padding:4px 2px!important;
+  box-sizing:border-box;
+  border-style:solid;
+  border-color:transparent;
+  border-width:9px 20px;
+  border-image-source:var(--wd-strip);
+  border-image-slice:40 96 40 96;
+  border-image-width:9px 20px;
+  border-image-repeat:stretch;
+  border-radius:0;
+  box-shadow:none;
+  background-origin:border-box;
+  min-height:46px;
+  padding:4px 2px;
 }
 
 /* ===== 12 · Namensplaketten der Achievements =====
@@ -10339,17 +10339,17 @@ html[data-v28-rework="2"] .mastery-purchase-actions button{
    wiederkehrende Fläche im Spiel und bekommen deshalb die Pille, nicht die
    Karte. Die Farben der Zustände (offen / erfüllt) bleiben erhalten. */
 html[data-v28-rework="2"] #achievementsScreen .achievement-owner{
-  box-sizing:border-box!important;
-  border-style:solid!important;
-  border-color:transparent!important;
-  border-width:11px 22px!important;
-  border-image-source:var(--wd-pill)!important;
-  border-image-slice:128!important;
-  border-image-width:11px 22px!important;
-  border-image-repeat:stretch!important;
-  border-radius:14px!important;
-  box-shadow:none!important;
-  padding:0 3px!important;
+  box-sizing:border-box;
+  border-style:solid;
+  border-color:transparent;
+  border-width:11px 22px;
+  border-image-source:var(--wd-pill);
+  border-image-slice:128;
+  border-image-width:11px 22px;
+  border-image-repeat:stretch;
+  border-radius:14px;
+  box-shadow:none;
+  padding:0 3px;
 }
 
 /* ===== 38-endgame-mechanics.css ===== */
