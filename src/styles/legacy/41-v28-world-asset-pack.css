@@ -338,7 +338,7 @@ html[data-v28-rework="2"] body.playing #game.boss-rush-game #players .player.bos
     grid-template-columns:46px minmax(0,1fr)!important;
     gap:5px!important;
     margin:0 -32px 11px!important;
-    padding:10px 20px!important;
+    padding:8px 20px 12px!important;
   }
   html[data-v28-rework="2"] .campaign-hub .campaign-world-banner-art{
     width:46px!important;
