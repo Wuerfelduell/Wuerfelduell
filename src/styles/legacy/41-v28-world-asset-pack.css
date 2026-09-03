@@ -52,6 +52,13 @@ html[data-v28-rework="2"] .campaign-hub .campaign-world-btn.active{
     radial-gradient(circle at 50% 28%,var(--world-glow),transparent 48%),
     linear-gradient(155deg,var(--world-surface),#06172f 84%)!important;
 }
+html[data-v28-rework="2"] .campaign-hub .campaign-world-tabs .campaign-world-btn:not(.active){
+  background:
+    radial-gradient(circle at 50% 28%,color-mix(in srgb,var(--world-glow) 88%,transparent),transparent 54%),
+    linear-gradient(155deg,
+      color-mix(in srgb,var(--world-surface) 92%,#203650 8%),
+      color-mix(in srgb,var(--world-surface) 78%,#07172b 22%))!important;
+}
 html[data-v28-rework="2"] .campaign-hub .campaign-world-btn::after{
   left:23%!important;
   right:23%!important;
@@ -368,10 +375,10 @@ html[data-v28-rework="2"] body.playing #game.boss-rush-game #players .player.bos
   content:""!important;
   position:absolute!important;
   z-index:1!important;
-  top:24px!important;
-  right:15px!important;
-  width:44px!important;
-  height:44px!important;
+  top:25px!important;
+  right:14px!important;
+  width:30px!important;
+  height:30px!important;
   background-image:var(--world-frame-round),var(--world-emblem)!important;
   background-position:center,center!important;
   background-repeat:no-repeat,no-repeat!important;
@@ -386,16 +393,20 @@ html[data-v28-rework="2"] body.playing #game.boss-rush-game #players .player.bos
 }
 html[data-v28-rework="2"] body.playing #game.boss-rush-game #players .player.boss-rush-world-enemy .player-name{
   min-height:2.15em!important;
-  padding-right:46px!important;
+  padding-right:34px!important;
   overflow:visible!important;
   align-items:flex-start!important;
 }
 html[data-v28-rework="2"] body.playing #game.boss-rush-game #players .player.boss-rush-world-enemy .player-name-text{
   display:block!important;
   overflow:visible!important;
-  overflow-wrap:anywhere!important;
+  overflow-wrap:normal!important;
+  word-break:normal!important;
+  hyphens:none!important;
   text-overflow:clip!important;
   white-space:normal!important;
+  font-size:clamp(12px,3.3vw,15px)!important;
+  line-height:1.14!important;
 }
 html[data-v28-rework="2"] body.playing #game.boss-rush-game #players .player.boss-rush-world-enemy .ability-tag{
   color:var(--world-secondary)!important;
@@ -496,8 +507,8 @@ html[data-v28-rework="2"] body.playing .phase-live[data-boss-rush-legacy-phase]{
     font-size:clamp(15px,4.5vw,18px)!important;
   }
   html[data-v28-rework="2"] body.playing #game.boss-rush-game #players .player.boss-rush-world-enemy::before{
-    width:36px!important;
-    height:36px!important;
+    width:28px!important;
+    height:28px!important;
     top:22px!important;
     right:12px!important;
     opacity:.76!important;
