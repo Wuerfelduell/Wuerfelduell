@@ -45,12 +45,12 @@
     
     body.playing .app,
     body.playing #game:not(.hidden){
-      height:auto!important;
-      min-height:100dvh!important;
-      overflow:visible!important}
+      height:auto;
+      min-height:100dvh;
+      overflow:visible}
     body.playing .app{
       /* Der Menü-Button bleibt im Matchbar-Layout statt über Spielerkarten zu schweben. */
-      padding-top:7px!important}
+      padding-top:7px}
     body.playing .dice{
       align-items:center;
       grid-auto-rows:1fr;
@@ -68,10 +68,10 @@
     #secondAbilityModal,
     #gamblingModal,
     .special-roll-modal{
-      overflow-y:auto!important;
+      overflow-y:auto;
       -webkit-overflow-scrolling:touch;
       overscroll-behavior-y:contain;
-      align-items:flex-start!important}
+      align-items:flex-start}
     .round-overlay-panel,
     .utility-panel,
     .second-ability-panel,
@@ -102,46 +102,46 @@
     .campaign-hub .campaign-complete{padding:8px 10px;margin:0 0 8px;border-radius:12px;font-size:11px}
 
     .campaign-world-tabs,.duo-world-tabs{
-      display:flex!important;grid-template-columns:none!important;gap:8px!important;
-      margin:2px 0 10px!important;padding:2px 1px 5px;overflow-x:auto;overflow-y:visible;
+      display:flex;grid-template-columns:none;gap:8px;
+      margin:2px 0 10px;padding:2px 1px 5px;overflow-x:auto;overflow-y:visible;
       scrollbar-width:none;scroll-snap-type:x proximity}
     .campaign-world-tabs::-webkit-scrollbar{display:none}
     .campaign-world-btn{
-      flex:0 0 94px;min-height:74px!important;padding:8px 7px!important;border-radius:22px!important;
+      flex:0 0 94px;min-height:74px;padding:8px 7px;border-radius:22px;
       display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;
-      text-align:center!important;scroll-snap-align:start;
-      background:linear-gradient(155deg,#182232,#0f151f)!important;
-      border:1px solid #344155!important;box-shadow:inset 0 1px 0 rgba(255,255,255,.04),0 5px 14px rgba(0,0,0,.18)!important}
+      text-align:center;scroll-snap-align:start;
+      background:linear-gradient(155deg,#182232,#0f151f);
+      border:1px solid #344155;box-shadow:inset 0 1px 0 rgba(255,255,255,.04),0 5px 14px rgba(0,0,0,.18)}
     .campaign-world-btn.active{
-      border-color:rgba(104,167,255,.9)!important;
-      box-shadow:0 0 0 2px rgba(104,167,255,.14),0 0 22px rgba(104,167,255,.18),inset 0 1px 0 rgba(255,255,255,.07)!important;
-      background:linear-gradient(155deg,rgba(104,167,255,.20),#111824)!important}
-    .campaign-world-btn.done{border-color:rgba(77,209,125,.68)!important;background:linear-gradient(155deg,rgba(77,209,125,.12),#101922)!important}
-    .campaign-world-btn:disabled{opacity:.30!important;filter:saturate(.4)!important}
+      border-color:rgba(104,167,255,.9);
+      box-shadow:0 0 0 2px rgba(104,167,255,.14),0 0 22px rgba(104,167,255,.18),inset 0 1px 0 rgba(255,255,255,.07);
+      background:linear-gradient(155deg,rgba(104,167,255,.20),#111824)}
+    .campaign-world-btn.done{border-color:rgba(77,209,125,.68);background:linear-gradient(155deg,rgba(77,209,125,.12),#101922)}
+    .campaign-world-btn:disabled{opacity:.30;filter:saturate(.4)}
     .campaign-world-kicker{font-size:9px;font-weight:1000;letter-spacing:.12em;color:#8290a4;text-transform:uppercase}
     .campaign-world-btn.active .campaign-world-kicker{color:#9fc4ff}
     .campaign-world-btn.done .campaign-world-kicker{color:#79dda0}
-    .campaign-world-name{display:block;font-size:13px!important;font-weight:1000;line-height:1.05;white-space:nowrap;max-width:100%;overflow:hidden;text-overflow:ellipsis}
-    .campaign-world-state{display:block;margin:1px 0 0!important;font-size:10px!important;font-weight:1000!important;color:#95a3b7!important;letter-spacing:0!important;text-transform:none!important}
-    .campaign-world-btn.done .campaign-world-state{color:#79dda0!important}
+    .campaign-world-name{display:block;font-size:13px;font-weight:1000;line-height:1.05;white-space:nowrap;max-width:100%;overflow:hidden;text-overflow:ellipsis}
+    .campaign-world-state{display:block;margin:1px 0 0;font-size:10px;font-weight:1000;color:#95a3b7;letter-spacing:0;text-transform:none}
+    .campaign-world-btn.done .campaign-world-state{color:#79dda0}
 
-    .campaign-top{grid-template-columns:minmax(0,1fr) auto!important;gap:7px!important;margin:0 0 8px!important;align-items:stretch}
-    .campaign-top .menu-info-card{padding:8px 10px!important;border-radius:13px!important;min-height:0!important;display:flex;flex-direction:column;justify-content:center}
-    .campaign-top .menu-info-card:nth-child(2){display:none!important}
+    .campaign-top{grid-template-columns:minmax(0,1fr) auto;gap:7px;margin:0 0 8px;align-items:stretch}
+    .campaign-top .menu-info-card{padding:8px 10px;border-radius:13px;min-height:0;display:flex;flex-direction:column;justify-content:center}
+    .campaign-top .menu-info-card:nth-child(2){display:none}
     .campaign-top .menu-info-card:nth-child(3){min-width:112px}
-    .campaign-top .campaign-label{font-size:8px!important;margin-bottom:2px!important}
-    .campaign-top .campaign-value{font-size:13px!important;line-height:1.2}
+    .campaign-top .campaign-label{font-size:8px;margin-bottom:2px}
+    .campaign-top .campaign-value{font-size:13px;line-height:1.2}
 
-    .campaign-controls{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:7px!important;margin-bottom:8px!important}
-    .campaign-controls label{gap:4px!important;font-size:9px!important}
-    .campaign-controls select{padding:9px 9px!important;font-size:14px!important}
-    .campaign-start-row button{min-height:46px!important}
-    .campaign-unlocks{margin-top:10px!important;padding-top:9px!important}
+    .campaign-controls{grid-template-columns:repeat(2,minmax(0,1fr));gap:7px;margin-bottom:8px}
+    .campaign-controls label{gap:4px;font-size:9px}
+    .campaign-controls select{padding:9px 9px;font-size:14px}
+    .campaign-start-row button{min-height:46px}
+    .campaign-unlocks{margin-top:10px;padding-top:9px}
 
     @media(max-width:540px){
-      .campaign-world-btn{flex-basis:88px;min-height:68px!important;border-radius:19px!important}
-      .campaign-world-name{font-size:12px!important}
-      .campaign-top{grid-template-columns:minmax(0,1fr) auto!important}
-      .campaign-controls,.trio-controls{grid-template-columns:repeat(2,minmax(0,1fr))!important}
-      .campaign-controls select{font-size:13px!important;padding:8px 7px!important}
+      .campaign-world-btn{flex-basis:88px;min-height:68px;border-radius:19px}
+      .campaign-world-name{font-size:12px}
+      .campaign-top{grid-template-columns:minmax(0,1fr) auto}
+      .campaign-controls,.trio-controls{grid-template-columns:repeat(2,minmax(0,1fr))}
+      .campaign-controls select{font-size:13px;padding:8px 7px}
     }
