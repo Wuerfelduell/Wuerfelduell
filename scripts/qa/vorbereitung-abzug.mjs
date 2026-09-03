@@ -33,8 +33,29 @@
    Aufruf:
      node scripts/qa/vorbereitung-abzug.mjs
 */
+import { readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import path from "node:path";
+
+const wurzel = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..", "..");
+
+/* Den Erklaertext nicht abschreiben, sondern aus der Quelle holen. Eine
+   Kopie im Pruefskript veraltet still, und dann misst das Netz einen
+   Text, den niemand mehr zu sehen bekommt. */
+function erklaertext() {
+  const quelle = readFileSync(path.join(wurzel, "js", "14-round-flow.js"), "utf8");
+  const marke = "nextRoundInfo.innerHTML=`<span class=\"last-place-note\">";
+  const start = quelle.indexOf(marke);
+  if (start < 0) {
+    console.error("Der Classic-Erklaertext wurde in js/14-round-flow.js nicht gefunden.");
+    console.error("Wenn er umgebaut wurde, muss dieses Skript nachgezogen werden.");
+    process.exit(1);
+  }
+  const ab = quelle.slice(start + "nextRoundInfo.innerHTML=`".length);
+  return ab.slice(0, ab.indexOf("`;"))
+    .replace(/\$\{escapeHtml\(players\[lastPlaceIndex\]\.name\)\}/g, "Bot Ferdinand");
+}
+const ERKLAERTEXT = erklaertext();
 
 async function ladePlaywright() {
   const orte = [
@@ -59,11 +80,10 @@ const BREITEN = [360, 412, 1280];
 /* Der Bildschirm, wie prepareNextRound() ihn im Classic-Zweig baut:
    ein Erklaerabsatz, eine Karte fuer den Letztplatzierten mit Auswahl,
    eine Karte fuer alle anderen ohne. */
-function aufbauen() {
+function aufbauen(erklaertext) {
   document.body.classList.add("playing");
   document.getElementById("nextRoundTitle").textContent = "Runde 8 vorbereiten";
-  document.getElementById("nextRoundInfo").innerHTML =
-    `<span class="last-place-note">Bot Ferdinand</span> startet und bekommt als Letztplatzierter die freie Fähigkeitswahl aus 1–5 oder 8–25. Der Sieger und alle anderen würfeln ihre Fähigkeit mit einem W25 neu; nur eine gewürfelte 6 erlaubt freie Wahl. Glück (BETA) gibt es nur bei einer direkt gewürfelten 7.`;
+  document.getElementById("nextRoundInfo").innerHTML = erklaertext;
   const ziel = document.getElementById("nextRoundAbilities");
   ziel.innerHTML = "";
   const karte = (name, i, frei) => {
@@ -235,7 +255,7 @@ for (const breite of BREITEN) {
   await seite.goto(ADRESSE, { waitUntil: "load" });
   await seite.waitForTimeout(1500);
 
-  await seite.evaluate(aufbauen);
+  await seite.evaluate(aufbauen, ERKLAERTEXT);
   await seite.waitForTimeout(700);
 
   // Grundbild: Schrift unsichtbar, damit die haeufigste Farbe im Feld
@@ -264,7 +284,11 @@ for (const breite of BREITEN) {
   console.log(`\n================ ${breite} px ================`);
   const zeile = (ok, text) => { if (!ok) maengel++; console.log(`  ${ok ? "ok       " : "ABWEICHUNG"} ${text}`); };
 
-  zeile(m.info.zeilen <= 4, `Erklaerabsatz: ${m.info.zeichen} Zeichen auf ${m.info.zeilen} Zeilen (${m.info.h}px). Soll: hoechstens 4 Zeilen.`);
+  /* Warum fuenf und nicht vier: vier Zeilen sind bei 360 Pixeln nur mit
+     Telegrammdeutsch zu halten ("Andere: W25, nur 6 waehlt frei"). Fuenf
+     Zeilen lassen jede Regel auf ihrer eigenen Zeile stehen und bleiben
+     lesbar - gemessen 101px statt 162px. */
+  zeile(m.info.zeilen <= 5, `Erklaerabsatz: ${m.info.zeichen} Zeichen auf ${m.info.zeilen} Zeilen (${m.info.h}px). Soll: hoechstens 5 Zeilen.`);
   for (const kk of k) {
     const soll = 4.5;
     zeile(kk.kontrast >= soll, `Kontrast ${kk.name}: ${kk.kontrast} (Text ${kk.text} auf ${kk.grund}). Soll: >= ${soll}.`);

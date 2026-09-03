@@ -63,6 +63,21 @@ window.WD_LANG_PACKS.en = {
     "Letzter":"Last",
     "Siegstand:":"Score:",
 
+    /* Rundenvorbereitung. Der Erklaertext stand vorher als ein Satz da und
+       war damit zu lang fuer die Wortersetzung - er blieb auf Englisch
+       komplett deutsch. Jetzt ist er in Regeln zerlegt, und jede Regel ist
+       ein eigener Textknoten mit eigenem Eintrag. */
+    "startet als Letzter.":"starts as last place.",
+    "Freie Wahl: 1–5 oder 8–25.":"Free choice: 1–5 or 8–25.",
+    "Alle anderen würfeln W25; nur eine 6 wählt frei.":"Everyone else rolls a d25; only a 6 grants a free pick.",
+    "Glück (BETA) nur bei gewürfelter 7.":"Luck (BETA) only on a rolled 7.",
+    "Letzter Platz: freie Wahl ohne Würfelwurf":"Last place: free choice, no roll",
+    "Kein Last-Place-Draw.":"No last-place draw.",
+    "Beide Startfähigkeiten frei wählbar.":"Both starting abilities are free to pick.",
+    "Alle anderen bekommen 2 neue zufällige Fähigkeiten.":"Everyone else gets 2 new random abilities.",
+    "1 von 3 Startfähigkeiten frei wählbar.":"1 of 3 starting abilities is free to pick.",
+    "Die anderen 2 kommen beim Start zufällig.":"The other 2 are random at the start.",
+
     "Partie verlassen":"Leave match",
     "Spiel wirklich verlassen?":"Really leave the match?",
     "Weiterspielen":"Keep playing",
@@ -1048,6 +1063,22 @@ window.WD_LANG_PACKS.en = {
       (m, tr)=>`finished last, starts round ${m[1]} and may pick the next ability freely.`],
     [/^(\d+) · Rundensieger$/i, (m, tr)=>`${m[1]} · Round winner`],
     [/^(.+) · (\d+) HP$/i, (m, tr)=>`${tr(m[1])} · ${m[2]} HP`],
+
+    /* Rundenvorbereitung, die Stellen mit Zahlen. Die Ueberschrift wurde
+       von der Wortersetzung sonst zu "round 8 vorbereiten" verstuemmelt.
+       Die freie Wahl muss vor dem allgemeinen Wurfmuster stehen, sonst
+       frisst dieses sie auf. */
+    [/^Runde (\d+) vorbereiten$/i, (m, tr)=>`Prepare round ${m[1]}`],
+    [/^Runde (\d+) · (.+)$/i, (m, tr)=>`Round ${m[1]} · ${tr(m[2])}`],
+    [/^W25 = (\d+) → freie Wahl$/i, (m, tr)=>`d25 = ${m[1]} → free choice`],
+    [/^W25 = (\d+) → (.+)$/i, (m, tr)=>`d25 = ${m[1]} → ${tr(m[2])}`],
+    [/^Freie Wahl (\d+)\/(\d+)$/i, (m, tr)=>`Free choice ${m[1]}/${m[2]}`],
+    [/^(\d+) weitere Fähigkeit wird beim Rundenstart zufällig bestimmt\.$/i,
+      (m, tr)=>`${m[1]} more ability is rolled at round start.`],
+    [/^(\d+) weitere Fähigkeiten werden beim Rundenstart zufällig bestimmt\.$/i,
+      (m, tr)=>`${m[1]} more abilities are rolled at round start.`],
+    [/^Jeder bekommt (\d+) neue zufällige Startfähigkeiten\.$/i,
+      (m, tr)=>`Everyone gets ${m[1]} new random starting abilities.`],
     [/^(.+) benutzt$/i, (m, tr)=>`${tr(m[1])} used`],
     [/^(.+) erfolgreich$/i, (m, tr)=>`${tr(m[1])} successful`],
     [/^(.+) je Spieler$/i, (m, tr)=>`${tr(m[1])} per player`],

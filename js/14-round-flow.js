@@ -26,11 +26,14 @@
       nextRoundAbilities.innerHTML="";
       nextRoundTitle.textContent=`Runde ${roundNumber+1} · ${rules.name}`;
       const noLastDraw=!(rules.lastPlaceFreeChoices>0);
+      // Eine Regel je Zeile. Als ein Absatz gesetzt ergaben diese Texte auf
+      // dem Telefon einen grauen Block von sechs bis acht Zeilen, in dem
+      // keine der Regeln hervortrat.
       nextRoundInfo.innerHTML=noLastDraw
-        ? `Kein Last-Place-Draw. Jeder bekommt ${rules.startAbilityCount} neue zufällige Startfähigkeiten.`
+        ? `Kein Last-Place-Draw.<br>Jeder bekommt ${rules.startAbilityCount} neue zufällige Startfähigkeiten.`
         : rules.id==="endurance50"
-        ? `<span class="last-place-note">${escapeHtml(players[lastPlaceIndex].name)}</span> startet. Als Letztplatzierter darf diese Person beide Startfähigkeiten frei wählen; alle anderen bekommen 2 neue zufällige Fähigkeiten.`
-        : `<span class="last-place-note">${escapeHtml(players[lastPlaceIndex].name)}</span> startet. Als Letztplatzierter darf diese Person genau 1 von 3 Startfähigkeiten frei wählen; die anderen 2 werden beim Start zufällig bestimmt.`;
+        ? `<span class="last-place-note">${escapeHtml(players[lastPlaceIndex].name)}</span> startet als Letzter.<br>Beide Startfähigkeiten frei wählbar.<br>Alle anderen bekommen 2 neue zufällige Fähigkeiten.`
+        : `<span class="last-place-note">${escapeHtml(players[lastPlaceIndex].name)}</span> startet als Letzter.<br>1 von 3 Startfähigkeiten frei wählbar.<br>Die anderen 2 kommen beim Start zufällig.`;
 
       players.forEach((p,i)=>{
         const box=document.createElement("div");box.className="round-prep-player";
@@ -61,7 +64,7 @@
     nextRoundAbilityRolls=Array(players.length).fill(null);
     nextRoundAbilities.innerHTML="";
     nextRoundTitle.textContent=`Runde ${roundNumber+1} vorbereiten`;
-    nextRoundInfo.innerHTML=`<span class="last-place-note">${escapeHtml(players[lastPlaceIndex].name)}</span> startet und bekommt als Letztplatzierter die freie Fähigkeitswahl aus 1–5 oder 8–25. Der Sieger und alle anderen würfeln ihre Fähigkeit mit einem W25 neu; nur eine gewürfelte 6 erlaubt freie Wahl. Glück (BETA) gibt es nur bei einer direkt gewürfelten 7.`;
+    nextRoundInfo.innerHTML=`<span class="last-place-note">${escapeHtml(players[lastPlaceIndex].name)}</span> startet als Letzter.<br>Freie Wahl: 1–5 oder 8–25.<br>Alle anderen würfeln W25; nur eine 6 wählt frei.<br>Glück (BETA) nur bei gewürfelter 7.`;
 
     players.forEach((p,i)=>{
       const box=document.createElement("div");box.className="round-prep-player";
