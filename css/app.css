@@ -3861,6 +3861,7 @@ body[data-v28-scene="combat"]::after{opacity:.04}
 }
 .utility-text,.round-note,.second-ability-sub,.special-roll-sub,.gambling-sub{color:#5e6e82!important}
 #nextRoundInfo{color:#58677a!important}
+.round-prep-player .round-note{color:#c0cbd6!important}
 .utility-actions button.secondary,.round-overlay button.secondary{
   background:linear-gradient(155deg,#123e71,#071f4b);
   color:#fff2ce;border-color:#d6a53c;
