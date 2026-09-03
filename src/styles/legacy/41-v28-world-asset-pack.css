@@ -334,6 +334,7 @@ html[data-v28-rework="2"] body.playing #game.boss-rush-game #players .player.bos
   }
   html[data-v28-rework="2"] .campaign-hub .campaign-world-desc{
     width:calc(100% + 64px)!important;
+    min-height:100px!important;
     grid-template-columns:46px minmax(0,1fr)!important;
     gap:5px!important;
     margin:0 -32px 11px!important;
@@ -352,6 +353,7 @@ html[data-v28-rework="2"] body.playing #game.boss-rush-game #players .player.bos
   }
   html[data-v28-rework="2"] .campaign-hub .campaign-world-banner-desc{
     font-size:9px!important;
+    line-height:1.2!important;
   }
   html[data-v28-rework="2"] .campaign-hub .campaign-node-detail[data-p4-detail-tone="boss"],
   html[data-v28-rework="2"] .campaign-hub .campaign-node-detail[data-p4-detail-tone="boss"].v28-prestige-detail:not(.v28-boss-detail){
