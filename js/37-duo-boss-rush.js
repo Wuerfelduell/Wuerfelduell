@@ -200,9 +200,53 @@
   }
 
   function stageNumber(){return run?run.stage+1:1;}
+  function livePhaseValue(){
+    const encounter=currentEncounter(),phase=encounter?.bossRushPhase;
+    if(!phase)return tr("–");
+    const triggered=typeof encounterRuntime!=="undefined"&&Array.isArray(encounterRuntime?.phaseTriggeredIds)
+      ?encounterRuntime.phaseTriggeredIds.length
+      :0;
+    if(triggered>0)return tr(`2 · ${phase.title}`);
+    return tr(`1 · ${Math.round((Number(phase.threshold)||.5)*100)} % → ${phase.title}`);
+  }
+
+  function liveStatusItem(label,value){
+    const item=document.createElement("span"),caption=document.createElement("small"),content=document.createElement("b");
+    item.className="boss-rush-status-item";
+    caption.textContent=tr(label);
+    content.textContent=String(value);
+    item.append(caption,content);
+    return item;
+  }
+
+  function syncLiveStatus(){
+    if(!run?.active)return;
+    const banner=$("encounterRuleBanner"),status=banner?.querySelector(".boss-rush-live"),stage=stageConfig();
+    if(!banner||!status||!stage)return;
+    const phaseValue=livePhaseValue();
+    const signature=[run.stage,stage.label,phaseValue,run.bossXpEarned].join("|");
+    if(status.dataset.bossRushStatus!==signature){
+      status.dataset.bossRushStatus=signature;
+      status.classList.add("boss-rush-status-items");
+      status.replaceChildren(
+        liveStatusItem("Stufe",`${run.stage+1} / ${STAGES.length}`),
+        liveStatusItem("Boss",stage.label),
+        liveStatusItem("Phase",phaseValue),
+        liveStatusItem("XP",`${run.bossXpEarned} ${tr("je Profil")}`)
+      );
+      status.setAttribute("aria-label",tr(`Boss Rush, Stufe ${run.stage+1} von ${STAGES.length}, Boss ${stage.label}, Phase ${phaseValue}, ${run.bossXpEarned} Boss XP je Profil`));
+    }
+    banner.querySelectorAll(".phase-live").forEach(line=>{
+      line.dataset.bossRushLegacyPhase="1";
+      line.setAttribute("aria-hidden","true");
+    });
+  }
+
   function statusText(){
     const stage=stageConfig();
-    return run&&stage?tr(`Boss Rush ${run.stage+1}/${STAGES.length} · ${stage.label} · ${run.bossXpEarned} Boss XP je Profil`):"";
+    if(!run||!stage)return "";
+    queueMicrotask(syncLiveStatus);
+    return tr(`Boss Rush ${run.stage+1}/${STAGES.length} · ${stage.label} · ${run.bossXpEarned} Boss XP je Profil`);
   }
 
   function findHeroIndex(profileId){
