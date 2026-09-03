@@ -5,12 +5,12 @@
 @media(max-width:520px){.online-player-list.four-player{grid-template-columns:1fr}}
 
 /* Achievement reward dice */
-.die.theme-chrome{--dice-accent:#eef5ff;--dice-glow:rgba(210,229,255,.9);--die-bg:linear-gradient(145deg,#ffffff 0%,#aeb8c7 38%,#f7fbff 58%,#697484 100%);--die-pip:#111722;--die-edge:#dce7f5;background:transparent!important}
-.die.theme-storm{--dice-accent:#8fe9ff;--dice-glow:rgba(90,211,255,.95);--die-bg:radial-gradient(circle at 32% 22%,#e5fbff 0%,#51bce9 30%,#2746a0 61%,#101a44 100%);--die-pip:#f4fcff;--die-edge:#75dcff;background:transparent!important}
-.die.theme-circuit{--dice-accent:#73ffb3;--dice-glow:rgba(82,255,169,.95);--die-bg:linear-gradient(135deg,#071a18 0%,#12302a 42%,#0b171d 42%,#0b171d 58%,#17352d 58%,#071a18 100%);--die-pip:#7dffbb;--die-edge:#39d98a;background:transparent!important}
-:is(.special-big-die,.gambling-die).theme-chrome{background:linear-gradient(145deg,#ffffff,#9ca8b9 42%,#eef5ff 62%,#616c7c)!important;color:#111722!important;border-color:#dce7f5!important}
-:is(.special-big-die,.gambling-die).theme-storm{background:radial-gradient(circle at 30% 20%,#e5fbff,#51bce9 31%,#2746a0 62%,#101a44)!important;color:#f4fcff!important;border-color:#75dcff!important}
-:is(.special-big-die,.gambling-die).theme-circuit{background:linear-gradient(135deg,#071a18,#17352d 45%,#0b171d 46%,#0b171d 60%,#17352d 61%,#071a18)!important;color:#7dffbb!important;border-color:#39d98a!important}
+.die.theme-chrome{--dice-accent:#eef5ff;--dice-glow:rgba(210,229,255,.9);--die-bg:linear-gradient(145deg,#ffffff 0%,#aeb8c7 38%,#f7fbff 58%,#697484 100%);--die-pip:#111722;--die-edge:#dce7f5;background:transparent}
+.die.theme-storm{--dice-accent:#8fe9ff;--dice-glow:rgba(90,211,255,.95);--die-bg:radial-gradient(circle at 32% 22%,#e5fbff 0%,#51bce9 30%,#2746a0 61%,#101a44 100%);--die-pip:#f4fcff;--die-edge:#75dcff;background:transparent}
+.die.theme-circuit{--dice-accent:#73ffb3;--dice-glow:rgba(82,255,169,.95);--die-bg:linear-gradient(135deg,#071a18 0%,#12302a 42%,#0b171d 42%,#0b171d 58%,#17352d 58%,#071a18 100%);--die-pip:#7dffbb;--die-edge:#39d98a;background:transparent}
+:is(.special-big-die,.gambling-die).theme-chrome{background:linear-gradient(145deg,#ffffff,#9ca8b9 42%,#eef5ff 62%,#616c7c);color:#111722;border-color:#dce7f5}
+:is(.special-big-die,.gambling-die).theme-storm{background:radial-gradient(circle at 30% 20%,#e5fbff,#51bce9 31%,#2746a0 62%,#101a44);color:#f4fcff;border-color:#75dcff}
+:is(.special-big-die,.gambling-die).theme-circuit{background:linear-gradient(135deg,#071a18,#17352d 45%,#0b171d 46%,#0b171d 60%,#17352d 61%,#071a18);color:#7dffbb;border-color:#39d98a}
 
 /* Combat projectile layer – fixed to viewport so rotating boards do not distort the beam. */
 .attack-fx-layer{position:fixed;inset:0;z-index:10006;pointer-events:none;overflow:hidden;contain:layout paint}
@@ -33,7 +33,7 @@
 .player.attack-source-flash{animation:wdAttackSource .36s ease-out}
 @keyframes wdAttackSource{0%{box-shadow:0 0 0 rgba(104,167,255,0)}35%{box-shadow:0 0 28px rgba(104,167,255,.95)}100%{box-shadow:0 0 0 rgba(104,167,255,0)}}
 
-@media(prefers-reduced-motion:reduce){.attack-fx-beam,.attack-fx-lightning,.attack-fx-lightning polyline,.attack-fx-impact,.player.attack-source-flash{animation-duration:.01ms!important;animation-iteration-count:1!important}}
+@media(prefers-reduced-motion:reduce){.attack-fx-beam,.attack-fx-lightning,.attack-fx-lightning polyline,.attack-fx-impact,.player.attack-source-flash{animation-duration:.01ms;animation-iteration-count:1}}
 /* GalaxyA50 compatibility mode keeps the new combat effect but drops the heaviest glow filter. */
 
 html.legacy-flat-dice .attack-fx-beam{box-shadow:0 0 9px rgba(120,205,255,.75)}
