@@ -237,14 +237,24 @@
   }
 
   function statLeader(field){
-    if(!players.length || !roundStats.length) return {names:"–",value:0};
+    if(!players.length || !roundStats.length) return {names:[],value:0};
     const best=Math.max(...roundStats.map(s=>s[field]||0));
-    if(best<=0) return {names:"–",value:0};
+    if(best<=0) return {names:[],value:0};
     const names=roundStats
       .map((s,i)=>(s[field]||0)===best?players[i].name:null)
-      .filter(Boolean)
-      .join(" & ");
+      .filter(Boolean);
     return {names,value:best};
+  }
+
+  // Eine Stat-Kachel hat auf dem Telefon rund 107 Pixel Innenbreite - der
+  // gemalte Rahmen nimmt 42 davon. "Bot Ferdinand · 12 HP" braucht 173 und
+  // wurde deshalb abgeschnitten, selbst auf dem Desktop. Name und Zahl stehen
+  // darum auf eigenen Zeilen; bei Gleichstand bekommt jeder Name seine eigene,
+  // statt sie zu "A & B" zu verketten. Ein <br> bricht auch unter
+  // white-space:nowrap - dafür ist kein Eingriff ins Stylesheet nötig.
+  function statZeilen(leader,einheit){
+    if(!leader.names.length) return "–";
+    return leader.names.map(escapeHtml).concat(`${leader.value}${einheit}`).join("<br>");
   }
 
   function renderRoundStats(){
@@ -258,27 +268,27 @@
     roundStatsBox.innerHTML=`
       <div class="round-stat">
         <div class="round-stat-label">🔥 Schadenskönig</div>
-        <div class="round-stat-value">${escapeHtml(damage.names)} · ${damage.value} HP</div>
+        <div class="round-stat-value">${statZeilen(damage," HP")}</div>
       </div>
       <div class="round-stat">
         <div class="round-stat-label">💥 Härtester Zug</div>
-        <div class="round-stat-value">${escapeHtml(turn.names)} · ${turn.value} HP</div>
+        <div class="round-stat-value">${statZeilen(turn," HP")}</div>
       </div>
       <div class="round-stat">
         <div class="round-stat-label">🎲 Sechserkönig</div>
-        <div class="round-stat-value">${escapeHtml(sixes.names)} · ${sixes.value}×6</div>
+        <div class="round-stat-value">${statZeilen(sixes,"×6")}</div>
       </div>
       <div class="round-stat">
         <div class="round-stat-label">❤️ Vampir</div>
-        <div class="round-stat-value">${escapeHtml(healed.names)} · ${healed.value} HP</div>
+        <div class="round-stat-value">${statZeilen(healed," HP")}</div>
       </div>
       <div class="round-stat">
         <div class="round-stat-label">🤡 Eigentor</div>
-        <div class="round-stat-value">${escapeHtml(selfDamage.names)} · ${selfDamage.value} HP selbst</div>
+        <div class="round-stat-value">${statZeilen(selfDamage," HP")}</div>
       </div>
       <div class="round-stat">
         <div class="round-stat-label">🧲 Schadensmagnet</div>
-        <div class="round-stat-value">${escapeHtml(damageTaken.names)} · ${damageTaken.value} HP kassiert</div>
+        <div class="round-stat-value">${statZeilen(damageTaken," HP")}</div>
       </div>
     `;
   }

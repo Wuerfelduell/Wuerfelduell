@@ -47,6 +47,22 @@ window.WD_LANG_PACKS.en = {
     "Schaden":"Damage",
     "Leben":"HP",
     "Runde beendet":"Round over",
+
+    /* Rundenauswertung. Die Kacheltitel standen bisher in keiner Liste, und
+       die Wortersetzung machte aus "Runden-Stats" ein "Rounds-Stats" und aus
+       "Härtester Zug" ein "Härtester turn". Exakte Eintraege gehen der
+       Wortersetzung vor und beenden diese Mischformen. */
+    "Runden-Stats":"Round stats",
+    "Schadenskönig":"Damage king",
+    "Härtester Zug":"Hardest turn",
+    "Sechserkönig":"Six king",
+    "Vampir":"Vampire",
+    "Eigentor":"Own goal",
+    "Schadensmagnet":"Damage magnet",
+    "Rundensieger":"Round winner",
+    "Letzter":"Last",
+    "Siegstand:":"Score:",
+
     "Partie verlassen":"Leave match",
     "Spiel wirklich verlassen?":"Really leave the match?",
     "Weiterspielen":"Keep playing",
@@ -1017,6 +1033,16 @@ window.WD_LANG_PACKS.en = {
     [/^Alle greifen (.+) an$/i, (m, tr)=>`Everyone attacks ${m[1]}`],
     [/^Erster Kill: (.+)$/i, (m, tr)=>`First kill: ${m[1]}`],
     [/^Letzter Kill: (.+)$/i, (m, tr)=>`Last kill: ${m[1]}`],
+
+    /* Rundenauswertung. Der Siegertext und die Notiz darunter sind durch
+       <span> und <strong> in mehrere Textknoten zerlegt; uebersetzt wird
+       deshalb je Bruchstueck, nicht der ganze Satz. */
+    [/^gewinnt Runde (\d+)!$/i, (m, tr)=>`wins round ${m[1]}!`],
+    [/^für (.+)\.$/i, (m, tr)=>`for ${m[1]}.`],
+    [/^wurde Letzter, startet Runde (\d+) und darf die nächste Fähigkeit frei wählen\.$/i,
+      (m, tr)=>`finished last, starts round ${m[1]} and may pick the next ability freely.`],
+    [/^(\d+) · Rundensieger$/i, (m, tr)=>`${m[1]} · Round winner`],
+    [/^(.+) · (\d+) HP$/i, (m, tr)=>`${tr(m[1])} · ${m[2]} HP`],
     [/^(.+) benutzt$/i, (m, tr)=>`${tr(m[1])} used`],
     [/^(.+) erfolgreich$/i, (m, tr)=>`${tr(m[1])} successful`],
     [/^(.+) je Spieler$/i, (m, tr)=>`${tr(m[1])} per player`],
