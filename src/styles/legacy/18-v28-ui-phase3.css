@@ -95,16 +95,7 @@ html[data-v28-rework="2"] .campaign-hub .campaign-controls .dd-select-trigger::a
   height:18px!important}
 html[data-v28-rework="2"] .campaign-hub .campaign-controls .dd-select-trigger>span{
   font-size:13px!important;
-  letter-spacing:-.025em}
-
-/* There is no separate green bitmap in the asset pack. Reuse the real
-   Navy/Gold edge without its fill, then paint only the padding box emerald. */
-html[data-v28-rework="2"] #campaignStartBtn,
-html[data-v28-rework="2"] #duoCampaignStartBtn,
-html[data-v28-rework="2"] #trioCampaignStartBtn{
-  background-clip:padding-box!important}
-
-/* ---------- Campaign map and framed nodes ---------- */
+  letter-spacing:-.025em}/* ---------- Campaign map and framed nodes ---------- */
 html[data-v28-rework="2"] .campaign-hub .campaign-node-map{
   box-sizing:border-box!important;
   padding:20px 11px 22px!important;

@@ -135,8 +135,7 @@
     .campaign-node-map{
       gap:12px 6px!important;margin-top:9px!important}
     .campaign-node{
-      width:min(58px,100%)!important;
-      border-color:#3c4a60!important}
+      width:min(58px,100%)!important}
     .campaign-node.done{
       box-shadow:0 0 14px rgba(77,209,125,.12),inset 0 1px 0 rgba(255,255,255,.05)!important}
     .campaign-node.current{

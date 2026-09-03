@@ -100,7 +100,6 @@ html[data-v28-rework="2"] body.playing #players .player.active{
   outline:0!important;
   outline-offset:0!important}
 html[data-v28-rework="2"] body.playing #players .player.active::after{
-  background-size:100% 100%!important;
   animation:p7ActivePlayerPulse 1.8s ease-in-out infinite!important}
 @keyframes p7ActivePlayerPulse{
   0%,100%{opacity:.84;filter:brightness(.98) drop-shadow(0 0 7px rgba(39,169,255,.26))}

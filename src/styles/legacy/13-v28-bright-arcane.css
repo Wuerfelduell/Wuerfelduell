@@ -177,18 +177,13 @@ body.playing .turn-card{
   border:1px solid rgba(215,173,82,.68)!important;
   color:#fff0c6!important;
   box-shadow:0 10px 26px rgba(0,0,0,.24),inset 0 0 0 1px rgba(255,255,255,.05)!important}
-body.playing .matchbar{border-bottom-color:rgba(215,173,82,.28)}
-body.playing .player{border-color:rgba(215,173,82,.55)}
-body.playing .player.active{outline-color:#67b5ff}
-body.playing .player-name,body.playing .hp strong,body.playing .turnline,body.playing .turn-total{color:#fff5db}
+body.playing .matchbar{border-bottom-color:rgba(215,173,82,.28)}body.playing .player-name,body.playing .hp strong,body.playing .turnline,body.playing .turn-total{color:#fff5db}
 
 body.playing .status{color:#b8c7d7}
 body.playing .ability-state{background:rgba(4,22,42,.62);border-color:rgba(215,173,82,.28);color:#b9c8d8}
 body.playing .ability-state strong{color:#f0c75e}
 body.playing .campaign-task-progress{background:rgba(18,46,78,.64)!important}
-body.playing .controls button{border-color:rgba(215,173,82,.72)}
-body.playing #primaryBtn{border-color:#e0bb61}
-body.playing .die{border-color:rgba(215,173,82,.48);box-shadow:inset 0 -4px 0 rgba(0,0,0,.13),0 7px 14px rgba(0,0,0,.20),0 0 0 1px rgba(255,239,194,.36)}
+body.playing .controls button{border-color:rgba(215,173,82,.72)}body.playing .die{border-color:rgba(215,173,82,.48);box-shadow:inset 0 -4px 0 rgba(0,0,0,.13),0 7px 14px rgba(0,0,0,.20),0 0 0 1px rgba(255,239,194,.36)}
 
 /* Second ability cards */
 
@@ -226,7 +221,7 @@ body.playing .die{border-color:rgba(215,173,82,.48);box-shadow:inset 0 -4px 0 rg
 .v28-ability-picker{position:fixed;inset:0;z-index:12050;display:flex;align-items:center;justify-content:center;padding:18px;backdrop-filter:blur(9px)}
 .v28-ability-picker.hidden{display:none!important}
 .v28-ability-picker-panel{width:min(94vw,560px);border:1px solid var(--v28-gold)}
-.v28-ability-picker-head{text-align:center;border-bottom:1px solid rgba(169,119,34,.24)}
+.v28-ability-picker-head{text-align:center}
 .v28-ability-picker-kicker{font-size:10px;font-weight:900;letter-spacing:.17em;text-transform:uppercase}
 .v28-ability-picker-title{font-family:Georgia,"Times New Roman",serif;font-size:28px;font-weight:800}
 .v28-ability-picker-list{overflow:auto;display:grid}

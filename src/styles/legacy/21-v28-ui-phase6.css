@@ -44,18 +44,7 @@ html[data-v28-rework="2"] #masteryCloseBtn:focus-visible{
 html[data-v28-rework="2"] .screen-topbar>button:focus-visible,
 html[data-v28-rework="2"] #masteryCloseBtn:focus-visible{
   outline:2px solid rgba(88,202,255,.88)!important;
-  outline-offset:2px!important}
-
-/* ---------- Real emerald encounter frame; icon and label stay dynamic ---------- */
-html[data-v28-rework="2"] #campaignStartBtn,
-html[data-v28-rework="2"] #duoCampaignStartBtn,
-html[data-v28-rework="2"] #trioCampaignStartBtn{
-
-  border-image-source:var(--p6-encounter-button)!important;
-  border-image-slice:130 260 130 260 fill!important;
-  border-image-width:30px 68px!important;
-  border-image-repeat:stretch!important}
-html[data-v28-rework="2"] #campaignStartBtn:not(:disabled):hover,
+  outline-offset:2px!important}html[data-v28-rework="2"] #campaignStartBtn:not(:disabled):hover,
 html[data-v28-rework="2"] #duoCampaignStartBtn:not(:disabled):hover,
 html[data-v28-rework="2"] #trioCampaignStartBtn:not(:disabled):hover{
   filter:brightness(1.06) drop-shadow(0 8px 13px rgba(4,58,37,.31))}

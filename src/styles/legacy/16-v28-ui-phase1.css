@@ -232,11 +232,7 @@ html[data-v28-rework="2"] .campaign-hub .campaign-node.current{
 html[data-v28-rework="2"] .campaign-hub .campaign-node.current::after,
 html[data-v28-rework="2"] .campaign-hub .campaign-node.selected::after{
   inset:-10px!important;
-  background-image:var(--p1-selected-node)!important}
-html[data-v28-rework="2"] .campaign-hub .campaign-node .node-xp-badge{
-  border-color:rgba(255,220,119,.42)!important}
-
-/* ---------- Encounter details; boss option A ---------- */
+  background-image:var(--p1-selected-node)!important}/* ---------- Encounter details; boss option A ---------- */
 html[data-v28-rework="2"] .campaign-node-detail{
   box-sizing:border-box!important;
   margin-top:12px!important;
@@ -278,14 +274,7 @@ html[data-v28-rework="2"] .campaign-node-detail.v28-boss-detail{
   background:
     radial-gradient(circle at 50% 0%,rgba(211,42,55,.18),transparent 48%),
     linear-gradient(160deg,#3b0d1b,#200713)!important;
-  box-shadow:0 16px 34px rgba(47,4,15,.22)!important}
-html[data-v28-rework="2"] .campaign-node-detail.v28-boss-detail .node-detail-head{
-
-  border-image-source:var(--p1-boss-bar)!important;
-  border-image-slice:122 190 122 190 fill!important;
-  border-image-width:22px 36px!important;
-  border-image-repeat:stretch!important}
-html[data-v28-rework="2"] .campaign-node-detail.v28-boss-detail .node-detail-title{
+  box-shadow:0 16px 34px rgba(47,4,15,.22)!important}html[data-v28-rework="2"] .campaign-node-detail.v28-boss-detail .node-detail-title{
   color:#fff4df!important;
   text-shadow:0 1px 3px rgba(32,0,7,.76)}
 html[data-v28-rework="2"] .campaign-node-detail.v28-boss-detail .node-detail-sub{
@@ -477,10 +466,7 @@ html[data-v28-rework="2"] #profilesScreen .profile-name-edit{
 html[data-v28-rework="2"] #profilesScreen .profile-card{
   border:1px solid rgba(177,128,40,.54)!important;
   border-image:none!important;
-  color:var(--p1-ink)!important}
-html[data-v28-rework="2"] #profilesScreen .profile-card-top{
-  border-bottom:1px solid rgba(214,165,60,.62)!important}
-html[data-v28-rework="2"] #profilesScreen .profile-name-line{
+  color:var(--p1-ink)!important}html[data-v28-rework="2"] #profilesScreen .profile-name-line{
   color:#fff6df!important;
   font-size:20px!important}
 html[data-v28-rework="2"] #profilesScreen .profile-mini{
@@ -593,10 +579,7 @@ html[data-v28-rework="2"] body.playing #players .player.v28-boss-player{
   border-image-source:var(--p1-boss-player)!important;
   border-image-slice:110 140 110 140 fill!important;
   border-image-width:20px 23px!important;
-  background:#2b0b17!important}
-html[data-v28-rework="2"] body.playing #players .player.active::after{
-  background-image:var(--p1-player-active)!important}
-html[data-v28-rework="2"] body.playing #players .player-name{
+  background:#2b0b17!important}html[data-v28-rework="2"] body.playing #players .player-name{
   font-size:15px!important}
 html[data-v28-rework="2"] body.playing #players .hp{
   gap:4px!important}

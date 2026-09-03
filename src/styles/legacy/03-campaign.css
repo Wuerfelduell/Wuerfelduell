@@ -9,7 +9,7 @@
     .campaign-world-name{display:block;font-size:13px;font-weight:1000}
     .campaign-world-state{display:block;margin-top:3px;color:var(--muted);font-size:9px;font-weight:900;text-transform:uppercase;letter-spacing:.05em}
     .campaign-world-desc{margin:0 0 12px;padding:9px 10px;border-radius:12px;background:#101620;border:1px solid rgba(255,255,255,.06);color:var(--muted);font-size:11px;line-height:1.45}
-    .campaign-top{display:grid;margin-bottom:12px}
+    .campaign-top{display:grid}
     .campaign-top .menu-info-card{min-width:0}
     .campaign-label{color:var(--muted);font-size:10px;font-weight:1000;text-transform:uppercase;letter-spacing:.08em;margin-bottom:5px}
     .campaign-value{font-size:15px;font-weight:1000;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
