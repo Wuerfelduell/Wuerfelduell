@@ -20,8 +20,17 @@ raten.
 `39-v28-campaign-polish`, `40-v28-screen-restoration`,
 `41-v28-world-asset-pack`, `js/39-campaign-world-themes.js`,
 `js/37-duo-boss-rush.js` und `assets/ui/v28/png/worlds/`; die
-Aufräumarbeit in `13-v28-bright-arcane` bis `31-v28-marked-ui`, `36` und
-`37`. Vor jedem Push `git pull --rebase`.
+Aufräumarbeit in `13-v28-grundlage`, `16-v28-phasen`,
+`29-v28-korrekturen`, `36` und `37`. Vor jedem Push `git pull --rebase`.
+
+**Achtung, die Dateinamen haben sich geändert.** Der V28-Stapel war 19
+Dateien und ist seit V28.11.5 auf drei zusammengelegt:
+`13-v28-grundlage` (bright-arcane, asset-system, ui-rework),
+`16-v28-phasen` (phase1 bis phase12 plus dice-designs) und
+`29-v28-korrekturen` (hotfix, combat-lock, marked-ui). Zusammengelegt
+wurden nur in `styleOrder` benachbarte Dateien, die Kaskade ist deshalb
+Regel für Regel dieselbe. Im Text steht über jedem Abschnitt, aus
+welcher Datei er stammt.
 
 ---
 

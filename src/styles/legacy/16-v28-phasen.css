@@ -1,0 +1,3723 @@
+/* ============================================================
+   V28 · Phasen 1 bis 12
+   ------------------------------------------------------------
+   Chronologisch entstanden, jede Phase ein Nachtrag zur vorigen. Die
+   Reihenfolge ist Teil der Bedeutung und darf nicht umsortiert werden.
+   27-v28-dice-designs stand in styleOrder zwischen Phase 12 und dem
+   Hotfix und behaelt diesen Platz.
+
+   Zusammengelegt in V28.11.5 aus 13 Einzeldateien. Die
+   Reihenfolge entspricht exakt der bisherigen styleOrder; im gebauten
+   Buendel haben sich dadurch nur die Trennkommentare geaendert, keine
+   einzige Regel.
+   ============================================================ */
+
+/* ---------- vormals 16-v28-ui-phase1.css ---------- */
+/* ============================================================
+   DiceDuel V28.2.1 — UI Rework Phase 1
+   Screenshot pass: campaign, setup, combat, settings, rules,
+   achievements, profiles and the second-ability draft.
+
+   This file deliberately loads after the V28.2.0 layers. It only
+   changes presentation and leaves game/save/campaign logic intact.
+   ============================================================ */
+
+:root{
+  --p1-ivory-card:url("../assets/ui/v28/png/frames/ivory-card-small.webp?v=28.2.1");
+  --p1-navy-button:url("../assets/ui/v28/png/frames/navy-button-horizontal.webp?v=28.2.1");
+  --p1-gold-button:url("../assets/ui/v28/png/frames/gold-special-button.webp?v=28.2.1");
+  --p1-danger-button:url("../assets/ui/v28/png/frames/danger-button.webp?v=28.2.1");
+  --p1-ability-card:url("../assets/ui/v28/png/frames/ability-choice-card.webp?v=28.2.1");
+  --p1-player-card:url("../assets/ui/v28/png/frames/player-card-combat.webp?v=28.2.1");
+  --p1-player-active:url("../assets/ui/v28/png/frames/active-player-glow.webp?v=28.2.1");
+  --p1-boss-player:url("../assets/ui/v28/png/frames/boss-player-card.webp?v=28.2.1");
+  --p1-boss-bar:url("../assets/ui/v28/png/frames/boss.webp?v=28.2.1");
+  --p1-achievement:url("../assets/ui/v28/png/frames/achievement-trophy-card.webp?v=28.2.1");
+  --p1-selected-node:url("../assets/ui/v28/png/frames/campaign-node-selected.webp?v=28.2.1");
+  --p1-gold:#d6a53c;
+  --p1-gold-light:#ffe59a;
+  --p1-ink:#082a55;
+  --p1-muted:#5b6d82;
+  --p1-ivory:#fff9e7;
+  --p1-navy:#071f4b}
+
+/* ---------- Shared repaired SVG presentation ---------- */
+html[data-v28-rework="2"] img[src^="assets/ui/v28/"]{
+  max-width:100%}
+html[data-v28-rework="2"] .p1-inline-icon,
+html[data-v28-rework="2"] .p1-rule-icon,
+html[data-v28-rework="2"] .p1-action-icon,
+html[data-v28-rework="2"] .p1-reward-icon{
+  display:inline-block;
+  flex:0 0 auto;
+  object-fit:contain;
+  pointer-events:none;
+  user-select:none}
+html[data-v28-rework="2"] .p1-inline-icon{
+  width:1.22em;height:1.22em;margin-right:.38em;vertical-align:-.24em}
+html[data-v28-rework="2"] .p1-action-icon{
+  width:27px;height:27px;margin-right:8px;vertical-align:-7px}
+html[data-v28-rework="2"] .p1-action-button{
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  gap:8px!important}
+html[data-v28-rework="2"] .p1-action-button .p1-action-icon{
+  margin:0!important}
+html[data-v28-rework="2"] .p1-reward-icon{
+  width:18px;height:18px;margin-right:4px;vertical-align:-4px}
+
+/* ---------- Inputs and custom selects ---------- */
+html[data-v28-rework="2"] .dd-select-trigger{
+  box-sizing:border-box!important;
+  width:100%!important;
+  min-width:0!important;
+  min-height:58px!important;
+  display:grid!important;
+  grid-template-columns:36px minmax(0,1fr) 24px!important;
+  align-items:center!important;
+  gap:8px!important;
+
+  border-image-source:var(--p1-ivory-card)!important;
+  border-image-slice:76 168 76 168 fill!important;
+  border-image-width:9px 18px!important;
+  border-image-repeat:stretch!important;
+  border-radius:0!important;
+  color:var(--p1-ink)!important;
+  background:var(--p1-ivory)!important;
+  box-shadow:0 4px 12px rgba(29,57,83,.08)!important;
+  font-weight:850!important}
+html[data-v28-rework="2"] .dd-select-trigger .dd-trigger-icon{
+  width:34px!important;height:34px!important;
+  filter:drop-shadow(0 2px 3px rgba(7,31,75,.18))}
+html[data-v28-rework="2"] .dd-select-trigger::after{
+  width:24px!important;height:24px!important;
+  background-image:url("../assets/ui/v28/svg/navigation/chevron-down.svg?v=28.2.1")!important}
+html[data-v28-rework="2"] .dd-select-trigger>span{
+  font-size:15px;
+  line-height:1.15}
+html[data-v28-rework="2"] .dd-select-option{
+  min-height:60px!important;
+  grid-template-columns:44px minmax(0,1fr) 24px!important;
+  padding:7px 16px!important;
+  background:var(--p1-ivory-card) center/100% 100% no-repeat!important}
+html[data-v28-rework="2"] .dd-select-option.selected{
+  background:var(--p1-navy-button) center/100% 100% no-repeat!important}
+html[data-v28-rework="2"] .dd-select-option .dd-option-icon{
+  width:42px!important;height:42px!important}
+
+/* ---------- Campaign mode picker ---------- */
+html[data-v28-rework="2"] .campaign-mode-panel .campaign-mode-grid{
+  gap:12px!important}
+html[data-v28-rework="2"] .campaign-mode-panel .campaign-mode-choice{
+  min-height:104px!important;
+  grid-template-columns:62px minmax(0,1fr)!important;
+  column-gap:13px!important;
+  padding:15px 42px!important;
+  background:var(--p1-ivory-card) center/100% 100% no-repeat!important;
+  color:var(--p1-ink)!important}
+html[data-v28-rework="2"] .campaign-mode-choice>.dd-choice-icon{
+  width:58px!important;height:58px!important;
+  filter:drop-shadow(0 3px 5px rgba(8,39,81,.22))}
+html[data-v28-rework="2"] .campaign-mode-choice>strong{
+  color:var(--p1-ink)!important;
+  font:800 25px/1.05 Georgia,"Times New Roman",serif!important}
+html[data-v28-rework="2"] .campaign-mode-choice>span{
+  color:#5b6e82!important;
+  font-size:12px!important;
+  font-weight:750!important}
+html[data-v28-rework="2"] #campaignModePickerClose{
+  width:100%!important;
+  min-height:58px!important;
+  border:0!important;border-radius:0!important;
+  padding:12px 42px!important;
+  color:#fff3d2!important;
+  background:var(--p1-navy-button) center/100% 100% no-repeat!important;
+  box-shadow:none!important;
+  text-shadow:0 1px 3px rgba(2,16,38,.65)!important}
+
+/* ---------- Campaign hub: cards, controls and map ---------- */
+html[data-v28-rework="2"] .campaign-hub .campaign-world-tabs{
+  gap:9px!important;
+  padding:3px 2px 8px!important}
+html[data-v28-rework="2"] .campaign-hub .campaign-world-btn{
+  flex:0 0 108px!important;
+  min-height:78px!important;
+  box-sizing:border-box!important;
+
+  border-image-source:var(--p1-ivory-card)!important;
+  border-image-slice:76 168 76 168 fill!important;
+  border-image-width:13px 18px!important;
+  border-image-repeat:stretch!important;
+  border-radius:0!important;
+  padding:5px 1px!important;
+  background:var(--p1-ivory)!important}
+html[data-v28-rework="2"] .campaign-hub .campaign-world-btn.active{
+  border:0!important;
+  padding:15px 24px!important;
+  background:var(--p1-navy-button) center/100% 100% no-repeat!important;
+  color:#fff2cf!important}
+html[data-v28-rework="2"] .campaign-hub .campaign-world-btn.done:not(.active){
+  filter:drop-shadow(0 3px 5px rgba(39,112,70,.10))}
+html[data-v28-rework="2"] .campaign-hub .campaign-top{
+  grid-template-columns:minmax(0,1fr) minmax(122px,.68fr)!important;
+  gap:9px!important;
+  margin-bottom:10px!important}
+html[data-v28-rework="2"] .campaign-hub .campaign-top .menu-info-card{
+  box-sizing:border-box!important;
+  padding:8px 12px!important;
+
+  border-image-source:var(--p1-ivory-card)!important;
+  border-image-slice:76 168 76 168 fill!important;
+  border-image-width:12px 19px!important;
+  border-image-repeat:stretch!important;
+  border-radius:0!important;
+  background:var(--p1-ivory)!important;
+  box-shadow:0 5px 14px rgba(28,58,88,.08)!important}
+html[data-v28-rework="2"] .campaign-hub .campaign-top .campaign-label{
+  display:flex;
+  align-items:center;
+  gap:5px;
+  color:#64758a!important;
+  font-size:9px!important}
+html[data-v28-rework="2"] .campaign-hub .campaign-top .campaign-label .p1-inline-icon{
+  width:18px;height:18px;margin:0}
+html[data-v28-rework="2"] .campaign-hub .campaign-top .campaign-value{
+  color:var(--p1-ink)!important}
+html[data-v28-rework="2"] .campaign-hub .campaign-controls{
+  gap:9px!important;
+  margin-bottom:10px!important}
+html[data-v28-rework="2"] .campaign-hub .campaign-controls label{
+  color:#718094!important;
+  font-size:10px!important}
+html[data-v28-rework="2"] .campaign-hub .campaign-mastery-strip{
+  display:grid!important;
+  grid-template-columns:minmax(0,1fr) minmax(150px,.72fr)!important;
+  align-items:stretch!important;
+  gap:9px!important;
+  margin:0 0 10px!important}
+html[data-v28-rework="2"] .campaign-hub .campaign-mastery-xp{
+  min-height:62px!important;
+  display:flex!important;
+  flex-direction:column!important;
+  justify-content:center!important;
+  padding:10px 30px!important;
+  border:0!important;border-radius:0!important;
+  background:var(--p1-navy-button) center/100% 100% no-repeat!important;
+  box-shadow:none!important}
+html[data-v28-rework="2"] .campaign-hub .campaign-mastery-xp-label{
+  font-size:9px!important;
+  text-transform:uppercase;
+  letter-spacing:.1em}
+html[data-v28-rework="2"] .campaign-hub .campaign-mastery-xp strong{
+  font-size:13px!important;
+  color:#fff4d3!important}
+html[data-v28-rework="2"] .campaign-hub .campaign-mastery-btn{
+  min-height:62px!important;
+  font-size:15px!important}
+html[data-v28-rework="2"] .campaign-hub .campaign-start-row{
+  margin:8px 0 13px!important}
+html[data-v28-rework="2"] .campaign-hub .campaign-start-row .good{
+  min-height:64px!important;
+  border:0!important;border-radius:0!important;
+  padding:13px 42px!important;
+  color:#fff3d2!important;
+  background:var(--p1-navy-button) center/100% 100% no-repeat!important;
+  box-shadow:none!important;
+  text-shadow:0 1px 3px rgba(2,16,38,.66)!important}
+html[data-v28-rework="2"] .campaign-hub .campaign-node-map{
+  grid-template-columns:repeat(5,minmax(46px,1fr))!important;
+  gap:16px 7px!important;
+  margin-top:10px!important;
+  padding:18px 10px 20px!important;
+  border:1px solid rgba(214,165,60,.72)!important;
+  border-radius:21px!important;
+  background:
+    radial-gradient(circle at 50% 0%,rgba(39,169,255,.17),transparent 48%),
+    linear-gradient(155deg,#0b3568,#051936)!important;
+  box-shadow:inset 0 0 0 2px rgba(255,255,255,.035),0 9px 24px rgba(8,40,76,.13)!important}
+
+html[data-v28-rework="2"] .campaign-hub .campaign-node.done{
+  border-color:#6ccc91!important;
+  background:linear-gradient(155deg,#23624a,#113a2f)!important}
+html[data-v28-rework="2"] .campaign-hub .campaign-node.current{
+  border-color:#f6d074!important;
+  background:linear-gradient(155deg,#215d4b,#123b34)!important;
+  color:#ffe28f!important}
+html[data-v28-rework="2"] .campaign-hub .campaign-node.current::after,
+html[data-v28-rework="2"] .campaign-hub .campaign-node.selected::after{
+  inset:-10px!important;
+  background-image:var(--p1-selected-node)!important}/* ---------- Encounter details; boss option A ---------- */
+html[data-v28-rework="2"] .campaign-node-detail{
+  box-sizing:border-box!important;
+  margin-top:12px!important;
+  min-height:0!important;
+  border:1px solid rgba(177,128,40,.54)!important;
+  border-image:none!important;
+  border-radius:18px!important;
+  padding:13px!important;
+  overflow:hidden!important;
+  color:var(--p1-ink)!important;
+  background:linear-gradient(160deg,rgba(255,253,246,.98),rgba(244,233,208,.98))!important;
+  box-shadow:0 10px 24px rgba(33,63,92,.10)!important}
+html[data-v28-rework="2"] .campaign-node-detail .node-detail-head{
+  align-items:center!important;
+  gap:12px!important;
+  margin:-3px -2px 10px!important;
+  padding:9px 10px!important;
+  border-bottom:1px solid rgba(171,124,38,.20)!important}
+html[data-v28-rework="2"] .campaign-node-detail .node-detail-desc{
+  margin:0 0 9px!important;
+  padding:10px 11px!important;
+  border-radius:11px;
+  color:#56697e!important;
+  background:rgba(255,255,255,.55)!important}
+html[data-v28-rework="2"] .campaign-node-detail .node-detail-row{
+  display:block;
+  border:1px solid rgba(130,96,38,.16)!important;
+  color:#3f5369!important;
+  background:rgba(255,251,239,.72)!important}
+html[data-v28-rework="2"] .campaign-node-detail .node-detail-row .p1-inline-icon{
+  width:20px;height:20px;margin-right:6px}
+html[data-v28-rework="2"] .campaign-node-detail.v28-boss-detail{
+  min-height:0!important;
+  padding:12px!important;
+  border:1px solid rgba(230,151,67,.38)!important;
+  border-image:none!important;
+  border-radius:18px!important;
+  color:#fff2df!important;
+  background:
+    radial-gradient(circle at 50% 0%,rgba(211,42,55,.18),transparent 48%),
+    linear-gradient(160deg,#3b0d1b,#200713)!important;
+  box-shadow:0 16px 34px rgba(47,4,15,.22)!important}html[data-v28-rework="2"] .campaign-node-detail.v28-boss-detail .node-detail-title{
+  color:#fff4df!important;
+  text-shadow:0 1px 3px rgba(32,0,7,.76)}
+html[data-v28-rework="2"] .campaign-node-detail.v28-boss-detail .node-detail-sub{
+  color:#f4cf89!important}
+html[data-v28-rework="2"] .campaign-node-detail.v28-boss-detail .node-detail-state{
+  color:#fff0c7!important;
+  border:1px solid rgba(245,194,97,.38)!important;
+  background:rgba(27,2,8,.68)!important}
+html[data-v28-rework="2"] .campaign-node-detail.v28-boss-detail .node-detail-desc{
+  color:#f2dfe1!important;
+  background:rgba(18,2,7,.33)!important;
+  border:1px solid rgba(242,190,92,.18)!important}
+html[data-v28-rework="2"] .campaign-node-detail.v28-boss-detail .node-detail-row{
+  color:#f7e6df!important;
+  border-color:rgba(242,190,92,.20)!important;
+  background:rgba(17,2,7,.34)!important}
+html[data-v28-rework="2"] .campaign-node-detail.v28-boss-detail .node-detail-phase{
+  border-color:rgba(255,103,119,.28)!important;
+  background:rgba(92,13,27,.20)!important}
+html[data-v28-rework="2"] .campaign-node-detail.v28-boss-detail .node-detail-xp{
+  border-color:rgba(255,220,117,.28)!important;
+  background:rgba(255,211,91,.055)!important}
+html[data-v28-rework="2"] .campaign-node-detail.v28-prestige-detail:not(.v28-boss-detail){
+  padding:12px!important;
+  border:1px solid rgba(214,165,60,.48)!important;
+  border-image:none!important;
+  border-radius:18px!important;
+  background:linear-gradient(155deg,#123b70,#071d43)!important;
+  color:#fff3d5!important}
+html[data-v28-rework="2"] .campaign-node-detail.v28-prestige-detail:not(.v28-boss-detail) .node-detail-desc,
+html[data-v28-rework="2"] .campaign-node-detail.v28-prestige-detail:not(.v28-boss-detail) .node-detail-row{
+  color:#e2e8f1!important;
+  background:rgba(3,17,39,.34)!important;
+  border-color:rgba(214,165,60,.22)!important}
+
+/* ---------- Second ability: icon left, selection right ---------- */
+
+html[data-v28-rework="2"] .second-ability-card{
+  width:100%!important;
+  display:grid!important;
+  column-gap:8px!important;
+  row-gap:7px!important;
+  padding:6px 7px 6px 2px!important;
+  border-image-slice:84 165 84 230 fill!important;
+  border-image-width:17px 26px 17px 42px!important;
+  border-image-repeat:stretch!important;
+  border-radius:0!important;
+  text-align:left!important}
+html[data-v28-rework="2"] .second-ability-card>.dd-ability-icon{
+  margin:0!important}
+
+html[data-v28-rework="2"] .second-ability-card>.name{
+  color:var(--p1-ink)!important;
+  font:800 21px/1.1 Georgia,"Times New Roman",serif!important}
+html[data-v28-rework="2"] .second-ability-card>.p1-choice-indicator{
+  grid-column:4!important;grid-row:1/3!important;
+  width:31px;height:44px;
+  align-self:center;
+  justify-self:center;
+  border:3px solid #0a2d5b;
+  border-radius:50%;
+  background:linear-gradient(180deg,#fffdf6,#e9dec6);
+  box-shadow:inset 0 0 0 3px rgba(255,255,255,.75),0 2px 5px rgba(7,31,75,.16)}
+html[data-v28-rework="2"] .second-ability-card>.desc{
+  grid-column:2/4!important;grid-row:2!important;
+  margin:0!important;
+  padding:9px 10px!important;
+  border-radius:10px!important;
+  color:#41546b!important;
+  background:rgba(255,253,247,.78)!important;
+  text-align:center!important}
+
+/* ---------- Settings ---------- */
+html[data-v28-rework="2"] #settingsScreen>.menu-info-card{
+  padding:10px 12px!important;
+  border:1px solid rgba(177,128,40,.40)!important;
+  border-radius:18px!important;
+  background:rgba(255,252,243,.70)!important}
+html[data-v28-rework="2"] #settingsScreen .setting-row{
+  grid-template-columns:minmax(0,1fr) minmax(220px,.92fr)!important;
+  gap:13px!important;
+  padding:14px 2px!important;
+  border-bottom:1px solid rgba(171,124,38,.18)!important}
+html[data-v28-rework="2"] #settingsScreen .setting-row:last-child{
+  border-bottom:0!important}
+html[data-v28-rework="2"] #settingsScreen .setting-label{
+  color:var(--p1-ink)!important;
+  font-size:16px!important}
+html[data-v28-rework="2"] #settingsScreen .setting-desc{
+  color:#64768a!important}
+html[data-v28-rework="2"] #settingsScreen .dd-select-trigger{
+  min-height:62px!important}
+
+/* ---------- Rules ---------- */
+
+html[data-v28-rework="2"] #rulesScreen .menu-info-card{
+  box-sizing:border-box!important;
+
+  border-image-source:var(--p1-ivory-card)!important;
+  border-image-slice:76 168 76 168 fill!important;
+  border-image-width:15px 22px!important;
+  border-image-repeat:stretch!important;
+  border-radius:0!important;
+  color:var(--p1-ink)!important;
+  background:var(--p1-ivory)!important;
+  box-shadow:0 6px 16px rgba(29,58,87,.08)!important}
+html[data-v28-rework="2"] #rulesScreen .menu-info-card>strong{
+  display:flex!important;
+  align-items:center!important;
+  gap:9px!important;
+  color:#d7a638!important;
+  font-size:18px!important}
+html[data-v28-rework="2"] #rulesScreen .p1-rule-icon{
+  width:31px;height:31px;
+  filter:drop-shadow(0 2px 3px rgba(8,40,82,.14))}
+html[data-v28-rework="2"] #rulesScreen .menu-info-card .small{
+  color:#6a7a8e!important;
+  font-size:13px!important;
+  line-height:1.5!important}
+
+/* ---------- Achievements ---------- */
+html[data-v28-rework="2"] #achievementsScreen .achievement-list{
+  gap:16px!important}
+html[data-v28-rework="2"] #achievementsScreen .achievement-card{
+  box-sizing:border-box!important;
+  min-height:170px!important;
+
+  border-image-source:var(--p1-achievement)!important;
+  border-image-slice:140 155 128 155 fill!important;
+  border-image-width:26px 34px!important;
+  border-image-repeat:stretch!important;
+  border-radius:0!important;
+  color:#fff1cf!important;
+  background:#092b58!important;
+  box-shadow:0 10px 24px rgba(3,25,55,.18)!important}
+html[data-v28-rework="2"] #achievementsScreen .achievement-head{
+  align-items:center!important;
+  gap:10px!important}
+html[data-v28-rework="2"] #achievementsScreen .achievement-name{
+  min-width:0;
+  display:flex!important;
+  align-items:center!important;
+  color:#fff4da!important;
+  font:800 18px/1.15 Georgia,"Times New Roman",serif!important}
+html[data-v28-rework="2"] #achievementsScreen .achievement-name .dd-inline-icon{
+  width:28px;height:28px;margin-right:7px}
+html[data-v28-rework="2"] #achievementsScreen .achievement-reward{
+  min-height:31px;
+  display:inline-flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  padding:5px 20px!important;
+  border:0!important;border-radius:0!important;
+  color:#2c1904!important;
+  background:var(--p1-gold-button) center/100% 100% no-repeat!important;
+  font-size:10px!important}
+html[data-v28-rework="2"] #achievementsScreen .achievement-desc{
+  margin-top:8px!important;
+  color:#e0e6ee!important;
+  font-size:13px!important}
+
+html[data-v28-rework="2"] #achievementsScreen .achievement-owner{
+  padding:5px 9px!important;
+  border-color:rgba(184,202,225,.22)!important;
+  background:rgba(2,15,35,.55)!important;
+  color:#a7b5c7!important}
+
+/* ---------- Profiles ---------- */
+html[data-v28-rework="2"] #profilesScreen .profile-create{
+  grid-template-columns:minmax(0,1fr) minmax(150px,.42fr)!important;
+  gap:10px!important;
+  margin-bottom:14px!important}
+html[data-v28-rework="2"] #profilesScreen #newProfileName,
+html[data-v28-rework="2"] #profilesScreen .profile-name-edit{
+  box-sizing:border-box!important;
+  width:100%!important;
+  min-height:58px!important;
+  padding:8px 18px!important;
+
+  border-image-source:var(--p1-ivory-card)!important;
+  border-image-slice:76 168 76 168 fill!important;
+  border-image-width:13px 24px!important;
+  border-image-repeat:stretch!important;
+  border-radius:0!important;
+  color:var(--p1-ink)!important;
+  background:var(--p1-ivory)!important;
+  box-shadow:0 4px 12px rgba(29,57,83,.08)!important;
+  font:inherit!important}
+html[data-v28-rework="2"] #profilesScreen .profile-card{
+  border:1px solid rgba(177,128,40,.54)!important;
+  border-image:none!important;
+  color:var(--p1-ink)!important}html[data-v28-rework="2"] #profilesScreen .profile-name-line{
+  color:#fff6df!important;
+  font-size:20px!important}
+html[data-v28-rework="2"] #profilesScreen .profile-mini{
+  color:#c3d0df!important;
+  white-space:normal!important;
+  line-height:1.35!important}
+html[data-v28-rework="2"] #profilesScreen .profile-actions{
+  grid-template-columns:1fr 1fr!important;
+  gap:11px!important;
+  align-items:end!important}
+html[data-v28-rework="2"] #profilesScreen .profile-actions>div:first-child{
+  grid-column:1/-1}
+html[data-v28-rework="2"] #profilesScreen .profile-actions label{
+  color:#68798d!important;
+  font-size:10px!important;
+  font-weight:850!important;
+  text-transform:uppercase;
+  letter-spacing:.06em}
+html[data-v28-rework="2"] #profilesScreen .profile-delete{
+  grid-column:1/-1!important;
+  width:100%!important}
+html[data-v28-rework="2"] #profilesScreen .unlock-strip-title{
+  margin:15px 0 6px!important;
+  color:#68798d!important;
+  font-size:10px!important;
+  font-weight:900!important;
+  text-transform:uppercase;
+  letter-spacing:.08em}
+html[data-v28-rework="2"] #profilesScreen .unlock-strip{
+  border:1px solid rgba(214,165,60,.42)!important}
+html[data-v28-rework="2"] #profilesScreen .unlock-chip{
+  padding:5px 8px!important;
+  color:#dfe7f1!important;
+  border-color:rgba(183,202,226,.24)!important;
+  background:rgba(2,15,34,.54)!important}
+html[data-v28-rework="2"] #profilesScreen .unlock-chip.locked{
+  opacity:.58!important}
+
+/* ---------- Local setup ---------- */
+html[data-v28-rework="2"] #setup .local-mode-card,
+html[data-v28-rework="2"] #setup .setup-player{
+  box-sizing:border-box!important;
+  padding:11px 13px 13px!important;
+
+  border-image-source:var(--p1-ivory-card)!important;
+  border-image-slice:76 168 76 168 fill!important;
+  border-image-width:16px 24px!important;
+  border-image-repeat:stretch!important;
+  border-radius:0!important;
+  color:var(--p1-ink)!important;
+  background:var(--p1-ivory)!important;
+  box-shadow:0 6px 16px rgba(28,58,87,.09)!important}
+html[data-v28-rework="2"] #setup .local-mode-card label,
+html[data-v28-rework="2"] #setup .setup-player label{
+  color:var(--p1-ink)!important}
+html[data-v28-rework="2"] #setup .local-mode-info,
+html[data-v28-rework="2"] #setup .setup-player .ability-desc{
+  color:#5f7186!important}
+html[data-v28-rework="2"] #setup .setup-row{
+  display:grid!important;
+  gap:9px!important;
+  align-items:stretch!important;
+  margin-bottom:11px!important}
+html[data-v28-rework="2"] #setup .setup-row>label{
+  grid-column:1/-1;
+  display:grid;
+  gap:5px;
+  color:#68798d!important;
+  font-size:11px;
+  font-weight:850}
+html[data-v28-rework="2"] #setup #makeNames,
+html[data-v28-rework="2"] #setup #setupProfilesBtn{
+  min-height:56px!important;
+  border:0!important;border-radius:0!important;
+  padding:10px 30px!important;
+  color:#fff3d2!important;
+  background:var(--p1-navy-button) center/100% 100% no-repeat!important;
+  box-shadow:none!important}
+html[data-v28-rework="2"] #setup .setup-grid{
+  grid-template-columns:repeat(2,minmax(0,1fr))!important;
+  gap:9px!important}html[data-v28-rework="2"] #setup .controls{
+  display:grid!important;
+  grid-template-columns:1fr 1fr!important;
+  gap:9px!important}
+html[data-v28-rework="2"] #setup #rollAbilities{
+  min-height:64px!important;
+  border:0!important;border-radius:0!important;
+  padding:12px 34px!important;
+  color:var(--p1-ink)!important;
+  background:var(--p1-gold-button) center/100% 100% no-repeat!important;
+  box-shadow:none!important}
+html[data-v28-rework="2"] #setup #startGame{
+  min-height:64px!important}
+
+/* ---------- Combat: light sizing pass, repaired icons ---------- */
+html[data-v28-rework="2"] body.playing .encounter-rule-banner{
+  box-sizing:border-box!important}
+
+html[data-v28-rework="2"] body.playing #players .player{
+  min-height:128px!important;
+  padding:8px 5px 10px!important;
+
+  border-image-source:var(--p1-player-card)!important;
+  border-image-slice:96 122 96 122 fill!important;
+  border-image-width:19px 22px!important;
+  border-image-repeat:stretch!important;
+  background:#082751!important}
+html[data-v28-rework="2"] body.playing #players .player.v28-boss-player{
+
+  border-image-source:var(--p1-boss-player)!important;
+  border-image-slice:110 140 110 140 fill!important;
+  border-image-width:20px 23px!important;
+  background:#2b0b17!important}html[data-v28-rework="2"] body.playing #players .player-name{
+  font-size:15px!important}
+html[data-v28-rework="2"] body.playing #players .hp{
+  gap:4px!important}
+html[data-v28-rework="2"] body.playing #players .hp .dd-inline-icon{
+  width:25px;height:25px;margin-right:2px}
+html[data-v28-rework="2"] body.playing #players .ability-tag .dd-inline-icon{
+  width:17px;height:17px;margin-right:4px}
+html[data-v28-rework="2"] body.playing .ability-state,
+html[data-v28-rework="2"] body.playing .campaign-task-progress{
+  padding:9px 11px!important;
+  border-radius:13px!important;
+  background:linear-gradient(155deg,rgba(7,36,72,.88),rgba(4,22,49,.90))!important}
+html[data-v28-rework="2"] body.playing .ability-state{
+  font-size:12px!important}
+html[data-v28-rework="2"] body.playing .campaign-task-head{
+  margin-bottom:6px!important}
+
+/* ---------- Mobile screenshot target ---------- */
+@media(max-width:540px){
+  html[data-v28-rework="2"] .dd-select-trigger{
+    min-height:56px!important;
+    grid-template-columns:34px minmax(0,1fr) 22px!important;
+    border-width:8px 16px!important;
+    border-image-width:8px 16px!important}
+  html[data-v28-rework="2"] .dd-select-trigger .dd-trigger-icon{
+    width:32px!important;height:32px!important}
+  html[data-v28-rework="2"] .campaign-mode-panel .campaign-mode-choice{
+    min-height:98px!important;
+    padding:14px 30px!important}
+  html[data-v28-rework="2"] .campaign-hub .campaign-world-btn{
+    flex-basis:104px!important}
+  html[data-v28-rework="2"] .campaign-hub .campaign-top{
+    grid-template-columns:minmax(0,1fr) minmax(118px,.72fr)!important}
+  html[data-v28-rework="2"] .campaign-hub .campaign-controls,
+  html[data-v28-rework="2"] .campaign-hub .trio-controls{
+    grid-template-columns:repeat(2,minmax(0,1fr))!important}
+  html[data-v28-rework="2"] .campaign-hub .campaign-mastery-strip{
+    grid-template-columns:minmax(0,1fr) minmax(136px,.74fr)!important}
+  html[data-v28-rework="2"] .campaign-hub .campaign-mastery-xp{
+    padding-inline:22px!important}
+  html[data-v28-rework="2"] .campaign-node-detail.v28-boss-detail .node-detail-head{
+    min-height:82px!important;
+    border-width:19px 27px!important;
+    border-image-width:19px 27px!important}
+  html[data-v28-rework="2"] .second-ability-card{
+    min-height:150px!important;
+    grid-template-columns:52px 39px minmax(0,1fr) 34px!important;
+    padding:5px 2px 5px 0!important;
+    border-width:15px 22px 15px 34px!important;
+    border-image-width:15px 22px 15px 34px!important}
+  html[data-v28-rework="2"] .second-ability-card>.dd-ability-icon{
+    width:50px!important;height:50px!important}
+  html[data-v28-rework="2"] .second-ability-card>.name{
+    font-size:19px!important}
+  html[data-v28-rework="2"] #settingsScreen .setting-row{
+    grid-template-columns:1fr!important;
+    gap:8px!important}
+  html[data-v28-rework="2"] #rulesScreen .menu-info-card{
+    min-height:112px!important}
+  html[data-v28-rework="2"] #achievementsScreen .achievement-card{
+    min-height:166px!important;
+    padding:14px 12px 16px!important;
+    border-width:24px 28px!important;
+    border-image-width:24px 28px!important}
+  html[data-v28-rework="2"] #profilesScreen .profile-create{
+    grid-template-columns:minmax(0,1fr) minmax(128px,.42fr)!important}
+  html[data-v28-rework="2"] #profilesScreen .profile-actions{
+    grid-template-columns:1fr!important}
+  html[data-v28-rework="2"] #profilesScreen .profile-actions>div:first-child,
+  html[data-v28-rework="2"] #profilesScreen .profile-delete{
+    grid-column:1!important}
+  html[data-v28-rework="2"] #setup .setup-grid{
+    grid-template-columns:repeat(2,minmax(0,1fr))!important}
+  html[data-v28-rework="2"] body.playing #players .player{
+    min-height:122px!important;
+    padding:7px 2px 8px!important;
+    border-width:17px 17px!important;
+    border-image-width:17px 17px!important}
+  html[data-v28-rework="2"] body.playing #players .player.v28-boss-player{
+    border-width:18px 18px!important;
+    border-image-width:18px 18px!important}
+}
+
+@media(max-width:390px){
+  html[data-v28-rework="2"] .campaign-hub .campaign-top{
+    grid-template-columns:minmax(0,1fr) 116px!important}
+  html[data-v28-rework="2"] .campaign-hub .campaign-top .menu-info-card{
+    padding-inline:7px!important}
+  html[data-v28-rework="2"] .campaign-hub .campaign-controls,
+  html[data-v28-rework="2"] .campaign-hub .trio-controls{
+    gap:6px!important}
+  html[data-v28-rework="2"] .campaign-hub .campaign-mastery-strip{
+    grid-template-columns:1fr!important}
+  html[data-v28-rework="2"] .campaign-hub .campaign-mastery-btn{
+    min-height:58px!important}
+  html[data-v28-rework="2"] .second-ability-card{
+    grid-template-columns:46px 36px minmax(0,1fr) 30px!important;
+    border-width:14px 18px 14px 30px!important;
+    border-image-width:14px 18px 14px 30px!important}
+  html[data-v28-rework="2"] .second-ability-card>.dd-ability-icon{
+    width:44px!important;height:44px!important}
+  html[data-v28-rework="2"] #profilesScreen .profile-create{
+    grid-template-columns:1fr!important}
+  html[data-v28-rework="2"] #setup .setup-row,
+  html[data-v28-rework="2"] #setup .controls{
+    grid-template-columns:1fr!important}
+  html[data-v28-rework="2"] #setup .setup-row>label{
+    grid-column:1!important}
+}
+
+@media(prefers-reduced-motion:reduce){
+  html[data-v28-rework="2"] .campaign-node.current{
+    animation:none!important}
+}
+
+/* ---------- vormals 17-v28-ui-phase2.css ---------- */
+/* ============================================================
+   DiceDuel V28.2.2 — UI Rework Phase 2
+   Mobile screenshot pass: transparent frame exteriors, picker,
+   main menu, campaign details, setup and mastery readability.
+
+   Presentation only. Game, save and campaign rules stay untouched.
+   ============================================================ */
+
+:root{
+  --p2-navy-button:url("../assets/ui/v28/png/frames/navy-button-horizontal.webp?v=28.2.2");
+  --p2-gold-button:url("../assets/ui/v28/png/frames/gold-special-button.webp?v=28.2.2");
+  --p2-boss-bar:url("../assets/ui/v28/png/frames/boss.webp?v=28.2.2");
+  --p2-node-current:url("../assets/ui/v28/png/frames/campaign-node-selected.webp?v=28.2.2")}
+
+/* ---------- Global frame exterior fix ----------
+   The PNGs already paint their own ivory centre via border-image fill.
+   A second opaque CSS background was visible through the transparent
+   outer pixels as rectangular white strips. */
+html[data-v28-rework="2"] .screen-card,
+html[data-v28-rework="2"] #setup,
+html[data-v28-rework="2"] #masteryModal .mastery-panel,
+html[data-v28-rework="2"] .utility-panel,
+html[data-v28-rework="2"] .round-overlay-panel,
+html[data-v28-rework="2"] .second-ability-panel,
+html[data-v28-rework="2"] .gambling-panel,
+html[data-v28-rework="2"] .special-roll-panel,
+html[data-v28-rework="2"] .mastery-purchase-card,
+html[data-v28-rework="2"] .mastery-locked-card,
+html[data-v28-rework="2"] .v28-ability-picker-panel,
+html[data-v28-rework="2"] .dd-select-panel{
+  background:transparent!important}
+
+/* ---------- Generic select picker ---------- */
+html[data-v28-rework="2"] .dd-select-panel{
+  position:relative!important}
+html[data-v28-rework="2"] .dd-select-head{
+  position:relative!important;
+  min-height:17px!important;
+  justify-content:center!important;
+  margin:0 0 12px!important;
+  padding:0!important;
+  border:0!important}
+html[data-v28-rework="2"] .dd-select-title{
+  position:absolute!important;
+  z-index:2;
+  top:-32px;
+  left:50%;
+  width:min(72%,330px);
+  transform:translateX(-50%);
+  overflow:hidden;
+  color:#fff2cb!important;
+  font:850 17px/1.05 Georgia,"Times New Roman",serif!important;
+  letter-spacing:.04em;
+  text-align:center;
+  text-overflow:ellipsis;
+  text-shadow:0 1px 4px rgba(2,16,39,.78)!important;
+  white-space:nowrap}
+html[data-v28-rework="2"] .dd-select-close{
+  position:absolute!important;
+  z-index:3}
+html[data-v28-rework="2"] .dd-select-options{
+  gap:7px!important}
+html[data-v28-rework="2"] .p2-player-count-picker .dd-select-option>span:not(.dd-option-check){
+  font-weight:900}
+
+/* ---------- Main menu ---------- */
+html[data-v28-rework="2"] #mainMenu .menu-title::after{
+  content:none!important;
+  display:none!important}
+html[data-v28-rework="2"] #mainMenu .menu-actions button.menu-play .menu-icon,
+html[data-v28-rework="2"] #mainMenu .menu-actions button.menu-online .menu-icon,
+html[data-v28-rework="2"] #mainMenu .menu-actions button.menu-campaign .menu-icon,
+html[data-v28-rework="2"] #mainMenu .menu-actions button.menu-tutorial .menu-icon{
+  transform:translateX(10px)!important}
+html[data-v28-rework="2"] #mainMenu .menu-actions button.menu-profile,
+html[data-v28-rework="2"] #mainMenu .menu-actions button.menu-account,
+html[data-v28-rework="2"] #mainMenu .menu-actions button.menu-achievements,
+html[data-v28-rework="2"] #mainMenu .menu-actions button.menu-prestige,
+html[data-v28-rework="2"] #mainMenu #menuStatsBtn,
+html[data-v28-rework="2"] #mainMenu #menuSettingsBtn,
+html[data-v28-rework="2"] #mainMenu #menuRulesBtn,
+html[data-v28-rework="2"] #mainMenu #menuChangelogBtn{
+  box-sizing:border-box!important;
+  padding:10px 4px 13px!important;
+  font-size:clamp(9px,2.45vw,11.5px)!important;
+  line-height:1.05!important;
+  letter-spacing:-.01em;
+  white-space:normal!important}
+html[data-v28-rework="2"] #mainMenu .menu-actions button.menu-profile .menu-icon,
+html[data-v28-rework="2"] #mainMenu .menu-actions button.menu-account .menu-icon,
+html[data-v28-rework="2"] #mainMenu .menu-actions button.menu-achievements .menu-icon,
+html[data-v28-rework="2"] #mainMenu .menu-actions button.menu-prestige .menu-icon,
+html[data-v28-rework="2"] #mainMenu #menuStatsBtn .menu-icon,
+html[data-v28-rework="2"] #mainMenu #menuSettingsBtn .menu-icon,
+html[data-v28-rework="2"] #mainMenu #menuRulesBtn .menu-icon,
+html[data-v28-rework="2"] #mainMenu #menuChangelogBtn .menu-icon{
+  width:42px!important;
+  height:42px!important}
+
+/* ---------- Campaign summary, action and map ---------- */
+html[data-v28-rework="2"] .campaign-hub .campaign-top .menu-info-card{
+  min-height:76px!important}
+html[data-v28-rework="2"] .campaign-hub .campaign-top .campaign-value{
+  overflow:visible!important;
+  font-size:13px!important;
+  line-height:1.12!important;
+  text-overflow:clip!important;
+  white-space:normal!important}
+html[data-v28-rework="2"] .campaign-hub .campaign-top .menu-info-card:nth-child(3) .campaign-value{
+  font-size:12px!important;
+  overflow-wrap:anywhere}
+
+html[data-v28-rework="2"] .campaign-hub .campaign-node-map{
+  padding:17px 9px 19px!important}
+html[data-v28-rework="2"] .campaign-hub .campaign-node.current:not(.boss){
+  border-color:transparent!important;
+  background:transparent!important;
+  box-shadow:none!important;
+  color:#fff0a4!important}
+html[data-v28-rework="2"] .campaign-hub .campaign-node.current:not(.boss)::after{
+  z-index:0!important;
+  inset:-8px!important;
+  display:block!important;
+  background:var(--p2-node-current) center/contain no-repeat!important;
+  filter:drop-shadow(0 0 9px rgba(255,209,87,.30))!important}
+html[data-v28-rework="2"] .campaign-hub .campaign-node.current:not(.boss)>span{
+  position:relative;
+  z-index:2}
+
+/* Boss option A: one compact, safe header image; cards stay below it. */
+html[data-v28-rework="2"] .campaign-node-detail.v28-boss-detail .node-detail-head{
+  box-sizing:border-box!important;
+  display:grid!important;
+  grid-template-columns:minmax(0,1fr) auto!important;
+  align-items:center!important;
+  gap:8px!important;
+  border:0!important;
+  border-radius:0!important}
+html[data-v28-rework="2"] .campaign-node-detail.v28-boss-detail .node-detail-head>div:first-child{
+  min-width:0}
+html[data-v28-rework="2"] .campaign-node-detail.v28-boss-detail .node-detail-title{
+  overflow:hidden;
+  font-size:19px!important;
+  line-height:1.05!important;
+  text-overflow:ellipsis;
+  white-space:nowrap}
+html[data-v28-rework="2"] .campaign-node-detail.v28-boss-detail .node-detail-sub{
+  margin-top:3px;
+  font-size:10px!important;
+  line-height:1.15!important}
+html[data-v28-rework="2"] .campaign-node-detail.v28-boss-detail .node-detail-state{
+  max-width:82px;
+  padding:5px 7px!important;
+  font-size:8px!important;
+  overflow:hidden;
+  text-overflow:ellipsis}
+
+/* ---------- Setup ---------- */
+
+html[data-v28-rework="2"] #setup .local-mode-info{
+  margin-top:6px!important;
+  padding:0 5px 4px!important;
+  line-height:1.38!important}
+html[data-v28-rework="2"] #setup .setup-grid .dd-select-trigger{
+  min-height:56px!important;
+  grid-template-columns:28px minmax(0,1fr) 18px!important;
+  gap:4px!important;
+  padding:2px!important;
+  border-width:8px 12px!important;
+  border-image-width:8px 12px!important}
+html[data-v28-rework="2"] #setup .setup-grid .dd-select-trigger .dd-trigger-icon{
+  width:27px!important;
+  height:27px!important}
+html[data-v28-rework="2"] #setup .setup-grid .dd-select-trigger::after{
+  width:18px!important;
+  height:18px!important}
+html[data-v28-rework="2"] #setup .setup-grid .dd-select-trigger>span{
+  font-size:11px!important;
+  letter-spacing:-.02em}
+html[data-v28-rework="2"] #setup .setup-dice-readonly{
+  display:flex!important;
+  align-items:center!important;
+  gap:6px!important}
+html[data-v28-rework="2"] #setup .ability-roll{
+  margin-top:7px!important;
+  border:0!important;
+  border-radius:0!important;
+  color:#0b2e59!important;
+  font-size:10.5px!important;
+  line-height:1.2!important;
+  box-shadow:none!important}
+html[data-v28-rework="2"] #setup .ability-roll .ability-desc{
+  flex-basis:100%}
+html[data-v28-rework="2"] .p2-setup-inline-icon{
+  width:22px;
+  height:22px;
+  flex:0 0 auto;
+  object-fit:contain}
+
+/* ---------- Mastery readability ---------- */
+html[data-v28-rework="2"] #masteryModal .mastery-summary{
+  color:#082a55!important}
+html[data-v28-rework="2"] #masteryModal .mastery-summary-main,
+html[data-v28-rework="2"] #masteryModal .mastery-summary-main span,
+html[data-v28-rework="2"] #masteryModal .mastery-xp-line{
+  color:#082a55!important;
+  opacity:1!important}
+html[data-v28-rework="2"] #masteryModal .mastery-summary small{
+  color:#50657d!important;
+  opacity:1!important}
+html[data-v28-rework="2"] #masteryModal .mastery-branch{
+  opacity:1!important}
+html[data-v28-rework="2"] #masteryModal .mastery-branch-head strong{
+  color:#fff6dc!important}
+html[data-v28-rework="2"] #masteryModal .mastery-branch-head small{
+  color:#d2deec!important;
+  opacity:1!important}
+html[data-v28-rework="2"] #masteryModal .mastery-node,
+html[data-v28-rework="2"] #masteryModal .mastery-node:disabled{
+  opacity:1!important;
+  filter:none!important;
+  border:0!important;
+  background:transparent!important;
+  box-shadow:none!important}
+html[data-v28-rework="2"] #masteryModal .mastery-node.locked,
+html[data-v28-rework="2"] #masteryModal .mastery-node.locked:disabled{
+  opacity:.82!important;
+  filter:saturate(.68)!important}
+html[data-v28-rework="2"] #masteryModal .mastery-node.owned .mastery-node-plaque{
+  color:#eafff2!important;
+  border-color:rgba(105,234,160,.44)!important}
+
+@media(max-width:540px){
+  html[data-v28-rework="2"] .dd-select-title{
+    top:-29px;
+    font-size:16px!important}
+  html[data-v28-rework="2"] .dd-select-close{
+    top:-61px!important;
+    right:-37px!important}
+  html[data-v28-rework="2"] #mainMenu .menu-actions button.menu-play .menu-icon,
+  html[data-v28-rework="2"] #mainMenu .menu-actions button.menu-online .menu-icon,
+  html[data-v28-rework="2"] #mainMenu .menu-actions button.menu-campaign .menu-icon,
+  html[data-v28-rework="2"] #mainMenu .menu-actions button.menu-tutorial .menu-icon{
+    transform:translateX(9px)!important}
+  html[data-v28-rework="2"] #mainMenu .menu-actions button.menu-profile,
+  html[data-v28-rework="2"] #mainMenu .menu-actions button.menu-account,
+  html[data-v28-rework="2"] #mainMenu .menu-actions button.menu-achievements,
+  html[data-v28-rework="2"] #mainMenu .menu-actions button.menu-prestige,
+  html[data-v28-rework="2"] #mainMenu #menuStatsBtn,
+  html[data-v28-rework="2"] #mainMenu #menuSettingsBtn,
+  html[data-v28-rework="2"] #mainMenu #menuRulesBtn,
+  html[data-v28-rework="2"] #mainMenu #menuChangelogBtn{
+    min-height:84px!important;
+    padding:9px 2px 12px!important;
+    font-size:clamp(8.5px,2.65vw,10.5px)!important}
+  html[data-v28-rework="2"] #mainMenu .menu-actions button.menu-profile .menu-icon,
+  html[data-v28-rework="2"] #mainMenu .menu-actions button.menu-account .menu-icon,
+  html[data-v28-rework="2"] #mainMenu .menu-actions button.menu-achievements .menu-icon,
+  html[data-v28-rework="2"] #mainMenu .menu-actions button.menu-prestige .menu-icon,
+  html[data-v28-rework="2"] #mainMenu #menuStatsBtn .menu-icon,
+  html[data-v28-rework="2"] #mainMenu #menuSettingsBtn .menu-icon,
+  html[data-v28-rework="2"] #mainMenu #menuRulesBtn .menu-icon,
+  html[data-v28-rework="2"] #mainMenu #menuChangelogBtn .menu-icon{
+    width:39px!important;
+    height:39px!important}
+  html[data-v28-rework="2"] .campaign-node-detail.v28-boss-detail .node-detail-head{
+    min-height:112px!important;
+    padding:27px 30px!important}
+  html[data-v28-rework="2"] .campaign-node-detail.v28-boss-detail .node-detail-title{
+    font-size:17px!important}
+  html[data-v28-rework="2"] #setup .setup-player{
+    padding-inline:8px!important}
+}
+
+@media(max-width:390px){
+  html[data-v28-rework="2"] #mainMenu .menu-actions button.menu-profile,
+  html[data-v28-rework="2"] #mainMenu .menu-actions button.menu-account,
+  html[data-v28-rework="2"] #mainMenu .menu-actions button.menu-achievements,
+  html[data-v28-rework="2"] #mainMenu .menu-actions button.menu-prestige,
+  html[data-v28-rework="2"] #mainMenu #menuStatsBtn,
+  html[data-v28-rework="2"] #mainMenu #menuSettingsBtn,
+  html[data-v28-rework="2"] #mainMenu #menuRulesBtn,
+  html[data-v28-rework="2"] #mainMenu #menuChangelogBtn{
+    font-size:9px!important}
+  html[data-v28-rework="2"] .campaign-node-detail.v28-boss-detail .node-detail-head{
+    grid-template-columns:minmax(0,1fr) 72px!important;
+    padding-inline:27px!important}
+  html[data-v28-rework="2"] #setup .setup-grid .dd-select-trigger{
+    grid-template-columns:25px minmax(0,1fr) 16px!important;
+    border-left-width:10px!important;
+    border-right-width:10px!important;
+    border-image-width:8px 10px!important}
+  html[data-v28-rework="2"] #setup .setup-grid .dd-select-trigger .dd-trigger-icon{
+    width:24px!important;
+    height:24px!important}
+  html[data-v28-rework="2"] #setup .setup-grid .dd-select-trigger>span{
+    font-size:10px!important}
+}
+
+/* ---------- vormals 18-v28-ui-phase3.css ---------- */
+/* ============================================================
+   DiceDuel V28.2.3 — UI Rework Phase 3
+   Screenshot pass: protruding frame exteriors, campaign nodes,
+   mastery trees, profile cards, combat shells and quit actions.
+
+   Presentation only. Gameplay, saves and campaign rules stay
+   untouched. Existing V28 assets are reused throughout.
+   ============================================================ */
+
+:root{
+  --p3-ivory-card:url("../assets/ui/v28/png/frames/ivory-card-small.webp?v=28.2.3");
+  --p3-panel:url("../assets/ui/v28/png/frames/panel-large.webp?v=28.2.3");
+  --p3-navy-button:url("../assets/ui/v28/png/frames/navy-button-horizontal.webp?v=28.2.3");
+  --p3-danger-button:url("../assets/ui/v28/png/frames/danger-button.webp?v=28.2.3");
+  --p3-navy-tile:url("../assets/ui/v28/png/frames/navy-tile.webp?v=28.2.3");
+  --p3-round-frame:url("../assets/ui/v28/png/frames/icon-frame-round.webp?v=28.2.3");
+  --p3-selected-node:url("../assets/ui/v28/png/frames/campaign-node-selected.webp?v=28.2.3");
+  --p3-player-frame:url("../assets/ui/v28/png/frames/player-card-combat.webp?v=28.2.3");
+  --p3-boss-bar:url("../assets/ui/v28/png/frames/boss.webp?v=28.2.3");
+  --p3-back:url("../assets/ui/v28/svg/navigation/back.svg?v=28.2.3")}
+
+/* ---------- Purple marks: remove opaque rectangles behind PNG frames ----------
+   The border-image assets already paint their centre. Any additional CSS
+   background becomes visible in their transparent outer pixels as a pale or
+   navy rectangular lip. */
+html[data-v28-rework="2"] body[data-v28-scene] .screen-card,
+html[data-v28-rework="2"] body[data-v28-scene] #setup,
+html[data-v28-rework="2"] body[data-v28-scene] #masteryModal .mastery-panel,
+html[data-v28-rework="2"] .campaign-hub .campaign-world-btn:not(.active),
+html[data-v28-rework="2"] .campaign-hub .campaign-top .menu-info-card,
+html[data-v28-rework="2"] .dd-select-trigger,
+html[data-v28-rework="2"] #profilesScreen #newProfileName,
+html[data-v28-rework="2"] #profilesScreen .profile-name-edit,
+html[data-v28-rework="2"] #setup .local-mode-card,
+html[data-v28-rework="2"] #setup .setup-player{
+  background:transparent!important;
+  box-shadow:none!important}
+
+/* Cut only the one-pixel bitmap halo, never the ornamental frame itself. */
+html[data-v28-rework="2"] body[data-v28-scene] .screen-card,
+html[data-v28-rework="2"] body[data-v28-scene] #setup,
+html[data-v28-rework="2"] body[data-v28-scene] #masteryModal .mastery-panel{
+  clip-path:inset(2px round 10px)}
+
+/* Campaign and mastery back controls use a clean circular ring. The old
+   star-frame had points extending beyond its intended hit area. */
+html[data-v28-rework="2"] .campaign-hub .screen-topbar>button,
+html[data-v28-rework="2"] #masteryCloseBtn{
+  width:48px!important;
+  height:48px!important;
+  min-width:48px!important;
+  overflow:hidden!important;
+  border:2px solid #d9ad4d!important;
+  border-radius:50%!important;
+  outline:1px solid rgba(255,232,160,.72)!important;
+  outline-offset:-5px!important;
+  background:
+    var(--p3-back) center/36% 36% no-repeat,
+    radial-gradient(circle at 50% 35%,#174b82 0 42%,#082750 63%,#04172f 100%)!important;
+  box-shadow:0 4px 12px rgba(5,29,61,.20),inset 0 0 0 4px #092650!important}
+
+/* ---------- Quit modal ---------- */
+
+html[data-v28-rework="2"] #quitModal .utility-actions{
+  align-items:stretch}
+html[data-v28-rework="2"] #quitCancelBtn,
+html[data-v28-rework="2"] #quitConfirmBtn{
+  box-sizing:border-box!important;
+  min-height:74px!important;
+  border:0!important;
+  border-radius:0!important;
+  padding:18px 34px!important;
+  box-shadow:none!important;
+  font-size:16px!important}
+html[data-v28-rework="2"] #quitCancelBtn{
+  color:#fff4d5!important;
+  background:var(--p3-navy-button) center/100% 100% no-repeat!important;
+  text-shadow:0 1px 3px rgba(2,16,38,.72)!important}
+/* Quit-Knopf: color, background und text-shadow werden in Phase 5 und 7
+   erneut gesetzt, das Artwork --p3-danger-button erreicht ihn nicht mehr. */
+
+/* ---------- Campaign controls and green primary action ---------- */
+html[data-v28-rework="2"] .campaign-hub .campaign-controls .dd-select-trigger{
+  min-height:62px!important;
+  grid-template-columns:30px minmax(0,1fr) 18px!important;
+  gap:4px!important;
+  padding:2px!important;
+  border-width:8px 12px!important;
+  border-image-width:8px 12px!important}
+html[data-v28-rework="2"] .campaign-hub .campaign-controls .dd-trigger-icon{
+  width:29px!important;
+  height:29px!important}
+html[data-v28-rework="2"] .campaign-hub .campaign-controls .dd-select-trigger::after{
+  width:18px!important;
+  height:18px!important}
+html[data-v28-rework="2"] .campaign-hub .campaign-controls .dd-select-trigger>span{
+  font-size:13px!important;
+  letter-spacing:-.025em}/* ---------- Campaign map and framed nodes ---------- */
+html[data-v28-rework="2"] .campaign-hub .campaign-node-map{
+  box-sizing:border-box!important;
+  padding:20px 11px 22px!important;
+  border:21px solid transparent!important;
+  border-image-source:var(--p3-navy-tile)!important;
+  border-image-slice:150 fill!important;
+  border-image-width:21px!important;
+  border-image-repeat:stretch!important;
+  border-radius:0!important;
+  background:transparent!important;
+  box-shadow:0 10px 24px rgba(6,30,65,.16)!important}
+html[data-v28-rework="2"] .campaign-hub .campaign-node{
+  position:relative;
+  isolation:isolate;
+  overflow:visible!important;
+  width:min(62px,100%)!important;
+  border:0!important;
+  background:transparent!important;
+  box-shadow:none!important;
+  color:#fff2ce!important}
+html[data-v28-rework="2"] .campaign-hub .campaign-node::before{
+  content:"";
+  position:absolute;
+  z-index:-1;
+  inset:-6px;
+  pointer-events:none;
+  background:var(--p3-round-frame) center/contain no-repeat;
+  filter:drop-shadow(0 5px 8px rgba(1,13,31,.36))}
+html[data-v28-rework="2"] .campaign-hub .campaign-node.done{
+  color:#91efb1!important}
+html[data-v28-rework="2"] .campaign-hub .campaign-node.current,
+html[data-v28-rework="2"] .campaign-hub .campaign-node.selected{
+  color:#ffe59b!important}
+html[data-v28-rework="2"] .campaign-hub .campaign-node.current::before,
+html[data-v28-rework="2"] .campaign-hub .campaign-node.selected::before{
+  inset:-8px;
+  background-image:var(--p3-selected-node);
+  filter:drop-shadow(0 0 10px rgba(255,209,87,.32))}
+/* Restore the route connector; Phase 2 used ::after for the selected frame. */
+html[data-v28-rework="2"] .campaign-hub .campaign-node::after,
+html[data-v28-rework="2"] .campaign-hub .campaign-node.current::after,
+html[data-v28-rework="2"] .campaign-hub .campaign-node.selected::after{
+  content:""!important;
+  position:absolute!important;
+  z-index:-2!important;
+  left:calc(100% - 1px)!important;
+  top:50%!important;
+  width:calc(100% + 9px)!important;
+  height:2px!important;
+  transform:none!important;
+  background:linear-gradient(90deg,rgba(104,206,146,.58),rgba(126,175,210,.30))!important;
+  filter:none!important;
+  pointer-events:none!important}
+html[data-v28-rework="2"] .campaign-hub .campaign-node:nth-child(5n)::after{
+  display:none!important}
+html[data-v28-rework="2"] .campaign-hub .campaign-node>span{
+  position:relative;
+  z-index:2}
+
+/* Compact the boss strip by cropping its transparent source margins. */
+html[data-v28-rework="2"] .campaign-node-detail.v28-boss-detail{
+  padding-top:7px!important}
+html[data-v28-rework="2"] .campaign-node-detail.v28-boss-detail .node-detail-head{
+  min-height:96px!important;
+  margin:0 0 8px!important;
+  padding:19px 34px!important;
+  background:var(--p3-boss-bar) center/100% 158% no-repeat!important}
+
+/* ---------- Mastery summary, branches and real nodes ---------- */
+html[data-v28-rework="2"] #masteryModeBadge{
+  display:none!important}
+html[data-v28-rework="2"] #masteryModal .mastery-mode-bar{
+  min-height:0!important;
+  justify-content:flex-end!important;
+  margin:0!important}
+html[data-v28-rework="2"] #masteryModal .mastery-summary{
+  box-sizing:border-box!important;
+
+  border-image-source:var(--p3-ivory-card)!important;
+  border-image-slice:76 168 76 168 fill!important;
+  border-image-width:14px 22px!important;
+  border-image-repeat:stretch!important;
+  border-radius:0!important;
+  padding:8px 8px 10px!important;
+  background:transparent!important;
+  box-shadow:0 6px 15px rgba(30,58,87,.08)!important}
+html[data-v28-rework="2"] #masteryModal .mastery-branch{
+  box-sizing:border-box!important;
+  overflow:hidden!important;
+  border:18px solid transparent!important;
+  border-image-source:var(--p3-navy-tile)!important;
+  border-image-slice:150 fill!important;
+  border-image-width:18px!important;
+  border-image-repeat:stretch!important;
+  border-radius:0!important;
+  padding:3px 5px 15px!important;
+  background:transparent!important;
+  box-shadow:0 10px 24px rgba(5,28,65,.18)!important}
+html[data-v28-rework="2"] #masteryModal .mastery-branch-head{
+  box-sizing:border-box!important;
+  min-height:88px!important;
+  margin:0 0 8px!important;
+  padding:19px 32px!important;
+  border:0!important;
+  background:var(--p3-navy-button) center/100% 100% no-repeat!important}
+html[data-v28-rework="2"] #masteryModal .mastery-branch-icon{
+  width:48px;
+  height:48px;
+  display:grid;
+  place-items:center;
+  background:var(--p3-round-frame) center/contain no-repeat;
+  font-size:23px!important}
+html[data-v28-rework="2"] #masteryModal .mastery-branch-level{
+  padding:7px 9px!important;
+  border:1px solid rgba(239,198,97,.58)!important;
+  background:rgba(5,24,52,.76)!important;
+  color:#ffe59d!important;
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,.05)!important}
+html[data-v28-rework="2"] #masteryModal .mastery-tree-line{
+  margin-top:4px!important;
+  padding-inline:4px!important}
+html[data-v28-rework="2"] #masteryModal .mastery-node{
+  grid-template-columns:76px minmax(0,1fr)!important;
+  width:calc(100% - 8px)!important;
+  min-height:82px!important;
+  --shift:-8px}
+html[data-v28-rework="2"] #masteryModal .mastery-node:nth-child(even){
+  --shift:8px}
+html[data-v28-rework="2"] #masteryModal .mastery-node-orb{
+  width:72px!important;
+  height:72px!important;
+  border-radius:0!important;
+  background:var(--p3-round-frame) center/contain no-repeat!important;
+  filter:drop-shadow(0 7px 8px rgba(0,0,0,.34))!important}
+html[data-v28-rework="2"] #masteryModal .mastery-node-orb::before{
+  inset:17px!important}
+html[data-v28-rework="2"] #masteryModal .mastery-node-orb::after{
+  display:none!important}
+html[data-v28-rework="2"] #masteryModal .mastery-node-dot{
+  width:34px!important;
+  height:34px!important;
+  font-size:13px!important}
+html[data-v28-rework="2"] #masteryModal .mastery-node-plaque,
+html[data-v28-rework="2"] #masteryModal .mastery-node.owned .mastery-node-plaque,
+html[data-v28-rework="2"] #masteryModal .mastery-node.available .mastery-node-plaque,
+html[data-v28-rework="2"] #masteryModal .mastery-node.locked .mastery-node-plaque{
+  box-sizing:border-box!important;
+  min-height:68px!important;
+  padding:17px 30px!important;
+  border:0!important;
+  border-radius:0!important;
+  background:var(--p3-navy-button) center/100% 100% no-repeat!important;
+  box-shadow:none!important;
+  opacity:1!important}
+html[data-v28-rework="2"] #masteryModal .mastery-node-plaque::before{
+  display:none!important}
+
+/* ---------- Ability Mastery sheet ---------- */
+html[data-v28-rework="2"] #masteryModal .mastery-ability-sheet-head{
+  box-sizing:border-box!important;
+  min-height:88px!important;
+  align-items:center!important;
+  margin:20px 0 10px!important;
+  padding:18px 34px!important;
+  border:0!important;
+  background:var(--p3-navy-button) center/100% 100% no-repeat!important}
+html[data-v28-rework="2"] #masteryModal .mastery-ability-sheet-head .mastery-kicker,
+html[data-v28-rework="2"] #masteryModal .mastery-ability-sheet-head h3{
+  color:#fff4d5!important;
+  text-shadow:0 1px 3px rgba(2,16,38,.72)!important}
+html[data-v28-rework="2"] #masteryModal .mastery-ability-sheet-head>span{
+  max-width:43%;
+  color:#d9e4f2!important;
+  text-align:right;
+  line-height:1.25}
+html[data-v28-rework="2"] #masteryModal .mastery-ability-pair{
+  box-sizing:border-box!important;
+  overflow:hidden!important;
+  border:18px solid transparent!important;
+  border-image-source:var(--p3-navy-tile)!important;
+  border-image-slice:150 fill!important;
+  border-image-width:18px!important;
+  border-image-repeat:stretch!important;
+  border-radius:0!important;
+  padding:4px 5px 9px!important;
+  background:transparent!important;
+  box-shadow:0 10px 22px rgba(5,28,65,.16)!important}
+html[data-v28-rework="2"] #masteryModal .mastery-ability-branch{
+  box-sizing:border-box!important;
+
+  border-image-source:var(--p3-player-frame)!important;
+  border-image-slice:96 122 96 122 fill!important;
+  border-image-width:15px 19px!important;
+  border-image-repeat:stretch!important;
+  border-radius:0!important;
+  padding:4px 2px 7px!important;
+  background:transparent!important}
+html[data-v28-rework="2"] #masteryModal .mastery-ability-name{
+  margin:0 5px 6px!important;
+  color:#fff3d3!important}
+html[data-v28-rework="2"] #masteryModal .mastery-ability-sheet .aml-node-orbit{
+  z-index:2!important;
+  border:0!important;
+  border-radius:0!important;
+  background:var(--p3-round-frame) center/contain no-repeat!important;
+  box-shadow:none!important}
+html[data-v28-rework="2"] #masteryModal .mastery-ability-sheet .aml-node-orbit::before,
+html[data-v28-rework="2"] #masteryModal .mastery-ability-sheet .aml-node-orbit::after{
+  display:none!important}
+html[data-v28-rework="2"] #masteryModal .mastery-ability-sheet .aml-node-core{
+  z-index:3!important;
+  width:34px!important;
+  height:34px!important;
+  left:12px!important;
+  top:18px!important;
+  font-size:11px!important}
+html[data-v28-rework="2"] #masteryModal .mastery-ability-sheet .aml-node-tag{
+  z-index:1!important;
+  box-sizing:border-box!important;
+  left:46px!important;
+  top:8px!important;
+  min-height:52px!important;
+  max-width:calc(100% - 42px)!important;
+  justify-content:center!important;
+  padding:12px 22px!important;
+  border:0!important;
+  border-radius:0!important;
+  background:var(--p3-navy-button) center/100% 100% no-repeat!important;
+  box-shadow:none!important}
+html[data-v28-rework="2"] #masteryModal .mastery-ability-sheet .aml-node-tag::before{
+  display:none!important}
+html[data-v28-rework="2"] #masteryModal .mastery-fusion-placeholder{
+  box-sizing:border-box!important;
+  width:calc(100% - 34px)!important;
+  min-height:54px!important;
+  margin:8px 17px 0!important;
+  padding:12px 34px!important;
+  border:0!important;
+  border-radius:0!important;
+  overflow:hidden!important;
+  background:var(--p3-navy-button) center/100% 100% no-repeat!important;
+  color:#fff1ce!important;
+  box-shadow:none!important}
+
+/* ---------- Combat: framed outer shells and clean player-card gaps ---------- */
+html[data-v28-rework="2"] body.playing #game>.card:first-child,
+html[data-v28-rework="2"] body.playing #game .turn-card{
+  box-sizing:border-box!important;
+  border:21px solid transparent!important;
+  border-image-source:var(--p3-navy-tile)!important;
+  border-image-slice:150 fill!important;
+  border-image-width:21px!important;
+  border-image-repeat:stretch!important;
+  border-radius:0!important;
+  background:transparent!important;
+  box-shadow:0 12px 28px rgba(2,12,30,.30)!important}
+html[data-v28-rework="2"] body.playing #game>.card:first-child{
+  padding:1px 5px 12px!important;
+  margin-bottom:7px!important}
+html[data-v28-rework="2"] body.playing #game .turn-card{
+  padding:7px 6px 12px!important}
+html[data-v28-rework="2"] body.playing #players{
+  gap:15px 13px!important;
+  padding:3px!important}
+html[data-v28-rework="2"] body.playing #players .player,
+html[data-v28-rework="2"] body.playing #players .player.v28-boss-player{
+  background:transparent!important;
+  box-shadow:none!important}
+
+html[data-v28-rework="2"] body.playing .encounter-rule-banner{
+  min-height:64px!important;
+  margin:4px 0 10px!important;
+  padding:16px 36px!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  background:var(--p3-boss-bar) center/100% 162% no-repeat!important;
+  font-size:10.5px!important;
+  line-height:1.28!important;
+  text-align:center}
+html[data-v28-rework="2"] body.playing .encounter-rule-banner.hidden{
+  display:none!important}
+
+/* ---------- Profiles: a real inner panel, clean small inputs ---------- */
+html[data-v28-rework="2"] #profilesScreen .profile-card{
+  box-sizing:border-box!important;
+  overflow:hidden!important;
+
+  border-image-source:var(--p3-panel)!important;
+  border-image-slice:96 82 96 82 fill!important;
+  border-image-width:22px 20px!important;
+  border-image-repeat:stretch!important;
+  border-radius:0!important;
+  padding:8px 8px 13px!important;
+  background:transparent!important;
+  box-shadow:0 10px 25px rgba(25,58,86,.12)!important}
+
+html[data-v28-rework="2"] #profilesScreen .profile-actions .dd-select-trigger,
+html[data-v28-rework="2"] #profilesScreen .profile-name-edit{
+  background:transparent!important;
+  box-shadow:none!important}
+
+@media(max-width:540px){
+  html[data-v28-rework="2"] #quitModal .utility-actions{
+    grid-template-columns:1fr 1fr!important}
+  html[data-v28-rework="2"] #quitCancelBtn,
+  html[data-v28-rework="2"] #quitConfirmBtn{
+    min-height:70px!important;
+    padding:16px 27px!important;
+    font-size:14px!important}
+  html[data-v28-rework="2"] .campaign-hub .campaign-node-map{
+    padding:19px 8px 21px!important;
+    border-width:18px!important;
+    border-image-width:18px!important;
+    gap:18px 6px!important}
+  html[data-v28-rework="2"] .campaign-hub .campaign-node{
+    width:min(58px,100%)!important}
+  html[data-v28-rework="2"] .campaign-node-detail.v28-boss-detail .node-detail-head{
+    min-height:92px!important;
+    padding:18px 29px!important}
+  html[data-v28-rework="2"] #masteryModal .mastery-branch{
+    border-width:16px!important;
+    border-image-width:16px!important}
+  html[data-v28-rework="2"] #masteryModal .mastery-branch-head{
+    min-height:84px!important;
+    padding:18px 28px!important}
+  html[data-v28-rework="2"] #masteryModal .mastery-ability-sheet-head{
+    min-height:94px!important;
+    padding:20px 28px!important}
+  html[data-v28-rework="2"] #masteryModal .mastery-ability-pair{
+    border-width:15px!important;
+    border-image-width:15px!important}
+  html[data-v28-rework="2"] #masteryModal .mastery-ability-branch{
+    border-width:13px 15px!important;
+    border-image-width:13px 15px!important}
+  html[data-v28-rework="2"] body.playing #game>.card:first-child,
+  html[data-v28-rework="2"] body.playing #game .turn-card{
+    border-width:17px!important;
+    border-image-width:17px!important}
+  html[data-v28-rework="2"] body.playing #players{
+    gap:13px 11px!important}
+  html[data-v28-rework="2"] body.playing .encounter-rule-banner{
+    padding-inline:29px!important}
+}
+
+@media(max-width:390px){
+  html[data-v28-rework="2"] .campaign-hub .campaign-controls .dd-select-trigger{
+    grid-template-columns:27px minmax(0,1fr) 16px!important;
+    border-width:7px 9px!important;
+    border-image-width:7px 9px!important}
+  html[data-v28-rework="2"] .campaign-hub .campaign-controls .dd-select-trigger>span{
+    font-size:11px!important}
+  html[data-v28-rework="2"] #masteryModal .mastery-branch-head{
+    grid-template-columns:42px minmax(0,1fr) auto!important;
+    padding-inline:23px!important}
+  html[data-v28-rework="2"] #masteryModal .mastery-branch-icon{
+    width:42px;
+    height:42px;
+    font-size:20px!important}
+  html[data-v28-rework="2"] #masteryModal .mastery-node{
+    grid-template-columns:66px minmax(0,1fr)!important;
+    --shift:-4px}
+  html[data-v28-rework="2"] #masteryModal .mastery-node:nth-child(even){
+    --shift:4px}
+  html[data-v28-rework="2"] #masteryModal .mastery-node-orb{
+    width:64px!important;
+    height:64px!important}
+  html[data-v28-rework="2"] #masteryModal .mastery-node-plaque,
+  html[data-v28-rework="2"] #masteryModal .mastery-node.owned .mastery-node-plaque,
+  html[data-v28-rework="2"] #masteryModal .mastery-node.available .mastery-node-plaque,
+  html[data-v28-rework="2"] #masteryModal .mastery-node.locked .mastery-node-plaque{
+    padding-inline:24px!important}
+  html[data-v28-rework="2"] #masteryModal .mastery-ability-sheet-head{
+    align-items:flex-start!important;
+    flex-direction:column;
+    gap:2px!important;
+    padding:22px 30px!important}
+  html[data-v28-rework="2"] #masteryModal .mastery-ability-sheet-head>span{
+    max-width:100%;
+    text-align:left}
+  html[data-v28-rework="2"] #masteryModal .mastery-ability-sheet .aml-node-tag{
+    padding-inline:17px!important}
+}
+
+@media(prefers-reduced-motion:reduce){
+  html[data-v28-rework="2"] #masteryModal .mastery-node-orb{
+    animation:none!important}
+}
+
+/* ---------- vormals 19-v28-ui-phase4.css ---------- */
+/* ============================================================
+   DiceDuel V28.2.4 — UI Rework Phase 4
+   Final screenshot polish: stable campaign tones, compact nodes,
+   clean navigation circles, framed utility surfaces and setup
+   sprite cleanup. Existing V28 assets only.
+   ============================================================ */
+
+:root{
+  --p4-ivory-card:url("../assets/ui/v28/png/frames/ivory-card-small.webp?v=28.2.4");
+  --p4-panel:url("../assets/ui/v28/png/frames/panel-large.webp?v=28.2.4");
+  --p4-navy-button:url("../assets/ui/v28/png/frames/navy-button-horizontal.webp?v=28.2.4");
+  --p4-gold-button:url("../assets/ui/v28/png/frames/gold-special-button.webp?v=28.2.4");
+  --p4-navy-tile:url("../assets/ui/v28/png/frames/navy-tile.webp?v=28.2.4");
+  --p4-achievement:url("../assets/ui/v28/png/frames/achievement-trophy-card.webp?v=28.2.4");
+  --p4-round-frame:url("../assets/ui/v28/png/frames/icon-frame-round.webp?v=28.2.4");
+  --p4-boss-bar:url("../assets/ui/v28/png/frames/boss.webp?v=28.2.4");
+  --p4-back:url("../assets/ui/v28/svg/navigation/back.svg?v=28.2.4");
+  --p4-close:url("../assets/ui/v28/svg/navigation/close-x.svg?v=28.2.4")}
+
+/* ---------- One navigation size everywhere ---------- */
+html[data-v28-rework="2"] .screen-topbar>button,
+html[data-v28-rework="2"] #masteryCloseBtn,
+html[data-v28-rework="2"] .ability-mastery-lab-topbar>button,
+html[data-v28-rework="2"] .mastery-locked-card>button,
+html[data-v28-rework="2"] .dd-select-close{
+  box-sizing:border-box!important;
+  width:48px!important;
+  height:48px!important;
+  min-width:48px!important;
+  min-height:48px!important;
+  flex:0 0 48px!important;
+  overflow:hidden!important;
+  padding:0!important;
+  border:2px solid #d7aa48!important;
+  border-radius:50%!important;
+  outline:1px solid rgba(255,235,170,.72)!important;
+  outline-offset:-5px!important;
+  color:transparent!important;
+  font-size:0!important;
+  background:
+    var(--p4-back) center/31% 31% no-repeat,
+    radial-gradient(circle at 50% 34%,#195489 0 40%,#0a315f 61%,#04162f 100%)!important;
+  box-shadow:0 4px 12px rgba(5,29,61,.19),inset 0 0 0 4px #092650!important;
+  transform:none!important}
+html[data-v28-rework="2"] .ability-mastery-lab-topbar>button,
+html[data-v28-rework="2"] .mastery-locked-card>button,
+html[data-v28-rework="2"] .dd-select-close{
+  background:
+    var(--p4-close) center/29% 29% no-repeat,
+    radial-gradient(circle at 50% 34%,#195489 0 40%,#0a315f 61%,#04162f 100%)!important}
+html[data-v28-rework="2"] #setup #setupBackBtn{
+  transform:none!important}
+
+/* Keep the picker close control inside the framed panel. */
+html[data-v28-rework="2"] .dd-select-panel{
+  overflow:hidden!important}
+
+html[data-v28-rework="2"] .dd-select-options{
+  min-height:0!important;
+  padding:2px 1px 0!important;
+  scroll-snap-type:y proximity;
+  scrollbar-gutter:stable}
+html[data-v28-rework="2"] .dd-select-option{
+  scroll-snap-align:start}
+
+/* ---------- Remove rectangular lips behind ornamental frames ---------- */
+html[data-v28-rework="2"] #rulesScreen .menu-info-card,
+html[data-v28-rework="2"] #achievementsScreen .achievement-card,
+html[data-v28-rework="2"] #prestigeShopScreen .prestige-item,
+html[data-v28-rework="2"] #prestigeShopScreen .prestige-item.owned,
+html[data-v28-rework="2"] #prestigeShopScreen .prestige-item.expensive,
+html[data-v28-rework="2"] #profilesScreen .profile-card,
+html[data-v28-rework="2"] #profilesScreen .profile-actions .dd-select-trigger,
+html[data-v28-rework="2"] #profilesScreen .profile-name-edit{
+  background-color:transparent!important;
+  box-shadow:none!important}
+html[data-v28-rework="2"] #rulesScreen .menu-info-card,
+html[data-v28-rework="2"] #achievementsScreen .achievement-card,
+html[data-v28-rework="2"] #prestigeShopScreen .prestige-item,
+html[data-v28-rework="2"] #profilesScreen .profile-card{
+  background-image:none!important}
+
+/* ---------- Rules ---------- */
+
+html[data-v28-rework="2"] #rulesScreen .menu-info-card>strong{
+  min-height:34px;
+  margin:0 0 4px!important}
+html[data-v28-rework="2"] #rulesScreen .rules-extra{
+  margin-top:13px!important}
+html[data-v28-rework="2"] #rulesScreen #allAbilitiesBtn{
+  box-sizing:border-box!important;
+  width:100%!important;
+  min-height:68px!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  gap:9px!important;
+  padding:13px 38px!important;
+  border:0!important;
+  border-radius:0!important;
+  color:#fff4d4!important;
+  background:var(--p4-navy-button) center/100% 100% no-repeat!important;
+  box-shadow:none!important;
+  text-shadow:0 1px 3px rgba(2,16,38,.72)!important}
+html[data-v28-rework="2"] #rulesScreen #allAbilitiesBtn .p4-action-icon{
+  width:25px;
+  height:25px;
+  flex:0 0 25px}
+html[data-v28-rework="2"] .p4-action-icon,
+html[data-v28-rework="2"] .p4-inline-icon,
+html[data-v28-rework="2"] .p4-setup-label-icon,
+html[data-v28-rework="2"] .p4-node-mark-icon,
+html[data-v28-rework="2"] .p4-node-xp-icon{
+  display:inline-block;
+  object-fit:contain;
+  pointer-events:none;
+  user-select:none}
+
+/* ---------- Trophy Shop ---------- */
+html[data-v28-rework="2"] #prestigeShopScreen .prestige-wallet{
+  box-sizing:border-box!important;
+  min-height:64px!important;
+  padding:12px 31px!important;
+  border:0!important;
+  border-radius:0!important;
+  color:#fff1cb!important;
+  background:var(--p4-navy-button) center/100% 100% no-repeat!important;
+  box-shadow:none!important}
+html[data-v28-rework="2"] #prestigeShopScreen .prestige-wallet span{
+  color:#d4dfec!important}
+html[data-v28-rework="2"] #prestigeShopScreen .prestige-wallet strong{
+  display:flex;
+  align-items:center;
+  gap:6px;
+  color:#ffe18b!important}
+html[data-v28-rework="2"] #prestigeShopScreen .prestige-equipped{
+  box-sizing:border-box!important;
+  margin:0 0 12px!important;
+  padding:15px 22px 17px!important;
+
+  border-image-source:var(--p4-navy-tile)!important;
+  border-image-slice:150 fill!important;
+  border-image-width:16px 21px!important;
+  border-image-repeat:stretch!important;
+  border-radius:0!important;
+  color:#dce5ef!important;
+  background:transparent!important;
+  box-shadow:none!important}
+html[data-v28-rework="2"] #prestigeShopScreen .prestige-reset-row{
+  gap:7px!important;
+  margin-top:9px!important}
+html[data-v28-rework="2"] #prestigeShopScreen .prestige-reset-row button{
+  min-height:39px!important;
+  padding:7px 20px!important;
+  border:0!important;
+  border-radius:0!important;
+  color:#fff0ca!important;
+  background:var(--p4-navy-button) center/100% 100% no-repeat!important;
+  box-shadow:none!important}
+html[data-v28-rework="2"] #prestigeShopScreen .prestige-item,
+html[data-v28-rework="2"] #prestigeShopScreen .prestige-item.owned,
+html[data-v28-rework="2"] #prestigeShopScreen .prestige-item.expensive{
+  min-height:164px!important;
+  display:flex!important;
+  flex-direction:column!important;
+  padding:16px 17px 15px!important}
+html[data-v28-rework="2"] #prestigeShopScreen .prestige-item-kicker{
+  min-height:18px;
+  display:flex;
+  align-items:center;
+  gap:5px;
+  margin:2px 0 0!important;
+  line-height:1.15!important}
+html[data-v28-rework="2"] #prestigeShopScreen .prestige-item-name{
+  margin:4px 0 0!important;
+  line-height:1.14!important}
+html[data-v28-rework="2"] #prestigeShopScreen .prestige-item-desc{
+  min-height:0!important;
+  margin:7px 0 12px!important;
+  line-height:1.42!important}
+html[data-v28-rework="2"] #prestigeShopScreen .prestige-item>button{
+  min-height:48px!important;
+  margin-top:auto!important;
+  padding:9px 31px!important;
+  border:0!important;
+  border-radius:0!important;
+  box-shadow:none!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  gap:6px!important}
+html[data-v28-rework="2"] #prestigeShopScreen .prestige-item>button.good,
+html[data-v28-rework="2"] #prestigeShopScreen .prestige-item>button:disabled:not(.gold){
+  color:#fff1cb!important;
+  background:var(--p4-navy-button) center/100% 100% no-repeat!important}
+html[data-v28-rework="2"] #prestigeShopScreen .prestige-item>button.gold{
+  color:#102c51!important;
+  background:var(--p4-gold-button) center/100% 100% no-repeat!important}
+html[data-v28-rework="2"] #prestigeShopScreen .prestige-item>button.gold:disabled{
+  color:#233b56!important;
+  background:var(--p4-gold-button) center/100% 100% no-repeat!important;
+  opacity:.52!important;
+  filter:grayscale(.68) saturate(.58)!important}
+html[data-v28-rework="2"] #prestigeShopScreen .p4-inline-icon{
+  width:18px;
+  height:18px;
+  flex:0 0 18px}
+
+/* ---------- Profile panels and small section plaques ---------- */
+html[data-v28-rework="2"] #profilesScreen .profile-card-top{
+  box-sizing:border-box!important;
+  min-height:92px!important;
+  margin:-8px -8px 13px!important;
+  padding:19px 34px!important;
+  border:0!important;
+  color:#fff3d1!important;
+  background:var(--p4-navy-button) center/100% 100% no-repeat!important;
+  box-shadow:none!important}
+html[data-v28-rework="2"] #profilesScreen .profile-actions label,
+html[data-v28-rework="2"] #profilesScreen .unlock-strip-title{
+  box-sizing:border-box!important;
+  width:max-content!important;
+  min-width:104px;
+  min-height:27px;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  margin:8px 0 5px!important;
+  padding:4px 22px!important;
+  color:#fff0c9!important;
+  background:var(--p4-navy-button) center/100% 100% no-repeat!important;
+  font-size:9px!important;
+  line-height:1!important;
+  letter-spacing:.075em!important;
+  text-shadow:0 1px 2px rgba(2,16,38,.66)}
+html[data-v28-rework="2"] #profilesScreen .profile-actions>div:first-child label{
+  margin-top:0!important}
+html[data-v28-rework="2"] #profilesScreen .unlock-strip{
+  box-sizing:border-box!important;
+  margin:0!important;
+  padding:13px 17px!important;
+
+  border-image-source:var(--p4-navy-tile)!important;
+  border-image-slice:150 fill!important;
+  border-image-width:16px 19px!important;
+  border-image-repeat:stretch!important;
+  border-radius:0!important;
+  background:transparent!important;
+  box-shadow:none!important}
+
+/* ---------- Achievements: no navy rectangles outside gold corners ---------- */
+html[data-v28-rework="2"] #achievementsScreen .achievement-list{
+  gap:10px!important;
+  padding-inline:2px}
+html[data-v28-rework="2"] #achievementsScreen .achievement-card,
+html[data-v28-rework="2"] #achievementsScreen .achievement-card.dd-achieved{
+  width:calc(100% - 6px)!important;
+  min-height:166px!important;
+  margin-inline:3px!important;
+  padding:15px 12px 17px!important;
+
+  border-image-source:var(--p4-achievement)!important;
+  border-image-slice:140 155 128 155 fill!important;
+  border-image-width:24px 29px!important;
+  border-image-repeat:stretch!important;
+  color:#fff1cf!important;
+  background:transparent!important;
+  box-shadow:none!important}
+html[data-v28-rework="2"] #achievementsScreen .achievement-head{
+  padding-inline:2px}
+html[data-v28-rework="2"] #achievementsScreen .achievement-desc,
+html[data-v28-rework="2"] #achievementsScreen .achievement-owners{
+  padding-inline:2px}
+
+/* ---------- Campaign nodes: keep every mark inside its own circle ---------- */
+html[data-v28-rework="2"] .campaign-hub .campaign-node-map{
+  gap:24px 7px!important;
+  padding-bottom:27px!important}
+html[data-v28-rework="2"] .campaign-hub .campaign-node,
+html[data-v28-rework="2"] .campaign-hub .campaign-node.boss,
+html[data-v28-rework="2"] .campaign-hub .campaign-node.world-boss{
+  width:min(60px,100%)!important;
+  aspect-ratio:1/1!important;
+  border-radius:50%!important}
+html[data-v28-rework="2"] .campaign-hub .campaign-node>span:first-child{
+  position:absolute!important;
+  z-index:3!important;
+  inset:0!important;
+  display:grid!important;
+  place-items:center!important;
+  transform:none!important;
+  font-size:16px!important;
+  line-height:1!important}
+html[data-v28-rework="2"] .campaign-hub .campaign-node .node-mark{
+  position:absolute!important;
+  z-index:5!important;
+  top:-4px!important;
+  right:-3px!important;
+  width:20px!important;
+  height:20px!important;
+  display:grid!important;
+  place-items:center!important;
+  transform:none!important;
+  font-size:0!important}
+html[data-v28-rework="2"] .campaign-hub .campaign-node .node-mark img{
+  width:18px!important;
+  height:18px!important;
+  object-fit:contain;
+  filter:drop-shadow(0 2px 2px rgba(0,0,0,.42))}
+html[data-v28-rework="2"] .campaign-hub .campaign-node .node-xp-badge{
+  z-index:6!important;
+  left:50%!important;
+  right:auto!important;
+  top:auto!important;
+  transform:translateX(-50%)!important}
+html[data-v28-rework="2"] .campaign-hub .campaign-node .node-xp-badge img{
+  width:9px;
+  height:9px}
+
+/* ---------- Stable encounter detail tone ----------
+   data-p4-detail-tone is set from the selected node before its click handler
+   renders new content. Older text classifiers may still toggle their class,
+   but can no longer change the visible colour between two frames. */
+html[data-v28-rework="2"] .campaign-node-detail[data-p4-detail-tone]{
+  transition:none!important;
+  animation:none!important}
+html[data-v28-rework="2"] .campaign-node-detail[data-p4-detail-tone="standard"],
+html[data-v28-rework="2"] .campaign-node-detail[data-p4-detail-tone="standard"].v28-boss-detail{
+  padding:12px!important;
+  border:1px solid rgba(214,165,60,.48)!important;
+  border-image:none!important;
+  border-radius:18px!important;
+  color:#fff3d5!important;
+  background:linear-gradient(155deg,#123b70,#071d43)!important;
+  box-shadow:0 12px 28px rgba(8,35,73,.16)!important}
+html[data-v28-rework="2"] .campaign-node-detail[data-p4-detail-tone="standard"] .node-detail-head,
+html[data-v28-rework="2"] .campaign-node-detail[data-p4-detail-tone="standard"].v28-boss-detail .node-detail-head{
+  min-height:0!important;
+  display:flex!important;
+  align-items:center!important;
+  margin:-3px -2px 10px!important;
+  padding:10px 11px!important;
+  border:0!important;
+  border-bottom:1px solid rgba(214,165,60,.26)!important;
+  background:transparent!important}
+html[data-v28-rework="2"] .campaign-node-detail[data-p4-detail-tone="standard"] .node-detail-title,
+html[data-v28-rework="2"] .campaign-node-detail[data-p4-detail-tone="standard"].v28-boss-detail .node-detail-title{
+  color:#fff4da!important;
+  white-space:normal!important}
+html[data-v28-rework="2"] .campaign-node-detail[data-p4-detail-tone="standard"] .node-detail-sub,
+html[data-v28-rework="2"] .campaign-node-detail[data-p4-detail-tone="standard"].v28-boss-detail .node-detail-sub{
+  color:#f1cf80!important}
+html[data-v28-rework="2"] .campaign-node-detail[data-p4-detail-tone="standard"] .node-detail-state,
+html[data-v28-rework="2"] .campaign-node-detail[data-p4-detail-tone="standard"].v28-boss-detail .node-detail-state{
+  color:#fff0c7!important;
+  border:1px solid rgba(214,165,60,.34)!important;
+  background:rgba(3,17,39,.55)!important}
+html[data-v28-rework="2"] .campaign-node-detail[data-p4-detail-tone="standard"] .node-detail-desc,
+html[data-v28-rework="2"] .campaign-node-detail[data-p4-detail-tone="standard"] .node-detail-row,
+html[data-v28-rework="2"] .campaign-node-detail[data-p4-detail-tone="standard"].v28-boss-detail .node-detail-desc,
+html[data-v28-rework="2"] .campaign-node-detail[data-p4-detail-tone="standard"].v28-boss-detail .node-detail-row{
+  color:#e4ebf3!important;
+  background:rgba(3,17,39,.36)!important;
+  border-color:rgba(214,165,60,.22)!important}
+html[data-v28-rework="2"] .campaign-node-detail[data-p4-detail-tone="boss"],
+html[data-v28-rework="2"] .campaign-node-detail[data-p4-detail-tone="boss"].v28-prestige-detail:not(.v28-boss-detail){
+  padding:12px!important;
+  border:1px solid rgba(230,151,67,.38)!important;
+  border-image:none!important;
+  border-radius:18px!important;
+  color:#fff2df!important;
+  background:
+    radial-gradient(circle at 50% 0%,rgba(211,42,55,.18),transparent 48%),
+    linear-gradient(160deg,#3b0d1b,#200713)!important;
+  box-shadow:0 16px 34px rgba(47,4,15,.22)!important}
+html[data-v28-rework="2"] .campaign-node-detail[data-p4-detail-tone="boss"] .node-detail-head{
+  box-sizing:border-box!important;
+  min-height:94px!important;
+  display:grid!important;
+  grid-template-columns:minmax(0,1fr) auto!important;
+  align-items:center!important;
+  gap:8px!important;
+  margin:-3px -3px 11px!important;
+  padding:19px 34px!important;
+  border:0!important;
+  border-radius:0!important;
+  background:var(--p4-boss-bar) center/100% 154% no-repeat!important}
+html[data-v28-rework="2"] .campaign-node-detail[data-p4-detail-tone="boss"] .node-detail-title{
+  color:#fff4df!important;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap}
+html[data-v28-rework="2"] .campaign-node-detail[data-p4-detail-tone="boss"] .node-detail-sub{
+  color:#f4cf89!important}
+html[data-v28-rework="2"] .campaign-node-detail[data-p4-detail-tone="boss"] .node-detail-state{
+  color:#fff0c7!important;
+  border:1px solid rgba(245,194,97,.38)!important;
+  background:rgba(27,2,8,.68)!important}
+html[data-v28-rework="2"] .campaign-node-detail[data-p4-detail-tone="boss"] .node-detail-desc,
+html[data-v28-rework="2"] .campaign-node-detail[data-p4-detail-tone="boss"] .node-detail-row,
+html[data-v28-rework="2"] .campaign-node-detail[data-p4-detail-tone="boss"].v28-prestige-detail:not(.v28-boss-detail) .node-detail-desc,
+html[data-v28-rework="2"] .campaign-node-detail[data-p4-detail-tone="boss"].v28-prestige-detail:not(.v28-boss-detail) .node-detail-row{
+  color:#f7e6df!important;
+  border-color:rgba(242,190,92,.20)!important;
+  background:rgba(17,2,7,.34)!important}
+
+/* ---------- Setup: the player count already rebuilds automatically ---------- */
+html[data-v28-rework="2"] #setup #makeNames{
+  display:none!important}
+html[data-v28-rework="2"] #setup .setup-row{
+  grid-template-columns:1fr!important}
+html[data-v28-rework="2"] #setup .setup-row>label,
+html[data-v28-rework="2"] #setup #setupProfilesBtn,
+html[data-v28-rework="2"] #setup .setup-row>.dd-select-trigger{
+  grid-column:1!important;
+  width:100%!important}
+html[data-v28-rework="2"] #setup .local-mode-card>label{
+  display:flex!important;
+  align-items:center!important;
+  gap:8px!important;
+  flex-wrap:wrap}
+html[data-v28-rework="2"] #setup .local-mode-card>label>.dd-native-select,
+html[data-v28-rework="2"] #setup .local-mode-card>label>.dd-select-trigger{
+  flex-basis:100%}
+html[data-v28-rework="2"] #setup .p4-setup-label-icon{
+  width:25px;
+  height:25px;
+  flex:0 0 25px}
+
+@media(max-width:540px){
+  html[data-v28-rework="2"] .dd-select-panel{
+    max-height:calc(100dvh - 42px)!important}
+  html[data-v28-rework="2"] .dd-select-close{
+    top:-42px!important;
+    right:-3px!important}
+  html[data-v28-rework="2"] #prestigeShopScreen .prestige-item,
+  html[data-v28-rework="2"] #prestigeShopScreen .prestige-item.owned,
+  html[data-v28-rework="2"] #prestigeShopScreen .prestige-item.expensive{
+    min-height:154px!important;
+    padding:14px 13px 13px!important}
+  html[data-v28-rework="2"] #profilesScreen .profile-card-top{
+    min-height:88px!important;
+    padding:18px 30px!important}
+  html[data-v28-rework="2"] #profilesScreen .profile-actions label,
+  html[data-v28-rework="2"] #profilesScreen .unlock-strip-title{
+    min-width:98px;
+    padding-inline:19px!important}
+  html[data-v28-rework="2"] #achievementsScreen .achievement-card,
+  html[data-v28-rework="2"] #achievementsScreen .achievement-card.dd-achieved{
+    width:100%!important;
+    margin-inline:0!important;
+    border-width:22px 25px!important;
+    border-image-width:22px 25px!important;
+    padding:13px 8px 15px!important}
+  html[data-v28-rework="2"] .campaign-hub .campaign-node-map{
+    gap:23px 5px!important;
+    padding:20px 7px 27px!important}
+  html[data-v28-rework="2"] .campaign-hub .campaign-node,
+  html[data-v28-rework="2"] .campaign-hub .campaign-node.boss,
+  html[data-v28-rework="2"] .campaign-hub .campaign-node.world-boss{
+    width:min(55px,100%)!important}
+  html[data-v28-rework="2"] .campaign-node-detail[data-p4-detail-tone="boss"] .node-detail-head{
+    min-height:90px!important;
+    padding:18px 29px!important}
+}
+
+@media(max-width:390px){
+  html[data-v28-rework="2"] .screen-topbar>button,
+  html[data-v28-rework="2"] #masteryCloseBtn,
+  html[data-v28-rework="2"] .ability-mastery-lab-topbar>button,
+  html[data-v28-rework="2"] .mastery-locked-card>button,
+  html[data-v28-rework="2"] .dd-select-close{
+    width:46px!important;
+    height:46px!important;
+    min-width:46px!important;
+    min-height:46px!important;
+    flex-basis:46px!important}
+  html[data-v28-rework="2"] .campaign-hub .campaign-node,
+  html[data-v28-rework="2"] .campaign-hub .campaign-node.boss,
+  html[data-v28-rework="2"] .campaign-hub .campaign-node.world-boss{
+    width:min(51px,100%)!important}
+  html[data-v28-rework="2"] .campaign-hub .campaign-node>span:first-child{
+    font-size:14px!important}
+}
+
+@media(prefers-reduced-motion:reduce){
+  html[data-v28-rework="2"] .campaign-hub .campaign-node.current{
+    animation:none!important}
+}
+
+/* ---------- vormals 20-v28-ui-phase5.css ---------- */
+/* ============================================================
+   DiceDuel V28.2.5 — UI Rework Phase 5
+   Fine polish: real danger action, lean combat cards, emoji-free
+   mastery surfaces, compact prestige summary and picker bounds.
+
+   Presentation only. Gameplay, saves and campaign rules stay
+   untouched. Existing V28 assets are reused throughout.
+   ============================================================ */
+
+:root{
+  --p5-danger-button:url("../assets/ui/v28/png/frames/danger-button.webp?v=28.2.5")}
+
+/* ---------- Quit action: paint the real ornamental danger asset ---------- */
+html[data-v28-rework="2"] #quitModal .utility-actions{
+  gap:10px!important;
+  padding:3px 2px!important}
+/* Quit-Knopf: Fassung und ihr ::before entfernt. Geometrie und Farben
+   kommen seit 22-v28-ui-phase7 von dort, Position und Ebenen seit
+   24-v28-ui-phase9; das ::before wird in Phase 7 auf display:none gesetzt
+   und in Phase 9 mit --p9-danger-button und inset:-4px -8px komplett neu
+   aufgebaut. --p5-danger-button wurde damit nie gezeichnet. */
+
+/* ---------- Combat: remove obsolete match metadata ---------- */
+html[data-v28-rework="2"] body.playing #winTrackerLabel,
+html[data-v28-rework="2"] body.playing #players .seat-tag,
+html[data-v28-rework="2"] body.playing #players .score-badge{
+  display:none!important}
+
+/* Keep the animated active-player artwork completely inside its card. */
+
+/* ---------- Mastery: SVG sprites instead of text emoji ---------- */
+html[data-v28-rework="2"] .p5-mastery-title-icon,
+html[data-v28-rework="2"] .p5-mastery-sheet-icon,
+html[data-v28-rework="2"] .p5-mastery-button-icon,
+html[data-v28-rework="2"] .p5-mastery-xp-icon,
+html[data-v28-rework="2"] .p5-mastery-lock-icon{
+  display:inline-block;
+  object-fit:contain;
+  vertical-align:middle;
+  pointer-events:none}
+html[data-v28-rework="2"] #masteryModal .screen-title{
+  display:flex!important;
+  align-items:center!important;
+  gap:8px!important}
+html[data-v28-rework="2"] #masteryModal .p5-mastery-title-icon{
+  width:36px;
+  height:36px;
+  flex:0 0 36px}
+html[data-v28-rework="2"] #masteryModal .mastery-branch-icon>.p5-mastery-branch-sprite{
+  width:30px;
+  height:30px;
+  object-fit:contain;
+  filter:drop-shadow(0 2px 3px rgba(2,15,35,.38))}
+html[data-v28-rework="2"] #masteryModal .mastery-xp-line>span:first-child{
+  display:inline-flex;
+  align-items:center;
+  gap:5px}
+html[data-v28-rework="2"] #masteryModal .p5-mastery-xp-icon,
+html[data-v28-rework="2"] .campaign-hub .p5-mastery-xp-icon{
+  width:18px;
+  height:18px;
+  flex:0 0 18px}
+html[data-v28-rework="2"] #masteryModal .mastery-ability-sheet-head h3{
+  display:flex!important;
+  align-items:center!important;
+  gap:7px!important}
+html[data-v28-rework="2"] #masteryModal .p5-mastery-sheet-icon{
+  width:27px;
+  height:27px;
+  flex:0 0 27px}
+html[data-v28-rework="2"] #masteryModal .mastery-fusion-placeholder .p5-mastery-lock-icon{
+  width:18px;
+  height:18px;
+  flex:0 0 18px}
+html[data-v28-rework="2"] .campaign-hub .campaign-mastery-btn{
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  gap:8px!important}
+html[data-v28-rework="2"] .campaign-hub .p5-mastery-button-icon{
+  width:25px;
+  height:25px;
+  flex:0 0 25px}
+html[data-v28-rework="2"] .campaign-hub .campaign-mastery-xp strong{
+  display:flex!important;
+  align-items:center!important;
+  gap:5px!important}
+html[data-v28-rework="2"] #abilityMasteryLabModal .ability-mastery-lab-title{
+  display:flex;
+  align-items:center;
+  gap:7px}
+html[data-v28-rework="2"] #abilityMasteryLabModal .p5-mastery-title-icon{
+  width:28px;
+  height:28px}
+
+/* ---------- Campaign prestige: one label, trophy + value below ---------- */
+html[data-v28-rework="2"] #campaignScreen .p5-prestige-card .campaign-label>.p1-inline-icon{
+  display:none!important}
+html[data-v28-rework="2"] #campaignScreen .p5-prestige-card .campaign-label{
+  padding-left:0!important}
+html[data-v28-rework="2"] #campaignTrophySummary.p5-prestige-value{
+  display:flex!important;
+  align-items:center!important;
+  gap:7px!important;
+  min-height:28px}
+html[data-v28-rework="2"] #campaignTrophySummary .p5-prestige-trophy{
+  width:27px;
+  height:27px;
+  flex:0 0 27px;
+  object-fit:contain}
+html[data-v28-rework="2"] #campaignTrophySummary .p5-prestige-count{
+  font:900 19px/1 Georgia,"Times New Roman",serif;
+  color:#0b2f5c}
+
+/* ---------- Generic picker: close circle stays fully on-screen ---------- */
+html[data-v28-rework="2"] .dd-select-panel{
+  box-sizing:border-box!important;
+  width:min(560px,calc(100% - 8px))!important}
+html[data-v28-rework="2"] .dd-select-close{
+  top:-43px!important;
+  right:12px!important}
+
+@media(max-width:540px){
+  html[data-v28-rework="2"] #quitConfirmBtn{
+    min-height:72px!important;
+    padding:16px 22px!important}
+  html[data-v28-rework="2"] .dd-select-close{
+    top:-40px!important;
+    right:10px!important}
+}
+
+@media(max-width:390px){
+  html[data-v28-rework="2"] #quitModal .utility-actions{
+    gap:7px!important}
+  html[data-v28-rework="2"] #quitCancelBtn,
+  html[data-v28-rework="2"] #quitConfirmBtn{
+    padding-inline:18px!important;
+    font-size:14px!important}
+}
+
+/* ---------- vormals 21-v28-ui-phase6.css ---------- */
+/* ============================================================
+   DiceDuel V28.2.6 — UI Rework Phase 6
+   Native component pass for the expanded V28 UI asset pack:
+   farm nodes, XP badges, encounter CTAs, HP/completed medallions
+   and the rebuilt back control.
+
+   Presentation only. Gameplay, saves and campaign rules stay
+   untouched.
+   ============================================================ */
+
+:root{
+  --p6-farm-node:url("../assets/ui/v28/png/components/campaign-node-farm-frame.webp?v=28.2.6");
+  --p6-xp-badge:url("../assets/ui/v28/png/components/xp-badge.webp?v=28.2.6");
+  --p6-encounter-button:url("../assets/ui/v28/png/components/encounter-button-green.webp?v=28.2.6");
+  --p6-hp-medallion:url("../assets/ui/v28/png/components/hp-heart-medallion.webp?v=28.2.6");
+  --p6-completed-medallion:url("../assets/ui/v28/png/components/completed-check-medallion.webp?v=28.2.6");
+  --p6-back-button:url("../assets/ui/v28/png/components/back-button.webp?v=28.2.6")}
+
+/* ---------- One rendered back control on every real back action ---------- */
+html[data-v28-rework="2"] .screen-topbar>button,
+html[data-v28-rework="2"] #masteryCloseBtn{
+  box-sizing:border-box!important;
+  width:54px!important;
+  height:54px!important;
+  min-width:54px!important;
+  min-height:54px!important;
+  flex:0 0 54px!important;
+  overflow:visible!important;
+  padding:0!important;
+  border:0!important;
+  border-radius:0!important;
+  outline:0!important;
+  color:transparent!important;
+  font-size:0!important;
+  background:var(--p6-back-button) center/contain no-repeat!important;
+  box-shadow:none!important;
+  filter:drop-shadow(0 5px 8px rgba(3,24,55,.28));
+  transform:none!important}
+html[data-v28-rework="2"] .screen-topbar>button:hover,
+html[data-v28-rework="2"] .screen-topbar>button:focus-visible,
+html[data-v28-rework="2"] #masteryCloseBtn:hover,
+html[data-v28-rework="2"] #masteryCloseBtn:focus-visible{
+  filter:brightness(1.07) drop-shadow(0 6px 10px rgba(3,24,55,.34))}
+html[data-v28-rework="2"] .screen-topbar>button:focus-visible,
+html[data-v28-rework="2"] #masteryCloseBtn:focus-visible{
+  outline:2px solid rgba(88,202,255,.88)!important;
+  outline-offset:2px!important}html[data-v28-rework="2"] #campaignStartBtn:not(:disabled):hover,
+html[data-v28-rework="2"] #duoCampaignStartBtn:not(:disabled):hover,
+html[data-v28-rework="2"] #trioCampaignStartBtn:not(:disabled):hover{
+  filter:brightness(1.06) drop-shadow(0 8px 13px rgba(4,58,37,.31))}
+html[data-v28-rework="2"] #campaignStartBtn:disabled,
+html[data-v28-rework="2"] #duoCampaignStartBtn:disabled,
+html[data-v28-rework="2"] #trioCampaignStartBtn:disabled{
+  opacity:.52!important;
+  filter:grayscale(.58) saturate(.62)!important}
+html[data-v28-rework="2"] .campaign-hub .campaign-start-row .p1-action-icon{
+  width:27px!important;
+  height:27px!important;
+  flex:0 0 27px!important}
+
+/* ---------- Dynamic farm nodes ---------- */
+html[data-v28-rework="2"] .campaign-hub .campaign-node.p6-farm-node,
+html[data-v28-rework="2"] .campaign-hub .campaign-node.p6-farm-node.boss,
+html[data-v28-rework="2"] .campaign-hub .campaign-node.p6-farm-node.world-boss{
+  width:min(68px,100%)!important;
+  aspect-ratio:1/1!important;
+  border-radius:0!important}
+html[data-v28-rework="2"] .campaign-hub .campaign-node.p6-farm-node::before,
+html[data-v28-rework="2"] .campaign-hub .campaign-node.p6-farm-node.current::before,
+html[data-v28-rework="2"] .campaign-hub .campaign-node.p6-farm-node.selected::before{
+  inset:-7px!important;
+  background:var(--p6-farm-node) center/contain no-repeat!important;
+  filter:drop-shadow(0 6px 9px rgba(1,16,39,.36))!important}
+html[data-v28-rework="2"] .campaign-hub .campaign-node.p6-farm-node.current::before,
+html[data-v28-rework="2"] .campaign-hub .campaign-node.p6-farm-node.selected::before{
+  filter:brightness(1.08) drop-shadow(0 0 12px rgba(255,214,91,.44))!important}
+html[data-v28-rework="2"] .campaign-hub .campaign-node.p6-farm-node>span:first-child{
+  inset:8% 12% 25%!important;
+  font-size:18px!important;
+  color:#fff0bd!important;
+  text-shadow:0 2px 3px rgba(1,13,31,.86)!important}
+html[data-v28-rework="2"] .campaign-hub .campaign-node>.p6-farm-label{
+  position:absolute!important;
+  z-index:4!important;
+  left:23%!important;
+  right:23%!important;
+  bottom:5%!important;
+  display:grid!important;
+  place-items:center!important;
+  color:#fff5ce!important;
+  font:1000 6px/1 system-ui,-apple-system,"Segoe UI",sans-serif!important;
+  letter-spacing:.08em!important;
+  text-transform:uppercase;
+  text-shadow:0 1px 2px rgba(1,29,38,.82)!important;
+  pointer-events:none}
+
+/* ---------- Rendered completion and XP components ---------- */
+html[data-v28-rework="2"] .campaign-hub .campaign-node .node-mark img.p6-completed-medallion{
+  width:22px!important;
+  height:22px!important;
+  object-fit:contain!important;
+  filter:drop-shadow(0 2px 3px rgba(0,0,0,.36))!important}
+html[data-v28-rework="2"] .campaign-hub .campaign-node.p6-farm-node .node-mark{
+  top:0!important;
+  right:0!important}
+html[data-v28-rework="2"] .campaign-hub .campaign-node .node-xp-badge{
+  min-height:19px!important;
+  display:inline-flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  gap:1px!important;
+  bottom:-20px!important;
+  padding:1px 6px 1px 1px!important;
+  border:1px solid rgba(255,216,106,.33)!important;
+  border-radius:999px!important;
+  color:#ffe28a!important;
+  background:rgba(5,18,40,.96)!important;
+  font-size:7px!important;
+  line-height:1!important;
+  box-shadow:0 4px 8px rgba(0,0,0,.34)!important}
+html[data-v28-rework="2"] .campaign-hub .campaign-node .node-xp-badge>.p6-xp-badge-art{
+  width:21px!important;
+  height:21px!important;
+  flex:0 0 21px!important;
+  margin:-2px 0 -2px -2px;
+  object-fit:contain;
+  filter:drop-shadow(0 1px 2px rgba(0,0,0,.28))}
+html[data-v28-rework="2"] .campaign-hub .campaign-node.p6-farm-node .node-xp-badge{
+  bottom:-23px!important}
+
+/* ---------- HP medallions in combat and the Vitality branch ---------- */
+html[data-v28-rework="2"] body.playing #players .hp>.p6-hp-medallion{
+  width:32px!important;
+  height:32px!important;
+  flex:0 0 32px!important;
+  margin:0 2px 0 0!important;
+  object-fit:contain!important;
+  filter:drop-shadow(0 2px 3px rgba(0,0,0,.34))}
+html[data-v28-rework="2"] #masteryModal .branch-hpLevel .mastery-branch-icon{
+  background:none!important}
+html[data-v28-rework="2"] #masteryModal .branch-hpLevel .p6-hp-branch-medallion{
+  width:48px!important;
+  height:48px!important;
+  object-fit:contain!important;
+  filter:drop-shadow(0 3px 4px rgba(2,15,35,.34))!important}
+
+/* Owned standard-mastery nodes use the supplied completed medallion. */
+html[data-v28-rework="2"] #masteryModal .mastery-node.owned .mastery-node-orb{
+  border:0!important;
+  background:var(--p6-completed-medallion) center/contain no-repeat!important;
+  box-shadow:none!important;
+  filter:drop-shadow(0 6px 8px rgba(0,0,0,.31))!important}
+html[data-v28-rework="2"] #masteryModal .mastery-node.owned .mastery-node-orb::before,
+html[data-v28-rework="2"] #masteryModal .mastery-node.owned .mastery-node-orb::after{
+  display:none!important}
+html[data-v28-rework="2"] #masteryModal .mastery-node.owned .mastery-node-dot{
+  visibility:hidden!important}
+
+@media(max-width:540px){
+  html[data-v28-rework="2"] .screen-topbar>button,
+  html[data-v28-rework="2"] #masteryCloseBtn{
+    width:50px!important;
+    height:50px!important;
+    min-width:50px!important;
+    min-height:50px!important;
+    flex-basis:50px!important}
+  html[data-v28-rework="2"] #campaignStartBtn,
+  html[data-v28-rework="2"] #duoCampaignStartBtn,
+  html[data-v28-rework="2"] #trioCampaignStartBtn{
+    min-height:76px!important;
+    padding:7px 8px!important;
+    border-width:25px 48px!important;
+    border-image-width:25px 48px!important;
+    font-size:14px!important}
+  html[data-v28-rework="2"] .campaign-hub .campaign-node.p6-farm-node,
+  html[data-v28-rework="2"] .campaign-hub .campaign-node.p6-farm-node.boss,
+  html[data-v28-rework="2"] .campaign-hub .campaign-node.p6-farm-node.world-boss{
+    width:min(58px,100%)!important}
+  html[data-v28-rework="2"] .campaign-hub .campaign-node.p6-farm-node>span:first-child{
+    font-size:15px!important}
+  html[data-v28-rework="2"] .campaign-hub .campaign-node>.p6-farm-label{
+    font-size:5px!important}
+  html[data-v28-rework="2"] .campaign-hub .campaign-node .node-xp-badge{
+    bottom:-18px!important;
+    font-size:6px!important}
+  html[data-v28-rework="2"] .campaign-hub .campaign-node .node-xp-badge>.p6-xp-badge-art{
+    width:19px!important;
+    height:19px!important;
+    flex-basis:19px!important}
+  html[data-v28-rework="2"] .campaign-hub .campaign-node.p6-farm-node .node-xp-badge{
+    bottom:-21px!important}
+}
+
+@media(prefers-reduced-motion:reduce){
+  html[data-v28-rework="2"] #campaignStartBtn,
+  html[data-v28-rework="2"] #duoCampaignStartBtn,
+  html[data-v28-rework="2"] #trioCampaignStartBtn{
+    transition:none!important}
+}
+
+/* ---------- vormals 22-v28-ui-phase7.css ---------- */
+/* ============================================================
+   DiceDuel V28.2.7 — UI Rework Phase 7
+   Screenshot polish for campaign summaries and nodes, mastery
+   completion states, utility actions and the active-player glow.
+
+   Presentation only. Gameplay, saves and campaign rules stay
+   untouched. Existing V28 assets are reused throughout.
+   ============================================================ */
+
+:root{
+  --p7-encounter-button:url("../assets/ui/v28/png/components/encounter-button-green.webp?v=28.2.7");
+  --p7-completed-medallion:url("../assets/ui/v28/png/components/completed-check-medallion.webp?v=28.2.7");
+  --p7-danger-button:url("../assets/ui/v28/png/frames/danger-button.webp?v=28.2.7");
+  --p7-navy-button:url("../assets/ui/v28/png/frames/navy-button-horizontal.webp?v=28.2.7")}
+
+/* ---------- Campaign header and primary encounter action ---------- */
+html[data-v28-rework="2"] #campaignProfileSummary{
+  box-sizing:border-box!important;
+  width:100%!important;
+  padding-inline:12px!important;
+  text-align:center!important}
+html[data-v28-rework="2"] #campaignScreen .p5-prestige-card .campaign-label,
+html[data-v28-rework="2"] #campaignScreen .p5-prestige-card #campaignTrophySummary{
+  justify-content:center!important;
+  text-align:center!important;
+  transform:translateX(5px)}
+
+html[data-v28-rework="2"] #campaignStartBtn,
+html[data-v28-rework="2"] #duoCampaignStartBtn,
+html[data-v28-rework="2"] #trioCampaignStartBtn{
+  box-sizing:border-box!important;
+  min-height:94px!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  gap:8px!important;
+  padding:20px 62px!important;
+  border:0!important;
+  border-image:none!important;
+  border-radius:0!important;
+  color:#fff8e8!important;
+  background:var(--p7-encounter-button) center/100% 158% no-repeat!important;
+  box-shadow:none!important;
+  filter:drop-shadow(0 7px 11px rgba(4,58,37,.25));
+  text-align:center!important;
+  text-shadow:0 1px 3px rgba(1,35,21,.82)!important}
+
+/* ---------- Clean node centres and keep FARM artwork upright ---------- */
+html[data-v28-rework="2"] .campaign-hub .campaign-node,
+html[data-v28-rework="2"] .campaign-hub .campaign-node.done,
+html[data-v28-rework="2"] .campaign-hub .campaign-node.current,
+html[data-v28-rework="2"] .campaign-hub .campaign-node.selected,
+html[data-v28-rework="2"] .campaign-hub .campaign-node.boss,
+html[data-v28-rework="2"] .campaign-hub .campaign-node.world-boss{
+  border-color:transparent!important;
+  outline:0!important;
+  background:transparent!important;
+  box-shadow:none!important}
+html[data-v28-rework="2"] .campaign-hub .campaign-node.p6-farm-node,
+html[data-v28-rework="2"] .campaign-hub .campaign-node.p6-farm-node.boss,
+html[data-v28-rework="2"] .campaign-hub .campaign-node.p6-farm-node.world-boss,
+html[data-v28-rework="2"] .campaign-hub .campaign-node.p6-farm-node>span{
+  transform:none!important}
+html[data-v28-rework="2"] .campaign-hub .campaign-node>.p6-farm-label{
+  transform:none!important;
+  rotate:0deg!important}
+
+/* ---------- Purchased Ability Masteries use the green medallion ---------- */
+html[data-v28-rework="2"] #masteryModal .mastery-ability-sheet .aml-ability-node.owned .aml-node-orbit{
+  border:0!important;
+  background:var(--p7-completed-medallion) center/contain no-repeat!important;
+  box-shadow:none!important;
+  filter:drop-shadow(0 5px 7px rgba(0,0,0,.32))!important}
+html[data-v28-rework="2"] #masteryModal .mastery-ability-sheet .aml-ability-node.owned .aml-node-core{
+  visibility:hidden!important;
+  opacity:0!important;
+  background:transparent!important;
+  box-shadow:none!important}
+
+/* ---------- Quit modal: one clean danger frame and centred labels ---------- */
+html[data-v28-rework="2"] #quitModal .utility-kicker{
+  margin:-38px 0 39px!important;
+  line-height:1!important;
+  text-align:center!important}
+html[data-v28-rework="2"] #quitConfirmBtn{
+  box-sizing:border-box!important;
+  min-height:78px!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  padding:18px 42px!important;
+  border:0!important;
+  border-radius:0!important;
+  color:#fff7e9!important;
+  text-align:center!important;
+  text-shadow:0 1px 3px rgba(42,2,9,.82)!important}
+
+/* ---------- Active player artwork covers the full player card ---------- */
+html[data-v28-rework="2"] body.playing #players .player.active{
+  outline:0!important;
+  outline-offset:0!important}
+html[data-v28-rework="2"] body.playing #players .player.active::after{
+  animation:p7ActivePlayerPulse 1.8s ease-in-out infinite!important}
+@keyframes p7ActivePlayerPulse{
+  0%,100%{opacity:.84;filter:brightness(.98) drop-shadow(0 0 7px rgba(39,169,255,.26))}
+  50%{opacity:1;filter:brightness(1.10) drop-shadow(0 0 12px rgba(72,189,255,.44))}
+}
+
+/* ---------- Locked Ability Mastery copy on ivory ---------- */
+html[data-v28-rework="2"] #masteryModal .mastery-locked-card p{
+  color:#334d69!important;
+  opacity:1!important;
+  text-shadow:none!important}
+html[data-v28-rework="2"] #masteryModal .mastery-locked-card small{
+  color:#49617a!important;
+  opacity:1!important;
+  text-shadow:none!important}
+
+/* ---------- Tutorial hub uses the finished ornamental actions ---------- */
+html[data-v28-rework="2"] #tutorialHubModal .utility-kicker{
+  transform:translateY(8px)!important;
+  margin-bottom:30px!important}
+html[data-v28-rework="2"] #tutorialHubStartBtn,
+html[data-v28-rework="2"] #tutorialHubCancelBtn{
+  box-sizing:border-box!important;
+  width:100%!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  border:0!important;
+  border-radius:0!important;
+  box-shadow:none!important;
+  text-align:center!important}
+html[data-v28-rework="2"] #tutorialHubStartBtn{
+  min-height:82px!important;
+  padding:18px 58px!important;
+  color:#fff8e8!important;
+  background:var(--p7-encounter-button) center/100% 170% no-repeat!important;
+  text-shadow:0 1px 3px rgba(1,35,21,.82)!important}
+html[data-v28-rework="2"] #tutorialHubCancelBtn{
+  min-height:70px!important;
+  padding:15px 48px!important;
+  color:#fff4d5!important;
+  background:var(--p7-navy-button) center/100% 100% no-repeat!important;
+  text-shadow:0 1px 3px rgba(2,16,38,.72)!important}
+
+@media(max-width:540px){
+  html[data-v28-rework="2"] #campaignStartBtn,
+  html[data-v28-rework="2"] #duoCampaignStartBtn,
+  html[data-v28-rework="2"] #trioCampaignStartBtn{
+    min-height:88px!important;
+    padding:18px 48px!important;
+    background-size:100% 166%!important;
+    font-size:14px!important}
+  html[data-v28-rework="2"] #quitConfirmBtn{
+    min-height:74px!important;
+    padding:17px 27px!important}
+  html[data-v28-rework="2"] #tutorialHubStartBtn{
+    min-height:78px!important;
+    padding:17px 42px!important;
+    background-size:100% 178%!important}
+  html[data-v28-rework="2"] #tutorialHubCancelBtn{
+    min-height:68px!important;
+    padding:14px 40px!important}
+}
+
+@media(prefers-reduced-motion:reduce){
+  html[data-v28-rework="2"] body.playing #players .player.active::after{
+    animation:none!important;
+    opacity:1!important;
+    filter:drop-shadow(0 0 8px rgba(39,169,255,.30))!important}
+}
+
+/* ---------- vormals 23-v28-ui-phase8.css ---------- */
+/* ============================================================
+   DiceDuel V28.2.8 — UI Rework Phase 8
+   Rendered close controls, rendered lock overlays and the green
+   premium-card selection glow for tapped campaign boss levels.
+
+   Presentation only. Gameplay, saves and campaign rules stay
+   untouched.
+   ============================================================ */
+
+:root{
+  --p8-close-button:url("../assets/ui/v28/png/components/close-button.webp?v=28.2.8");
+  --p8-lock-overlay:url("../assets/ui/v28/png/components/locked-padlock-overlay.webp?v=28.2.8");
+  --p8-boss-selected-glow:url("../assets/ui/v28/png/fx/premium-card-selected-glow-green.webp?v=28.2.8")}
+
+/* ---------- One rendered X medallion for every real close action ---------- */
+html[data-v28-rework="2"] .ability-mastery-lab-topbar>button,
+html[data-v28-rework="2"] .mastery-locked-card>button,
+html[data-v28-rework="2"] .dd-select-close,
+html[data-v28-rework="2"] .aml-info-close{
+  box-sizing:border-box!important;
+  width:50px!important;
+  height:50px!important;
+  min-width:50px!important;
+  min-height:50px!important;
+  flex:0 0 50px!important;
+  overflow:visible!important;
+  padding:0!important;
+  border:0!important;
+  border-radius:0!important;
+  outline:0!important;
+  color:transparent!important;
+  background:var(--p8-close-button) center/contain no-repeat!important;
+  box-shadow:none!important;
+  filter:drop-shadow(0 5px 8px rgba(2,20,45,.28));
+  font-size:0!important;
+  line-height:0!important;
+  text-indent:-9999px;
+  appearance:none;
+  -webkit-appearance:none;
+  transform:none!important}
+html[data-v28-rework="2"] .ability-mastery-lab-topbar>button:active,
+html[data-v28-rework="2"] .mastery-locked-card>button:active,
+html[data-v28-rework="2"] .dd-select-close:active,
+html[data-v28-rework="2"] .aml-info-close:active{
+  transform:scale(.94)!important;
+  filter:brightness(1.08) drop-shadow(0 3px 6px rgba(2,20,45,.28))}
+
+/* ---------- Shared rendered lock layer ---------- */
+html[data-v28-rework="2"] .p8-lock-overlay{
+  box-sizing:border-box;
+  display:block;
+  object-fit:contain;
+  pointer-events:none;
+  user-select:none;
+  -webkit-user-drag:none;
+  filter:drop-shadow(0 3px 5px rgba(1,15,35,.42))}
+
+/* Locked campaign nodes use the new lock in the centre, not a text mark. */
+html[data-v28-rework="2"] .campaign-hub .campaign-node.locked{
+  opacity:1!important;
+  filter:none!important}
+html[data-v28-rework="2"] .campaign-hub .campaign-node.locked::before{
+  opacity:.62!important;
+  filter:grayscale(.38) saturate(.42) brightness(.72) drop-shadow(0 4px 7px rgba(1,13,31,.32))!important}
+html[data-v28-rework="2"] .campaign-hub .campaign-node.locked>span:first-child{
+  opacity:.30!important}
+html[data-v28-rework="2"] .campaign-hub .campaign-node.locked .node-mark.p8-lock-mark{
+  position:absolute!important;
+  z-index:8!important;
+  inset:0!important;
+  width:100%!important;
+  height:100%!important;
+  display:grid!important;
+  place-items:center!important;
+  transform:none!important;
+  background:none!important}
+html[data-v28-rework="2"] .campaign-hub .campaign-node.locked .node-mark.p8-lock-mark>.p8-lock-node{
+  width:72%!important;
+  height:72%!important;
+  max-width:none!important;
+  max-height:none!important}
+
+/* Compact inline overlays for locked worlds, cosmetics and labels. */
+html[data-v28-rework="2"] .campaign-world-btn:disabled{
+  opacity:1!important;
+  filter:none!important}
+html[data-v28-rework="2"] .campaign-world-btn:disabled .campaign-world-kicker,
+html[data-v28-rework="2"] .campaign-world-btn:disabled .campaign-world-name{
+  opacity:.48!important}
+html[data-v28-rework="2"] .campaign-world-state.p8-lock-host{
+  min-height:22px;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important}
+html[data-v28-rework="2"] .campaign-world-state>.p8-lock-world{
+  width:31px;
+  height:31px;
+  margin:-6px 0 -5px}
+html[data-v28-rework="2"] .campaign-ability-chip.locked,
+html[data-v28-rework="2"] #profilesScreen .unlock-chip.locked{
+  display:inline-flex!important;
+  align-items:center!important;
+  opacity:1!important;
+  filter:none!important}
+html[data-v28-rework="2"] .campaign-ability-chip.locked{
+  color:#71849a!important;
+  background:rgba(6,27,55,.42)!important}
+html[data-v28-rework="2"] #profilesScreen .unlock-chip.locked{
+  color:#52677e!important}
+html[data-v28-rework="2"] .p8-lock-inline{
+  width:29px;
+  height:29px;
+  flex:0 0 29px;
+  margin:-7px -3px -7px -7px;
+  vertical-align:middle}
+html[data-v28-rework="2"] .campaign-hub .p8-lock-host,
+html[data-v28-rework="2"] #masteryModal .p8-lock-host,
+html[data-v28-rework="2"] #testLab3dLock.p8-lock-host{
+  align-items:center!important}
+html[data-v28-rework="2"] .campaign-hub .campaign-value.p8-lock-host,
+html[data-v28-rework="2"] .campaign-hub .campaign-complete.p8-lock-host,
+html[data-v28-rework="2"] .campaign-hub .node-detail-state.p8-lock-host,
+html[data-v28-rework="2"] .campaign-hub .node-detail-row.p8-lock-host{
+  display:flex!important;
+  justify-content:center!important;
+  gap:3px!important}
+html[data-v28-rework="2"] .campaign-hub .node-detail-row.p8-lock-host{
+  justify-content:flex-start!important}
+html[data-v28-rework="2"] .campaign-hub .campaign-mastery-btn:disabled .p5-mastery-button-icon{
+  display:none!important}
+html[data-v28-rework="2"] .campaign-hub .campaign-mastery-btn>.p8-lock-button{
+  width:32px;
+  height:32px;
+  flex:0 0 32px;
+  margin:-8px -3px -8px -8px}
+
+/* Standard- and Ability-Mastery locks sit directly over their old orbs. */
+html[data-v28-rework="2"] #masteryModal .mastery-node.locked{
+  opacity:1!important;
+  filter:none!important}
+html[data-v28-rework="2"] #masteryModal .mastery-node.locked .mastery-node-orb,
+html[data-v28-rework="2"] #masteryModal .mastery-node.locked .mastery-node-plaque{
+  opacity:.48!important;
+  filter:saturate(.45)!important}
+html[data-v28-rework="2"] #masteryModal .mastery-node.locked>.p8-lock-standard{
+  position:absolute;
+  z-index:8;
+  left:8px;
+  top:50%;
+  width:64px;
+  height:64px;
+  transform:translateY(-50%)}
+html[data-v28-rework="2"] #masteryModal .mastery-ability-locked{
+  opacity:1!important;
+  filter:none!important}
+html[data-v28-rework="2"] #masteryModal .mastery-ability-locked .aml-node-orbit,
+html[data-v28-rework="2"] #masteryModal .mastery-ability-locked .aml-node-core,
+html[data-v28-rework="2"] #masteryModal .mastery-ability-locked .aml-node-tag{
+  opacity:.50!important;
+  filter:saturate(.42)!important}
+html[data-v28-rework="2"] #masteryModal .mastery-ability-locked>.p8-lock-ability{
+  position:absolute;
+  z-index:8;
+  left:0;
+  top:5px;
+  width:58px;
+  height:58px}
+html[data-v28-rework="2"] #masteryModal .mastery-fusion-placeholder>.p5-mastery-lock-icon{
+  display:none!important}
+html[data-v28-rework="2"] #masteryModal .mastery-fusion-placeholder>.p8-lock-fusion{
+  width:40px;
+  height:40px;
+  flex:0 0 40px;
+  margin:-10px -8px -10px -6px}
+html[data-v28-rework="2"] #masteryModal .mastery-locked-cost.p8-lock-host,
+html[data-v28-rework="2"] #masteryModal .mastery-ability-sheet-head>span.p8-lock-host{
+  display:inline-flex!important;
+  gap:3px!important}
+html[data-v28-rework="2"] #masteryModal .mastery-locked-cost>.p8-lock-modal,
+html[data-v28-rework="2"] #masteryModal .mastery-ability-sheet-head>span>.p8-lock-note{
+  width:34px;
+  height:34px;
+  flex:0 0 34px;
+  margin:-10px -5px -10px -8px}
+
+/* Locked Fusion/Keystone placeholders in the visual lab use the same art. */
+html[data-v28-rework="2"] #abilityMasteryLabModal :is(.aml-fusion-node,.aml-keystone-node)>.p8-lock-prototype{
+  position:absolute;
+  z-index:8;
+  left:50%;
+  top:50%;
+  width:82px;
+  height:82px;
+  transform:translate(-50%,-50%)}
+html[data-v28-rework="2"] #testLab3dLock{
+  display:inline-flex!important;
+  justify-content:center!important;
+  gap:5px!important}
+
+/* ---------- Supplied 1536×1536 boss selection layer ---------- */
+html[data-v28-rework="2"] .campaign-hub .campaign-node.boss>.p8-boss-selected-glow{
+  position:absolute;
+  z-index:-2;
+  inset:-8px;
+  width:calc(100% + 16px);
+  height:calc(100% + 16px);
+  max-width:none;
+  max-height:none;
+  object-fit:contain;
+  pointer-events:none;
+  user-select:none;
+  -webkit-user-drag:none}
+
+html[data-v28-rework="2"] .campaign-hub .campaign-node.p6-farm-node:is(.current,.selected)::before{
+  filter:drop-shadow(0 6px 9px rgba(1,16,39,.36))!important}
+@keyframes p8BossSelectedPulse{
+  0%,50%,100%{opacity:.94;filter:none}
+}
+
+@media(max-width:420px){
+  html[data-v28-rework="2"] .ability-mastery-lab-topbar>button,
+  html[data-v28-rework="2"] .mastery-locked-card>button,
+  html[data-v28-rework="2"] .dd-select-close,
+  html[data-v28-rework="2"] .aml-info-close{
+    width:47px!important;
+    height:47px!important;
+    min-width:47px!important;
+    min-height:47px!important;
+    flex-basis:47px!important}
+  html[data-v28-rework="2"] #masteryModal .mastery-node.locked>.p8-lock-standard{
+    left:7px;
+    width:56px;
+    height:56px}
+  html[data-v28-rework="2"] #masteryModal .mastery-ability-locked>.p8-lock-ability{
+    top:8px;
+    width:48px;
+    height:48px}
+}
+
+@media(prefers-reduced-motion:reduce){
+  html[data-v28-rework="2"] .campaign-hub .campaign-node.boss>.p8-boss-selected-glow{
+    animation:none!important;
+    opacity:.94}
+}
+
+/* ---------- vormals 24-v28-ui-phase9.css ---------- */
+/* ============================================================
+   DiceDuel V28.2.9 — UI Rework Phase 9
+   Mobile layout repair for compact ability cards, setup results,
+   the quit action, active-player alignment and campaign status UI.
+
+   Presentation only. Gameplay, saves and campaign rules stay
+   untouched. Existing rendered V28 assets are reused throughout.
+   ============================================================ */
+
+:root{
+  --p9-ability-choice:url("../assets/ui/v28/png/frames/ability-choice-card.webp?v=28.2.9");
+  --p9-gold-button:url("../assets/ui/v28/png/frames/gold-special-button.webp?v=28.2.9");
+  --p9-danger-button:url("../assets/ui/v28/png/frames/danger-button.webp?v=28.2.9");
+  --p9-active-player:url("../assets/ui/v28/png/frames/active-player-glow.webp?v=28.2.9");
+  --p9-close-button:url("../assets/ui/v28/png/components/close-button.webp?v=28.2.9");
+  --p9-completed-medallion:url("../assets/ui/v28/png/components/completed-check-medallion.webp?v=28.2.9")}
+
+/* ---------- Ability bonus: only icon, number and name ----------
+   The supplied card already contains its ivory centre and right ring.
+   Removing the old CSS fill and radio oval gets rid of both pale outer
+   rectangles while keeping the rendered frame intact. */
+html[data-v28-rework="2"] .second-ability-options{
+  align-items:start!important;
+  gap:10px!important}
+html[data-v28-rework="2"] .second-ability-card{
+  box-sizing:border-box!important;
+  align-items:center!important;
+  overflow:visible!important;
+  border-image-source:var(--p9-ability-choice)!important;
+  color:#082a55!important;
+  background:transparent!important;
+  box-shadow:none!important}
+html[data-v28-rework="2"] .second-ability-card>.dd-ability-icon,
+html[data-v28-rework="2"] .second-ability-card>.num,
+html[data-v28-rework="2"] .second-ability-card>.name{
+  grid-row:1!important;
+  align-self:center!important}
+html[data-v28-rework="2"] .second-ability-card>.name{
+  min-width:0!important;
+  margin:0!important;
+  overflow-wrap:anywhere}
+html[data-v28-rework="2"] .second-ability-card>.desc,
+html[data-v28-rework="2"] .second-ability-card>.p1-choice-indicator{
+  display:none!important}
+
+/* ---------- Setup result: compact result instead of escaping copy ---------- */
+html[data-v28-rework="2"] #setup .ability-roll{
+  box-sizing:border-box!important;
+  min-height:72px!important;
+  display:flex!important;
+  flex-wrap:nowrap!important;
+  align-items:center!important;
+  justify-content:center!important;
+  gap:6px!important;
+  padding:14px 36px!important;
+  overflow:visible!important;
+  background:var(--p9-gold-button) center/100% 100% no-repeat!important;
+  text-align:center!important}
+html[data-v28-rework="2"] #setup .ability-roll .ability-desc{
+  display:none!important}
+html[data-v28-rework="2"] #setup .ability-roll strong{
+  min-width:0;
+  overflow-wrap:anywhere}
+
+/* ---------- Quit modal: rendered danger art as an independent layer ---------- */
+html[data-v28-rework="2"] #quitModal .utility-actions{
+  overflow:visible!important}
+html[data-v28-rework="2"] #quitConfirmBtn{
+  position:relative!important;
+  isolation:isolate!important;
+  overflow:visible!important;
+  background:transparent!important;
+  box-shadow:none!important}
+html[data-v28-rework="2"] #quitConfirmBtn::before{
+  content:""!important;
+  display:block!important;
+  position:absolute!important;
+  inset:-4px -8px!important;
+  pointer-events:none!important;
+  background:var(--p9-danger-button) center/100% 100% no-repeat!important;
+  filter:drop-shadow(0 6px 10px rgba(54,3,12,.24))}
+html[data-v28-rework="2"] #quitConfirmBtn>.p5-button-label{
+  position:relative!important;
+  z-index:1!important;
+  width:100%!important;
+  display:block!important;
+  text-align:center!important;
+  white-space:nowrap!important}
+
+/* ---------- Active player: both 1200×704 canvases share one box ---------- */
+html[data-v28-rework="2"] body.playing #players .player.active::after{
+  border:0!important;
+  border-radius:0!important;
+  clip-path:none!important;
+  background:var(--p9-active-player) center/100% 100% no-repeat!important;
+  box-shadow:none!important;
+  transform:none!important}
+
+/* ---------- Campaign: close action, clean profile card and real checks ---------- */
+html[data-v28-rework="2"] :is(#campaignBackBtn,#duoCampaignBackBtn,#trioCampaignBackBtn){
+  box-sizing:border-box!important;
+  width:50px!important;
+  height:50px!important;
+  min-width:50px!important;
+  min-height:50px!important;
+  flex:0 0 50px!important;
+  overflow:visible!important;
+  padding:0!important;
+  border:0!important;
+  border-radius:0!important;
+  outline:0!important;
+  color:transparent!important;
+  background:var(--p9-close-button) center/contain no-repeat!important;
+  box-shadow:none!important;
+  filter:drop-shadow(0 4px 7px rgba(3,24,55,.24));
+  font-size:0!important;
+  line-height:0!important;
+  transform:none!important}
+html[data-v28-rework="2"] :is(#campaignBackBtn,#duoCampaignBackBtn,#trioCampaignBackBtn):active{
+  transform:scale(.94)!important}
+html[data-v28-rework="2"] #campaignScreen .campaign-profile-card{
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important}
+html[data-v28-rework="2"] #campaignScreen .campaign-profile-card #campaignProfileSummary{
+  margin:0!important;
+  padding:0 14px!important;
+  text-align:center!important}
+html[data-v28-rework="2"] .campaign-hub .campaign-world-btn.done .campaign-world-state{
+  box-sizing:border-box!important;
+  width:23px!important;
+  height:23px!important;
+  min-height:23px!important;
+  display:block!important;
+  margin:-1px auto -4px!important;
+  overflow:hidden!important;
+  color:transparent!important;
+  background:var(--p9-completed-medallion) center/contain no-repeat!important;
+  font-size:0!important;
+  line-height:0!important;
+  text-indent:-9999px!important;
+  filter:drop-shadow(0 2px 3px rgba(0,0,0,.28))}
+
+@media(max-width:430px){
+  html[data-v28-rework="2"] .second-ability-card{
+    min-height:142px!important}
+  html[data-v28-rework="2"] .second-ability-card>.name{
+    font-size:18px!important}
+  html[data-v28-rework="2"] #setup .ability-roll{
+    min-height:68px!important;
+    padding-inline:31px!important}
+  html[data-v28-rework="2"] #quitConfirmBtn{
+    padding:15px 18px!important;
+    font-size:14px!important}
+}
+
+@media(prefers-reduced-motion:reduce){
+  html[data-v28-rework="2"] body.playing #players .player.active::after{
+    animation:none!important;
+    opacity:1!important}
+}
+
+/* ---------- vormals 25-v28-ui-phase10.css ---------- */
+/* ============================================================
+   DiceDuel V28.2.10 — UI Rework Phase 10
+   Exact artwork anchoring for the ability bonus, combat cards
+   and premium campaign nodes.
+
+   Presentation only. Gameplay, saves and campaign rules stay
+   untouched. Existing rendered V28 assets are reused throughout.
+   ============================================================ */
+
+/* ---------- Ability bonus: use the plaque and both artwork sockets ----------
+   The modal frame already owns its navy title plaque. The ability frame also
+   owns a left diamond and a right number ring, so those three elements are
+   anchored to the artwork instead of reserving extra grid columns. */
+html[data-v28-rework="2"] .second-ability-panel{
+  position:relative!important}
+html[data-v28-rework="2"] .second-ability-panel>.second-ability-kicker{
+  position:absolute!important;
+  z-index:3!important;
+  top:-27px!important;
+  left:50%!important;
+  width:88%!important;
+  min-height:26px!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  margin:0!important;
+  padding:0 12px!important;
+  transform:translateX(-50%)!important;
+  color:#fff2c8!important;
+  background:none!important;
+  font-size:13px!important;
+  line-height:1.05!important;
+  text-align:center!important;
+  pointer-events:none}
+html[data-v28-rework="2"] .second-ability-title{
+  margin:14px 0 6px!important}
+html[data-v28-rework="2"] .second-ability-options{
+  margin-top:8px!important}
+html[data-v28-rework="2"] .second-ability-card{
+  position:relative!important;
+  grid-template-columns:minmax(0,1fr)!important;
+  grid-template-rows:1fr!important}
+html[data-v28-rework="2"] .second-ability-card>.dd-ability-icon{
+  position:absolute!important;
+  z-index:2!important;
+  top:50%!important;
+  grid-column:auto!important;
+  grid-row:auto!important;
+  transform:translateY(-50%)!important}
+html[data-v28-rework="2"] .second-ability-card>.num{
+  position:absolute!important;
+  z-index:2!important;
+  right:-16px!important;
+  top:50%!important;
+  width:32px!important;
+  height:44px!important;
+  min-width:0!important;
+  display:grid!important;
+  place-items:center!important;
+  grid-column:auto!important;
+  grid-row:auto!important;
+  margin:0!important;
+  padding:0!important;
+  transform:translateY(-50%)!important;
+  color:#082a55!important;
+  background:transparent!important;
+  border:0!important;
+  border-radius:0!important;
+  box-shadow:none!important;
+  font:900 18px/1 Georgia,"Times New Roman",serif!important;
+  text-align:center!important}
+html[data-v28-rework="2"] .second-ability-card>.name{
+  width:100%!important;
+  box-sizing:border-box!important;
+  grid-column:1!important;
+  grid-row:1!important;
+  justify-self:center!important;
+  padding:0 12px!important;
+  text-align:center!important}
+
+/* ---------- Combat: align the 1200x704 active canvas to the full card ---------- */
+
+html[data-v28-rework="2"] body.playing #players .player.v28-boss-player.active::after{
+  inset:-20px -23px!important}
+
+/* ---------- Campaign: glow directly below the premium node artwork ---------- */
+html[data-v28-rework="2"] .campaign-hub .campaign-node.boss.p6-farm-node{
+  isolation:isolate!important;
+  overflow:visible!important}
+html[data-v28-rework="2"] .campaign-hub .campaign-node.boss.p6-farm-node::before{
+  z-index:0!important}
+html[data-v28-rework="2"] .campaign-hub .campaign-node.boss.p6-farm-node>.p8-boss-selected-glow{
+  z-index:-1!important;
+  inset:-7px!important;
+  width:calc(100% + 14px)!important;
+  height:calc(100% + 14px)!important;
+  max-width:none!important;
+  max-height:none!important;
+  object-fit:contain!important;
+  object-position:center!important;
+  transform:none!important;
+  mix-blend-mode:normal!important;
+  opacity:1!important;
+  filter:drop-shadow(0 0 5px rgba(23,240,106,.30))}
+html[data-v28-rework="2"] .campaign-hub .campaign-node.p6-farm-node>.node-xp-badge{
+  left:50%!important;
+  right:auto!important;
+  bottom:-20px!important;
+  transform:translateX(-50%)!important}
+
+@media(max-width:540px){
+  html[data-v28-rework="2"] .second-ability-card>.dd-ability-icon{
+    left:-38px!important}
+  html[data-v28-rework="2"] body.playing #players .player.active::after{
+    inset:-17px!important}
+  html[data-v28-rework="2"] body.playing #players .player.v28-boss-player.active::after{
+    inset:-18px!important}
+}
+
+@media(max-width:390px){
+  html[data-v28-rework="2"] .second-ability-card>.dd-ability-icon{
+    left:-34px!important}
+  html[data-v28-rework="2"] .second-ability-card>.num{
+    font-size:17px!important}
+}
+
+@media(prefers-reduced-motion:reduce){
+  html[data-v28-rework="2"] .campaign-hub .campaign-node.boss.p6-farm-node>.p8-boss-selected-glow{
+    animation:none!important;
+    opacity:1!important}
+}
+
+/* ---------- vormals 26-v28-ui-phase11.css ---------- */
+/* ============================================================
+   DiceDuel V28.2.11 — UI Rework Phase 11
+   Stable ability-choice geometry, clean quit action and campaign
+   node anchoring without transform/pulse races.
+
+   Presentation only. Gameplay, saves and campaign rules stay
+   untouched. Existing rendered V28 assets are reused throughout.
+   ============================================================ */
+
+/* ---------- Ability bonus: compact frame and icon use one geometry ----------
+   The left navy socket is baked into the card artwork. Reducing the card height
+   while scaling the icon from the same breakpoint variables makes both shapes
+   meet instead of leaving a tall empty diamond around a small icon. */
+html[data-v28-rework="2"] .second-ability-card{
+  --p11-choice-icon-size:64px;
+  min-height:84px!important;
+  padding-block:0!important}
+html[data-v28-rework="2"] .second-ability-card>.dd-ability-icon{
+  left:-44px!important;
+  width:var(--p11-choice-icon-size)!important;
+  height:var(--p11-choice-icon-size)!important;
+  max-width:none!important;
+  max-height:none!important;
+  object-fit:contain!important}
+html[data-v28-rework="2"] .second-ability-card>.name{
+  padding-inline:18px 24px!important;
+  line-height:1.06!important}
+
+/* ---------- Quit modal: no native/native-theme rectangle below the PNG ---------- */
+html[data-v28-rework="2"] #quitModal .utility-kicker{
+  transform:translateY(11px)!important}
+html[data-v28-rework="2"] #quitConfirmBtn,
+html[data-v28-rework="2"] #quitConfirmBtn:hover,
+html[data-v28-rework="2"] #quitConfirmBtn:focus,
+html[data-v28-rework="2"] #quitConfirmBtn:active{
+  -webkit-appearance:none!important;
+  appearance:none!important;
+  border:0!important;
+  outline:0!important;
+  background:none!important;
+  background-color:transparent!important;
+  background-image:none!important;
+  box-shadow:none!important;
+  filter:none!important;
+  -webkit-tap-highlight-color:transparent!important}
+html[data-v28-rework="2"] #quitConfirmBtn::before{
+  z-index:0!important;
+  background-color:transparent!important}
+html[data-v28-rework="2"] #quitConfirmBtn::after{
+  content:none!important;
+  display:none!important;
+  background:none!important}
+html[data-v28-rework="2"] #quitConfirmBtn>.p5-button-label{
+  transform:translateY(2px)!important}
+
+/* ---------- Campaign nodes: stable number, size and selected state ----------
+   Phase 8 prepends the selected-glow image. Therefore :first-child no longer
+   identifies the level number. :first-of-type remains stable because the glow
+   is an IMG and the dynamic level number is the first SPAN. */
+html[data-v28-rework="2"] .campaign-hub .campaign-node,
+html[data-v28-rework="2"] .campaign-hub .campaign-node.boss,
+html[data-v28-rework="2"] .campaign-hub .campaign-node.world-boss{
+  transform:none!important;
+  rotate:0deg!important;
+  scale:1!important;
+  animation:none!important;
+  transition:none!important;
+  will-change:auto!important}
+html[data-v28-rework="2"] .campaign-hub .campaign-node.boss,
+html[data-v28-rework="2"] .campaign-hub .campaign-node.world-boss{
+  width:min(68px,100%)!important;
+  aspect-ratio:1/1!important}
+html[data-v28-rework="2"] .campaign-hub .campaign-node>span:first-of-type{
+  position:absolute!important;
+  z-index:3!important;
+  inset:0!important;
+  display:grid!important;
+  place-items:center!important;
+  margin:0!important;
+  transform:none!important;
+  rotate:0deg!important;
+  scale:1!important;
+  animation:none!important;
+  transition:none!important;
+  font-size:16px!important;
+  line-height:1!important;
+  text-align:center!important}
+html[data-v28-rework="2"] .campaign-hub .campaign-node.p6-farm-node>span:first-of-type{
+  inset:8% 12% 25%!important;
+  font-size:18px!important;
+  color:#fff0bd!important;
+  text-shadow:0 2px 3px rgba(1,13,31,.86)!important}
+html[data-v28-rework="2"] .campaign-hub .campaign-node.boss>.p8-boss-selected-glow{
+  opacity:1!important;
+  rotate:0deg!important;
+  scale:1!important}
+
+/* The detail panel and its asynchronously decorated contents must not inherit
+   generic button/card transitions. This prevents the lower encounter card from
+   alternating by a pixel while its status classes are applied. */
+html[data-v28-rework="2"] .campaign-node-detail,
+html[data-v28-rework="2"] .campaign-node-detail *,
+html[data-v28-rework="2"] .campaign-node-detail::before,
+html[data-v28-rework="2"] .campaign-node-detail::after{
+  animation:none!important;
+  transition:none!important;
+  will-change:auto!important}
+html[data-v28-rework="2"] .campaign-node-detail{
+  transform:none!important;
+  scale:1!important}
+
+@media(max-width:540px){
+  html[data-v28-rework="2"] .second-ability-card{
+    --p11-choice-icon-size:60px;
+    min-height:80px!important}
+  html[data-v28-rework="2"] .second-ability-card>.dd-ability-icon{
+    left:-43px!important}
+  html[data-v28-rework="2"] .campaign-hub .campaign-node.boss,
+  html[data-v28-rework="2"] .campaign-hub .campaign-node.world-boss{
+    width:min(58px,100%)!important}
+  html[data-v28-rework="2"] .campaign-hub .campaign-node.p6-farm-node>span:first-of-type{
+    font-size:15px!important}
+}
+
+@media(max-width:390px){
+  html[data-v28-rework="2"] .second-ability-card{
+    --p11-choice-icon-size:56px;
+    min-height:76px!important}
+  html[data-v28-rework="2"] .second-ability-card>.dd-ability-icon{
+    left:-39px!important}
+  html[data-v28-rework="2"] .second-ability-card>.name{
+    padding-inline:14px 21px!important;
+    font-size:17px!important}
+  html[data-v28-rework="2"] .campaign-hub .campaign-node>span:first-of-type{
+    font-size:14px!important}
+}
+
+/* V28.3.6 — contained front screens + campaign jitter (folded into last UI sheet) */
+
+html.wd-front-scroll-lock,
+html.wd-front-scroll-lock body{
+  overflow:hidden!important;
+  height:100dvh!important;
+  max-height:100dvh!important;
+  overscroll-behavior:none!important}
+
+#abilitiesScreen.hidden,
+#changelogScreen.hidden,
+#rulesScreen.hidden,
+#statsScreen.hidden,
+#settingsScreen.hidden{display:none!important}
+
+#abilitiesScreen.screen-card:not(.hidden),
+#changelogScreen.screen-card:not(.hidden),
+#rulesScreen.screen-card:not(.hidden),
+#statsScreen.screen-card:not(.hidden),
+#settingsScreen.screen-card:not(.hidden){
+  display:flex!important;
+  flex-direction:column!important;
+  height:calc(100dvh - 12px)!important;
+  max-height:calc(100dvh - 12px)!important;
+  min-height:0!important;
+  overflow:hidden!important;
+  box-sizing:border-box!important}
+
+.screen-card:not(.hidden)>.screen-scroll-inner{
+  display:flex!important;
+  flex-direction:column!important;
+  flex:1 1 auto!important;
+  min-height:0!important;
+  height:100%!important;
+  overflow:hidden!important}
+
+#abilitiesScreen:not(.hidden) .ability-list,
+#abilitiesScreen:not(.hidden) #allAbilitiesList,
+#rulesScreen:not(.hidden) .menu-list,
+#changelogScreen:not(.hidden) .screen-scroll-body,
+#statsScreen:not(.hidden) .screen-scroll-body,
+#settingsScreen:not(.hidden) .screen-scroll-body{
+  flex:1 1 auto!important;
+  min-height:0!important;
+  overflow-x:hidden!important;
+  overflow-y:auto!important;
+  -webkit-overflow-scrolling:touch;
+  overscroll-behavior:contain;
+  padding-bottom:12px!important;
+  box-sizing:border-box!important}
+
+html[data-v28-rework="2"] .campaign-hub .campaign-node,
+html[data-v28-rework="2"] .campaign-hub .campaign-node.current,
+html[data-v28-rework="2"] .campaign-hub .campaign-node.selected,
+html[data-v28-rework="2"] .campaign-hub .campaign-node.boss,
+html[data-v28-rework="2"] .campaign-hub .campaign-node.boss span,
+html[data-v28-rework="2"] .campaign-hub .campaign-node.boss .node-mark{
+  animation:none!important;
+  transition:none!important;
+  transform:none!important;
+  rotate:0deg!important;
+  scale:1!important;
+  will-change:auto!important;
+  filter:none!important}
+
+html[data-v28-rework="2"] .campaign-hub .campaign-node::before,
+html[data-v28-rework="2"] .campaign-hub .campaign-node::after,
+html[data-v28-rework="2"] .campaign-hub .campaign-node.current::before,
+html[data-v28-rework="2"] .campaign-hub .campaign-node.selected::before,
+html[data-v28-rework="2"] .campaign-hub .campaign-node.p6-farm-node.current::before,
+html[data-v28-rework="2"] .campaign-hub .campaign-node.p6-farm-node.selected::before{
+  animation:none!important;
+  transition:none!important;
+  filter:none!important}
+
+html[data-v28-rework="2"] .campaign-hub .campaign-node.boss>.p8-boss-selected-glow{
+  mix-blend-mode:normal!important;
+  animation:none!important;
+  transition:none!important;
+  filter:none!important;
+  transform:none!important;
+  will-change:auto!important}
+
+html[data-v28-rework="2"] .campaign-hub .campaign-node-map{
+  overflow:visible!important}
+
+@keyframes nodePulse{
+  0%,50%,100%{box-shadow:0 0 0 3px rgba(255,200,87,.12),0 0 14px rgba(255,200,87,.16)}
+}
+
+/* V28.3.7 — generic ability/select picker stays inside the 9-slice frame */
+html.wd-picker-open,
+html.wd-picker-open body{
+  overflow:hidden!important;
+  overscroll-behavior:none!important}
+.dd-select-picker{
+  overflow:hidden!important;
+  overscroll-behavior:none!important}
+.dd-select-picker .dd-select-panel,
+html[data-v28-rework="2"] .dd-select-panel{
+  display:flex!important;
+  flex-direction:column!important;
+  max-height:min(78dvh,720px)!important;
+  min-height:0!important;
+  overflow:hidden!important}
+.dd-select-picker .dd-select-options,
+html[data-v28-rework="2"] .dd-select-options{
+  flex:1 1 auto!important;
+  min-height:0!important;
+  max-height:calc(78dvh - 118px)!important;
+  overflow-x:hidden!important;
+  overflow-y:auto!important;
+  overscroll-behavior:contain!important;
+  -webkit-overflow-scrolling:touch;
+  padding:4px 2px 18px!important;
+  touch-action:pan-y;
+  scrollbar-gutter:stable;
+  mask-image:linear-gradient(to bottom,#000 0,#000 calc(100% - 14px),transparent 100%);
+  -webkit-mask-image:linear-gradient(to bottom,#000 0,#000 calc(100% - 14px),transparent 100%)}
+.v28-ability-picker{
+  overflow:hidden!important}
+.v28-ability-picker-panel{
+  display:flex!important;
+  flex-direction:column!important;
+  max-height:min(78dvh,720px)!important;
+  overflow:hidden!important}
+.v28-ability-picker-list{
+  flex:1 1 auto!important;
+  min-height:0!important;
+  overflow-y:auto!important;
+  overscroll-behavior:contain!important}
+
+/* ---------- vormals 28-v28-ui-phase12.css ---------- */
+/* V28.3.5 — UI hotfix
+   Alle Fähigkeiten: Page-Scroll lock + inner clip (border-image bleibt sichtbar)
+   Campaign Jitter: Pulse/Filter/Glow tot, Map clippt Selected-Frames
+   Kampagnen-Fähigkeiten: weg
+   L1/L2: unangetastet
+*/
+
+/* ===== Page lock while abilities screen is open =====
+   Frueher setzte js/35-v28-ui-phase12.js dafuer .wd-abilities-open auf <html>.
+   Das Script ist nicht mehr in index.html eingebunden, die Regel lief also ins
+   Leere. Der Zustand steht ohnehin schon im DOM (#abilitiesScreen.hidden), also
+   wird er direkt per :has() abgefragt statt ueber eine gespiegelte Klasse.
+   .wd-abilities-open bleibt als Selektor stehen, falls das Script zurueckkommt. */
+html.wd-abilities-open,
+html.wd-abilities-open body,
+html:has(#abilitiesScreen:not(.hidden)),
+html:has(#abilitiesScreen:not(.hidden)) body{
+  overflow:hidden!important;
+  height:100dvh!important;
+  max-height:100dvh!important;
+  overscroll-behavior:none!important;
+}
+
+#abilitiesScreen.hidden{display:none!important}
+
+#abilitiesScreen.screen-card:not(.hidden){
+  display:flex!important;
+  flex-direction:column!important;
+  height:calc(100dvh - 12px)!important;
+  max-height:calc(100dvh - 12px)!important;
+  min-height:0!important;
+  /* overflow hidden clips descendants to the padding-box.
+     border-image lives in the border-box and stays visible. */
+  overflow:hidden!important;
+  box-sizing:border-box!important;
+}
+
+#abilitiesScreen:not(.hidden)>.screen-scroll-inner{
+  display:flex!important;
+  flex-direction:column!important;
+  flex:1 1 auto!important;
+  min-height:0!important;
+  height:100%!important;
+  overflow:hidden!important;
+}
+
+#abilitiesScreen:not(.hidden) .screen-topbar,
+#abilitiesScreen:not(.hidden) .screen-subtitle{
+  flex:0 0 auto!important;
+}
+
+#abilitiesScreen:not(.hidden) .ability-list,
+#abilitiesScreen:not(.hidden) #allAbilitiesList{
+  flex:1 1 auto!important;
+  min-height:0!important;
+  overflow-x:hidden!important;
+  overflow-y:auto!important;
+  -webkit-overflow-scrolling:touch;
+  overscroll-behavior:contain;
+  padding:4px 2px 18px!important;
+  margin:0!important;
+  box-sizing:border-box!important;
+}
+
+#abilitiesScreen .ability-list-item{
+  max-width:100%!important;
+  box-sizing:border-box!important;
+}
+
+/* ===== Kampagnen-Fähigkeiten weg ===== */
+.campaign-unlocks,
+#campaignAbilityGrid{
+  display:none!important;
+  height:0!important;
+  margin:0!important;
+  padding:0!important;
+  overflow:hidden!important;
+  visibility:hidden!important;
+  pointer-events:none!important;
+}
+
+/* ===== Campaign node jitter ===== */
+html[data-v28-rework="2"] .campaign-hub .campaign-node,
+html[data-v28-rework="2"] .campaign-hub .campaign-node.current,
+html[data-v28-rework="2"] .campaign-hub .campaign-node.selected,
+html[data-v28-rework="2"] .campaign-hub .campaign-node.boss,
+html[data-v28-rework="2"] .campaign-hub .campaign-node.boss.current,
+html[data-v28-rework="2"] .campaign-hub .campaign-node.boss.selected,
+html[data-v28-rework="2"] .campaign-hub .campaign-node.boss span,
+html[data-v28-rework="2"] .campaign-hub .campaign-node.boss .node-mark{
+  animation:none!important;
+  transition:none!important;
+  transform:none!important;
+  rotate:0deg!important;
+  scale:1!important;
+  will-change:auto!important;
+  filter:none!important;
+}
+
+html[data-v28-rework="2"] .campaign-hub .campaign-node::before,
+html[data-v28-rework="2"] .campaign-hub .campaign-node::after,
+html[data-v28-rework="2"] .campaign-hub .campaign-node.current::before,
+html[data-v28-rework="2"] .campaign-hub .campaign-node.selected::before,
+html[data-v28-rework="2"] .campaign-hub .campaign-node.current::after,
+html[data-v28-rework="2"] .campaign-hub .campaign-node.selected::after,
+html[data-v28-rework="2"] .campaign-hub .campaign-node.p6-farm-node::before,
+html[data-v28-rework="2"] .campaign-hub .campaign-node.p6-farm-node.current::before,
+html[data-v28-rework="2"] .campaign-hub .campaign-node.p6-farm-node.selected::before{
+  animation:none!important;
+  transition:none!important;
+  filter:none!important;
+}
+
+html[data-v28-rework="2"] .campaign-hub .campaign-node.boss>.p8-boss-selected-glow,
+html[data-v28-rework="2"] .campaign-hub .campaign-node.boss.p6-farm-node>.p8-boss-selected-glow{
+  position:absolute!important;
+  z-index:-1!important;
+  inset:-6px!important;
+  width:calc(100% + 12px)!important;
+  height:calc(100% + 12px)!important;
+  object-fit:contain!important;
+  pointer-events:none!important;
+  mix-blend-mode:normal!important;
+  opacity:.9!important;
+  transform:none!important;
+  animation:none!important;
+  transition:none!important;
+  filter:none!important;
+  will-change:auto!important;
+}
+
+html[data-v28-rework="2"] .campaign-hub .campaign-node-map{
+  overflow:hidden!important;
+  padding:24px 16px!important;
+}
+
+html[data-v28-rework="2"] .campaign-node-detail,
+html[data-v28-rework="2"] .campaign-node-detail *{
+  animation:none!important;
+  transition:none!important;
+  will-change:auto!important;
+}
+
+@keyframes nodePulse{
+  0%,50%,100%{box-shadow:0 0 0 3px rgba(255,200,87,.12),0 0 14px rgba(255,200,87,.16)}
+}
+@keyframes p8BossSelectedPulse{
+  0%,50%,100%{opacity:.9;filter:none}
+}
+
+/* ---------- vormals 27-v28-dice-designs.css ---------- */
+/* DiceDuel V28.3.15 – rest pose = flat face filling the slot.
+   3D cube only while .rolling so the spin stays, the idle pose stays square. */
+
+.die.theme-classic-v2{--dice-accent:#45b9ff;--dice-glow:rgba(69,185,255,.88)}
+.die.theme-sapphire-crown{--dice-accent:#53d9ff;--dice-glow:rgba(83,217,255,.9)}
+.die.theme-amethyst-rift{--dice-accent:#c36bff;--dice-glow:rgba(195,107,255,.9)}
+
+.theme-art-die{
+  background:transparent!important;
+  border-color:transparent!important;
+  box-shadow:none!important;
+  isolation:auto!important;
+  transform:none!important;
+  animation:none!important;
+}
+.die.theme-art-die{
+  position:relative!important;
+  perspective:860px;
+  transform-style:preserve-3d;
+  overflow:hidden!important;
+}
+.die.theme-art-die.rolling{overflow:visible!important}
+.die.theme-art-die.selected,
+.die.theme-art-die.rolling,
+.die.theme-art-die:active{
+  transform:none!important;
+  animation:none!important;
+}
+.die.theme-art-die>.die-cube{
+  inset:0;
+  transform-origin:50% 50%;
+}
+.die.theme-art-die.rolling>.die-cube{
+  animation:die3dSpin .42s linear both;
+}
+body.fast-animations .die.theme-art-die.rolling>.die-cube{
+  animation-duration:.24s;
+}
+.theme-art-die:not(.rolling)>.die-cube{
+  opacity:0;
+  pointer-events:none;
+}
+
+/* echte Mitte: left/top 50% + translate — inset+width kann auf Android links kleben */
+.theme-art-die>.die-art-sprite{
+  position:absolute!important;
+  left:50%!important;
+  top:50%!important;
+  width:100%!important;
+  height:100%!important;
+  margin:0!important;
+  transform:translate(-50%,-50%) scale(1.24)!important;
+  object-fit:cover!important;
+  object-position:center!important;
+  z-index:2;
+  pointer-events:none;
+  display:block!important;
+  -webkit-user-drag:none;
+}
+.theme-art-die.rolling>.die-art-sprite{display:none!important}
+
+.theme-art-die .die-face{
+  border:0!important;
+  border-radius:16%!important;
+  background:transparent!important;
+  box-shadow:none!important;
+  overflow:hidden!important;
+}
+.theme-art-die .die-face::after{display:none!important}
+.theme-art-die .die-face-art{
+  position:absolute!important;
+  left:50%!important;
+  top:50%!important;
+  width:100%!important;
+  height:100%!important;
+  margin:0!important;
+  transform:translate(-50%,-50%) scale(1.24)!important;
+  object-fit:cover!important;
+  object-position:center!important;
+  pointer-events:none;
+  display:block;
+  z-index:1;
+  -webkit-user-drag:none;
+}
+.theme-art-die :is(.die-pips,.die-question){display:none!important}
+
+html.legacy-flat-dice .die.theme-art-die{
+  border-color:transparent!important;
+  background:transparent!important;
+  box-shadow:none!important;
+}
+.die.theme-art-die .die-flat-face{
+  inset:0!important;
+  border-radius:16%!important;
+  background:var(--die-art-current) center/cover no-repeat!important;
+  transform:scale(1.24);
+}
+.die.theme-art-die .die-flat-face::after,
+.die.theme-art-die .die-flat-pips,
+.die.theme-art-die .die-flat-question{display:none!important}
+
+:is(.special-big-die,.gambling-die).theme-art-die:not(.d4){
+  position:relative!important;
+  appearance:none!important;
+  perspective:980px!important;
+  background:transparent!important;
+  border-color:transparent!important;
+  color:transparent!important;
+  font-size:0!important;
+  box-shadow:none!important;
+  overflow:hidden!important;
+  isolation:auto!important;
+  transform:none!important;
+  animation:none!important;
+}
+:is(.special-big-die,.gambling-die).theme-art-die:not(.d4).rolling{overflow:visible!important}
+:is(.special-big-die,.gambling-die).theme-art-die:not(.d4)>.die-cube{
+  inset:0;
+  transform-origin:50% 50%;
+}
+:is(.special-big-die,.gambling-die).theme-art-die:not(.d4):not(.rolling)>.die-cube{
+  opacity:0;
+  pointer-events:none;
+}
+:is(.special-big-die,.gambling-die).theme-art-die:not(.d4).rolling{
+  animation:none!important;
+  transform:none!important;
+}
+:is(.special-big-die,.gambling-die).theme-art-die:not(.d4).rolling>.die-cube{
+  animation:die3dSpin .42s linear both!important;
+}
+body.fast-animations :is(.special-big-die,.gambling-die).theme-art-die:not(.d4).rolling>.die-cube{
+  animation-duration:.24s!important;
+}
+
+.special-big-die.d4.theme-classic-v2{background:linear-gradient(145deg,#fffdf7,#e9dac0)!important;color:#123765!important;border-color:#e8b33e!important}
+.special-big-die.d4.theme-sapphire-crown{background:linear-gradient(145deg,#174eb5,#061d68)!important;color:#ffd75e!important;border-color:#e9b635!important}
+.special-big-die.d4.theme-amethyst-rift{background:linear-gradient(145deg,#7d22bc,#2d0b5b)!important;color:#7fe9ff!important;border-color:#f0b43a!important}
+
+/* ---------- Profile collection using the supplied shop/beauty views ---------- */
+html[data-v28-rework="2"] #profilesScreen .dice-design-gallery{
+  display:grid!important;
+  grid-template-columns:repeat(3,minmax(0,1fr))!important;
+  gap:9px!important;
+  margin:0!important;
+  padding:11px!important;
+  border:1px solid rgba(214,165,60,.48)!important;
+  border-radius:16px!important;
+  background:linear-gradient(155deg,#103660,#071f40)!important;
+}
+html[data-v28-rework="2"] #profilesScreen .dice-design-card{
+  appearance:none!important;
+  display:flex!important;
+  min-width:0!important;
+  min-height:0!important;
+  padding:7px 7px 9px!important;
+  flex-direction:column!important;
+  align-items:center!important;
+  justify-content:flex-start!important;
+  gap:2px!important;
+  border:1px solid rgba(224,177,69,.62)!important;
+  border-radius:13px!important;
+  background:linear-gradient(165deg,rgba(16,62,108,.98),rgba(3,22,49,.98))!important;
+  box-shadow:inset 0 0 0 1px rgba(255,244,193,.08),0 5px 12px rgba(1,10,24,.2)!important;
+  color:#f6f8fb!important;
+  text-align:center!important;
+  opacity:1!important;
+  filter:none!important;
+  transform:none!important;
+  overflow:hidden!important;
+}
+html[data-v28-rework="2"] #profilesScreen .dice-design-card:not([disabled]){cursor:pointer!important}
+html[data-v28-rework="2"] #profilesScreen .dice-design-card:not([disabled]):active{transform:scale(.975)!important}
+html[data-v28-rework="2"] #profilesScreen .dice-design-card:focus-visible{outline:3px solid #71d9ff!important;outline-offset:2px!important}
+html[data-v28-rework="2"] #profilesScreen .dice-design-card.selected{
+  border-color:#79f5ad!important;
+  box-shadow:inset 0 0 0 2px rgba(121,245,173,.3),0 0 16px rgba(75,224,136,.45)!important;
+}
+html[data-v28-rework="2"] #profilesScreen .dice-design-preview{
+  position:relative!important;
+  display:block!important;
+  width:100%!important;
+  aspect-ratio:1/1!important;
+  border-radius:10px!important;
+  background:radial-gradient(circle at 50% 45%,rgba(34,107,173,.62),rgba(2,18,43,.18) 68%,transparent 70%)!important;
+  overflow:hidden!important;
+}
+html[data-v28-rework="2"] #profilesScreen .dice-design-beauty{
+  display:block!important;
+  width:100%!important;
+  height:100%!important;
+  object-fit:contain!important;
+  transform:scale(1.06)!important;
+  filter:drop-shadow(0 5px 7px rgba(0,0,0,.35));
+  transition:filter .16s ease,transform .16s ease;
+}
+html[data-v28-rework="2"] #profilesScreen .dice-design-card:not([disabled]):hover .dice-design-beauty{transform:scale(1.1)!important}
+html[data-v28-rework="2"] #profilesScreen .dice-design-card.locked .dice-design-beauty{
+  filter:saturate(.48) brightness(.58) drop-shadow(0 4px 6px rgba(0,0,0,.3))!important;
+}
+html[data-v28-rework="2"] #profilesScreen .dice-design-state{
+  position:absolute!important;
+  top:3px!important;
+  right:3px!important;
+  z-index:2!important;
+  display:block!important;
+  width:34px!important;
+  height:34px!important;
+  object-fit:contain!important;
+  pointer-events:none!important;
+  filter:drop-shadow(0 2px 4px rgba(0,0,0,.38));
+}
+html[data-v28-rework="2"] #profilesScreen .dice-design-card.locked .dice-design-state{
+  top:50%!important;
+  right:auto!important;
+  left:50%!important;
+  width:46px!important;
+  height:46px!important;
+  transform:translate(-50%,-50%)!important;
+}
+html[data-v28-rework="2"] #profilesScreen .dice-design-name{
+  display:block!important;
+  width:100%!important;
+  margin-top:3px!important;
+  color:#fff6d5!important;
+  font-family:Georgia,"Times New Roman",serif!important;
+  font-size:clamp(11px,2.7vw,14px)!important;
+  font-weight:900!important;
+  line-height:1.08!important;
+  overflow-wrap:anywhere!important;
+}
+html[data-v28-rework="2"] #profilesScreen .dice-design-meta{
+  display:block!important;
+  width:100%!important;
+  min-height:2.25em!important;
+  color:#aebfd2!important;
+  font-size:9px!important;
+  font-weight:850!important;
+  line-height:1.15!important;
+}
+html[data-v28-rework="2"] #profilesScreen .dice-design-card.selected .dice-design-meta{color:#79f5ad!important}
+
+@media (max-width:390px){
+  html[data-v28-rework="2"] #profilesScreen .dice-design-gallery{gap:6px!important;padding:8px!important}
+  html[data-v28-rework="2"] #profilesScreen .dice-design-card{padding:5px 5px 7px!important}
+  html[data-v28-rework="2"] #profilesScreen .dice-design-state{width:29px!important;height:29px!important}
+  html[data-v28-rework="2"] #profilesScreen .dice-design-card.locked .dice-design-state{width:40px!important;height:40px!important}
+}
+
+@media (prefers-reduced-motion:reduce){
+  html[data-v28-rework="2"] #profilesScreen .dice-design-beauty{transition:none!important}
+}

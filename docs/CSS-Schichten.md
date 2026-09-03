@@ -10,12 +10,11 @@ Stand: V28.11.2, 41 Dateien. Die Tabellen unten stammen von V28.7.3
 
 | | V28.7.3 | V28.9.4 | jetzt |
 |---|---|---|---|
-| Dateien | 37 | 40 | 41 |
-| Zeilen | 12.065 | 12.803 | **11.447** |
-| Deklarationen | 13.408 | 14.111 | **13.472** |
-| überschrieben | 2.745 (20 %) | 2.998 (21 %) | **2.087 (15 %)** |
-| `!important` | 4.269 | 4.680 | **4.597** |
-| `css/app.css` | — | 510 KB | **491 KB** |
+| Dateien | 37 | 40 | **25** |
+| Zeilen | 12.065 | 12.803 | **11.586** |
+| überschrieben | 2.745 (20 %) | 2.998 (21 %) | **~15 %** |
+| `!important` | 4.269 | 4.680 | **4.664** |
+| `css/app.css` | — | 510 KB | **485 KB** |
 
 Bemerkenswert an der Spalte rechts: der Anteil toter Deklarationen ist
 von 21 auf 15 Prozent gefallen, obwohl der Stapel in derselben Zeit um
@@ -47,6 +46,12 @@ passiert nichts.
 
 Reihenfolge = Kaskade. `rework` zählt Regeln, die auf
 `html[data-v28-rework="2"]` eingeschränkt sind.
+
+**Die Tabelle ist historisch.** Sie zeigt den Stand von V28.7.3 mit 37
+Dateien. Seit V28.11.5 sind die Zeilen 14 bis 32 - der komplette
+V28-Stapel - zu drei Dateien zusammengelegt: `13-v28-grundlage`,
+`16-v28-phasen`, `29-v28-korrekturen`. Die Tabelle bleibt stehen, weil
+sie zeigt, wie der Stapel gewachsen ist.
 
 | # | Datei | Zeilen | !imp | rework |
 |---|---|---|---|---|
@@ -166,6 +171,21 @@ bearbeiteten Elements hätte das gezeigt, der Wertevergleich schon.
 | 2 · V28.11.2 | die zehn Würfel-Themes in 02-battle, zeichengleich in 04-prestige-polish mit `!important` wiederholt — 30 tote Deklarationen | 143 Varianten aus `.special-big-die` und `.gambling-die` über 19 Eigenschaften, 3 Breiten, identisch |
 | 3 · V28.11.2 | 84 vollständig überdeckte Regeln in 19 Dateien, 238 tote Deklarationen, maschinell ermittelt | Vollabzug: 3.493 Knoten je Bildschirm samt `::before`/`::after`, 45 Eigenschaften, 3 Breiten — rund 472.000 Werte, identisch |
 | 4 · V28.11.2 | 509 einzeln überschriebene Deklarationen in 25 Dateien — Regeln, die selbst stehen bleiben | Vollabzug identisch; dazu Klammernprüfung aller 41 Dateien und eine Gegenprobe im Browser: er akzeptiert 2.697 statt 2.789 Regeln, die Differenz entspricht genau den Schritten 2 und 3 |
+| 5 · V28.11.4 | 35 Langformen, die eine spätere Kurzform zurücksetzt (`border:0` löscht `border-image-source`) | Vollabzug identisch. Damit ist die Kategorie „exakt gleicher Selektortext" ausgeschöpft: 812 tote Deklarationen insgesamt |
+| 6 · V28.11.5 | **Der V28-Stapel von 19 auf 3 Dateien zusammengelegt** — 41 Schichten insgesamt auf 25 | Regeltext des Bündels Zeichen für Zeichen identisch (431.786 Zeichen ohne Kommentare, vorher wie nachher); dazu Vollabzug identisch |
+
+### Warum das Zusammenlegen risikofrei war
+
+Nur in `styleOrder` **benachbarte** Dateien wurden verschmolzen. Dann ist
+die Reihenfolge der Regeln im Bündel dieselbe wie vorher, und weil bei
+gleicher Spezifität allein die Position entscheidet, kann sich am
+Ergebnis nichts ändern. Das Skript bricht ab, wenn eine Gruppe nicht
+benachbart ist.
+
+Der Beweis ist entsprechend einfach: `css/app.css` vor und nach dem
+Zusammenlegen, Kommentare entfernt, Leerraum normalisiert — beide Male
+431.786 Zeichen, Zeichen für Zeichen gleich. Geändert haben sich
+ausschließlich die Trennkommentare, die der Bundler je Quelldatei setzt.
 
 ### Der Vollabzug
 

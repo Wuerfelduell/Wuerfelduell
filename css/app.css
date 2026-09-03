@@ -3091,7 +3091,20 @@ body.ability-mastery-lab-open{overflow:hidden!important}
 .aml-keystone-node .aml-fusion-core strong{max-width:92px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:11px!important}
 @media(max-width:700px){.aml-section-title{align-items:flex-start;flex-direction:column;gap:2px}.aml-section-title small{text-align:left}.aml-node-tag{min-width:82px!important}.aml-node-tag strong{font-size:8px!important}.aml-ability-heading strong{font-size:9px!important}.aml-standalone-track .aml-node-tag{min-width:130px!important}}
 
-/* ===== 13-v28-bright-arcane.css ===== */
+/* ===== 13-v28-grundlage.css ===== */
+/* ============================================================
+   V28 · Grundlage
+   ------------------------------------------------------------
+   Farbwelt, Rahmen-Assets und der erste Umbau der Oberflaeche. Alles,
+   worauf die Phasen darunter aufsetzen.
+
+   Zusammengelegt in V28.11.5 aus 3 Einzeldateien. Die
+   Reihenfolge entspricht exakt der bisherigen styleOrder; im gebauten
+   Buendel haben sich dadurch nur die Trennkommentare geaendert, keine
+   einzige Regel.
+   ============================================================ */
+
+/* ---------- vormals 13-v28-bright-arcane.css ---------- */
 /* DiceDuel V28.0.2 — Bright Arcane Premium UI pass
    Pure presentation layer: gameplay mechanics remain untouched. */
 :root{
@@ -3425,7 +3438,7 @@ body.playing .controls button{border-color:rgba(215,173,82,.72)}body.playing .di
   #mainMenu .menu-actions button.menu-prestige,#mainMenu #menuStatsBtn,#mainMenu #menuSettingsBtn,#mainMenu #menuRulesBtn,#mainMenu #menuChangelogBtn{font-size:9.5px!important}
 }
 
-/* ===== 14-v28-asset-system.css ===== */
+/* ---------- vormals 14-v28-asset-system.css ---------- */
 /* ============================================================
    DiceDuel V28.2.0 — Bright Arcane Asset System
    Asset-driven presentation only. No gameplay rules are changed here.
@@ -4061,7 +4074,7 @@ body.playing .encounter-rule-banner .phase-live{color:#ffdfae!important}
   }
 }
 
-/* ===== 15-v28-ui-rework.css ===== */
+/* ---------- vormals 15-v28-ui-rework.css ---------- */
 /* ============================================================
    DiceDuel V28.2.0 — Full Bright Arcane UI Rework
    Presentation and input chrome only. Gameplay rules stay untouched.
@@ -4601,7 +4614,22 @@ html[data-v28-rework="2"] body.playing .game-menu-btn{
   html[data-v28-rework="2"] body.playing .player.active::after{filter:none}
 }
 
-/* ===== 16-v28-ui-phase1.css ===== */
+/* ===== 16-v28-phasen.css ===== */
+/* ============================================================
+   V28 · Phasen 1 bis 12
+   ------------------------------------------------------------
+   Chronologisch entstanden, jede Phase ein Nachtrag zur vorigen. Die
+   Reihenfolge ist Teil der Bedeutung und darf nicht umsortiert werden.
+   27-v28-dice-designs stand in styleOrder zwischen Phase 12 und dem
+   Hotfix und behaelt diesen Platz.
+
+   Zusammengelegt in V28.11.5 aus 13 Einzeldateien. Die
+   Reihenfolge entspricht exakt der bisherigen styleOrder; im gebauten
+   Buendel haben sich dadurch nur die Trennkommentare geaendert, keine
+   einzige Regel.
+   ============================================================ */
+
+/* ---------- vormals 16-v28-ui-phase1.css ---------- */
 /* ============================================================
    DiceDuel V28.2.1 — UI Rework Phase 1
    Screenshot pass: campaign, setup, combat, settings, rules,
@@ -5299,7 +5327,7 @@ html[data-v28-rework="2"] body.playing .campaign-task-head{
     animation:none!important}
 }
 
-/* ===== 17-v28-ui-phase2.css ===== */
+/* ---------- vormals 17-v28-ui-phase2.css ---------- */
 /* ============================================================
    DiceDuel V28.2.2 — UI Rework Phase 2
    Mobile screenshot pass: transparent frame exteriors, picker,
@@ -5599,7 +5627,7 @@ html[data-v28-rework="2"] #masteryModal .mastery-node.owned .mastery-node-plaque
     font-size:10px!important}
 }
 
-/* ===== 18-v28-ui-phase3.css ===== */
+/* ---------- vormals 18-v28-ui-phase3.css ---------- */
 /* ============================================================
    DiceDuel V28.2.3 — UI Rework Phase 3
    Screenshot pass: protruding frame exteriors, campaign nodes,
@@ -6087,7 +6115,7 @@ html[data-v28-rework="2"] #profilesScreen .profile-name-edit{
     animation:none!important}
 }
 
-/* ===== 19-v28-ui-phase4.css ===== */
+/* ---------- vormals 19-v28-ui-phase4.css ---------- */
 /* ============================================================
    DiceDuel V28.2.4 — UI Rework Phase 4
    Final screenshot polish: stable campaign tones, compact nodes,
@@ -6578,7 +6606,7 @@ html[data-v28-rework="2"] #setup .p4-setup-label-icon{
     animation:none!important}
 }
 
-/* ===== 20-v28-ui-phase5.css ===== */
+/* ---------- vormals 20-v28-ui-phase5.css ---------- */
 /* ============================================================
    DiceDuel V28.2.5 — UI Rework Phase 5
    Fine polish: real danger action, lean combat cards, emoji-free
@@ -6719,7 +6747,7 @@ html[data-v28-rework="2"] .dd-select-close{
     font-size:14px!important}
 }
 
-/* ===== 21-v28-ui-phase6.css ===== */
+/* ---------- vormals 21-v28-ui-phase6.css ---------- */
 /* ============================================================
    DiceDuel V28.2.6 — UI Rework Phase 6
    Native component pass for the expanded V28 UI asset pack:
@@ -6920,7 +6948,7 @@ html[data-v28-rework="2"] #masteryModal .mastery-node.owned .mastery-node-dot{
     transition:none!important}
 }
 
-/* ===== 22-v28-ui-phase7.css ===== */
+/* ---------- vormals 22-v28-ui-phase7.css ---------- */
 /* ============================================================
    DiceDuel V28.2.7 — UI Rework Phase 7
    Screenshot polish for campaign summaries and nodes, mastery
@@ -7094,7 +7122,7 @@ html[data-v28-rework="2"] #tutorialHubCancelBtn{
     filter:drop-shadow(0 0 8px rgba(39,169,255,.30))!important}
 }
 
-/* ===== 23-v28-ui-phase8.css ===== */
+/* ---------- vormals 23-v28-ui-phase8.css ---------- */
 /* ============================================================
    DiceDuel V28.2.8 — UI Rework Phase 8
    Rendered close controls, rendered lock overlays and the green
@@ -7340,7 +7368,7 @@ html[data-v28-rework="2"] .campaign-hub .campaign-node.p6-farm-node:is(.current,
     opacity:.94}
 }
 
-/* ===== 24-v28-ui-phase9.css ===== */
+/* ---------- vormals 24-v28-ui-phase9.css ---------- */
 /* ============================================================
    DiceDuel V28.2.9 — UI Rework Phase 9
    Mobile layout repair for compact ability cards, setup results,
@@ -7503,7 +7531,7 @@ html[data-v28-rework="2"] .campaign-hub .campaign-world-btn.done .campaign-world
     opacity:1!important}
 }
 
-/* ===== 25-v28-ui-phase10.css ===== */
+/* ---------- vormals 25-v28-ui-phase10.css ---------- */
 /* ============================================================
    DiceDuel V28.2.10 — UI Rework Phase 10
    Exact artwork anchoring for the ability bonus, combat cards
@@ -7636,7 +7664,7 @@ html[data-v28-rework="2"] .campaign-hub .campaign-node.p6-farm-node>.node-xp-bad
     opacity:1!important}
 }
 
-/* ===== 26-v28-ui-phase11.css ===== */
+/* ---------- vormals 26-v28-ui-phase11.css ---------- */
 /* ============================================================
    DiceDuel V28.2.11 — UI Rework Phase 11
    Stable ability-choice geometry, clean quit action and campaign
@@ -7906,7 +7934,7 @@ html[data-v28-rework="2"] .dd-select-options{
   overflow-y:auto!important;
   overscroll-behavior:contain!important}
 
-/* ===== 28-v28-ui-phase12.css ===== */
+/* ---------- vormals 28-v28-ui-phase12.css ---------- */
 /* V28.3.5 — UI hotfix
    Alle Fähigkeiten: Page-Scroll lock + inner clip (border-image bleibt sichtbar)
    Campaign Jitter: Pulse/Filter/Glow tot, Map clippt Selected-Frames
@@ -8057,7 +8085,7 @@ html[data-v28-rework="2"] .campaign-node-detail *{
   0%,50%,100%{opacity:.9;filter:none}
 }
 
-/* ===== 27-v28-dice-designs.css ===== */
+/* ---------- vormals 27-v28-dice-designs.css ---------- */
 /* DiceDuel V28.3.15 – rest pose = flat face filling the slot.
    3D cube only while .rolling so the spin stays, the idle pose stays square. */
 
@@ -8311,7 +8339,20 @@ html[data-v28-rework="2"] #profilesScreen .dice-design-card.selected .dice-desig
   html[data-v28-rework="2"] #profilesScreen .dice-design-beauty{transition:none!important}
 }
 
-/* ===== 29-v28-ui-hotfix.css ===== */
+/* ===== 29-v28-korrekturen.css ===== */
+/* ============================================================
+   V28 · Korrekturen
+   ------------------------------------------------------------
+   Hotfix, Kampfsperre und Zielmarkierung. Stehen bewusst nach den
+   Phasen, weil sie sie korrigieren.
+
+   Zusammengelegt in V28.11.5 aus 3 Einzeldateien. Die
+   Reihenfolge entspricht exakt der bisherigen styleOrder; im gebauten
+   Buendel haben sich dadurch nur die Trennkommentare geaendert, keine
+   einzige Regel.
+   ============================================================ */
+
+/* ---------- vormals 29-v28-ui-hotfix.css ---------- */
 /* DiceDuel 28.3.34 — remove broken title max-width (caused vertical letter collapse) */
 
 /* ============================================================
@@ -8931,7 +8972,7 @@ html[data-v28-rework="2"] #duoCampaignScreen .campaign-top,
 html[data-v28-rework="2"] #trioCampaignScreen .campaign-top{
   grid-template-columns:minmax(0,1fr)!important}
 
-/* ===== 30-v28-combat-lock.css ===== */
+/* ---------- vormals 30-v28-combat-lock.css ---------- */
 /* DiceDuel 28.3.41 — combat lock
    Player cards get the space. Turn card shrink-wraps (not a giant empty panel).
    Dice + button stay visible. Dice frames are NOT clipped.
@@ -9216,7 +9257,7 @@ html[data-v28-rework="2"] body.playing #game .controls>button{
   min-height:46px!important;
 }
 
-/* ===== 31-v28-marked-ui.css ===== */
+/* ---------- vormals 31-v28-marked-ui.css ---------- */
 /* 28.3.53 — marked screenshot pass. LAST stylesheet. Paths are ../assets from /css. */
 html[data-v28-rework="2"]{
   --p53-navy:url("../assets/ui/v28/png/frames/navy-button-horizontal.webp");
