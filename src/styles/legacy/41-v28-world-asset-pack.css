@@ -372,20 +372,8 @@ html[data-v28-rework="2"] body.playing #game.boss-rush-game #players .player.bos
   pointer-events:none!important;
 }
 html[data-v28-rework="2"] body.playing #game.boss-rush-game #players .player.boss-rush-world-enemy::before{
-  content:""!important;
-  position:absolute!important;
-  z-index:1!important;
-  top:25px!important;
-  right:14px!important;
-  width:30px!important;
-  height:30px!important;
-  background-image:var(--world-frame-round),var(--world-emblem)!important;
-  background-position:center,center!important;
-  background-repeat:no-repeat,no-repeat!important;
-  background-size:100% 100%,72% 72%!important;
-  filter:saturate(.92) drop-shadow(0 3px 5px rgba(0,0,0,.35))!important;
-  opacity:.82!important;
-  pointer-events:none!important;
+  content:none!important;
+  display:none!important;
 }
 html[data-v28-rework="2"] body.playing #game.boss-rush-game #players .player.boss-rush-world-enemy>*{
   position:relative!important;
@@ -393,7 +381,7 @@ html[data-v28-rework="2"] body.playing #game.boss-rush-game #players .player.bos
 }
 html[data-v28-rework="2"] body.playing #game.boss-rush-game #players .player.boss-rush-world-enemy .player-name{
   min-height:2.15em!important;
-  padding-right:34px!important;
+  padding-right:0!important;
   overflow:visible!important;
   align-items:flex-start!important;
 }
@@ -505,13 +493,6 @@ html[data-v28-rework="2"] body.playing .phase-live[data-boss-rush-legacy-phase]{
   }
   html[data-v28-rework="2"] .campaign-hub .campaign-node-detail[data-p4-detail-tone="boss"] .node-detail-title{
     font-size:clamp(15px,4.5vw,18px)!important;
-  }
-  html[data-v28-rework="2"] body.playing #game.boss-rush-game #players .player.boss-rush-world-enemy::before{
-    width:28px!important;
-    height:28px!important;
-    top:22px!important;
-    right:12px!important;
-    opacity:.76!important;
   }
   html[data-v28-rework="2"] body.playing .boss-rush-live.boss-rush-status-items{
     grid-template-columns:repeat(2,minmax(0,1fr))!important;
