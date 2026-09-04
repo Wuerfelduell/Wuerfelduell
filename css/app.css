@@ -313,22 +313,30 @@
        ein zweites Mal. 04-prestige-polish.css definiert dieselben zehn
        Selektoren zeichengleich, aber mit !important - diese Fassung hat damit
        nie gewonnen. Neue Themes gehoeren nach 04, nicht hierher. */
+    /* Diese drei Zustandsmarker MUESSEN !important tragen. Sie stehen in
+       Schicht 02; body.playing .die in 13-v28-grundlage.css:199 setzt
+       border-color und box-shadow mit hoeherer Spezifitaet (0,2,1 gegen
+       0,2,0) und gewinnt sonst - dann sind angewaehlte, eingelockte und
+       Treffer-Wuerfel im Kampf nicht mehr zu unterscheiden. Genau das ist
+       in V28.11.9 passiert. Die Stil-Abzuege sehen die Wuerfel nicht: sie
+       entstehen erst in renderDice(), im Dokument steht nur die leere
+       .dice-Huelle. */
     .die.selected{
-      border-color:#ffffff ;
+      border-color:#ffffff !important;
       outline:4px solid var(--dice-accent);
       outline-offset:2px;
-      transform:translateY(-8px) scale(1.07) ;
+      transform:translateY(-8px) scale(1.07) !important;
       box-shadow:
         0 0 0 4px var(--dice-glow),
         0 0 26px var(--dice-glow),
         inset 0 0 0 3px rgba(255,255,255,.72),
         inset 0 -4px 0 rgba(0,0,0,.15),
-        0 8px 16px rgba(0,0,0,.28) ;
+        0 8px 16px rgba(0,0,0,.28) !important;
       z-index:4}
 
     /* Locked dice stay in their theme, but are easier to spot */
     .die.locked{
-      border-color:#72efa0 ;
+      border-color:#72efa0 !important;
       outline:2px solid rgba(114,239,160,.58);
       outline-offset:1px;
       opacity:.96;
@@ -336,7 +344,7 @@
         inset 0 0 0 2px rgba(114,239,160,.24),
         inset 0 -4px 0 rgba(0,0,0,.13),
         0 0 12px rgba(77,209,125,.24),
-        0 7px 14px rgba(0,0,0,.2) }
+        0 7px 14px rgba(0,0,0,.2) !important}
     .die.locked::after{
       content:"✓";
       position:absolute;
@@ -346,13 +354,13 @@
       text-shadow:0 1px 4px rgba(0,0,0,.75);
       font-weight:1000}
     .die.attack-hit{
-      border-color:#ffe073 ;
+      border-color:#ffe073 !important;
       outline-color:rgba(255,224,115,.65);
       box-shadow:
         inset 0 0 0 2px rgba(255,224,115,.22),
         inset 0 -4px 0 rgba(0,0,0,.13),
         0 0 12px rgba(255,200,87,.24),
-        0 7px 14px rgba(0,0,0,.2) }
+        0 7px 14px rgba(0,0,0,.2) !important}
     .die.rolling{backface-visibility:hidden}
     @keyframes diceRoll{
       0%{transform:rotate(0deg) scale(1)}
