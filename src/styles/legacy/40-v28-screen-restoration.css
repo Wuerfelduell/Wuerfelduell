@@ -300,7 +300,10 @@ html[data-v28-rework="2"] #prestigeShopScreen .prestige-item.expensive{
   border-width:0;
   border-image:none;
   border-radius:0;
-  background:var(--v2893-achievement-card) center/100% 100% no-repeat;
+  /* !important noetig: 36-v28-hierarchie.css setzt fuer #prestigeShopScreen .prestige-item
+     background:var(--wd-hell)!important (Pergament). Ohne Markierung gewinnt das und der
+     helle Text (#f7edda) steht unlesbar auf Pergament. */
+  background:var(--v2893-achievement-card) center/100% 100% no-repeat!important;
   color:#f7edda;
   box-shadow:0 10px 22px rgba(3,20,43,.18);
 }

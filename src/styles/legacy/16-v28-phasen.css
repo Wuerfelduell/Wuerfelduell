@@ -244,10 +244,13 @@ html[data-v28-rework="2"] .campaign-hub .campaign-node.current{
   border-color:#f6d074;
   background:linear-gradient(155deg,#215d4b,#123b34);
   color:#ffe28f}
+/* !important noetig: weiter unten (Routen-Verbinder, ".campaign-node::after, .current::after,
+   .selected::after") stehen z-index/inset/background mit !important. Ohne Markierung hier
+   gewinnt der Verbinder und der Rahmen um den aktuellen Knoten verschwindet. */
 html[data-v28-rework="2"] .campaign-hub .campaign-node.current::after,
 html[data-v28-rework="2"] .campaign-hub .campaign-node.selected::after{
-  inset:-10px;
-  background-image:var(--p1-selected-node)}/* ---------- Encounter details; boss option A ---------- */
+  inset:-10px!important;
+  background-image:var(--p1-selected-node)!important}/* ---------- Encounter details; boss option A ---------- */
 html[data-v28-rework="2"] .campaign-node-detail{
   box-sizing:border-box;
   margin-top:12px;
@@ -317,7 +320,8 @@ html[data-v28-rework="2"] .campaign-node-detail.v28-prestige-detail:not(.v28-bos
   border:1px solid rgba(214,165,60,.48);
   border-image:none;
   border-radius:18px;
-  background:linear-gradient(155deg,#123b70,#071d43);
+  /* !important noetig: .campaign-node-detail traegt background (Pergament) mit !important. */
+  background:linear-gradient(155deg,#123b70,#071d43)!important;
   color:#fff3d5}
 html[data-v28-rework="2"] .campaign-node-detail.v28-prestige-detail:not(.v28-boss-detail) .node-detail-desc,
 html[data-v28-rework="2"] .campaign-node-detail.v28-prestige-detail:not(.v28-boss-detail) .node-detail-row{
@@ -830,12 +834,13 @@ html[data-v28-rework="2"] .campaign-hub .campaign-node.current:not(.boss){
   background:transparent;
   box-shadow:none;
   color:#fff0a4}
+/* !important noetig, gleicher Grund wie oben: der Routen-Verbinder traegt !important. */
 html[data-v28-rework="2"] .campaign-hub .campaign-node.current:not(.boss)::after{
-  z-index:0;
-  inset:-8px;
-  display:block;
-  background:var(--p2-node-current) center/contain no-repeat;
-  filter:drop-shadow(0 0 9px rgba(255,209,87,.30))}
+  z-index:0!important;
+  inset:-8px!important;
+  display:block!important;
+  background:var(--p2-node-current) center/contain no-repeat!important;
+  filter:drop-shadow(0 0 9px rgba(255,209,87,.30))!important}
 html[data-v28-rework="2"] .campaign-hub .campaign-node.current:not(.boss)>span{
   position:relative;
   z-index:2}
@@ -1796,11 +1801,13 @@ html[data-v28-rework="2"] .campaign-hub .campaign-node>span:first-child{
   transform:none;
   font-size:16px;
   line-height:1}
+/* !important noetig: am aktuellen Knoten gewinnt sonst ".campaign-node.current:not(.boss)>span"
+   (position:relative;z-index:2) und die Markierung faellt aus der Ecke in den Textfluss. */
 html[data-v28-rework="2"] .campaign-hub .campaign-node .node-mark{
-  position:absolute;
-  z-index:5;
-  top:-4px;
-  right:-3px;
+  position:absolute!important;
+  z-index:5!important;
+  top:-4px!important;
+  right:-3px!important;
   width:20px;
   height:20px;
   display:grid;
@@ -1836,7 +1843,9 @@ html[data-v28-rework="2"] .campaign-node-detail[data-p4-detail-tone="standard"].
   border-image:none;
   border-radius:18px;
   color:#fff3d5;
-  background:linear-gradient(155deg,#123b70,#071d43);
+  /* !important noetig: .campaign-node-detail traegt background (Pergament) mit !important.
+     Ohne Markierung wird die Standard-Detailkarte pergamentfarben, der helle Text unlesbar. */
+  background:linear-gradient(155deg,#123b70,#071d43)!important;
   box-shadow:0 12px 28px rgba(8,35,73,.16)}
 html[data-v28-rework="2"] .campaign-node-detail[data-p4-detail-tone="standard"] .node-detail-head,
 html[data-v28-rework="2"] .campaign-node-detail[data-p4-detail-tone="standard"].v28-boss-detail .node-detail-head{
@@ -2576,10 +2585,12 @@ html[data-v28-rework="2"] .campaign-hub .campaign-node.locked::before{
   filter:grayscale(.38) saturate(.42) brightness(.72) drop-shadow(0 4px 7px rgba(1,13,31,.32))!important}
 html[data-v28-rework="2"] .campaign-hub .campaign-node.locked>span:first-child{
   opacity:.30}
+/* !important noetig: die allgemeine .node-mark-Regel oben traegt z-index/top/right mit
+   !important; das Schloss muss sie mit denselben Mitteln ueberschreiben. */
 html[data-v28-rework="2"] .campaign-hub .campaign-node.locked .node-mark.p8-lock-mark{
-  position:absolute;
-  z-index:8;
-  inset:0;
+  position:absolute!important;
+  z-index:8!important;
+  inset:0!important;
   width:100%;
   height:100%;
   display:grid;
@@ -3124,10 +3135,13 @@ html[data-v28-rework="2"] .campaign-hub .campaign-node.boss,
 html[data-v28-rework="2"] .campaign-hub .campaign-node.world-boss{
   width:min(68px,100%);
   aspect-ratio:1/1}
+/* !important noetig: ".campaign-node.current:not(.boss)>span{position:relative;z-index:2}"
+   ist spezifischer als diese Regel. Ohne Markierung wird das Symbol des aktuellen Knotens
+   relativ (8.9px statt 46px) und rutscht aus der Knotenmitte. */
 html[data-v28-rework="2"] .campaign-hub .campaign-node>span:first-of-type{
-  position:absolute;
-  z-index:3;
-  inset:0;
+  position:absolute!important;
+  z-index:3!important;
+  inset:0!important;
   display:grid;
   place-items:center;
   margin:0;

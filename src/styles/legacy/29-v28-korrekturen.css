@@ -273,8 +273,11 @@ html[data-v28-rework="2"] #prestigeShopScreen.screen-card:not(.hidden){
   height:calc(100dvh - 12px);
   max-height:calc(100dvh - 12px);
   min-height:0;
-  overflow-x:hidden;
-  overflow-y:auto;
+  /* !important noetig: js/15-app.js setzt auf Screens mit Listenkoerper (Profile)
+     inline style.overflow="hidden". Nur !important schlaegt Inline-Stile; ohne
+     Markierung laesst sich der Profilbildschirm nicht mehr scrollen. */
+  overflow-x:hidden!important;
+  overflow-y:auto!important;
   -webkit-overflow-scrolling:touch;
   overscroll-behavior:contain;
   box-sizing:border-box;
@@ -739,7 +742,9 @@ html[data-v28-rework="2"] body.playing .players{
   -webkit-overflow-scrolling:touch;
   overscroll-behavior:contain;
   padding:16px 14px 18px;
-  gap:10px;
+  /* !important noetig: "#game > .card:first-child .players{gap:6px}" (02-battle.css) ist
+     spezifischer als "body.playing .players" und wuerde sonst die 10px auf 6px druecken. */
+  gap:10px!important;
   grid-template-columns:repeat(2,minmax(0,1fr));
   grid-auto-rows:min-content;
   align-content:start;
@@ -853,9 +858,12 @@ html[data-v28-rework="2"] body.playing .rotation-shell,
 html[data-v28-rework="2"] body.playing .rotating-board{
   flex:0 0 auto;
   min-height:0;
-  height:auto;
-  max-height:none;
-  overflow:visible;
+  /* !important noetig: js/12-battle-ui.js (applySeatRotation) setzt inline style.height
+     auf die Shell. Nur !important schlaegt Inline-Stile; ohne Markierung bleibt die Shell
+     auf dem gemessenen Wert stehen (z. B. 152px) waehrend das Board 270px hoch ist. */
+  height:auto!important;
+  max-height:none!important;
+  overflow:visible!important;
   display:flex;
   flex-direction:column;
   min-width:0;
@@ -925,7 +933,9 @@ html[data-v28-rework="2"] body.playing #game .controls{
   bottom:auto;
   top:auto;
   z-index:6;
-  margin-top:2px;
+  /* !important noetig: ".turn-card .controls{margin-top:7px !important}" (02-battle.css)
+     traegt weiterhin !important; ohne Markierung hier waechst die Zugkarte um 5px. */
+  margin-top:2px!important;
   padding-top:2px;
   background:transparent;
   display:flex;
@@ -1051,7 +1061,9 @@ html[data-v28-rework="2"] #achievementsScreen .achievement-list{
   display:grid;
   gap:16px;
   padding:4px 4px 12px;
-  overflow:visible}
+  /* !important noetig: js/15-app.js setzt inline overflowY:auto auf die Liste. Der Screen
+     selbst scrollt (siehe oben); ohne Markierung entsteht ein zweiter, geschachtelter Scroller. */
+  overflow:visible!important}
 html[data-v28-rework="2"] #achievementsScreen .achievement-card,
 html[data-v28-rework="2"] #achievementsScreen .achievement-card.dd-achieved,
 html[data-v28-rework="2"] #achievementsScreen .achievement-card.secret-achievement{
