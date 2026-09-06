@@ -197,28 +197,33 @@ V28.7.2: **Fließtext bekommt `slim-card`, wiederholte Datenzeilen
    fasst sie bewusst nicht an: sie arbeitet über Textknoten, und 733
    Einzeleinträge dort einzutragen würde jede Sprachprüfung sprengen.
 
-3. **Online-Match** — funktioniert derzeit nicht: die Lobby wird
-   gefunden, das Match startet nicht. **Die Serverseite ist als Ursache
-   ausgeschlossen** (V28.11.13, gegen das echte Projekt gemessen):
+3. **Online-Match** — der Nutzer meldet, es gehe nicht: die Lobby werde
+   gefunden, das Match starte nicht. **Im Stand V28.11.13 ist der Fehler
+   nicht reproduzierbar.** `scripts/qa/online-durchspielen.mjs` fährt
+   zwei getrennte Browser gegen das echte Projekt, und alle zwölf
+   Zusicherungen sind grün: Anmeldung, Raumcode, Beitritt, der Host sieht
+   den Gast ohne Neuladen, die Bereitmeldung kommt an, beide landen im
+   Match, und der erste Wurf steht auf beiden Seiten mit denselben Augen.
+   Ebenso grün ist die Serverseite, lokal abgesichert in
+   `supabase/tests/20-matchstart.sql` **als Rolle `authenticated` mit
+   aktiven Zeilenregeln** — der ältere Test lief als Eigentümer und
+   umging sie.
 
-   - Alle Funktionen sind live und richtig gesperrt — anonym gerufen
-     antworten sie mit `permission denied`, nicht mit „unbekannt".
-   - Der ganze Ablauf läuft durch: Raum anlegen, beitreten, beide
-     bereit, starten, Zustand lesen. Beide Seiten bekommen alle
-     Realtime-Nachrichten (`dd_battle_members`, `dd_battle_rooms`,
-     `dd_battle_states`).
-   - `supabase/tests/20-matchstart.sql` sichert dasselbe lokal ab,
-     **als Rolle `authenticated` mit aktiven Zeilenregeln** — der ältere
-     Test lief als Eigentümer und umging sie.
+   Bleibt die Frage, warum es auf dem Gerät des Nutzers nicht geht. Der
+   naheliegendste Verdacht ist der Service Worker: `sw.js` liefert `js/`
+   und `css/` nach *stale-while-revalidate* aus, also beim ersten Besuch
+   nach einem Update noch den alten Stand und erst beim zweiten den
+   neuen. Ein einzelnes Neuladen behebt das. Zuerst zu klären ist deshalb,
+   welchen Build das Gerät tatsächlich fährt (Fußzeile im Hauptmenü) und
+   was in der Lobby als Verbindungsanzeige steht.
 
-   Der Fehler liegt also im Browser. Nicht weiter eingegrenzt, weil der
-   Sandbox-Proxy `supabase.co` aus dem Browser heraus sperrt (aus Node
-   geht es). Was als Nächstes zu prüfen wäre: die Verbindungsanzeige in
-   der Lobby (muss „Supabase Live verbunden" zeigen) und die
-   Konsolenausgabe während eines echten Versuchs. Ein Verdacht, der beim
-   Lesen auffiel und noch nicht widerlegt ist: der Rückruf
-   `onAuthStateChange` in `js/online/01-online.js` wirft den Spieler bei
-   jeder Sitzungsmeldung **ohne** Nutzer aus der Lobby.
+   **Das Fehlerbild bei totem Realtime ist genau das gemeldete.** Beim
+   Bauen des Prüfskripts war die WebSocket-Brücke einmal falsch maskiert,
+   Realtime schwieg also. Ergebnis: Raum anlegen und Beitreten
+   funktionierten weiter (beides sind einzelne Anfragen), aber der Host
+   sah den Gast nie, die Bereitmeldung kam nie an, das Match startete
+   nie. Wenn der Nutzer dasselbe sieht, liegt es an der Live-Verbindung,
+   nicht am Matchstart.
 
 4. **`dd_touch_room` fehlt auf der Datenbank.** Die zweite Migration
    (`20260903120000_dd_room_idle_expiry.sql`, Räume laufen bei
@@ -370,6 +375,13 @@ Konkurrent gleichzeitig erfüllen, prüft aber die Vorfahren nicht mit und
 meldet dadurch tausende Paare, die es nie gibt. Er hat die acht echten
 Regressionen aus V28.11.9 zwar enthalten, aber unter zu vielen
 Fehlmeldungen. Er taugt zum Eingrenzen, nicht zum Freigeben.
+
+**Zum Online-Match** gibt es `scripts/qa/online-durchspielen.mjs`: zwei
+getrennte Browser gegen das echte Projekt, von der Anmeldung bis zum
+ersten synchron angezeigten Wurf. Es braucht den lokalen Server auf 8099
+und ein Supabase-Bündel unter `/var/tmp/sbtest/` — beides im Kopf der
+Datei beschrieben. Der Lauf legt echte Gastkonten und einen echten Raum
+an und räumt danach auf.
 
 **Zur Supabase-Seite** gibt es einen eigenen Läufer:
 `bash scripts/qa/supabase-raumtest.sh`. Er startet ein eigenes Postgres,
