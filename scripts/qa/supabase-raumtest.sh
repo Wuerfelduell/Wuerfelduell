@@ -72,11 +72,18 @@ for datei in 00-bootstrap.sql "$(basename "$WURZEL"/supabase/migrations/*foundat
 done
 
 echo
-echo "== Zusicherungen =="
+echo "== Zusicherungen: Raumablauf und State-Schreibweg =="
 ausgabe="$(psql_ postgres -f "$ORT/10-raum-ablauf.sql" 2>&1 | grep -E '^(ok|FEHLER):')"
 echo "$ausgabe" | sed 's/^/  /'
 if echo "$ausgabe" | grep -q '^FEHLER:'; then fehler=1; fi
 anzahl="$(echo "$ausgabe" | grep -c '^ok:')"
+
+echo
+echo "== Zusicherungen: Matchstart als angemeldeter Spieler, mit Zeilenregeln =="
+start="$(psql_ postgres -f "$ORT/20-matchstart.sql" 2>&1 | grep -E '^(ok|FEHLER):')"
+echo "$start" | sed 's/^/  /'
+if echo "$start" | grep -q '^FEHLER:'; then fehler=1; fi
+anzahl=$((anzahl + $(echo "$start" | grep -c '^ok:')))
 
 echo
 echo "== Selbstprobe: die naive Variante MUSS durchfallen =="
