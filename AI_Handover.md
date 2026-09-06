@@ -190,7 +190,7 @@ V28.7.2: **Fließtext bekommt `slim-card`, wiederholte Datenzeilen
    `docs/CSS-Schichten.md`. Der größte offene Posten am Stapel. Die
    Vorrangmarkierungen sind dagegen erledigt (4.647 → 318).
 
-2. **Changelog auf Englisch** — 138 Versionsblöcke mit zusammen 733
+2. **Changelog auf Englisch** — 195 Versionsblöcke mit zusammen 733
    Punkten in `index.html` (Zeilen 487 bis 624) bleiben deutsch. Sie
    liegen in einem eigenen Bildschirm, sind reine Versionsgeschichte und
    werden im Spiel nicht gebraucht. Die Übersetzungsschicht in `lang/`
