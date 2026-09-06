@@ -12,16 +12,15 @@ raten.
 
 | | |
 |---|---|
-| Version | **28.11.5** |
+| Version | **28.11.13** |
 | Branch | `main` |
-| Letzte Schritte | Welt-Tabs ohne Kicker und 13 px niedriger · Banner ohne Doppelwappen · Boss-Fähigkeiten außerhalb des Unterornaments · Statusfelder ohne Innenrahmen |
+| Letzte Schritte | Vorrangmarkierungen stark reduziert (4647 → 318) · acht Folgefehler daraus zurückgedreht · Rundenvorbereitung und Rundenauswertung überarbeitet · Supabase-Räume laufen bei Untätigkeit ab |
 
-**Zwei Sitzungen arbeiten parallel.** Aufteilung: Codex in
-`39-v28-campaign-polish`, `40-v28-screen-restoration`,
-`41-v28-world-asset-pack`, `js/39-campaign-world-themes.js`,
-`js/37-duo-boss-rush.js` und `assets/ui/v28/png/worlds/`; die
-Aufräumarbeit in `13-v28-grundlage`, `16-v28-phasen`,
-`29-v28-korrekturen`, `36` und `37`. Vor jedem Push `git pull --rebase`.
+**Zwei Sitzungen arbeiten parallel.** Vor jedem Push `git pull --rebase`.
+Die Aufteilung wechselt je Auftrag; sie steht jeweils im Prompt an die
+andere Sitzung. Zuletzt: Codex hat die Vorrangmarkierungen (`!important`)
+im gesamten Stapel abgeräumt, diese Sitzung hat die Folgefehler gemessen
+und zurückgedreht.
 
 **Achtung, die Dateinamen haben sich geändert.** Der V28-Stapel war 19
 Dateien und ist seit V28.11.5 auf drei zusammengelegt:
@@ -87,12 +86,31 @@ Genau deshalb wird jede Runde teurer.
 Würfel-Themes, 84 vollständig überdeckte Regeln, 509 einzeln
 überschriebene Deklarationen. Zusammen 777 tote Deklarationen.
 
-| | 28.9.4 | 28.11.2 |
-|---|---|---|
-| Zeilen | 12.803 | **11.447** |
-| `!important` | 4.680 | **4.597** |
-| überschrieben | 2.998 (21 %) | **2.087 (15 %)** |
-| `css/app.css` | 510 KB | **491 KB** |
+| | 28.9.4 | 28.11.2 | 28.11.13 |
+|---|---|---|---|
+| Zeilen | 12.803 | 11.447 | **11.447** |
+| `!important` | 4.680 | 4.597 | **318** |
+| überschrieben | 2.998 (21 %) | 2.087 (15 %) | — |
+| `css/app.css` | 510 KB | 491 KB | **475 KB** |
+
+**Die Vorrangmarkierungen sind seit V28.11.9 weg** — 4.398 Stück, in
+einem Zug von der anderen Sitzung. Das ist der größte Einzelfortschritt
+an der Kaskade bisher; die Dateizahl blieb dabei bei 25. Die 318 heute
+verbliebenen Markierungen sind kein Rest zum Wegräumen, sondern
+größtenteils **notwendig** und mit Begründung im Quelltext versehen. Sie
+fallen in zwei Muster:
+
+1. Eine gezielte Zustandsregel in einer frühen Schicht muss eine
+   allgemeinere Regel aus einer späteren Schicht schlagen
+   (`.hidden`, `.die.attack-hit`, `.campaign-node.current::after`).
+2. Eine Regel muss einen **Inline-Stil** aus dem Skript schlagen. Inline
+   schlägt jede Spezifität, nur `!important` kommt darüber
+   (`#profilesScreen`-Scroll, Höhe des Würfelfensters).
+
+**Was das Zurückdrehen gekostet hat:** acht Regressionen, gefunden erst
+nach dem Push. Lehre daraus steht unten unter „So wird hier geprüft":
+ein synthetischer Paartest über die Selektoren findet sie **nicht**
+zuverlässig, der Vollabzug am echten Baum schon.
 
 **Das wichtigste Werkzeug ist der Vollabzug** (`snapshot.mjs`-Muster in
 `docs/CSS-Schichten.md` beschrieben): er liest von jedem Element jedes
@@ -168,48 +186,63 @@ V28.7.2: **Fließtext bekommt `slim-card`, wiederholte Datenzeilen
 
 ## Offen
 
-1. **Zusammenlegen der CSS-Schichten** — siehe oben und
-   `docs/CSS-Schichten.md`. Der größte offene Posten.
+1. **Zusammenlegen der CSS-Schichten** — 25 Dateien, siehe oben und
+   `docs/CSS-Schichten.md`. Der größte offene Posten am Stapel. Die
+   Vorrangmarkierungen sind dagegen erledigt (4.647 → 318).
 
-2. **Changelog auf Englisch** — 622 Einträge in `index.html` bleiben
-   deutsch. Bewusst so: Versionsgeschichte, wächst bei jedem Release,
-   wird im Spiel nicht gebraucht. Der Nutzer weiß davon; er hat weder
-   zu- noch abgesagt.
+2. **Changelog auf Englisch** — 138 Versionsblöcke mit zusammen 733
+   Punkten in `index.html` (Zeilen 487 bis 624) bleiben deutsch. Sie
+   liegen in einem eigenen Bildschirm, sind reine Versionsgeschichte und
+   werden im Spiel nicht gebraucht. Die Übersetzungsschicht in `lang/`
+   fasst sie bewusst nicht an: sie arbeitet über Textknoten, und 733
+   Einzeleinträge dort einzutragen würde jede Sprachprüfung sprengen.
 
-3. **Rundenvorbereitung und Fähigkeits-Auswahl** — der Nutzer hält den
-   Bildschirm für stark überarbeitungsbedürftig, „da fehlts an zu vielen
-   enden". Aufgenommen aus Screenshots, im Browser noch nicht
-   nachgemessen (der Picker wird erst beim Öffnen gebaut):
+3. **Online-Match** — funktioniert derzeit nicht: die Lobby wird
+   gefunden, das Match startet nicht. **Die Serverseite ist als Ursache
+   ausgeschlossen** (V28.11.13, gegen das echte Projekt gemessen):
 
-   *Runde vorbereiten:* der Erklärtext presst vier Regeln in einen
-   grauen Absatz; das Symbol der Fähigkeitszeile hängt links aus der
-   Zeile und stößt an den Kartenrand; rechts sitzt ein unstilisierter
-   schwarzer Kreis als Auswahlanzeige; die Karten der beiden Spieler
-   sind unterschiedlich aufgebaut; Hinweistexte grau auf Navy.
+   - Alle Funktionen sind live und richtig gesperrt — anonym gerufen
+     antworten sie mit `permission denied`, nicht mit „unbekannt".
+   - Der ganze Ablauf läuft durch: Raum anlegen, beitreten, beide
+     bereit, starten, Zustand lesen. Beide Seiten bekommen alle
+     Realtime-Nachrichten (`dd_battle_members`, `dd_battle_rooms`,
+     `dd_battle_states`).
+   - `supabase/tests/20-matchstart.sql` sichert dasselbe lokal ab,
+     **als Rolle `authenticated` mit aktiven Zeilenregeln** — der ältere
+     Test lief als Eigentümer und umging sie.
 
-   *Modal „Fähigkeit wählen"* (`js/26-v28-ui.js`, `.v28-ability-picker`):
-   über dem Kicker sitzt eine leere Navy-Plakette; die Liste wird oben
-   vom Kopfbereich angeschnitten und unten vom Abbrechen-Knopf verdeckt,
-   der scrollende Bereich rechnet die feststehenden Elemente nicht ein;
-   Fähigkeitssymbole ragen links aus ihren Zeilen und werden am
-   Panelrand abgeschnitten; die grüne Häkchen-Plakette der Auswahl sitzt
-   halb außerhalb des Zeilenrahmens.
+   Der Fehler liegt also im Browser. Nicht weiter eingegrenzt, weil der
+   Sandbox-Proxy `supabase.co` aus dem Browser heraus sperrt (aus Node
+   geht es). Was als Nächstes zu prüfen wäre: die Verbindungsanzeige in
+   der Lobby (muss „Supabase Live verbunden" zeigen) und die
+   Konsolenausgabe während eines echten Versuchs. Ein Verdacht, der beim
+   Lesen auffiel und noch nicht widerlegt ist: der Rückruf
+   `onAuthStateChange` in `js/online/01-online.js` wirft den Spieler bei
+   jeder Sitzungsmeldung **ohne** Nutzer aus der Lobby.
 
-   Betroffene Dateien liegen in `13-v28-bright-arcane`,
-   `14-v28-asset-system`, `15-v28-ui-rework`, `17-v28-ui-phase2`,
-   `26-v28-ui-phase11` — also mitten im Aufräumbereich. Wer das angeht,
-   muss die Aufteilung mit der anderen Sitzung neu abstimmen.
+4. **`dd_touch_room` fehlt auf der Datenbank.** Die zweite Migration
+   (`20260903120000_dd_room_idle_expiry.sql`, Räume laufen bei
+   Untätigkeit nach 45 Minuten bzw. 2 Stunden ab) ist im Repo, aber nicht
+   eingespielt. Nachweis: die Funktion antwortet mit „nicht gefunden",
+   alle Funktionen der ersten Migration antworten mit „permission
+   denied". Einspielen mit `supabase db push`.
 
-4. **Rundenauswertung** — Ergebniskarten, Stat-Kacheln und Match-Awards
-   sind inzwischen im echten Rundenende gesehen. Behoben: doppelte
-   Pokale (zwei Ursachen) und der ungerahmte „Neue Partie"-Knopf. Offen
-   geblieben: Spielernamen und lange Stat-Werte werden abgeschnitten
-   („Jürgen #9…", „Seb · 3 HP k…").
+5. **Host-autoritativ.** Der Spielstand kommt vom Gerät des Hosts,
+   niemand prüft ihn nach. Ohne öffentliche Bestenliste unkritisch, mit
+   einer wird es das Hauptproblem. Ebenso offen: die Zuordnung von
+   `Profiles` zu `auth.users`.
+
+6. **Reste aus der Rundenauswertung** — Namen und Stat-Werte werden
+   unter 412 px noch leicht beschnitten. Zuletzt vor den Korrekturen aus
+   V28.11.13 gemessen, müsste neu nachgemessen werden.
 
 **Entschieden, nicht mehr offen:** Fähigkeitsnamen mischen absichtlich
 Deutsch und Englisch — Eigennamen wie Snake Eyes oder Loaded Dice werden
 nicht eingedeutscht. Das Würfeldesign-Feld im Setup bleibt reine
-Anzeige, trägt seit V28.11.2 aber den Stil seiner Nachbarn.
+Anzeige, trägt seit V28.11.2 aber den Stil seiner Nachbarn. Die
+Rundenvorbereitung und der Fähigkeits-Picker sind seit V28.11.10 bis
+28.11.12 überarbeitet: Erklärtext je Regel umgebrochen, Symbol mit
+Kartenabstand, grünes Häkchen in der gemalten Fassung, Kontraste erhöht.
 
 ---
 
@@ -322,6 +355,28 @@ So wurden bei V28.7.3 355 Änderungen geprüft, 19 davon von Hand.
 **Vorsicht bei automatischen Deutsch-Prüfern:** „die" ist auch das
 englische Wort für Würfel. Ein naiver Wörtertest meldet korrekt
 übersetzte Sätze als deutsch.
+
+**Beim Entfernen von Vorrangmarkierungen** ist der einzige belastbare
+Nachweis der A/B-Vollabzug am echten Baum:
+`scripts/qa/ab-stylesheet.mjs <alt.css> [neu.css] [breite]`. Er lädt die
+Seite einmal, hängt beide Bündel als `<style>` ein, schaltet zwischen
+ihnen um und liest an jedem Element 49 Eigenschaften samt
+Pseudoelementen — an rund 40 Stationen, vom Hauptmenü über die Kampagne
+bis zum ausgespielten Bot-Kampf und der Rundenvorbereitung.
+
+Was **nicht** reicht: ein synthetischer Paartest über die Selektoren
+(`scripts/qa/important-diagnose.mjs`). Er baut Elemente, die Regel und
+Konkurrent gleichzeitig erfüllen, prüft aber die Vorfahren nicht mit und
+meldet dadurch tausende Paare, die es nie gibt. Er hat die acht echten
+Regressionen aus V28.11.9 zwar enthalten, aber unter zu vielen
+Fehlmeldungen. Er taugt zum Eingrenzen, nicht zum Freigeben.
+
+**Zur Supabase-Seite** gibt es einen eigenen Läufer:
+`bash scripts/qa/supabase-raumtest.sh`. Er startet ein eigenes Postgres,
+spielt Bootstrap und beide Migrationen ein und prüft 24 Zusicherungen —
+Raumablauf, Zustands-Schreibweg und den kompletten Matchstart als Rolle
+`authenticated` mit aktiven Zeilenregeln. Er prüft sich selbst mit: eine
+absichtlich naive Variante **muss** durchfallen.
 
 ---
 
