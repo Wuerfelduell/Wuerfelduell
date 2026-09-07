@@ -137,9 +137,7 @@ html[data-v28-rework="2"] #campaignModePickerClose{
   text-shadow:0 1px 3px rgba(2,16,38,.65)}
 
 /* ---------- Campaign hub: cards, controls and map ---------- */
-html[data-v28-rework="2"] .campaign-hub .campaign-world-tabs{
-  gap:9px;
-  padding:3px 2px 8px}
+html[data-v28-rework="2"] .campaign-hub .campaign-world-tabs{}
 html[data-v28-rework="2"] .campaign-hub .campaign-world-btn{
   flex:0 0 108px;
   min-height:78px;
@@ -155,10 +153,8 @@ html[data-v28-rework="2"] .campaign-hub .campaign-world-btn{
 html[data-v28-rework="2"] .campaign-hub .campaign-world-btn.active{
   border:0;
   padding:15px 24px;
-  background:var(--p1-navy-button) center/100% 100% no-repeat;
   color:#fff2cf}
-html[data-v28-rework="2"] .campaign-hub .campaign-world-btn.done:not(.active){
-  filter:drop-shadow(0 3px 5px rgba(39,112,70,.10))}
+html[data-v28-rework="2"] .campaign-hub .campaign-world-btn.done:not(.active){}
 html[data-v28-rework="2"] .campaign-hub .campaign-top{
   grid-template-columns:minmax(0,1fr) minmax(122px,.68fr);
   gap:9px;

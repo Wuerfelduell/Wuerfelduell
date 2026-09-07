@@ -1078,12 +1078,12 @@
     .menu-actions button.menu-campaign{grid-column:1/-1;justify-content:center;text-align:center;color:#170c19;border:0;font-weight:1000}
     .campaign-world-tabs{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin:0 0 8px}
     .duo-world-tabs{grid-template-columns:repeat(2,minmax(0,1fr))}
-    .campaign-world-btn{min-height:52px;padding:9px 10px;border-radius:14px;border:1px solid var(--border);background:#121925;color:var(--text);text-align:left}
-    .campaign-world-btn.active{border-color:rgba(104,167,255,.72);box-shadow:0 0 0 2px rgba(104,167,255,.12);background:linear-gradient(145deg,rgba(104,167,255,.10),#121925)}
-    .campaign-world-btn.done{border-color:rgba(77,209,125,.42)}
-    .campaign-world-btn:disabled{opacity:.42;filter:saturate(.45)}
-    .campaign-world-name{display:block;font-size:13px;font-weight:1000}
-    .campaign-world-state{display:block;margin-top:3px;color:var(--muted);font-size:9px;font-weight:900;text-transform:uppercase;letter-spacing:.05em}
+    .campaign-world-btn{}
+    .campaign-world-btn.active{}
+    .campaign-world-btn.done{}
+    .campaign-world-btn:disabled{}
+    .campaign-world-name{}
+    .campaign-world-state{margin-top:3px}
     .campaign-world-desc{margin:0 0 12px;padding:9px 10px;border-radius:12px;background:#101620;border:1px solid rgba(255,255,255,.06);color:var(--muted);font-size:11px;line-height:1.45}
     .campaign-top{display:grid}
     .campaign-top .menu-info-card{min-width:0}
@@ -1185,14 +1185,9 @@
     .campaign-world-btn{
       flex:0 0 94px;min-height:74px;padding:8px 7px;border-radius:22px;
       display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;
-      text-align:center;scroll-snap-align:start;
-      background:linear-gradient(155deg,#182232,#0f151f);
-      border:1px solid #344155;box-shadow:inset 0 1px 0 rgba(255,255,255,.04),0 5px 14px rgba(0,0,0,.18)}
-    .campaign-world-btn.active{
-      border-color:rgba(104,167,255,.9);
-      box-shadow:0 0 0 2px rgba(104,167,255,.14),0 0 22px rgba(104,167,255,.18),inset 0 1px 0 rgba(255,255,255,.07);
-      background:linear-gradient(155deg,rgba(104,167,255,.20),#111824)}
-    .campaign-world-btn.done{border-color:rgba(77,209,125,.68);background:linear-gradient(155deg,rgba(77,209,125,.12),#101922)}
+      text-align:center;scroll-snap-align:start}
+    .campaign-world-btn.active{}
+    .campaign-world-btn.done{}
     .campaign-world-btn:disabled{opacity:.30;filter:saturate(.4)}
     .campaign-world-kicker{font-size:9px;font-weight:1000;letter-spacing:.12em;color:#8290a4;text-transform:uppercase}
     .campaign-world-btn.active .campaign-world-kicker{color:#9fc4ff}

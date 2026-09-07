@@ -1273,21 +1273,8 @@ html[data-v28-rework="2"] #setup .ability-roll .ability-desc{
 
 /* ---------- Campaign worlds, nodes and details ---------- */
 html[data-v28-rework="2"] .campaign-hub .campaign-world-btn{
-  min-height:78px;
-
-  border-image-source:var(--dd-frame-card-small);
-  border-image-slice:76 168 76 168 fill;
-  border-image-width:20px 34px;
-  border-image-repeat:stretch;
-  border-radius:0;
-  background:var(--dd-ivory);
-  box-shadow:none;
-  padding:7px 4px}
-html[data-v28-rework="2"] .campaign-hub .campaign-world-btn.active{
-  border:0;
-  padding:16px 36px;
-  background:var(--dd-frame-button-navy) center/100% 100% no-repeat;
-  color:#fff2ce}
+  box-shadow:none}
+html[data-v28-rework="2"] .campaign-hub .campaign-world-btn.active{}
 html[data-v28-rework="2"] .campaign-node{
   position:relative;
   isolation:isolate}

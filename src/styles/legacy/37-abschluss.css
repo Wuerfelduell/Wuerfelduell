@@ -361,13 +361,6 @@ html[data-v28-rework="2"] #mainMenu #menuTutorialBtn .menu-icon img{
 /* World tabs: active and idle share exactly one box and one gold frame. */
 html[data-v28-rework="2"] .campaign-hub .campaign-world-btn,
 html[data-v28-rework="2"] .campaign-hub .campaign-world-btn.active{
-  position:relative;
-  isolation:isolate;
-  overflow:hidden;
-  flex:0 0 108px;
-  width:108px;
-  min-height:78px;
-  box-sizing:border-box;
   border-style:solid;
   border-color:transparent;
   border-width:13px 18px;
@@ -375,11 +368,7 @@ html[data-v28-rework="2"] .campaign-hub .campaign-world-btn.active{
   border-image-slice:76 168 76 168 fill;
   border-image-width:13px 18px;
   border-image-repeat:stretch;
-  border-radius:0;
-  padding:0;
   background:transparent!important;
-  transform:none;
-  box-shadow:0 5px 13px var(--world-glow);
 }
 html[data-v28-rework="2"] .campaign-hub .campaign-world-btn.active::before{
   content:"";
@@ -396,9 +385,6 @@ html[data-v28-rework="2"] .campaign-hub .campaign-world-btn::after{
   content:"";
   position:absolute;
   z-index:2;
-  left:25%;
-  right:25%;
-  bottom:1px;
   height:2px;
   border-radius:999px;
   background:var(--world-primary);
@@ -1096,11 +1082,6 @@ html[data-v28-rework="2"] .campaign-hub .campaign-world-btn.active{
   border:0!important;
   border-image:none!important;
   border-radius:22px!important;
-  background:
-    radial-gradient(circle at 50% 28%,color-mix(in srgb,var(--world-glow) 88%,transparent),transparent 54%),
-    linear-gradient(155deg,
-      color-mix(in srgb,var(--world-surface) 92%,#203650 8%),
-      color-mix(in srgb,var(--world-surface) 78%,#07172b 22%));
   background-clip:padding-box!important;
   box-shadow:none;
   transform:none;
