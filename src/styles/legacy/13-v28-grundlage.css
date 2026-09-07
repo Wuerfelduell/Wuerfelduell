@@ -339,7 +339,7 @@ body.playing .controls button{border-color:rgba(215,173,82,.72)}body.playing .di
   position:relative}
 @media (max-width:390px){
   #mainMenu{padding-left:12px;padding-right:12px}
-  #mainMenu .menu-actions{gap:5px 4px}
+  #mainMenu .menu-actions{}
   #mainMenu .menu-actions button.menu-profile,#mainMenu .menu-actions button.menu-account,#mainMenu .menu-actions button.menu-achievements,
   #mainMenu .menu-actions button.menu-prestige,#mainMenu #menuStatsBtn,#mainMenu #menuSettingsBtn,#mainMenu #menuRulesBtn,#mainMenu #menuChangelogBtn{font-size:9.5px}
 }
@@ -1050,7 +1050,6 @@ html[data-v28-rework="2"] #mainMenu .menu-actions button.menu-play,
 html[data-v28-rework="2"] #mainMenu .menu-actions button.menu-online,
 html[data-v28-rework="2"] #mainMenu .menu-actions button.menu-campaign,
 html[data-v28-rework="2"] #mainMenu .menu-actions button.menu-tutorial{
-  display:grid;
   grid-template-columns:64px minmax(0,1fr) 60px;
   align-items:center;
   justify-items:center;
@@ -1066,21 +1065,11 @@ html[data-v28-rework="2"] #mainMenu .menu-actions button.menu-campaign .menu-ico
 html[data-v28-rework="2"] #mainMenu .menu-actions button.menu-tutorial .menu-icon{
   grid-column:1;
   grid-row:1;
-  width:64px;
-  height:64px;
-  padding:0;
-  margin:0;
-  border:0;
-  border-radius:0;
-  background:none;
-  box-shadow:none;
-  transform:none;
   filter:drop-shadow(0 5px 5px rgba(22,55,89,.20))}
 html[data-v28-rework="2"] #mainMenu .menu-actions button.menu-play .menu-icon img,
 html[data-v28-rework="2"] #mainMenu .menu-actions button.menu-online .menu-icon img,
 html[data-v28-rework="2"] #mainMenu .menu-actions button.menu-campaign .menu-icon img,
-html[data-v28-rework="2"] #mainMenu .menu-actions button.menu-tutorial .menu-icon img{
-  width:100%;height:100%}
+html[data-v28-rework="2"] #mainMenu .menu-actions button.menu-tutorial .menu-icon img{}
 html[data-v28-rework="2"] #mainMenu .online-beta-badge{
   grid-column:3;
   grid-row:1;
@@ -1456,7 +1445,7 @@ html[data-v28-rework="2"] body.playing .game-menu-btn{
   html[data-v28-rework="2"] #mainMenu .menu-actions button.menu-play .menu-icon,
   html[data-v28-rework="2"] #mainMenu .menu-actions button.menu-online .menu-icon,
   html[data-v28-rework="2"] #mainMenu .menu-actions button.menu-campaign .menu-icon,
-  html[data-v28-rework="2"] #mainMenu .menu-actions button.menu-tutorial .menu-icon{width:56px;height:56px}
+  html[data-v28-rework="2"] #mainMenu .menu-actions button.menu-tutorial .menu-icon{}
   html[data-v28-rework="2"] #mainMenu .online-beta-badge{width:50px;height:26px}
   html[data-v28-rework="2"] #mainMenu .menu-actions button.menu-profile,
   html[data-v28-rework="2"] #mainMenu .menu-actions button.menu-account,
@@ -1465,7 +1454,7 @@ html[data-v28-rework="2"] body.playing .game-menu-btn{
   html[data-v28-rework="2"] #mainMenu #menuStatsBtn,
   html[data-v28-rework="2"] #mainMenu #menuSettingsBtn,
   html[data-v28-rework="2"] #mainMenu #menuRulesBtn,
-  html[data-v28-rework="2"] #mainMenu #menuChangelogBtn{min-height:82px;font-size:14px}
+  html[data-v28-rework="2"] #mainMenu #menuChangelogBtn{}
   html[data-v28-rework="2"] .campaign-mode-choice{min-height:90px;padding:13px 24px}
   html[data-v28-rework="2"] .second-ability-card{
     grid-template-columns:44px 34px minmax(0,1fr);

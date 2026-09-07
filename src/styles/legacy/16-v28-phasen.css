@@ -755,8 +755,7 @@ html[data-v28-rework="2"] #mainMenu .menu-title::after{
 html[data-v28-rework="2"] #mainMenu .menu-actions button.menu-play .menu-icon,
 html[data-v28-rework="2"] #mainMenu .menu-actions button.menu-online .menu-icon,
 html[data-v28-rework="2"] #mainMenu .menu-actions button.menu-campaign .menu-icon,
-html[data-v28-rework="2"] #mainMenu .menu-actions button.menu-tutorial .menu-icon{
-  transform:translateX(10px)}
+html[data-v28-rework="2"] #mainMenu .menu-actions button.menu-tutorial .menu-icon{}
 html[data-v28-rework="2"] #mainMenu .menu-actions button.menu-profile,
 html[data-v28-rework="2"] #mainMenu .menu-actions button.menu-account,
 html[data-v28-rework="2"] #mainMenu .menu-actions button.menu-achievements,
@@ -925,8 +924,7 @@ html[data-v28-rework="2"] #masteryModal .mastery-node.owned .mastery-node-plaque
   html[data-v28-rework="2"] #mainMenu .menu-actions button.menu-play .menu-icon,
   html[data-v28-rework="2"] #mainMenu .menu-actions button.menu-online .menu-icon,
   html[data-v28-rework="2"] #mainMenu .menu-actions button.menu-campaign .menu-icon,
-  html[data-v28-rework="2"] #mainMenu .menu-actions button.menu-tutorial .menu-icon{
-    transform:translateX(9px)}
+  html[data-v28-rework="2"] #mainMenu .menu-actions button.menu-tutorial .menu-icon{}
   html[data-v28-rework="2"] #mainMenu .menu-actions button.menu-profile,
   html[data-v28-rework="2"] #mainMenu .menu-actions button.menu-account,
   html[data-v28-rework="2"] #mainMenu .menu-actions button.menu-achievements,
