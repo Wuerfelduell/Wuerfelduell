@@ -398,8 +398,7 @@ html[data-v28-rework="2"] #rulesScreen .menu-info-card .small{
   line-height:1.5}
 
 /* ---------- Achievements ---------- */
-html[data-v28-rework="2"] #achievementsScreen .achievement-list{
-  gap:16px}
+html[data-v28-rework="2"] #achievementsScreen .achievement-list{}
 html[data-v28-rework="2"] #achievementsScreen .achievement-card{
   box-sizing:border-box;
   min-height:170px;
@@ -418,31 +417,18 @@ html[data-v28-rework="2"] #achievementsScreen .achievement-head{
 html[data-v28-rework="2"] #achievementsScreen .achievement-name{
   min-width:0;
   display:flex;
-  align-items:center;
-  color:#fff4da;
-  font:800 18px/1.15 Georgia,"Times New Roman",serif}
+  align-items:center}
 html[data-v28-rework="2"] #achievementsScreen .achievement-name .dd-inline-icon{
   width:28px;height:28px;margin-right:7px}
 html[data-v28-rework="2"] #achievementsScreen .achievement-reward{
   min-height:31px;
-  display:inline-flex;
-  align-items:center;
   justify-content:center;
-  padding:5px 20px;
-  border:0;border-radius:0;
-  color:#2c1904;
+  padding:5px 20px;border-radius:0;
   background:var(--p1-gold-button) center/100% 100% no-repeat!important;
   font-size:10px}
-html[data-v28-rework="2"] #achievementsScreen .achievement-desc{
-  margin-top:8px;
-  color:#e0e6ee;
-  font-size:13px}
+html[data-v28-rework="2"] #achievementsScreen .achievement-desc{}
 
-html[data-v28-rework="2"] #achievementsScreen .achievement-owner{
-  padding:5px 9px;
-  border-color:rgba(184,202,225,.22);
-  background:rgba(2,15,35,.55);
-  color:#a7b5c7}
+html[data-v28-rework="2"] #achievementsScreen .achievement-owner{}
 
 /* ---------- Profiles ---------- */
 html[data-v28-rework="2"] #profilesScreen .profile-create{
@@ -1735,7 +1721,6 @@ html[data-v28-rework="2"] #profilesScreen .unlock-strip{
 
 /* ---------- Achievements: no navy rectangles outside gold corners ---------- */
 html[data-v28-rework="2"] #achievementsScreen .achievement-list{
-  gap:10px;
   padding-inline:2px}
 html[data-v28-rework="2"] #achievementsScreen .achievement-card,
 html[data-v28-rework="2"] #achievementsScreen .achievement-card.dd-achieved{

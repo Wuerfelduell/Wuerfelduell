@@ -637,16 +637,7 @@ html[data-v28-rework="2"] #achievementsScreen .achievement-card{
   padding:22px 26px 24px;
   overflow:visible}
 
-html[data-v28-rework="2"] #achievementsScreen .achievement-owner{
-  display:inline-flex;
-  align-items:center;
-  gap:6px;
-  min-height:34px;
-  padding:4px 12px 4px 6px;
-  border:1px solid rgba(214,165,60,.42);
-  border-radius:999px;
-  background:rgba(4,22,49,.72);
-  color:#dce5ef}
+html[data-v28-rework="2"] #achievementsScreen .achievement-owner{}
 
 /* Duo: Unlock-Kasten weg. Trio: Reward-Kasten weg. Team wird breiter. */
 html[data-v28-rework="2"] #duoCampaignScreen .campaign-top .menu-info-card:nth-child(3),
@@ -1059,19 +1050,14 @@ html[data-v28-rework="2"] #achievementsScreen.screen-card:not(.hidden){
   overflow-y:auto}
 html[data-v28-rework="2"] #achievementsScreen .achievement-list{
   display:grid;
-  gap:16px;
-  padding:4px 4px 12px;
   /* !important noetig: js/15-app.js setzt inline overflowY:auto auf die Liste. Der Screen
      selbst scrollt (siehe oben); ohne Markierung entsteht ein zweiter, geschachtelter Scroller. */
   overflow:visible!important}
 html[data-v28-rework="2"] #achievementsScreen .achievement-card,
 html[data-v28-rework="2"] #achievementsScreen .achievement-card.dd-achieved,
 html[data-v28-rework="2"] #achievementsScreen .achievement-card.secret-achievement{
-  box-sizing:border-box;
   min-width:0;
-  width:auto;
   max-width:100%;
-  margin:0;
   justify-self:stretch}
 html[data-v28-rework="2"] #achievementsScreen .achievement-owners{
   display:flex;
@@ -1083,12 +1069,9 @@ html[data-v28-rework="2"] #achievementsScreen .achievement-owner{
   align-items:center;
   gap:6px;
   min-height:30px;
-  padding:4px 10px 4px 6px;
   border:1px solid rgba(214,165,60,.38);
-  border-radius:12px;
   background:rgba(4,22,49,.58);
   color:#dce5ef;
-  box-shadow:none;
   font-size:12px}
 html[data-v28-rework="2"] #achievementsScreen .achievement-owner.done{
   border-color:rgba(77,209,125,.48);

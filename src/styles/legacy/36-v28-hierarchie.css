@@ -230,7 +230,6 @@ html[data-v28-rework="2"] #prestigeShopScreen .prestige-active-chip{
 html[data-v28-rework="2"] #achievementsScreen .achievement-reward{
   background:linear-gradient(180deg,#f6dd8b,#e2bd5c)!important;
   border:1px solid rgba(120,84,20,.45);
-  color:#2c1904;
 }
 html[data-v28-rework="2"] #prestigeShopScreen .prestige-active-chip{
   background:rgba(3,20,48,.72);
