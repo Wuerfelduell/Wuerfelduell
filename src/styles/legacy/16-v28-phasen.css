@@ -2258,11 +2258,8 @@ html[data-v28-rework="2"] #masteryModal .mastery-node.owned .mastery-node-dot{
   html[data-v28-rework="2"] #campaignStartBtn,
   html[data-v28-rework="2"] #duoCampaignStartBtn,
   html[data-v28-rework="2"] #trioCampaignStartBtn{
-    min-height:76px;
-    padding:7px 8px;
     border-width:25px 48px;
-    border-image-width:25px 48px;
-    font-size:14px}
+    border-image-width:25px 48px}
   html[data-v28-rework="2"] .campaign-hub .campaign-node.p6-farm-node,
   html[data-v28-rework="2"] .campaign-hub .campaign-node.p6-farm-node.boss,
   html[data-v28-rework="2"] .campaign-hub .campaign-node.p6-farm-node.world-boss{

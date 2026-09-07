@@ -1172,7 +1172,7 @@
     .campaign-mode-choice.trio{background:linear-gradient(145deg,#173f37,#25314f);box-shadow:0 0 26px rgba(77,209,125,.12)}
     .trio-controls{grid-template-columns:repeat(2,minmax(0,1fr))}
     .trio-node-map{align-items:center}
-    @media (max-width:540px){.campaign-mode-grid{grid-template-columns:1fr}.campaign-mode-choice{min-height:74px}.trio-controls{grid-template-columns:1fr}.trio-node-map{grid-template-columns:repeat(5,minmax(0,1fr));gap:5px}}
+    @media (max-width:540px){.campaign-mode-grid{}.campaign-mode-choice{}.trio-controls{grid-template-columns:1fr}.trio-node-map{}}
 
     /* V26.1 – kompakter Campaign Hub */
     .campaign-hub>.screen-subtitle{display:none}
@@ -3368,7 +3368,7 @@ body.playing .controls button{border-color:rgba(215,173,82,.72)}body.playing .di
   .menu-actions button.menu-play,.menu-actions button.menu-online,.menu-actions button.menu-campaign,.menu-actions button.menu-tutorial{font-size:20px}
   .setup-grid,#setup.local-human-only .setup-grid{grid-template-columns:1fr 1fr}
   .setup-dice-readonly{min-height:46px}
-  .campaign-mode-grid{grid-template-columns:1fr}.campaign-mode-choice{min-height:78px}
+  .campaign-mode-grid{grid-template-columns:1fr}.campaign-mode-choice{}
   .utility-panel,.round-overlay-panel,.second-ability-panel,.special-roll-panel,.gambling-panel{width:min(94vw,620px)!important;padding:16px}
   .v28-ability-picker-title{font-size:25px}
 }
@@ -6868,11 +6868,8 @@ html[data-v28-rework="2"] #masteryModal .mastery-node.owned .mastery-node-dot{
   html[data-v28-rework="2"] #campaignStartBtn,
   html[data-v28-rework="2"] #duoCampaignStartBtn,
   html[data-v28-rework="2"] #trioCampaignStartBtn{
-    min-height:76px;
-    padding:7px 8px;
     border-width:25px 48px;
-    border-image-width:25px 48px;
-    font-size:14px}
+    border-image-width:25px 48px}
   html[data-v28-rework="2"] .campaign-hub .campaign-node.p6-farm-node,
   html[data-v28-rework="2"] .campaign-hub .campaign-node.p6-farm-node.boss,
   html[data-v28-rework="2"] .campaign-hub .campaign-node.p6-farm-node.world-boss{

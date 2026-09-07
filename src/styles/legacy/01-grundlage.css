@@ -1168,7 +1168,7 @@
     .campaign-mode-choice.trio{background:linear-gradient(145deg,#173f37,#25314f);box-shadow:0 0 26px rgba(77,209,125,.12)}
     .trio-controls{grid-template-columns:repeat(2,minmax(0,1fr))}
     .trio-node-map{align-items:center}
-    @media (max-width:540px){.campaign-mode-grid{grid-template-columns:1fr}.campaign-mode-choice{min-height:74px}.trio-controls{grid-template-columns:1fr}.trio-node-map{grid-template-columns:repeat(5,minmax(0,1fr));gap:5px}}
+    @media (max-width:540px){.campaign-mode-grid{}.campaign-mode-choice{}.trio-controls{grid-template-columns:1fr}.trio-node-map{}}
 
     /* V26.1 – kompakter Campaign Hub */
     .campaign-hub>.screen-subtitle{display:none}

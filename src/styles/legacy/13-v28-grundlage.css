@@ -255,7 +255,7 @@ body.playing .controls button{border-color:rgba(215,173,82,.72)}body.playing .di
   .menu-actions button.menu-play,.menu-actions button.menu-online,.menu-actions button.menu-campaign,.menu-actions button.menu-tutorial{font-size:20px}
   .setup-grid,#setup.local-human-only .setup-grid{grid-template-columns:1fr 1fr}
   .setup-dice-readonly{min-height:46px}
-  .campaign-mode-grid{grid-template-columns:1fr}.campaign-mode-choice{min-height:78px}
+  .campaign-mode-grid{grid-template-columns:1fr}.campaign-mode-choice{}
   .utility-panel,.round-overlay-panel,.second-ability-panel,.special-roll-panel,.gambling-panel{width:min(94vw,620px)!important;padding:16px}
   .v28-ability-picker-title{font-size:25px}
 }
