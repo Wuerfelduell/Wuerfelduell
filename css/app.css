@@ -6244,27 +6244,19 @@ html[data-v28-rework="2"] #prestigeShopScreen .prestige-reset-row button{
 html[data-v28-rework="2"] #prestigeShopScreen .prestige-item,
 html[data-v28-rework="2"] #prestigeShopScreen .prestige-item.owned,
 html[data-v28-rework="2"] #prestigeShopScreen .prestige-item.expensive{
-  min-height:164px;
-  display:flex;
-  flex-direction:column;
-  padding:16px 17px 15px}
+  flex-direction:column}
 html[data-v28-rework="2"] #prestigeShopScreen .prestige-item-kicker{
   min-height:18px;
   display:flex;
   align-items:center;
   gap:5px;
-  margin:2px 0 0;
   line-height:1.15}
 html[data-v28-rework="2"] #prestigeShopScreen .prestige-item-name{
-  margin:4px 0 0;
   line-height:1.14}
 html[data-v28-rework="2"] #prestigeShopScreen .prestige-item-desc{
   min-height:0;
-  margin:7px 0 12px;
   line-height:1.42}
 html[data-v28-rework="2"] #prestigeShopScreen .prestige-item>button{
-  min-height:48px;
-  margin-top:auto;
   padding:9px 31px;
   border:0;
   border-radius:0;
@@ -8527,9 +8519,6 @@ html[data-v28-rework="2"] #rulesScreen .menu-info-card .small{
 
 /* ---- Trophy shop chips ---- */
 html[data-v28-rework="2"] #prestigeShopScreen .prestige-item-kicker{
-  color:#e2b44a;
-  letter-spacing:.04em;
-  font-size:11px;
   overflow:visible;
   padding-left:2px;
   opacity:1}
@@ -8922,9 +8911,7 @@ html[data-v28-rework="2"] .v28-ability-picker-close.secondary{
 /* Trophy-Shop: Text nicht in den 9-Slice, Chips + Aktiv mit Frame */
 html[data-v28-rework="2"] #prestigeShopScreen .prestige-item,
 html[data-v28-rework="2"] #prestigeShopScreen .prestige-item.owned,
-html[data-v28-rework="2"] #prestigeShopScreen .prestige-item.expensive{
-  padding:22px 26px 18px;
-  overflow:visible}
+html[data-v28-rework="2"] #prestigeShopScreen .prestige-item.expensive{}
 html[data-v28-rework="2"] #prestigeShopScreen .prestige-item-kicker{
   position:relative;
   left:auto;

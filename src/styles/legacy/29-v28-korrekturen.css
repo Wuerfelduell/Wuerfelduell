@@ -212,9 +212,6 @@ html[data-v28-rework="2"] #rulesScreen .menu-info-card .small{
 
 /* ---- Trophy shop chips ---- */
 html[data-v28-rework="2"] #prestigeShopScreen .prestige-item-kicker{
-  color:#e2b44a;
-  letter-spacing:.04em;
-  font-size:11px;
   overflow:visible;
   padding-left:2px;
   opacity:1}
@@ -607,9 +604,7 @@ html[data-v28-rework="2"] .v28-ability-picker-close.secondary{
 /* Trophy-Shop: Text nicht in den 9-Slice, Chips + Aktiv mit Frame */
 html[data-v28-rework="2"] #prestigeShopScreen .prestige-item,
 html[data-v28-rework="2"] #prestigeShopScreen .prestige-item.owned,
-html[data-v28-rework="2"] #prestigeShopScreen .prestige-item.expensive{
-  padding:22px 26px 18px;
-  overflow:visible}
+html[data-v28-rework="2"] #prestigeShopScreen .prestige-item.expensive{}
 html[data-v28-rework="2"] #prestigeShopScreen .prestige-item-kicker{
   position:relative;
   left:auto;
