@@ -2813,10 +2813,8 @@ body.ability-mastery-lab-open{overflow:hidden}
   .ability-mastery-lab-viewport{
     padding-left:8px;
     padding-right:8px}
-  .ability-mastery-lab-tree{
-    min-width:600px}
-  .aml-pair{
-    min-height:510px}
+  .ability-mastery-lab-tree{}
+  .aml-pair{}
 }
 
 /* =========================================================
@@ -3022,8 +3020,7 @@ body.ability-mastery-lab-open{overflow:hidden}
     gap:6px}
   .aml-ability-heading small{
     display:none}
-  .aml-ability-heading strong{
-    font-size:11px}
+  .aml-ability-heading strong{}
   .aml-pair-emblem{
     padding:4px 6px;
     font-size:7px}
@@ -3050,10 +3047,8 @@ body.ability-mastery-lab-open{overflow:hidden}
   .aml-node-tag{
     left:59px;
     top:20px;
-    min-width:60px;
     padding:5px 7px}
-  .aml-node-tag strong{
-    font-size:12px}
+  .aml-node-tag strong{}
   .aml-fusion-node{
     width:134px;
     height:112px;
