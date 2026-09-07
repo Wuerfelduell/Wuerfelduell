@@ -82,7 +82,7 @@
   line-height:1.4;
   opacity:.64}
 @media(max-width:760px){
-  .mastery-content{grid-template-columns:1fr}
+  .mastery-content{}
   .mastery-branch-head{min-height:0}
 }
 
@@ -177,7 +177,6 @@ body.mastery-open{
   align-items:start}
 
 .mastery-branch{
-  --branch-accent:132,108,255;
   --branch-accent-2:186,126,255;
   position:relative;
   overflow:hidden;

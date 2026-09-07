@@ -247,32 +247,23 @@ html[data-v28-rework="2"] #duoCampaignScreen .boss-rush-xp-summary{
    Guthaben, Titel und Beschreibung standen hell auf hell. Preis und die
    beiden Knöpfe bekommen zusätzlich die fehlenden Rahmen. */
 html[data-v28-rework="2"] .mastery-purchase-card h3{
-  color:var(--wd-navy);
 }
 html[data-v28-rework="2"] .mastery-purchase-desc,
 html[data-v28-rework="2"] .mastery-purchase-balance{
   color:#3f5369;
 }
 html[data-v28-rework="2"] .mastery-purchase-price{
-  box-sizing:border-box;
   border-style:solid;
   border-color:transparent;
-  border-width:11px 22px;
   border-image-source:var(--wd-pill);
   border-image-slice:128;
   border-image-width:11px 22px;
   border-image-repeat:stretch;
-  border-radius:14px;
-  box-shadow:none;
-  padding:1px 4px;
-  background:rgba(84,44,168,.16);
-  color:#3b1d78;
 }
 html[data-v28-rework="2"] .mastery-purchase-actions button{
   box-sizing:border-box;
   border-style:solid;
   border-color:transparent;
-  border-width:9px 20px;
   border-image-source:var(--wd-strip);
   border-image-slice:40 96 40 96;
   border-image-width:9px 20px;
@@ -280,7 +271,6 @@ html[data-v28-rework="2"] .mastery-purchase-actions button{
   border-radius:0;
   box-shadow:none;
   background-origin:border-box;
-  min-height:46px;
   padding:4px 2px;
 }
 
