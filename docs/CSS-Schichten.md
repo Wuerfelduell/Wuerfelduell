@@ -5,23 +5,24 @@ hat den **Bauweg** vereinheitlicht (`src/styles/legacy/` → `css/app.css`),
 die **Schichten selbst** aber unangetastet gelassen. Dieses Dokument misst,
 was da liegt, damit das Zusammenlegen nicht auf Vermutungen aufsetzt.
 
-Stand: V28.11.14, nach der zweiten Konsolidierung 10 Dateien. Der reine
-Regeltext blieb beim Zusammenlegen mit 387.866 Zeichen unverändert; die
-zusätzlichen Zeilen sind ausschließlich Herkunftskommentare. Die historischen
-Tabellen unten stammen von V28.7.3 (37 Dateien) und sind als Momentaufnahme zu
-lesen.
+Stand: V28.11.15, nach der zweiten Konsolidierung 10 Dateien. Der reine
+Regeltext blieb beim Zusammenlegen mit 387.866 Zeichen unverändert; danach
+wurden 226 nach exaktem Selektor und Medienkontext vollständig überdeckte
+Normaldeklarationen entfernt. Die historischen Tabellen unten stammen von
+V28.7.3 (37 Dateien) und sind als Momentaufnahme zu lesen.
 
 | | V28.7.3 | V28.9.4 | jetzt |
 |---|---|---|---|
 | Dateien | 37 | 40 | **10** |
-| Zeilen | 12.065 | 12.803 | **11.660 einschließlich Herkunftskommentaren** |
-| überschrieben | 2.745 (20 %) | 2.998 (21 %) | **228 exakt nachgewiesene tote Deklarationen** |
+| Zeilen | 12.065 | 12.803 | **11.490 einschließlich Herkunftskommentaren** |
+| überschrieben | 2.745 (20 %) | 2.998 (21 %) | **0 normalgewichtete Exaktfälle; 3 geschützte `!important`-Paare** |
 | `!important` | 4.269 | 4.680 | **318 Vorrangmarkierungen** |
-| `css/app.css` | — | 510 KB | **458.397 Zeichen / 387.866 Zeichen Regeltext** |
+| `css/app.css` | — | 510 KB | **452.500 Zeichen / 382.452 Zeichen Regeltext** |
 
-Bemerkenswert an der Spalte rechts: Der V28-Stapel ist auf 25 Dateien
-geschrumpft, und 94,6 Prozent der echten `!important`-Direktiven des
-V28.11.5-Ausgangsstands konnten ohne berechnete Stiländerung entfallen.
+Die Spalte rechts verbindet beide Schritte: Der gesamte Stapel wurde von 25
+auf 10 Quellen gebündelt, ohne seinen Regeltext zu verändern. Anschließend
+entfielen 226 tote Normaldeklarationen; die Vorrangmarkierungen blieben dabei
+zeichengetreu unangetastet.
 
 ---
 
@@ -179,6 +180,16 @@ bearbeiteten Elements hätte das gezeigt, der Wertevergleich schon.
 | 5 · V28.11.4 | 35 Langformen, die eine spätere Kurzform zurücksetzt (`border:0` löscht `border-image-source`) | Vollabzug identisch. Damit ist die Kategorie „exakt gleicher Selektortext" ausgeschöpft: 812 tote Deklarationen insgesamt |
 | 6 · V28.11.5 | **Der V28-Stapel von 19 auf 3 Dateien zusammengelegt** — 41 Schichten insgesamt auf 25 | Regeltext des Bündels Zeichen für Zeichen identisch (431.786 Zeichen ohne Kommentare, vorher wie nachher); dazu Vollabzug identisch |
 | 7 · V28.11.9 | **4.398 wirkungslose `!important` in 21 Dateien entfernt** — echte Direktiven 4.647 → 249; Texttreffer inklusive drei Kommentaren 4.650 → 252 | Nach jeder Datei: Vollabzug mit 3.523 Knoten je Breite und rund 476.000 Werten `IDENTISCH`; nach dem Rebase zusätzlich gegen den unangetasteten Remote-Stand mit 3.546 Knoten und rund 479.000 Werten `IDENTISCH`. Zustandsabzug jeweils mit 309 Elementen × `hover`/`focus`/`active` × 19 Eigenschaften (17.613 Werte) `IDENTISCH` |
+| 8 · V28.11.15 | **Den CSS-Stapel von 25 auf 10 Dateien gebündelt** — nur in `styleOrder` benachbarte Quellen, jeder Abschnitt mit Herkunftskommentar | Regeltext ohne Kommentare und mit normalisiertem Leerraum vorher und nachher 387.866 Zeichen und SHA-256 `d4c3a241…28722d5`; Zeichenvergleich ohne Differenz, `npm run check` grün |
+| 9 · V28.11.15 | **226 tote Normaldeklarationen in 13 Elementfamilien entfernt** — jeweils nur die einzelne Deklaration, keine Selektoren oder Sammelblöcke | Nach jeder Familie kumulativer A/B-Vergleich gegen das unangetastete Phase-2-Ausgangsbündel: rund 40 Stationen, 49 Eigenschaften samt Pseudoelementen, bei 412 und 360 px jeweils 0 Abweichungen; Vorrangmarkierungen unverändert |
+
+Die Arbeitsvorgabe nannte für Schritt 9 insgesamt 228 Deklarationen. Die
+erneute AST-Zählung löst die Abweichung auf: 196 Selektor-/Kontext-/Eigenschafts-
+gruppen kommen mehrfach vor. Drei davon bestehen ausschließlich aus je zwei
+geschützten `!important`-Deklarationen. Die übrigen 193 Gruppen enthalten exakt
+226 entfernbare Normaldeklarationen, nicht 228. Nach deren Entfernung meldet
+die Analyse 0 weitere normalgewichtete Kandidaten; die drei früheren
+`!important`-Deklarationen bleiben auftragsgemäß stehen.
 
 ### Der `!important`-Abbau
 
