@@ -1692,7 +1692,7 @@ body.test-lab-active #dice.lab-hot-fire-5 .die{
 @media(max-width:620px){
   .test-lab-ability-grid{grid-template-columns:1fr}
   .test-lab-bench-body{grid-template-columns:1fr 1fr}
-  .test-lab-preview-actions{grid-template-columns:1fr}
+  .test-lab-preview-actions{}
 }
 
 #testLabFxCanvas,#testLabFireCanvas{
