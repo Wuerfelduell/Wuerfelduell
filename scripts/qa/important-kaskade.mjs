@@ -41,11 +41,11 @@ import {
   existsSync,
   mkdirSync,
   readFileSync,
-  readdirSync,
   writeFileSync
 } from "node:fs";
 import { fileURLToPath } from "node:url";
 import path from "node:path";
+import { styleOrder } from "../build-styles.mjs";
 
 async function ladePlaywright() {
   const orte = [
@@ -137,7 +137,7 @@ function importantTokens(text) {
 
 function quellBestand() {
   const dateien = {};
-  for (const datei of readdirSync(quellOrdner).filter(n => n.endsWith(".css")).sort()) {
+  for (const datei of styleOrder) {
     const text = readFileSync(path.join(quellOrdner, datei), "utf8");
     const tokens = importantTokens(text);
     dateien[datei] = {

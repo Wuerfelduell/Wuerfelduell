@@ -1,0 +1,1570 @@
+/* ---------- vormals 37-v28-feinschliff.css ---------- */
+/* V28.7.2 — Feinschliff nach dem Rahmen-Durchgang
+   ============================================================ */
+
+/* ===== 1 · Inhalt innerhalb des Ornamentrahmens halten =====
+   .screen-card zeichnet seinen Rahmen mit border-image-width 22px 17px,
+   reserviert horizontal aber nur 6px Padding. Der Inhalt lag damit
+   konstruktionsbedingt 11px je Seite unter dem Rahmen - auf jedem Gerät,
+   auch am Desktop. Aufgefallen ist es erst, seit die inneren Flächen
+   eigene Rahmen tragen und die Kollision sichtbar wurde. */
+html[data-v28-rework="2"] .screen-card{
+  padding-left:19px;
+  padding-right:19px;
+}
+@media (max-width:380px){
+  html[data-v28-rework="2"] .screen-card{
+    padding-left:15px;
+    padding-right:15px;
+  }
+}
+
+/* ===== 2 · Trophy Shop: erworbene Einträge bleiben dunkel =====
+   Phase 4 gibt .owned und .expensive helle Schrift, weil sie dort eine
+   dunkle Karte haben. Die helle Grundfläche aus der leisen Stufe machte
+   die Schrift damit unlesbar - "High Roller" war praktisch unsichtbar. */
+html[data-v28-rework="2"] #prestigeShopScreen .prestige-item.owned,
+html[data-v28-rework="2"] #prestigeShopScreen .prestige-item.expensive{
+  background:#0a2b58;
+}
+
+/* ===== 3 · Spezialwürfel: ruhigere Bewegung =====
+   Der Wurf drehte den kompletten Knopf um 360 Grad und skalierte ihn
+   dabei. Mit dem Rahmen darauf dreht sich jetzt auch das Ornament mit -
+   das ist unruhig bis unangenehm. Die Bewegung bleibt, wird aber zu einem
+   Pulsieren ohne Drehung. */
+@keyframes wdWuerfelPuls{
+  0%,100%{ transform:scale(1); }
+  50%    { transform:scale(.945); }
+}
+html[data-v28-rework="2"] #gamblingDie.rolling,
+html[data-v28-rework="2"] .special-big-die.rolling{
+  animation:wdWuerfelPuls .5s ease-in-out infinite;
+}
+@media (prefers-reduced-motion:reduce){
+  html[data-v28-rework="2"] #gamblingDie.rolling,
+  html[data-v28-rework="2"] .special-big-die.rolling{ animation:none; }
+}
+
+/* ===== 4 · Würfeldesign-Vorschau bleibt ohne eigenen Rahmen =====
+   Hier stand bis V28.7.1 ein slim-card auf .dice-design-preview. Die
+   Kachel ist aber nur 76px breit; nach 7px Kartenpolster, 2x18px Rahmen
+   und Innenabstand blieben dem Würfelbild 21x32px - das Motiv war
+   zerdrückt statt gerahmt. Die Karte selbst trägt bereits Goldrand und
+   Rundung, ein zweiter Rahmen darin hat auf dieser Größe keinen Platz.
+   Nicht erneut hinzufügen, ohne die Kachel vorher zu vergrößern. */
+
+/* ===== 5 · Aufgabenfortschritt im Kampf ===== */
+html[data-v28-rework="2"] body.playing .campaign-task-progress{
+  box-sizing:border-box;
+  border-style:solid;
+  border-color:transparent;
+  border-width:9px 20px;
+  border-image-source:var(--wd-strip);
+  border-image-slice:40 96 40 96;
+  border-image-width:9px 20px;
+  border-image-repeat:stretch;
+  border-radius:0;
+  background:rgba(2,13,32,.5);
+  box-shadow:none;
+  padding:5px 6px;
+}
+
+/* ===== 6 · Mastery: "Profil" nicht mehr neben das Auswahlfeld quetschen =====
+   Die Zeile war ein flex mit 7px Abstand; auf schmalen Breiten stand das
+   Wort gequetscht links vom Feld. Es steht jetzt darüber, wie die übrigen
+   Beschriftungen im Spiel. */
+html[data-v28-rework="2"] .mastery-profile-picker{
+  display:grid;
+  grid-template-columns:minmax(0,1fr);
+  gap:4px;
+  font-size:10px;
+  letter-spacing:.08em;
+  text-transform:uppercase;
+}
+
+/* ===== 7 · Aktiv-Glow auf die Kartenkante legen =====
+   Die Spielerkarte hat einen echten Rand (border-width), auf dem ihr
+   Rahmenartwork sitzt. Das ::after mit inset:0 liegt dagegen auf der
+   Innenbox und war dadurch um genau diese Randbreite zu klein - der Glow
+   saß sichtbar innerhalb des Goldrahmens statt auf ihm. Die Werte
+   entsprechen der Randbreite der Karte in beiden Breakpoints. */
+html[data-v28-rework="2"] body.playing #players .player.active::after{
+  inset:-17px;
+}
+@media (max-width:540px){
+  html[data-v28-rework="2"] body.playing #players .player.active::after{
+    inset:-20px -22px;
+  }
+}
+
+/* ===== 13 · Würfeldesign im Setup: Anzeige, die auch so aussieht =====
+   Das Feld zeigt das Würfeldesign des gewählten Profils an und ist
+   bewusst nicht bedienbar. Es war aber die einzige dunkle Fläche in
+   einer Zeile heller Auswahlfelder und damit die auffälligste - genau
+   umgekehrt zu seiner Bedeutung. Wer es anklickt, bekommt keine
+   Reaktion.
+
+   Es bekommt jetzt Rahmen und Füllung der Nachbarn, damit die Zeile
+   ruhig wird. Dass es keine Auswahl ist, zeigt es über das, was fehlt:
+   kein Chevron, keine Aufhellung beim Überfahren, kein Fokusring - und
+   eine etwas zurückgenommene Schriftfarbe. Bewusst kein eigener Stil:
+   das Feld soll nicht auffallen, sondern mitlaufen. */
+html[data-v28-rework="2"] #setup .setup-dice-readonly{
+  box-sizing:border-box;
+  border-style:solid;
+  border-color:transparent;
+  border-width:8px 12px;
+  border-image-source:var(--wd-strip);
+  border-image-slice:40 96 40 96;
+  border-image-width:8px 12px;
+  border-image-repeat:stretch;
+  border-radius:0;
+  background:var(--wd-hell)!important;
+  box-shadow:none;
+  padding:2px 6px;
+  color:#3f5369;
+  font-size:12px;
+  font-weight:800;
+  text-shadow:none;
+  cursor:default;
+  /* Der Rahmen nimmt 24 px der 152 px Breite. Ohne Kürzung schiebt sich
+     ein langer Designname unter die rechte Rahmenkante statt zu enden. */
+  min-width:0;
+  overflow:hidden;
+  white-space:nowrap;
+  text-overflow:ellipsis;
+}
+html[data-v28-rework="2"] #setup .setup-dice-readonly>*{
+  min-width:0;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+/* Keine Rückmeldung auf Berührung - das Feld nimmt keine Eingabe an. */
+html[data-v28-rework="2"] #setup .setup-dice-readonly:hover,
+html[data-v28-rework="2"] #setup .setup-dice-readonly:active,
+html[data-v28-rework="2"] #setup .setup-dice-readonly:focus{
+  background:var(--wd-hell);
+  filter:none;
+  transform:none;
+  outline:0;
+}
+
+/* ===== 14 · Rundenauswertung: der zweite Knopf blieb ungerahmt =====
+   Phase 3 hat die Knöpfe des Beenden-Dialogs gerahmt (#quitCancelBtn mit
+   --p3-navy-button), die Rundenauswertung aber nie mitgezogen. Dort steht
+   "Nächste Runde" mit vollem Goldrahmen neben "Neue Partie" als flachem
+   Rechteck mit 1px Rand - der einzige Knopf im Bildschirm ohne Artwork.
+
+   Er bekommt denselben Navy-Knopf wie der Abbrechen-Knopf im
+   Beenden-Dialog: gleiche Rolle, gleiche Optik. Der Goldrahmen daneben
+   bleibt, damit die Rangfolge der beiden Aktionen sichtbar bleibt. */
+html[data-v28-rework="2"] #winnerBox .controls #restartBtn,
+html[data-v28-rework="2"] #winnerBox .controls #onlineMainMenuBtn{
+  box-sizing:border-box;
+  min-height:50px;
+  border:0;
+  border-radius:0;
+  background:var(--p3-navy-button) center/100% 100% no-repeat!important;
+  box-shadow:none;
+  color:#fff4d5;
+  text-shadow:0 1px 3px rgba(2,16,38,.72);
+  padding:10px 16px;
+}
+
+/* ===== 8 · Kampagnenknoten dürfen nicht aus der Karte laufen =====
+   .campaign-node-map stand auf repeat(5,minmax(48px,1fr)). Der Mindestwert
+   gewinnt gegen 1fr, sobald die Karte schmaler wird: bei 360px Fensterbreite
+   waren die fünf Spalten zusammen 278px breit, die Karte innen nur 240px.
+   Der fünfte Knoten jeder Reihe (5, 10, 15) lag unter dem rechten Rahmen,
+   weil die Karte overflow-x:hidden trägt. minmax(0,1fr) lässt die Spalten
+   mitschrumpfen; der Knoten deckelt sich selbst bei 46px. */
+html[data-v28-rework="2"] .campaign-hub .campaign-node-map{
+  grid-template-columns:repeat(5,minmax(0,1fr));
+}
+html[data-v28-rework="2"] .campaign-hub .campaign-node-map .campaign-node{
+  width:min(46px,100%);
+  justify-self:center;
+}
+
+/* ===== 9 · Encounter-Details: Beschreibung und Zeilen bekommen Rahmen =====
+   Beide Flächen waren als einzige im Detailpanel noch schmucklos - flache
+   Rechtecke unter einem gerahmten Kopf. Die Beschreibung ist Fließtext und
+   bekommt deshalb die Kartenlinie, die Datenzeilen darunter wiederholen
+   sich und bekommen die schmale Zeilenlinie (Stufe 3).
+   Die Füllfarbe bleibt bewusst unangetastet: das Panel tritt hell wie
+   dunkel auf (.v28-boss-detail, .v28-prestige-detail), und die Rahmen sind
+   innen transparent - sie tragen damit beide Fassungen. */
+html[data-v28-rework="2"] .campaign-node-detail .node-detail-desc{
+  box-sizing:border-box;
+  border-style:solid;
+  border-color:transparent;
+  border-width:13px 21px;
+  border-image-source:var(--wd-card);
+  border-image-slice:72 120 72 120;
+  border-image-width:13px 21px;
+  border-image-repeat:stretch;
+  border-radius:0;
+  box-shadow:none;
+  padding:2px 4px 4px;
+}
+html[data-v28-rework="2"] .campaign-node-detail .node-detail-row{
+  box-sizing:border-box;
+  border-style:solid;
+  border-color:transparent;
+  border-width:9px 20px;
+  border-image-source:var(--wd-strip);
+  border-image-slice:40 96 40 96;
+  border-image-width:9px 20px;
+  border-image-repeat:stretch;
+  border-radius:0;
+  box-shadow:none;
+  margin-top:3px;
+  padding:3px 4px;
+}
+
+/* ===== 10 · Boss Rush =====
+   Der Knopf stand als einzige Fläche der Aktionszeile ohne Rahmen unter
+   dem bereits gerahmten XP-Streifen. Er bekommt die leise Zeilenlinie -
+   der Encounter-Start daneben behält sein volles Ornament, damit die
+   Rangfolge der beiden Aktionen sichtbar bleibt. Der rot-blaue Verlauf
+   aus 33-duo-boss-rush.css bleibt als Füllung stehen. */
+html[data-v28-rework="2"] .boss-rush-start{
+  box-sizing:border-box;
+  border-style:solid;
+  border-color:transparent;
+  border-width:9px 20px;
+  border-image-source:var(--wd-strip);
+  border-image-slice:40 96 40 96;
+  border-image-width:9px 20px;
+  border-image-repeat:stretch;
+  border-radius:0;
+  box-shadow:none;
+  background-origin:border-box!important;
+  min-height:48px;
+  padding:4px 6px;
+}
+/* Der XP-Streifen trägt seit V28.7.1 die helle Füllung der Stufe 3, seine
+   Schrift stammt aber noch von der dunklen Vorlage: Gold auf Creme war
+   praktisch nicht zu lesen. */
+html[data-v28-rework="2"] #duoCampaignScreen .boss-rush-xp-summary{
+  color:var(--wd-navy);
+}
+
+/* ===== 11 · Mastery-Kaufdialog =====
+   Der Dialog sitzt seit dem Rahmen-Durchgang auf der hellen Modalfläche,
+   seine Innenteile stammen aber noch von der dunklen Karte davor. Preis,
+   Guthaben, Titel und Beschreibung standen hell auf hell. Preis und die
+   beiden Knöpfe bekommen zusätzlich die fehlenden Rahmen. */
+html[data-v28-rework="2"] .mastery-purchase-card h3{
+  color:var(--wd-navy);
+}
+html[data-v28-rework="2"] .mastery-purchase-desc,
+html[data-v28-rework="2"] .mastery-purchase-balance{
+  color:#3f5369;
+}
+html[data-v28-rework="2"] .mastery-purchase-price{
+  box-sizing:border-box;
+  border-style:solid;
+  border-color:transparent;
+  border-width:11px 22px;
+  border-image-source:var(--wd-pill);
+  border-image-slice:128;
+  border-image-width:11px 22px;
+  border-image-repeat:stretch;
+  border-radius:14px;
+  box-shadow:none;
+  padding:1px 4px;
+  background:rgba(84,44,168,.16);
+  color:#3b1d78;
+}
+html[data-v28-rework="2"] .mastery-purchase-actions button{
+  box-sizing:border-box;
+  border-style:solid;
+  border-color:transparent;
+  border-width:9px 20px;
+  border-image-source:var(--wd-strip);
+  border-image-slice:40 96 40 96;
+  border-image-width:9px 20px;
+  border-image-repeat:stretch;
+  border-radius:0;
+  box-shadow:none;
+  background-origin:border-box;
+  min-height:46px;
+  padding:4px 2px;
+}
+
+/* ===== 12 · Namensplaketten der Achievements =====
+   Pro Erfolg steht dort eine Zeile Profilnamen. Sie sind die kleinste
+   wiederkehrende Fläche im Spiel und bekommen deshalb die Pille, nicht die
+   Karte. Die Farben der Zustände (offen / erfüllt) bleiben erhalten. */
+html[data-v28-rework="2"] #achievementsScreen .achievement-owner{
+  box-sizing:border-box;
+  border-style:solid;
+  border-color:transparent;
+  border-width:11px 22px;
+  border-image-source:var(--wd-pill);
+  border-image-slice:128;
+  border-image-width:11px 22px;
+  border-image-repeat:stretch;
+  border-radius:14px;
+  box-shadow:none;
+  padding:0 3px;
+}
+
+/* ---------- vormals 38-endgame-mechanics.css ---------- */
+.endgame-combat-badge{display:inline-flex;align-items:center;max-width:100%;margin:.22rem 0;padding:.18rem .48rem;border:1px solid #c6a451;border-radius:999px;background:linear-gradient(135deg,#fff9df,#ead492);color:#182848;font-size:.68rem;font-weight:850;letter-spacing:.045em;text-transform:uppercase;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.endgame-combat-badge.mark-badge{border-color:#d2694f;background:linear-gradient(135deg,#fff2e9,#eab19b);color:#5a1e1e}
+.campaign-enemy-instance.current-target{outline:2px solid #d8b65c;box-shadow:0 0 0 3px rgba(15,34,65,.9),0 0 20px rgba(216,182,92,.5)}
+.endgame-mechanic-row{display:grid;gap:.2rem;border-left:3px solid #c6a451;background:linear-gradient(90deg,rgba(255,247,213,.95),rgba(255,255,255,.78))}
+.endgame-mechanic-row strong{color:#15284a}.endgame-mechanic-row span{font-size:.78rem;line-height:1.35;color:#3d4961}
+.endgame-mechanic-row.modifier{border-left-color:#8c65bc}.endgame-mechanic-row.mutator{border-left-color:#b94f48}
+@media(max-width:560px){.endgame-combat-badge{font-size:.6rem;padding:.15rem .38rem}.endgame-mechanic-row span{font-size:.72rem}}
+
+/* ---------- vormals 39-v28-campaign-polish.css ---------- */
+/* DiceDuel V28.10.4 — menu/campaign polish and data-driven world colors. */
+
+:root{
+  --world-primary:#d5a642;
+  --world-secondary:#fff0b5;
+  --world-surface:#17365b;
+  --world-glow:rgba(213,166,66,.28);
+}
+
+/* Main menu: every primary icon uses one restrained, matching footprint. */
+html[data-v28-rework="2"] #mainMenu .menu-actions button.menu-play .menu-icon,
+html[data-v28-rework="2"] #mainMenu .menu-actions button.menu-online .menu-icon,
+html[data-v28-rework="2"] #mainMenu .menu-actions button.menu-campaign .menu-icon,
+html[data-v28-rework="2"] #mainMenu .menu-actions button.menu-tutorial .menu-icon{
+  width:54px;
+  height:54px;
+  transform:translateX(7px);
+}
+html[data-v28-rework="2"] #mainMenu .menu-actions button.menu-play .menu-icon img,
+html[data-v28-rework="2"] #mainMenu .menu-actions button.menu-online .menu-icon img,
+html[data-v28-rework="2"] #mainMenu .menu-actions button.menu-campaign .menu-icon img,
+html[data-v28-rework="2"] #mainMenu .menu-actions button.menu-tutorial .menu-icon img{
+  display:block;
+  width:48px;
+  height:48px;
+  margin:3px;
+  object-fit:contain;
+}
+html[data-v28-rework="2"] #mainMenu #menuOnlineBtn .menu-icon img,
+html[data-v28-rework="2"] #mainMenu #menuCampaignBtn .menu-icon img,
+html[data-v28-rework="2"] #mainMenu #menuTutorialBtn .menu-icon img{
+  width:44px!important;
+  height:44px!important;
+  margin:5px!important;
+}
+
+/* World tabs: active and idle share exactly one box and one gold frame. */
+html[data-v28-rework="2"] .campaign-hub .campaign-world-btn,
+html[data-v28-rework="2"] .campaign-hub .campaign-world-btn.active{
+  position:relative;
+  isolation:isolate;
+  overflow:hidden;
+  flex:0 0 108px;
+  width:108px;
+  min-height:78px;
+  box-sizing:border-box;
+  border-style:solid;
+  border-color:transparent;
+  border-width:13px 18px;
+  border-image-source:var(--p1-ivory-card);
+  border-image-slice:76 168 76 168 fill;
+  border-image-width:13px 18px;
+  border-image-repeat:stretch;
+  border-radius:0;
+  padding:0;
+  background:transparent!important;
+  transform:none;
+  box-shadow:0 5px 13px var(--world-glow);
+}
+html[data-v28-rework="2"] .campaign-hub .campaign-world-btn.active::before{
+  content:"";
+  position:absolute;
+  z-index:0;
+  inset:-1px -5px;
+  border:1px solid rgba(255,236,173,.55);
+  border-radius:5px;
+  background:linear-gradient(155deg,#145aa8 0%,#0b3978 52%,#061d48 100%);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.2),inset 0 -3px 12px rgba(0,0,0,.24);
+  pointer-events:none;
+}
+html[data-v28-rework="2"] .campaign-hub .campaign-world-btn::after{
+  content:"";
+  position:absolute;
+  z-index:2;
+  left:25%;
+  right:25%;
+  bottom:1px;
+  height:2px;
+  border-radius:999px;
+  background:var(--world-primary);
+  box-shadow:0 0 7px var(--world-glow);
+  pointer-events:none;
+}
+html[data-v28-rework="2"] .campaign-hub .campaign-world-btn>span,
+html[data-v28-rework="2"] .campaign-hub .campaign-world-btn>img{
+  position:relative;
+  z-index:1;
+}
+html[data-v28-rework="2"] .campaign-hub .campaign-world-btn:not(.active) .campaign-world-kicker{
+  color:var(--world-primary);
+}
+html[data-v28-rework="2"] .campaign-hub .campaign-world-btn.active .campaign-world-name,
+html[data-v28-rework="2"] .campaign-hub .campaign-world-btn.active .campaign-world-kicker,
+html[data-v28-rework="2"] .campaign-hub .campaign-world-btn.active .campaign-world-state{
+  color:#fff2cf;
+  text-shadow:0 1px 3px rgba(0,12,36,.72);
+}
+html[data-v28-rework="2"] .campaign-hub .campaign-world-btn.done:not(.active){
+  filter:none;
+  box-shadow:0 5px 13px var(--world-glow);
+}
+
+/* Current world's palette accents the map and detail shell without changing layout. */
+html[data-v28-rework="2"] .campaign-hub .campaign-node-map{
+  box-shadow:0 0 0 1px var(--world-primary),0 12px 26px var(--world-glow);
+}
+html[data-v28-rework="2"] .campaign-hub .campaign-node.current,
+html[data-v28-rework="2"] .campaign-hub .campaign-node.selected{
+  box-shadow:0 0 0 3px var(--world-glow),0 0 18px var(--world-primary);
+}
+html[data-v28-rework="2"] .campaign-hub .campaign-node-detail{
+  box-shadow:0 0 0 1px var(--world-primary),0 10px 22px var(--world-glow);
+}
+
+/* Solo overview: keep the selected profile, drop the obsolete Prestige tile. */
+html[data-v28-rework="2"] #campaignScreen .campaign-top{
+  grid-template-columns:1fr;
+}
+
+/* XP, Mastery and Encounter actions now share the same full-width geometry. */
+html[data-v28-rework="2"] .campaign-hub .campaign-mastery-strip{
+  grid-template-columns:1fr;
+  align-items:stretch;
+}
+html[data-v28-rework="2"] .campaign-hub .campaign-mastery-xp,
+html[data-v28-rework="2"] .campaign-hub .campaign-mastery-btn,
+html[data-v28-rework="2"] .campaign-hub .campaign-start-row .good{
+  box-sizing:border-box;
+  width:100%;
+  min-height:64px;
+  height:64px;
+}
+
+/* Farm rewards remain functional, but no node gets a special protruding frame. */
+html[data-v28-rework="2"] .campaign-hub .p6-farm-label,
+html[data-v28-rework="2"] .campaign-hub .p8-boss-selected-glow{
+  display:none;
+}
+
+/* Guarantee a complete frame around the first narrative block in every detail. */
+html[data-v28-rework="2"] .campaign-node-detail .node-detail-desc{
+  box-sizing:border-box;
+  border-style:solid;
+  border-color:transparent;
+  border-width:13px 21px;
+  border-image-source:var(--wd-card);
+  border-image-slice:72 120 72 120;
+  border-image-width:13px 21px;
+  border-image-repeat:stretch;
+  border-radius:0;
+  padding:2px 4px 4px;
+}
+
+@media(max-width:540px){
+  html[data-v28-rework="2"] #mainMenu .menu-actions button.menu-play .menu-icon,
+  html[data-v28-rework="2"] #mainMenu .menu-actions button.menu-online .menu-icon,
+  html[data-v28-rework="2"] #mainMenu .menu-actions button.menu-campaign .menu-icon,
+  html[data-v28-rework="2"] #mainMenu .menu-actions button.menu-tutorial .menu-icon{
+    width:50px;
+    height:50px;
+    transform:translateX(7px);
+  }
+  html[data-v28-rework="2"] #mainMenu .menu-actions button.menu-play .menu-icon img{
+    width:46px;
+    height:46px;
+    margin:2px;
+  }
+  html[data-v28-rework="2"] #mainMenu #menuOnlineBtn .menu-icon img,
+  html[data-v28-rework="2"] #mainMenu #menuCampaignBtn .menu-icon img,
+  html[data-v28-rework="2"] #mainMenu #menuTutorialBtn .menu-icon img{
+    width:42px!important;
+    height:42px!important;
+    margin:4px!important;
+  }
+}
+
+/* ---------- vormals 40-v28-screen-restoration.css ---------- */
+/* DiceDuel V28.10.4 — menu safe areas and framed utility screens. */
+
+:root{
+  --v2893-achievement-card:url("../assets/ui/v28/png/frames/achievement-trophy-card.webp?v=28.10.4");
+  --v2893-ivory-card:url("../assets/ui/v28/png/frames/ivory-card-small.webp?v=28.10.4");
+  --v2893-navy-button:url("../assets/ui/v28/png/frames/navy-button-horizontal.webp?v=28.10.4");
+  --v2893-green-button:url("../assets/ui/v28/png/components/encounter-button-green.webp?v=28.10.4");
+}
+
+/* Main menu: the icon leaves the ornamental end cap and gets its own safe area. */
+html[data-v28-rework="2"] #mainMenu .menu-actions button.menu-play,
+html[data-v28-rework="2"] #mainMenu .menu-actions button.menu-online,
+html[data-v28-rework="2"] #mainMenu .menu-actions button.menu-campaign,
+html[data-v28-rework="2"] #mainMenu .menu-actions button.menu-tutorial{
+  position:relative;
+  isolation:isolate;
+  display:block;
+  text-align:center;
+}
+html[data-v28-rework="2"] #mainMenu .menu-actions .menu-primary-label{
+  position:absolute;
+  z-index:1;
+  left:50%;
+  top:50%;
+  display:block;
+  margin:0;
+  transform:translate(-50%,-50%);
+  white-space:nowrap;
+}
+html[data-v28-rework="2"] #mainMenu .menu-actions button.menu-play .menu-icon,
+html[data-v28-rework="2"] #mainMenu .menu-actions button.menu-online .menu-icon,
+html[data-v28-rework="2"] #mainMenu .menu-actions button.menu-campaign .menu-icon,
+html[data-v28-rework="2"] #mainMenu .menu-actions button.menu-tutorial .menu-icon{
+  position:absolute;
+  z-index:2;
+  left:clamp(60px,15%,104px);
+  top:50%;
+  width:40px;
+  height:40px;
+  margin:0;
+  padding:0;
+  border:0;
+  border-radius:0;
+  clip-path:none;
+  background:transparent;
+  box-shadow:none;
+  transform:translateY(-50%);
+}
+html[data-v28-rework="2"] #mainMenu .menu-actions button.menu-play .menu-icon img,
+html[data-v28-rework="2"] #mainMenu .menu-actions button.menu-online .menu-icon img,
+html[data-v28-rework="2"] #mainMenu .menu-actions button.menu-campaign .menu-icon img,
+html[data-v28-rework="2"] #mainMenu .menu-actions button.menu-tutorial .menu-icon img{
+  display:block;
+  width:100%;
+  height:100%;
+  margin:0;
+  object-fit:contain;
+}
+html[data-v28-rework="2"] #mainMenu #menuOnlineBtn .menu-icon,
+html[data-v28-rework="2"] #mainMenu #menuCampaignBtn .menu-icon,
+html[data-v28-rework="2"] #mainMenu #menuTutorialBtn .menu-icon{
+  width:36px;
+  height:36px;
+}
+html[data-v28-rework="2"] #mainMenu #menuOnlineBtn .online-beta-badge{
+  position:absolute;
+  right:clamp(38px,9%,72px);
+  top:50%;
+  margin:0;
+  transform:translateY(-50%);
+}
+
+/* Statistics: strong section plaques and one readable grid per profile. */
+html[data-v28-rework="2"] #statsScreen .screen-subtitle{
+  color:#40556d;
+}
+html[data-v28-rework="2"] #statsScreen .stats-grid{
+  gap:9px;
+}
+html[data-v28-rework="2"] #statsScreen .stats-kpi{
+  border-style:solid;
+  border-color:transparent;
+  border-width:11px 17px;
+  border-image-source:var(--v2893-ivory-card)!important;
+  border-image-slice:76 168 76 168 fill;
+  border-image-width:11px 17px!important;
+  border-image-repeat:stretch;
+  background:transparent!important;
+  padding:8px 7px 7px;
+}
+html[data-v28-rework="2"] #statsScreen .stats-kpi-label{
+  color:#76521b;
+  font-size:9px;
+}
+html[data-v28-rework="2"] #statsScreen .stats-kpi-value{
+  color:#102f55;
+  font-family:Georgia,"Times New Roman",serif;
+}
+html[data-v28-rework="2"] #statsScreen .stats-section-title{
+  box-sizing:border-box;
+  width:100%;
+  min-height:54px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:9px;
+  margin:16px 0 9px;
+  padding:9px 34px;
+  border:0;
+  color:#fff1ca;
+  background:var(--v2893-navy-button) center/100% 100% no-repeat!important;
+  font:800 17px/1 Georgia,"Times New Roman",serif;
+  letter-spacing:.02em;
+  text-shadow:0 1px 3px rgba(0,15,38,.7);
+}
+html[data-v28-rework="2"] #statsScreen .stats-section-title>.p1-inline-icon{
+  width:25px;
+  height:25px;
+  flex:0 0 25px;
+  margin:0;
+  object-fit:contain;
+}
+html[data-v28-rework="2"] #statsScreen #profileStatsList{
+  display:grid;
+  gap:10px;
+}
+html[data-v28-rework="2"] #statsScreen .profile-stats-card{
+  box-sizing:border-box;
+  margin:0;
+  padding:8px 8px 10px;
+  border-style:solid;
+  border-color:transparent;
+  border-width:15px 21px;
+  border-image-source:var(--v2893-ivory-card);
+  border-image-slice:76 168 76 168 fill;
+  border-image-width:15px 21px;
+  border-image-repeat:stretch;
+  border-radius:0;
+  background:transparent;
+  box-shadow:0 7px 18px rgba(20,50,82,.10);
+  color:#102f55;
+}
+html[data-v28-rework="2"] #statsScreen .profile-stats-head{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  min-height:34px;
+  margin:0 0 7px;
+  padding:0 3px 7px;
+  border-bottom:1px solid rgba(173,126,37,.28);
+}
+html[data-v28-rework="2"] #statsScreen .profile-stats-name{
+  color:#102f55;
+  font:800 17px/1.1 Georgia,"Times New Roman",serif;
+}
+html[data-v28-rework="2"] #statsScreen .battle-tag{
+  margin-left:5px;
+  color:#8b6528;
+  font:700 11px/1 system-ui,sans-serif;
+  letter-spacing:.04em;
+}
+html[data-v28-rework="2"] #statsScreen .profile-stat-overview,
+html[data-v28-rework="2"] #statsScreen .profile-stat-grid{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:6px;
+}
+html[data-v28-rework="2"] #statsScreen .profile-stat-overview{
+  margin-bottom:6px;
+}
+html[data-v28-rework="2"] #statsScreen .profile-stat-item{
+  box-sizing:border-box;
+  min-width:0;
+  min-height:43px;
+  display:grid;
+  grid-template-columns:25px minmax(0,1fr);
+  align-items:center;
+  gap:7px;
+  padding:5px 7px;
+  border:1px solid rgba(166,119,31,.25);
+  border-radius:9px;
+  background:linear-gradient(145deg,rgba(255,255,255,.72),rgba(229,238,248,.48));
+  color:#102f55;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.8);
+}
+html[data-v28-rework="2"] #statsScreen .profile-stat-overview .profile-stat-item{
+  background:linear-gradient(145deg,rgba(10,54,99,.94),rgba(3,29,63,.96));
+  border-color:rgba(224,179,80,.52);
+  color:#fff0c7;
+}
+html[data-v28-rework="2"] #statsScreen .profile-stat-item>.dd-inline-icon{
+  width:23px;
+  height:23px;
+  margin:0;
+}
+html[data-v28-rework="2"] #statsScreen .profile-stat-copy{
+  min-width:0;
+  display:flex;
+  flex-direction:column;
+  gap:1px;
+}
+html[data-v28-rework="2"] #statsScreen .profile-stat-copy small{
+  overflow:hidden;
+  color:#68798c;
+  font-size:8px;
+  font-weight:800;
+  line-height:1;
+  letter-spacing:.05em;
+  text-overflow:ellipsis;
+  text-transform:uppercase;
+  white-space:nowrap;
+}
+html[data-v28-rework="2"] #statsScreen .profile-stat-copy b{
+  overflow:hidden;
+  color:#102f55;
+  font-size:13px;
+  line-height:1.1;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+html[data-v28-rework="2"] #statsScreen .profile-stat-overview small{
+  color:#b9cbe0;
+}
+html[data-v28-rework="2"] #statsScreen .profile-stat-overview b{
+  color:#fff1c6;
+}
+html[data-v28-rework="2"] #statsScreen #abilityStatsList{
+  box-sizing:border-box;
+  overflow:hidden;
+  padding:8px 8px 10px;
+  border-style:solid;
+  border-color:transparent;
+  border-width:15px 21px;
+  border-image-source:var(--v2893-ivory-card);
+  border-image-slice:76 168 76 168 fill;
+  border-image-width:15px 21px;
+  border-image-repeat:stretch;
+  border-radius:0;
+  background:transparent!important;
+  box-shadow:0 7px 18px rgba(20,50,82,.10);
+}
+html[data-v28-rework="2"] #statsScreen .ability-stat-row{
+  grid-template-columns:minmax(0,1.72fr) repeat(4,minmax(34px,.55fr));
+  gap:5px;
+  min-height:36px;
+  padding:7px 6px;
+  border:0;
+  border-bottom:1px solid rgba(165,121,38,.19);
+  background:transparent;
+  color:#172d46;
+}
+html[data-v28-rework="2"] #statsScreen .ability-stat-row.header{
+  top:0;
+  min-height:42px;
+  border:0;
+  border-radius:7px;
+  background:linear-gradient(145deg,#0c3b70,#041e43)!important;
+  box-shadow:inset 0 0 0 1px rgba(226,181,80,.55);
+}
+html[data-v28-rework="2"] #statsScreen .ability-stat-row.header span{
+  padding:0;
+  background:transparent;
+  color:#fff0c8;
+  font-size:9px;
+  text-align:center;
+}
+html[data-v28-rework="2"] #statsScreen .ability-stat-row.header span:first-child{
+  text-align:left;
+}
+html[data-v28-rework="2"] #statsScreen .ability-stat-row:not(.header) span{
+  color:#172d46;
+  text-align:center;
+}
+html[data-v28-rework="2"] #statsScreen .ability-stat-row:not(.header) .ability-stat-name{
+  overflow:hidden;
+  color:#102f55;
+  text-align:left;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+
+/* Trophy Shop: restore the complete ornate card instead of a thin line. */
+html[data-v28-rework="2"] #prestigeShopScreen .prestige-shop-list{
+  display:grid;
+  gap:14px;
+  padding:3px 1px 10px;
+}
+html[data-v28-rework="2"] #prestigeShopScreen .prestige-item,
+html[data-v28-rework="2"] #prestigeShopScreen .prestige-item.owned,
+html[data-v28-rework="2"] #prestigeShopScreen .prestige-item.expensive{
+  box-sizing:border-box;
+  width:100%;
+  min-height:214px;
+  display:grid;
+  grid-template-rows:auto auto minmax(0,1fr) auto;
+  margin:0;
+  padding:56px 31px 31px;
+  overflow:hidden;
+  border:0;
+  border-width:0;
+  border-image:none;
+  border-radius:0;
+  /* !important noetig: 36-v28-hierarchie.css setzt fuer #prestigeShopScreen .prestige-item
+     background:var(--wd-hell)!important (Pergament). Ohne Markierung gewinnt das und der
+     helle Text (#f7edda) steht unlesbar auf Pergament. */
+  background:var(--v2893-achievement-card) center/100% 100% no-repeat!important;
+  color:#f7edda;
+  box-shadow:0 10px 22px rgba(3,20,43,.18);
+}
+html[data-v28-rework="2"] #prestigeShopScreen .prestige-item-kicker{
+  color:#f0c967;
+  font-size:10px;
+  letter-spacing:.08em;
+  text-transform:uppercase;
+}
+html[data-v28-rework="2"] #prestigeShopScreen .prestige-item-name{
+  color:#fff3d2;
+  font:800 20px/1.12 Georgia,"Times New Roman",serif;
+}
+html[data-v28-rework="2"] #prestigeShopScreen .prestige-item-desc{
+  color:#d4dfed;
+  font-size:12px;
+}
+html[data-v28-rework="2"] #prestigeShopScreen .prestige-item>button{
+  width:100%;
+  min-height:52px;
+  margin-top:8px;
+}
+
+/* Achievements use the same complete trophy frame and keep all states inside it. */
+html[data-v28-rework="2"] #achievementsScreen .achievement-list{
+  gap:14px;
+  padding:3px 1px 12px!important;
+}
+html[data-v28-rework="2"] #achievementsScreen .achievement-card,
+html[data-v28-rework="2"] #achievementsScreen .achievement-card.dd-achieved,
+html[data-v28-rework="2"] #achievementsScreen .achievement-card.secret-achievement{
+  box-sizing:border-box;
+  width:100%;
+  min-height:210px;
+  margin:0!important;
+  padding:54px 31px 31px;
+  overflow:hidden;
+  border:0;
+  border-width:0;
+  border-image:none;
+  border-radius:0;
+  background:var(--v2893-achievement-card) center/100% 100% no-repeat!important;
+  color:#f7edda;
+  box-shadow:0 10px 22px rgba(3,20,43,.18);
+}
+html[data-v28-rework="2"] #achievementsScreen .achievement-name{
+  color:#fff3d2;
+  font:800 18px/1.15 Georgia,"Times New Roman",serif;
+}
+html[data-v28-rework="2"] #achievementsScreen .achievement-desc{
+  margin-top:6px;
+  color:#d6e1ee;
+  font-size:12px;
+  line-height:1.4;
+}
+html[data-v28-rework="2"] #achievementsScreen .achievement-reward{
+  display:inline-flex;
+  align-items:center;
+  gap:5px;
+  max-width:48%;
+  color:#2c1904;
+}
+html[data-v28-rework="2"] #achievementsScreen .achievement-owner{
+  border-image:none;
+  background-image:none;
+}
+
+/* Mastery purchase: fill the empty title plaque and turn XP into a real framed cost block. */
+html[data-v28-rework="2"] .mastery-purchase-card{
+  position:relative;
+  padding:10px 12px 14px;
+}
+html[data-v28-rework="2"] .mastery-purchase-banner{
+  position:absolute;
+  z-index:2;
+  top:-27px;
+  left:50%;
+  width:min(72%,270px);
+  height:19px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  transform:translateX(-50%);
+  overflow:hidden;
+  color:#fff0c3;
+  font:800 10px/1 Georgia,"Times New Roman",serif;
+  letter-spacing:.13em;
+  text-shadow:0 1px 3px rgba(0,14,38,.8);
+}
+html[data-v28-rework="2"] .mastery-purchase-card>.mastery-kicker{
+  margin:1px 0 7px;
+  color:#a27b31;
+  font-size:9px;
+  letter-spacing:.12em;
+}
+html[data-v28-rework="2"] .mastery-purchase-card h3{
+  margin:0 0 8px;
+  color:#102f55;
+  font:800 23px/1.14 Georgia,"Times New Roman",serif;
+}
+html[data-v28-rework="2"] .mastery-purchase-desc{
+  margin:0 0 12px;
+  color:#43576c;
+  font-size:12px;
+}
+html[data-v28-rework="2"] .mastery-purchase-price{
+  box-sizing:border-box;
+  width:min(64%,220px);
+  min-height:46px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:10px;
+  margin:0 auto;
+  padding:7px 25px;
+  border:0;
+  border-width:0;
+  border-image:none;
+  border-radius:0;
+  background:var(--v2893-navy-button) center/100% 100% no-repeat;
+  color:#fff0c8;
+  box-shadow:0 6px 16px rgba(4,28,61,.18);
+}
+html[data-v28-rework="2"] .mastery-purchase-price img{
+  width:22px;
+  height:22px;
+  flex:0 0 22px;
+  object-fit:contain;
+}
+html[data-v28-rework="2"] .mastery-purchase-price>span{
+  display:flex;
+  flex-direction:column;
+  align-items:flex-start;
+  gap:2px;
+}
+html[data-v28-rework="2"] .mastery-purchase-price small{
+  color:#b8cbe0;
+  font-size:8px;
+  font-weight:800;
+  letter-spacing:.10em;
+  text-transform:uppercase;
+}
+html[data-v28-rework="2"] .mastery-purchase-price strong{
+  color:#fff0c8;
+  font:800 14px/1 Georgia,"Times New Roman",serif;
+}
+html[data-v28-rework="2"] .mastery-purchase-balance{
+  box-sizing:border-box;
+  width:min(88%,310px);
+  min-height:50px;
+  display:grid;
+  grid-template-columns:1fr auto 1fr;
+  align-items:center;
+  gap:9px;
+  margin:8px auto 0;
+  padding:8px 12px;
+  border:1px solid rgba(167,120,34,.28);
+  border-radius:10px;
+  background:rgba(255,255,255,.46);
+  color:#43576c;
+}
+html[data-v28-rework="2"] .mastery-balance-value{
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:2px;
+}
+html[data-v28-rework="2"] .mastery-balance-value small{
+  color:#718197;
+  font-size:8px;
+  font-weight:800;
+  letter-spacing:.08em;
+  text-transform:uppercase;
+}
+html[data-v28-rework="2"] .mastery-balance-value strong{
+  color:#17395f;
+  font-size:13px;
+}
+html[data-v28-rework="2"] .mastery-balance-value.after strong{
+  color:#177044;
+}
+html[data-v28-rework="2"] .mastery-balance-arrow{
+  color:#b18435;
+  font-size:20px;
+  font-weight:900;
+}
+html[data-v28-rework="2"] .mastery-purchase-actions{
+  gap:9px;
+  margin-top:11px;
+}
+html[data-v28-rework="2"] .mastery-purchase-actions button{
+  min-height:54px;
+  border:0;
+  border-width:0;
+  border-image:none;
+  color:#fff1ca;
+  background:var(--v2893-navy-button) center/100% 100% no-repeat;
+}
+html[data-v28-rework="2"] .mastery-purchase-actions .mastery-purchase-buy{
+  color:#fff8df;
+  background:var(--v2893-green-button) center/100% 100% no-repeat;
+  border:0;
+  border-radius:0;
+  box-shadow:none;
+}
+
+@media(max-width:540px){
+  html[data-v28-rework="2"] #mainMenu .menu-actions button.menu-play .menu-icon,
+  html[data-v28-rework="2"] #mainMenu .menu-actions button.menu-online .menu-icon,
+  html[data-v28-rework="2"] #mainMenu .menu-actions button.menu-campaign .menu-icon,
+  html[data-v28-rework="2"] #mainMenu .menu-actions button.menu-tutorial .menu-icon{
+    left:60px;
+    width:34px;
+    height:34px;
+  }
+  html[data-v28-rework="2"] #mainMenu #menuOnlineBtn .menu-icon,
+  html[data-v28-rework="2"] #mainMenu #menuCampaignBtn .menu-icon,
+  html[data-v28-rework="2"] #mainMenu #menuTutorialBtn .menu-icon{
+    width:32px;
+    height:32px;
+  }
+  html[data-v28-rework="2"] #prestigeShopScreen .prestige-item,
+  html[data-v28-rework="2"] #prestigeShopScreen .prestige-item.owned,
+  html[data-v28-rework="2"] #prestigeShopScreen .prestige-item.expensive,
+  html[data-v28-rework="2"] #achievementsScreen .achievement-card,
+  html[data-v28-rework="2"] #achievementsScreen .achievement-card.dd-achieved,
+  html[data-v28-rework="2"] #achievementsScreen .achievement-card.secret-achievement{
+    padding:54px 27px 30px;
+  }
+}
+
+@media(max-width:350px){
+  html[data-v28-rework="2"] #mainMenu .menu-actions button.menu-play .menu-icon,
+  html[data-v28-rework="2"] #mainMenu .menu-actions button.menu-online .menu-icon,
+  html[data-v28-rework="2"] #mainMenu .menu-actions button.menu-campaign .menu-icon,
+  html[data-v28-rework="2"] #mainMenu .menu-actions button.menu-tutorial .menu-icon{
+    left:50px;
+    width:32px;
+    height:32px;
+  }
+  html[data-v28-rework="2"] #mainMenu #menuOnlineBtn .menu-icon,
+  html[data-v28-rework="2"] #mainMenu #menuCampaignBtn .menu-icon,
+  html[data-v28-rework="2"] #mainMenu #menuTutorialBtn .menu-icon{
+    width:30px;
+    height:30px;
+  }
+  html[data-v28-rework="2"] #mainMenu #menuOnlineBtn .online-beta-badge{
+    right:28px;
+  }
+  html[data-v28-rework="2"] #statsScreen .profile-stat-overview,
+  html[data-v28-rework="2"] #statsScreen .profile-stat-grid{
+    gap:4px;
+  }
+  html[data-v28-rework="2"] #statsScreen .profile-stat-item{
+    grid-template-columns:21px minmax(0,1fr);
+    gap:5px;
+    padding:4px 5px;
+  }
+  html[data-v28-rework="2"] #statsScreen .profile-stat-item>.dd-inline-icon{
+    width:20px;
+    height:20px;
+  }
+}
+
+/* ---------- vormals 41-v28-world-asset-pack.css ---------- */
+/* DiceDuel V28.11.4 — world artwork and deterministic Boss Rush themes. */
+
+/* Every world tab carries its assigned painted frame as one complete image.
+   The artwork is never sliced; active/locked state changes only its emphasis. */
+html[data-v28-rework="2"] .campaign-hub .campaign-world-tabs{
+  gap:10px;
+  padding:6px 4px 10px;
+}
+html[data-v28-rework="2"] .campaign-hub .campaign-world-btn,
+html[data-v28-rework="2"] .campaign-hub .campaign-world-btn.active{
+  position:relative;
+  isolation:isolate;
+  flex:0 0 120px;
+  width:120px;
+  min-height:133px;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:flex-start;
+  gap:1px;
+  overflow:visible;
+  box-sizing:border-box;
+  padding:7px 8px 9px!important;
+  border:0!important;
+  border-image:none!important;
+  border-radius:22px!important;
+  background:
+    radial-gradient(circle at 50% 28%,color-mix(in srgb,var(--world-glow) 88%,transparent),transparent 54%),
+    linear-gradient(155deg,
+      color-mix(in srgb,var(--world-surface) 92%,#203650 8%),
+      color-mix(in srgb,var(--world-surface) 78%,#07172b 22%));
+  background-clip:padding-box!important;
+  box-shadow:none;
+  transform:none;
+}
+html[data-v28-rework="2"] .campaign-hub .campaign-world-btn::before{
+  content:""!important;
+  position:absolute!important;
+  z-index:0!important;
+  inset:0!important;
+  background:var(--world-frame-rect,var(--p1-ivory-card)) center/100% 100% no-repeat!important;
+  filter:brightness(.92) drop-shadow(0 4px 5px color-mix(in srgb,var(--world-glow) 72%,transparent));
+  opacity:1;
+  pointer-events:none!important;
+}
+html[data-v28-rework="2"] .campaign-hub .campaign-world-btn.active::before{
+  filter:brightness(1.08) drop-shadow(0 8px 11px var(--world-glow));
+  opacity:1;
+}
+html[data-v28-rework="2"] .campaign-hub .campaign-world-btn.active{
+  background:
+    radial-gradient(circle at 50% 28%,var(--world-glow),transparent 48%),
+    linear-gradient(155deg,var(--world-surface),#06172f 84%)!important;
+}
+html[data-v28-rework="2"] .campaign-hub .campaign-world-tabs .campaign-world-btn:not(.active){
+  background:
+    radial-gradient(circle at 50% 28%,color-mix(in srgb,var(--world-glow) 88%,transparent),transparent 54%),
+    linear-gradient(155deg,
+      color-mix(in srgb,var(--world-surface) 92%,#203650 8%),
+      color-mix(in srgb,var(--world-surface) 78%,#07172b 22%))!important;
+}
+html[data-v28-rework="2"] .campaign-hub .campaign-world-btn::after{
+  left:23%!important;
+  right:23%!important;
+  bottom:4px!important;
+}
+html[data-v28-rework="2"] .campaign-hub .campaign-world-kicker{
+  display:none;
+}
+html[data-v28-rework="2"] .campaign-hub .campaign-world-art{
+  position:relative;
+  z-index:2!important;
+  display:block;
+  width:78px;
+  height:78px;
+  flex:0 0 78px;
+  margin:-1px auto -2px;
+  background-image:var(--world-frame-round),var(--world-emblem);
+  background-position:center,center;
+  background-repeat:no-repeat,no-repeat;
+  background-size:100% 100%,72% 72%;
+  filter:saturate(1.04) drop-shadow(0 4px 5px rgba(2,17,39,.34));
+  pointer-events:none;
+}
+html[data-v28-rework="2"] .campaign-hub .campaign-world-btn.active .campaign-world-art{
+  filter:saturate(1) opacity(1) drop-shadow(0 4px 6px rgba(2,17,39,.42));
+}
+html[data-v28-rework="2"] .campaign-hub .campaign-world-copy{
+  position:relative;
+  z-index:3!important;
+  width:100%;
+  min-width:0;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:flex-start;
+  gap:1px;
+}
+html[data-v28-rework="2"] .campaign-hub .campaign-world-name{
+  width:100%;
+  color:color-mix(in srgb,var(--world-secondary) 78%,#fff 22%);
+  font-size:12px;
+  line-height:1.08;
+  text-align:center;
+}
+html[data-v28-rework="2"] .campaign-hub .campaign-world-state{
+  min-height:23px;
+  color:color-mix(in srgb,var(--world-primary) 78%,#fff 22%);
+  font-size:9px;
+  line-height:23px;
+}
+html[data-v28-rework="2"] .campaign-hub .campaign-world-btn.active .campaign-world-name,
+html[data-v28-rework="2"] .campaign-hub .campaign-world-btn.active .campaign-world-state,
+html[data-v28-rework="2"] .campaign-hub .campaign-world-btn.active .campaign-world-kicker{
+  color:#fff3d1;
+}
+html[data-v28-rework="2"] .campaign-hub .campaign-world-btn:disabled::before{
+  filter:brightness(.84) drop-shadow(0 3px 4px color-mix(in srgb,var(--world-glow) 54%,transparent))!important;
+  opacity:1!important;
+}
+html[data-v28-rework="2"] .campaign-hub .campaign-world-btn:disabled .campaign-world-art{
+  opacity:1;
+  filter:saturate(1) brightness(.9) drop-shadow(0 3px 4px rgba(2,17,39,.28));
+}
+html[data-v28-rework="2"] .campaign-hub .campaign-world-btn:disabled .campaign-world-state{
+  box-sizing:border-box;
+  min-width:29px;
+  min-height:21px;
+  height:21px;
+  display:inline-grid;
+  place-items:center;
+  margin-top:1px;
+  padding:0 6px;
+  overflow:hidden;
+  border:1px solid color-mix(in srgb,var(--world-secondary) 68%,transparent);
+  border-radius:999px;
+  background:linear-gradient(155deg,color-mix(in srgb,var(--world-surface) 88%,#07172b 12%),#071426)!important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.16),0 2px 6px rgba(2,17,39,.28);
+  color:transparent;
+  font-size:0;
+  line-height:1;
+}
+html[data-v28-rework="2"] .campaign-hub .campaign-world-btn:disabled .campaign-world-state::before{
+  content:""!important;
+  width:13px!important;
+  height:13px!important;
+  display:block!important;
+  background:url("../assets/ui/v28/svg/gameplay/locked.svg?v=28.11.2") center/contain no-repeat!important;
+  filter:drop-shadow(0 1px 2px rgba(0,0,0,.42))!important;
+}
+
+/* The painted frame remains whole. A 3:1 preferred aspect ratio keeps its
+   centre gems and left-to-right colour ramp legible; content may add height. */
+html[data-v28-rework="2"] .campaign-hub .campaign-world-desc{
+  position:relative;
+  isolation:isolate;
+  box-sizing:border-box;
+  width:100%;
+  min-height:min-content;
+  height:auto;
+  aspect-ratio:3 / 1;
+  display:grid;
+  grid-template-columns:minmax(0,1fr);
+  align-items:center;
+  gap:0;
+  margin:0 0 11px;
+  padding:clamp(15px,4vw,24px) clamp(28px,5.3vw,66px);
+  overflow:clip;
+  border:0;
+  border-image:none;
+  border-radius:0;
+  background:transparent;
+  box-shadow:none;
+  color:#fff2d2;
+}
+html[data-v28-rework="2"] .campaign-hub .campaign-world-desc::before,
+html[data-v28-rework="2"] .campaign-hub .campaign-node-detail[data-p4-detail-tone="boss"] .node-detail-head::before{
+  content:""!important;
+  position:absolute!important;
+  z-index:0!important;
+  inset:11% 5.2% 14%!important;
+  border-radius:clamp(12px,3.4vw,22px)!important;
+  background:linear-gradient(155deg,var(--world-surface),#071a38 84%)!important;
+  pointer-events:none!important;
+}
+html[data-v28-rework="2"] .campaign-hub .campaign-world-desc::after,
+html[data-v28-rework="2"] .campaign-hub .campaign-node-detail[data-p4-detail-tone="boss"] .node-detail-head::after{
+  content:""!important;
+  position:absolute!important;
+  z-index:1!important;
+  inset:0!important;
+  background:var(--world-frame-rect,var(--p1-ivory-card)) center/100% 100% no-repeat!important;
+  filter:drop-shadow(0 7px 10px var(--world-glow))!important;
+  pointer-events:none!important;
+}
+/* Rift's crossed blades are painted beyond the visual top/bottom rails. Clip
+   only those two outside tips; the rail and the rest of the 3:1 artwork stay
+   intact. */
+html[data-v28-rework="2"] .campaign-hub[data-world-theme="solo-rift"] .campaign-world-desc::after,
+html[data-v28-rework="2"] .campaign-hub[data-world-theme="solo-rift"] .campaign-node-detail[data-p4-detail-tone="boss"] .node-detail-head::after{
+  clip-path:polygon(0 0,62% 0,62% 8%,81% 8%,81% 0,100% 0,100% 100%,36% 100%,36% 92%,19% 92%,19% 100%,0 100%);
+}
+html[data-v28-rework="2"] .campaign-hub .campaign-world-desc>*{
+  position:relative;
+  z-index:2;
+}
+html[data-v28-rework="2"] .campaign-hub .campaign-world-banner-art{
+  display:none;
+}
+html[data-v28-rework="2"] .campaign-hub .campaign-world-banner-copy{
+  min-width:0;
+  display:flex;
+  flex-direction:column;
+  gap:2px;
+}
+html[data-v28-rework="2"] .campaign-hub .campaign-world-banner-kicker{
+  color:var(--world-secondary);
+  font-size:clamp(8px,1.9vw,10px);
+  font-weight:950;
+  letter-spacing:.065em;
+  line-height:1.2;
+  text-transform:uppercase;
+  white-space:normal;
+}
+html[data-v28-rework="2"] .campaign-hub .campaign-world-banner-copy>strong{
+  overflow:hidden;
+  color:#fff5dc;
+  font:900 clamp(15px,3.8vw,19px)/1.05 Georgia,"Times New Roman",serif;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+  text-shadow:0 1px 3px rgba(0,0,0,.65);
+}
+html[data-v28-rework="2"] .campaign-hub .campaign-world-banner-desc{
+  display:block;
+  overflow:visible;
+  color:#e8edf5;
+  font-size:clamp(9px,2.15vw,11px);
+  line-height:1.28;
+  white-space:normal;
+  -webkit-box-orient:initial;
+  -webkit-line-clamp:unset;
+}
+
+/* A tall boss detail cannot use the painted 3:1 world frame. Its outer edge is
+   the generic tier-2 frame; only the naturally wide header carries world art. */
+html[data-v28-rework="2"] .campaign-hub .campaign-node-detail[data-p4-detail-tone="boss"],
+html[data-v28-rework="2"] .campaign-hub .campaign-node-detail[data-p4-detail-tone="boss"].v28-prestige-detail:not(.v28-boss-detail){
+  position:relative;
+  isolation:isolate;
+  box-sizing:border-box;
+  border-style:solid;
+  border-color:transparent;
+  border-width:13px 18px;
+  border-image-source:var(--p1-ivory-card);
+  border-image-slice:76 168 76 168;
+  border-image-width:13px 18px;
+  border-image-outset:0;
+  border-image-repeat:stretch;
+  border-radius:0;
+  color:#f6eee0;
+  background:
+    radial-gradient(circle at 50% 0%,var(--world-glow),transparent 48%) padding-box,
+    linear-gradient(160deg,color-mix(in srgb,var(--world-surface) 88%,#160713 12%),#07111f) padding-box;
+  background-clip:padding-box;
+  box-shadow:none;
+  filter:drop-shadow(0 12px 16px var(--world-glow));
+}
+html[data-v28-rework="2"] .campaign-hub .campaign-node-detail[data-p4-detail-tone="boss"] .node-detail-head{
+  position:relative;
+  isolation:isolate;
+  box-sizing:border-box;
+  width:100%;
+  min-height:0;
+  height:auto;
+  aspect-ratio:3 / 1;
+  display:grid;
+  grid-template-columns:minmax(0,1fr) auto;
+  align-items:center;
+  gap:clamp(7px,2vw,12px);
+  margin:-3px -3px 11px;
+  padding:clamp(15px,4vw,23px) clamp(29px,9vw,48px);
+  overflow:clip;
+  border:0;
+  border-image:none;
+  border-radius:0;
+  background:transparent;
+  box-shadow:none;
+}
+html[data-v28-rework="2"] .campaign-hub .campaign-node-detail[data-p4-detail-tone="boss"] .node-detail-head>*{
+  position:relative;
+  z-index:2;
+}
+html[data-v28-rework="2"] .campaign-hub .campaign-node-detail[data-p4-detail-tone="boss"] .node-detail-title{
+  overflow:visible;
+  color:#fff5dc;
+  line-height:1.08;
+  overflow-wrap:anywhere;
+  text-overflow:clip;
+  white-space:normal;
+  text-shadow:0 1px 3px rgba(0,0,0,.7);
+}
+html[data-v28-rework="2"] .campaign-hub .campaign-node-detail[data-p4-detail-tone="boss"] .node-detail-sub{
+  color:var(--world-secondary);
+}
+html[data-v28-rework="2"] .campaign-hub .campaign-node-detail[data-p4-detail-tone="boss"] .node-detail-state{
+  border-color:color-mix(in srgb,var(--world-secondary) 42%,transparent);
+  background:color-mix(in srgb,var(--world-surface) 78%,transparent);
+}
+html[data-v28-rework="2"] .campaign-hub .node-detail-state[data-campaign-state]{
+  box-sizing:border-box;
+  width:32px;
+  min-width:32px;
+  height:32px;
+  min-height:32px;
+  display:inline-grid;
+  place-items:center;
+  padding:5px;
+  overflow:hidden;
+  border-radius:999px;
+  color:transparent;
+  font-size:0;
+  line-height:1;
+}
+html[data-v28-rework="2"] .campaign-hub .node-detail-state[data-campaign-state]>img{
+  width:18px;
+  height:18px;
+  display:block;
+  margin:0;
+  object-fit:contain;
+}
+html[data-v28-rework="2"] .campaign-hub .campaign-node-detail[data-p4-detail-tone="boss"] .node-detail-desc,
+html[data-v28-rework="2"] .campaign-hub .campaign-node-detail[data-p4-detail-tone="boss"] .node-detail-row{
+  color:#edf1f7;
+  border-color:color-mix(in srgb,var(--world-primary) 28%,transparent);
+  background:color-mix(in srgb,var(--world-surface) 52%,transparent);
+}
+
+/* Boss Rush enemies use the assigned world's complete painted frame. The
+   player side keeps its established combat frame unchanged. */
+html[data-v28-rework="2"] body.playing #game.boss-rush-game #players .player.boss-rush-world-enemy{
+  border:0;
+  border-image:none;
+  border-radius:16px;
+  padding:clamp(23px,7vw,31px) clamp(14px,4.5vw,19px) 60px;
+  background:
+    radial-gradient(circle at 82% 25%,var(--world-glow),transparent 36%),
+    linear-gradient(155deg,color-mix(in srgb,var(--world-surface) 94%,#142b47 6%),#050f20 90%);
+  box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--world-primary) 24%,transparent),0 8px 18px rgba(1,9,22,.42);
+  filter:drop-shadow(0 7px 10px var(--world-glow));
+}
+html[data-v28-rework="2"] body.playing #game.boss-rush-game #players .player.boss-rush-world-enemy::after{
+  content:"";
+  position:absolute;
+  z-index:3;
+  inset:0;
+  background:var(--world-frame-rect,var(--p1-ivory-card)) center/100% 100% no-repeat;
+  filter:drop-shadow(0 4px 7px var(--world-glow));
+  mix-blend-mode:normal;
+  opacity:1;
+  pointer-events:none;
+}
+html[data-v28-rework="2"] body.playing #game.boss-rush-game #players .player.boss-rush-world-enemy::before{
+  content:none;
+  display:none;
+}
+html[data-v28-rework="2"] body.playing #game.boss-rush-game #players .player.boss-rush-world-enemy>*{
+  position:relative;
+  z-index:2;
+}
+html[data-v28-rework="2"] body.playing #game.boss-rush-game #players .player.boss-rush-world-enemy .player-name{
+  min-height:2.15em;
+  padding-right:0;
+  overflow:visible;
+  align-items:flex-start;
+}
+html[data-v28-rework="2"] body.playing #game.boss-rush-game #players .player.boss-rush-world-enemy .player-name-text{
+  display:block;
+  overflow:visible;
+  overflow-wrap:normal;
+  word-break:normal;
+  hyphens:none;
+  text-overflow:clip;
+  white-space:normal;
+  font-size:clamp(12px,3.3vw,15px);
+  line-height:1.14;
+}
+html[data-v28-rework="2"] body.playing #game.boss-rush-game #players .player.boss-rush-world-enemy .ability-tag{
+  color:var(--world-secondary);
+}
+
+/* JS 37 replaces the run-on sentence with four explicit label/value cells. */
+html[data-v28-rework="2"] body.playing .boss-rush-live.boss-rush-status-items{
+  box-sizing:border-box;
+  width:100%;
+  display:grid;
+  grid-template-columns:repeat(4,minmax(0,1fr));
+  gap:6px;
+  letter-spacing:normal;
+}
+html[data-v28-rework="2"] body.playing .boss-rush-live.boss-rush-status-items::before{
+  display:none;
+}
+html[data-v28-rework="2"] body.playing .boss-rush-status-item{
+  min-width:0;
+  display:flex;
+  flex-direction:column;
+  align-items:flex-start;
+  gap:2px;
+  padding:6px 7px;
+  border:0!important;
+  border-radius:8px;
+  background:rgba(4,22,49,.58);
+}
+html[data-v28-rework="2"] body.playing .boss-rush-status-item>small{
+  color:#9fb3cd;
+  font-size:8px;
+  font-weight:900;
+  letter-spacing:.08em;
+  line-height:1;
+  text-transform:uppercase;
+}
+html[data-v28-rework="2"] body.playing .boss-rush-status-item>b{
+  max-width:100%;
+  color:#ffe19a;
+  font-size:10px;
+  line-height:1.18;
+  overflow-wrap:anywhere;
+  white-space:normal;
+}
+html[data-v28-rework="2"] body.playing .phase-live[data-boss-rush-legacy-phase]{
+  display:none;
+}
+
+@media(max-width:540px){
+  html[data-v28-rework="2"] .campaign-hub .campaign-world-btn,
+  html[data-v28-rework="2"] .campaign-hub .campaign-world-btn.active{
+    flex-basis:112px;
+    width:112px;
+    min-height:124px;
+    padding-inline:7px!important;
+  }
+  html[data-v28-rework="2"] .campaign-hub .campaign-world-art{
+    width:72px;
+    height:72px;
+    flex-basis:72px;
+  }
+  html[data-v28-rework="2"] .campaign-hub .campaign-world-desc{
+    width:calc(100% + 64px);
+    min-height:100px;
+    grid-template-columns:minmax(0,1fr);
+    gap:0;
+    margin:0 -32px 11px;
+    padding:8px 24px 12px;
+  }
+  html[data-v28-rework="2"] .campaign-hub .campaign-world-banner-kicker{
+    font-size:8px;
+    letter-spacing:.04em;
+  }
+  html[data-v28-rework="2"] .campaign-hub .campaign-world-banner-copy>strong{
+    font-size:14px;
+  }
+  html[data-v28-rework="2"] .campaign-hub .campaign-world-banner-desc{
+    font-size:9px;
+    line-height:1.2;
+  }
+  html[data-v28-rework="2"] .campaign-hub .campaign-node-detail[data-p4-detail-tone="boss"],
+  html[data-v28-rework="2"] .campaign-hub .campaign-node-detail[data-p4-detail-tone="boss"].v28-prestige-detail:not(.v28-boss-detail){
+    border-width:11px 15px;
+    border-image-width:11px 15px;
+  }
+  html[data-v28-rework="2"] .campaign-hub .campaign-node-detail[data-p4-detail-tone="boss"] .node-detail-head{
+    width:calc(100% + 24px);
+    min-height:94px;
+    gap:6px;
+    margin:-3px -12px 11px;
+    padding:15px 27px;
+  }
+  html[data-v28-rework="2"] .campaign-hub .campaign-node-detail[data-p4-detail-tone="boss"] .node-detail-title{
+    font-size:clamp(15px,4.5vw,18px);
+  }
+  html[data-v28-rework="2"] body.playing .boss-rush-live.boss-rush-status-items{
+    grid-template-columns:repeat(2,minmax(0,1fr));
+    gap:5px;
+  }
+}
+
+@media(max-width:340px){
+  html[data-v28-rework="2"] body.playing #game.boss-rush-game #players .player.boss-rush-world-enemy{
+    padding-inline:10px;
+  }
+}
+
+@media(prefers-reduced-motion:reduce){
+  html[data-v28-rework="2"] .campaign-hub .campaign-world-art,
+  html[data-v28-rework="2"] .campaign-hub .campaign-world-banner-art{
+    transition:none;
+  }
+}

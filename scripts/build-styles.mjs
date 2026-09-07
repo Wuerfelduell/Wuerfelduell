@@ -9,31 +9,16 @@ const outputFile = path.join(root, "css", "app.css");
 // This order intentionally mirrors the former <link> order in index.html.
 // Changing it can alter the cascade and therefore requires visual regression testing.
 export const styleOrder = [
-  "01-base-ui.css",
-  "02-battle.css",
-  "03-campaign.css",
-  "04-prestige-polish.css",
-  "05-online.css",
-  "06-v275.css",
-  "07-v2751.css",
-  "08-v276.css",
-  "09-test-lab.css",
-  "10-dice-tray-lab.css",
-  "11-mastery.css",
-  "12-cloud-account.css",
-  "12-ability-mastery-lab.css",
+  "01-grundlage.css",
+  "06-version-27.css",
+  "09-labore.css",
+  "11-mastery-und-konto.css",
   "13-v28-grundlage.css",
   "16-v28-phasen.css",
   "29-v28-korrekturen.css",
-  "32-emoji-sprite-pass.css",
-  "33-duo-boss-rush.css",
-  "35-v28-frame-catchup.css",
+  "32-nachtraege.css",
   "36-v28-hierarchie.css",
-  "37-v28-feinschliff.css",
-  "38-endgame-mechanics.css",
-  "39-v28-campaign-polish.css",
-  "40-v28-screen-restoration.css",
-  "41-v28-world-asset-pack.css"
+  "37-abschluss.css"
 ];
 
 async function createBundle() {

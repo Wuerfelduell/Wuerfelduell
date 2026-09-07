@@ -5,16 +5,19 @@ hat den **Bauweg** vereinheitlicht (`src/styles/legacy/` → `css/app.css`),
 die **Schichten selbst** aber unangetastet gelassen. Dieses Dokument misst,
 was da liegt, damit das Zusammenlegen nicht auf Vermutungen aufsetzt.
 
-Stand: V28.11.9, 25 Dateien. Die historischen Tabellen unten stammen von
-V28.7.3 (37 Dateien) und sind als Momentaufnahme zu lesen.
+Stand: V28.11.14, nach der zweiten Konsolidierung 10 Dateien. Der reine
+Regeltext blieb beim Zusammenlegen mit 387.866 Zeichen unverändert; die
+zusätzlichen Zeilen sind ausschließlich Herkunftskommentare. Die historischen
+Tabellen unten stammen von V28.7.3 (37 Dateien) und sind als Momentaufnahme zu
+lesen.
 
 | | V28.7.3 | V28.9.4 | jetzt |
 |---|---|---|---|
-| Dateien | 37 | 40 | **25** |
-| Zeilen | 12.065 | 12.803 | **11.549** |
-| überschrieben | 2.745 (20 %) | 2.998 (21 %) | **~15 %** |
-| `!important` | 4.269 | 4.680 | **252 Texttreffer / 249 Direktiven** |
-| `css/app.css` | — | 510 KB | **452 KB** |
+| Dateien | 37 | 40 | **10** |
+| Zeilen | 12.065 | 12.803 | **11.660 einschließlich Herkunftskommentaren** |
+| überschrieben | 2.745 (20 %) | 2.998 (21 %) | **228 exakt nachgewiesene tote Deklarationen** |
+| `!important` | 4.269 | 4.680 | **318 Vorrangmarkierungen** |
+| `css/app.css` | — | 510 KB | **458.397 Zeichen / 387.866 Zeichen Regeltext** |
 
 Bemerkenswert an der Spalte rechts: Der V28-Stapel ist auf 25 Dateien
 geschrumpft, und 94,6 Prozent der echten `!important`-Direktiven des
@@ -48,9 +51,11 @@ Reihenfolge = Kaskade. `rework` zählt Regeln, die auf
 `html[data-v28-rework="2"]` eingeschränkt sind.
 
 **Die Tabelle ist historisch.** Sie zeigt den Stand von V28.7.3 mit 37
-Dateien. Seit V28.11.5 sind die Zeilen 14 bis 32 - der komplette
-V28-Stapel - zu drei Dateien zusammengelegt: `13-v28-grundlage`,
-`16-v28-phasen`, `29-v28-korrekturen`. Die Tabelle bleibt stehen, weil
+Dateien. Der aktuelle Stapel besteht aus zehn Dateien: `01-grundlage`,
+`06-version-27`, `09-labore`, `11-mastery-und-konto`, `13-v28-grundlage`,
+`16-v28-phasen`, `29-v28-korrekturen`, `32-nachtraege`,
+`36-v28-hierarchie` und `37-abschluss`. Jeder übernommene Abschnitt ist
+mit seinem früheren Dateinamen markiert. Die Tabelle bleibt stehen, weil
 sie zeigt, wie der Stapel gewachsen ist.
 
 | # | Datei | Zeilen | !imp | rework |

@@ -18,7 +18,7 @@ const [html, versionText, packageText, configText, workerText, css, worldThemeTe
   readFile(path.join(root, "sw.js"), "utf8"),
   readFile(path.join(root, "css", "app.css"), "utf8"),
   readFile(path.join(root, "js", "39-campaign-world-themes.js"), "utf8"),
-  readFile(path.join(root, "src", "styles", "legacy", "41-v28-world-asset-pack.css"), "utf8"),
+  readFile(path.join(root, "src", "styles", "legacy", "37-abschluss.css"), "utf8"),
   readFile(path.join(root, "js", "37-duo-boss-rush.js"), "utf8"),
   readFile(path.join(root, "js", "12-battle-ui.js"), "utf8")
 ]);
