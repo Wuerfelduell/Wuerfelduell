@@ -1309,7 +1309,7 @@
     /* V24.0: Button bewusst tiefer im normalen Dokumentfluss, damit Mobile-Browser-Chrome ihn nicht anschneidet. */
     body.playing .game-menu-btn{margin-top:5px}
     body.playing .matchbar{align-items:flex-start;min-height:38px}
-    @media(max-width:540px){.prestige-shop-list{grid-template-columns:1fr}.prestige-shop-head{grid-template-columns:1fr}.campaign-node-map{gap:14px 5px;padding:15px 5px}.campaign-node{width:min(58px,100%);font-size:15px}}
+    @media(max-width:540px){.prestige-shop-list{grid-template-columns:1fr}.prestige-shop-head{grid-template-columns:1fr}.campaign-node-map{}.campaign-node{font-size:15px}}
 
     /* V24.1 – Mobile Scroll + kompakte Kampf-Fähigkeiten
        Auf Mobile-Chrome scrollt jetzt das Dokument selbst. Body als eigener

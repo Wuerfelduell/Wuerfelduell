@@ -196,17 +196,7 @@ html[data-v28-rework="2"] .campaign-hub .campaign-node-map .campaign-node{
    dunkel auf (.v28-boss-detail, .v28-prestige-detail), und die Rahmen sind
    innen transparent - sie tragen damit beide Fassungen. */
 html[data-v28-rework="2"] .campaign-node-detail .node-detail-desc{
-  box-sizing:border-box;
-  border-style:solid;
-  border-color:transparent;
-  border-width:13px 21px;
-  border-image-source:var(--wd-card);
-  border-image-slice:72 120 72 120;
-  border-image-width:13px 21px;
-  border-image-repeat:stretch;
-  border-radius:0;
   box-shadow:none;
-  padding:2px 4px 4px;
 }
 html[data-v28-rework="2"] .campaign-node-detail .node-detail-row{
   box-sizing:border-box;

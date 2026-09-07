@@ -1313,7 +1313,7 @@
     /* V24.0: Button bewusst tiefer im normalen Dokumentfluss, damit Mobile-Browser-Chrome ihn nicht anschneidet. */
     body.playing .game-menu-btn{margin-top:5px}
     body.playing .matchbar{align-items:flex-start;min-height:38px}
-    @media(max-width:540px){.prestige-shop-list{grid-template-columns:1fr}.prestige-shop-head{grid-template-columns:1fr}.campaign-node-map{gap:14px 5px;padding:15px 5px}.campaign-node{width:min(58px,100%);font-size:15px}}
+    @media(max-width:540px){.prestige-shop-list{grid-template-columns:1fr}.prestige-shop-head{grid-template-columns:1fr}.campaign-node-map{}.campaign-node{font-size:15px}}
 
     /* V24.1 – Mobile Scroll + kompakte Kampf-Fähigkeiten
        Auf Mobile-Chrome scrollt jetzt das Dokument selbst. Body als eigener
@@ -4814,8 +4814,6 @@ html[data-v28-rework="2"] .campaign-hub .campaign-controls label{
   font-size:10px}
 html[data-v28-rework="2"] .campaign-hub .campaign-mastery-strip{
   display:grid;
-  grid-template-columns:minmax(0,1fr) minmax(150px,.72fr);
-  align-items:stretch;
   gap:9px;
   margin:0 0 10px}
 html[data-v28-rework="2"] .campaign-hub .campaign-mastery-xp{
@@ -4848,16 +4846,7 @@ html[data-v28-rework="2"] .campaign-hub .campaign-start-row .good{
   box-shadow:none;
   text-shadow:0 1px 3px rgba(2,16,38,.66)}
 html[data-v28-rework="2"] .campaign-hub .campaign-node-map{
-  grid-template-columns:repeat(5,minmax(46px,1fr));
-  gap:16px 7px;
-  margin-top:10px;
-  padding:18px 10px 20px;
-  border:1px solid rgba(214,165,60,.72);
-  border-radius:21px;
-  background:
-    radial-gradient(circle at 50% 0%,rgba(39,169,255,.17),transparent 48%),
-    linear-gradient(155deg,#0b3568,#051936);
-  box-shadow:inset 0 0 0 2px rgba(255,255,255,.035),0 9px 24px rgba(8,40,76,.13)}
+  margin-top:10px}
 
 html[data-v28-rework="2"] .campaign-hub .campaign-node.done{
   border-color:#6ccc91;
@@ -4893,8 +4882,6 @@ html[data-v28-rework="2"] .campaign-node-detail .node-detail-head{
   border-bottom:1px solid rgba(171,124,38,.20)}
 html[data-v28-rework="2"] .campaign-node-detail .node-detail-desc{
   margin:0 0 9px;
-  padding:10px 11px;
-  border-radius:11px;
   color:#56697e;
   background:rgba(255,255,255,.55)}
 html[data-v28-rework="2"] .campaign-node-detail .node-detail-row{
@@ -5262,7 +5249,6 @@ html[data-v28-rework="2"] body.playing .campaign-task-head{
   html[data-v28-rework="2"] .campaign-hub .campaign-mastery-xp{
     padding-inline:22px!important}
   html[data-v28-rework="2"] .campaign-node-detail.v28-boss-detail .node-detail-head{
-    min-height:82px;
     border-width:19px 27px;
     border-image-width:19px 27px}
   html[data-v28-rework="2"] .second-ability-card{
@@ -5449,8 +5435,7 @@ html[data-v28-rework="2"] .campaign-hub .campaign-top .menu-info-card:nth-child(
   font-size:12px;
   overflow-wrap:anywhere}
 
-html[data-v28-rework="2"] .campaign-hub .campaign-node-map{
-  padding:17px 9px 19px}
+html[data-v28-rework="2"] .campaign-hub .campaign-node-map{}
 html[data-v28-rework="2"] .campaign-hub .campaign-node.current:not(.boss){
   border-color:transparent;
   background:transparent;
@@ -5603,9 +5588,7 @@ html[data-v28-rework="2"] #masteryModal .mastery-node.owned .mastery-node-plaque
   html[data-v28-rework="2"] #mainMenu #menuChangelogBtn .menu-icon{
     width:39px;
     height:39px}
-  html[data-v28-rework="2"] .campaign-node-detail.v28-boss-detail .node-detail-head{
-    min-height:112px;
-    padding:27px 30px}
+  html[data-v28-rework="2"] .campaign-node-detail.v28-boss-detail .node-detail-head{}
   html[data-v28-rework="2"] .campaign-node-detail.v28-boss-detail .node-detail-title{
     font-size:17px}
   html[data-v28-rework="2"] #setup .setup-player{
@@ -5738,15 +5721,13 @@ html[data-v28-rework="2"] .campaign-hub .campaign-controls .dd-select-trigger>sp
   letter-spacing:-.025em}/* ---------- Campaign map and framed nodes ---------- */
 html[data-v28-rework="2"] .campaign-hub .campaign-node-map{
   box-sizing:border-box;
-  padding:20px 11px 22px;
   border:21px solid transparent;
   border-image-source:var(--p3-navy-tile);
   border-image-slice:150 fill;
   border-image-width:21px;
   border-image-repeat:stretch;
   border-radius:0;
-  background:transparent;
-  box-shadow:0 10px 24px rgba(6,30,65,.16)}
+  background:transparent}
 html[data-v28-rework="2"] .campaign-hub .campaign-node{
   position:relative;
   isolation:isolate;
@@ -6051,10 +6032,8 @@ html[data-v28-rework="2"] #profilesScreen .profile-name-edit{
     padding:16px 27px!important;
     font-size:14px}
   html[data-v28-rework="2"] .campaign-hub .campaign-node-map{
-    padding:19px 8px 21px;
     border-width:18px;
-    border-image-width:18px;
-    gap:18px 6px}
+    border-image-width:18px}
   html[data-v28-rework="2"] .campaign-hub .campaign-node{
     width:min(58px,100%)}
   html[data-v28-rework="2"] .campaign-node-detail.v28-boss-detail .node-detail-head{
@@ -7908,8 +7887,7 @@ html[data-v28-rework="2"] .campaign-hub .campaign-node.boss>.p8-boss-selected-gl
   transform:none;
   will-change:auto}
 
-html[data-v28-rework="2"] .campaign-hub .campaign-node-map{
-  overflow:visible}
+html[data-v28-rework="2"] .campaign-hub .campaign-node-map{}
 
 @keyframes nodePulse{
   0%,50%,100%{box-shadow:0 0 0 3px rgba(255,200,87,.12),0 0 14px rgba(255,200,87,.16)}
@@ -10286,17 +10264,7 @@ html[data-v28-rework="2"] .campaign-hub .campaign-node-map .campaign-node{
    dunkel auf (.v28-boss-detail, .v28-prestige-detail), und die Rahmen sind
    innen transparent - sie tragen damit beide Fassungen. */
 html[data-v28-rework="2"] .campaign-node-detail .node-detail-desc{
-  box-sizing:border-box;
-  border-style:solid;
-  border-color:transparent;
-  border-width:13px 21px;
-  border-image-source:var(--wd-card);
-  border-image-slice:72 120 72 120;
-  border-image-width:13px 21px;
-  border-image-repeat:stretch;
-  border-radius:0;
   box-shadow:none;
-  padding:2px 4px 4px;
 }
 html[data-v28-rework="2"] .campaign-node-detail .node-detail-row{
   box-sizing:border-box;
