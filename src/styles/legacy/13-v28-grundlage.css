@@ -1456,11 +1456,7 @@ html[data-v28-rework="2"] body.playing .game-menu-btn{
   html[data-v28-rework="2"] #mainMenu #menuRulesBtn,
   html[data-v28-rework="2"] #mainMenu #menuChangelogBtn{}
   html[data-v28-rework="2"] .campaign-mode-choice{min-height:90px;padding:13px 24px}
-  html[data-v28-rework="2"] .second-ability-card{
-    grid-template-columns:44px 34px minmax(0,1fr);
-    padding:15px 12px 13px 18px;
-    border-width:20px 24px 20px 36px;
-    border-image-width:20px 24px 20px 36px}
+  html[data-v28-rework="2"] .second-ability-card{}
   .dd-ability-icon{width:44px;height:44px}
   .dd-select-panel{border-width:40px 18px 30px;border-image-width:40px 18px 30px}
   .dd-select-head{margin-top:-19px}

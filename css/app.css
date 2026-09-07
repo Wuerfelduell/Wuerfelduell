@@ -4569,11 +4569,7 @@ html[data-v28-rework="2"] body.playing .game-menu-btn{
   html[data-v28-rework="2"] #mainMenu #menuRulesBtn,
   html[data-v28-rework="2"] #mainMenu #menuChangelogBtn{}
   html[data-v28-rework="2"] .campaign-mode-choice{min-height:90px;padding:13px 24px}
-  html[data-v28-rework="2"] .second-ability-card{
-    grid-template-columns:44px 34px minmax(0,1fr);
-    padding:15px 12px 13px 18px;
-    border-width:20px 24px 20px 36px;
-    border-image-width:20px 24px 20px 36px}
+  html[data-v28-rework="2"] .second-ability-card{}
   .dd-ability-icon{width:44px;height:44px}
   .dd-select-panel{border-width:40px 18px 30px;border-image-width:40px 18px 30px}
   .dd-select-head{margin-top:-19px}
@@ -5226,7 +5222,6 @@ html[data-v28-rework="2"] body.playing .campaign-task-head{
     border-width:19px 27px;
     border-image-width:19px 27px}
   html[data-v28-rework="2"] .second-ability-card{
-    min-height:150px;
     grid-template-columns:52px 39px minmax(0,1fr) 34px;
     padding:5px 2px 5px 0;
     border-width:15px 22px 15px 34px;
@@ -5532,9 +5527,7 @@ html[data-v28-rework="2"] #masteryModal .mastery-node.owned .mastery-node-plaque
   html[data-v28-rework="2"] .dd-select-title{
     top:-29px;
     font-size:16px}
-  html[data-v28-rework="2"] .dd-select-close{
-    top:-61px;
-    right:-37px}
+  html[data-v28-rework="2"] .dd-select-close{}
   html[data-v28-rework="2"] #mainMenu .menu-actions button.menu-play .menu-icon,
   html[data-v28-rework="2"] #mainMenu .menu-actions button.menu-online .menu-icon,
   html[data-v28-rework="2"] #mainMenu .menu-actions button.menu-campaign .menu-icon,
@@ -6508,9 +6501,7 @@ html[data-v28-rework="2"] #setup .p4-setup-label-icon{
 @media(max-width:540px){
   html[data-v28-rework="2"] .dd-select-panel{
     max-height:calc(100dvh - 42px)}
-  html[data-v28-rework="2"] .dd-select-close{
-    top:-42px;
-    right:-3px}
+  html[data-v28-rework="2"] .dd-select-close{}
   html[data-v28-rework="2"] #prestigeShopScreen .prestige-item,
   html[data-v28-rework="2"] #prestigeShopScreen .prestige-item.owned,
   html[data-v28-rework="2"] #prestigeShopScreen .prestige-item.expensive{
@@ -7605,8 +7596,7 @@ html[data-v28-rework="2"] .campaign-hub .campaign-node.p6-farm-node>.node-xp-bad
   transform:translateX(-50%)}
 
 @media(max-width:540px){
-  html[data-v28-rework="2"] .second-ability-card>.dd-ability-icon{
-    left:-38px}
+  html[data-v28-rework="2"] .second-ability-card>.dd-ability-icon{}
   html[data-v28-rework="2"] body.playing #players .player.active::after{
     inset:-17px}
   html[data-v28-rework="2"] body.playing #players .player.v28-boss-player.active::after{
@@ -7614,8 +7604,7 @@ html[data-v28-rework="2"] .campaign-hub .campaign-node.p6-farm-node>.node-xp-bad
 }
 
 @media(max-width:390px){
-  html[data-v28-rework="2"] .second-ability-card>.dd-ability-icon{
-    left:-34px}
+  html[data-v28-rework="2"] .second-ability-card>.dd-ability-icon{}
   html[data-v28-rework="2"] .second-ability-card>.num{
     font-size:17px}
 }
