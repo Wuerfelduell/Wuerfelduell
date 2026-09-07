@@ -2455,8 +2455,6 @@ html[data-v28-rework="2"] #tutorialHubCancelBtn{
 
 @media(prefers-reduced-motion:reduce){
   html[data-v28-rework="2"] body.playing #players .player.active::after{
-    animation:none;
-    opacity:1;
     filter:drop-shadow(0 0 8px rgba(39,169,255,.30))}
 }
 
@@ -2984,8 +2982,7 @@ html[data-v28-rework="2"] .campaign-hub .campaign-node.p6-farm-node>.node-xp-bad
 
 @media(max-width:540px){
   html[data-v28-rework="2"] .second-ability-card>.dd-ability-icon{}
-  html[data-v28-rework="2"] body.playing #players .player.active::after{
-    inset:-17px}
+  html[data-v28-rework="2"] body.playing #players .player.active::after{}
   html[data-v28-rework="2"] body.playing #players .player.v28-boss-player.active::after{
     inset:-18px}
 }
