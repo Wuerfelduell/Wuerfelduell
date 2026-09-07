@@ -71,6 +71,19 @@ for datei in 00-bootstrap.sql "$(basename "$WURZEL"/supabase/migrations/*foundat
   echo "  eingespielt: $datei"
 done
 
+# Wer keine CLI hat, fuegt die Migration im SQL-Editor ein. Dabei passiert es,
+# dass jemand denselben Block ein zweites Mal einfuegt. Das darf nichts kaputt
+# machen und muss ohne Fehler durchlaufen, sonst bleibt die Datenbank halb
+# umgestellt zurueck.
+ablauf="$(basename "$WURZEL"/supabase/migrations/*idle_expiry.sql)"
+if psql_ postgres -f "$ORT/$ablauf" >/dev/null 2>&1; then
+  echo "  ok: die Ablauf-Migration laeuft auch ein zweites Mal durch"
+else
+  echo "  FEHLER: die Ablauf-Migration bricht beim zweiten Einspielen ab"
+  psql_ postgres -f "$ORT/$ablauf" 2>&1 | tail -4
+  fehler=1
+fi
+
 echo
 echo "== Zusicherungen: Raumablauf und State-Schreibweg =="
 ausgabe="$(psql_ postgres -f "$ORT/10-raum-ablauf.sql" 2>&1 | grep -E '^(ok|FEHLER):')"

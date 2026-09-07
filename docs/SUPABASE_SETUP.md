@@ -32,6 +32,24 @@ If the Edge Function is wanted for future server-side battle work, deploy it sep
 
 Without the CLI, run `supabase/manual/diceduel_backend_foundation_batch_1.sql` and then `supabase/manual/diceduel_backend_foundation_batch_2.sql` once in the SQL Editor.
 
+### Later migrations without the CLI
+
+Every file in `supabase/migrations/` after the foundation is a single
+self-contained transaction. Paste one whole file into the SQL Editor and run
+it, oldest first. No batching is needed, and running the same file twice is
+harmless — `scripts/qa/supabase-raumtest.sh` checks exactly that, because a
+double paste is easy to do by accident.
+
+Currently pending on a project that only has the foundation:
+
+| File | What it does |
+|---|---|
+| `20260903120000_dd_room_idle_expiry.sql` | Rooms expire on idle (45 min in the lobby, 2 h in a running match) instead of after a fixed 6 hours, and the match state stops being written twice. |
+
+To check whether it is already applied, call `dd_touch_room` from the browser
+console or with `curl`. A `permission denied` reply means it is there; `Could
+not find the function` means it is not.
+
 ## 2. Configure Auth
 
 In Supabase Auth settings:
