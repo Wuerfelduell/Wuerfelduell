@@ -6676,9 +6676,7 @@ html[data-v28-rework="2"] .dd-select-close{
   right:12px}
 
 @media(max-width:540px){
-  html[data-v28-rework="2"] #quitConfirmBtn{
-    min-height:72px;
-    padding:16px 22px}
+  html[data-v28-rework="2"] #quitConfirmBtn{}
   html[data-v28-rework="2"] .dd-select-close{
     top:-40px;
     right:10px}
