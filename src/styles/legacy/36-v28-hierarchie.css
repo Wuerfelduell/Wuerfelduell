@@ -146,25 +146,11 @@ html[data-v28-rework="2"] #achievementToastLayer .achievement-toast{
    Tabelle EINEN Rahmen, die Zeilen nur eine Trennlinie. Die Kopfzeile
    bleibt dunkel - ihre Zellen tragen helle Schrift. */
 html[data-v28-rework="2"] #statsScreen #abilityStatsList{
-  box-sizing:border-box;
-  border-style:solid;
-  border-color:transparent;
-  border-width:13px 21px;
-  border-image-source:var(--wd-card);
-  border-image-slice:72 120 72 120;
-  border-image-width:13px 21px;
-  border-image-repeat:stretch;
-  border-radius:0;
   background:var(--wd-hell)!important;
-  padding:0;
 }
 html[data-v28-rework="2"] #statsScreen .ability-stat-row{
-  border:0;
-  border-bottom:1px solid rgba(170,124,40,.20);
   border-image:none;
   border-radius:0;
-  background:transparent;
-  padding:7px 8px;
   box-shadow:none;
 }
 html[data-v28-rework="2"] #statsScreen .ability-stat-row:last-child{

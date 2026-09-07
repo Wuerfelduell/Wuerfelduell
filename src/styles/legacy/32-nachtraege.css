@@ -303,7 +303,6 @@ html[data-v28-rework="2"] #onlineScreen .online-connection{
    Textzeile hinein, deshalb ist das Padding oben deutlich größer. */
 html[data-v28-rework="2"] #statsScreen .stats-kpi{
   min-height:84px;
-  padding:20px 20px 12px;
 }
 
 html[data-v28-rework="2"] #settingsScreen .menu-info-card{
