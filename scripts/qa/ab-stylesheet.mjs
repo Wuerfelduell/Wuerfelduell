@@ -46,9 +46,40 @@ const FELDER = ["display","position","width","height","margin","padding","border
   "align-items","justify-content","min-height","min-width","max-width","aspect-ratio","inset","animation-name",
   "visibility","pointer-events","outline-color","outline-width"];
 
+/* Saatgut: ein durchgespieltes Profil, bevor die Seite zum ersten Mal laedt.
+   ------------------------------------------------------------------
+   Ohne Fortschritt erreicht dieser Abzug mehrere Zustaende nie, und genau
+   dort ist in V28.11.9 ein Fehler durchgerutscht: die Detailkarte eines
+   Bosses. Sie erscheint erst, wenn die Welt durchgespielt und der letzte
+   Knoten anwaehlbar ist, und war monatelang pergamentfarben statt rot,
+   ohne dass es hier auffiel.
+
+   Der Spielstand ist bewusst knapp gehalten. js/04-save.js normalisiert
+   ihn beim Laden und ergaenzt alle fehlenden Felder, Wuerfel-Freischaltungen
+   inklusive. Er traegt deshalb nur, was Zustaende freischaltet:
+   die 15 Encounter der ersten Solo-Welt, ein paar Achievements und
+   genug Trophaeen, damit der Trophy Shop kaufbare Eintraege zeigt. */
+const HAUS_ENCOUNTER = ["first_blood","push_it","hit_hard","blood_table","house_always_wins","snake_pit",
+  "mirror_chamber","double_trouble_campaign","blood_bank","black_table","vampires_cut","no_safety_net",
+  "chaos_room","three_of_a_kind","royal_flush"];
+const SAATGUT = {
+  schemaVersion: 8, settings: { animation: "fast", botSpeed: "fast" },
+  global: { completedRounds: 42 },
+  profiles: [{
+    id: "qa-durchgespielt", name: "Durchgespielt", tagNumber: "0001",
+    achievements: { grande: 1, not_today: 1, blood_money: 1 },
+    stats: { rounds: 42, wins: 27, damageDealt: 913, damageTaken: 704 },
+    campaign: { completedEncounters: HAUS_ENCOUNTER, trophies: 40 }
+  }],
+  duoCampaigns: {}, trioCampaigns: {}
+};
+
 const browser = await chromium.launch();
 const seite = await browser.newPage({ viewport: { width: BREITE, height: 900 } });
 seite.on("pageerror", () => {});
+await seite.addInitScript(([schluessel, stand]) => {
+  try { localStorage.setItem(schluessel, JSON.stringify(stand)); } catch (_e) {}
+}, ["wuerfelduell_save_v1", SAATGUT]);
 await seite.route("**/*", r => r.request().url().startsWith(new URL(ADRESSE).origin) ? r.continue() : r.fulfill({ status: 200, contentType: "application/javascript", body: "" }));
 await seite.goto(ADRESSE, { waitUntil: "load" });
 await seite.waitForTimeout(1500);
@@ -99,8 +130,18 @@ await messe("hauptmenue");
 
 // 2) Profile anlegen - drei, damit die Liste scrollen muss
 if (await klick("#menuProfilesBtn", 700)) {
-  for (const name of ["Seb", "Jürgen", "Alexandra"]) { await setze("#newProfileName", name); await klick("#createProfileBtn", 500); }
+  // Seit V28.11.21 liegt die Erstellung hinter einem Aufklappknopf. Der Klick
+  // darauf schadet nicht, wenn es ihn nicht gibt, und ohne ihn bleiben die
+  // Felder verborgen - dann haette dieser Abzug still ohne Profile gemessen.
+  for (const name of ["Seb", "Jürgen", "Alexandra"]) {
+    await klick("#profileCreateToggle", 250);
+    await setze("#newProfileName", name);
+    await klick("#createProfileBtn", 500);
+  }
+  const angelegt = await seite.evaluate(() => document.querySelectorAll("#profileList .profile-card").length);
+  if (angelegt < 3) protokoll.push(`  ACHTUNG: nur ${angelegt} Profilkarten statt der erwarteten vier - die Erstellung greift nicht mehr`);
   await messe("profile-drei");
+  if (await klick("#profileList .profile-card .profile-card-top", 600)) await messe("profil-aufgeklappt");
   const roll = await seite.evaluate(() => { const s = document.getElementById("profilesScreen"); const c = getComputedStyle(s); return { overflowY: c.overflowY, inhalt: s.scrollHeight, sicht: s.clientHeight, seite: document.documentElement.scrollHeight, fenster: innerHeight }; });
   protokoll.push(`  profilesScreen: overflow-y ${roll.overflowY}, Inhalt ${roll.inhalt} / Sicht ${roll.sicht}, Seite ${roll.seite}/${roll.fenster}`);
   await zurueck();
@@ -119,6 +160,20 @@ if (await klick("#menuCampaignBtn", 500)) {
     await seite.waitForTimeout(600);
     await messe("kampagne-karte");
     if (await klick(".campaign-hub .campaign-node:not([disabled])", 700)) await messe("kampagne-knoten");
+    /* Der Bossknoten der durchgespielten Welt. Ohne das Saatgut oben ist er
+       gesperrt und diese Station faellt aus - dann fehlt genau der Zustand,
+       der die Detailkarte in Bossfarbe zeigt. */
+    const bossOffen = await seite.evaluate(() => {
+      const knoten = [...document.querySelectorAll(".campaign-hub .campaign-node")].filter(n => !n.disabled);
+      const boss = knoten.reverse().find(n => n.classList.contains("boss") || n.classList.contains("world-boss")) || knoten[0];
+      if (!boss) return false; boss.click(); return true;
+    });
+    await seite.waitForTimeout(700);
+    if (bossOffen) {
+      const ton = await seite.evaluate(() => document.querySelector(".campaign-node-detail")?.getAttribute("data-p4-detail-tone") || "");
+      protokoll.push(`  kampagne-boss: Detailton "${ton}"${ton === "boss" ? "" : " - ACHTUNG, kein Bossknoten getroffen"}`);
+      await messe("kampagne-boss");
+    }
     if (await klick(".campaign-hub .campaign-world-btn:not(.active):not([disabled])", 700)) await messe("kampagne-welt2");
   }
   await zurueck(); await zurueck();
