@@ -5,6 +5,7 @@
   if (!pack) return;
 
   Object.assign(pack.exact, {
+    "Die Achievementkarten sind bis an die Goldkante dunkelblau gefüllt; Profilzeilen, Aufklappflächen und Belohnungen verwenden vorhandene dünne Goldrahmenbilder": "Achievement cards are filled dark blue up to the gold edge; profile rows, expand controls and rewards use existing thin gold frame images",
     "Die Spielvorbereitung zeigt kompaktere Spielerfelder und eine dunkelblaue Fähigkeitszeile mit vollständigem Namen und Symbol": "Game setup shows more compact player fields and a dark blue ability row with the full name and icon",
     "Freie Wahl nutzt die Fähigkeitsauswahl der Kampagne; menschliche Spieler wählen vor dem Start bewusst eine Fähigkeit, Abbrechen behält die bisherige Auswahl": "Free Choice uses the campaign ability picker; human players explicitly select an ability before starting, and Cancel keeps the previous selection",
     "Die Achievementkarten sind kompakt: Titel, Bedingung und Belohnung stehen untereinander, die Profilliste klappt auf und zu": "Achievement cards are compact: title, condition and reward are stacked, and the profile list expands and collapses",

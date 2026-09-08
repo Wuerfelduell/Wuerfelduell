@@ -884,10 +884,12 @@ html[data-v28-rework="2"] #achievementsScreen .achievement-card.secret-achieveme
   border-width:13px 21px;
   border-image-source:var(--wd-card);
   border-image-slice:72 120 72 120;
-  border-image-width:13px 21px;
+  border-image-width:12.6px 21px;
   border-image-repeat:stretch;
-  border-radius:0;
-  background:var(--wd-navy) padding-box!important;
+  border-radius:4px;
+  /* Das transparente Rahmenbild liegt ueber der bis unter die Goldkante
+     reichenden Fuellung. padding-box liess hier die helle Seite durch. */
+  background:var(--wd-navy) border-box!important;
   color:#f7edda;
   box-shadow:none;
 }
@@ -936,7 +938,7 @@ html[data-v28-rework="2"] #achievementsScreen .achievement-reward{
   max-width:100%;
   min-height:34px;
   padding:6px 10px;
-  border-radius:8px;
+  border-radius:1px;
   color:#2c1904;
   line-height:1.25;
 }
@@ -960,8 +962,8 @@ html[data-v28-rework="2"] #achievementsScreen .achievement-owner-toggle{
   min-height:43px;
   margin-top:11px;
   padding:8px 11px;
-  border:1px solid rgba(226,183,92,.46);
-  border-radius:8px;
+  border:1px solid transparent;
+  border-radius:1px;
   background:rgba(8,39,79,.88);
   box-shadow:none;
   color:#eef4fb;
@@ -1026,9 +1028,8 @@ html[data-v28-rework="2"] #achievementsScreen .achievement-owner{
   min-width:0;
   min-height:42px;
   padding:7px 9px;
-  border:1px solid rgba(151,177,207,.3);
-  border-image:none;
-  border-radius:8px;
+  border:1px solid transparent;
+  border-radius:1px;
   background:rgba(7,28,59,.92);
   background-image:none;
   box-shadow:none;
@@ -1036,7 +1037,7 @@ html[data-v28-rework="2"] #achievementsScreen .achievement-owner{
   font-size:12px;
 }
 html[data-v28-rework="2"] #achievementsScreen .achievement-owner.done{
-  border-color:rgba(121,245,173,.58);
+  border-color:transparent;
   background:rgba(18,86,57,.88);
   color:#effff5;
 }
@@ -1074,11 +1075,31 @@ html[data-v28-rework="2"] #achievementsScreen .achievement-owner-mark{
 }
 html[data-v28-rework="2"] #achievementsScreen .achievement-owner-empty{
   padding:10px;
-  border:1px dashed rgba(181,201,224,.32);
-  border-radius:8px;
+  border:1px solid transparent;
+  border-radius:1px;
   color:#b9c9da;
   font-size:12px;
   text-align:center;
+}
+
+/* Alle kleinen Rahmen dieser Seite verwenden das transparente Goldbild.
+   40/4 und 96/9.6 haben denselben Massstab: unverzerrte Ecken, auch bei
+   mehrzeiligen Namen. Die Bildkante belegt das vorhandene Innenpolster;
+   die bisherige 1px-Randbox und damit das Layout bleiben erhalten. */
+html[data-v28-rework="2"] #achievementsScreen .achievement-owner,
+html[data-v28-rework="2"] #achievementsScreen .achievement-owner-toggle,
+html[data-v28-rework="2"] #achievementsScreen .achievement-reward,
+html[data-v28-rework="2"] #achievementsScreen .achievement-owner-empty{
+  border-style:solid;
+  border-width:1px;
+  border-color:transparent;
+  border-image-source:var(--wd-strip);
+  border-image-slice:40 96 40 96;
+  border-image-width:4px 9.6px;
+  border-image-repeat:stretch;
+  background-origin:border-box;
+  background-clip:border-box;
+  box-shadow:none;
 }
 
 /* Mastery purchase: fill the empty title plaque and turn XP into a real framed cost block. */
@@ -1301,7 +1322,8 @@ html[data-v28-rework="2"] .mastery-purchase-actions .mastery-purchase-buy{
   html[data-v28-rework="2"] #achievementsScreen .achievement-card.dd-achieved,
   html[data-v28-rework="2"] #achievementsScreen .achievement-card.secret-achievement{
     border-width:11px 16px;
-    border-image-width:11px 16px;
+    border-image-width:9.6px 16px;
+    border-radius:3px;
     padding:12px 13px 14px;
   }
 }
