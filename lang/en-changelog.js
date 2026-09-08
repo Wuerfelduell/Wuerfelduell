@@ -5,6 +5,9 @@
   if (!pack) return;
 
   Object.assign(pack.exact, {
+    "Der 3D-Würfelbecher ist entfallen: ein Prototyp, der nur im Testlabor lag und im Spiel nie zum Einsatz kam": "The 3D dice tray has been removed: a prototype that only existed in the test lab and was never used in the game itself",
+    "Dadurch lädt der Start knapp ein Megabyte weniger, weil three.js und cannon-es nicht mehr geholt werden; das Spiel startet auch ohne erreichbares CDN": "Startup now loads almost a megabyte less, because three.js and cannon-es are no longer fetched; the game also starts when the CDN is unreachable",
+    "Das Testlabor selbst bleibt vollständig erhalten": "The test lab itself remains fully intact",
     "Der CSS-Stapel ist von 25 auf 10 Dateien gebündelt; 226 nach exaktem Selektor und Medienkontext vollständig überdeckte Deklarationen sind entfernt, ohne Kaskade, Vorrangmarkierungen oder berechnete Stile zu verändern": "The CSS stack has been consolidated from 25 files into 10; 226 declarations fully overridden under the exact same selector and media context were removed without changing the cascade, priority markers, or computed styles",
     "Der vollständige Changelog ist jetzt auch auf Englisch verfügbar; eine eigene exakte Sprachtabelle übersetzt alle Einträge, ohne die deutsche Fassung zu verändern": "The full changelog is now also available in English; a dedicated exact-match language table translates every entry without changing the German version",
     "Die großen Versionssprünge, ohne jeden Mini-Hotfix.": "Major version jumps, without any intervening mini-hotfixes.",

@@ -1470,7 +1470,7 @@
 
     const target=ev.target;
     if(!(target instanceof HTMLElement)) return;
-    if(target.closest('#testLabWorkbench,#testLab3dDiceTray')) return;
+    if(target.closest('#testLabWorkbench')) return;
 
     ev.preventDefault();
     ev.stopImmediatePropagation();

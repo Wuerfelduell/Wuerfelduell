@@ -125,12 +125,10 @@
     "#testLabAbilityModal",
     "#abilityMasteryLabModal",
     "#testLabWorkbench",
-    "#testLab3dDiceTray",
     "#tutorialHubLabBtn",
     "[id^='testLab']",
     "[id^='abilityMasteryLab']",
-    ".test-lab-workbench",
-    ".test-lab-3d-tray"
+    ".test-lab-workbench"
   ].join(",");
   const TEST_SESSION_SURFACES=[
     "#game","#winnerBox","#nextRoundBox","#secondAbilityModal",

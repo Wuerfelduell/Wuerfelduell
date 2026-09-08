@@ -249,9 +249,6 @@
     around(root, "#abilityMasteryLabModal .aml-fusion-node,#abilityMasteryLabModal .aml-keystone-node").forEach(node => {
       syncInlineLock(node, true, "mastery-prototype", "p8-lock-prototype");
     });
-    around(root, "#testLab3dLock").forEach(button => {
-      syncInlineLock(button, true, "test-lock", "p8-lock-inline");
-    });
   }
 
   function cleanLockText(root){

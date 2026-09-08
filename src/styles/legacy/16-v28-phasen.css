@@ -2575,8 +2575,7 @@ html[data-v28-rework="2"] .p8-lock-inline{
   margin:-7px -3px -7px -7px;
   vertical-align:middle}
 html[data-v28-rework="2"] .campaign-hub .p8-lock-host,
-html[data-v28-rework="2"] #masteryModal .p8-lock-host,
-html[data-v28-rework="2"] #testLab3dLock.p8-lock-host{
+html[data-v28-rework="2"] #masteryModal .p8-lock-host{
   align-items:center}
 html[data-v28-rework="2"] .campaign-hub .campaign-value.p8-lock-host,
 html[data-v28-rework="2"] .campaign-hub .campaign-complete.p8-lock-host,
@@ -2653,10 +2652,6 @@ html[data-v28-rework="2"] #abilityMasteryLabModal :is(.aml-fusion-node,.aml-keys
   width:82px;
   height:82px;
   transform:translate(-50%,-50%)}
-html[data-v28-rework="2"] #testLab3dLock{
-  display:inline-flex;
-  justify-content:center;
-  gap:5px}
 
 /* ---------- Supplied 1536×1536 boss selection layer ---------- */
 html[data-v28-rework="2"] .campaign-hub .campaign-node.boss>.p8-boss-selected-glow{
