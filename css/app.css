@@ -10241,9 +10241,9 @@ html[data-v28-rework="2"] #mainMenu .menu-actions button.menu-tutorial .menu-ico
 html[data-v28-rework="2"] #mainMenu #menuOnlineBtn .menu-icon img,
 html[data-v28-rework="2"] #mainMenu #menuCampaignBtn .menu-icon img,
 html[data-v28-rework="2"] #mainMenu #menuTutorialBtn .menu-icon img{
-  width:44px!important;
-  height:44px!important;
-  margin:5px!important;
+  width:100%!important;
+  height:100%!important;
+  margin:0!important;
 }
 
 /* World tabs: active and idle share exactly one box and one gold frame. */
@@ -10364,9 +10364,9 @@ html[data-v28-rework="2"] .campaign-node-detail .node-detail-desc{
   html[data-v28-rework="2"] #mainMenu #menuOnlineBtn .menu-icon img,
   html[data-v28-rework="2"] #mainMenu #menuCampaignBtn .menu-icon img,
   html[data-v28-rework="2"] #mainMenu #menuTutorialBtn .menu-icon img{
-    width:42px!important;
-    height:42px!important;
-    margin:4px!important;
+    width:100%!important;
+    height:100%!important;
+    margin:0!important;
   }
 }
 
@@ -11447,4 +11447,55 @@ html[data-v28-rework="2"] body.playing .phase-live[data-boss-rush-legacy-phase]{
   html[data-v28-rework="2"] .campaign-hub .campaign-world-banner-art{
     transition:none;
   }
+}
+
+/* Main menu: compact primary actions and roomier square utility tiles. */
+html[data-v28-rework="2"] #mainMenu .menu-actions{
+  align-content:start;
+  row-gap:5px;
+  column-gap:3px;
+  margin-inline:-5px;
+}
+html[data-v28-rework="2"] #mainMenu .menu-actions button.menu-play,
+html[data-v28-rework="2"] #mainMenu .menu-actions button.menu-online,
+html[data-v28-rework="2"] #mainMenu .menu-actions button.menu-campaign,
+html[data-v28-rework="2"] #mainMenu .menu-actions button.menu-tutorial{
+  margin-inline:5px;
+}
+html[data-v28-rework="2"] #mainMenu #menuPlayBtn .menu-icon,
+html[data-v28-rework="2"] #mainMenu #menuOnlineBtn .menu-icon,
+html[data-v28-rework="2"] #mainMenu #menuCampaignBtn .menu-icon,
+html[data-v28-rework="2"] #mainMenu #menuTutorialBtn .menu-icon{
+  left:clamp(50px,15%,104px);
+  top:50%;
+  width:clamp(34px,10vw,40px);
+  height:clamp(34px,10vw,40px);
+  transform:translateY(-50%);
+}
+html[data-v28-rework="2"] #mainMenu #menuPlayBtn .menu-icon img,
+html[data-v28-rework="2"] #mainMenu #menuOnlineBtn .menu-icon img,
+html[data-v28-rework="2"] #mainMenu #menuCampaignBtn .menu-icon img,
+html[data-v28-rework="2"] #mainMenu #menuTutorialBtn .menu-icon img{
+  display:block;
+  width:100%;
+  height:100%;
+  margin:0;
+  object-fit:contain;
+}
+html[data-v28-rework="2"] #mainMenu #menuCampaignBtn .menu-icon img,
+html[data-v28-rework="2"] #mainMenu #menuTutorialBtn .menu-icon img{
+  transform:translateY(-2px);
+}
+html[data-v28-rework="2"] #mainMenu .menu-actions button.menu-profile,
+html[data-v28-rework="2"] #mainMenu .menu-actions button.menu-account,
+html[data-v28-rework="2"] #mainMenu .menu-actions button.menu-achievements,
+html[data-v28-rework="2"] #mainMenu .menu-actions button.menu-prestige,
+html[data-v28-rework="2"] #mainMenu #menuStatsBtn,
+html[data-v28-rework="2"] #mainMenu #menuSettingsBtn,
+html[data-v28-rework="2"] #mainMenu #menuRulesBtn,
+html[data-v28-rework="2"] #mainMenu #menuChangelogBtn{
+  min-width:0;
+  min-height:0;
+  aspect-ratio:1;
+  margin-block-start:2px;
 }
