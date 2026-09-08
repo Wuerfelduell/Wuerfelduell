@@ -11668,7 +11668,13 @@ html[data-v28-rework="2"] #profilesScreen .profile-card-top{
   min-width:0;
   min-height:118px;
   margin:0;
-  padding:22px 20px;
+  /* Der Kopf traegt navy-button-horizontal als gedehnten Hintergrund, kein
+     9-Slice. Die gemalten Zierspitzen oben und unten in der Mitte wachsen
+     daher mit der Kopfhoehe. Bei einem zweizeiligen Namen stiess die erste
+     Namenszeile an die obere Spitze und die untere Statistikzeile an die
+     untere. 34px halten beide frei; gemessen mit "Maximiliane Donnerbold"
+     bei 320, 360, 390 und 412 px. */
+  padding:34px 20px;
   border:0;
   border-radius:0;
   color:#fff3d1;
@@ -11889,7 +11895,8 @@ html[data-v28-rework="2"] #profilesScreen .profile-delete{
   }
   html[data-v28-rework="2"] #profilesScreen .profile-card-top{
     min-height:116px;
-    padding:21px 14px;
+    /* siehe oben: die gemalten Zierspitzen brauchen auch schmal ihre Luft */
+    padding:32px 14px;
   }
   html[data-v28-rework="2"] #profilesScreen .profile-head-copy{
     gap-inline:6px;
