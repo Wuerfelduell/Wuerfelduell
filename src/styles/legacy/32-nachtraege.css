@@ -282,7 +282,6 @@ body:not(.test-lab-active) .die.locked::after{
      gestrichelte Kontur ist dort die Aussage.
    ============================================================ */
 
-html[data-v28-rework="2"] #statsScreen .stats-kpi,
 html[data-v28-rework="2"] #settingsScreen .menu-info-card,
 html[data-v28-rework="2"] #accountScreen .cloud-card,
 html[data-v28-rework="2"] #accountScreen .cloud-status-card,

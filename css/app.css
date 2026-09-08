@@ -9619,7 +9619,6 @@ body:not(.test-lab-active) .die.locked::after{
      gestrichelte Kontur ist dort die Aussage.
    ============================================================ */
 
-html[data-v28-rework="2"] #statsScreen .stats-kpi,
 html[data-v28-rework="2"] #settingsScreen .menu-info-card,
 html[data-v28-rework="2"] #accountScreen .cloud-card,
 html[data-v28-rework="2"] #accountScreen .cloud-status-card,
@@ -10443,31 +10442,41 @@ html[data-v28-rework="2"] #mainMenu #menuOnlineBtn .online-beta-badge{
   transform:translateY(-50%);
 }
 
-/* Statistics: strong section plaques and one readable grid per profile. */
+/* Statistics: compact framed content and collapsible profile details. */
+html[data-v28-rework="2"] #statsScreen.screen-card{
+  padding-left:6px;
+  padding-right:6px;
+}
 html[data-v28-rework="2"] #statsScreen .screen-subtitle{
   color:#40556d;
 }
 html[data-v28-rework="2"] #statsScreen .stats-grid{
-  gap:9px;
+  gap:6px;
 }
 html[data-v28-rework="2"] #statsScreen .stats-kpi{
   border-style:solid;
   border-color:transparent;
-  border-width:11px 17px;
+  border-width:10px 12px;
   border-image-source:var(--v2893-ivory-card)!important;
-  border-image-slice:76 168 76 168 fill;
-  border-image-width:11px 17px!important;
+  border-image-slice:76 168 76 168;
+  border-image-width:10px 12px!important;
   border-image-repeat:stretch;
-  background:transparent!important;
-  padding:8px 7px 7px;
+  background:var(--wd-hell) padding-box!important;
+  box-shadow:none;
+  padding:6px 5px;
 }
 html[data-v28-rework="2"] #statsScreen .stats-kpi-label{
   color:#76521b;
   font-size:9px;
 }
 html[data-v28-rework="2"] #statsScreen .stats-kpi-value{
+  overflow:visible;
   color:#102f55;
   font-family:Georgia,"Times New Roman",serif;
+  line-height:1.05;
+  overflow-wrap:anywhere;
+  text-overflow:clip;
+  white-space:normal;
 }
 html[data-v28-rework="2"] #statsScreen .stats-section-title{
   box-sizing:border-box;
@@ -10500,31 +10509,70 @@ html[data-v28-rework="2"] #statsScreen #profileStatsList{
 html[data-v28-rework="2"] #statsScreen .profile-stats-card{
   box-sizing:border-box;
   margin:0;
-  padding:8px 8px 10px;
+  padding:4px 5px 7px;
   border-style:solid;
   border-color:transparent;
-  border-width:15px 21px;
-  border-image-source:var(--v2893-ivory-card);
-  border-image-slice:76 168 76 168 fill;
-  border-image-width:15px 21px;
+  border-width:12px 14px;
+  border-image-source:var(--wd-card);
+  border-image-slice:72 120 72 120;
+  border-image-width:12px 14px;
   border-image-repeat:stretch;
   border-radius:0;
-  background:transparent;
-  box-shadow:0 7px 18px rgba(20,50,82,.10);
+  background:var(--wd-hell) padding-box;
+  box-shadow:none;
   color:#102f55;
 }
 html[data-v28-rework="2"] #statsScreen .profile-stats-head{
+  appearance:none;
+  width:100%;
   display:flex;
   align-items:center;
   justify-content:space-between;
-  min-height:34px;
+  gap:8px;
+  min-height:44px;
   margin:0 0 7px;
-  padding:0 3px 7px;
+  padding:0 4px 7px;
+  border:0;
   border-bottom:1px solid rgba(173,126,37,.28);
+  border-radius:0;
+  background:transparent;
+  box-shadow:none;
+  color:#102f55;
+  text-align:left;
+  cursor:pointer;
+}
+html[data-v28-rework="2"] #statsScreen .profile-stats-head:hover,
+html[data-v28-rework="2"] #statsScreen .profile-stats-head:active{
+  transform:none;
+  filter:none;
+  background:rgba(215,173,82,.08);
+  box-shadow:none;
+}
+html[data-v28-rework="2"] #statsScreen .profile-stats-head:focus-visible{
+  outline:2px solid #a87a29;
+  outline-offset:2px;
 }
 html[data-v28-rework="2"] #statsScreen .profile-stats-name{
+  min-width:0;
   color:#102f55;
   font:800 17px/1.1 Georgia,"Times New Roman",serif;
+  overflow-wrap:anywhere;
+}
+html[data-v28-rework="2"] #statsScreen .profile-stats-chevron{
+  box-sizing:border-box;
+  width:13px;
+  height:13px;
+  flex:0 0 13px;
+  margin:0 5px 5px 0;
+  border-right:2px solid #9a6c22;
+  border-bottom:2px solid #9a6c22;
+  transform:rotate(45deg);
+  transition:transform .16s ease,margin .16s ease;
+}
+html[data-v28-rework="2"] #statsScreen .profile-stats-head[aria-expanded="true"] .profile-stats-chevron{
+  margin-top:7px;
+  margin-bottom:0;
+  transform:rotate(225deg);
 }
 html[data-v28-rework="2"] #statsScreen .battle-tag{
   margin-left:5px;
@@ -10539,7 +10587,15 @@ html[data-v28-rework="2"] #statsScreen .profile-stat-grid{
   gap:6px;
 }
 html[data-v28-rework="2"] #statsScreen .profile-stat-overview{
-  margin-bottom:6px;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  margin:0;
+}
+html[data-v28-rework="2"] #statsScreen .profile-stat-details[hidden]{
+  display:none;
+}
+html[data-v28-rework="2"] #statsScreen .profile-stat-details:not([hidden]){
+  display:block;
+  margin-top:6px;
 }
 html[data-v28-rework="2"] #statsScreen .profile-stat-item{
   box-sizing:border-box;
@@ -10557,9 +10613,16 @@ html[data-v28-rework="2"] #statsScreen .profile-stat-item{
   box-shadow:inset 0 1px 0 rgba(255,255,255,.8);
 }
 html[data-v28-rework="2"] #statsScreen .profile-stat-overview .profile-stat-item{
+  grid-template-columns:20px minmax(0,1fr);
+  gap:4px;
+  padding:5px 4px;
   background:linear-gradient(145deg,rgba(10,54,99,.94),rgba(3,29,63,.96));
   border-color:rgba(224,179,80,.52);
   color:#fff0c7;
+}
+html[data-v28-rework="2"] #statsScreen .profile-stat-overview .profile-stat-item>.dd-inline-icon{
+  width:19px;
+  height:19px;
 }
 html[data-v28-rework="2"] #statsScreen .profile-stat-item>.dd-inline-icon{
   width:23px;
@@ -10593,6 +10656,7 @@ html[data-v28-rework="2"] #statsScreen .profile-stat-copy b{
 }
 html[data-v28-rework="2"] #statsScreen .profile-stat-overview small{
   color:#b9cbe0;
+  letter-spacing:0;
 }
 html[data-v28-rework="2"] #statsScreen .profile-stat-overview b{
   color:#fff1c6;
@@ -10600,27 +10664,28 @@ html[data-v28-rework="2"] #statsScreen .profile-stat-overview b{
 html[data-v28-rework="2"] #statsScreen #abilityStatsList{
   box-sizing:border-box;
   overflow:hidden;
-  padding:8px 8px 10px;
+  padding:4px 2px 6px;
   border-style:solid;
   border-color:transparent;
-  border-width:15px 21px;
-  border-image-source:var(--v2893-ivory-card);
-  border-image-slice:76 168 76 168 fill;
-  border-image-width:15px 21px;
+  border-width:12px 14px;
+  border-image-source:var(--wd-card);
+  border-image-slice:72 120 72 120;
+  border-image-width:12px 14px;
   border-image-repeat:stretch;
   border-radius:0;
-  background:transparent!important;
-  box-shadow:0 7px 18px rgba(20,50,82,.10);
+  background:var(--wd-hell) padding-box!important;
+  box-shadow:none;
 }
 html[data-v28-rework="2"] #statsScreen .ability-stat-row{
-  grid-template-columns:minmax(0,1.72fr) repeat(4,minmax(34px,.55fr));
-  gap:5px;
+  grid-template-columns:minmax(88px,1fr) 36px 25px 27px 37px;
+  gap:1px;
   min-height:36px;
-  padding:7px 6px;
+  padding:6px 0;
   border:0;
   border-bottom:1px solid rgba(165,121,38,.19);
   background:transparent;
   color:#172d46;
+  font-variant-numeric:tabular-nums;
 }
 html[data-v28-rework="2"] #statsScreen .ability-stat-row.header{
   top:0;
@@ -10634,7 +10699,8 @@ html[data-v28-rework="2"] #statsScreen .ability-stat-row.header span{
   padding:0;
   background:transparent;
   color:#fff0c8;
-  font-size:9px;
+  font-size:8.25px;
+  letter-spacing:-.02em;
   text-align:center;
 }
 html[data-v28-rework="2"] #statsScreen .ability-stat-row.header span:first-child{
@@ -10645,10 +10711,16 @@ html[data-v28-rework="2"] #statsScreen .ability-stat-row:not(.header) span{
   text-align:center;
 }
 html[data-v28-rework="2"] #statsScreen .ability-stat-row:not(.header) .ability-stat-name{
-  overflow:hidden;
+  overflow:visible;
   color:#102f55;
+  font-size:9px;
+  line-height:1.15;
+  overflow-wrap:anywhere;
   text-align:left;
-  text-overflow:ellipsis;
+  text-overflow:clip;
+  white-space:normal;
+}
+html[data-v28-rework="2"] #statsScreen .ability-stat-row:not(.header) span:not(.ability-stat-name){
   white-space:nowrap;
 }
 
@@ -10938,6 +11010,22 @@ html[data-v28-rework="2"] .mastery-purchase-actions .mastery-purchase-buy{
   html[data-v28-rework="2"] #statsScreen .profile-stat-item>.dd-inline-icon{
     width:20px;
     height:20px;
+  }
+  html[data-v28-rework="2"] #statsScreen .profile-stat-overview .profile-stat-item{
+    grid-template-columns:14px minmax(0,1fr);
+    gap:2px;
+    padding:4px 2px;
+  }
+  html[data-v28-rework="2"] #statsScreen .profile-stat-overview .profile-stat-item>.dd-inline-icon{
+    width:14px;
+    height:14px;
+  }
+  html[data-v28-rework="2"] #statsScreen .profile-stat-overview .profile-stat-copy small{
+    font-size:7.5px;
+    letter-spacing:0;
+  }
+  html[data-v28-rework="2"] #statsScreen .profile-stat-overview .profile-stat-copy b{
+    font-size:12px;
   }
 }
 

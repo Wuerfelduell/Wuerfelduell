@@ -241,28 +241,44 @@
       <div class="stats-kpi"><div class="stats-kpi-label">Best Winrate ≥3</div><div class="stats-kpi-value">${bestRate?`${escapeHtml(ABILITIES[bestRate.id].name)} ${Math.round(bestRate.rate*100)}%`:"–"}</div></div>`;
 
     const statCell=(icon,label,value)=>`<span class="profile-stat-item">${uiIcon(icon)}<span class="profile-stat-copy"><small>${escapeHtml(tFn(label))}</small><b>${escapeHtml(String(value))}</b></span></span>`;
-    profileStatsList.innerHTML=profiles.length?profiles.map(p=>{
+    profileStatsList.innerHTML=profiles.length?profiles.map((p,profileIndex)=>{
       const wr=p.stats.rounds?Math.round(p.stats.wins/p.stats.rounds*100):0;
+      const detailId=`profile-stats-detail-${profileIndex}`;
       return `<div class="profile-stats-card">
-        <div class="profile-stats-head"><strong class="profile-stats-name">${escapeHtml(p.name)} <span class="battle-tag">#${escapeHtml(p.tagNumber)}</span></strong></div>
+        <button type="button" class="profile-stats-head" data-profile-stats-toggle aria-expanded="false" aria-controls="${detailId}" aria-label="${escapeHtml(`${p.name} #${p.tagNumber} · ${tFn("Details")}`)}" title="${escapeHtml(tFn("Details"))}">
+          <strong class="profile-stats-name">${escapeHtml(p.name)} <span class="battle-tag">#${escapeHtml(p.tagNumber)}</span></strong>
+          <span class="profile-stats-chevron" aria-hidden="true"></span>
+        </button>
         <div class="profile-stat-overview">
           ${statCell("stats/dice.svg","Runden",p.stats.rounds)}
           ${statCell("stats/crown.svg","Siege",p.stats.wins)}
           ${statCell("stats/mastery.svg","Winrate",`${wr}%`)}
-          ${statCell("gameplay/trophy.svg","Achievements",Object.keys(p.achievements).length)}
         </div>
-        <div class="profile-stat-grid">
-          ${statCell("stats/sword-damage.svg","Schaden",p.stats.damageDealt)}
-          ${statCell("gameplay/attack.svg","Kills",p.stats.kills)}
-          ${statCell("stats/dice.svg","Sechsen",p.stats.sixes)}
-          ${statCell("gameplay/dice.svg","Einser",p.stats.ones)}
-          ${statCell("gameplay/heal.svg","Geheilt",p.stats.healed)}
-          ${statCell("stats/shield.svg","Kassiert",p.stats.damageTaken)}
-          ${statCell("gameplay/self-damage-blood.svg","Eigenschaden",p.stats.selfDamage)}
-          ${statCell("stats/xp.svg","Peak",p.stats.maxTurnDamage)}
+        <div id="${detailId}" class="profile-stat-details" hidden>
+          <div class="profile-stat-grid">
+            ${statCell("gameplay/trophy.svg","Achievements",Object.keys(p.achievements).length)}
+            ${statCell("stats/sword-damage.svg","Schaden",p.stats.damageDealt)}
+            ${statCell("gameplay/attack.svg","Kills",p.stats.kills)}
+            ${statCell("stats/dice.svg","Sechsen",p.stats.sixes)}
+            ${statCell("gameplay/dice.svg","Einser",p.stats.ones)}
+            ${statCell("gameplay/heal.svg","Geheilt",p.stats.healed)}
+            ${statCell("stats/shield.svg","Kassiert",p.stats.damageTaken)}
+            ${statCell("gameplay/self-damage-blood.svg","Eigenschaden",p.stats.selfDamage)}
+            ${statCell("stats/xp.svg","Peak",p.stats.maxTurnDamage)}
+          </div>
         </div>
       </div>`;
     }).join(""):`<div class="profile-empty">Noch keine abgeschlossenen Profil-Runden.</div>`;
+
+    profileStatsList.querySelectorAll("[data-profile-stats-toggle]").forEach(toggle=>{
+      toggle.addEventListener("click",()=>{
+        const details=document.getElementById(toggle.getAttribute("aria-controls"));
+        if(!details) return;
+        const expanded=toggle.getAttribute("aria-expanded")==="true";
+        toggle.setAttribute("aria-expanded",String(!expanded));
+        details.hidden=expanded;
+      });
+    });
 
     const rows=REAL_ABILITY_IDS.map(id=>({id,...totals[id]})).sort((a,b)=>b.equipped-a.equipped||a.id-b.id);
     abilityStatsList.innerHTML=`<div class="ability-stat-row header"><span>Fähigkeit</span><span>Runden</span><span>Wahl</span><span>Siege</span><span>Winrate</span></div>`+rows.map(s=>{
