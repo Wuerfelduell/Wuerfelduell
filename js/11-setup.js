@@ -80,7 +80,10 @@
       const ability=document.createElement("div");ability.id="abilityResult"+i;ability.className="ability-roll";
       ability.innerHTML=rules.id==="classic"?`🎲 Fähigkeit: <strong>noch nicht gewürfelt</strong>`:`🎲 ${rules.startAbilityCount} Startfähigkeiten: <strong>noch nicht gewürfelt</strong>`;
       const choice=document.createElement("select");choice.id="abilityChoice"+i;choice.className="ability-choice hidden";
-      CHOOSABLE_ABILITY_IDS.forEach(a=>{const opt=document.createElement("option");opt.value=a;opt.textContent=`${a} – ${ABILITIES[a].name}`;choice.appendChild(opt);});
+      choice.setAttribute("aria-label","Fähigkeit wählen");
+      const placeholder=document.createElement("option");placeholder.value="";placeholder.textContent="Fähigkeit wählen";placeholder.disabled=true;placeholder.hidden=true;choice.appendChild(placeholder);
+      CHOOSABLE_ABILITY_IDS.forEach(a=>{const opt=document.createElement("option");opt.value=a;opt.textContent=ABILITIES[a].name;choice.appendChild(opt);});
+      choice.value="";
       choice.onchange=updateStartAvailability;
 
       wrap.appendChild(grid);wrap.appendChild(ability);wrap.appendChild(choice);nameInputs.appendChild(wrap);
@@ -95,20 +98,23 @@
     for(let i=0;i<n;i++){
       const result=$("abilityResult"+i);
       const choice=$("abilityChoice"+i);
+      result.classList.remove("hidden");
       if(rules.id!=="classic"){
         const abilities=randomUniqueAbilityIds(rules.startAbilityCount);
         setupAbilityRolls[i]=abilities;
-        result.innerHTML=`🎲 <strong>${abilities.map(id=>escapeHtml(ABILITIES[id].name)).join(" · ")}</strong><div class="ability-desc">${abilities.map(id=>`${id}: ${escapeHtml(ABILITIES[id].desc)}`).join("<br>")}</div>`;
+        result.innerHTML=abilities.map(id=>`<span class="setup-ability-name" data-ability-id="${id}">${escapeHtml(ABILITIES[id].name)}</span>`).join("");
         choice.classList.add("hidden");
         continue;
       }
       const roll=randAbilityRoll();
       setupAbilityRolls[i]=roll;
       if(roll===6){
-        result.innerHTML=`🎲 W25 = <strong>6</strong> → <strong>Freie Wahl!</strong><div class="ability-desc">Wähle jetzt eine Fähigkeit aus 1–5 oder 8–25. Glück (BETA) gibt es ausschließlich bei einer direkt gewürfelten 7.</div>`;
+        choice.value="";
+        result.textContent="";
+        result.classList.add("hidden");
         choice.classList.remove("hidden");
       }else{
-        result.innerHTML=`🎲 W25 = <strong>${roll}</strong> → <strong>${ABILITIES[roll].name}</strong><div class="ability-desc">${ABILITIES[roll].desc}</div>`;
+        result.innerHTML=`<span class="setup-ability-name" data-ability-id="${roll}">${escapeHtml(ABILITIES[roll].name)}</span>`;
         choice.classList.add("hidden");
       }
       syncSetupBotChoice(i);
@@ -119,7 +125,7 @@
   function updateStartAvailability(){
     const rules=localModeRules();
     const n=+playerCount.value;
-    const abilitiesReady=setupAbilityRolls.length===n && setupAbilityRolls.every(v=>v!=null && (!Array.isArray(v)||v.length===rules.startAbilityCount));
+    const abilitiesReady=setupAbilityRolls.length===n && setupAbilityRolls.every((v,i)=>v!=null && (Array.isArray(v)?v.length===rules.startAbilityCount:v!==6||CHOOSABLE_ABILITY_IDS.includes(+$("abilityChoice"+i).value)));
     const humanProfileIds=[];
     let profilesValid=true;
 
@@ -148,4 +154,3 @@
     if(rules.id!=="classic") return Array.isArray(setupAbilityRolls[i])?[...setupAbilityRolls[i]]:[];
     return [setupAbilityRolls[i]===6 ? +$("abilityChoice"+i).value : setupAbilityRolls[i]];
   }
-

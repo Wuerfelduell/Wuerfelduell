@@ -6,7 +6,7 @@
 
   function isAbilitySelect(select){
     if(!select || select.tagName!=="SELECT") return false;
-    return /^(abilityChoice\d+|nextAbilityChoice\d+(?:_\d+)?)$/.test(select.id||"");
+    return /^(nextAbilityChoice\d+(?:_\d+)?)$/.test(select.id||"");
   }
 
   let picker=null;

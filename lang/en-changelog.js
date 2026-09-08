@@ -5,6 +5,8 @@
   if (!pack) return;
 
   Object.assign(pack.exact, {
+    "Die Spielvorbereitung zeigt kompaktere Spielerfelder und eine dunkelblaue Fähigkeitszeile mit vollständigem Namen und Symbol": "Game setup shows more compact player fields and a dark blue ability row with the full name and icon",
+    "Freie Wahl nutzt die Fähigkeitsauswahl der Kampagne; menschliche Spieler wählen vor dem Start bewusst eine Fähigkeit, Abbrechen behält die bisherige Auswahl": "Free Choice uses the campaign ability picker; human players explicitly select an ability before starting, and Cancel keeps the previous selection",
     "Die Achievementkarten sind kompakt: Titel, Bedingung und Belohnung stehen untereinander, die Profilliste klappt auf und zu": "Achievement cards are compact: title, condition and reward are stacked, and the profile list expands and collapses",
     "Darunter steht, wie viele der lokalen Profile das Achievement geschafft haben, aus den echten Profildaten berechnet": "Below that it shows how many of the local profiles have completed the achievement, calculated from the real profile data",
     "Der verzierte Pokalrahmen ist dem schlanken Rahmen gewichen; die Karte ist durchgehend navyfarben, die hellen Unterlagen samt Schatten sind weg": "The ornate trophy frame has given way to the slim frame; the card is navy throughout, and the light backing panels and their shadows are gone",

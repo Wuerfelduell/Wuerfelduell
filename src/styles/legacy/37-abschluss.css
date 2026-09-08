@@ -2194,3 +2194,135 @@ html[data-v28-rework="2"] #profilesScreen .profile-delete{
     transition:none;
   }
 }
+
+/* Spielvorbereitung: kompakte Felder und eine gemeinsame Fähigkeitszeile.
+   Die wichtigen Markierungen schlagen nur bestehende Rahmen-/Bannerregeln. */
+html[data-v28-rework="2"] #setup .setup-grid{
+  gap:6px;
+}
+html[data-v28-rework="2"] #setup .setup-grid .dd-select-trigger,
+html[data-v28-rework="2"] #setup .setup-grid .setup-dice-readonly{
+  min-height:44px;
+  height:44px;
+}
+html[data-v28-rework="2"] #setup .ability-roll,
+html[data-v28-rework="2"] #setup .setup-ability-trigger{
+  box-sizing:border-box;
+  width:100%;
+  min-height:52px;
+  height:auto;
+  margin:6px 0 0;
+  padding:4px 6px!important;
+  border-style:solid;
+  border-color:transparent;
+  border-width:8px 12px!important;
+  border-image-source:var(--wd-strip);
+  border-image-slice:40 96 40 96;
+  border-image-width:8px 12px!important;
+  border-image-repeat:stretch;
+  background:var(--wd-navy)!important;
+  color:#f4f7ff;
+  text-shadow:none;
+  text-align:left;
+  font-size:14px;
+  line-height:1.25;
+}
+html[data-v28-rework="2"] #setup .ability-roll{
+  flex-direction:column;
+  align-items:stretch;
+  gap:6px;
+}
+html[data-v28-rework="2"] #setup .ability-roll.hidden{
+  display:none;
+}
+html[data-v28-rework="2"] #setup .setup-ability-name{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  min-width:0;
+  overflow-wrap:anywhere;
+  font:800 14px/1.25 Georgia,"Times New Roman",serif;
+}
+html[data-v28-rework="2"] #setup .setup-ability-name .dd-inline-icon,
+html[data-v28-rework="2"] #setup .setup-ability-trigger .dd-trigger-icon{
+  width:32px;
+  height:32px;
+  flex:0 0 32px;
+  object-fit:contain;
+}
+html[data-v28-rework="2"] #setup .setup-ability-trigger{
+  grid-template-columns:32px minmax(0,1fr) 24px;
+  gap:8px;
+}
+html[data-v28-rework="2"] #setup .setup-ability-trigger>span{
+  color:inherit;
+  white-space:normal;
+  overflow:visible;
+  overflow-wrap:anywhere;
+  text-overflow:clip;
+  font-size:14px;
+  line-height:1.25;
+}
+html[data-v28-rework="2"] #setup .setup-ability-trigger:disabled{
+  opacity:1;
+}
+/* Derselbe Picker und dieselben Zeilen wie in der Kampagne; nur dieser
+   Aufruf erhält den Titel im Rahmen und Abbrechen unter der Liste. */
+html[data-v28-rework="2"] .setup-ability-picker .dd-select-panel{
+  border-style:solid;
+  border-color:transparent;
+  border-width:44px 24px 34px;
+  padding:0;
+  background:transparent!important;
+  box-shadow:none;
+  overflow:visible;
+  max-height:min(86dvh,760px);
+}
+html[data-v28-rework="2"] .setup-ability-picker .dd-select-head{
+  flex:0 0 8px;
+  min-height:8px;
+  margin:0 0 8px;
+}
+html[data-v28-rework="2"] .setup-ability-picker .dd-select-title{
+  top:-24px;
+  width:90%;
+  font-size:clamp(14px,4vw,17px);
+}
+html[data-v28-rework="2"] .setup-ability-picker .dd-select-close{
+  display:none;
+}
+html[data-v28-rework="2"] .setup-ability-picker .dd-select-options{
+  padding:4px 2px;
+  gap:7px;
+  max-height:none;
+  overflow-x:hidden;
+  overflow-y:auto;
+}
+html[data-v28-rework="2"] .setup-ability-picker .dd-option-icon{
+  object-fit:contain;
+}
+html[data-v28-rework="2"] .setup-ability-picker .dd-select-option>span:not(.dd-option-check){
+  white-space:normal;
+  overflow-wrap:anywhere;
+  min-width:0;
+}
+html[data-v28-rework="2"] .setup-ability-picker .setup-ability-cancel{
+  flex:0 0 auto;
+  width:100%;
+  min-height:48px;
+  margin:8px 0 0;
+  padding:10px 24px;
+  border:0;
+  border-radius:0;
+  background:var(--p1-navy-button) center/100% 100% no-repeat;
+  color:#fff2ca;
+  box-shadow:none;
+}
+@media(max-width:540px){
+  html[data-v28-rework="2"] .setup-ability-picker .dd-select-panel{
+    border-width:40px 18px 30px;
+  }
+  html[data-v28-rework="2"] .setup-ability-picker .dd-select-title{
+    top:-20px;
+  }
+}

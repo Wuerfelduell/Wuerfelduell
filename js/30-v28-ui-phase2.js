@@ -75,7 +75,7 @@
   }
 
   function decorateSetup(){
-    document.querySelectorAll("#setup .setup-dice-readonly, #setup .ability-roll").forEach(ensureSetupIcon);
+    document.querySelectorAll("#setup .setup-dice-readonly").forEach(ensureSetupIcon);
   }
 
   function decorate(){

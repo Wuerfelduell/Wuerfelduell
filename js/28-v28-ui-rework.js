@@ -297,13 +297,27 @@
   }
 
   function genericSelectIcon(select){
+    if(isSetupAbilitySelect(select) && !select.value) return "gameplay/mastery.svg";
     if(/ability/i.test(select.id || "") && ABILITY_ICON_PATHS[Number(select.value)]) return ABILITY_ICON_PATHS[Number(select.value)];
     const match = SELECT_ICON_PATHS.find(([pattern]) => pattern.test(select.id || select.className || ""));
     return match?.[1] || "navigation/chevron-down.svg";
   }
 
   function isLegacyAbilitySelect(select){
-    return !!select?.dataset.v28Enhanced || /^(abilityChoice\d+|nextAbilityChoice\d+(?:_\d+)?)$/.test(select?.id || "");
+    return !!select?.dataset.v28Enhanced || /^(nextAbilityChoice\d+(?:_\d+)?)$/.test(select?.id || "");
+  }
+
+  function isSetupAbilitySelect(select){
+    return !!select?.closest("#setup") && /^abilityChoice\d+$/.test(select.id);
+  }
+
+  function decorateSetupAbilityResults(){
+    document.querySelectorAll("#setup .setup-ability-name").forEach(row => {
+      if(!row.querySelector(".dd-inline-icon")){
+        const path = ABILITY_ICON_PATHS[Number(row.dataset.abilityId)];
+        if(path) row.prepend(icon(path, "dd-inline-icon"));
+      }
+    });
   }
 
   function genericSelectLabel(select){
@@ -337,6 +351,7 @@
     label.textContent = text;
     trigger.append(label);
     trigger.disabled = !!select.disabled;
+    if(isSetupAbilitySelect(select)) trigger.classList.add("setup-ability-trigger");
     trigger.classList.toggle("hidden", select.classList.contains("hidden"));
   }
 
@@ -383,15 +398,31 @@
     if(select.disabled || select.classList.contains("hidden")) return;
     activeGenericSelect = select;
     const picker = ensureGenericPicker();
+    const setupAbility = isSetupAbilitySelect(select);
+    picker.classList.toggle("setup-ability-picker", setupAbility);
+    let cancel = picker.querySelector(".setup-ability-cancel");
+    if(setupAbility && !cancel){
+      cancel = document.createElement("button");
+      cancel.type = "button";
+      cancel.className = "setup-ability-cancel secondary";
+      cancel.addEventListener("click", closeGenericPicker);
+      picker.querySelector(".dd-select-panel").append(cancel);
+    }
+    if(cancel){
+      cancel.classList.toggle("hidden", !setupAbility);
+      cancel.textContent = uiText("Abbrechen", "Cancel");
+    }
     picker.querySelector(".dd-select-title").textContent = genericSelectLabel(select);
     const options = picker.querySelector(".dd-select-options");
     options.textContent = "";
 
     [...select.options].forEach(option => {
+      if(setupAbility && option.hidden) return;
       const button = document.createElement("button");
       button.type = "button";
       button.className = "dd-select-option" + (String(select.value) === String(option.value) ? " selected" : "");
       button.disabled = !!option.disabled;
+      if(setupAbility) button.dataset.abilityId = option.value;
       const path = optionIconPath(select, option);
       if(path) button.append(icon(path, "dd-option-icon"));
       const text = document.createElement("span");
@@ -420,6 +451,16 @@
     requestAnimationFrame(() => {
       const panel = picker.querySelector(".dd-select-panel");
       const head = picker.querySelector(".dd-select-head");
+      if(setupAbility){
+        panel.style.removeProperty("max-height");
+        panel.style.removeProperty("overflow");
+        options.style.removeProperty("max-height");
+        options.scrollTop = 0;
+        const selected = options.querySelector(".selected") || options.querySelector("button:not(:disabled)");
+        selected?.scrollIntoView({block:"nearest"});
+        selected?.focus({preventScroll:true});
+        return;
+      }
       const max = Math.min(Math.round(window.innerHeight * 0.78), 720);
       if(panel){
         panel.style.maxHeight = max + "px";
@@ -492,6 +533,7 @@
     decorateAbilityReferenceList();
     decorateAbilityPicker();
     decorateAbilityTriggers();
+    decorateSetupAbilityResults();
     decoratePlayers();
     decorateAchievements();
     decorateCampaignDetails();
