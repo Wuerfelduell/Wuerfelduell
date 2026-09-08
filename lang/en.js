@@ -520,6 +520,7 @@ window.WD_LANG_PACKS.en = {
     "Zufällig":"Random",
     "Standard":"Default",
     "Aktiv":"Active",
+    "Ausgewählt":"Selected",
     "Inaktiv":"Inactive",
     "Freigeschaltet":"Unlocked",
     "Gesperrt bis":"Locked until",

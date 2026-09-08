@@ -128,40 +128,104 @@
     prestigeEquipped.querySelectorAll("[data-reset-cosmetic]").forEach(btn=>btn.onclick=()=>{const p=getProfile(prestigeShopProfileSelect.value);if(!p)return;if(btn.dataset.resetCosmetic==="title")p.prestigeCosmetics.selectedTitle=null;else if(btn.dataset.resetCosmetic==="frame")p.prestigeCosmetics.selectedFrame=null;else if(btn.dataset.resetCosmetic==="attackfx")p.selectedAttackFx="classic";saveGameData();renderPrestigeShop();renderProfiles();});
   }
 
+  const expandedProfileIds=new Set();
+
+  function setProfileCreateExpanded(expanded){
+    const toggle=$("profileCreateToggle"),fields=$("profileCreateFields");
+    if(!toggle||!fields) return;
+    toggle.setAttribute("aria-expanded",String(expanded));
+    fields.hidden=!expanded;
+    requestAnimationFrame(()=>{
+      if(expanded) newProfileName.focus({preventScroll:true});
+      if(typeof layoutContainedScreen==="function") layoutContainedScreen(profilesScreen);
+    });
+  }
+
+  function resetProfileManagementUi(){
+    expandedProfileIds.clear();
+    setProfileCreateExpanded(false);
+  }
+
   function renderProfiles(){
     if(!saveData.profiles.length){
+      expandedProfileIds.clear();
       profileList.innerHTML=`<div class="profile-empty">Noch kein Profil. Erstelle dein erstes Profil – Classic und ClassicV2 sind sofort freigeschaltet.</div>`;
       return;
     }
 
-    profileList.innerHTML=saveData.profiles.map(p=>{
+    const existingIds=new Set(saveData.profiles.map(profile=>profile.id));
+    [...expandedProfileIds].forEach(id=>{if(!existingIds.has(id)) expandedProfileIds.delete(id);});
+
+    profileList.innerHTML=saveData.profiles.map((p,profileIndex)=>{
       const featuredDice=Object.entries(DICE_DESIGNS).filter(([,d])=>d.previewAsset).map(([key,d])=>{
         const unlockedNow=p.unlockedDice.includes(key),selected=p.selectedDice===key;
         const stateAsset=unlockedNow?"assets/ui/v28/png/components/completed-check-medallion.webp":"assets/ui/v28/png/components/locked-padlock-overlay.webp";
-        const stateLabel=selected?"Aktiv":unlockedNow?"Freigeschaltet":d.unlockText||"Gesperrt";
+        const stateLabel=selected?"Ausgewählt":unlockedNow?"Freigeschaltet":d.unlockText||"Gesperrt";
         return `<button type="button" class="dice-design-card${unlockedNow?" unlocked":" locked"}${selected?" selected":""}" data-dice-design="${escapeHtml(key)}"${unlockedNow?"":" disabled"} aria-label="${escapeHtml(`${d.name}: ${stateLabel}`)}"><span class="dice-design-preview"><img class="dice-design-beauty" src="${escapeHtml(d.previewAsset)}?v=${GAME_VERSION}" alt="" loading="lazy"><img class="dice-design-state" src="${stateAsset}?v=28.3.0" alt="" aria-hidden="true"></span><span class="dice-design-name">${escapeHtml(d.name)}</span><span class="dice-design-meta">${escapeHtml(stateLabel)}</span></button>`;
       }).join("");
-      const unlocked=Object.entries(DICE_DESIGNS).filter(([,d])=>!d.previewAsset).map(([key,d])=>{const unlockedNow=p.unlockedDice.includes(key);const shopItem=PRESTIGE_SHOP_ITEMS.find(x=>x.type==="dice"&&x.value===key);const req=DICE_UNLOCK_ACHIEVEMENT[key]?ACHIEVEMENTS[DICE_UNLOCK_ACHIEVEMENT[key]]?.name:(shopItem?`Trophy Shop · ${shopItem.cost}`:"");return `<span class="unlock-chip${unlockedNow?"":" locked"}">${unlockedNow?uiIcon("gameplay/completed.svg"):uiIcon("gameplay/locked.svg")}${escapeHtml(d.name)}${!unlockedNow&&req?` · ${escapeHtml(req)}`:""}</span>`;}).join("");
+      const unlocked=Object.entries(DICE_DESIGNS).filter(([,d])=>!d.previewAsset).map(([key,d])=>{
+        const unlockedNow=p.unlockedDice.includes(key),selected=p.selectedDice===key;
+        const shopItem=PRESTIGE_SHOP_ITEMS.find(x=>x.type==="dice"&&x.value===key);
+        const req=DICE_UNLOCK_ACHIEVEMENT[key]?ACHIEVEMENTS[DICE_UNLOCK_ACHIEVEMENT[key]]?.name:(shopItem?`Trophy Shop · ${shopItem.cost}`:"");
+        const status=selected?"Ausgewählt":"Freigeschaltet";
+        return `<span class="unlock-chip dice-design-chip${unlockedNow?"":" locked"}${selected?" selected":""}" data-dice-design="${escapeHtml(key)}">${unlockedNow?uiIcon("gameplay/completed.svg"):uiIcon("gameplay/locked.svg")}<span class="unlock-chip-copy"><span class="unlock-chip-name">${escapeHtml(d.name)}</span>${unlockedNow?`<span class="unlock-chip-state">${status}</span>`:req?`<span class="unlock-chip-requirement">${escapeHtml(req)}</span>`:""}</span></span>`;
+      }).join("");
       const diceOptions=p.unlockedDice.filter(k=>DICE_DESIGNS[k]).map(k=>`<option value="${k}"${p.selectedDice===k?" selected":""}>${escapeHtml(DICE_DESIGNS[k].name)}</option>`).join("");
       const fxOptions=(p.unlockedAttackFx||["classic"]).filter(k=>ATTACK_FX_STYLES[k]).map(k=>`<option value="${k}"${p.selectedAttackFx===k?" selected":""}>${escapeHtml(ATTACK_FX_STYLES[k].name)}</option>`).join("");
       const fxUnlocked=Object.entries(ATTACK_FX_STYLES).map(([key,fx])=>{const unlockedNow=(p.unlockedAttackFx||[]).includes(key);const shopItem=PRESTIGE_SHOP_ITEMS.find(x=>x.type==="attackfx"&&x.value===key);const req=ATTACK_FX_UNLOCK_ACHIEVEMENT[key]?ACHIEVEMENTS[ATTACK_FX_UNLOCK_ACHIEVEMENT[key]]?.name:(shopItem?`Trophy Shop · ${shopItem.cost}`:key==="classic"?"Standard":"");return `<span class="unlock-chip fx${unlockedNow?"":" locked"}">${unlockedNow?uiIcon("gameplay/completed.svg"):uiIcon("gameplay/locked.svg")}${escapeHtml(fx.name)}${!unlockedNow&&req?` · ${escapeHtml(req)}`:""}</span>`;}).join("");
       const winrate=p.stats.rounds?Math.round((p.stats.wins/p.stats.rounds)*100):0;
+      const achievementCount=Object.keys(p.achievements).length;
+      const trophies=p.campaign?.trophies||0;
+      const title=profileCosmeticTitle(p);
+      const detailsId=`profile-card-details-${profileIndex}`;
+      const expanded=expandedProfileIds.has(p.id);
       return `<div class="profile-card${profileCosmeticFrame(p)?` frame-${profileCosmeticFrame(p)}`:""}" data-profile-id="${escapeHtml(p.id)}">
-        <div class="profile-card-top"><div class="profile-identity"><div class="profile-name-line">${escapeHtml(p.name)} <span class="battle-tag">#${escapeHtml(p.tagNumber)}</span></div>${profileCosmeticTitle(p)?`<div class="profile-title-badge">${escapeHtml(profileCosmeticTitle(p))}</div>`:""}<div class="profile-mini">${p.stats.rounds} Runden · ${p.stats.wins} Siege · ${winrate}% Winrate · ${Object.keys(p.achievements).length} Achievements · ${uiIcon("gameplay/trophy.svg")} ${p.campaign?.trophies||0}</div></div></div>
-        <div class="profile-actions"><div><label>Name</label><input class="profile-name-edit" maxlength="24" value="${escapeHtml(p.name)}"></div><div><label>Würfeldesign</label><select class="profile-dice-edit">${diceOptions}</select></div><div><label>Angriffseffekt</label><select class="profile-fx-edit">${fxOptions}</select></div><button class="profile-delete">Löschen</button></div>
-        <div class="unlock-strip-title">Würfel-Kollektion</div><div class="dice-design-gallery">${featuredDice}</div>
-        <div class="unlock-strip-title">Weitere Würfeldesigns</div><div class="unlock-strip">${unlocked}</div>
-        <div class="unlock-strip-title">Angriffseffekte</div><div class="unlock-strip">${fxUnlocked}</div>
+        <button type="button" class="profile-card-top" data-profile-toggle aria-expanded="${expanded}" aria-controls="${detailsId}" title="Details">
+          <span class="profile-head-copy">
+            <span class="profile-head-primary">
+              <span class="profile-name-line"><span class="profile-name-text">${escapeHtml(p.name)}</span><span class="battle-tag">#${escapeHtml(p.tagNumber)}</span></span>
+              ${title?`<span class="profile-title-badge">${escapeHtml(title)}</span>`:""}
+            </span>
+            <span class="profile-trophy" title="Trophäen">${uiIcon("gameplay/trophy.svg")}<strong>${trophies}</strong></span>
+            <span class="profile-head-stats">
+              <span class="profile-head-stat"><strong>${p.stats.rounds}</strong><span>Runden</span></span>
+              <span class="profile-head-stat"><strong>${p.stats.wins}</strong><span>Siege</span></span>
+              <span class="profile-head-stat"><strong>${winrate}%</strong><span>Winrate</span></span>
+              <span class="profile-head-stat"><strong>${achievementCount}</strong><span>Achievements</span></span>
+            </span>
+          </span>
+          <span class="profile-card-chevron" aria-hidden="true"></span>
+        </button>
+        <div id="${detailsId}" class="profile-card-details"${expanded?"":" hidden"}>
+          <div class="profile-actions">
+            <div class="profile-field"><label>Name</label><input class="profile-name-edit" maxlength="24" value="${escapeHtml(p.name)}"></div>
+            <div class="profile-field"><label>Würfeldesign</label><select class="profile-dice-edit">${diceOptions}</select></div>
+            <div class="profile-field"><label>Angriffseffekt</label><select class="profile-fx-edit">${fxOptions}</select></div>
+          </div>
+          <div class="unlock-strip-title">Würfel-Kollektion</div><div class="dice-design-gallery">${featuredDice}</div>
+          <div class="unlock-strip-title">Weitere Würfeldesigns</div><div class="unlock-strip">${unlocked}</div>
+          <div class="unlock-strip-title">Angriffseffekte</div><div class="unlock-strip">${fxUnlocked}</div>
+          <div class="profile-danger"><button class="profile-delete">Löschen</button></div>
+        </div>
       </div>`;
     }).join("");
 
     profileList.querySelectorAll(".profile-card").forEach(card=>{
       const id=card.dataset.profileId;
+      const toggle=card.querySelector("[data-profile-toggle]");
       const nameInput=card.querySelector(".profile-name-edit");
       const diceSelect=card.querySelector(".profile-dice-edit");
       const fxSelect=card.querySelector(".profile-fx-edit");
       const del=card.querySelector(".profile-delete");
 
+      toggle.onclick=()=>{
+        const details=document.getElementById(toggle.getAttribute("aria-controls"));
+        if(!details) return;
+        const expanded=toggle.getAttribute("aria-expanded")==="true";
+        toggle.setAttribute("aria-expanded",String(!expanded));
+        details.hidden=expanded;
+        if(expanded) expandedProfileIds.delete(id); else expandedProfileIds.add(id);
+      };
       nameInput.onchange=()=>{
         const p=getProfile(id); if(!p) return;
         const clean=nameInput.value.trim().slice(0,24);
@@ -184,6 +248,7 @@
       del.onclick=()=>{
         const p=getProfile(id); if(!p) return;
         if(!confirm(`Profil ${profileLabel(p)} wirklich löschen? Achievements und Statistiken dieses Profils gehen verloren.`)) return;
+        expandedProfileIds.delete(id);
         saveData.profiles=saveData.profiles.filter(x=>x.id!==id);saveGameData();renderProfiles();renderAchievements();renderStats();makeNameFields();
       };
     });

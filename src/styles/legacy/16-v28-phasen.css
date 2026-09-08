@@ -1543,15 +1543,13 @@ html[data-v28-rework="2"] #achievementsScreen .achievement-card,
 html[data-v28-rework="2"] #prestigeShopScreen .prestige-item,
 html[data-v28-rework="2"] #prestigeShopScreen .prestige-item.owned,
 html[data-v28-rework="2"] #prestigeShopScreen .prestige-item.expensive,
-html[data-v28-rework="2"] #profilesScreen .profile-card,
 html[data-v28-rework="2"] #profilesScreen .profile-actions .dd-select-trigger,
 html[data-v28-rework="2"] #profilesScreen .profile-name-edit{
   background-color:transparent!important;
   box-shadow:none}
 html[data-v28-rework="2"] #rulesScreen .menu-info-card,
 html[data-v28-rework="2"] #achievementsScreen .achievement-card,
-html[data-v28-rework="2"] #prestigeShopScreen .prestige-item,
-html[data-v28-rework="2"] #profilesScreen .profile-card{
+html[data-v28-rework="2"] #prestigeShopScreen .prestige-item{
   background-image:none!important}
 
 /* ---------- Rules ---------- */

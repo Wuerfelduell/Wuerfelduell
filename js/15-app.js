@@ -154,18 +154,24 @@
   duoProfile2Select.onchange=()=>{duoProfile2Id=duoProfile2Select.value||null;duoCampaignEncounterId=null;renderDuoCampaign();};
   duoAbility1Select.onchange=()=>{};duoAbility2Select.onchange=()=>{};
   duoCampaignStartBtn.onclick=startDuoCampaignEncounter;
-  duoCampaignProfilesBtn.onclick=()=>{profileScreenOrigin="duo";renderProfiles();openFrontScreen(profilesScreen);};
+  function openProfileManagement(origin){
+    profileScreenOrigin=origin;
+    resetProfileManagementUi();
+    renderProfiles();
+    openFrontScreen(profilesScreen);
+  }
+  duoCampaignProfilesBtn.onclick=()=>openProfileManagement("duo");
   trioProfile1Select.onchange=()=>{trioProfile1Id=trioProfile1Select.value||null;trioCampaignEncounterId=null;renderTrioCampaign();};
   trioProfile2Select.onchange=()=>{trioProfile2Id=trioProfile2Select.value||null;trioCampaignEncounterId=null;renderTrioCampaign();};
   trioProfile3Select.onchange=()=>{trioProfile3Id=trioProfile3Select.value||null;trioCampaignEncounterId=null;renderTrioCampaign();};
   trioAbility1Select.onchange=renderTrioCampaign;trioAbility2Select.onchange=renderTrioCampaign;trioAbility3Select.onchange=renderTrioCampaign;
   trioCampaignStartBtn.onclick=startTrioCampaignEncounter;
-  trioCampaignProfilesBtn.onclick=()=>{profileScreenOrigin="trio";renderProfiles();openFrontScreen(profilesScreen);};
+  trioCampaignProfilesBtn.onclick=()=>openProfileManagement("trio");
   campaignProfileSelect.onchange=()=>{campaignProfileId=campaignProfileSelect.value||null;campaignEncounterId=null;gameContext.profileId=campaignProfileId;gameContext.encounterId=null;renderCampaign();};
   campaignAbilitySelect.onchange=()=>renderCampaign();
   campaignStartBtn.onclick=startCampaignEncounter;
-  campaignProfilesBtn.onclick=()=>{profileScreenOrigin="campaign";renderProfiles();openFrontScreen(profilesScreen);};
-  $("menuProfilesBtn").onclick=()=>{profileScreenOrigin="menu";renderProfiles();openFrontScreen(profilesScreen);};
+  campaignProfilesBtn.onclick=()=>openProfileManagement("campaign");
+  $("menuProfilesBtn").onclick=()=>openProfileManagement("menu");
   $("menuAccountBtn").onclick=()=>{window.WDCloudAccount?.open?.(openFrontScreen);};
   $("accountBackBtn").onclick=openMainMenu;
   $("menuAchievementsBtn").onclick=()=>{renderAchievements();openFrontScreen(achievementsScreen);};
@@ -209,8 +215,9 @@
   createProfileBtn.onclick=()=>{
     const p=createProfile(newProfileName.value);
     if(!p) return;
-    newProfileName.value="";renderProfiles();renderAchievements();makeNameFields();
+    newProfileName.value="";setProfileCreateExpanded(false);renderProfiles();renderAchievements();makeNameFields();
   };
+  $("profileCreateToggle").onclick=()=>setProfileCreateExpanded($("profileCreateToggle").getAttribute("aria-expanded")!=="true");
   newProfileName.addEventListener("keydown",e=>{if(e.key==="Enter")createProfileBtn.click();});
   profilesBackBtn.onclick=()=>{
     if(profileScreenOrigin==="setup"){makeNameFields();openFrontScreen(setup);}
@@ -220,7 +227,7 @@
     else openMainMenu();
   };
 
-  $("setupProfilesBtn").onclick=()=>{profileScreenOrigin="setup";renderProfiles();openFrontScreen(profilesScreen);};
+  $("setupProfilesBtn").onclick=()=>openProfileManagement("setup");
 
   function refreshPersistentUi(){
     applyStoredSettings();renderProfiles();renderAchievements();renderStats();makeNameFields();renderCampaign();renderDuoCampaign();renderTrioCampaign();if(prestigeShopScreen&&!prestigeShopScreen.classList.contains("hidden"))renderPrestigeShop();

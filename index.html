@@ -412,7 +412,13 @@
   <section id="profilesScreen" class="card screen-card hidden">
     <div class="screen-topbar"><button id="profilesBackBtn">←</button><h2 class="screen-title">Spielerprofile</h2></div>
     <div class="screen-subtitle">Profile tragen Battletag, Würfel-Unlocks, Achievements und Langzeitstatistiken. Der Battletag bleibt auch nach einer Umbenennung gleich.</div>
-    <div class="profile-create"><input id="newProfileName" type="text" maxlength="24" placeholder="Neues Profil"><button id="createProfileBtn" class="good">Erstellen</button></div>
+    <div class="profile-create">
+      <button id="profileCreateToggle" type="button" class="good profile-create-toggle" aria-expanded="false" aria-controls="profileCreateFields">Neues Profil</button>
+      <div id="profileCreateFields" class="profile-create-fields" hidden>
+        <input id="newProfileName" type="text" maxlength="24" placeholder="Neues Profil">
+        <button id="createProfileBtn" class="good">Erstellen</button>
+      </div>
+    </div>
     <div id="profileList" class="profile-list"></div>
   </section>
 
