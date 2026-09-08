@@ -5,6 +5,12 @@
   if (!pack) return;
 
   Object.assign(pack.exact, {
+    "Die Achievementkarten sind kompakt: Titel, Bedingung und Belohnung stehen untereinander, die Profilliste klappt auf und zu": "Achievement cards are compact: title, condition and reward are stacked, and the profile list expands and collapses",
+    "Darunter steht, wie viele der lokalen Profile das Achievement geschafft haben, aus den echten Profildaten berechnet": "Below that it shows how many of the local profiles have completed the achievement, calculated from the real profile data",
+    "Der verzierte Pokalrahmen ist dem schlanken Rahmen gewichen; die Karte ist durchgehend navyfarben, die hellen Unterlagen samt Schatten sind weg": "The ornate trophy frame has given way to the slim frame; the card is navy throughout, and the light backing panels and their shadows are gone",
+    "Die Profilzeilen sind gleich breit mit Name und Kennung links und Häkchen oder Schloss rechts; die innere dunkle Textbox entfällt": "The profile rows share one width with name and tag on the left and a checkmark or padlock on the right; the inner dark text box is gone",
+    "Würfeldesign-Belohnungen sind als solche beschriftet, etwa „Würfeldesign: Gold“; Achievements ohne Belohnung zeigen die Zeile nicht": "Dice design rewards are labelled as such, for example \"Dice design: Gold\"; achievements without a reward do not show the line",
+    "Die Karte wächst mit ihrer Profilliste; die letzte Zeile ragt nicht mehr in den Rahmen": "The card grows with its profile list; the last row no longer sticks out into the frame",
     "Die Profilverwaltung ist überarbeitet: Profile starten zugeklappt mit Name, Kennung, Pokalen, Runden, Siegen, Winrate und Achievements und klappen per Antippen auf": "Profile management has been reworked: profiles start collapsed with name, tag, trophies, rounds, wins, win rate and achievements, and expand on tap",
     "Die Profilerstellung liegt hinter einem Knopf „Neues Profil“ und nimmt im Ausgangszustand keinen Platz mehr ein": "Profile creation sits behind a \"New profile\" button and no longer takes up space in the initial state",
     "Name, Würfeldesign und Angriffseffekt sind gleich breit mit dunkelblauer Beschriftung darüber; der Löschknopf sitzt am Ende der Karte": "Name, dice design and attack effect share the same width with a dark blue label above; the delete button sits at the end of the card",
