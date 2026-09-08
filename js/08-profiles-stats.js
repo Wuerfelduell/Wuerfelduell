@@ -254,6 +254,12 @@
     });
   }
 
+  const expandedAchievementIds=new Set();
+
+  function resetAchievementsUi(){
+    expandedAchievementIds.clear();
+  }
+
   function renderAchievements(){
     const profiles=saveData.profiles;
     achievementList.innerHTML=Object.entries(ACHIEVEMENTS).map(([id,a])=>{
@@ -262,14 +268,33 @@
       if(a.requires&&!prerequisiteVisible) return "";
       const hidden=!!a.secret&&!globallyUnlocked;
       const tFn=typeof window.t==="function"?window.t:(s=>s);
-      const rewards=[];if(a.rewardDice)rewards.push(`${uiIcon("gameplay/dice.svg")} ${escapeHtml(DICE_DESIGNS[a.rewardDice]?.name||a.rewardDice)}`);if(a.rewardFx)rewards.push(`${uiIcon("gameplay/attack.svg")} ${escapeHtml(ATTACK_FX_STYLES[a.rewardFx]?.name||a.rewardFx)}`);const reward=!hidden&&rewards.length?`<span class="achievement-reward">${rewards.join(" · ")}</span>`:"";
+      const rewards=[];
+      if(a.rewardDice) rewards.push(`<span class="achievement-reward">${uiIcon("gameplay/dice.svg")}<span><span class="achievement-reward-label">${escapeHtml(tFn("Würfeldesign:"))}</span> <strong>${escapeHtml(DICE_DESIGNS[a.rewardDice]?.name||a.rewardDice)}</strong></span></span>`);
+      if(a.rewardFx) rewards.push(`<span class="achievement-reward">${uiIcon("gameplay/attack.svg")}<span><span class="achievement-reward-label">${escapeHtml(tFn("Angriffseffekt:"))}</span> <strong>${escapeHtml(ATTACK_FX_STYLES[a.rewardFx]?.name||a.rewardFx)}</strong></span></span>`);
+      const reward=!hidden&&rewards.length?`<div class="achievement-rewards">${rewards.join("")}</div>`:"";
+      const earnedCount=profiles.reduce((count,p)=>count+(p.achievements[id]?1:0),0);
       const owners=profiles.length?profiles.map(p=>{
         const earned=!!p.achievements[id];
         const mark=earned?"assets/ui/v28/png/components/completed-check-medallion.webp":"assets/ui/v28/png/components/locked-padlock-overlay.webp";
-        return `<span class="achievement-owner${earned?" done":""}"><img class="achievement-owner-mark" src="${mark}" alt="" draggable="false"><span class="achievement-owner-name">${escapeHtml(p.name)} <span class="battle-tag">#${escapeHtml(p.tagNumber)}</span></span></span>`;
-      }).join(""):`<span class="achievement-owner">${tFn("Noch keine Profile")}</span>`;
-      return `<div class="achievement-card${hidden?" secret-achievement":""}"><div class="achievement-head"><div class="achievement-name">${escapeHtml(hidden?"???":a.name)}</div>${reward}</div><div class="achievement-desc">${escapeHtml(hidden?tFn("Geheimes Achievement"):a.desc)}</div><div class="achievement-owners">${owners}</div></div>`;
+        return `<div class="achievement-owner${earned?" done":""}"><span class="achievement-owner-name"><span>${escapeHtml(p.name)}</span><span class="battle-tag">#${escapeHtml(p.tagNumber)}</span></span><img class="achievement-owner-mark" src="${mark}" alt="${escapeHtml(tFn(earned?"Geschafft":"Nicht geschafft"))}" draggable="false"></div>`;
+      }).join(""):`<div class="achievement-owner-empty">${escapeHtml(tFn("Noch keine Profile"))}</div>`;
+      const detailsId=`achievement-owners-${escapeHtml(id)}`;
+      const expanded=expandedAchievementIds.has(id);
+      return `<div class="achievement-card${hidden?" secret-achievement":""}" data-achievement-id="${escapeHtml(id)}"><div class="achievement-head"><div class="achievement-name" data-dd-achievement-icon="1">${uiIcon("gameplay/trophy.svg")}<span>${escapeHtml(hidden?"???":a.name)}</span></div></div><div class="achievement-desc">${escapeHtml(hidden?tFn("Geheimes Achievement"):a.desc)}</div>${reward}<button type="button" class="achievement-owner-toggle" data-achievement-toggle aria-expanded="${expanded}" aria-controls="${detailsId}"><span class="achievement-owner-summary"><strong>${earnedCount}</strong><span>${escapeHtml(tFn("von"))}</span><strong>${profiles.length}</strong><span>${escapeHtml(tFn("Profilen geschafft"))}</span></span><span class="achievement-card-chevron" aria-hidden="true"></span></button><div id="${detailsId}" class="achievement-owners"${expanded?"":" hidden"}>${owners}</div></div>`;
     }).join("");
+
+    achievementList.querySelectorAll("[data-achievement-toggle]").forEach(toggle=>{
+      toggle.onclick=()=>{
+        const card=toggle.closest(".achievement-card");
+        const owners=document.getElementById(toggle.getAttribute("aria-controls"));
+        if(!card||!owners) return;
+        const id=card.dataset.achievementId;
+        const expanded=toggle.getAttribute("aria-expanded")==="true";
+        toggle.setAttribute("aria-expanded",String(!expanded));
+        owners.hidden=expanded;
+        if(expanded) expandedAchievementIds.delete(id); else expandedAchievementIds.add(id);
+      };
+    });
   }
 
   function aggregateAbilityStats(){

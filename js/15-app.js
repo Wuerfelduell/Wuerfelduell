@@ -174,7 +174,7 @@
   $("menuProfilesBtn").onclick=()=>openProfileManagement("menu");
   $("menuAccountBtn").onclick=()=>{window.WDCloudAccount?.open?.(openFrontScreen);};
   $("accountBackBtn").onclick=openMainMenu;
-  $("menuAchievementsBtn").onclick=()=>{renderAchievements();openFrontScreen(achievementsScreen);};
+  $("menuAchievementsBtn").onclick=()=>{resetAchievementsUi();renderAchievements();openFrontScreen(achievementsScreen);};
   $("menuPrestigeShopBtn").onclick=()=>{renderPrestigeShop();openFrontScreen(prestigeShopScreen);};
   prestigeShopBackBtn.onclick=openMainMenu;
   prestigeShopProfileSelect.onchange=renderPrestigeShop;
