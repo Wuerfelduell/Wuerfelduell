@@ -5626,6 +5626,17 @@ html[data-v28-rework="2"] .campaign-hub .campaign-node-map{
   border-image-repeat:stretch;
   border-radius:0;
   background:transparent}
+/* Die Knotenkachel trug bis V28.11.17 selbst einen vollen Ornamentrahmen
+   (navy-tile als 9-Slice). Zusammen mit dem Bildschirmrahmen lagen damit zwei
+   Stufe-1-Ornamente ineinander, was das Rahmensystem ausdruecklich auf eine
+   Flaeche je Bildschirm begrenzt. Jetzt eine ruhige Navy-Flaeche mit derselben
+   Haarlinie wie die Encounter-Detailkarte darunter. */
+html[data-v28-rework="2"] .campaign-hub .campaign-node-map{
+  border:1px solid rgba(214,165,60,.34)!important;
+  border-image:none!important;
+  border-radius:18px!important;
+  background:linear-gradient(155deg,#123b70,#071d43)!important;
+  box-shadow:0 10px 24px rgba(8,35,73,.14)!important}
 html[data-v28-rework="2"] .campaign-hub .campaign-node{
   position:relative;
   isolation:isolate;
@@ -5653,21 +5664,18 @@ html[data-v28-rework="2"] .campaign-hub .campaign-node.selected::before{
   inset:-8px;
   background-image:var(--p3-selected-node);
   filter:drop-shadow(0 0 10px rgba(255,209,87,.32))}
-/* Restore the route connector; Phase 2 used ::after for the selected frame. */
+/* Die Wegelinie zwischen den Knoten entfaellt seit V28.11.17. Sie ist bei
+   dieser Rasterdichte nicht sauber zu zeichnen: die Luecke zwischen zwei
+   Knoten ist 6,2 px, der Ring ragt aber 6 px ueber jeden Knoten hinaus. Die
+   Linie lag damit fast vollstaendig hinter den Ringen und stiess an deren
+   Zacken. Sichtbar blieb nur ein Splitter, der wie ein Fehler aussah.
+   Die Regel bleibt als Ausblendung stehen, damit keine der frueheren
+   Phasenregeln sie wieder hervorholt. */
 html[data-v28-rework="2"] .campaign-hub .campaign-node::after,
 html[data-v28-rework="2"] .campaign-hub .campaign-node.current::after,
 html[data-v28-rework="2"] .campaign-hub .campaign-node.selected::after{
   content:""!important;
-  position:absolute!important;
-  z-index:-2!important;
-  left:calc(100% - 1px)!important;
-  top:50%!important;
-  width:calc(100% + 9px)!important;
-  height:2px!important;
-  transform:none!important;
-  background:linear-gradient(90deg,rgba(104,206,146,.58),rgba(126,175,210,.30))!important;
-  filter:none;
-  pointer-events:none!important}
+  display:none!important}
 html[data-v28-rework="2"] .campaign-hub .campaign-node:nth-child(5n)::after{
   display:none!important}
 html[data-v28-rework="2"] .campaign-hub .campaign-node>span{
@@ -6366,17 +6374,20 @@ html[data-v28-rework="2"] .campaign-node-detail[data-p4-detail-tone="standard"].
   color:#e4ebf3;
   background:rgba(3,17,39,.36);
   border-color:rgba(214,165,60,.22)}
+/* !important noetig: .campaign-node-detail traegt weiter oben eine
+   Pergament-Fuellung mit !important. Ohne Markierung gewinnt die hier und der
+   Bossknoten bekam den Elfenbeinrahmen samt blassgrauen Innenkaesten.
+   Die Fuellung war bis V28.11.8 dunkelrot; auf Wunsch jetzt Navy wie bei den
+   uebrigen Encountern. Fuer Rot wieder die beiden Zeilen unten tauschen. */
 html[data-v28-rework="2"] .campaign-node-detail[data-p4-detail-tone="boss"],
 html[data-v28-rework="2"] .campaign-node-detail[data-p4-detail-tone="boss"].v28-prestige-detail:not(.v28-boss-detail){
-  padding:12px;
-  border:1px solid rgba(230,151,67,.38);
-  border-image:none;
-  border-radius:18px;
-  color:#fff2df;
-  background:
-    radial-gradient(circle at 50% 0%,rgba(211,42,55,.18),transparent 48%),
-    linear-gradient(160deg,#3b0d1b,#200713);
-  box-shadow:0 16px 34px rgba(47,4,15,.22)}
+  padding:12px!important;
+  border:1px solid rgba(214,165,60,.48)!important;
+  border-image:none!important;
+  border-radius:18px!important;
+  color:#fff3d5!important;
+  background:linear-gradient(155deg,#123b70,#071d43)!important;
+  box-shadow:0 12px 28px rgba(8,35,73,.16)!important}
 html[data-v28-rework="2"] .campaign-node-detail[data-p4-detail-tone="boss"] .node-detail-head{
   box-sizing:border-box;
   min-height:94px;
@@ -10958,12 +10969,25 @@ html[data-v28-rework="2"] .campaign-hub .campaign-world-btn.active{
   box-shadow:none;
   transform:none;
 }
+/* Der Weltrahmen ist 1536x512, also 3:1. Als gedehnter Hintergrund in einer
+   112x124-Kachel wurden die Eckornamente platt gequetscht und schnitten ins
+   Wappen. Deshalb hier als 9-Slice: die vier Ecken behalten ihre Form, nur die
+   geraden Kanten dehnen sich. Die Schnittwerte stehen in Quellpixeln.
+   Damit die Ecken nicht wieder verzerren, muessen sich border-image-width und
+   border-image-slice je Achse gleich verhalten: 130/17 senkrecht, 190/25
+   waagerecht, beides rund 1:7,6. Der Preis ist die Krone in der Mitte der
+   Oberkante, die mit der Kantenbreite schmal gezogen wird. */
 html[data-v28-rework="2"] .campaign-hub .campaign-world-btn::before{
   content:""!important;
   position:absolute!important;
   z-index:0!important;
   inset:0!important;
-  background:var(--world-frame-rect,var(--p1-ivory-card)) center/100% 100% no-repeat!important;
+  background:none!important;
+  border-style:solid!important;
+  border-color:transparent!important;
+  border-width:17px 25px!important;
+  border-image:var(--world-frame-rect,var(--p1-ivory-card)) 130 190 fill stretch!important;
+  border-image-width:17px 25px!important;
   filter:brightness(.92) drop-shadow(0 4px 5px color-mix(in srgb,var(--world-glow) 72%,transparent));
   opacity:1;
   pointer-events:none!important;

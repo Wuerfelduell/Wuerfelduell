@@ -1056,12 +1056,25 @@ html[data-v28-rework="2"] .campaign-hub .campaign-world-btn.active{
   box-shadow:none;
   transform:none;
 }
+/* Der Weltrahmen ist 1536x512, also 3:1. Als gedehnter Hintergrund in einer
+   112x124-Kachel wurden die Eckornamente platt gequetscht und schnitten ins
+   Wappen. Deshalb hier als 9-Slice: die vier Ecken behalten ihre Form, nur die
+   geraden Kanten dehnen sich. Die Schnittwerte stehen in Quellpixeln.
+   Damit die Ecken nicht wieder verzerren, muessen sich border-image-width und
+   border-image-slice je Achse gleich verhalten: 130/17 senkrecht, 190/25
+   waagerecht, beides rund 1:7,6. Der Preis ist die Krone in der Mitte der
+   Oberkante, die mit der Kantenbreite schmal gezogen wird. */
 html[data-v28-rework="2"] .campaign-hub .campaign-world-btn::before{
   content:""!important;
   position:absolute!important;
   z-index:0!important;
   inset:0!important;
-  background:var(--world-frame-rect,var(--p1-ivory-card)) center/100% 100% no-repeat!important;
+  background:none!important;
+  border-style:solid!important;
+  border-color:transparent!important;
+  border-width:17px 25px!important;
+  border-image:var(--world-frame-rect,var(--p1-ivory-card)) 130 190 fill stretch!important;
+  border-image-width:17px 25px!important;
   filter:brightness(.92) drop-shadow(0 4px 5px color-mix(in srgb,var(--world-glow) 72%,transparent));
   opacity:1;
   pointer-events:none!important;

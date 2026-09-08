@@ -5,6 +5,10 @@
   if (!pack) return;
 
   Object.assign(pack.exact, {
+    "Die Weltkacheln nutzen ihren Rahmen jetzt als 9-Slice: die Eckornamente behalten ihre Form, der Rahmen schließt die Kachel ringsum und schneidet nicht mehr ins Wappen": "World tiles now use their frame as a 9-slice: the corner ornaments keep their shape, the frame closes the tile on all sides and no longer cuts into the crest",
+    "Die Knotenkarte trägt keinen eigenen Ornamentrahmen mehr, sondern eine ruhige Navy-Fläche – zwei Ornamentrahmen ineinander widersprachen dem Rahmensystem": "The node map no longer carries an ornamental frame of its own, just a calm navy surface; two ornamental frames nested inside each other contradicted the frame system",
+    "Die Wegelinie zwischen den Kampagnenknoten entfällt: bei 6 Pixeln Lücke und 6 Pixeln Ringüberstand lag sie fast vollständig hinter den Ringen": "The route line between campaign nodes has been dropped: with a 6-pixel gap and a 6-pixel ring overhang it sat almost entirely behind the rings",
+    "Behoben (Folge aus V28.11.9): die Detailkarte eines Bosses war pergamentfarben mit Elfenbeinrahmen und blassgrauen Innenkästen; sie ist wieder navy": "Fixed (a consequence of V28.11.9): a boss detail card appeared parchment-colored with an ivory frame and washed-out grey inner boxes; it is navy again",
     "Der 3D-Würfelbecher ist entfallen: ein Prototyp, der nur im Testlabor lag und im Spiel nie zum Einsatz kam": "The 3D dice tray has been removed: a prototype that only existed in the test lab and was never used in the game itself",
     "Dadurch lädt der Start knapp ein Megabyte weniger, weil three.js und cannon-es nicht mehr geholt werden; das Spiel startet auch ohne erreichbares CDN": "Startup now loads almost a megabyte less, because three.js and cannon-es are no longer fetched; the game also starts when the CDN is unreachable",
     "Das Testlabor selbst bleibt vollständig erhalten": "The test lab itself remains fully intact",
