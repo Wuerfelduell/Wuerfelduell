@@ -5,6 +5,7 @@
   if (!pack) return;
 
   Object.assign(pack.exact, {
+    "Die Detailkarte eines Bosses ist wieder dunkelrot statt navy; die Innenkästen für Beschreibung, Challenge und Belohnung bleiben wie immer navy": "A boss detail card is dark red again instead of navy; the inner boxes for description, challenge, and reward stay navy as always",
     "Die Weltkacheln nutzen ihren Rahmen jetzt als 9-Slice: die Eckornamente behalten ihre Form, der Rahmen schließt die Kachel ringsum und schneidet nicht mehr ins Wappen": "World tiles now use their frame as a 9-slice: the corner ornaments keep their shape, the frame closes the tile on all sides and no longer cuts into the crest",
     "Die Knotenkarte trägt keinen eigenen Ornamentrahmen mehr, sondern eine ruhige Navy-Fläche – zwei Ornamentrahmen ineinander widersprachen dem Rahmensystem": "The node map no longer carries an ornamental frame of its own, just a calm navy surface; two ornamental frames nested inside each other contradicted the frame system",
     "Die Wegelinie zwischen den Kampagnenknoten entfällt: bei 6 Pixeln Lücke und 6 Pixeln Ringüberstand lag sie fast vollständig hinter den Ringen": "The route line between campaign nodes has been dropped: with a 6-pixel gap and a 6-pixel ring overhang it sat almost entirely behind the rings",
