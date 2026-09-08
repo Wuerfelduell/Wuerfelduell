@@ -5,6 +5,12 @@
   if (!pack) return;
 
   Object.assign(pack.exact, {
+    "Die Statistikseite nutzt die Bildschirmbreite besser: das Raster der sechs Übersichtskarten wächst von 320 auf 346 Pixel, die Namensspalte der Fähigkeitentabelle von 94 auf 185 Pixel": "The statistics page makes better use of the screen width: the grid of the six overview cards grows from 320 to 346 pixels, the name column of the ability table from 94 to 185 pixels",
+    "Kein Fähigkeitsname wird mehr abgeschnitten; bei 360 Pixeln Gerätebreite waren es vorher 23 von 25": "No ability name is cut off any more; at 360 pixels of device width, 23 out of 25 used to be",
+    "Profilkarten und Fähigkeitentabelle tragen den schlanken Rahmen statt der Ornamentrahmen, die sich bei hohen Karten in die Länge zogen": "Profile cards and the ability table use the slim frame instead of the ornamental frames, which stretched out on tall cards",
+    "Die hellen Rechtecke hinter den sechs Übersichtskarten sind weg; jede Karte endet an ihrem eigenen Goldrahmen": "The light rectangles behind the six overview cards are gone; every card ends at its own gold frame",
+    "Spielerprofile starten zugeklappt mit Name, Kennung, Runden, Siegen und Winrate und klappen per Antippen auf; der Weg zur Fähigkeitentabelle ist dadurch deutlich kürzer": "Player profiles start collapsed with name, tag, rounds, wins and win rate, and expand on tap; this makes the way down to the ability table much shorter",
+    "Alle Bilder liegen jetzt in ihrer tatsächlichen Anzeigegröße vor statt bis zu 37-fach überabgetastet; das spart 1,9 Megabyte beim Laden": "All images are now stored at their actual display size instead of being oversampled by up to 37 times; this saves 1.9 megabytes on load",
     "Die Symbole der vier großen Menüknöpfe sitzen jetzt senkrecht mittig auf der Höhe ihrer Beschriftung; Globus, Burg und Buch ragten vorher über den unteren Goldrahmen": "The icons on the four large menu buttons now sit vertically centred at the height of their label; the globe, castle, and book previously overhung the lower gold frame",
     "Die Abstände zwischen den vier großen Knöpfen sind von 7 auf 5 Pixel verkleinert, der Knopfblock ist dadurch 6 Pixel kompakter": "The gaps between the four large buttons have been reduced from 7 to 5 pixels, making the button block 6 pixels more compact",
     "Das violette PREP-Schild auf der Account-Kachel und das BETA-Schild im Online-Knopf sind entfallen": "The purple PREP badge on the Account tile and the BETA badge in the Online button have been removed",
