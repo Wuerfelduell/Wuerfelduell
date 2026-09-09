@@ -123,16 +123,28 @@
     const frame=frameItem?.name||tFn("Kein Rahmen");
     const dice=DICE_DESIGNS[profile.selectedDice]?.name||"Classic";
     const fx=ATTACK_FX_STYLES[profile.selectedAttackFx]?.name||"Arc Shot";
+    // Ganze vorhandene Buttonbilder: nur die geraden Zwischenbereiche
+    // wachsen in der Breite, die Ornamentbereiche behalten ihren Massstab.
+    const buttonArtwork=kind=>{
+      const green=kind==="green",navy=kind==="navy";
+      const file=green?"components/encounter-button-green.webp":`frames/${navy?"navy-button-horizontal":kind==="red"?"danger-button":"gold-special-button"}.webp`;
+      const width=green?1926:1536,height=green?642:512;
+      const xs=green?[0,300,1626,1926]:navy?[0,128,688,848,1408,1536]:[0,192,688,848,1344,1536];
+      // Beim gruenen Bild entfaellt nur transparenter Aussenraum (Motiv: y=180..457).
+      const top=green?176:0,viewHeight=green?286:512;
+      const tiles=xs.slice(0,-1).map((x,i)=>`<svg viewBox="${x} ${top} ${xs[i+1]-x} ${viewHeight}" preserveAspectRatio="none" focusable="false"><image href="assets/ui/v28/png/${file}" width="${width}" height="${height}"/></svg>`).join("");
+      return `<span class="prestige-button-artwork" data-artwork="${kind}" aria-hidden="true">${tiles}</span>`;
+    };
     const section=(key,label,content,bodyClass)=>{
       const open=expanded.has(key),bodyId=`prestige-section-${key}`;
-      return `<button type="button" class="prestige-section-toggle" data-shop-section="${key}" aria-expanded="${open}" aria-controls="${bodyId}"><span>${tFn(label)}</span><span class="prestige-section-chevron" aria-hidden="true"></span></button><div id="${bodyId}" class="${bodyClass}"${open?"":" hidden"}>${content}</div>`;
+      return `<button type="button" class="prestige-section-toggle" data-shop-section="${key}" aria-expanded="${open}" aria-controls="${bodyId}">${buttonArtwork("navy")}<span>${tFn(label)}</span><span class="prestige-section-chevron" aria-hidden="true"></span></button><div id="${bodyId}" class="${bodyClass}"${open?"":" hidden"}>${content}</div>`;
     };
     const cosmetics=[
       ["title","Titel",title,"navigation/info.svg","Titel entfernen"],
       ["frame","Rahmen",frame,"gameplay/prestige.svg","Rahmen entfernen"],
       ["dice","Würfel",dice,"gameplay/dice.svg",null],
       ["attackfx","Effekt",fx,"gameplay/attack.svg","Effekt auf Arc Shot"]
-    ].map(([key,label,name,path,action])=>`<div class="prestige-cosmetic-row" data-cosmetic="${key}"><span class="prestige-cosmetic-label">${uiIcon(path)}<b>${tFn(label)}</b></span><span class="prestige-cosmetic-name">${escapeHtml(name)}</span>${action?`<button type="button" class="prestige-cosmetic-action" data-reset-cosmetic="${key}">${tFn(action)}</button>`:""}</div>`).join("");
+    ].map(([key,label,name,path,action])=>`<div class="prestige-cosmetic-row" data-cosmetic="${key}"><span class="prestige-cosmetic-label">${uiIcon(path)}<b>${tFn(label)}</b></span><span class="prestige-cosmetic-name">${escapeHtml(name)}</span>${action?`<button type="button" class="prestige-cosmetic-action" data-reset-cosmetic="${key}">${buttonArtwork("red")}<span>${tFn(action)}</span></button>`:""}</div>`).join("");
     prestigeEquipped.innerHTML=section("equipped","Aktive Kosmetik",cosmetics,"prestige-active-list");
     const categoryNames={title:"Titel",frame:"Rahmen",dice:"Würfel",attackfx:"Angriffseffekte"};
     const categories=new Map();
@@ -144,7 +156,7 @@
       const cards=items.map(item=>{
         const owned=prestigeItemOwned(profile,item),equipped=prestigeItemEquipped(profile,item),afford=trophies>=item.cost;
         const typeName=tFn(item.type==="attackfx"?"Angriffseffekt":categoryNames[item.type]);
-        const action=equipped?`<div class="prestige-item-action prestige-item-active">${uiIcon("gameplay/completed.svg")}<span>${tFn("Aktiv")}</span></div>`:owned?`<button type="button" class="prestige-item-action prestige-item-equip" data-shop-equip="${item.id}">${uiIcon("gameplay/prestige.svg")}<span>${tFn("Aktivieren")}</span></button>`:`<button type="button" class="prestige-item-action prestige-item-buy gold" data-shop-buy="${item.id}" ${afford?"":"disabled"}>${uiIcon("gameplay/trophy.svg")}<span>${item.cost} · ${tFn("Kaufen")}</span></button>`;
+        const action=equipped?`<div class="prestige-item-action prestige-item-active">${buttonArtwork("green")}${uiIcon("gameplay/completed.svg")}<span>${tFn("Aktiv")}</span></div>`:owned?`<button type="button" class="prestige-item-action prestige-item-equip" data-shop-equip="${item.id}">${uiIcon("gameplay/prestige.svg")}<span>${tFn("Aktivieren")}</span></button>`:`<button type="button" class="prestige-item-action prestige-item-buy gold" data-shop-buy="${item.id}" ${afford?"":"disabled"}>${buttonArtwork("gold")}${uiIcon("gameplay/trophy.svg")}<span>${item.cost} · ${tFn("Kaufen")}</span></button>`;
         // Auch der bisherige Maximalpreis im Beschreibungstext erscheint nur im Kaufbutton.
         const description=item.id==="dice_prestige"?"Teuerstes Würfelset im Shop.":item.desc;
         return `<div class="prestige-item${owned?" owned":""}${item.cost>=25?" expensive":""}" data-shop-item="${item.id}"><div class="prestige-item-kicker">${typeName}</div><div class="prestige-item-name">${escapeHtml(item.name)}</div><div class="prestige-item-desc">${escapeHtml(description)}</div>${action}</div>`;

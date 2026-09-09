@@ -5,6 +5,7 @@
   if (!pack) return;
 
   Object.assign(pack.exact, {
+    "Der Trophy Shop verwendet verzierte grüne Aktivfelder, goldene Kaufbuttons, blaue Aufklappleisten wie die Trophäenanzeige und rote Rücksetzbuttons; die vorhandenen Bildornamente behalten ihre Proportionen": "The Trophy Shop uses ornate green active indicators, gold purchase buttons, blue section headers matching the trophy display and red reset buttons; the existing image ornaments retain their proportions",
     "Der Trophy Shop gruppiert Artikel und aktive Kosmetik in aufklappbaren Abschnitten; Rücksetzaktionen stehen direkt beim passenden Eintrag": "The Trophy Shop groups items and active cosmetics into collapsible sections; reset actions sit directly beside their corresponding entry",
     "Artikelkarten enden ohne rechteckige Schattenunterlage; kleine Flächen tragen echte Goldrahmenbilder, Preise stehen einmal im Kaufbutton und Kaufen, Aktivieren sowie Aktiv sind farblich unterscheidbar": "Item cards have no rectangular shadow backing; small surfaces use actual gold frame images, prices appear once in the purchase button, and Buy, Activate and Active have distinct colours",
     "Die Fähigkeitsfelder der Spielvorbereitung verwenden das blaue Profil-Leistenbild mit Goldrahmen und Edelsteinen; auch vor dem Würfeln stehen Symbol und heller Statustext kompakt nebeneinander": "Ability fields in game setup use the blue Profiles bar image with its gold frame and gems; even before rolling, the icon and light status text sit compactly side by side",

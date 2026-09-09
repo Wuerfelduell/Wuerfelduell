@@ -1006,6 +1006,55 @@ html[data-v28-rework="2"] #prestigeShopScreen .prestige-item-action:focus-visibl
   }
 }
 
+/* Nur die angefragten Shopbuttons erhalten die vollstaendigen Ornamentbilder.
+   Der Bildstreifen skaliert in Ornamentbereichen gleichmaessig; ausschliesslich
+   gerade Zwischenbereiche werden horizontal gedehnt. */
+html[data-v28-rework="2"] #prestigeShopScreen .prestige-section-toggle,
+html[data-v28-rework="2"] #prestigeShopScreen .prestige-cosmetic-action,
+html[data-v28-rework="2"] #prestigeShopScreen .prestige-item>.prestige-item-active,
+html[data-v28-rework="2"] #prestigeShopScreen .prestige-item>.prestige-item-buy,
+html[data-v28-rework="2"] #prestigeShopScreen .prestige-item>button.prestige-item-buy:disabled{
+  position:relative;
+  isolation:isolate;
+  min-height:64px;
+  padding:14px 26px;
+  border:0;
+  border-image:none;
+  background:transparent!important;
+  box-shadow:none;
+}
+html[data-v28-rework="2"] #prestigeShopScreen .prestige-cosmetic-action{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  color:#fff4df;
+}
+html[data-v28-rework="2"] #prestigeShopScreen .prestige-button-artwork{
+  position:absolute;
+  inset-inline:0;
+  top:50%;
+  transform:translateY(-50%);
+  z-index:-1;
+  display:grid;
+  grid-template-columns:21.12px minmax(0,1fr) 17.6px minmax(0,1fr) 21.12px;
+  height:56.32px;
+  pointer-events:none;
+}
+html[data-v28-rework="2"] #prestigeShopScreen .prestige-button-artwork[data-artwork="navy"]{
+  grid-template-columns:14.08px minmax(0,1fr) 17.6px minmax(0,1fr) 14.08px;
+}
+html[data-v28-rework="2"] #prestigeShopScreen .prestige-button-artwork[data-artwork="green"]{
+  grid-template-columns:42px minmax(0,1fr) 42px;
+  height:40.04px;
+}
+html[data-v28-rework="2"] #prestigeShopScreen .prestige-button-artwork>svg{
+  display:block;
+  width:100%;
+  height:100%;
+  min-width:0;
+  overflow:hidden;
+}
+
 /* Achievements: slim-card bleibt auch mit unterschiedlich vielen Profilen proportional. */
 html[data-v28-rework="2"] #achievementsScreen .achievement-list{
   gap:10px;
