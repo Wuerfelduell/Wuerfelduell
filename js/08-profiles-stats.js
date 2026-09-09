@@ -110,6 +110,8 @@
     return false;
   }
   function renderPrestigeShop(){
+    // Aufklappzustand nur waehrend des Shopbesuchs erhalten, auch nach Aktionen.
+    const expanded=new Set(prestigeShopScreen.classList.contains("hidden")?[]:[...prestigeShopScreen.querySelectorAll('[data-shop-section][aria-expanded="true"]')].map(button=>button.dataset.shopSection));
     const profiles=saveData.profiles||[],old=prestigeShopProfileSelect.value||profiles[0]?.id||"";prestigeShopProfileSelect.innerHTML="";
     if(!profiles.length){const o=document.createElement("option");o.value="";o.textContent="Kein Profil vorhanden";prestigeShopProfileSelect.appendChild(o);prestigeShopTrophies.textContent="0";prestigeEquipped.textContent="Erstelle zuerst ein Profil.";prestigeShopList.innerHTML="";return;}
     profiles.forEach(p=>{const o=document.createElement("option");o.value=p.id;o.textContent=`${p.name} #${p.tagNumber}`;prestigeShopProfileSelect.appendChild(o);});prestigeShopProfileSelect.value=getProfile(old)?old:profiles[0].id;
@@ -121,8 +123,40 @@
     const frame=frameItem?.name||tFn("Kein Rahmen");
     const dice=DICE_DESIGNS[profile.selectedDice]?.name||"Classic";
     const fx=ATTACK_FX_STYLES[profile.selectedAttackFx]?.name||"Arc Shot";
-    prestigeEquipped.innerHTML=`<strong>${tFn("Aktiv")}</strong><div class="prestige-active-list"><span class="prestige-active-chip">${uiIcon("navigation/info.svg")}<b>${tFn("Titel")}</b> ${escapeHtml(title)}</span><span class="prestige-active-chip">${uiIcon("gameplay/prestige.svg")}<b>${tFn("Rahmen")}</b> ${escapeHtml(frame)}</span><span class="prestige-active-chip">${uiIcon("gameplay/dice.svg")}<b>${tFn("Würfel")}</b> ${escapeHtml(dice)}</span><span class="prestige-active-chip">${uiIcon("gameplay/attack.svg")}<b>${tFn("Effekt")}</b> ${escapeHtml(fx)}</span></div><div class="prestige-reset-row"><button type="button" class="secondary" data-reset-cosmetic="title">${tFn("Titel entfernen")}</button><button type="button" class="secondary" data-reset-cosmetic="frame">${tFn("Rahmen entfernen")}</button><button type="button" class="secondary" data-reset-cosmetic="attackfx">${tFn("Effekt auf Arc Shot")}</button></div>`;
-    prestigeShopList.innerHTML=PRESTIGE_SHOP_ITEMS.map(item=>{const owned=prestigeItemOwned(profile,item),equipped=prestigeItemEquipped(profile,item),afford=trophies>=item.cost;const typeName=tFn(item.type==="dice"?"Würfel":item.type==="frame"?"Rahmen":item.type==="attackfx"?"Angriffseffekt":"Titel");const button=equipped?`<button disabled>${uiIcon("gameplay/completed.svg")} ${tFn("Aktiv")}</button>`:owned?`<button class="good" data-shop-equip="${item.id}">${tFn("Ausrüsten")}</button>`:`<button class="gold" data-shop-buy="${item.id}" ${afford?"":"disabled"}>${uiIcon("gameplay/trophy.svg")} ${item.cost} · ${tFn("Kaufen")}</button>`;return `<div class="prestige-item${owned?" owned":""}${item.cost>=25?" expensive":""}"><div class="prestige-item-kicker">${typeName} · ${uiIcon("gameplay/trophy.svg")} ${item.cost}</div><div class="prestige-item-name">${escapeHtml(item.name)}</div><div class="prestige-item-desc">${escapeHtml(item.desc)}</div>${button}</div>`;}).join("");
+    const section=(key,label,content,bodyClass)=>{
+      const open=expanded.has(key),bodyId=`prestige-section-${key}`;
+      return `<button type="button" class="prestige-section-toggle" data-shop-section="${key}" aria-expanded="${open}" aria-controls="${bodyId}"><span>${tFn(label)}</span><span class="prestige-section-chevron" aria-hidden="true"></span></button><div id="${bodyId}" class="${bodyClass}"${open?"":" hidden"}>${content}</div>`;
+    };
+    const cosmetics=[
+      ["title","Titel",title,"navigation/info.svg","Titel entfernen"],
+      ["frame","Rahmen",frame,"gameplay/prestige.svg","Rahmen entfernen"],
+      ["dice","Würfel",dice,"gameplay/dice.svg",null],
+      ["attackfx","Effekt",fx,"gameplay/attack.svg","Effekt auf Arc Shot"]
+    ].map(([key,label,name,path,action])=>`<div class="prestige-cosmetic-row" data-cosmetic="${key}"><span class="prestige-cosmetic-label">${uiIcon(path)}<b>${tFn(label)}</b></span><span class="prestige-cosmetic-name">${escapeHtml(name)}</span>${action?`<button type="button" class="prestige-cosmetic-action" data-reset-cosmetic="${key}">${tFn(action)}</button>`:""}</div>`).join("");
+    prestigeEquipped.innerHTML=section("equipped","Aktive Kosmetik",cosmetics,"prestige-active-list");
+    const categoryNames={title:"Titel",frame:"Rahmen",dice:"Würfel",attackfx:"Angriffseffekte"};
+    const categories=new Map();
+    PRESTIGE_SHOP_ITEMS.forEach(item=>{
+      if(!categories.has(item.type)) categories.set(item.type,[]);
+      categories.get(item.type).push(item);
+    });
+    prestigeShopList.innerHTML=[...categories].map(([type,items])=>{
+      const cards=items.map(item=>{
+        const owned=prestigeItemOwned(profile,item),equipped=prestigeItemEquipped(profile,item),afford=trophies>=item.cost;
+        const typeName=tFn(item.type==="attackfx"?"Angriffseffekt":categoryNames[item.type]);
+        const action=equipped?`<div class="prestige-item-action prestige-item-active">${uiIcon("gameplay/completed.svg")}<span>${tFn("Aktiv")}</span></div>`:owned?`<button type="button" class="prestige-item-action prestige-item-equip" data-shop-equip="${item.id}">${uiIcon("gameplay/prestige.svg")}<span>${tFn("Aktivieren")}</span></button>`:`<button type="button" class="prestige-item-action prestige-item-buy gold" data-shop-buy="${item.id}" ${afford?"":"disabled"}>${uiIcon("gameplay/trophy.svg")}<span>${item.cost} · ${tFn("Kaufen")}</span></button>`;
+        // Auch der bisherige Maximalpreis im Beschreibungstext erscheint nur im Kaufbutton.
+        const description=item.id==="dice_prestige"?"Teuerstes Würfelset im Shop.":item.desc;
+        return `<div class="prestige-item${owned?" owned":""}${item.cost>=25?" expensive":""}" data-shop-item="${item.id}"><div class="prestige-item-kicker">${typeName}</div><div class="prestige-item-name">${escapeHtml(item.name)}</div><div class="prestige-item-desc">${escapeHtml(description)}</div>${action}</div>`;
+      }).join("");
+      return `<div class="prestige-category">${section(type,categoryNames[type],cards,"prestige-category-items")}</div>`;
+    }).join("");
+    prestigeShopScreen.querySelectorAll("[data-shop-section]").forEach(button=>button.onclick=()=>{
+      const open=button.getAttribute("aria-expanded")!=="true";
+      button.setAttribute("aria-expanded",String(open));
+      document.getElementById(button.getAttribute("aria-controls")).hidden=!open;
+      requestAnimationFrame(()=>layoutContainedScreen(prestigeShopScreen));
+    });
     prestigeShopList.querySelectorAll("[data-shop-buy]").forEach(btn=>btn.onclick=()=>{const item=PRESTIGE_SHOP_ITEMS.find(x=>x.id===btn.dataset.shopBuy),p=getProfile(prestigeShopProfileSelect.value);if(!p||!item||prestigeItemOwned(p,item)||(p.campaign.trophies||0)<item.cost)return;p.campaign.trophies-=item.cost;if(!p.prestigeCosmetics)p.prestigeCosmetics={owned:[],selectedTitle:null,selectedFrame:null};if(!p.prestigeCosmetics.owned.includes(item.id))p.prestigeCosmetics.owned.push(item.id);if(item.type==="dice"&&!p.unlockedDice.includes(item.value))p.unlockedDice.push(item.value);if(item.type==="attackfx"&&!p.unlockedAttackFx.includes(item.value))p.unlockedAttackFx.push(item.value);saveGameData();renderPrestigeShop();renderProfiles();});
     prestigeShopList.querySelectorAll("[data-shop-equip]").forEach(btn=>btn.onclick=()=>{const item=PRESTIGE_SHOP_ITEMS.find(x=>x.id===btn.dataset.shopEquip),p=getProfile(prestigeShopProfileSelect.value);if(!p||!item||!prestigeItemOwned(p,item))return;if(item.type==="dice")p.selectedDice=item.value;if(item.type==="title")p.prestigeCosmetics.selectedTitle=item.id;if(item.type==="frame")p.prestigeCosmetics.selectedFrame=item.id;if(item.type==="attackfx")p.selectedAttackFx=item.value;saveGameData();renderPrestigeShop();renderProfiles();});
     prestigeEquipped.querySelectorAll("[data-reset-cosmetic]").forEach(btn=>btn.onclick=()=>{const p=getProfile(prestigeShopProfileSelect.value);if(!p)return;if(btn.dataset.resetCosmetic==="title")p.prestigeCosmetics.selectedTitle=null;else if(btn.dataset.resetCosmetic==="frame")p.prestigeCosmetics.selectedFrame=null;else if(btn.dataset.resetCosmetic==="attackfx")p.selectedAttackFx="classic";saveGameData();renderPrestigeShop();renderProfiles();});

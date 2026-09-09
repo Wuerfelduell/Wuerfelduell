@@ -809,10 +809,11 @@ html[data-v28-rework="2"] #statsScreen .ability-stat-row:not(.header) span:not(.
   white-space:nowrap;
 }
 
-/* Trophy Shop: restore the complete ornate card instead of a thin line. */
+/* Trophy Shop: das vorhandene Artikelbild endet ohne rechteckige Unterlage. */
 html[data-v28-rework="2"] #prestigeShopScreen .prestige-shop-list{
   display:grid;
-  gap:14px;
+  grid-template-columns:minmax(0,1fr);
+  gap:10px;
   padding:3px 1px 10px;
 }
 html[data-v28-rework="2"] #prestigeShopScreen .prestige-item,
@@ -835,7 +836,7 @@ html[data-v28-rework="2"] #prestigeShopScreen .prestige-item.expensive{
      helle Text (#f7edda) steht unlesbar auf Pergament. */
   background:var(--v2893-achievement-card) center/100% 100% no-repeat!important;
   color:#f7edda;
-  box-shadow:0 10px 22px rgba(3,20,43,.18);
+  box-shadow:none;
 }
 html[data-v28-rework="2"] #prestigeShopScreen .prestige-item-kicker{
   color:#f0c967;
@@ -851,10 +852,158 @@ html[data-v28-rework="2"] #prestigeShopScreen .prestige-item-desc{
   color:#d4dfed;
   font-size:12px;
 }
-html[data-v28-rework="2"] #prestigeShopScreen .prestige-item>button{
+html[data-v28-rework="2"] #prestigeShopScreen .prestige-item>.prestige-item-action{
   width:100%;
   min-height:52px;
   margin-top:8px;
+}
+
+/* Shopabschnitte: dieselben Button-/hidden-Zustaende wie bei Profilen und
+   Achievements. Die Aktionen liegen ausserhalb des Aufklappbuttons. */
+html[data-v28-rework="2"] #prestigeShopScreen .prestige-equipped{
+  padding:0;
+  border:0;
+  border-image:none;
+  background:transparent;
+  box-shadow:none;
+}
+html[data-v28-rework="2"] #prestigeShopScreen .prestige-section-toggle,
+html[data-v28-rework="2"] #prestigeShopScreen .prestige-cosmetic-row,
+html[data-v28-rework="2"] #prestigeShopScreen .prestige-cosmetic-action,
+html[data-v28-rework="2"] #prestigeShopScreen .prestige-item>button.prestige-item-action:disabled,
+html[data-v28-rework="2"] #prestigeShopScreen .prestige-item>.prestige-item-action{
+  box-sizing:border-box;
+  min-width:0;
+  border-style:solid;
+  border-color:transparent;
+  border-width:1px;
+  border-image-source:var(--wd-strip);
+  border-image-slice:40 96 40 96;
+  border-image-width:4px 9.6px;
+  border-image-repeat:stretch;
+  border-radius:1px;
+  /* Die Bildkante liegt ueber der Fuellung, ohne hellen Zwischenstreifen.
+     Wichtig wegen der aelteren globalen Button-Hintergruende. */
+  background:var(--wd-navy) border-box!important;
+  box-shadow:none;
+  color:#f4f7ff;
+  text-shadow:none;
+  white-space:normal;
+  overflow-wrap:anywhere;
+  transform:none;
+}
+html[data-v28-rework="2"] #prestigeShopScreen .prestige-section-toggle{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  width:100%;
+  min-height:46px;
+  padding:10px 14px;
+  text-align:left;
+  font-size:15px;
+}
+html[data-v28-rework="2"] #prestigeShopScreen .prestige-section-chevron{
+  box-sizing:border-box;
+  width:10px;
+  height:10px;
+  flex:0 0 10px;
+  margin-right:2px;
+  border-right:2px solid #ffe09a;
+  border-bottom:2px solid #ffe09a;
+  transform:rotate(45deg) translate(-2px,-2px);
+}
+html[data-v28-rework="2"] #prestigeShopScreen .prestige-section-toggle[aria-expanded="true"] .prestige-section-chevron{
+  transform:rotate(225deg) translate(-2px,-2px);
+}
+html[data-v28-rework="2"] #prestigeShopScreen .prestige-active-list,
+html[data-v28-rework="2"] #prestigeShopScreen .prestige-category-items{
+  display:grid;
+  gap:8px;
+  margin-top:8px;
+}
+html[data-v28-rework="2"] #prestigeShopScreen .prestige-category-items{
+  grid-template-columns:repeat(auto-fit,minmax(min(100%,240px),1fr));
+  gap:12px;
+}
+html[data-v28-rework="2"] #prestigeShopScreen .prestige-active-list[hidden],
+html[data-v28-rework="2"] #prestigeShopScreen .prestige-category-items[hidden]{
+  display:none;
+}
+html[data-v28-rework="2"] #prestigeShopScreen .prestige-cosmetic-row{
+  display:grid;
+  grid-template-columns:80px minmax(0,1fr) auto;
+  align-items:center;
+  gap:7px;
+  width:100%;
+  padding:9px 12px;
+  min-height:44px;
+  font-size:12px;
+  line-height:1.4;
+}
+html[data-v28-rework="2"] #prestigeShopScreen .prestige-cosmetic-label{
+  display:flex;
+  align-items:center;
+  gap:5px;
+  color:#ffe09a;
+  white-space:nowrap;
+}
+html[data-v28-rework="2"] #prestigeShopScreen .prestige-cosmetic-name{
+  min-width:0;
+  overflow-wrap:anywhere;
+}
+html[data-v28-rework="2"] #prestigeShopScreen .prestige-cosmetic-action{
+  min-height:40px;
+  padding:8px 12px;
+  font-size:11px;
+  line-height:1.3;
+}
+html[data-v28-rework="2"] #prestigeShopScreen .prestige-item>.prestige-item-action{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:6px;
+  padding:9px 12px;
+  font-size:13px;
+  line-height:1.3;
+}
+html[data-v28-rework="2"] #prestigeShopScreen .prestige-cosmetic-label .dd-inline-icon,
+html[data-v28-rework="2"] #prestigeShopScreen .prestige-item-action .dd-inline-icon{
+  width:20px;
+  height:20px;
+  flex:0 0 20px;
+  object-fit:contain;
+  margin:0;
+}
+html[data-v28-rework="2"] #prestigeShopScreen .prestige-item>button.prestige-item-buy:disabled,
+html[data-v28-rework="2"] #prestigeShopScreen .prestige-item>.prestige-item-buy{
+  background:linear-gradient(180deg,#ffe6a2,#e9b94e) border-box!important;
+  color:#2c1904;
+}
+html[data-v28-rework="2"] #prestigeShopScreen .prestige-item>.prestige-item-active{
+  background:#125639 border-box!important;
+  color:#effff5;
+}
+html[data-v28-rework="2"] #prestigeShopScreen .prestige-item>button.prestige-item-buy:disabled{
+  min-height:52px;
+  color:#2c1904;
+  opacity:.65;
+  filter:none;
+}
+html[data-v28-rework="2"] #prestigeShopScreen .prestige-section-toggle:focus-visible,
+html[data-v28-rework="2"] #prestigeShopScreen .prestige-cosmetic-action:focus-visible,
+html[data-v28-rework="2"] #prestigeShopScreen .prestige-item-action:focus-visible{
+  outline:3px solid #71d9ff;
+  outline-offset:2px;
+}
+@media(max-width:600px){
+  html[data-v28-rework="2"] #prestigeShopScreen .prestige-cosmetic-row{
+    grid-template-columns:80px minmax(0,1fr);
+  }
+  html[data-v28-rework="2"] #prestigeShopScreen .prestige-cosmetic-action{
+    grid-column:1/-1;
+    width:100%;
+  }
 }
 
 /* Achievements: slim-card bleibt auch mit unterschiedlich vielen Profilen proportional. */
