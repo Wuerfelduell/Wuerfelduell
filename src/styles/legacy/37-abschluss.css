@@ -1012,6 +1012,7 @@ html[data-v28-rework="2"] #prestigeShopScreen .prestige-item-action:focus-visibl
 html[data-v28-rework="2"] #prestigeShopScreen .prestige-section-toggle,
 html[data-v28-rework="2"] #prestigeShopScreen .prestige-cosmetic-action,
 html[data-v28-rework="2"] #prestigeShopScreen .prestige-item>.prestige-item-active,
+html[data-v28-rework="2"] #prestigeShopScreen .prestige-item>.prestige-item-equip,
 html[data-v28-rework="2"] #prestigeShopScreen .prestige-item>.prestige-item-buy,
 html[data-v28-rework="2"] #prestigeShopScreen .prestige-item>button.prestige-item-buy:disabled{
   position:relative;
@@ -1053,6 +1054,23 @@ html[data-v28-rework="2"] #prestigeShopScreen .prestige-button-artwork>svg{
   height:100%;
   min-width:0;
   overflow:hidden;
+}
+html[data-v28-rework="2"] #prestigeShopScreen .prestige-cosmetic-row{
+  position:relative;
+  isolation:isolate;
+  min-height:52px;
+  padding:14px 12px 8px;
+  row-gap:2px;
+  border:0;
+  border-image:none;
+  background:transparent!important;
+}
+html[data-v28-rework="2"] #prestigeShopScreen .prestige-cosmetic-row>.prestige-button-artwork{
+  top:0;
+  bottom:0;
+  height:auto;
+  transform:none;
+  grid-template-rows:15.84px minmax(0,1fr) 15.84px;
 }
 
 /* Achievements: slim-card bleibt auch mit unterschiedlich vielen Profilen proportional. */

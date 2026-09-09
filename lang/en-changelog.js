@@ -5,6 +5,7 @@
   if (!pack) return;
 
   Object.assign(pack.exact, {
+    "Auch Aktivieren verwendet im Trophy Shop das verzierte blaue Buttonbild; jeder aktive Kosmetikeintrag besitzt einen eigenen passenden blauen Bildrahmen, der Informationen und Rücksetzbutton umfasst": "Activate now also uses the ornate blue button image in the Trophy Shop; each active cosmetic entry has its own matching blue image frame enclosing its information and reset button",
     "Der Trophy Shop verwendet verzierte grüne Aktivfelder, goldene Kaufbuttons, blaue Aufklappleisten wie die Trophäenanzeige und rote Rücksetzbuttons; die vorhandenen Bildornamente behalten ihre Proportionen": "The Trophy Shop uses ornate green active indicators, gold purchase buttons, blue section headers matching the trophy display and red reset buttons; the existing image ornaments retain their proportions",
     "Der Trophy Shop gruppiert Artikel und aktive Kosmetik in aufklappbaren Abschnitten; Rücksetzaktionen stehen direkt beim passenden Eintrag": "The Trophy Shop groups items and active cosmetics into collapsible sections; reset actions sit directly beside their corresponding entry",
     "Artikelkarten enden ohne rechteckige Schattenunterlage; kleine Flächen tragen echte Goldrahmenbilder, Preise stehen einmal im Kaufbutton und Kaufen, Aktivieren sowie Aktiv sind farblich unterscheidbar": "Item cards have no rectangular shadow backing; small surfaces use actual gold frame images, prices appear once in the purchase button, and Buy, Activate and Active have distinct colours",
