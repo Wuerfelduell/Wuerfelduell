@@ -5,6 +5,7 @@
   if (!pack) return;
 
   Object.assign(pack.exact, {
+    "Die Fähigkeitsfelder der Spielvorbereitung verwenden das blaue Profil-Leistenbild mit Goldrahmen und Edelsteinen; auch vor dem Würfeln stehen Symbol und heller Statustext kompakt nebeneinander": "Ability fields in game setup use the blue Profiles bar image with its gold frame and gems; even before rolling, the icon and light status text sit compactly side by side",
     "Die Achievementkarten sind bis an die Goldkante dunkelblau gefüllt; Profilzeilen, Aufklappflächen und Belohnungen verwenden vorhandene dünne Goldrahmenbilder": "Achievement cards are filled dark blue up to the gold edge; profile rows, expand controls and rewards use existing thin gold frame images",
     "Die Spielvorbereitung zeigt kompaktere Spielerfelder und eine dunkelblaue Fähigkeitszeile mit vollständigem Namen und Symbol": "Game setup shows more compact player fields and a dark blue ability row with the full name and icon",
     "Freie Wahl nutzt die Fähigkeitsauswahl der Kampagne; menschliche Spieler wählen vor dem Start bewusst eine Fähigkeit, Abbrechen behält die bisherige Auswahl": "Free Choice uses the campaign ability picker; human players explicitly select an ability before starting, and Cancel keeps the previous selection",

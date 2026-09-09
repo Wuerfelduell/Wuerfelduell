@@ -314,9 +314,33 @@
   function decorateSetupAbilityResults(){
     document.querySelectorAll("#setup .setup-ability-name").forEach(row => {
       if(!row.querySelector(".dd-inline-icon")){
-        const path = ABILITY_ICON_PATHS[Number(row.dataset.abilityId)];
+        const path = row.hasAttribute("data-setup-pending") ? "gameplay/dice.svg" : ABILITY_ICON_PATHS[Number(row.dataset.abilityId)];
         if(path) row.prepend(icon(path, "dd-inline-icon"));
       }
+    });
+    document.querySelectorAll("#setup .ability-roll, #setup .setup-ability-trigger").forEach(field => {
+      if(field.querySelector(":scope > .setup-ability-artwork")) return;
+      const frame = document.createElement("span");
+      frame.className = "setup-ability-artwork";
+      frame.setAttribute("aria-hidden", "true");
+      // Das Profil-Leistenbild enthaelt Textur, Ecken und mittige Edelsteine.
+      // Fuenf Spalten halten die Steine aus den dehnbaren Kanten heraus;
+      // drei Zeilen lassen auch mehrzeilige Felder ohne verzerrte Ecken zu.
+      const xs = [0,128,688,848,1408,1536];
+      const ys = [0,144,368,512];
+      for(let y=0;y<3;y++) for(let x=0;x<5;x++){
+        const tile = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+        tile.setAttribute("viewBox", `${xs[x]} ${ys[y]} ${xs[x+1]-xs[x]} ${ys[y+1]-ys[y]}`);
+        tile.setAttribute("preserveAspectRatio", "none");
+        tile.setAttribute("focusable", "false");
+        const art = document.createElementNS("http://www.w3.org/2000/svg", "image");
+        art.setAttribute("href", "assets/ui/v28/png/frames/navy-button-horizontal.webp?v=28.2.1");
+        art.setAttribute("width", "1536");
+        art.setAttribute("height", "512");
+        tile.append(art);
+        frame.append(tile);
+      }
+      field.prepend(frame);
     });
   }
 

@@ -78,7 +78,7 @@
       grid.appendChild(profileChoice);grid.appendChild(seat);grid.appendChild(diceReadout);
 
       const ability=document.createElement("div");ability.id="abilityResult"+i;ability.className="ability-roll";
-      ability.innerHTML=rules.id==="classic"?`🎲 Fähigkeit: <strong>noch nicht gewürfelt</strong>`:`🎲 ${rules.startAbilityCount} Startfähigkeiten: <strong>noch nicht gewürfelt</strong>`;
+      ability.innerHTML=`<span class="setup-ability-name" data-setup-pending><span>Noch nicht gewürfelt</span></span>`;
       const choice=document.createElement("select");choice.id="abilityChoice"+i;choice.className="ability-choice hidden";
       choice.setAttribute("aria-label","Fähigkeit wählen");
       const placeholder=document.createElement("option");placeholder.value="";placeholder.textContent="Fähigkeit wählen";placeholder.disabled=true;placeholder.hidden=true;choice.appendChild(placeholder);

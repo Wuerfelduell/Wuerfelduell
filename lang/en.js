@@ -788,6 +788,7 @@ window.WD_LANG_PACKS.en = {
     "Overload ist ein reiner Local-Modus: nur echte Spielerprofile, keine Bots, maximal 4 Spieler.":"Overload is local-only: real player profiles, no bots, max 4 players.",
     "Das normale Tutorial erklärt die Grundregeln. Die Testumgebung ist unser Spiel-Labor und beeinflusst keinerlei Fortschritt.":"The regular tutorial covers the core rules. The Test Lab is our sandbox and does not affect any progress.",
     "noch nicht gewürfelt":"not rolled yet",
+    "Noch nicht gewürfelt":"Not rolled yet",
     "Fähigkeit:":"Ability:",
     "Startfähigkeiten:":"Starting abilities:",
     "Local-Modus":"Local mode",

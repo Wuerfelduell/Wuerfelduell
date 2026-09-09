@@ -12146,29 +12146,54 @@ html[data-v28-rework="2"] #setup .setup-grid .setup-dice-readonly{
 }
 html[data-v28-rework="2"] #setup .ability-roll,
 html[data-v28-rework="2"] #setup .setup-ability-trigger{
+  position:relative;
+  isolation:isolate;
   box-sizing:border-box;
   width:100%;
-  min-height:52px;
+  min-height:56px;
   height:auto;
   margin:6px 0 0;
-  padding:4px 6px!important;
-  border-style:solid;
-  border-color:transparent;
-  border-width:8px 12px!important;
-  border-image-source:var(--wd-strip);
-  border-image-slice:40 96 40 96;
-  border-image-width:8px 12px!important;
-  border-image-repeat:stretch;
-  background:var(--wd-navy)!important;
+  padding:10px 16px!important;
+  border:0!important;
+  border-image:none!important;
+  background:transparent!important;
+  box-shadow:none;
   color:#f4f7ff;
   text-shadow:none;
   text-align:left;
   font-size:14px;
   line-height:1.25;
 }
+/* Ausschliesslich vorhandenes Profil-Leistenbild, kein nachgebauter Rahmen.
+   Feste Bildbereiche werden in beiden Achsen mit Faktor 0.1 dargestellt. */
+html[data-v28-rework="2"] #setup .setup-ability-artwork{
+  position:absolute;
+  inset:0;
+  z-index:0;
+  display:grid;
+  grid-template-columns:12.8px minmax(0,1fr) 16px minmax(0,1fr) 12.8px;
+  grid-template-rows:14.4px minmax(0,1fr) 14.4px;
+  pointer-events:none;
+}
+html[data-v28-rework="2"] #setup .setup-ability-artwork>svg{
+  display:block;
+  width:100%;
+  height:100%;
+  min-width:0;
+  min-height:0;
+  overflow:hidden;
+}
+html[data-v28-rework="2"] #setup .setup-ability-name,
+html[data-v28-rework="2"] #setup .setup-ability-trigger>.dd-trigger-icon,
+html[data-v28-rework="2"] #setup .setup-ability-trigger>span:not(.setup-ability-artwork),
+html[data-v28-rework="2"] #setup .setup-ability-trigger::after{
+  position:relative;
+  z-index:1;
+}
 html[data-v28-rework="2"] #setup .ability-roll{
   flex-direction:column;
   align-items:stretch;
+  justify-content:center;
   gap:6px;
 }
 html[data-v28-rework="2"] #setup .ability-roll.hidden{
@@ -12179,6 +12204,7 @@ html[data-v28-rework="2"] #setup .setup-ability-name{
   align-items:center;
   gap:8px;
   min-width:0;
+  color:inherit;
   overflow-wrap:anywhere;
   font:800 14px/1.25 Georgia,"Times New Roman",serif;
 }
