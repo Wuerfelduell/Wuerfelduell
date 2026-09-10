@@ -1,0 +1,246 @@
+{
+  "schema": 1,
+  "active": true,
+  "finished": false,
+  "phase": "combat",
+  "stage": 9,
+  "cleared": 9,
+  "preparedStage": 9,
+  "profileIds": [
+    "a",
+    "b",
+    "c"
+  ],
+  "heroes": {
+    "a": {
+      "hp": 50,
+      "maxHp": 50,
+      "primaryAbility": 3,
+      "secondAbility": 4,
+      "thirdAbility": null,
+      "perks": {
+        "refinement": 1
+      },
+      "openingUsedStage": -1,
+      "bulwarkUsedStage": -1,
+      "successfulAttacks": 0,
+      "stageKills": 0,
+      "xpEarned": 0
+    },
+    "b": {
+      "hp": 50,
+      "maxHp": 50,
+      "primaryAbility": 3,
+      "secondAbility": 4,
+      "thirdAbility": null,
+      "perks": {},
+      "openingUsedStage": -1,
+      "bulwarkUsedStage": -1,
+      "successfulAttacks": 0,
+      "stageKills": 0,
+      "xpEarned": 0
+    },
+    "c": {
+      "hp": 50,
+      "maxHp": 50,
+      "primaryAbility": 3,
+      "secondAbility": 4,
+      "thirdAbility": null,
+      "perks": {},
+      "openingUsedStage": -1,
+      "bulwarkUsedStage": -1,
+      "successfulAttacks": 0,
+      "stageKills": 0,
+      "xpEarned": 0
+    }
+  },
+  "rewardHistory": [],
+  "bossXpAwards": [],
+  "paths": [
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    [
+      {
+        "encounterId": "trio_helix_apex",
+        "label": "Helix Apex + Seal Crimson + Seal Azure + Seal Amber",
+        "difficulty": "hard",
+        "phaseHeal": 8,
+        "phaseAbilityCount": 3,
+        "enemies": [
+          {
+            "name": "Helix Apex",
+            "hp": 54,
+            "abilityCount": 3
+          },
+          {
+            "name": "Seal Crimson",
+            "hp": 22,
+            "abilityCount": 3
+          },
+          {
+            "name": "Seal Azure",
+            "hp": 22,
+            "abilityCount": 3
+          },
+          {
+            "name": "Seal Amber",
+            "hp": 22,
+            "abilityCount": 3
+          }
+        ],
+        "pressure": 210,
+        "build": {
+          "enemies": [
+            {
+              "name": "Helix Apex",
+              "hp": 54,
+              "abilities": [
+                21,
+                11,
+                24
+              ]
+            },
+            {
+              "name": "Seal Crimson",
+              "hp": 22,
+              "abilities": [
+                25,
+                17,
+                9
+              ]
+            },
+            {
+              "name": "Seal Azure",
+              "hp": 22,
+              "abilities": [
+                1,
+                4,
+                23
+              ]
+            },
+            {
+              "name": "Seal Amber",
+              "hp": 22,
+              "abilities": [
+                16,
+                10,
+                8
+              ]
+            }
+          ],
+          "phaseAbilities": [
+            18,
+            13,
+            12
+          ]
+        }
+      }
+    ]
+  ],
+  "selectedPaths": [
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    {
+      "encounterId": "trio_helix_apex",
+      "label": "Helix Apex + Seal Crimson + Seal Azure + Seal Amber",
+      "difficulty": "hard",
+      "phaseHeal": 8,
+      "phaseAbilityCount": 3,
+      "enemies": [
+        {
+          "name": "Helix Apex",
+          "hp": 54,
+          "abilityCount": 3
+        },
+        {
+          "name": "Seal Crimson",
+          "hp": 22,
+          "abilityCount": 3
+        },
+        {
+          "name": "Seal Azure",
+          "hp": 22,
+          "abilityCount": 3
+        },
+        {
+          "name": "Seal Amber",
+          "hp": 22,
+          "abilityCount": 3
+        }
+      ],
+      "pressure": 210,
+      "build": {
+        "enemies": [
+          {
+            "name": "Helix Apex",
+            "hp": 54,
+            "abilities": [
+              21,
+              11,
+              24
+            ]
+          },
+          {
+            "name": "Seal Crimson",
+            "hp": 22,
+            "abilities": [
+              25,
+              17,
+              9
+            ]
+          },
+          {
+            "name": "Seal Azure",
+            "hp": 22,
+            "abilities": [
+              1,
+              4,
+              23
+            ]
+          },
+          {
+            "name": "Seal Amber",
+            "hp": 22,
+            "abilities": [
+              16,
+              10,
+              8
+            ]
+          }
+        ],
+        "phaseAbilities": [
+          18,
+          13,
+          12
+        ]
+      }
+    }
+  ],
+  "seenEncounters": [
+    "trio_helix_apex"
+  ],
+  "deferredRewards": [],
+  "rewardTasks": [],
+  "rewardTurn": 0,
+  "swapPending": null,
+  "bossXpEarned": 0,
+  "abilityLevelOverrides": {
+    "a": {
+      "3": 1
+    }
+  }
+}

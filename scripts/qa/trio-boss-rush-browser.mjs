@@ -45,19 +45,39 @@ try{
  assert.equal((await snap()).stage,1);assert.equal(await p.locator('[data-rush-path]').count(),3);
  await p.click('[data-rush-path="0"]');await pause();assert.equal(await p.evaluate(id=>players.find(p=>p.profileId===id).ability,ids[0]),changed);
  // A complete run using the real transition/reward UI; combat victories are test fixtures.
- for(let stage=1;stage<10;stage++){
+ for(let stage=1;stage<15;stage++){
+   if([9,14].includes(stage)){
+     const checkpoint=await snap();
+     await p.reload();await openTeam(ids);await p.click('[data-rush-resume="yes"]');await pause();
+     assert.deepEqual((await snap()).selectedPaths,checkpoint.selectedPaths,'späte Pfade nach Reload identisch');
+     assert.equal((await snap()).stageCount,15);
+     assert.deepEqual(await p.evaluate(()=>players.filter(p=>p.campaignTeam==='enemy').map(p=>p.hp)),checkpoint.selectedPaths[stage].enemies.map(e=>e.hp));
+   }
    await win();
-   if(stage===9)break;
+   if(stage===14)break;
    while((await snap()).phase==='reward'){
      const slot=p.locator('[data-rush-slot]');
      if(await slot.count())await slot.first().click();
      else await p.locator('[data-boss-rush-reward]').filter({hasNot:p.locator('[data-rush-slot]')}).first().click();
      await pause();
    }
-   if(stage<8){assert.equal(await p.locator('[data-rush-path]').count(),3);await p.click('[data-rush-path="1"]');await pause();}
-   else {assert.equal((await snap()).selectedPaths[9].encounterId,'trio_helix_apex');assert.equal(await p.evaluate(()=>players.filter(p=>p.campaignTeam==='enemy').length),4);await p.screenshot({path:'/tmp/trio-rush-final-battle.png'});}
+   if(stage===8){
+     for(const language of ['de','en']){
+       await p.evaluate(language=>localStorage.setItem('diceduel_language',language),language);
+       await p.reload();await openTeam(ids);await p.click('[data-rush-resume="yes"]');await pause();
+       assert((await p.locator('#trioBossRushRewardText').innerText()).includes(language==='de'?'Ultraschwer':'Ultra hard'));
+       for(const width of [320,360,390,412,1280]){
+         await p.setViewportSize({width,height:900});await p.locator('[data-rush-path]').last().scrollIntoViewIfNeeded();
+         assert(await p.locator('[data-rush-path]').evaluateAll(nodes=>nodes.every(e=>e.scrollWidth<=e.clientWidth+1)));
+       }
+     }
+     await p.setViewportSize({width:390,height:844});await p.locator('[data-rush-path]').first().scrollIntoViewIfNeeded();
+     await p.screenshot({path:'/tmp/trio-ultra-paths.png'});
+   }
+   if(stage<13){assert.equal(await p.locator('[data-rush-path]').count(),3);await p.click('[data-rush-path="1"]');await pause();}
+   else {assert.equal((await snap()).selectedPaths[14].encounterId,'trio_helix_apex');assert.equal(await p.evaluate(()=>players.filter(p=>p.campaignTeam==='enemy').length),4);await p.screenshot({path:'/tmp/trio-rush-final-battle.png'});}
  }
- r=await snap();assert(r.finished);assert.equal(new Set(r.selectedPaths.map(o=>o.encounterId)).size,10);
+ r=await snap();assert(r.finished);assert.equal(new Set(r.selectedPaths.map(o=>o.encounterId)).size,15);
  assert.equal(await p.evaluate(()=>Object.keys(saveData.trioBossRushRuns).length),0);assert.equal(await p.locator('#roundStandings .round-score-row').count(),3);
  // Another run: path rerolls, four perks + ability, reward reroll and defeat.
  await p.evaluate(()=>returnToTrioCampaignMap());await openTeam(ids);
@@ -113,7 +133,22 @@ try{
  assert(await p.evaluate(()=>winnerText.textContent.includes('Challenge')));
  await p.evaluate(()=>{returnToTrioCampaignMap();openMainMenu(true);});assert(await p.evaluate(()=>window.WDBossRush===null));
  console.log('ok: Motorabschluss, Proviantteilung an beide Mitspieler, Trio/Duo-Verteiler, gemeinsamer XP-Zähler, getrennte Saves nach Reload und normaler Trio-Kampf');
+ // Ein echter Zehner-Spielstand aus 28.12.3 bleibt fortsetzbar und endet weiterhin bei 10.
+ const legacy=JSON.parse(fs.readFileSync('scripts/qa/fixtures/trio-rush-v28.12.3.json','utf8'));
+ await p.evaluate(({legacy,ids})=>{
+   returnToTrioCampaignMap();
+   const oldIds=legacy.profileIds;
+   legacy.heroes=Object.fromEntries(ids.map((id,i)=>[id,legacy.heroes[oldIds[i]]]));
+   legacy.abilityLevelOverrides=Object.fromEntries(ids.map((id,i)=>[id,legacy.abilityLevelOverrides?.[oldIds[i]]||{}]));
+   legacy.profileIds=ids;saveData.trioBossRushRuns[JSON.stringify([...ids].sort())]=legacy;saveGameData();
+ },{legacy,ids});
+ await p.reload();await openTeam(ids);await p.click('[data-rush-resume="yes"]');await pause();
+ assert.equal((await snap()).stageCount,10);assert.equal((await snap()).stage,9);
+ assert.equal((await snap()).heroes[ids[0]].perks.refinement,1);
+ assert.equal((await snap()).abilityLevelOverrides[ids[0]][3],1);
+ await win();assert((await snap()).finished);assert.equal((await snap()).cleared,10);
+ console.log('ok: gespeicherter Zehner-Run bleibt unverändert spielbar; Stufe 10/15 neuer Runs übersteht Reload');
  await checkRushMasteryBrowser({p,ids,mode:'trio',open:openTeam,win,pause,snap});
  assert.deepEqual(errors,[]);
- console.log('ok: drei Pfade, Gegner-HP, Kampf-Reload, zwei Schritte und Reward-Reload, XP einmalig, zehn Stufen, fester Endboss, Speicher nach Sieg leer');
+ console.log('ok: drei Pfade, Gegner-HP, Kampf-Reload, zwei Schritte und Reward-Reload, XP einmalig, 15 Stufen, fester Endboss, Speicher nach Sieg leer');
 }catch(e){console.log('Browserfehler',errors);console.log('Trio-Status',await snap());throw e;}finally{await browser.close();server.close();}

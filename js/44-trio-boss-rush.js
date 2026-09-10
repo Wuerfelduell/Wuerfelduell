@@ -2,7 +2,10 @@
   const ICON_ROOT="assets/ui/v28/svg/gameplay/";
   // Druckbudget = Gesamt-HP * (1 + 0,25 je zusätzlichem Gegner).
   // Getrennte, chronologisch geordnete Vorräte verhindern Wiederholungen.
-  const STAGES=Object.freeze([45,54,64.5,76.5,91.5,108,127.5,150,177,210]);
+  const STAGES=Object.freeze([45,54,64.5,76.5,91.5,108,127.5,150,177,280,350,440,550,690,870]);
+  // Offene Runs vor 28.12.4 behalten ihre zehn Stufen samt Originalangeboten.
+  const stageCount=()=>run?.stageCount||STAGES.length;
+  const ultraStage=()=>stageCount()===15&&run?.stage>=9;
   const FINAL_ENCOUNTER_ID="trio_helix_apex";
   const DIFFICULTIES=Object.freeze([
     {id:"easy",name:"leicht",factor:.94,loot:"3 gewöhnliche Belohnungen"},
@@ -18,20 +21,23 @@
     return !!(encounter.isBoss||encounter.isMiniBoss||[4,9,14].includes(world.findIndex(e=>e.id===encounter.id)));
   }
 
-  function stagePool(index){
-    if(index===9)return [trioEncounterById(FINAL_ENCOUNTER_ID)].filter(Boolean);
+  function stagePool(index,count=stageCount()){
+    if(index===count-1)return [trioEncounterById(FINAL_ENCOUNTER_ID)].filter(Boolean);
     const pool=TRIO_CAMPAIGN_ENCOUNTERS.filter(e=>e.id!==FINAL_ENCOUNTER_ID&&e.enemies.length>0);
-    // Boss-/Miniboss-Encounter erst als Zwischenprüfung auf Stufe 5 anbieten.
-    if(index===4)return pool.filter(isBossEncounter);
-    const normal=pool.filter(e=>!isBossEncounter(e)),slot=[0,1,2,3,5,6,7,8].indexOf(index);
-    return normal.slice(Math.floor(slot*normal.length/8),Math.floor((slot+1)*normal.length/8));
+    const bosses=pool.filter(isBossEncounter);
+    if(index===4)return count===10?bosses:bosses.slice(0,Math.floor(bosses.length/2));
+    if(index===9&&count===15)return bosses.slice(Math.floor(bosses.length/2));
+    const slots=count===10?[0,1,2,3,5,6,7,8]:[0,1,2,3,5,6,7,8,10,11,12,13];
+    const normal=pool.filter(e=>!isBossEncounter(e)),slot=slots.indexOf(index);
+    return normal.slice(Math.floor(slot*normal.length/slots.length),Math.floor((slot+1)*normal.length/slots.length));
   }
 
-  function optionFor(encounter,index,difficulty){
+  function optionFor(encounter,index,difficulty,count=stageCount()){
     const weight=1+.25*(encounter.enemies.length-1);
     const rawTotal=encounter.enemies.reduce((n,e)=>n+e.hp,0);
-    // Drei statt zwei Helden: Duo-Druckbudget × 1,5, auch beim festen Endboss.
-    const total=Math.round(STAGES[index]*(index===9?1:DIFFICULTIES.find(d=>d.id===difficulty).factor)/weight);
+    // Stufe 1–9 behalten ihr Budget; ab 10 folgt die Ultra-Kurve.
+    const budget=count===10&&index===9?210:STAGES[index];
+    const total=Math.round(budget*(index===count-1?1:DIFFICULTIES.find(d=>d.id===difficulty).factor)/weight);
     let remaining=total;
     const enemies=encounter.enemies.map((e,i)=>{
       const hp=i===encounter.enemies.length-1?remaining:Math.max(1,Math.round(total*e.hp/rawTotal));
@@ -39,7 +45,7 @@
       return {name:e.name,hp,abilityCount:index<3?2:3};
     });
     return {encounterId:encounter.id,label:enemies.map(e=>e.name).join(" + "),difficulty,
-      phaseHeal:Math.min(8,3+Math.floor(index*.6)),phaseAbilityCount:index<3?2:3,enemies,pressure:total*weight};
+      phaseHeal:count===15&&index>=9?12+4*(index-9):Math.min(8,3+Math.floor(index*.6)),phaseAbilityCount:index<3?2:3,enemies,pressure:total*weight};
   }
 
   // Visual world identities are indexed by stage, never rolled. Repeated
@@ -186,7 +192,7 @@
     };
     return {
       ...base,
-      title:`Boss Rush ${run.stage+1}/${STAGES.length} · ${stage.label}`,
+      title:`Boss Rush ${run.stage+1}/${stageCount()} · ${stage.label}`,
       subtitle:tr(enemies.length>1?"Fortlaufender Trio-Gruppenkampf":"Fortlaufender Trio-Bosskampf"),
       desc:tr(`Besiegt ${stage.label}. Gegnerfähigkeiten wechseln bei jedem neuen Run; Spieler-HP, Rush-Fähigkeiten und Belohnungen werden übernommen.`),
       requires:[],
@@ -226,17 +232,17 @@
     const banner=$("encounterRuleBanner"),status=banner?.querySelector(".boss-rush-live"),stage=stageConfig();
     if(!banner||!status||!stage)return;
     const phaseValue=livePhaseValue();
-    const signature=[run.stage,stage.label,phaseValue,run.bossXpEarned].join("|");
+    const signature=[stageCount(),run.stage,stage.label,phaseValue,run.bossXpEarned].join("|");
     if(status.dataset.bossRushStatus!==signature){
       status.dataset.bossRushStatus=signature;
       status.classList.add("boss-rush-status-items");
       status.replaceChildren(
-        liveStatusItem("Stufe",`${run.stage+1} / ${STAGES.length}`),
+        liveStatusItem("Stufe",`${run.stage+1} / ${stageCount()}`),
         liveStatusItem("Boss",stage.label),
         liveStatusItem("Phase",phaseValue),
         liveStatusItem("XP",run.profileIds.map(id=>`${getProfile(id)?.name}: ${heroState(id)?.xpEarned||0}`).join(" · "))
       );
-      status.setAttribute("aria-label",tr(`Boss Rush, Stufe ${run.stage+1} von ${STAGES.length}, Boss ${stage.label}, Phase ${phaseValue}, ${run.bossXpEarned} ${tr("Basis-Boss-XP")}`));
+      status.setAttribute("aria-label",tr(`Boss Rush, Stufe ${run.stage+1} von ${stageCount()}, Boss ${stage.label}, Phase ${phaseValue}, ${run.bossXpEarned} ${tr("Basis-Boss-XP")}`));
     }
     banner.querySelectorAll(".phase-live").forEach(line=>{
       line.dataset.bossRushLegacyPhase="1";
@@ -248,7 +254,7 @@
     const stage=stageConfig();
     if(!run||!stage)return "";
     queueMicrotask(syncLiveStatus);
-    return tr(`Boss Rush ${run.stage+1}/${STAGES.length} · ${stage.label} · ${run.bossXpEarned} ${tr("Basis-Boss-XP")}`);
+    return tr(`Boss Rush ${run.stage+1}/${stageCount()} · ${stage.label} · ${run.bossXpEarned} ${tr("Basis-Boss-XP")}`);
   }
 
   function findHeroIndex(profileId){
@@ -533,7 +539,7 @@
     run.rewardHistory.push({stage:run.stage+1,profileId:String(profileId),rewardId,slot,abilityId,copy:copyReward,automatic});
     if(!copyReward&&!automatic){
       if(rewardId==="second_find")hero.secondFindLeft=(Number(hero.secondFindLeft)||0)+SECOND_FIND_STAGES;
-      else if((Number(hero.secondFindLeft)||0)>0&&run.stage<9){
+      else if((Number(hero.secondFindLeft)||0)>0&&run.stage<stageCount()-1){
         const partner=copyPartner(profileId);
         if(partner!=null){hero.secondFindLeft--;run.deferredRewards.push({dueStage:run.stage+1,profileId:partner,rewardId});}
       }
@@ -581,7 +587,7 @@
       const faellig=[],warten=[],vergeben=new Set();
       run.deferredRewards.forEach(r=>{
         if(r.dueStage>run.stage){warten.push(r);return;}
-        if(vergeben.has(String(r.profileId))){if(run.stage<9)warten.push({...r,dueStage:run.stage+1});return;}
+        if(vergeben.has(String(r.profileId))){if(run.stage<stageCount()-1)warten.push({...r,dueStage:run.stage+1});return;}
         vergeben.add(String(r.profileId));faellig.push(r);
       });
       run.deferredRewards=warten;
@@ -632,26 +638,26 @@
   }
 
   function stageDefinitions(){
-    return STAGES.map((_,index)=>({candidates:stagePool(index).flatMap(e=>(index===9?[DIFFICULTIES[2]]:DIFFICULTIES).map(d=>optionFor(e,index,d.id)))}));
+    return STAGES.map((_,index)=>({candidates:stagePool(index,STAGES.length).flatMap(e=>(index===STAGES.length-1?[DIFFICULTIES[2]]:DIFFICULTIES).map(d=>optionFor(e,index,d.id,STAGES.length)))}));
   }
   function ensurePaths(){
     if(run.paths[run.stage]?.length)return;
     const pool=shuffled(stagePool(run.stage).filter(e=>!run.seenEncounters.includes(e.id)));
-    const chosen=pool.slice(0,run.stage===9?1:3);
+    const chosen=pool.slice(0,run.stage===stageCount()-1?1:3);
     run.paths[run.stage]=chosen.map((encounter,i)=>{
-      const option=optionFor(encounter,run.stage,run.stage===9?"hard":DIFFICULTIES[i].id);
+      const option=optionFor(encounter,run.stage,run.stage===stageCount()-1?"hard":DIFFICULTIES[i].id);
       option.build=buildStage(option);run.seenEncounters.push(encounter.id);return option;
     });
   }
   function showPaths(){
-    if(run.stage===9){choosePath(0,true);return;}
+    if(run.stage===stageCount()-1){choosePath(0,true);return;}
     selectionLocked=false;
-    modal("Nächsten Gegner wählen",`${tr("Stufe")} ${run.stage+1} / 10 · ${tr("Schwerer Pfad, bessere Beute")}`);
+    modal("Nächsten Gegner wählen",`${tr("Stufe")} ${run.stage+1} / ${stageCount()} · ${tr(ultraStage()?"Ultraschwer":"Schwerer Pfad, bessere Beute")}`);
     const scouting=run.profileIds.some(id=>perk(id,"scout")>0);
     $("trioBossRushRewardOptions").innerHTML=run.paths[run.stage].map((o,i)=>{
       const difficulty=DIFFICULTIES.find(d=>d.id===o.difficulty);
       const enemies=o.enemies.map((e,j)=>`${e.name}: ${e.hp} HP${scouting?` · ${abilityNames(o.build.enemies[j].abilities)}`:""}`).join(" · ");
-      const card=optionButton(`${tr(difficulty.name)} · ${o.label}`,enemies,"encounter.svg","data-rush-path",i,tr(difficulty.loot));
+      const card=optionButton(`${ultraStage()?tr("Ultraschwer")+" · ":""}${tr(difficulty.name)} · ${o.label}`,enemies,"encounter.svg","data-rush-path",i,tr(difficulty.loot));
       const available=run.profileIds.reduce((n,id)=>n+perk(id,"cartographer")-(heroState(id).pathRerollsUsed||0),0);
       const unseen=stagePool(run.stage).some(e=>!run.seenEncounters.includes(e.id));
       return `<div class="rush-path-entry">${card}${available>0&&unseen?`<button type="button" class="secondary" data-rush-redraw="${i}">${safe(tr("Pfad neu ziehen"))} (${available})</button>`:""}</div>`;
@@ -708,15 +714,15 @@
     persistRun();
     run.active=true;
     syncRunStateFromPlayers();
-    const cleared=completed?STAGES.length:Math.max(0,run.cleared||0);
+    const cleared=completed?stageCount():Math.max(0,run.cleared||0);
     const heroRows=run.profileIds.map((profileId,slot)=>{
       const profile=getProfile(profileId),hero=heroState(profileId);
       return `<div class="round-score-row${completed?" winner-row":""}"><div class="round-score-name">${safe(profile?.name||tr(`Spieler ${slot+1}`))}</div><div class="round-score-meta">${safe(tr(`Trio-Spieler · ${Math.max(0,hero?.hp||0)} HP · Boss XP gesamt ${profileBossXp(profile)}`))} · ${safe(perkSummary(profileId))}</div></div>`;
     }).join("");
     winnerText.textContent=tr(completed?"BOSS RUSH GESCHAFFT!":"BOSS RUSH GESCHEITERT");
     roundResultText.innerHTML=completed
-      ?`${safe(tr(`Alle ${STAGES.length} Bossstufen wurden besiegt.`))}<br><strong>${safe(tr(`Run abgeschlossen: ${cleared} / ${STAGES.length} · +${run.bossXpEarned} ${tr("Basis-Boss-XP")}`))}</strong><br>${safe(tr("Rush-Belohnungen und zusätzliche Fähigkeiten sind nur für diesen Lauf gültig und werden beim Verlassen entfernt."))}`
-      :`${safe(tr(`Euer Team ist bei Boss ${Math.min(STAGES.length,run.stage+1)} gefallen.`))}<br><strong>${safe(tr(`Besiegt: ${cleared} / ${STAGES.length} · +${run.bossXpEarned} ${tr("Basis-Boss-XP")} behalten`))}</strong>${technicalMessage?`<br>${safe(technicalMessage)}`:""}<br>${safe(tr("Kampagnenfortschritt, Mastery XP und Trophäen bleiben unverändert."))}`;
+      ?`${safe(tr(`Alle ${stageCount()} Bossstufen wurden besiegt.`))}<br><strong>${safe(tr(`Run abgeschlossen: ${cleared} / ${stageCount()} · +${run.bossXpEarned} ${tr("Basis-Boss-XP")}`))}</strong><br>${safe(tr("Rush-Belohnungen und zusätzliche Fähigkeiten sind nur für diesen Lauf gültig und werden beim Verlassen entfernt."))}`
+      :`${safe(tr(`Euer Team ist bei Boss ${Math.min(stageCount(),run.stage+1)} gefallen.`))}<br><strong>${safe(tr(`Besiegt: ${cleared} / ${stageCount()} · +${run.bossXpEarned} ${tr("Basis-Boss-XP")} behalten`))}</strong>${technicalMessage?`<br>${safe(technicalMessage)}`:""}<br>${safe(tr("Kampagnenfortschritt, Mastery XP und Trophäen bleiben unverändert."))}`;
     roundStandings.innerHTML=heroRows;
     renderRoundStats();
     clearBotAutomation();
@@ -732,7 +738,7 @@
     abilityState.innerHTML="";
     hideAllControls();
     renderPlayers();
-    roundNumberEl.textContent=Math.min(STAGES.length,run.stage+1);
+    roundNumberEl.textContent=Math.min(stageCount(),run.stage+1);
   }
 
   function finishEncounter(heroWon){
@@ -757,7 +763,7 @@
     awardBossXp();
     applyStageRegeneration();
     syncRunStateFromPlayers();
-    if(run.stage>=STAGES.length-1){
+    if(run.stage>=stageCount()-1){
       heroIndices.forEach(index=>unlockAchievementForPlayer(index,"rush_finale"));
       const usedRest=run.rewardHistory.some(entry=>entry.rewardId==="rest");
       if(!usedRest)heroIndices.forEach(index=>unlockAchievementForPlayer(index,"no_rest_for_legends"));
@@ -781,7 +787,7 @@
     const unlocked=validPair&&trioWorldUnlocked(p1,p2,p3,TRIO_CAMPAIGN_WORLDS[0]);
     const abilities=[1,2,3].every(i=>!!$("trioAbility"+i+"Select")?.value);
     button.disabled=!validPair||!unlocked||!abilities||isActive();
-    button.title=tr(!validPair?"Drei verschiedene Trio-Profile wählen":!unlocked?"Trio-Kampagne zuerst freischalten":"10 Bossstufen · wechselnde Loadouts · Build-Drafts nach jeder Stufe");
+    button.title=tr(!validPair?"Drei verschiedene Trio-Profile wählen":!unlocked?"Trio-Kampagne zuerst freischalten":"15 Bossstufen · ab Stufe 10 ultraschwer");
     if(summary){
       summary.textContent=validPair
         ?`Boss XP · ${p1.name} ${profileBossXp(p1)} · ${p2.name} ${profileBossXp(p2)} · ${p3.name} ${profileBossXp(p3)}`
@@ -790,21 +796,23 @@
   }
 
   function validStored(candidate,ids){
+    const count=candidate?.stageCount??10;
+    if(![10,15].includes(count))return false;
     if(!candidate||candidate.schema!==1||candidate.finished||!Array.isArray(candidate.profileIds)||candidate.profileIds.length!==3||trioKey(candidate.profileIds)!==trioKey(ids))return false;
-    if(!["path","combat","reward"].includes(candidate.phase)||!Number.isInteger(candidate.stage)||candidate.stage<0||candidate.stage>9)return false;
+    if(!["path","combat","reward"].includes(candidate.phase)||!Number.isInteger(candidate.stage)||candidate.stage<0||candidate.stage>=count)return false;
     if(!candidate.profileIds.every(id=>getProfile(id)&&candidate.heroes?.[id]))return false;
     if(!Array.isArray(candidate.paths)||!Array.isArray(candidate.selectedPaths)||!Array.isArray(candidate.rewardTasks))return false;
     if(!Array.isArray(candidate.seenEncounters)||!Array.isArray(candidate.deferredRewards)||!Array.isArray(candidate.rewardHistory)||!Array.isArray(candidate.bossXpAwards))return false;
     if(candidate.profileIds.some(id=>Object.keys(candidate.heroes[id].perks||{}).some(key=>!rewardById(key))))return false;
-    if(candidate.paths.length>10||candidate.selectedPaths.length>10)return false;
+    if(candidate.paths.length>count||candidate.selectedPaths.length>count)return false;
     for(const [index,options] of candidate.paths.entries()){
       if(!options)continue;
-      if(!Array.isArray(options)||options.length!==(index===9?1:3)||new Set(options.map(o=>o?.encounterId)).size!==options.length)return false;
+      if(!Array.isArray(options)||options.length!==(index===count-1?1:3)||new Set(options.map(o=>o?.encounterId)).size!==options.length)return false;
       for(const option of options){
         if(!option||typeof option!=="object")return false;
-        const base=stagePool(index).find(e=>e.id===option.encounterId);
+        const base=stagePool(index,count).find(e=>e.id===option.encounterId);
         if(!base||!DIFFICULTIES.some(d=>d.id===option.difficulty)||!option.build)return false;
-        const expected=optionFor(base,index,option.difficulty);
+        const expected=optionFor(base,index,option.difficulty,count);
         const {build,...spec}=option;
         if(JSON.stringify(spec)!==JSON.stringify(expected))return false;
         if(!Array.isArray(option.build.enemies)||option.build.enemies.length!==expected.enemies.length||!option.build.enemies.every(e=>Array.isArray(e.abilities)&&e.abilities.length===expected.phaseAbilityCount&&new Set(e.abilities).size===e.abilities.length&&e.abilities.every(id=>validAbility(id)!=null))||!Array.isArray(option.build.phaseAbilities)||option.build.phaseAbilities.length!==expected.phaseAbilityCount||new Set(option.build.phaseAbilities).size!==option.build.phaseAbilities.length||option.build.phaseAbilities.some(id=>validAbility(id)==null))return false;
@@ -814,15 +822,15 @@
     if(candidate.phase==="combat"&&!candidate.selectedPaths[candidate.stage])return false;
     for(const task of candidate.rewardTasks)if(!task||!candidate.profileIds.includes(task.profileId)||!Array.isArray(task.choices)||!task.choices.length||task.choices.some(id=>!choiceById(id)))return false;
     if(candidate.swapPending&&(!needsTarget(candidate.swapPending.rewardId)||!candidate.rewardTasks[candidate.rewardTurn]?.choices.includes(candidate.swapPending.rewardId)||candidate.swapPending.profileId!==candidate.rewardTasks[candidate.rewardTurn]?.profileId))return false;
-    if(!Number.isInteger(candidate.rewardTurn)||candidate.rewardTurn<0||!Number.isInteger(candidate.cleared)||candidate.cleared<0||candidate.cleared>10)return false;
-    if(candidate.deferredRewards.some(r=>!r||!candidate.profileIds.includes(r.profileId)||!Number.isInteger(r.dueStage)||r.dueStage<0||r.dueStage>9||!choiceById(r.rewardId)))return false;
+    if(!Number.isInteger(candidate.rewardTurn)||candidate.rewardTurn<0||!Number.isInteger(candidate.cleared)||candidate.cleared<0||candidate.cleared>count)return false;
+    if(candidate.deferredRewards.some(r=>!r||!candidate.profileIds.includes(r.profileId)||!Number.isInteger(r.dueStage)||r.dueStage<0||r.dueStage>=count||!choiceById(r.rewardId)))return false;
     if(candidate.phase==="reward"&&!candidate.rewardTasks[candidate.rewardTurn])return false;
     return true;
   }
 
   function newRun(){
     const p1=getProfile($("trioProfile1Select").value),p2=getProfile($("trioProfile2Select").value),p3=getProfile($("trioProfile3Select").value);
-    run={schema:1,active:true,finished:false,phase:"path",stage:0,cleared:0,preparedStage:-1,bossXpEarned:0,lastBossXpAward:0,
+    run={schema:1,stageCount:STAGES.length,active:true,finished:false,phase:"path",stage:0,cleared:0,preparedStage:-1,bossXpEarned:0,lastBossXpAward:0,
       profileIds:[String(p1.id),String(p2.id),String(p3.id)],previousEncounterId:trioCampaignEncounterId,previousWorldId:trioWorldId,
       abilityLevelOverrides:{},rewardHistory:[],bossXpAwards:[],paths:[],selectedPaths:[],seenEncounters:[],deferredRewards:[],rewardTasks:[],rewardTurn:0,swapPending:null,lastAttacker:null,
       heroes:Object.fromEntries([p1,p2,p3].map((p,i)=>[p.id,{hp:null,maxHp:null,primaryAbility:validAbility($("trioAbility"+(i+1)+"Select").value)??3,
@@ -836,8 +844,8 @@
     if(!p1||!p2||!p3||new Set([p1.id,p2.id,p3.id]).size!==3||!trioWorldUnlocked(p1,p2,p3,TRIO_CAMPAIGN_WORLDS[0]))return false;
     const key=trioKey([p1.id,p2.id,p3.id]),stored=saveData.trioBossRushRuns?.[key];
     if(validStored(stored,[p1.id,p2.id,p3.id])){
-      resumeCandidate=copy(stored);selectionLocked=false;
-      modal("Offener Boss Rush",`${p1.name} + ${p2.name} + ${p3.name} · ${tr("Stufe")} ${stored.stage+1} / 10`);
+      resumeCandidate=copy(stored);resumeCandidate.stageCount=stored.stageCount||10;selectionLocked=false;
+      modal("Offener Boss Rush",`${p1.name} + ${p2.name} + ${p3.name} · ${tr("Stufe")} ${stored.stage+1} / ${stored.stageCount||10}`);
       $("trioBossRushRewardOptions").innerHTML=optionButton(tr("Fortsetzen"),tr("Am gespeicherten Abschnitt weiterspielen"),"trio.svg","data-rush-resume","yes")+optionButton(tr("Neu starten"),tr("Den offenen Run durch einen neuen ersetzen"),"dice.svg","data-rush-resume","no");
       return true;
     }

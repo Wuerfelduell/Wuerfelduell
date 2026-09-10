@@ -326,8 +326,11 @@
       if(!source||source.schema!==1||source.finished||!Array.isArray(source.profileIds)||source.profileIds.length!==teamSize)continue;
       const pair=source.profileIds.map(String);
       if(new Set(pair).size!==teamSize||!pair.every(id=>ids.has(id)))continue;
-      if(!Number.isInteger(source.stage)||source.stage<0||source.stage>9||!["path","combat","reward"].includes(source.phase))continue;
+      const rushStages=teamSize===3?(source.stageCount??10):10;
+      if(teamSize===3&&![10,15].includes(rushStages))continue;
+      if(!Number.isInteger(source.stage)||source.stage<0||source.stage>=rushStages||!["path","combat","reward"].includes(source.phase))continue;
       const runSave=clean(source);
+      if(teamSize===3)runSave.stageCount=rushStages;
       if(!runSave.heroes||!pair.every(id=>runSave.heroes[id]&&typeof runSave.heroes[id]==="object"))continue;
       runSave.abilityLevelOverrides=Object.fromEntries(pair.map(id=>[id,
         Object.fromEntries(Object.entries(runSave.abilityLevelOverrides?.[id]||{}).filter(([ability,level])=>

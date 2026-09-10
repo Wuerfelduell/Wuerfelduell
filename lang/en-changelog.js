@@ -5,6 +5,9 @@
   if (!pack) return;
 
   Object.assign(pack.exact, {
+    "Der Trio-Boss-Rush umfasst jetzt 15 Stufen; ab Stufe 10 steigen Gegner-HP und Phasenheilung stark an": "Trio Boss Rush now spans 15 stages; enemy HP and phase healing rise sharply from stage 10",
+    "Boss-Auswahlen warten auf Stufe 5 und 10, Helix Apex bildet das Finale auf Stufe 15; bereits gespeicherte Zehner-Runs bleiben unverändert fortsetzbar": "Boss choices await on stages 5 and 10, with Helix Apex as the stage 15 finale; saved ten-stage runs remain resumable under their original rules",
+
     "Mastery tauscht pro Klick 300 Boss-XP gegen 100 XP für das ausgewählte Profil und den geöffneten Modus; unter 300 Boss-XP ist der Button gesperrt": "Mastery converts 300 Boss XP into 100 XP per click for the selected profile and open mode; the button is disabled below 300 Boss XP",
     "Zweitfund läuft jetzt zwei Stufen und gibt je Stufe höchstens eine Belohnung an einen Mitspieler weiter; ein erneuter Fund verlängert um zwei Stufen": "Second Find now lasts two stages and passes at most one reward per stage to a teammate; finding it again extends this by two stages",
     "Bisher vervielfachte der Perk sich mit Stapeln und Mitspielern: im Trio sammelte ein Held bis zu 52 statt zehn Belohnungen und damit weit überhöhte Schadens- und HP-Werte": "The perk used to multiply with stacks and teammates: in Trio a hero collected up to 52 instead of ten rewards, and damage and health values far beyond the intended range",

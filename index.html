@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="de" class="wd-booting">
 <head>
-  <meta name="wd-build" content="28.12.3" />
+  <meta name="wd-build" content="28.12.4" />
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <meta name="theme-color" content="#e8f2f6" />
@@ -11,7 +11,7 @@
   <link rel="manifest" href="manifest.json" />
   <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png?v=28.11.28" />
   <link rel="apple-touch-icon" sizes="192x192" href="icon-192.png?v=28.11.28" />
-  <title>DiceDuel · V28.12.3</title>
+  <title>DiceDuel · V28.12.4</title>
   <link rel="preload" as="image" href="assets/ui/v28/bg-main-palace.webp?v=28.11.28">
   <style>
     html.wd-booting,body.wd-booting{overflow:hidden!important;overscroll-behavior:none}
@@ -26,7 +26,7 @@
     #wdBootGate.is-done{opacity:0;pointer-events:none;transition:opacity .35s ease}
     body.wd-booting>#wdBootGate~*{pointer-events:none!important}
   </style>
-  <link rel="stylesheet" href="css/app.css?v=28.12.3" />
+  <link rel="stylesheet" href="css/app.css?v=28.12.4" />
 </head>
 <body class="wd-booting">
 <div id="wdBootGate" role="progressbar" aria-busy="true" aria-label="DiceDuel wird geladen">
@@ -229,7 +229,7 @@
       <button id="menuRulesBtn"><span class="menu-icon" data-v28-icon-ready="1"><img class="v28-menu-icon" src="assets/ui/v28/svg/menu/rules.svg?v=28.11.28" alt="" aria-hidden="true"></span> Regeln</button>
       <button id="menuChangelogBtn"><span class="menu-icon" data-v28-icon-ready="1"><img class="v28-menu-icon" src="assets/ui/v28/svg/menu/changelog.svg?v=28.11.28" alt="" aria-hidden="true"></span> Changelog</button>
     </div>
-    <div class="version-footer">DICEDUEL · VERSION 28.12.3</div>
+    <div class="version-footer">DICEDUEL · VERSION 28.12.4</div>
   </section>
 
 
@@ -405,7 +405,7 @@
     <div id="trioBossRushXpSummary" class="boss-rush-xp-summary">Boss XP · drei Profile wählen</div>
     <div class="campaign-start-row duo-boss-rush-row">
       <button id="trioCampaignStartBtn" class="good">Trio-Encounter starten</button>
-      <button id="trioBossRushStartBtn" class="boss-rush-start">Boss Rush starten</button>
+      <button id="trioBossRushStartBtn" class="boss-rush-start">Boss Rush starten · 15 Stufen</button>
       <button id="trioCampaignProfilesBtn" class="secondary">Profile</button>
     </div>
     <div id="trioCampaignPath" class="campaign-path campaign-node-map trio-node-map"></div>
@@ -496,6 +496,7 @@
     <div class="screen-topbar"><button class="menuBackBtn">←</button><h2 class="screen-title">Changelog</h2></div>
     <div class="screen-subtitle">Die großen Versionssprünge, ohne jeden Mini-Hotfix.</div>
     <div class="screen-scroll-body">
+    <div class="changelog-entry"><div class="changelog-version">V28.12.4</div><ul><li>Der Trio-Boss-Rush umfasst jetzt 15 Stufen; ab Stufe 10 steigen Gegner-HP und Phasenheilung stark an</li><li>Boss-Auswahlen warten auf Stufe 5 und 10, Helix Apex bildet das Finale auf Stufe 15; bereits gespeicherte Zehner-Runs bleiben unverändert fortsetzbar</li></ul></div>
     <div class="changelog-entry"><div class="changelog-version">V28.12.3</div><ul><li>Zweitfund läuft jetzt zwei Stufen und gibt je Stufe höchstens eine Belohnung an einen Mitspieler weiter; ein erneuter Fund verlängert um zwei Stufen</li><li>Bisher vervielfachte der Perk sich mit Stapeln und Mitspielern: im Trio sammelte ein Held bis zu 52 statt zehn Belohnungen und damit weit überhöhte Schadens- und HP-Werte</li></ul></div>
     <div class="changelog-entry"><div class="changelog-version">V28.12.2</div><ul><li>Duo- und Trio-Boss-Rush bieten jetzt 32 Perks: Feinschliff hebt eine ausgerüstete Fähigkeit für den Lauf auf Mastery-Level 1, Meisterschaft auf Level 2</li><li>Die gezielte Upgrade-Auswahl zeigt Namen und Wirkung, bleibt nach Neuladen erhalten und verändert weder Profil-Mastery noch dauerhaften L2-Fortschritt</li><li>Mastery tauscht pro Klick 300 Boss-XP gegen 100 XP für das ausgewählte Profil und den geöffneten Modus; unter 300 Boss-XP ist der Button gesperrt</li></ul></div>
     <div class="changelog-entry"><div class="changelog-version">V28.12.1</div><ul><li>Der Trio-Boss-Rush übernimmt Pfadwahl, gespeicherte Runs und alle 30 Perks des Duo-Modus; Belohnungen gehen nacheinander an drei Helden</li><li>Vollständige Trio-Encounter bilden die Gegnergruppen; Boss-Angebote erscheinen auf Stufe 5, Helix Apex beendet den Lauf auf Stufe 10</li></ul></div>
@@ -833,59 +834,59 @@
      vorher zuletzt (Module sind implizit deferred), und mit defer auf den
      klassischen Scripts wuerde ein haengender CDN-Fetch sonst alles danach
      blockieren. -->
-<script defer src="lang/de.js?v=28.12.3"></script>
-<script defer src="lang/en.js?v=28.12.3"></script>
-<script defer src="lang/en-campaign.js?v=28.12.3"></script>
-<script defer src="lang/en-changelog.js?v=28.12.3"></script>
-<script defer src="js/00-i18n.js?v=28.12.3"></script>
-<script defer src="js/01-config.js?v=28.12.3"></script>
-<script defer src="js/backend-config.js?v=28.12.3"></script>
-<script defer src="js/40-backend-config.js?v=28.12.3"></script>
-<script defer src="js/41-supabase-core.js?v=28.12.3"></script>
-<script defer src="js/02-campaign-solo-data.js?v=28.12.3"></script>
-<script defer src="js/03-campaign-duo-data.js?v=28.12.3"></script>
-<script defer src="js/03b-campaign-trio-data.js?v=28.12.3"></script>
-<script defer src="js/03c-campaign-endgame-data.js?v=28.12.3"></script>
-<script defer src="js/03d-endgame-mechanics.js?v=28.12.3"></script>
-<script defer src="js/04-save.js?v=28.12.3"></script>
-<script defer src="js/05-game-data-state.js?v=28.12.3"></script>
-<script defer src="js/06-campaign.js?v=28.12.3"></script>
-<script defer src="js/07-tutorial.js?v=28.12.3"></script>
-<script defer src="js/08-profiles-stats.js?v=28.12.3"></script>
-<script defer src="js/09-battle-stats.js?v=28.12.3"></script>
-<script defer src="js/10-bots.js?v=28.12.3"></script>
-<script defer src="js/11-setup.js?v=28.12.3"></script>
-<script defer src="js/12-battle-ui.js?v=28.12.3"></script>
-<script defer src="js/13-battle-actions.js?v=28.12.3"></script>
-<script defer src="js/14-round-flow.js?v=28.12.3"></script>
-<script defer src="js/15-app.js?v=28.12.3"></script>
-<script defer src="js/16-audio.js?v=28.12.3"></script>
-<script defer src="js/18-attack-fx.js?v=28.12.3"></script>
-<script defer src="js/17-online-bridge.js?v=28.12.3"></script>
-<script defer src="js/19-build-integrity.js?v=28.12.3"></script>
-<script defer src="js/20-v276.js?v=28.12.3"></script>
-<script defer src="js/21-test-lab.js?v=28.12.3"></script>
-<script defer src="js/23-mastery.js?v=28.12.3"></script>
-<script defer src="js/24-ability-mastery-lab.js?v=28.12.3"></script>
-<script defer src="js/25-cloud-account.js?v=28.12.3"></script>
-<script defer src="js/42-supabase-account.js?v=28.12.3"></script>
-<script defer src="js/43-supabase-battle.js?v=28.12.3"></script>
-<script defer src="js/26-v28-ui.js?v=28.12.3"></script>
-<script defer src="js/27-v28-asset-polish.js?v=28.12.3"></script>
-<script defer src="js/28-v28-ui-rework.js?v=28.12.3"></script>
-<script defer src="js/29-v28-ui-phase1.js?v=28.12.3"></script>
-<script defer src="js/30-v28-ui-phase2.js?v=28.12.3"></script>
-<script defer src="js/31-v28-ui-phase4.js?v=28.12.3"></script>
-<script defer src="js/32-v28-ui-phase5.js?v=28.12.3"></script>
-<script defer src="js/33-v28-ui-phase6.js?v=28.12.3"></script>
-<script defer src="js/34-v28-ui-phase8.js?v=28.12.3"></script>
-<script defer src="js/36-emoji-sprite-pass.js?v=28.12.3"></script>
-<script defer src="js/37-duo-boss-rush.js?v=28.12.3"></script>
-<script defer src="js/39-campaign-world-themes.js?v=28.12.3"></script>
-<script defer src="js/44-trio-boss-rush.js?v=28.12.3"></script>
-<script defer src="js/35-boot-gate.js?v=28.12.3"></script>
-<script defer src="js/38-sw-register.js?v=28.12.3"></script>
+<script defer src="lang/de.js?v=28.12.4"></script>
+<script defer src="lang/en.js?v=28.12.4"></script>
+<script defer src="lang/en-campaign.js?v=28.12.4"></script>
+<script defer src="lang/en-changelog.js?v=28.12.4"></script>
+<script defer src="js/00-i18n.js?v=28.12.4"></script>
+<script defer src="js/01-config.js?v=28.12.4"></script>
+<script defer src="js/backend-config.js?v=28.12.4"></script>
+<script defer src="js/40-backend-config.js?v=28.12.4"></script>
+<script defer src="js/41-supabase-core.js?v=28.12.4"></script>
+<script defer src="js/02-campaign-solo-data.js?v=28.12.4"></script>
+<script defer src="js/03-campaign-duo-data.js?v=28.12.4"></script>
+<script defer src="js/03b-campaign-trio-data.js?v=28.12.4"></script>
+<script defer src="js/03c-campaign-endgame-data.js?v=28.12.4"></script>
+<script defer src="js/03d-endgame-mechanics.js?v=28.12.4"></script>
+<script defer src="js/04-save.js?v=28.12.4"></script>
+<script defer src="js/05-game-data-state.js?v=28.12.4"></script>
+<script defer src="js/06-campaign.js?v=28.12.4"></script>
+<script defer src="js/07-tutorial.js?v=28.12.4"></script>
+<script defer src="js/08-profiles-stats.js?v=28.12.4"></script>
+<script defer src="js/09-battle-stats.js?v=28.12.4"></script>
+<script defer src="js/10-bots.js?v=28.12.4"></script>
+<script defer src="js/11-setup.js?v=28.12.4"></script>
+<script defer src="js/12-battle-ui.js?v=28.12.4"></script>
+<script defer src="js/13-battle-actions.js?v=28.12.4"></script>
+<script defer src="js/14-round-flow.js?v=28.12.4"></script>
+<script defer src="js/15-app.js?v=28.12.4"></script>
+<script defer src="js/16-audio.js?v=28.12.4"></script>
+<script defer src="js/18-attack-fx.js?v=28.12.4"></script>
+<script defer src="js/17-online-bridge.js?v=28.12.4"></script>
+<script defer src="js/19-build-integrity.js?v=28.12.4"></script>
+<script defer src="js/20-v276.js?v=28.12.4"></script>
+<script defer src="js/21-test-lab.js?v=28.12.4"></script>
+<script defer src="js/23-mastery.js?v=28.12.4"></script>
+<script defer src="js/24-ability-mastery-lab.js?v=28.12.4"></script>
+<script defer src="js/25-cloud-account.js?v=28.12.4"></script>
+<script defer src="js/42-supabase-account.js?v=28.12.4"></script>
+<script defer src="js/43-supabase-battle.js?v=28.12.4"></script>
+<script defer src="js/26-v28-ui.js?v=28.12.4"></script>
+<script defer src="js/27-v28-asset-polish.js?v=28.12.4"></script>
+<script defer src="js/28-v28-ui-rework.js?v=28.12.4"></script>
+<script defer src="js/29-v28-ui-phase1.js?v=28.12.4"></script>
+<script defer src="js/30-v28-ui-phase2.js?v=28.12.4"></script>
+<script defer src="js/31-v28-ui-phase4.js?v=28.12.4"></script>
+<script defer src="js/32-v28-ui-phase5.js?v=28.12.4"></script>
+<script defer src="js/33-v28-ui-phase6.js?v=28.12.4"></script>
+<script defer src="js/34-v28-ui-phase8.js?v=28.12.4"></script>
+<script defer src="js/36-emoji-sprite-pass.js?v=28.12.4"></script>
+<script defer src="js/37-duo-boss-rush.js?v=28.12.4"></script>
+<script defer src="js/39-campaign-world-themes.js?v=28.12.4"></script>
+<script defer src="js/44-trio-boss-rush.js?v=28.12.4"></script>
+<script defer src="js/35-boot-gate.js?v=28.12.4"></script>
+<script defer src="js/38-sw-register.js?v=28.12.4"></script>
 <!-- Modul zuletzt: der konfigurierbare Online-Transport laedt extern. -->
-<script type="module" src="js/online/01-online.js?v=28.12.3"></script>
+<script type="module" src="js/online/01-online.js?v=28.12.4"></script>
 </body>
 </html>

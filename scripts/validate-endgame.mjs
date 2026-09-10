@@ -88,11 +88,12 @@ function validateRush(mode,file,moduleName){
   const rushSource=fs.readFileSync(file,"utf8");
   vm.runInContext(rushSource,context,{filename:file});
   const rush=context.window[moduleName],stages=rush.stageDefinitions(),used=new Set();
-  if(stages.length!==10)errors.push(`${mode} Boss Rush requires 10 stages`);
+  const count=mode==="trio"?15:10;
+  if(stages.length!==count)errors.push(`${mode} Boss Rush requires ${count} stages`);
   for(const [index,stage] of stages.entries()){
     const stageIds=new Set(stage.candidates.map(c=>c.encounterId));
-    if(stageIds.size<(index===9?1:3))errors.push(`${mode} Boss Rush stage ${index+1} has too few encounters`);
-    if(index===9&&(stage.candidates.length!==1||stage.candidates[0].encounterId!==(mode==="trio"?"trio_helix_apex":"duo_bloodmoon_empress")))errors.push(`${mode} Boss Rush fixed final boss missing`);
+    if(stageIds.size<(index===count-1?1:3))errors.push(`${mode} Boss Rush stage ${index+1} has too few encounters`);
+    if(index===count-1&&(stage.candidates.length!==1||stage.candidates[0].encounterId!==(mode==="trio"?"trio_helix_apex":"duo_bloodmoon_empress")))errors.push(`${mode} Boss Rush fixed final boss missing`);
     for(const id of stageIds){if(used.has(id))errors.push(`${mode} Boss Rush repeated stage pool: ${id}`);used.add(id);}
     for(const choice of stage.candidates){
       const source=encounters.find(e=>e.id===choice.encounterId&&e.id.startsWith(mode+"_"));
@@ -105,7 +106,7 @@ function validateRush(mode,file,moduleName){
       if(mode==="trio"&&source){
         const world=encounters.filter(e=>e.id.startsWith("trio_")&&e.world===source.world);
         const boss=source.isBoss||source.isMiniBoss||[4,9,14].includes(world.findIndex(e=>e.id===source.id));
-        if(!!boss!==[4,9].includes(index))errors.push(`Trio Boss Rush boss outside stage 5/10: ${source.id}`);
+        if(!!boss!==[4,9,14].includes(index))errors.push(`Trio Boss Rush boss outside stage 5/10/15: ${source.id}`);
       }
     }
     if(index&&Math.min(...stage.candidates.map(c=>c.pressure))<=Math.max(...stages[index-1].candidates.map(c=>c.pressure)))errors.push(`${mode} Boss Rush pressure must rise across ALL paths at stage ${index+1}`);
@@ -125,4 +126,4 @@ const duoRush=validateRush("duo","js/37-duo-boss-rush.js","WDDuoBossRush"),trioR
 if(JSON.stringify(duoRush.rewards.map(r=>[r.id,r.name,r.rarity]))!==JSON.stringify(trioRush.rewards.map(r=>[r.id,r.name,r.rarity])))errors.push("Trio perk pool differs from Duo");
 if(trioRush.ids.size!==encounters.filter(e=>e.id.startsWith("trio_")).length)errors.push("Trio Boss Rush must retain all existing encounters");
 if(errors.length){console.error(errors.map(x=>`- ${x}`).join("\n"));process.exit(1);}
-const endgame=encounters.filter(e=>endgameWorldIds.has(e.world));console.log(`Endgame validated: ${endgame.length} encounters, ${Object.keys(profiles).length} AI profiles, ${Object.keys(mutators).length} mutators, ${Object.keys(modifiers).length} modifiers, ${ruleIds.size} world rules, 10 Boss Rush stages each: Duo ${duoRush.ids.size} encounters (${duoRush.hp.join("/")}); Trio ${trioRush.ids.size} encounters (${trioRush.hp.join("/")}), ${Object.keys(translations).length} static DE/EN pairs; positional fingerprints equal duo=${duoSame}/15, trio=${trioSame}/15.`);
+const endgame=encounters.filter(e=>endgameWorldIds.has(e.world));console.log(`Endgame validated: ${endgame.length} encounters, ${Object.keys(profiles).length} AI profiles, ${Object.keys(mutators).length} mutators, ${Object.keys(modifiers).length} modifiers, ${ruleIds.size} world rules, Boss Rush: Duo 10 stages, ${duoRush.ids.size} encounters (${duoRush.hp.join("/")}); Trio 15 stages, ${trioRush.ids.size} encounters (${trioRush.hp.join("/")}), ${Object.keys(translations).length} static DE/EN pairs; positional fingerprints equal duo=${duoSame}/15, trio=${trioSame}/15.`);

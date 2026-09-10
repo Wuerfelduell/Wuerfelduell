@@ -22,9 +22,9 @@ welche Fallen schon Zeit gekostet haben.
 
 | | |
 |---|---|
-| Version | **28.12.3** |
+| Version | **28.12.4** |
 | Branch | `main` |
-| Letzte Schritte | CSS-Stapel auf 10 Dateien zusammengelegt · Changelog englisch vervollständigt · Hauptmenü, Statistik, Profile, Achievements, Spielvorbereitung und Trophy Shop überarbeitet · Fähigkeits- und Shopflächen auf proportional gekachelte Bildrahmen umgestellt · alle Bild-URLs auf einen gemeinsamen Cache-Schlüssel · Trophy-Shop-Reste bereinigt und Aufklapppfeile angeglichen · Duo- und Trio-Boss-Rush mit Pfadwahl, gespeicherten Runs und 32 Perks einschließlich temporärer Ability-Mastery · Boss-XP-Umtausch 300:100 · Zweitfund gedeckelt |
+| Letzte Schritte | CSS-Stapel auf 10 Dateien zusammengelegt · Changelog englisch vervollständigt · Hauptmenü, Statistik, Profile, Achievements, Spielvorbereitung und Trophy Shop überarbeitet · Fähigkeits- und Shopflächen auf proportional gekachelte Bildrahmen umgestellt · alle Bild-URLs auf einen gemeinsamen Cache-Schlüssel · Trophy-Shop-Reste bereinigt und Aufklapppfeile angeglichen · Duo- und Trio-Boss-Rush mit Pfadwahl, gespeicherten Runs und 32 Perks einschließlich temporärer Ability-Mastery · Boss-XP-Umtausch 300:100 · Zweitfund gedeckelt · Trio-Rush 15 Stufen, ab 10 ultraschwer |
 
 **Die Arbeitsteilung hat sich geändert.** Bis V28.11.28 liefen zwei
 Sitzungen parallel: Codex hat umgesetzt, diese Sitzung geprüft. Ab jetzt
@@ -268,14 +268,20 @@ wird nur auf ausdrückliche Ansage geändert. Nicht ungefragt „reparieren".
   und allen 32 Perks. `window.WDBossRush` in `js/06-campaign.js` verteilt
   die Motorhaken nach Trio-/Duo-Modus; auf den Karten nach Rückkehrziel,
   damit Start und Buttonzustand auch vor dem Kampf funktionieren.
-- Quelle sind alle 60 vorhandenen Trio-Encounter aus vier Welten. Nach
-  Nutzerklärung bleiben die Gruppen vollständig, auch mit vier Gegnern.
-  Boss-/Miniboss-Encounter (Weltposition 5/10/15 oder Datenflag) werden nur
-  auf Rush-Stufe 5 angeboten; Stufe 10 ist fest `trio_helix_apex` mit seinen
-  drei Seals. Alle anderen Stufen ziehen normale Encounter, ohne Wiederholung.
-- Druckbudgets = Duo × 1,5: 45 bis 210, für drei statt zwei Helden.
-  Die unveränderte Gegnerzahl-Gewichtung und HP-Verteilung gelten auch
-  für den Endboss; die Stufen steigen über alle drei Pfade.
+- Seit 28.12.4 haben neue Trio-Runs 15 Stufen. Quelle bleiben alle 60
+  vorhandenen Trio-Encounter aus vier Welten mit vollständigen Gegnergruppen.
+  Normale Encounter verteilen sich auf zwölf getrennte Stufenvorräte;
+  Boss-/Miniboss-Angebote auf Stufe 5 und 10. Stufe 15 ist fest
+  `trio_helix_apex` mit seinen drei Seals. Kein Encounter wiederholt sich.
+- Stufe 1–9 behalten ihre Druckbudgets (45 bis 177). Ultraschwer ab Stufe 10:
+  280 / 350 / 440 / 550 / 690 / 870, Phasenheilung 12 / 16 / 20 / 24 / 28 / 32 HP.
+  Druck = Gesamt-HP × (1 + 0,25 je zusätzlichem Gegner); auch der leichteste
+  Zehner-Pfad liegt mehr als 35 % über dem schwersten Neuner-Pfad.
+  Loadouts, Perks, Kopiergrenzen, Preise und die Duo-Kurve bleiben unverändert.
+- `stageCount:15` kennzeichnet neue Trio-Runs. Alte Saves ohne Kennzeichen
+  werden als `stageCount:10` geladen und behalten alte Pfadpools, HP, Beute
+  und Finale. Alle Anzeigen, Speichergrenzen und Zweitfund-Fristen verwenden
+  die jeweilige Run-Länge. Neue Runs werden erst auf Stufe 15 abgeschlossen.
 - `saveData.trioBossRushRuns` ist separat nach sortierten drei Profil-IDs
   indiziert. Derselbe Bereiniger wie Duo mit Teamgröße 3.
   `profile.campaign.bossRushXp` bleibt für beide Modi gemeinsam. Seit 28.12.2
@@ -303,10 +309,14 @@ wird nur auf ausdrückliche Ansage geändert. Nicht ungefragt „reparieren".
   die drei Verteidigungsperks bleiben bei `shield.svg`.
 - Prüfung: `scripts/qa/trio-boss-rush.mjs` und
   `scripts/qa/trio-boss-rush-browser.mjs`; zusätzlich die bestehenden
-  Duo-Prüfstände. Zehn Stufen mit Test-Siegen, Reloads, alle drei Helden,
+  Duo-Prüfstände. 15 Trio-Stufen mit Test-Siegen, Reloads auf Stufe 10/15,
+  ein Zehner-Save aus 28.12.3, alle drei Helden,
   Moduswechsel, normale Trio-Kampagne und DE/EN bei fünf Bildschirmbreiten.
   `validate-endgame.mjs` prüft beide Module und vollständige Trio-Gruppen.
   Alle Prüfläufe grün, keine JS-Fehler/404; im Pfaddialog 0 DOM-Mutationen/s.
+  50 vollständige Pfadziehungen ohne Wiederholung; Ultra-Angebote zusätzlich
+  bei allen fünf Breiten auf DE/EN geprüft. Keine vollständige Balance-Simulation:
+  Kämpfe werden im Browser-Prüfstand durch Test-Siege abgeschlossen.
   Der folgende mobile Altfehler ist davon ausdrücklich nicht abgedeckt.
 
 

@@ -29,6 +29,9 @@
   if (!pack) return;
 
   Object.assign(pack.exact, {
+    "Ultraschwer":"Ultra hard",
+    "15 Bossstufen · ab Stufe 10 ultraschwer":"15 boss stages · ultra hard from stage 10",
+    "Boss Rush starten · 15 Stufen":"Start Boss Rush · 15 stages",
     /* ---- Beschriftungen der Encounter-Detailzeilen ----
        Sie stehen je in einem eigenen <strong> und damit in einem eigenen
        Textknoten. Genau diese kurzen Knoten liefen bisher in die
