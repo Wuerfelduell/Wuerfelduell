@@ -1,10 +1,20 @@
 # AI_Handover
 
-Übergabe zwischen KI-Sitzungen an diesem Repo. Der Nutzer sagt Bescheid,
-wann diese Datei fortzuschreiben ist — nicht ungefragt anfassen.
+Übergabe zwischen KI-Sitzungen an diesem Repo.
+
+**Nach jedem Push prüfen, ob diese Datei noch stimmt.** Die Tabelle unter
+„Stand" wird jedes Mal nachgezogen; alles andere nur, wenn sich wirklich
+etwas geändert hat — eine Entscheidung, ein offener Punkt, eine neue
+Falle. Kein Eintrag für jede Version, sonst verwildert die Datei.
 
 Kurz halten. Was hier steht, muss stimmen — lieber „unklar" schreiben als
-raten.
+raten. Ein veralteter Absatz ist schlimmer als ein fehlender: er wird
+geglaubt.
+
+Die **Regeln** stehen nicht hier, sondern in `docs/PROJEKTREGELN.md` —
+Bauweg, Rahmenkonventionen, Sprachpaket, feste Entscheidungen. Diese
+Datei hier beschreibt den **Zustand**: wo der Umbau steht, was offen ist,
+welche Fallen schon Zeit gekostet haben.
 
 ---
 
@@ -12,24 +22,38 @@ raten.
 
 | | |
 |---|---|
-| Version | **28.11.13** |
+| Version | **28.11.28** |
 | Branch | `main` |
-| Letzte Schritte | Vorrangmarkierungen stark reduziert (4647 → 318) · acht Folgefehler daraus zurückgedreht · Rundenvorbereitung und Rundenauswertung überarbeitet · Supabase-Räume laufen bei Untätigkeit ab |
+| Letzte Schritte | CSS-Stapel auf 10 Dateien zusammengelegt · Changelog englisch vervollständigt · Hauptmenü, Statistik, Profile, Achievements, Spielvorbereitung und Trophy Shop überarbeitet · Fähigkeits- und Shopflächen auf proportional gekachelte Bildrahmen umgestellt |
 
-**Zwei Sitzungen arbeiten parallel.** Vor jedem Push `git pull --rebase`.
-Die Aufteilung wechselt je Auftrag; sie steht jeweils im Prompt an die
-andere Sitzung. Zuletzt: Codex hat die Vorrangmarkierungen (`!important`)
-im gesamten Stapel abgeräumt, diese Sitzung hat die Folgefehler gemessen
-und zurückgedreht.
+**Die Arbeitsteilung hat sich geändert.** Bis V28.11.28 liefen zwei
+Sitzungen parallel: Codex hat umgesetzt, diese Sitzung geprüft. Ab jetzt
+läuft die laufende Arbeit in **einer** Sitzung — Umsetzung und Prüfung
+zusammen. Codex bleibt als Reserve für drei Fälle: wenn dieselbe Sache
+zweimal misslingt, wenn eine zweite unabhängige Umsetzung den Fehler
+billiger macht (Kandidat: host-autoritatives Online), oder wenn ein
+frischer Blick auf einen Bildschirm nötig ist.
 
-**Achtung, die Dateinamen haben sich geändert.** Der V28-Stapel war 19
-Dateien und ist seit V28.11.5 auf drei zusammengelegt:
-`13-v28-grundlage` (bright-arcane, asset-system, ui-rework),
-`16-v28-phasen` (phase1 bis phase12 plus dice-designs) und
-`29-v28-korrekturen` (hotfix, combat-lock, marked-ui). Zusammengelegt
-wurden nur in `styleOrder` benachbarte Dateien, die Kaskade ist deshalb
-Regel für Regel dieselbe. Im Text steht über jedem Abschnitt, aus
-welcher Datei er stammt.
+**Damit fällt die zweite Instanz als Gegenprüfung weg.** Ersatz ist
+Pflicht: **das Messskript vor der Änderung schreiben, gegen die
+Anforderung — nicht gegen die eigene Umsetzung.** Wer seinen eigenen Code
+prüft, sieht seinen eigenen blinden Fleck nicht. Die Skripte in
+`scripts/qa/` sind genau dafür da.
+
+Läuft doch einmal eine zweite Sitzung mit: vor jedem Push
+`git pull --rebase`.
+
+**Achtung, die Dateinamen haben sich geändert.** Aus 40 CSS-Dateien sind
+seit V28.11.14 zehn geworden. Zusammengelegt wurden immer nur in
+`styleOrder` benachbarte Dateien, die Kaskade ist deshalb Regel für Regel
+dieselbe. Im Text steht über jedem Abschnitt, aus welcher Datei er stammt:
+
+```
+01-grundlage        06-version-27       09-labore
+11-mastery-und-konto  13-v28-grundlage  16-v28-phasen
+29-v28-korrekturen  32-nachtraege       36-v28-hierarchie
+37-abschluss
+```
 
 ---
 
@@ -56,46 +80,32 @@ den „Mischbuild", vor dem `js/19-build-integrity.js` warnt.
 
 ## Umbau: wo er steht
 
-**Erledigt (ChatGPT-Cleanup):** der Bauweg. CSS-Quellen gesammelt, ein
-Bündel, Prüfskript, CI-Check.
+**Erledigt:** der Bauweg (CSS-Quellen gesammelt, ein Bündel, Prüfskript,
+CI-Check), die Vorrangmarkierungen und das Zusammenlegen der Schichten.
 
-**Nicht erledigt:** die Schichten selbst. `js/` ist unangetastet, und
-keine der Grenzen aus `ARCHITECTURE.md` (Engine, Persistenz, Firebase
+**Nicht erledigt:** die Schichten in `js/`. Dort ist nichts angetastet,
+und keine der Grenzen aus `ARCHITECTURE.md` (Engine, Persistenz, Firebase
 hinter einer Schnittstelle, Plattform-Adapter) existiert.
 
-**Der Stapel wächst weiter.** Zahlen aus `docs/CSS-Schichten.md`, neu
-gemessen auf 28.9.4:
-
-| | 28.7.3 | 28.9.4 |
-|---|---|---|
-| Dateien | 37 | **40** |
-| Zeilen | 12.065 | **12.803** |
-| `!important` | 4.269 | **4.680** |
-| von späteren Schichten überschrieben | 2.745 (20 %) | **2.998 (21 %)** |
-
-Dazugekommen sind `38-endgame-mechanics.css`,
-`39-v28-campaign-polish.css` und `40-v28-screen-restoration.css`. Die
-letzten beiden sind Korrekturschichten: 28.9.3 stellt gerahmte
-Utility-Screens wieder her, 28.9.4 behebt Rahmen-Regressionen. Das ist
-kein Vorwurf — bei 40 Schichten und 4.680 `!important` ist eine neue
-Schicht oft der einzige Weg, der in vertretbarer Zeit funktioniert.
-Genau deshalb wird jede Runde teurer.
-
-**Vier Schritte sind gemacht** (Einzelheiten und Nachweise in
+**Vier Aufräumschritte am CSS** (Einzelheiten und Nachweise in
 `docs/CSS-Schichten.md`): `#quitConfirmBtn`, die doppelten
 Würfel-Themes, 84 vollständig überdeckte Regeln, 509 einzeln
 überschriebene Deklarationen. Zusammen 777 tote Deklarationen.
 
-| | 28.9.4 | 28.11.2 | 28.11.13 |
+| | 28.9.4 | 28.11.2 | 28.11.28 |
 |---|---|---|---|
-| Zeilen | 12.803 | 11.447 | **11.447** |
-| `!important` | 4.680 | 4.597 | **318** |
+| Dateien | 40 | 25 | **10** |
+| Zeilen | 12.803 | 11.447 | **12.271** |
+| `!important` | 4.680 | 4.597 | **334** |
 | überschrieben | 2.998 (21 %) | 2.087 (15 %) | — |
-| `css/app.css` | 510 KB | 491 KB | **475 KB** |
+| `css/app.css` | 510 KB | 491 KB | **476 KB** |
 
-**Die Vorrangmarkierungen sind seit V28.11.9 weg** — 4.398 Stück, in
-einem Zug von der anderen Sitzung. Das ist der größte Einzelfortschritt
-an der Kaskade bisher; die Dateizahl blieb dabei bei 25. Die 318 heute
+Die Zeilen sind seit 28.11.2 wieder gewachsen — das sind die
+UI-Durchgänge von V28.11.14 bis .28, nicht neue Schichten.
+
+**Die Vorrangmarkierungen sind seit V28.11.9 weg** — 4.398 Stück in
+einem Zug. Das ist der größte Einzelfortschritt an der Kaskade. Die 334
+heute
 verbliebenen Markierungen sind kein Rest zum Wegräumen, sondern
 größtenteils **notwendig** und mit Begründung im Quelltext versehen. Sie
 fallen in zwei Muster:
@@ -107,10 +117,17 @@ fallen in zwei Muster:
    schlägt jede Spezifität, nur `!important` kommt darüber
    (`#profilesScreen`-Scroll, Höhe des Würfelfensters).
 
-**Was das Zurückdrehen gekostet hat:** acht Regressionen, gefunden erst
+**Was das Zurückdrehen gekostet hat:** neun Regressionen, gefunden erst
 nach dem Push. Lehre daraus steht unten unter „So wird hier geprüft":
 ein synthetischer Paartest über die Selektoren findet sie **nicht**
 zuverlässig, der Vollabzug am echten Baum schon.
+
+Die neunte fand der Prüfstand selbst nicht — sie lag im Bossdetail einer
+**durchgespielten** Welt, und der A/B-Abzug kam nie dorthin. Er sät jetzt
+vor dem ersten Laden einen fertigen Spielstand in `localStorage` und hat
+Stationen für Boss und aufgeklapptes Profil. **Ein Prüfstand ist nur so
+gut wie der Zustand, den er erreicht** — vor dem Vertrauen darauf immer
+fragen, welchen Bildschirm er nie sieht.
 
 **Das wichtigste Werkzeug ist der Vollabzug** (`snapshot.mjs`-Muster in
 `docs/CSS-Schichten.md` beschrieben): er liest von jedem Element jedes
@@ -153,6 +170,36 @@ V28.7.2: **Fließtext bekommt `slim-card`, wiederholte Datenzeilen
 **Regel:** Zierrat gehört in die Ecken, nie in die Kantenmitte. Bei
 9-Slice wird alles zwischen den Ecken gestreckt.
 
+### Kachelgitter für Bilder mit Mittelornament
+
+Mehrere Buttonbilder haben mittig oben und unten einen Edelstein — ein
+normales `border-image` würde ihn mitdehnen. Seit V28.11.25 gibt es dafür
+ein Gitter aus `<svg viewBox>`-Ausschnitten: feste Spalten für Ecken und
+Edelstein, dehnbare `1fr` dazwischen. Umgesetzt in `buttonArtwork`
+(`js/08-profiles-stats.js`) und `decorateSetupAbilityResults`
+(`js/28-v28-ui-rework.js`).
+
+**Die Bedingung, an der alles hängt:** feste Spaltenbreite geteilt durch
+Quellbreite muss denselben Faktor ergeben wie Kachelhöhe geteilt durch
+Quellhöhe. Sonst sind die Ornamente verzerrt. Beispiel Trophy Shop:
+`navy-button-horizontal` ist 1536 × 512, Ecke 128 px, Edelstein 160 px,
+gerendert 14,08 / 17,60 px bei 56,32 px Höhe — überall Faktor 0,11.
+Wächst das Feld auch in der Höhe, braucht es drei Zeilen statt einer
+(15,84 / `1fr` / 15,84).
+
+Vorsicht bei der Randstärke: `border-image-slice` ist **nicht** die
+sichtbare Goldschiene. Bei `navy-button-horizontal` ist der Slice 144 px,
+die Schiene aber nur 90 px. Wer Abstände gegen den Slice rechnet, meldet
+Kollisionen, die es nicht gibt — am Bild messen.
+
+### Gestreckte Rahmen bleiben
+
+22 Stellen zeigen ein Rahmenbild als `background-size:100% 100%` mit über
+15 % Abweichung vom Seitenverhältnis der Quelle, bis Faktor 2,0
+(Statistik-Überschriften, Hauptmenüknöpfe, Profilkopf, `prestige-wallet`).
+**Nutzerentscheidung: das bleibt so.** Etwas Streckung ist akzeptiert und
+wird nur auf ausdrückliche Ansage geändert. Nicht ungefragt „reparieren".
+
 ### Weltassets seit 28.11.4
 
 - Die gemalten `world-*-frame-rect.webp` bleiben unzerschnittene
@@ -186,18 +233,7 @@ V28.7.2: **Fließtext bekommt `slim-card`, wiederholte Datenzeilen
 
 ## Offen
 
-1. **Zusammenlegen der CSS-Schichten** — 25 Dateien, siehe oben und
-   `docs/CSS-Schichten.md`. Der größte offene Posten am Stapel. Die
-   Vorrangmarkierungen sind dagegen erledigt (4.647 → 318).
-
-2. **Changelog auf Englisch** — 195 Versionsblöcke mit zusammen 733
-   Punkten in `index.html` (Zeilen 487 bis 624) bleiben deutsch. Sie
-   liegen in einem eigenen Bildschirm, sind reine Versionsgeschichte und
-   werden im Spiel nicht gebraucht. Die Übersetzungsschicht in `lang/`
-   fasst sie bewusst nicht an: sie arbeitet über Textknoten, und 733
-   Einzeleinträge dort einzutragen würde jede Sprachprüfung sprengen.
-
-3. **Online-Match** — der Nutzer meldet, es gehe nicht: die Lobby werde
+1. **Online-Match** — der Nutzer meldet, es gehe nicht: die Lobby werde
    gefunden, das Match starte nicht. **Im Stand V28.11.13 ist der Fehler
    nicht reproduzierbar.** `scripts/qa/online-durchspielen.mjs` fährt
    zwei getrennte Browser gegen das echte Projekt, und alle zwölf
@@ -225,29 +261,53 @@ V28.7.2: **Fließtext bekommt `slim-card`, wiederholte Datenzeilen
    nie. Wenn der Nutzer dasselbe sieht, liegt es an der Live-Verbindung,
    nicht am Matchstart.
 
-4. **`dd_touch_room` fehlt auf der Datenbank.** Die zweite Migration
+2. **`dd_touch_room` fehlt auf der Datenbank.** Die zweite Migration
    (`20260903120000_dd_room_idle_expiry.sql`, Räume laufen bei
    Untätigkeit nach 45 Minuten bzw. 2 Stunden ab) ist im Repo, aber nicht
    eingespielt. Nachweis: die Funktion antwortet mit „nicht gefunden",
    alle Funktionen der ersten Migration antworten mit „permission
-   denied". Einspielen mit `supabase db push`.
+   denied". Einspielen mit `supabase db push`. **Nutzerseite.**
 
-5. **Host-autoritativ.** Der Spielstand kommt vom Gerät des Hosts,
+3. **Host-autoritativ.** Der Spielstand kommt vom Gerät des Hosts,
    niemand prüft ihn nach. Ohne öffentliche Bestenliste unkritisch, mit
    einer wird es das Hauptproblem. Ebenso offen: die Zuordnung von
-   `Profiles` zu `auth.users`.
+   `Profiles` zu `auth.users`. Entwurfsarbeit, kein Fließbandthema — und
+   der beste Kandidat für eine zweite, unabhängige Umsetzung.
 
-6. **Reste aus der Rundenauswertung** — Namen und Stat-Werte werden
-   unter 412 px noch leicht beschnitten. Zuletzt vor den Korrekturen aus
-   V28.11.13 gemessen, müsste neu nachgemessen werden.
+4. **Dasselbe Bild lädt mehrfach.** 41 von 110 Bildern werden unter
+   mehreren `?v=`-Schlüsseln angefragt, weil jede UI-Phase sich eigene
+   Variablen angelegt hat (`--p1-navy-button`, `--p3-…`, `--p4-…`,
+   `--dd-frame-button-navy`, …). Im Browser gemessen über zehn
+   Bildschirme: **58 überflüssige Ladevorgänge, 515 KB** und ebenso viele
+   doppelt dekodierte Bitmaps. `navy-button-horizontal.webp` allein
+   viermal. Mechanisch behebbar: eine Variable je Bild, ein Schlüssel.
+
+5. **Kleinigkeiten**, gesammelt und vom Nutzer zurückgestellt:
+   - Alte Phasenregeln zielen noch auf `.prestige-item > button`
+     (`css/app.css` ~6204, ~8852, ~9243) und überschreiben neuere Farben.
+   - `dice_prestige` wird im Renderer umgeschrieben statt in den Daten
+     (`js/08-profiles-stats.js` gegen `js/01-config.js`); der alte Text
+     und seine Übersetzung in `lang/en.js` sind tot.
+   - Tote Schlüssel `"noch nicht gewürfelt"`, `"Startfähigkeiten:"`.
+   - `"von"` als sehr kurzer, generischer `exact`-Schlüssel.
+   - In den Nicht-Classic-Modi steht vor dem Wurf nicht mehr, wie viele
+     Startfähigkeiten es gibt.
+   - Der Shop-Chevron hat keine `transition`, der Profil-Chevron schon.
+   - Die 22 Rahmenbilder in `frames/` (1,6 MB) sind beim Runterskalieren
+     ausgespart — jeder `border-image-slice` müsste neu gerechnet werden.
 
 **Entschieden, nicht mehr offen:** Fähigkeitsnamen mischen absichtlich
 Deutsch und Englisch — Eigennamen wie Snake Eyes oder Loaded Dice werden
 nicht eingedeutscht. Das Würfeldesign-Feld im Setup bleibt reine
 Anzeige, trägt seit V28.11.2 aber den Stil seiner Nachbarn. Die
 Rundenvorbereitung und der Fähigkeits-Picker sind seit V28.11.10 bis
-28.11.12 überarbeitet: Erklärtext je Regel umgebrochen, Symbol mit
-Kartenabstand, grünes Häkchen in der gemalten Fassung, Kontraste erhöht.
+28.11.12 überarbeitet. Der englische Changelog ist vollständig: 769 von
+770 Zeilen haben ihr Paar in `lang/en-changelog.js`; die eine Ausnahme
+trägt ein `<code>`-Tag, das der Exact-Match-Weg nicht greifen kann. Die
+doppelten Changelog-Bezeichnungen vor V28 bleiben unangetastet. `.git`
+ist rund 100 MB (67 tote PNG-Blobs) — das kostet nur Klonzeit und wird
+nicht aufgeräumt. Die 3D-Würfel sind seit V28.11.21 ganz entfernt; das
+Testlabor bleibt für spätere Angriffsanimationen.
 
 ---
 
@@ -288,6 +348,14 @@ Kartenabstand, grünes Häkchen in der gemalten Fassung, Kontraste erhöht.
   `js/32`, `js/34`.
 - **Testdaten.** Ein Prüflauf mit „alles freigeschaltet" übersieht genau
   die Fehler, die nur im gesperrten Zustand auftreten. Beides testen.
+- **Jede Bild-URL braucht denselben `?v=`-Schlüssel wie das CSS.** Wer im
+  Skript `assets/…/bild.webp` ohne Schlüssel schreibt, während das CSS
+  `bild.webp?v=28.2.1` nutzt, erzeugt für den Browser eine zweite Datei:
+  zweiter Download, zweite dekodierte Bitmap. Siehe „Offen" Punkt 4.
+- **`border-image-slice` ist nicht die sichtbare Rahmenstärke.** Der
+  Slice enthält oft Füllfläche jenseits der Zierschiene. Abstände am Bild
+  messen, nicht am Slice-Wert — sonst meldet man Kollisionen, die es
+  nicht gibt.
 
 ---
 
@@ -326,6 +394,20 @@ Notnagel und erzeugt bei Komposita Mischformen.
 Fehlt eine Encounter-Beschreibung, ersetzt der Notbehelf in
 `js/00-i18n.js` sie durch einen neutralen englischen Satz — sichtbar,
 aber nie halbdeutsch. Stand V28.7.3 greift er nirgends mehr.
+
+---
+
+## Wenn ein Asset fehlt
+
+**Nie ersatzweise irgendein vorhandenes Bild nehmen und nie einen Rahmen
+in CSS nachbauen.** Sieht etwas schief aus oder passt kein vorhandenes
+Asset zur Aufgabe, dann **sagen, dass eines gebraucht wird** — mit Zweck,
+gewünschtem Format und ungefährer Größe. Der Nutzer liefert es; das ist
+für ihn schnell gemacht. Ein notdürftiger Ersatz kostet später mehr als
+die Nachfrage jetzt.
+
+Dasselbe gilt, wenn ein Auftrag nur mit einem hässlichen Kompromiss
+umsetzbar wäre: erst sagen, dann bauen.
 
 ---
 
