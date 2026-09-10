@@ -14,7 +14,7 @@
   function emptyAbilityStat(){return {equipped:0,primary:0,secondary:0,chosen:0,wins:0};}
   function emptyProfileStats(){return {rounds:0,wins:0,kills:0,damageDealt:0,damageTaken:0,selfDamage:0,healed:0,ones:0,sixes:0,maxTurnDamage:0,currentWinStreak:0,bestWinStreak:0,abilities:{}};}
   function createDefaultSave(){
-    return {schemaVersion:SAVE_SCHEMA_VERSION,campaignVersion:CAMPAIGN_VERSION,lastGameVersion:GAME_VERSION,settings:{animation:"normal",botSpeed:"normal"},global:{completedRounds:0},profiles:[],duoCampaigns:{},trioCampaigns:{}};
+    return {schemaVersion:SAVE_SCHEMA_VERSION,campaignVersion:CAMPAIGN_VERSION,lastGameVersion:GAME_VERSION,settings:{animation:"normal",botSpeed:"normal"},global:{completedRounds:0},profiles:[],duoCampaigns:{},trioCampaigns:{},bossRushRuns:{}};
   }
 
   let storageAvailable=true;
@@ -308,6 +308,44 @@
     return p;
   }
 
+  function sanitizeBossRushRuns(raw,profiles){
+    const result={};
+    if(!raw||typeof raw!=="object"||Array.isArray(raw))return result;
+    const ids=new Set(profiles.map(p=>String(p.id)));
+    // Nur JSON-Daten, begrenzte Größe/Tiefe und keine Prototyp-Schlüssel.
+    const clean=(value,depth=0)=>{
+      if(depth>12)return null;
+      if(value===null||typeof value==="boolean")return value;
+      if(typeof value==="number")return Number.isFinite(value)?value:0;
+      if(typeof value==="string")return value.slice(0,2000);
+      if(Array.isArray(value))return value.slice(0,1000).map(v=>clean(v,depth+1));
+      if(value&&typeof value==="object")return Object.fromEntries(Object.entries(value).slice(0,300).filter(([key])=>!["__proto__","prototype","constructor"].includes(key)).map(([key,v])=>[key,clean(v,depth+1)]));
+      return null;
+    };
+    for(const source of Object.values(raw).slice(0,100)){
+      if(!source||source.schema!==1||source.finished||!Array.isArray(source.profileIds)||source.profileIds.length!==2)continue;
+      const pair=source.profileIds.map(String);
+      if(pair[0]===pair[1]||!pair.every(id=>ids.has(id)))continue;
+      if(!Number.isInteger(source.stage)||source.stage<0||source.stage>9||!["path","combat","reward"].includes(source.phase))continue;
+      const runSave=clean(source);
+      if(!runSave.heroes||!pair.every(id=>runSave.heroes[id]&&typeof runSave.heroes[id]==="object"))continue;
+      let valid=true;
+      pair.forEach(id=>{
+        const hero=runSave.heroes[id];
+        if(hero.hp!==null&&(!Number.isFinite(hero.hp)||hero.hp<0))valid=false;
+        if(hero.maxHp!==null&&(!Number.isFinite(hero.maxHp)||hero.maxHp<10))valid=false;
+        for(const slot of ["primaryAbility","secondAbility","thirdAbility"]){
+          if(hero[slot]!=null&&!REAL_ABILITY_IDS.includes(hero[slot]))valid=false;
+        }
+        hero.perks=Object.fromEntries(Object.entries(hero.perks||{}).filter(([key,n])=>/^[a-z_]{1,32}$/.test(key)&&Number.isInteger(n)&&n>0).map(([key,n])=>[key,Math.min(1000,n)]));
+        for(const key of ["successfulAttacks","stageKills","xpEarned","rerollsUsed","suppliesUsed","pathRerollsUsed"])hero[key]=Math.max(0,Math.floor(Number(hero[key])||0));
+      });
+      for(const key of ["paths","selectedPaths","seenEncounters","rewardHistory","bossXpAwards","deferredRewards","rewardTasks"])if(!Array.isArray(runSave[key]))valid=false;
+      if(valid){runSave.active=true;runSave.profileIds=pair;result[JSON.stringify([...pair].sort())]=runSave;}
+    }
+    return result;
+  }
+
   function hydrateSave(raw){
     const migrated=migrateSave(raw);
     const next={...createDefaultSave(),...migrated};
@@ -322,6 +360,7 @@
     next.profiles=[];
     saveData=next; // normalizeProfile nutzt die bereits aufgebauten Profile für eindeutige Tags.
     rawProfiles.forEach(rawProfile=>next.profiles.push(normalizeProfile(rawProfile)));
+    next.bossRushRuns=sanitizeBossRushRuns(migrated.bossRushRuns,next.profiles);
     return next;
   }
 

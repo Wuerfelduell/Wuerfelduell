@@ -1639,7 +1639,7 @@
       rawDamage+=masteryDamageBonus;
       addLog(`⚔️ Mastery · Force: +${masteryDamageBonus} Gesamtschaden.`);
     }
-    const rushDamageBonus=rawDamage>0?window.WDDuoBossRush?.attackDamageBonus?.(current):null;
+    const rushDamageBonus=rawDamage>0?window.WDDuoBossRush?.attackDamageBonus?.(current,attackTarget):null;
     if((rushDamageBonus?.amount||0)>0){
       rawDamage+=rushDamageBonus.amount;
       addLog(`Boss Rush: ${rushDamageBonus.parts.join(" · ")}.`);

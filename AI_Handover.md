@@ -22,9 +22,9 @@ welche Fallen schon Zeit gekostet haben.
 
 | | |
 |---|---|
-| Version | **28.11.32** |
+| Version | **28.12.0** |
 | Branch | `main` |
-| Letzte Schritte | CSS-Stapel auf 10 Dateien zusammengelegt · Changelog englisch vervollständigt · Hauptmenü, Statistik, Profile, Achievements, Spielvorbereitung und Trophy Shop überarbeitet · Fähigkeits- und Shopflächen auf proportional gekachelte Bildrahmen umgestellt · alle Bild-URLs auf einen gemeinsamen Cache-Schlüssel · Trophy-Shop-Reste bereinigt und Aufklapppfeile angeglichen |
+| Letzte Schritte | CSS-Stapel auf 10 Dateien zusammengelegt · Changelog englisch vervollständigt · Hauptmenü, Statistik, Profile, Achievements, Spielvorbereitung und Trophy Shop überarbeitet · Fähigkeits- und Shopflächen auf proportional gekachelte Bildrahmen umgestellt · alle Bild-URLs auf einen gemeinsamen Cache-Schlüssel · Trophy-Shop-Reste bereinigt und Aufklapppfeile angeglichen · Duo-Boss-Rush mit Pfadwahl, gespeicherten Runs und 30 Perks |
 
 **Die Arbeitsteilung hat sich geändert.** Bis V28.11.28 liefen zwei
 Sitzungen parallel: Codex hat umgesetzt, diese Sitzung geprüft. Ab jetzt
@@ -228,6 +228,36 @@ wird nur auf ausdrückliche Ansage geändert. Nicht ungefragt „reparieren".
 - Boss-Rush-Gegner reservieren unten 60 px für das gemalte Ornament. Die vier
   Statusfelder haben keinen eigenen Border; die dunkle Füllung bleibt wegen des
   deutlich besseren Kontrasts zum roten Außenornament erhalten.
+
+---
+
+## Duo-Boss-Rush seit 28.12.0
+
+- `js/37-duo-boss-rush.js`: neun Stufen mit je drei Angeboten (leicht,
+  normal, schwer), danach fest `duo_bloodmoon_empress`. Die 80 erreichbaren
+  vorhandenen Duo-Encounter sind auf getrennte Stufenvorräte verteilt;
+  gezogene Encounter und zufällige Loadouts bleiben beim Fortsetzen gleich.
+- Die HP werden nach einem steigenden Druckbudget skaliert:
+  Gesamt-HP × (1 + 0,25 je zusätzlichem Gegner). Das ist ein prüfbares
+  Schwierigkeitsmaß, keine vollständige Bewertung sämtlicher Fähigkeiten.
+  `validate-endgame.mjs` prüft alle Pfade, Existenz, Gegnerzahl und Anstieg.
+- `saveData.bossRushRuns` ist ein neuer bereinigter Zweig für genau zwei
+  Profile (sortiertes Profilpaar als Schlüssel). Gesichert werden Pfade,
+  Helden, Perkzähler und Belohnungsschritte. Ein Kampf-Reload beginnt am
+  gespeicherten Stufenanfang; Sieg/Niederlage löschen den offenen Run.
+  Boss-XP und Kampfabschluss werden gemeinsam gespeichert.
+- 30 stapelbare Perks: 6 bisherige + 19 vorgegebene + Wechselspiel,
+  Proviantteilung, Kartograph, Auslese und Plünderer. Neuausrichtung sichert
+  auch den zweiten Schritt mit belegten Slots; Zweitfund kopiert ohne
+  rekursive Verdopplung. Der Endboss bietet keine weitere Belohnungswahl.
+- Die drei Verteidigungsperks verwenden ausdrücklich alle `shield.svg`;
+  zwei weitere spezifische Icons fehlen. Bildrevision bleibt 28.11.28.
+- Prüfstände: `node scripts/qa/boss-rush.mjs` für Haken, Stapel, Schwellen,
+  Angebote, Historie und Speicherbereinigung; `scripts/qa/boss-rush-browser.mjs`
+  für echte UI-/Engine-Übergänge, Reloads und zehn Stufen mit Test-Siegen
+  (keine vollständig ausgespielten Zufallskämpfe). Browserlauf in DE/EN
+  bei 320/360/390/412/1280 px; keine JS-Fehler/404, im offenen Pfaddialog
+  0 DOM-Mutationen/s. `npm run check` grün. Keine zusätzliche App-Abhängigkeit.
 
 ---
 

@@ -12468,3 +12468,13 @@ html[data-v28-rework="2"] .setup-ability-picker .setup-ability-cancel{
     top:-20px;
   }
 }
+
+/* Duo-Roguelike: bestehender Dialog, scrollbare Auswahl und vorhandene Bildkanten. */
+#duoBossRushRewardModal .boss-rush-reward-panel{max-height:calc(100dvh - 24px);overflow-y:auto;}
+#duoBossRushRewardModal .boss-rush-reward-options{grid-template-columns:repeat(auto-fit,minmax(min(100%,160px),1fr));}
+#duoBossRushRewardModal .boss-rush-reward-card{width:100%;height:100%;border-style:solid;border-color:transparent;border-width:9px 15px;border-image:var(--wd-card) 72 120 72 120 / 9px 15px stretch;background:#0b203b;box-shadow:none;border-radius:0;padding:8px;overflow-wrap:anywhere;}
+#duoBossRushRewardModal .boss-rush-reward-copy{min-width:0;color:#fff3cf;}
+#duoBossRushRewardModal .rush-path-entry{min-width:0;display:flex;flex-direction:column;gap:8px;}
+#duoBossRushRewardModal .boss-rush-reward-card img{object-fit:contain;flex-shrink:0;}
+#duoBossRushRewardModal #duoBossRushRerollBtn{margin-top:12px;width:100%;}
+@media(max-width:540px){#duoBossRushRewardModal .boss-rush-reward-options{grid-template-columns:1fr;}}

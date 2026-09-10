@@ -1,74 +1,37 @@
 (() => {
   const ICON_ROOT="assets/ui/v28/svg/gameplay/";
-  const ABILITY_ICON_ROOT="assets/ui/v28/svg/";
-  const ABILITY_ICON_PATHS=Object.freeze({
-    1:"abilities/01-brutale-einsen.svg",
-    2:"abilities/02-lifesteal.svg",
-    3:"abilities/03-glueckswurf.svg",
-    4:"abilities/04-zweite-chance.svg",
-    5:"abilities/05-angriffsvorsprung.svg",
-    7:"abilities/07-glueck.svg",
-    8:"abilities/08-praezision.svg",
-    9:"abilities/09-rache.svg",
-    10:"abilities/10-momentum.svg",
-    11:"abilities/11-blutpreis.svg",
-    12:"abilities/12-gambling-man.svg",
-    13:"abilities/13-high-stakes.svg",
-    14:"abilities/14-last-stand.svg",
-    15:"abilities/15-perfect-25.svg",
-    16:"abilities/16-ricochet.svg",
-    17:"abilities/17-wildcard.svg",
-    18:"abilities/18-loaded-dice.svg",
-    19:"abilities/19-insurance.svg",
-    20:"abilities/20-snake-eyes.svg",
-    21:"abilities/21-counterattack.svg",
-    22:"abilities/22-twelve.svg",
-    23:"abilities/23-blood-rush.svg",
-    24:"abilities/24-double-tap.svg",
-    25:"abilities/25-underdog.svg"
-  });
-
-  // Doppelstufen haben bewusst weniger Gesamt-HP als die alten Einzelbosse.
-  // Ihre zwei getrennten Züge und die stärkeren Zufalls-Loadouts liefern den Druck.
-  const STAGES=Object.freeze([
-    {encounterId:"duo_covenant_zero",label:"Covenant King",phaseHeal:3,phaseAbilityCount:2,enemies:[
-      {name:"Covenant King",hp:50,abilityCount:2}
-    ]},
-    {encounterId:"duo_fracture_monarch",label:"Fracture Monarch + Left Hand",phaseHeal:4,phaseAbilityCount:2,enemies:[
-      {name:"Fracture Monarch",hp:34,abilityCount:2},
-      {name:"Left Hand",hp:24,abilityCount:2}
-    ]},
-    {encounterId:"duo_mirror_heart",label:"Mirror Heart",phaseHeal:5,phaseAbilityCount:3,enemies:[
-      {name:"Mirror Heart",hp:58,abilityCount:3}
-    ]},
-    {encounterId:"duo_omega_roles_two",label:"Delta + Gamma Seal",phaseHeal:6,phaseAbilityCount:3,enemies:[
-      {name:"Delta Seal",hp:36,abilityCount:3},
-      {name:"Gamma Seal",hp:26,abilityCount:2}
-    ]},
-    {encounterId:"duo_omega_throne",label:"Omega Sovereign + Throne Black",phaseHeal:8,phaseAbilityCount:3,enemies:[
-      {name:"Omega Sovereign",hp:46,abilityCount:3},
-      {name:"Throne Black",hp:30,abilityCount:3}
-    ]},
-    {encounterId:"duo_eclipse_05",label:"Eclipse Vanguard",phaseHeal:6,phaseAbilityCount:3,enemies:[
-      {name:"Eclipse Vanguard",hp:64,abilityCount:3}
-    ]},
-    {encounterId:"duo_eclipse_10",label:"Eclipse Blades",phaseHeal:6,phaseAbilityCount:3,enemies:[
-      {name:"Eclipse Blade",hp:36,abilityCount:3},
-      {name:"Eclipse Ward",hp:30,abilityCount:2}
-    ]},
-    {encounterId:"duo_eclipse_sovereign",label:"Eclipse Sovereign + Anchor",phaseHeal:7,phaseAbilityCount:3,enemies:[
-      {name:"Eclipse Sovereign",hp:48,abilityCount:3},
-      {name:"Eclipse Anchor",hp:30,abilityCount:3}
-    ]},
-    {encounterId:"duo_bloodmoon_10",label:"Bloodmoon Hunters",phaseHeal:7,phaseAbilityCount:3,enemies:[
-      {name:"Bloodmoon Fang",hp:38,abilityCount:3},
-      {name:"Bloodmoon Seer",hp:32,abilityCount:3}
-    ]},
-    {encounterId:"duo_bloodmoon_empress",label:"Bloodmoon Empress + Anchor",phaseHeal:8,phaseAbilityCount:3,enemies:[
-      {name:"Bloodmoon Empress",hp:52,abilityCount:3},
-      {name:"Bloodmoon Anchor",hp:32,abilityCount:3}
-    ]}
+  // Druckbudget = Gesamt-HP * (1 + 0,25 je zusätzlichem Gegner).
+  // Getrennte, chronologisch geordnete Vorräte verhindern Wiederholungen.
+  const STAGES=Object.freeze([30,36,43,51,61,72,85,100,118,140]);
+  const FINAL_ENCOUNTER_ID="duo_bloodmoon_empress";
+  const DIFFICULTIES=Object.freeze([
+    {id:"easy",name:"leicht",factor:.94,loot:"3 gewöhnliche Belohnungen"},
+    {id:"normal",name:"normal",factor:1,loot:"3 Belohnungen · mindestens eine seltene"},
+    {id:"hard",name:"schwer",factor:1.06,loot:"3 Belohnungen · mindestens eine epische + Fähigkeitsangebot"}
   ]);
+  const RARITIES=Object.freeze({common:"gewöhnlich",rare:"selten",epic:"episch"});
+  const copy=value=>JSON.parse(JSON.stringify(value));
+  const pairKey=ids=>JSON.stringify([...ids].map(String).sort());
+
+  function stagePool(index){
+    if(index===9)return [duoEncounterById(FINAL_ENCOUNTER_ID)].filter(Boolean);
+    const pool=DUO_CAMPAIGN_ENCOUNTERS.filter(e=>e.id!==FINAL_ENCOUNTER_ID&&e.enemies.length>0&&e.enemies.length<=3);
+    return pool.slice(Math.floor(index*pool.length/9),Math.floor((index+1)*pool.length/9));
+  }
+
+  function optionFor(encounter,index,difficulty){
+    const weight=1+.25*(encounter.enemies.length-1);
+    const rawTotal=encounter.enemies.reduce((n,e)=>n+e.hp,0);
+    const total=index===9?rawTotal:Math.round(STAGES[index]*DIFFICULTIES.find(d=>d.id===difficulty).factor/weight);
+    let remaining=total;
+    const enemies=encounter.enemies.map((e,i)=>{
+      const hp=i===encounter.enemies.length-1?remaining:Math.max(1,Math.round(total*e.hp/rawTotal));
+      remaining-=hp;
+      return {name:e.name,hp,abilityCount:index<3?2:3};
+    });
+    return {encounterId:encounter.id,label:enemies.map(e=>e.name).join(" + "),difficulty,
+      phaseHeal:Math.min(8,3+Math.floor(index*.6)),phaseAbilityCount:index<3?2:3,enemies,pressure:total*weight};
+  }
 
   // Visual world identities are indexed by stage, never rolled. Repeated
   // encounter families (Omega, Eclipse, Bloodmoon) deliberately receive an
@@ -89,24 +52,50 @@
 
   const BRUTAL_ABILITY_IDS=Object.freeze([1,4,8,9,10,11,13,16,17,18,21,23,24,25]);
   const REWARDS=Object.freeze([
-    {kind:"perk",id:"damage",name:"Klingenfokus",icon:"damage-sword.svg",desc:"Alle eigenen Hauptangriffe verursachen dauerhaft +1 Schaden pro Stapel."},
-    {kind:"perk",id:"rest",name:"Verschnaufpause",icon:"heart-hp.svg",desc:"Heilt diesen Spieler sofort um 12 HP. Kann erneut gewählt werden."},
-    {kind:"perk",id:"regen",name:"Regeneration",icon:"heal.svg",desc:"Heilt diesen Spieler jetzt und nach jedem weiteren Boss um 5 HP pro Stapel."},
-    {kind:"perk",id:"opening",name:"Eröffnungsschlag",icon:"attack.svg",desc:"Der erste erfolgreiche eigene Hauptangriff jedes Bosses erhält +3 Schaden pro Stapel."},
-    {kind:"perk",id:"siphon",name:"Blutdurst",icon:"self-damage-blood.svg",desc:"Jeder erfolgreiche eigene Hauptangriff heilt 2 HP pro Stapel."},
-    {kind:"perk",id:"hunter",name:"Trophäenjäger",icon:"reward-gift.svg",desc:"Jeder eigene Gegner-Kill heilt diesen Spieler um 4 HP pro Stapel."}
+    {kind:"perk",id:"damage",rarity:"common",name:"Klingenfokus",icon:"damage-sword.svg",desc:"Alle eigenen Hauptangriffe verursachen dauerhaft +1 Schaden pro Stapel."},
+    {kind:"perk",id:"rest",rarity:"common",name:"Verschnaufpause",icon:"heart-hp.svg",desc:"Heilt diesen Spieler sofort um 12 HP. Kann erneut gewählt werden."},
+    {kind:"perk",id:"regen",rarity:"rare",name:"Regeneration",icon:"heal.svg",desc:"Heilt diesen Spieler jetzt und nach jedem weiteren Boss um 5 HP pro Stapel."},
+    {kind:"perk",id:"opening",rarity:"rare",name:"Eröffnungsschlag",icon:"attack.svg",desc:"Der erste erfolgreiche eigene Hauptangriff jedes Bosses erhält +3 Schaden pro Stapel."},
+    {kind:"perk",id:"siphon",rarity:"rare",name:"Blutdurst",icon:"self-damage-blood.svg",desc:"Jeder erfolgreiche eigene Hauptangriff heilt 2 HP pro Stapel."},
+    {kind:"perk",id:"hunter",rarity:"common",name:"Trophäenjäger",icon:"reward-gift.svg",desc:"Jeder eigene Gegner-Kill heilt diesen Spieler um 4 HP pro Stapel."},
+    {kind:"perk",id:"execution",rarity:"epic",name:"Henkersblick",icon:"target.svg",desc:"Angriffe auf Gegner unter 30 % ihrer maximalen HP verursachen +4 Schaden pro Stapel."},
+    {kind:"perk",id:"revenge",rarity:"rare",name:"Vergeltung",icon:"loss.svg",desc:"Jeder gefallene eigene Held erhöht den Angriffsschaden um 3 pro Stapel."},
+    {kind:"perk",id:"sacrifice",rarity:"rare",name:"Aufopferung",icon:"self-damage-blood.svg",desc:"Unter 50 % eigener HP: +2 Angriffsschaden, unter 25 %: +4 pro Stapel."},
+    {kind:"perk",id:"momentum",rarity:"common",name:"Schwung",icon:"streak-flame.svg",desc:"Jeder bereits besiegte Boss erhöht den Angriffsschaden um 1 pro Stapel."},
+    {kind:"perk",id:"drill",rarity:"rare",name:"Präzisionsdrill",icon:"target.svg",desc:"Jeder dritte erfolgreiche eigene Hauptangriff im Run verursacht +6 Schaden pro Stapel."},
+    {kind:"perk",id:"gamble",rarity:"epic",name:"Glücksspiel",icon:"dice.svg",desc:"Dauerhaft +5 Angriffsschaden und -5 maximale HP pro Stapel; mindestens 10 maximale HP bleiben."},
+    {kind:"perk",id:"hospital",rarity:"rare",name:"Feldlazarett",icon:"heal.svg",desc:"Nach jedem Boss heilen beide Helden 8 HP pro Stapel."},
+    {kind:"perk",id:"second_wind",rarity:"epic",name:"Zweiter Atem",icon:"heart-hp.svg",desc:"Ein gefallener Held startet den nächsten Boss mit 15 HP."},
+    {kind:"perk",id:"constitution",rarity:"common",name:"Eiserne Konstitution",icon:"heart-hp.svg",desc:"Erhöht die maximalen und aktuellen HP sofort um 10 pro Stapel."},
+    {kind:"perk",id:"blood_pact",rarity:"rare",name:"Blutpakt",icon:"self-damage-blood.svg",desc:"Heilt sofort 25 HP; nach jedem weiteren Boss kostet jeder Stapel 3 HP, ohne zu töten."},
+    {kind:"perk",id:"scales",rarity:"common",name:"Schuppenpanzer",icon:"shield.svg",desc:"Eingehender Gegnerangriffsschaden sinkt um 1 pro Stapel, mindestens auf 0."},
+    {kind:"perk",id:"bulwark",rarity:"rare",name:"Bollwerk",icon:"shield.svg",desc:"Der erste Gegnerangriff auf diesen Helden je Boss verursacht 4 Schaden weniger pro Stapel."},
+    {kind:"perk",id:"dodge",rarity:"rare",name:"Ausweichinstinkt",icon:"shield.svg",desc:"Unter 30 % eigener HP verursachen Gegnerangriffe 2 Schaden weniger pro Stapel."},
+    {kind:"perk",id:"realign",rarity:"epic",name:"Neuausrichtung",icon:"mastery.svg",desc:"Wähle einen belegten Fähigkeitsslot; seine Fähigkeit wird zufällig gegen eine noch nicht besessene getauscht."},
+    {kind:"perk",id:"reroll",rarity:"common",name:"Neuwurf",icon:"dice.svg",desc:"Gewährt pro Stapel einen Neuwurf einer Belohnungsauswahl im Run."},
+    {kind:"perk",id:"supply",rarity:"rare",name:"Vorratspaket",icon:"reward-gift.svg",desc:"Die nächste eigene Belohnungsauswahl enthält vier statt drei Perks; einmal pro Stapel."},
+    {kind:"perk",id:"second_find",rarity:"epic",name:"Zweitfund",icon:"duo.svg",desc:"Der Partner erhält deine gewählte Belohnung eine Stufe später ebenfalls, einmal pro Stapel."},
+    {kind:"perk",id:"scout",rarity:"common",name:"Kundschafter",icon:"encounter.svg",desc:"Zeigt bei der Pfadwahl die Fähigkeiten aller angebotenen Gegner."},
+    {kind:"perk",id:"greed",rarity:"rare",name:"Trophäengier",icon:"trophy.svg",desc:"Erhöht die eigenen Boss-XP im restlichen Run um 50 % pro Stapel."},
+    {kind:"perk",id:"relay",rarity:"rare",name:"Wechselspiel",icon:"duo.svg",desc:"Solange beide leben: Greift nach dem Partner an und verursacht +2 Schaden pro Stapel."},
+    {kind:"perk",id:"sharing",rarity:"common",name:"Proviantteilung",icon:"duo.svg",desc:"Vor jedem Boss gibt der gesündere Held bis zu 3 HP pro Stapel an den schwächeren ab, höchstens bis zum Gleichstand."},
+    {kind:"perk",id:"cartographer",rarity:"common",name:"Kartograph",icon:"world.svg",desc:"Gewährt pro Stapel einen Austausch eines Pfadangebots gegen einen ungesehenen Encounter derselben Stufe."},
+    {kind:"perk",id:"flawless",rarity:"epic",name:"Auslese",icon:"completed.svg",desc:"Nach einem Boss ohne erlittenen Schaden erhält dieser Held je Stapel zusätzlich einen zufälligen gewöhnlichen Perk."},
+    {kind:"perk",id:"plunder",rarity:"rare",name:"Plünderer",icon:"xp-star.svg",desc:"Jeder eigene Gegner-Kill bringt bei einem gewonnenen Boss 10 zusätzliche eigene Boss-XP pro Stapel."}
   ]);
 
   let run=null;
   let rewardTurn=0;
   let rewardChoices=[];
   let selectionLocked=false;
+  let inputReadyAt=0;
+  let resumeCandidate=null;
 
   const $=id=>document.getElementById(id);
   const tr=value=>window.t?window.t(String(value)):String(value);
   const safe=value=>String(value??"").replace(/[&<>"']/g,ch=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[ch]));
   const rewardById=id=>REWARDS.find(reward=>reward.id===id)||null;
-  const stageConfig=()=>run?STAGES[Math.max(0,Math.min(STAGES.length-1,run.stage))]:null;
+  const stageConfig=()=>run?.selectedPaths?.[run.stage]||null;
   const heroState=profileId=>run?.heroes?.[String(profileId)]||null;
   const isActive=()=>!!run?.active;
   const validAbility=id=>REAL_ABILITY_IDS.includes(Number(id))?Number(id):null;
@@ -149,23 +138,23 @@
     return {enemies,phaseAbilities};
   }
 
-  function abilityNames(ids){
-    return (ids||[]).map(id=>ABILITIES[id]?.name||`Fähigkeit ${id}`).join(" + ");
-  }
+  function abilityName(id){const name=ABILITIES[id]?.name||String(id);return window.WD_LANG_PACKS?.en?.exact?.[name]||name;}
+  function abilityNames(ids){return (ids||[]).map(abilityName).join(" + ");}
 
   function currentEncounter(){
-    const stage=stageConfig(),build=run?.stageBuilds?.[run?.stage];
+    const stage=stageConfig(),build=stage?.build;
     if(!run||!stage||!build)return null;
     const base=duoEncounterById(stage.encounterId);
     if(!base)return null;
     const enemies=build.enemies.map((built,index)=>{
       const spec=stage.enemies[index];
-      const source=base.enemies.find(enemy=>enemy.name===spec.name)||base.enemies[index]||base.enemies[0];
+      const source=base.enemies[index];
       if(!source)return null;
       return {
         ...source,
         name:spec.name,
-        hp:spec.hp,
+        // Der Motor multipliziert Mutator-HP beim Aufbau; die Vorschau zeigt End-HP.
+        hp:spec.hp/(ELITE_MUTATORS[source.mutator]?.hp||1),
         level:"hard",
         ability:built.abilities[0],
         secondAbility:built.abilities[1]??null,
@@ -190,6 +179,7 @@
       subtitle:tr(enemies.length>1?"Fortlaufender Duo-Gruppenkampf":"Fortlaufender Duo-Bosskampf"),
       desc:tr(`Besiegt ${stage.label}. Gegnerfähigkeiten wechseln bei jedem neuen Run; Spieler-HP, Rush-Fähigkeiten und Belohnungen werden übernommen.`),
       requires:[],
+      playerHp:START_HP,
       challenge:{type:"win",text:tr(`Besiegt ${stage.label}.`)},
       enemies,
       farmTrophy:false,
@@ -232,9 +222,9 @@
         liveStatusItem("Stufe",`${run.stage+1} / ${STAGES.length}`),
         liveStatusItem("Boss",stage.label),
         liveStatusItem("Phase",phaseValue),
-        liveStatusItem("XP",`${run.bossXpEarned} ${tr("je Profil")}`)
+        liveStatusItem("XP",run.profileIds.map(id=>`${getProfile(id)?.name}: ${heroState(id)?.xpEarned||0}`).join(" · "))
       );
-      status.setAttribute("aria-label",tr(`Boss Rush, Stufe ${run.stage+1} von ${STAGES.length}, Boss ${stage.label}, Phase ${phaseValue}, ${run.bossXpEarned} Boss XP je Profil`));
+      status.setAttribute("aria-label",tr(`Boss Rush, Stufe ${run.stage+1} von ${STAGES.length}, Boss ${stage.label}, Phase ${phaseValue}, ${run.bossXpEarned} ${tr("Basis-Boss-XP")}`));
     }
     banner.querySelectorAll(".phase-live").forEach(line=>{
       line.dataset.bossRushLegacyPhase="1";
@@ -246,7 +236,7 @@
     const stage=stageConfig();
     if(!run||!stage)return "";
     queueMicrotask(syncLiveStatus);
-    return tr(`Boss Rush ${run.stage+1}/${STAGES.length} · ${stage.label} · ${run.bossXpEarned} Boss XP je Profil`);
+    return tr(`Boss Rush ${run.stage+1}/${STAGES.length} · ${stage.label} · ${run.bossXpEarned} ${tr("Basis-Boss-XP")}`);
   }
 
   function findHeroIndex(profileId){
@@ -274,16 +264,17 @@
       hero.maxHp=fallback;
       hero.hp=fallback;
     }else{
-      hero.maxHp=Math.max(hero.maxHp,fallback);
+      hero.maxHp=Math.max(10,hero.maxHp);
       hero.hp=Math.max(0,Number(hero.hp)||0);
     }
+    if(hero.hp<=0&&perk(profile.id,"second_wind")>0)hero.hp=15;
     return {hp:hero.hp,maxHp:hero.maxHp};
   }
 
   function startingLoadout(profile,primaryAbility,fallbackSecond=null){
     const hero=heroState(profile?.id),primary=validAbility(primaryAbility);
     if(!hero)return {secondAbility:validAbility(fallbackSecond),thirdAbility:null,secondAbilityUnlocked:fallbackSecond!=null,thirdAbilityUnlocked:false,campaignBonusDraftUsed:false};
-    hero.primaryAbility=primary;
+    hero.primaryAbility=validAbility(hero.primaryAbility)??primary;
     const fallback=validAbility(fallbackSecond);
     const storedSecond=validAbility(hero.secondAbility);
     const second=storedSecond??(fallback!==primary?fallback:null);
@@ -302,207 +293,331 @@
   }
 
   function healHero(profileId,amount,{combat=false,reason="Boss Rush"}={}){
-    if(!run||amount<=0)return 0;
     const hero=heroState(profileId),index=findHeroIndex(profileId),player=players[index];
-    if(!hero||!player)return 0;
-    const before=Math.max(0,Number(player.hp)||0);
-    player.hp=before+Math.max(0,Number(amount)||0);
-    const healed=player.hp-before;
-    hero.hp=player.hp;
-    hero.maxHp=Math.max(1,Number(player.maxHp)||hero.maxHp||START_HP);
-    if(combat&&healed>0){
-      recordHealing(index,healed);
-      if(Array.isArray(pendingExtraHealFx))pendingExtraHealFx.push({target:index,amount:healed});
-      addLog(tr(`${reason}: ${player.name} heilt ${healed} HP.`));
-    }
-    return healed;
-  }
-
-  function attackDamageBonus(index){
-    if(!run||run.finished||players[index]?.campaignTeam!=="hero")return {amount:0,parts:[]};
-    const hero=heroState(players[index].profileId);
-    if(!hero)return {amount:0,parts:[]};
-    const parts=[];
-    let amount=Math.max(0,Number(hero.perks.damage)||0);
-    if(amount>0)parts.push(`${tr("Klingenfokus")} +${amount}`);
-    const openingStacks=Math.max(0,Number(hero.perks.opening)||0);
-    if(openingStacks>0&&hero.openingUsedStage!==run.stage){
-      const openingBonus=openingStacks*3;
-      amount+=openingBonus;
-      hero.openingUsedStage=run.stage;
-      parts.push(`${tr("Eröffnungsschlag")} +${openingBonus}`);
-    }
-    return {amount,parts};
-  }
-
-  function afterHeroAttack(index,totalDamage){
-    if(!run||run.finished||totalDamage<=0||players[index]?.campaignTeam!=="hero")return 0;
-    const hero=heroState(players[index].profileId),stacks=Math.max(0,Number(hero?.perks?.siphon)||0);
-    return stacks>0?healHero(players[index].profileId,stacks*2,{combat:true,reason:"Boss Rush · Blutdurst"}):0;
-  }
-
-  function onHeroKill(index){
-    if(!run||run.finished||players[index]?.campaignTeam!=="hero")return 0;
-    const hero=heroState(players[index].profileId),stacks=Math.max(0,Number(hero?.perks?.hunter)||0);
-    return stacks>0?healHero(players[index].profileId,stacks*4,{combat:true,reason:"Boss Rush · Trophäenjäger"}):0;
-  }
-
-  function perkChoicesFor(profileId,count){
-    const pool=shuffled(REWARDS),hero=heroState(profileId),choices=[];
-    if((hero?.hp||0)<=0){
-      const recovery=pool.find(reward=>reward.id==="rest"||reward.id==="regen");
-      if(recovery)choices.push(recovery);
-    }
-    pool.forEach(reward=>{
-      if(choices.length<count&&!choices.some(item=>item.id===reward.id))choices.push(reward);
-    });
-    return choices.slice(0,count);
-  }
-
-  function abilityChoicesFor(profileId,count=2){
-    const hero=heroState(profileId),index=findHeroIndex(profileId),player=players[index];
-    if(!hero)return [];
-    const owned=new Set([
-      hero.primaryAbility,hero.secondAbility,hero.thirdAbility,
-      player?.ability,player?.secondAbility,player?.thirdAbility
-    ].map(validAbility).filter(id=>id!=null));
-    return shuffled(REAL_ABILITY_IDS.filter(id=>!owned.has(id))).slice(0,count).map(abilityId=>{const ability=ABILITIES[abilityId]||{name:`Fähigkeit ${abilityId}`,desc:"Zusätzliche Rush-Fähigkeit."};return {
-      kind:"ability",
-      id:`ability:${abilityId}`,
-      abilityId,
-      name:tr(ability.name),
-      icon:ABILITY_ICON_PATHS[abilityId]||"gameplay/mastery.svg",
-      desc:tr(`Setzt die 3. Fähigkeit für die nächsten Stufen. ${ability.desc}`)
-    }});
-  }
-
-  function choicesFor(profileId){
-    const draftStage=[1,5,7].includes(run?.stage);
-    const abilityChoices=draftStage?abilityChoicesFor(profileId,2):[];
-    return [...abilityChoices,...perkChoicesFor(profileId,3-abilityChoices.length)].slice(0,3);
-  }
-
-  function choiceIcon(choice){
-    return choice.kind==="ability"?`${ABILITY_ICON_ROOT}${choice.icon}`:`${ICON_ROOT}${choice.icon}`;
-  }
-
-  function choiceStateLabel(profileId,choice){
-    if(choice.kind==="ability")return tr("Einmalig · bleibt bis Rush-Ende");
-    const count=Math.max(0,Number(heroState(profileId)?.perks?.[choice.id])||0);
-    if(choice.id==="rest")return tr(count?`Bereits ${count}× gewählt`:"Sofort-Effekt");
-    return tr(count?`Aktuell ${count} Stapel`:"Noch kein Stapel");
-  }
-
-  function renderRewardTurn(){
-    if(!run)return;
-    const profileId=run.profileIds[rewardTurn],profile=getProfile(profileId),hero=heroState(profileId);
-    if(!profile||!hero)return;
-    rewardChoices=choicesFor(profileId);
-    selectionLocked=false;
-    $("duoBossRushRewardKicker").textContent=tr(`BOSS ${run.stage+1} / ${STAGES.length} BESIEGT · +${run.lastBossXpAward} BOSS XP`);
-    $("duoBossRushRewardTitle").textContent=tr(`Belohnung für ${profile.name}`);
-    $("duoBossRushRewardText").textContent=tr(`Spieler ${rewardTurn+1} von ${run.profileIds.length} · ${Math.max(0,hero.hp)} HP · Run: ${run.bossXpEarned} Boss XP je Profil · Wähle 1 von 3.`);
-    $("duoBossRushRewardOptions").innerHTML=rewardChoices.map(choice=>`
-      <button type="button" class="boss-rush-reward-card${choice.kind==="ability"?" is-ability":""}" data-boss-rush-reward="${safe(choice.id)}">
-        <img src="${safe(choiceIcon(choice))}?v=${ASSET_REV}" alt="" aria-hidden="true">
-        <span class="boss-rush-reward-copy"><strong>${safe(tr(choice.name))}</strong><small>${safe(tr(choice.desc))}</small><em>${safe(choiceStateLabel(profileId,choice))}</em></span>
-      </button>`).join("");
-  }
-
-  function applyReward(profileId,rewardId){
-    const hero=heroState(profileId),choice=rewardChoices.find(item=>item.id===rewardId);
-    if(!hero||!choice)return false;
-    if(choice.kind==="ability"){
-      const abilityId=validAbility(choice.abilityId);
-      if(abilityId==null)return false;
-      hero.thirdAbility=abilityId;
-      const index=findHeroIndex(profileId),player=players[index];
-      if(player){
-        player.thirdAbility=abilityId;
-        player.thirdAbilityUnlocked=true;
-        player.thirdAbilityWasChosen=true;
-      }
-      run.rewardHistory.push({stage:run.stage+1,profileId:String(profileId),rewardId,abilityId});
-    }else{
-      const reward=rewardById(rewardId);
-      if(!reward)return false;
-      hero.perks[rewardId]=(Number(hero.perks[rewardId])||0)+1;
-      if(rewardId==="rest")healHero(profileId,12);
-      if(rewardId==="regen")healHero(profileId,5);
-      run.rewardHistory.push({stage:run.stage+1,profileId:String(profileId),rewardId});
-    }
-    syncRunStateFromPlayers();
-    renderPlayers();
-    return true;
-  }
-
-  function selectReward(rewardId){
-    if(selectionLocked||!run||run.finished||!rewardChoices.some(choice=>choice.id===rewardId))return;
-    selectionLocked=true;
-    const profileId=run.profileIds[rewardTurn];
-    if(!applyReward(profileId,rewardId)){selectionLocked=false;return;}
-    rewardTurn++;
-    if(rewardTurn<run.profileIds.length){renderRewardTurn();return;}
-    $("duoBossRushRewardModal").classList.add("hidden");
-    run.stage++;
-    const next=stageConfig();
-    if(!next){showOutcome(true);return;}
-    duoCampaignEncounterId=next.encounterId;
-    if(!startDuoCampaignEncounter({bossRush:true}))showOutcome(false,tr("Der nächste Boss konnte nicht gestartet werden."));
-  }
-
-  function showRewardModal(){
-    rewardTurn=0;
-    rewardChoices=[];
-    selectionLocked=false;
-    $("duoBossRushRewardModal").classList.remove("hidden");
-    renderRewardTurn();
-  }
-
-  function applyStageRegeneration(){
-    if(!run)return;
-    run.profileIds.forEach(profileId=>{
-      const stacks=Math.max(0,Number(heroState(profileId)?.perks?.regen)||0);
-      if(stacks>0)healHero(profileId,stacks*5);
-    });
-  }
-
-  function profileBossXp(profile){
-    return Math.max(0,Math.floor(Number(profile?.campaign?.bossRushXp)||0));
-  }
-
-  function awardBossXp(){
-    if(!run)return 0;
-    const amount=50+(run.stage*25);
-    run.bossXpEarned+=amount;
-    run.lastBossXpAward=amount;
-    run.bossXpAwards.push({stage:run.stage+1,amount});
-    run.profileIds.forEach(profileId=>{
-      const profile=getProfile(profileId);
-      if(!profile)return;
-      if(!profile.campaign||typeof profile.campaign!=="object")profile.campaign={};
-      profile.campaign.bossRushXp=profileBossXp(profile)+amount;
-    });
-    if(typeof saveGameData==="function")saveGameData();
-    window.WDMastery?.refreshAll?.();
-    refreshButton();
+    if(!hero||amount<=0)return 0;
+    const before=Math.max(0,Number(combat?player?.hp:hero.hp)||0);
+    hero.hp=before+amount;
+    if(player)player.hp=hero.hp;
+    if(combat&&player){recordHealing(index,amount);pendingExtraHealFx.push({target:index,amount});addLog(`${tr(reason)}: ${player.name} +${amount} HP`);}
     return amount;
   }
 
-  function perkSummary(profileId){
-    const hero=heroState(profileId),parts=[];
-    if(!hero)return tr("Keine Run-Belohnungen");
-    REWARDS.forEach(reward=>{
-      const count=Math.max(0,Number(hero.perks[reward.id])||0);
-      if(count>0)parts.push(`${tr(reward.name)} ${count}×`);
+  function perk(profileId,id){return Math.max(0,Number(heroState(profileId)?.perks?.[id])||0);}
+  function combatHero(index){return run?.active&&!run.finished&&players[index]?.campaignTeam==="hero"?heroState(players[index].profileId):null;}
+  function partnerId(profileId){return run.profileIds.find(id=>String(id)!==String(profileId));}
+  function persistRun(){
+    if(!run)return;
+    if(!saveData.bossRushRuns)saveData.bossRushRuns={};
+    if(run.finished)delete saveData.bossRushRuns[pairKey(run.profileIds)];
+    else saveData.bossRushRuns[pairKey(run.profileIds)]=copy(run);
+    saveGameData();
+  }
+
+  function attackDamageBonus(index,targetIndex){
+    const hero=combatHero(index);
+    if(!hero)return {amount:0,parts:[]};
+    const id=players[index].profileId,parts=[];
+    let amount=0;
+    const add=(key,factor)=>{const n=perk(id,key)*factor;if(n>0){amount+=n;parts.push(`${tr(rewardById(key).name)} +${n}`);}};
+    add("damage",1);
+    if(hero.openingUsedStage!==run.stage&&perk(id,"opening")){add("opening",3);hero.openingUsedStage=run.stage;}
+    const target=players[targetIndex],ratio=players[index].hp/Math.max(1,players[index].maxHp);
+    if(target&&target.hp/Math.max(1,target.maxHp)<.3)add("execution",4);
+    add("revenge",3*players.filter(p=>p.campaignTeam==="hero"&&p.hp<=0).length);
+    add("sacrifice",ratio<.25?4:ratio<.5?2:0);
+    add("momentum",run.cleared);
+    if(((hero.successfulAttacks||0)+1)%3===0)add("drill",6);
+    add("gamble",5);
+    if(run.lastAttacker===partnerId(id)&&run.profileIds.every(pid=>players[findHeroIndex(pid)]?.hp>0))add("relay",2);
+    return {amount,parts};
+  }
+
+  function incomingDamageModifier(targetIndex,base){
+    const hero=combatHero(targetIndex);
+    if(!hero||players[current]?.campaignTeam!=="enemy"||base<=0)return 0;
+    const id=players[targetIndex].profileId;
+    let reduction=perk(id,"scales");
+    if(hero.bulwarkUsedStage!==run.stage){reduction+=4*perk(id,"bulwark");hero.bulwarkUsedStage=run.stage;}
+    if(players[targetIndex].hp/Math.max(1,players[targetIndex].maxHp)<.3)reduction+=2*perk(id,"dodge");
+    return -Math.min(base,reduction);
+  }
+
+  function afterHeroAttack(index,totalDamage){
+    const hero=combatHero(index);
+    if(!hero||totalDamage<=0)return 0;
+    hero.successfulAttacks=(hero.successfulAttacks||0)+1;
+    run.lastAttacker=String(players[index].profileId);
+    return healHero(players[index].profileId,perk(players[index].profileId,"siphon")*2,{combat:true,reason:"Boss Rush · Blutdurst"});
+  }
+
+  function onHeroKill(index){
+    const hero=combatHero(index);
+    if(!hero)return 0;
+    hero.stageKills=(hero.stageKills||0)+1;
+    return healHero(players[index].profileId,perk(players[index].profileId,"hunter")*4,{combat:true,reason:"Boss Rush · Trophäenjäger"});
+  }
+
+  function perkChoicesFor(profileId,count,difficulty=stageConfig()?.difficulty||"easy"){
+    const eligible=REWARDS.filter(r=>difficulty!=="easy"||r.rarity==="common");
+    const mandatory=difficulty==="hard"?"epic":difficulty==="normal"?"rare":"common";
+    const chosen=shuffled(eligible.filter(r=>r.rarity===mandatory)).slice(0,1);
+    shuffled(eligible).forEach(r=>{if(chosen.length<count&&!chosen.includes(r))chosen.push(r);});
+    return shuffled(chosen);
+  }
+
+  function abilityChoicesFor(profileId,count=1){
+    const hero=heroState(profileId);
+    if(!hero)return [];
+    const owned=new Set([hero.primaryAbility,hero.secondAbility,hero.thirdAbility].map(validAbility).filter(id=>id!=null));
+    return shuffled(REAL_ABILITY_IDS.filter(id=>!owned.has(id))).slice(0,count).map(abilityId=>({kind:"ability",id:`ability:${abilityId}`,abilityId,name:abilityName(abilityId),icon:"mastery.svg",desc:"Setzt die 3. Fähigkeit für die nächsten Stufen."}));
+  }
+
+  function choiceById(id){
+    if(String(id).startsWith("ability:")){
+      const abilityId=validAbility(String(id).slice(8));
+      return abilityId==null?null:{kind:"ability",id,abilityId,name:abilityName(abilityId),icon:"mastery.svg",desc:"Setzt die 3. Fähigkeit für die nächsten Stufen."};
+    }
+    return rewardById(id);
+  }
+
+  function newChoices(profileId,count){
+    const difficulty=stageConfig()?.difficulty||"easy";
+    return [...perkChoicesFor(profileId,count,difficulty),...(difficulty==="hard"?abilityChoicesFor(profileId):[])].map(c=>c.id);
+  }
+
+  function choiceIcon(choice){return `${ICON_ROOT}${choice.icon}`;}
+  function choiceStateLabel(profileId,choice){
+    if(choice.kind==="ability")return tr("Einmalig · bleibt bis Rush-Ende");
+    return `${tr(RARITIES[choice.rarity])} · ${tr("Stapel")}: ${perk(profileId,choice.id)}`;
+  }
+  function modal(title,text,kicker="Boss Rush"){
+    $("duoBossRushRewardModal").classList.remove("hidden");
+    $("duoBossRushRewardTitle").textContent=tr(title);
+    $("duoBossRushRewardText").textContent=text;
+    $("duoBossRushRewardKicker").textContent=tr(kicker);
+    $("duoBossRushRerollBtn").classList.add("hidden");
+    $("duoBossRushRewardOptions").replaceChildren();
+  }
+  function optionButton(label,desc,icon,attribute,value,meta=""){
+    return `<button type="button" class="boss-rush-reward-card" ${attribute}="${safe(value)}"><img src="${ICON_ROOT}${safe(icon)}?v=${ASSET_REV}" alt="" aria-hidden="true"><span class="boss-rush-reward-copy"><strong>${safe(label)}</strong><small>${safe(desc)}</small><em>${safe(meta)}</em></span></button>`;
+  }
+  function lockSelection(){selectionLocked=true;inputReadyAt=performance.now()+250;}
+  function inputBlocked(){return performance.now()<inputReadyAt;}
+  function currentTask(){return run?.rewardTasks?.[run.rewardTurn];}
+
+  function renderRewardTurn(){
+    const task=currentTask();if(!task)return;
+    rewardTurn=run.rewardTurn;
+    const profile=getProfile(task.profileId),hero=heroState(task.profileId);
+    rewardChoices=task.choices.map(choiceById).filter(Boolean);
+    selectionLocked=!!run.swapPending;
+    const intro=`${profile.name} · ${hero.hp} HP · ${tr("Wähle eine Belohnung")}`;
+    modal(run.swapPending?"Fähigkeit zum Tauschen wählen":"Run-Belohnung",intro,task.copy?"Zweitfund":"Boss besiegt");
+    if(run.swapPending){
+      $("duoBossRushRewardOptions").innerHTML=["primaryAbility","secondAbility","thirdAbility"].map((slot,i)=>{
+        const ability=validAbility(hero[slot]);
+        return ability==null?"":optionButton(`${i+1}. ${tr("Fähigkeit")}: ${abilityName(ability)}`,tr("Diesen belegten Slot tauschen"),"mastery.svg","data-rush-slot",slot);
+      }).join("");
+      return;
+    }
+    $("duoBossRushRewardOptions").innerHTML=rewardChoices.map(choice=>optionButton(tr(choice.name),tr(choice.desc),choice.icon,"data-boss-rush-reward",choice.id,choiceStateLabel(task.profileId,choice))).join("");
+    const left=perk(task.profileId,"reroll")-(hero.rerollsUsed||0);
+    const reroll=$("duoBossRushRerollBtn");
+    reroll.classList.toggle("hidden",task.copy||left<=0);
+    reroll.textContent=`${tr("Belohnungen neu würfeln")} (${left})`;
+  }
+
+  function mirrorHero(profileId){
+    const player=players[findHeroIndex(profileId)],hero=heroState(profileId);
+    if(!player||!hero)return;
+    player.hp=hero.hp;player.maxHp=hero.maxHp;player.ability=hero.primaryAbility;
+    player.secondAbility=hero.secondAbility;player.thirdAbility=hero.thirdAbility;
+    player.secondAbilityUnlocked=hero.secondAbility!=null;player.thirdAbilityUnlocked=hero.thirdAbility!=null;
+  }
+
+  function grant(profileId,rewardId,{slot=null,abilityId=null,copyReward=false,automatic=false}={}){
+    const hero=heroState(profileId),choice=choiceById(rewardId);if(!hero||!choice)return false;
+    const copies=perk(profileId,"second_find");
+    if(choice.kind==="ability"){
+      if(!copyReward&&[hero.primaryAbility,hero.secondAbility].includes(choice.abilityId))return false;
+      if(![hero.primaryAbility,hero.secondAbility].includes(choice.abilityId))hero.thirdAbility=choice.abilityId;abilityId=choice.abilityId;
+    }else{
+      if(rewardId==="realign"){
+        if(!["primaryAbility","secondAbility","thirdAbility"].includes(slot)||validAbility(hero[slot])==null)return false;
+        const available=REAL_ABILITY_IDS.filter(id=>![hero.primaryAbility,hero.secondAbility,hero.thirdAbility].includes(id));
+        abilityId=shuffled(available)[0];if(abilityId==null)return false;
+        hero[slot]=abilityId;
+      }
+      hero.perks[rewardId]=perk(profileId,rewardId)+1;
+      if(rewardId==="constitution"){hero.maxHp+=10;hero.hp+=10;}
+      if(rewardId==="gamble"){hero.maxHp=Math.max(10,hero.maxHp-5);hero.hp=Math.min(hero.hp,hero.maxHp);}
+      if(rewardId==="rest")hero.hp+=12;
+      if(rewardId==="regen")hero.hp+=5;
+      if(rewardId==="blood_pact")hero.hp+=25;
+    }
+    run.rewardHistory.push({stage:run.stage+1,profileId:String(profileId),rewardId,slot,abilityId,copy:copyReward,automatic});
+    if(!copyReward&&!automatic&&copies>0&&run.stage<8){
+      for(let i=0;i<copies;i++)run.deferredRewards.push({dueStage:run.stage+1,profileId:partnerId(profileId),rewardId});
+    }
+    mirrorHero(profileId);
+    return true;
+  }
+
+  function completeReward(){
+    run.swapPending=null;run.rewardTurn++;
+    if(run.rewardTurn<run.rewardTasks.length){persistRun();renderPlayers();renderRewardTurn();return;}
+    run.stage++;run.phase="path";run.rewardTasks=[];run.rewardTurn=0;
+    ensurePaths();persistRun();renderPlayers();showPaths();
+  }
+
+  function selectReward(rewardId){
+    const task=currentTask();
+    if(inputBlocked()||selectionLocked||!run||run.finished||run.phase!=="reward"||!task?.choices.includes(rewardId))return;
+    lockSelection();
+    if(rewardId==="realign"){
+      run.swapPending={profileId:task.profileId,rewardId};persistRun();renderRewardTurn();return;
+    }
+    if(!grant(task.profileId,rewardId,{copyReward:!!task.copy})){selectionLocked=false;return;}
+    completeReward();
+  }
+
+  function selectSlot(slot){
+    if(inputBlocked()||!run?.swapPending||!selectionLocked)return;
+    const task=currentTask();lockSelection();
+    if(!grant(task.profileId,"realign",{slot,copyReward:!!task.copy}))return;
+    completeReward();
+  }
+
+  function rerollRewards(){
+    const task=currentTask(),hero=task&&heroState(task.profileId);
+    if(inputBlocked()||selectionLocked||!task||task.copy||perk(task.profileId,"reroll")<=(hero.rerollsUsed||0))return;
+    lockSelection();hero.rerollsUsed=(hero.rerollsUsed||0)+1;
+    task.choices=newChoices(task.profileId,task.count);persistRun();renderRewardTurn();
+  }
+
+  function showRewardModal(){
+    if(!run.rewardTasks.length){
+      const due=run.deferredRewards.filter(r=>r.dueStage<=run.stage);
+      run.deferredRewards=run.deferredRewards.filter(r=>r.dueStage>run.stage);
+      run.rewardTasks=due.map(r=>({profileId:r.profileId,copy:true,count:1,choices:[r.rewardId]}));
+      run.profileIds.forEach(profileId=>{
+        const hero=heroState(profileId),supply=perk(profileId,"supply")>(hero.suppliesUsed||0);
+        if(supply)hero.suppliesUsed=(hero.suppliesUsed||0)+1;
+        const count=supply?4:3;
+        run.rewardTasks.push({profileId,copy:false,count,choices:newChoices(profileId,count)});
+      });
+      run.rewardTurn=0;
+    }
+    persistRun();renderRewardTurn();
+  }
+
+  function applyStageRegeneration(){
+    const hospital=run.profileIds.reduce((n,id)=>n+perk(id,"hospital"),0)*8;
+    run.profileIds.forEach(id=>{
+      const hero=heroState(id);
+      healHero(id,perk(id,"regen")*5+hospital);
+      if(hero.hp>0)hero.hp=Math.max(1,hero.hp-3*perk(id,"blood_pact"));
+      mirrorHero(id);
     });
-    if(hero.thirdAbility!=null)parts.push(`${tr("3. Fähigkeit")}: ${tr(ABILITIES[hero.thirdAbility]?.name||hero.thirdAbility)}`);
-    return parts.join(" · ")||tr("Keine Run-Belohnungen");
+  }
+
+  function profileBossXp(profile){return Math.max(0,Math.floor(Number(profile?.campaign?.bossRushXp)||0));}
+  function awardBossXp(){
+    const base=50+run.stage*25;
+    run.lastBossXpAward=base;run.bossXpEarned+=base;
+    run.profileIds.forEach(id=>{
+      const profile=getProfile(id),hero=heroState(id);
+      const amount=Math.floor((base+10*perk(id,"plunder")*(hero.stageKills||0))*(1+.5*perk(id,"greed")));
+      if(!profile.campaign)profile.campaign={};
+      profile.campaign.bossRushXp=profileBossXp(profile)+amount;
+      hero.xpEarned=(hero.xpEarned||0)+amount;
+      run.bossXpAwards.push({stage:run.stage+1,profileId:id,amount});
+    });
+    // XP und abgeschlossene Stufe werden zusammen mit dem Belohnungszustand gespeichert.
+    return base;
+  }
+
+  function perkSummary(profileId){
+    const hero=heroState(profileId);if(!hero)return tr("Keine Run-Belohnungen");
+    const parts=REWARDS.filter(r=>perk(profileId,r.id)>0).map(r=>`${tr(r.name)} ${perk(profileId,r.id)}×`);
+    if(hero.thirdAbility!=null)parts.push(`${tr("3. Fähigkeit")}: ${abilityName(hero.thirdAbility)}`);
+    parts.push(`${hero.xpEarned||0} Boss XP`);
+    return parts.join(" · ");
+  }
+
+  function stageDefinitions(){
+    return STAGES.map((_,index)=>({candidates:stagePool(index).flatMap(e=>(index===9?[DIFFICULTIES[2]]:DIFFICULTIES).map(d=>optionFor(e,index,d.id)))}));
+  }
+  function ensurePaths(){
+    if(run.paths[run.stage]?.length)return;
+    const pool=shuffled(stagePool(run.stage).filter(e=>!run.seenEncounters.includes(e.id)));
+    const chosen=pool.slice(0,run.stage===9?1:3);
+    run.paths[run.stage]=chosen.map((encounter,i)=>{
+      const option=optionFor(encounter,run.stage,run.stage===9?"hard":DIFFICULTIES[i].id);
+      option.build=buildStage(option);run.seenEncounters.push(encounter.id);return option;
+    });
+  }
+  function showPaths(){
+    if(run.stage===9){choosePath(0,true);return;}
+    selectionLocked=false;
+    modal("Nächsten Gegner wählen",`${tr("Stufe")} ${run.stage+1} / 10 · ${tr("Schwerer Pfad, bessere Beute")}`);
+    const scouting=run.profileIds.some(id=>perk(id,"scout")>0);
+    $("duoBossRushRewardOptions").innerHTML=run.paths[run.stage].map((o,i)=>{
+      const difficulty=DIFFICULTIES.find(d=>d.id===o.difficulty);
+      const enemies=o.enemies.map((e,j)=>`${e.name}: ${e.hp} HP${scouting?` · ${abilityNames(o.build.enemies[j].abilities)}`:""}`).join(" · ");
+      const card=optionButton(`${tr(difficulty.name)} · ${o.label}`,enemies,"encounter.svg","data-rush-path",i,tr(difficulty.loot));
+      const available=run.profileIds.reduce((n,id)=>n+perk(id,"cartographer")-(heroState(id).pathRerollsUsed||0),0);
+      const unseen=stagePool(run.stage).some(e=>!run.seenEncounters.includes(e.id));
+      return `<div class="rush-path-entry">${card}${available>0&&unseen?`<button type="button" class="secondary" data-rush-redraw="${i}">${safe(tr("Pfad neu ziehen"))} (${available})</button>`:""}</div>`;
+    }).join("");
+  }
+  function redrawPath(index){
+    if(inputBlocked()||selectionLocked||run?.phase!=="path"||!run.paths[run.stage]?.[index])return;
+    const donor=run.profileIds.find(id=>perk(id,"cartographer")>(heroState(id).pathRerollsUsed||0));
+    const encounter=shuffled(stagePool(run.stage).filter(e=>!run.seenEncounters.includes(e.id)))[0];
+    if(!donor||!encounter)return;
+    lockSelection();const old=run.paths[run.stage][index],option=optionFor(encounter,run.stage,old.difficulty);
+    option.build=buildStage(option);run.paths[run.stage][index]=option;run.seenEncounters.push(encounter.id);
+    heroState(donor).pathRerollsUsed=(heroState(donor).pathRerollsUsed||0)+1;
+    persistRun();showPaths();
+  }
+  function choosePath(index,final=false){
+    if(!final&&(inputBlocked()||selectionLocked))return;
+    const option=run?.paths?.[run.stage]?.[index];if(!option||run.phase!=="path")return;
+    lockSelection();run.selectedPaths[run.stage]=copy(option);run.phase="combat";
+    startStage();
+  }
+  function startStage(){
+    $("duoBossRushRewardModal").classList.add("hidden");
+    const encounter=currentEncounter();if(!encounter){showOutcome(false,tr("Der nächste Boss konnte nicht gestartet werden."));return;}
+    if(run.preparedStage!==run.stage){
+      run.profileIds.forEach(id=>{
+        const profile=getProfile(id),hero=heroState(id);
+        startingVitals(profile,START_HP+(window.WDMastery?.hpBonus?.(profile,"duo",encounter)||0));
+        hero.stageKills=0;
+      });
+      const heroes=run.profileIds.map(heroState);
+      if(heroes.every(h=>h.hp>0)){
+        const ordered=[...heroes].sort((a,b)=>b.hp-a.hp),stacks=run.profileIds.reduce((n,id)=>n+perk(id,"sharing"),0);
+        const transfer=Math.min(3*stacks,Math.floor((ordered[0].hp-ordered[1].hp)/2));
+        ordered[0].hp-=transfer;ordered[1].hp+=transfer;
+      }
+      run.preparedStage=run.stage;
+    }
+    // Der Motor liest die Primärfähigkeiten aus der bestehenden Duo-Auswahl.
+    run.profileIds.forEach((id,i)=>{
+      $(i?"duoProfile2Select":"duoProfile1Select").value=id;
+      $(i?"duoAbility2Select":"duoAbility1Select").value=String(heroState(id).primaryAbility);
+    });
+    duoCampaignEncounterId=encounter.id;
+    persistRun();
+    if(!startDuoCampaignEncounter({bossRush:true})){showOutcome(false,tr("Der nächste Boss konnte nicht gestartet werden."));return;}
   }
 
   function showOutcome(completed,technicalMessage=""){
     if(!run)return;
     run.finished=true;
+    persistRun();
     run.active=true;
     syncRunStateFromPlayers();
     const cleared=completed?STAGES.length:Math.max(0,run.cleared||0);
@@ -512,8 +627,8 @@
     }).join("");
     winnerText.textContent=tr(completed?"BOSS RUSH GESCHAFFT!":"BOSS RUSH GESCHEITERT");
     roundResultText.innerHTML=completed
-      ?`${safe(tr(`Alle ${STAGES.length} Bossstufen wurden besiegt.`))}<br><strong>${safe(tr(`Run abgeschlossen: ${cleared} / ${STAGES.length} · +${run.bossXpEarned} Boss XP je Profil`))}</strong><br>${safe(tr("Rush-Belohnungen und zusätzliche Fähigkeiten sind nur für diesen Lauf gültig und werden beim Verlassen entfernt."))}`
-      :`${safe(tr(`Euer Team ist bei Boss ${Math.min(STAGES.length,run.stage+1)} gefallen.`))}<br><strong>${safe(tr(`Besiegt: ${cleared} / ${STAGES.length} · +${run.bossXpEarned} Boss XP je Profil behalten`))}</strong>${technicalMessage?`<br>${safe(technicalMessage)}`:""}<br>${safe(tr("Kampagnenfortschritt, Mastery XP und Trophäen bleiben unverändert."))}`;
+      ?`${safe(tr(`Alle ${STAGES.length} Bossstufen wurden besiegt.`))}<br><strong>${safe(tr(`Run abgeschlossen: ${cleared} / ${STAGES.length} · +${run.bossXpEarned} ${tr("Basis-Boss-XP")}`))}</strong><br>${safe(tr("Rush-Belohnungen und zusätzliche Fähigkeiten sind nur für diesen Lauf gültig und werden beim Verlassen entfernt."))}`
+      :`${safe(tr(`Euer Team ist bei Boss ${Math.min(STAGES.length,run.stage+1)} gefallen.`))}<br><strong>${safe(tr(`Besiegt: ${cleared} / ${STAGES.length} · +${run.bossXpEarned} ${tr("Basis-Boss-XP")} behalten`))}</strong>${technicalMessage?`<br>${safe(technicalMessage)}`:""}<br>${safe(tr("Kampagnenfortschritt, Mastery XP und Trophäen bleiben unverändert."))}`;
     roundStandings.innerHTML=heroRows;
     renderRoundStats();
     clearBotAutomation();
@@ -545,6 +660,12 @@
     syncRunStateFromPlayers();
     if(!heroWon){showOutcome(false);return true;}
     run.cleared=run.stage+1;
+    run.profileIds.forEach(id=>{
+      if((roundStats[findHeroIndex(id)]?.damageTaken||0)===0){
+        const count=perk(id,"flawless");
+        for(let i=0;i<count;i++)grant(id,shuffled(REWARDS.filter(r=>r.rarity==="common"))[0].id,{automatic:true});
+      }
+    });
     awardBossXp();
     applyStageRegeneration();
     syncRunStateFromPlayers();
@@ -555,10 +676,11 @@
       showOutcome(true);return true;
     }
     turnLine.textContent=tr(`Boss ${run.stage+1} besiegt`);
-    statusEl.textContent=tr(`+${run.lastBossXpAward} Boss XP je Profil · Belohnungen wählen`);
+    statusEl.textContent=`+${run.lastBossXpAward} ${tr("Basis-Boss-XP")} · ${tr("Wähle eine Belohnung")}`;
     abilityState.innerHTML="";
     hideAllControls();
     renderPlayers();
+    run.phase="reward";
     showRewardModal();
     return true;
   }
@@ -579,28 +701,71 @@
     }
   }
 
+  function validStored(candidate,ids){
+    if(!candidate||candidate.schema!==1||candidate.finished||!Array.isArray(candidate.profileIds)||candidate.profileIds.length!==2||pairKey(candidate.profileIds)!==pairKey(ids))return false;
+    if(!["path","combat","reward"].includes(candidate.phase)||!Number.isInteger(candidate.stage)||candidate.stage<0||candidate.stage>9)return false;
+    if(!candidate.profileIds.every(id=>getProfile(id)&&candidate.heroes?.[id]))return false;
+    if(!Array.isArray(candidate.paths)||!Array.isArray(candidate.selectedPaths)||!Array.isArray(candidate.rewardTasks))return false;
+    if(!Array.isArray(candidate.seenEncounters)||!Array.isArray(candidate.deferredRewards)||!Array.isArray(candidate.rewardHistory)||!Array.isArray(candidate.bossXpAwards))return false;
+    if(candidate.profileIds.some(id=>Object.keys(candidate.heroes[id].perks||{}).some(key=>!rewardById(key))))return false;
+    if(candidate.paths.length>10||candidate.selectedPaths.length>10)return false;
+    for(const [index,options] of candidate.paths.entries()){
+      if(!options)continue;
+      if(!Array.isArray(options)||options.length!==(index===9?1:3)||new Set(options.map(o=>o?.encounterId)).size!==options.length)return false;
+      for(const option of options){
+        if(!option||typeof option!=="object")return false;
+        const base=stagePool(index).find(e=>e.id===option.encounterId);
+        if(!base||!DIFFICULTIES.some(d=>d.id===option.difficulty)||!option.build)return false;
+        const expected=optionFor(base,index,option.difficulty);
+        const {build,...spec}=option;
+        if(JSON.stringify(spec)!==JSON.stringify(expected))return false;
+        if(!Array.isArray(option.build.enemies)||option.build.enemies.length!==expected.enemies.length||!option.build.enemies.every(e=>Array.isArray(e.abilities)&&e.abilities.length===expected.phaseAbilityCount&&new Set(e.abilities).size===e.abilities.length&&e.abilities.every(id=>validAbility(id)!=null))||!Array.isArray(option.build.phaseAbilities)||option.build.phaseAbilities.length!==expected.phaseAbilityCount||new Set(option.build.phaseAbilities).size!==option.build.phaseAbilities.length||option.build.phaseAbilities.some(id=>validAbility(id)==null))return false;
+      }
+    }
+    for(const [index,chosen] of candidate.selectedPaths.entries())if(chosen&&!candidate.paths[index]?.some(o=>JSON.stringify(o)===JSON.stringify(chosen)))return false;
+    if(candidate.phase==="combat"&&!candidate.selectedPaths[candidate.stage])return false;
+    for(const task of candidate.rewardTasks)if(!task||!candidate.profileIds.includes(task.profileId)||!Array.isArray(task.choices)||!task.choices.length||task.choices.some(id=>!choiceById(id)))return false;
+    if(candidate.swapPending&&(!candidate.rewardTasks[candidate.rewardTurn]?.choices.includes("realign")||candidate.swapPending.profileId!==candidate.rewardTasks[candidate.rewardTurn]?.profileId))return false;
+    if(!Number.isInteger(candidate.rewardTurn)||candidate.rewardTurn<0||!Number.isInteger(candidate.cleared)||candidate.cleared<0||candidate.cleared>10)return false;
+    if(candidate.deferredRewards.some(r=>!r||!candidate.profileIds.includes(r.profileId)||!Number.isInteger(r.dueStage)||r.dueStage<0||r.dueStage>9||!choiceById(r.rewardId)))return false;
+    if(candidate.phase==="reward"&&!candidate.rewardTasks[candidate.rewardTurn])return false;
+    return true;
+  }
+
+  function newRun(){
+    const p1=getProfile($("duoProfile1Select").value),p2=getProfile($("duoProfile2Select").value);
+    run={schema:1,active:true,finished:false,phase:"path",stage:0,cleared:0,preparedStage:-1,bossXpEarned:0,lastBossXpAward:0,
+      profileIds:[String(p1.id),String(p2.id)],previousEncounterId:duoCampaignEncounterId,previousWorldId:duoWorldId,
+      rewardHistory:[],bossXpAwards:[],paths:[],selectedPaths:[],seenEncounters:[],deferredRewards:[],rewardTasks:[],rewardTurn:0,swapPending:null,lastAttacker:null,
+      heroes:Object.fromEntries([p1,p2].map((p,i)=>[p.id,{hp:null,maxHp:null,primaryAbility:validAbility($(i?"duoAbility2Select":"duoAbility1Select").value)??3,
+        secondAbility:null,thirdAbility:null,perks:{},openingUsedStage:-1,bulwarkUsedStage:-1,successfulAttacks:0,stageKills:0,xpEarned:0}]))};
+    resumeCandidate=null;ensurePaths();persistRun();showPaths();refreshButton();return true;
+  }
+
   function start(){
     if(isActive())return false;
     const p1=getProfile($("duoProfile1Select")?.value),p2=getProfile($("duoProfile2Select")?.value);
     if(!p1||!p2||p1.id===p2.id||!duoCampaignUnlocked(p1,p2))return false;
-    run={
-      active:true,finished:false,stage:0,cleared:0,bossXpEarned:0,lastBossXpAward:0,
-      profileIds:[String(p1.id),String(p2.id)],
-      previousEncounterId:duoCampaignEncounterId,
-      previousWorldId:duoWorldId,
-      rewardHistory:[],
-      bossXpAwards:[],
-      stageBuilds:STAGES.map(buildStage),
-      heroes:{
-        [String(p1.id)]:{hp:null,maxHp:null,primaryAbility:null,secondAbility:null,thirdAbility:null,perks:{},openingUsedStage:-1},
-        [String(p2.id)]:{hp:null,maxHp:null,primaryAbility:null,secondAbility:null,thirdAbility:null,perks:{},openingUsedStage:-1}
-      }
-    };
-    duoCampaignEncounterId=STAGES[0].encounterId;
-    const started=startDuoCampaignEncounter({bossRush:true});
-    if(!started)reset();
+    const key=pairKey([p1.id,p2.id]),stored=saveData.bossRushRuns?.[key];
+    if(validStored(stored,[p1.id,p2.id])){
+      resumeCandidate=copy(stored);selectionLocked=false;
+      modal("Offener Boss Rush",`${p1.name} + ${p2.name} · ${tr("Stufe")} ${stored.stage+1} / 10`);
+      $("duoBossRushRewardOptions").innerHTML=optionButton(tr("Fortsetzen"),tr("Am gespeicherten Abschnitt weiterspielen"),"duo.svg","data-rush-resume","yes")+optionButton(tr("Neu starten"),tr("Den offenen Run durch einen neuen ersetzen"),"dice.svg","data-rush-resume","no");
+      return true;
+    }
+    if(stored){delete saveData.bossRushRuns[key];saveGameData();}
+    return newRun();
+  }
+
+  function resumeRun(choice){
+    if(inputBlocked()||selectionLocked||!resumeCandidate)return;
+    lockSelection();
+    if(choice==="no"){newRun();return;}
+    run=copy(resumeCandidate);resumeCandidate=null;run.active=true;
+    if(run.phase==="combat")startStage();
+    else if(run.phase==="reward")renderRewardTurn();
+    else showPaths();
     refreshButton();
-    return !!started;
   }
 
   function reset({restoreSelection=true}={}){
@@ -611,31 +776,36 @@
     rewardTurn=0;
     rewardChoices=[];
     selectionLocked=false;
+    resumeCandidate=null;
     if(restoreSelection&&hadRun){duoCampaignEncounterId=previousEncounterId;duoWorldId=previousWorldId;}
     refreshButton();
   }
 
   function abort(){
-    if(!run)return;
     $("duoBossRushRewardModal")?.classList.add("hidden");
-    returnToDuoCampaignMap();
+    resumeCandidate=null;
+    if(run)returnToDuoCampaignMap();
   }
 
   function snapshot(){return run?JSON.parse(JSON.stringify(run)):null;}
   function rewardDefinitions(){return REWARDS.map(reward=>({...reward}));}
-  function stageDefinitions(){return STAGES.map(stage=>JSON.parse(JSON.stringify(stage)));}
   function worldThemeSequence(){return [...BOSS_RUSH_WORLD_THEME_KEYS];}
 
   window.WDDuoBossRush=Object.freeze({
     start,reset,abort,isActive,currentEncounter,stageNumber,statusText,worldThemeKey,worldThemeSequence,startingVitals,startingLoadout,
-    finishEncounter,attackDamageBonus,afterHeroAttack,onHeroKill,refreshButton,snapshot,rewardDefinitions,stageDefinitions,profileBossXp
+    finishEncounter,attackDamageBonus,incomingDamageModifier,afterHeroAttack,onHeroKill,refreshButton,snapshot,rewardDefinitions,stageDefinitions,profileBossXp
   });
 
   $("duoBossRushStartBtn")?.addEventListener("click",start);
   $("duoBossRushRewardOptions")?.addEventListener("click",event=>{
-    const button=event.target.closest("[data-boss-rush-reward]");
-    if(button)selectReward(button.dataset.bossRushReward);
+    const button=event.target.closest("button");if(!button)return;
+    if(button.hasAttribute("data-boss-rush-reward"))selectReward(button.dataset.bossRushReward);
+    else if(button.hasAttribute("data-rush-slot"))selectSlot(button.dataset.rushSlot);
+    else if(button.hasAttribute("data-rush-path"))choosePath(Number(button.dataset.rushPath));
+    else if(button.hasAttribute("data-rush-redraw"))redrawPath(Number(button.dataset.rushRedraw));
+    else if(button.hasAttribute("data-rush-resume"))resumeRun(button.dataset.rushResume);
   });
+  $("duoBossRushRerollBtn")?.addEventListener("click",rerollRewards);
   $("duoBossRushAbortBtn")?.addEventListener("click",abort);
   queueMicrotask(refreshButton);
 })();

@@ -5,6 +5,9 @@
   if (!pack) return;
 
   Object.assign(pack.exact, {
+    "Der Duo-Boss-Rush bietet vor den ersten neun Stufen je drei Pfade mit sichtbarer Beute und endet beim festen zehnten Boss": "Duo Boss Rush offers three paths with visible rewards before each of the first nine stages and ends with the fixed tenth boss",
+    "Offene Runs lassen sich je Profilpaar fortsetzen; 30 stapelbare Perks, seltenheitsabhängige Belohnungen und ein gezielter Fähigkeitstausch ermöglichen unterschiedliche Builds": "Unfinished runs can be resumed per profile pair; 30 stackable perks, rarity-based rewards and a targeted ability swap enable different builds",
+
     "Der Gast im Online-Match holt keinen überflüssigen Spielstand mehr für seine eigene Aktion und wartet nach einer Zustandsänderung nicht noch einmal auf die Sammelpause": "The guest in an online match no longer fetches a superfluous game state for their own action, and after a state change no longer waits through the batching pause a second time",
     "Der Bildschlüssel lässt sich mit einem Befehl anheben und die Buildprüfung meldet jede Bild-URL, die davon abweicht oder gar keinen Schlüssel trägt": "The image key can be raised with a single command, and the build check reports every image URL that deviates from it or carries no key at all",
     "Kaufbare Artikel im Trophy Shop verwenden die vorgesehene Schriftfarbe; die Aufklapppfeile drehen sich weich wie in der Profilverwaltung": "Purchasable items in the Trophy Shop use the intended text colour; section arrows rotate smoothly as they do in profile management",
