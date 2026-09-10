@@ -3159,7 +3159,7 @@ button:disabled{opacity:.46;filter:saturate(.45)}
 .menu-hero::after{display:none}
 .menu-hero::before{
   content:"";display:block;margin:0 auto 2px;width:110px;height:64px;
-  background:url("../assets/ui/v28/svg/gameplay/dice.svg") center/contain no-repeat;
+  background:url("../assets/ui/v28/svg/gameplay/dice.svg?v=28.11.28") center/contain no-repeat;
   filter:drop-shadow(0 0 14px rgba(255,223,135,.76)) drop-shadow(0 10px 16px rgba(38,83,125,.18));
   transform:rotate(-4deg)}
 .menu-logo-img{display:none}
@@ -3311,11 +3311,11 @@ body.playing .controls button{border-color:rgba(215,173,82,.72)}body.playing .di
    Uses supplied Bright Arcane artwork. Gameplay/click handling untouched.
    ============================================================ */
 :root{
-  --v28-ui-main-bg:url("../assets/ui/v28/bg-main-palace.webp");
-  --v28-ui-combat-bg:url("../assets/ui/v28/bg-combat-hall.webp");
-  --v28-ui-button-ivory:url("../assets/ui/v28/frame-button-ivory.webp");
-  --v28-ui-tile-navy:url("../assets/ui/v28/frame-tile-navy.webp");
-  --v28-ui-panel-ivory:url("../assets/ui/v28/frame-panel-ivory.webp")}
+  --v28-ui-main-bg:url("../assets/ui/v28/bg-main-palace.webp?v=28.11.28");
+  --v28-ui-combat-bg:url("../assets/ui/v28/bg-combat-hall.webp?v=28.11.28");
+  --v28-ui-button-ivory:url("../assets/ui/v28/frame-button-ivory.webp?v=28.11.28");
+  --v28-ui-tile-navy:url("../assets/ui/v28/frame-tile-navy.webp?v=28.11.28");
+  --v28-ui-panel-ivory:url("../assets/ui/v28/frame-panel-ivory.webp?v=28.11.28")}
 
 #mainMenu{
   position:relative;isolation:isolate;
@@ -3396,19 +3396,19 @@ body.playing .controls button{border-color:rgba(215,173,82,.72)}body.playing .di
    Asset-driven presentation only. No gameplay rules are changed here.
    ============================================================ */
 :root{
-  --dd-bg-main:url("../assets/ui/v28/png/backgrounds/main-menu.webp");
-  --dd-bg-light:url("../assets/ui/v28/png/backgrounds/campaign-mastery-light.webp");
-  --dd-bg-combat:url("../assets/ui/v28/png/backgrounds/combat.webp");
-  --dd-crest:url("../assets/ui/v28/png/emblems/diceduel-crest.webp");
-  --dd-frame-ivory-button:url("../assets/ui/v28/png/frames/ivory-button.webp");
-  --dd-frame-navy-tile:url("../assets/ui/v28/png/frames/navy-tile.webp");
-  --dd-frame-panel:url("../assets/ui/v28/png/frames/panel-large.webp");
-  --dd-frame-modal:url("../assets/ui/v28/png/frames/modal-popup.webp");
-  --dd-frame-boss:url("../assets/ui/v28/png/frames/boss.webp");
-  --dd-frame-mastery:url("../assets/ui/v28/png/frames/mastery.webp");
-  --dd-frame-prestige:url("../assets/ui/v28/png/frames/prestige.webp");
-  --dd-fx-halo:url("../assets/ui/v28/png/fx/arcane-halo-blue.webp");
-  --dd-fx-burst:url("../assets/ui/v28/png/fx/divine-burst-gold.webp");
+  --dd-bg-main:url("../assets/ui/v28/png/backgrounds/main-menu.webp?v=28.11.28");
+  --dd-bg-light:url("../assets/ui/v28/png/backgrounds/campaign-mastery-light.webp?v=28.11.28");
+  --dd-bg-combat:url("../assets/ui/v28/png/backgrounds/combat.webp?v=28.11.28");
+  --dd-crest:url("../assets/ui/v28/png/emblems/diceduel-crest.webp?v=28.11.28");
+  --dd-frame-ivory-button:url("../assets/ui/v28/png/frames/ivory-button.webp?v=28.11.28");
+  --dd-frame-navy-tile:url("../assets/ui/v28/png/frames/navy-tile.webp?v=28.11.28");
+  --dd-frame-panel:url("../assets/ui/v28/png/frames/panel-large.webp?v=28.11.28");
+  --dd-frame-modal:url("../assets/ui/v28/png/frames/modal-popup.webp?v=28.11.28");
+  --dd-frame-boss:url("../assets/ui/v28/png/frames/boss.webp?v=28.11.28");
+  --dd-frame-mastery:url("../assets/ui/v28/png/frames/mastery.webp?v=28.11.28");
+  --dd-frame-prestige:url("../assets/ui/v28/png/frames/prestige.webp?v=28.11.28");
+  --dd-fx-halo:url("../assets/ui/v28/png/fx/arcane-halo-blue.webp?v=28.11.28");
+  --dd-fx-burst:url("../assets/ui/v28/png/fx/divine-burst-gold.webp?v=28.11.28");
   --dd-navy:#071f4b;
   --dd-navy-2:#0b3568;
   --dd-navy-3:#06162f;
@@ -3605,7 +3605,7 @@ body[data-v28-scene="combat"]::after{opacity:.04}
 #masteryCloseBtn{
   width:46px;height:46px;min-width:46px;
   padding:0;border:0;border-radius:50%;
-  background:url("../assets/ui/v28/svg/navigation/back-arrow.svg") center/contain no-repeat;
+  background:url("../assets/ui/v28/svg/navigation/back-arrow.svg?v=28.11.28") center/contain no-repeat;
   color:transparent;font-size:0;box-shadow:none;
 }
 .screen-subtitle,.setup-intro{color:#5d6e82}
@@ -4035,19 +4035,19 @@ body.playing .encounter-rule-banner .phase-live{color:#ffdfae}
    ============================================================ */
 
 :root{
-  --dd-bg-lobby:url("../assets/ui/v28/png/backgrounds/navy-lobby-profile.webp");
-  --dd-bg-boss:url("../assets/ui/v28/png/backgrounds/boss-finale.webp");
-  --dd-frame-card-small:url("../assets/ui/v28/png/frames/ivory-card-small.webp");
-  --dd-frame-button-navy:url("../assets/ui/v28/png/frames/navy-button-horizontal.webp");
-  --dd-frame-button-gold:url("../assets/ui/v28/png/frames/gold-special-button.webp");
-  --dd-frame-button-danger:url("../assets/ui/v28/png/frames/danger-button.webp");
-  --dd-frame-icon-round:url("../assets/ui/v28/png/frames/icon-frame-round.webp");
-  --dd-frame-ability-choice:url("../assets/ui/v28/png/frames/ability-choice-card.webp");
-  --dd-frame-player:url("../assets/ui/v28/png/frames/player-card-combat.webp");
-  --dd-frame-player-active:url("../assets/ui/v28/png/frames/active-player-glow.webp");
-  --dd-frame-player-boss:url("../assets/ui/v28/png/frames/boss-player-card.webp");
-  --dd-frame-node-selected:url("../assets/ui/v28/png/frames/campaign-node-selected.webp");
-  --dd-frame-achievement:url("../assets/ui/v28/png/frames/achievement-trophy-card.webp");
+  --dd-bg-lobby:url("../assets/ui/v28/png/backgrounds/navy-lobby-profile.webp?v=28.11.28");
+  --dd-bg-boss:url("../assets/ui/v28/png/backgrounds/boss-finale.webp?v=28.11.28");
+  --dd-frame-card-small:url("../assets/ui/v28/png/frames/ivory-card-small.webp?v=28.11.28");
+  --dd-frame-button-navy:url("../assets/ui/v28/png/frames/navy-button-horizontal.webp?v=28.11.28");
+  --dd-frame-button-gold:url("../assets/ui/v28/png/frames/gold-special-button.webp?v=28.11.28");
+  --dd-frame-button-danger:url("../assets/ui/v28/png/frames/danger-button.webp?v=28.11.28");
+  --dd-frame-icon-round:url("../assets/ui/v28/png/frames/icon-frame-round.webp?v=28.11.28");
+  --dd-frame-ability-choice:url("../assets/ui/v28/png/frames/ability-choice-card.webp?v=28.11.28");
+  --dd-frame-player:url("../assets/ui/v28/png/frames/player-card-combat.webp?v=28.11.28");
+  --dd-frame-player-active:url("../assets/ui/v28/png/frames/active-player-glow.webp?v=28.11.28");
+  --dd-frame-player-boss:url("../assets/ui/v28/png/frames/boss-player-card.webp?v=28.11.28");
+  --dd-frame-node-selected:url("../assets/ui/v28/png/frames/campaign-node-selected.webp?v=28.11.28");
+  --dd-frame-achievement:url("../assets/ui/v28/png/frames/achievement-trophy-card.webp?v=28.11.28");
   --dd-shadow-soft:0 12px 32px rgba(5,32,65,.16);
   --dd-shadow-deep:0 22px 58px rgba(2,14,34,.38)}
 
@@ -4213,14 +4213,14 @@ html[data-v28-rework="2"] .mastery-locked-card>button{
   border:0;border-radius:50%;
   padding:0;
   background:
-    url("../assets/ui/v28/svg/navigation/back.svg") center/39% 39% no-repeat,
+    url("../assets/ui/v28/svg/navigation/back.svg?v=28.11.28") center/39% 39% no-repeat,
     var(--dd-frame-icon-round) center/contain no-repeat;
   color:transparent;font-size:0;
   box-shadow:0 4px 12px rgba(5,29,61,.18)}
 html[data-v28-rework="2"] .ability-mastery-lab-topbar>button,
 html[data-v28-rework="2"] .mastery-locked-card>button{
   background:
-    url("../assets/ui/v28/svg/navigation/close-x.svg") center/36% 36% no-repeat,
+    url("../assets/ui/v28/svg/navigation/close-x.svg?v=28.11.28") center/36% 36% no-repeat,
     var(--dd-frame-icon-round) center/contain no-repeat}
 
 /* ---------- Custom selects: remove grey Android menus ---------- */
@@ -4247,7 +4247,7 @@ html[data-v28-rework="2"] select.dd-native-select{
 .dd-select-trigger::after{
   content:"";
   width:22px;height:22px;
-  background:url("../assets/ui/v28/svg/navigation/chevron-down.svg") center/contain no-repeat}
+  background:url("../assets/ui/v28/svg/navigation/chevron-down.svg?v=28.11.28") center/contain no-repeat}
 .dd-select-trigger>span{min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .dd-select-trigger.hidden{display:none}
 .dd-select-trigger:disabled{opacity:.48}
@@ -4275,7 +4275,7 @@ html[data-v28-rework="2"] select.dd-native-select{
 .dd-select-close{
   width:44px;height:44px;min-width:44px;padding:0;border:0;border-radius:50%;
   background:
-    url("../assets/ui/v28/svg/navigation/close-x.svg") center/36% 36% no-repeat,
+    url("../assets/ui/v28/svg/navigation/close-x.svg?v=28.11.28") center/36% 36% no-repeat,
     var(--dd-frame-icon-round) center/contain no-repeat;
   color:transparent;font-size:0;box-shadow:none}
 .dd-select-options{display:grid;gap:5px;overflow:auto;overscroll-behavior:contain;padding:2px 0 8px}
@@ -4566,17 +4566,17 @@ html[data-v28-rework="2"] body.playing .game-menu-btn{
    ============================================================ */
 
 :root{
-  --p1-ivory-card:url("../assets/ui/v28/png/frames/ivory-card-small.webp?v=28.2.1");
-  --p1-navy-button:url("../assets/ui/v28/png/frames/navy-button-horizontal.webp?v=28.2.1");
-  --p1-gold-button:url("../assets/ui/v28/png/frames/gold-special-button.webp?v=28.2.1");
-  --p1-danger-button:url("../assets/ui/v28/png/frames/danger-button.webp?v=28.2.1");
-  --p1-ability-card:url("../assets/ui/v28/png/frames/ability-choice-card.webp?v=28.2.1");
-  --p1-player-card:url("../assets/ui/v28/png/frames/player-card-combat.webp?v=28.2.1");
-  --p1-player-active:url("../assets/ui/v28/png/frames/active-player-glow.webp?v=28.2.1");
-  --p1-boss-player:url("../assets/ui/v28/png/frames/boss-player-card.webp?v=28.2.1");
-  --p1-boss-bar:url("../assets/ui/v28/png/frames/boss.webp?v=28.2.1");
-  --p1-achievement:url("../assets/ui/v28/png/frames/achievement-trophy-card.webp?v=28.2.1");
-  --p1-selected-node:url("../assets/ui/v28/png/frames/campaign-node-selected.webp?v=28.2.1");
+  --p1-ivory-card:url("../assets/ui/v28/png/frames/ivory-card-small.webp?v=28.11.28");
+  --p1-navy-button:url("../assets/ui/v28/png/frames/navy-button-horizontal.webp?v=28.11.28");
+  --p1-gold-button:url("../assets/ui/v28/png/frames/gold-special-button.webp?v=28.11.28");
+  --p1-danger-button:url("../assets/ui/v28/png/frames/danger-button.webp?v=28.11.28");
+  --p1-ability-card:url("../assets/ui/v28/png/frames/ability-choice-card.webp?v=28.11.28");
+  --p1-player-card:url("../assets/ui/v28/png/frames/player-card-combat.webp?v=28.11.28");
+  --p1-player-active:url("../assets/ui/v28/png/frames/active-player-glow.webp?v=28.11.28");
+  --p1-boss-player:url("../assets/ui/v28/png/frames/boss-player-card.webp?v=28.11.28");
+  --p1-boss-bar:url("../assets/ui/v28/png/frames/boss.webp?v=28.11.28");
+  --p1-achievement:url("../assets/ui/v28/png/frames/achievement-trophy-card.webp?v=28.11.28");
+  --p1-selected-node:url("../assets/ui/v28/png/frames/campaign-node-selected.webp?v=28.11.28");
   --p1-gold:#d6a53c;
   --p1-gold-light:#ffe59a;
   --p1-ink:#082a55;
@@ -4635,7 +4635,7 @@ html[data-v28-rework="2"] .dd-select-trigger .dd-trigger-icon{
   filter:drop-shadow(0 2px 3px rgba(7,31,75,.18))}
 html[data-v28-rework="2"] .dd-select-trigger::after{
   width:24px!important;height:24px!important;
-  background-image:url("../assets/ui/v28/svg/navigation/chevron-down.svg?v=28.2.1")!important}
+  background-image:url("../assets/ui/v28/svg/navigation/chevron-down.svg?v=28.11.28")!important}
 html[data-v28-rework="2"] .dd-select-trigger>span{
   font-size:15px;
   line-height:1.15}
@@ -5234,10 +5234,10 @@ html[data-v28-rework="2"] body.playing .campaign-task-head{
    ============================================================ */
 
 :root{
-  --p2-navy-button:url("../assets/ui/v28/png/frames/navy-button-horizontal.webp?v=28.2.2");
-  --p2-gold-button:url("../assets/ui/v28/png/frames/gold-special-button.webp?v=28.2.2");
-  --p2-boss-bar:url("../assets/ui/v28/png/frames/boss.webp?v=28.2.2");
-  --p2-node-current:url("../assets/ui/v28/png/frames/campaign-node-selected.webp?v=28.2.2")}
+  --p2-navy-button:url("../assets/ui/v28/png/frames/navy-button-horizontal.webp?v=28.11.28");
+  --p2-gold-button:url("../assets/ui/v28/png/frames/gold-special-button.webp?v=28.11.28");
+  --p2-boss-bar:url("../assets/ui/v28/png/frames/boss.webp?v=28.11.28");
+  --p2-node-current:url("../assets/ui/v28/png/frames/campaign-node-selected.webp?v=28.11.28")}
 
 /* ---------- Global frame exterior fix ----------
    The PNGs already paint their own ivory centre via border-image fill.
@@ -5529,16 +5529,16 @@ html[data-v28-rework="2"] #masteryModal .mastery-node.owned .mastery-node-plaque
    ============================================================ */
 
 :root{
-  --p3-ivory-card:url("../assets/ui/v28/png/frames/ivory-card-small.webp?v=28.2.3");
-  --p3-panel:url("../assets/ui/v28/png/frames/panel-large.webp?v=28.2.3");
-  --p3-navy-button:url("../assets/ui/v28/png/frames/navy-button-horizontal.webp?v=28.2.3");
-  --p3-danger-button:url("../assets/ui/v28/png/frames/danger-button.webp?v=28.2.3");
-  --p3-navy-tile:url("../assets/ui/v28/png/frames/navy-tile.webp?v=28.2.3");
-  --p3-round-frame:url("../assets/ui/v28/png/frames/icon-frame-round.webp?v=28.2.3");
-  --p3-selected-node:url("../assets/ui/v28/png/frames/campaign-node-selected.webp?v=28.2.3");
-  --p3-player-frame:url("../assets/ui/v28/png/frames/player-card-combat.webp?v=28.2.3");
-  --p3-boss-bar:url("../assets/ui/v28/png/frames/boss.webp?v=28.2.3");
-  --p3-back:url("../assets/ui/v28/svg/navigation/back.svg?v=28.2.3")}
+  --p3-ivory-card:url("../assets/ui/v28/png/frames/ivory-card-small.webp?v=28.11.28");
+  --p3-panel:url("../assets/ui/v28/png/frames/panel-large.webp?v=28.11.28");
+  --p3-navy-button:url("../assets/ui/v28/png/frames/navy-button-horizontal.webp?v=28.11.28");
+  --p3-danger-button:url("../assets/ui/v28/png/frames/danger-button.webp?v=28.11.28");
+  --p3-navy-tile:url("../assets/ui/v28/png/frames/navy-tile.webp?v=28.11.28");
+  --p3-round-frame:url("../assets/ui/v28/png/frames/icon-frame-round.webp?v=28.11.28");
+  --p3-selected-node:url("../assets/ui/v28/png/frames/campaign-node-selected.webp?v=28.11.28");
+  --p3-player-frame:url("../assets/ui/v28/png/frames/player-card-combat.webp?v=28.11.28");
+  --p3-boss-bar:url("../assets/ui/v28/png/frames/boss.webp?v=28.11.28");
+  --p3-back:url("../assets/ui/v28/svg/navigation/back.svg?v=28.11.28")}
 
 /* ---------- Purple marks: remove opaque rectangles behind PNG frames ----------
    The border-image assets already paint their centre. Any additional CSS
@@ -6023,16 +6023,16 @@ html[data-v28-rework="2"] #profilesScreen .profile-name-edit{
    ============================================================ */
 
 :root{
-  --p4-ivory-card:url("../assets/ui/v28/png/frames/ivory-card-small.webp?v=28.2.4");
-  --p4-panel:url("../assets/ui/v28/png/frames/panel-large.webp?v=28.2.4");
-  --p4-navy-button:url("../assets/ui/v28/png/frames/navy-button-horizontal.webp?v=28.2.4");
-  --p4-gold-button:url("../assets/ui/v28/png/frames/gold-special-button.webp?v=28.2.4");
-  --p4-navy-tile:url("../assets/ui/v28/png/frames/navy-tile.webp?v=28.2.4");
-  --p4-achievement:url("../assets/ui/v28/png/frames/achievement-trophy-card.webp?v=28.2.4");
-  --p4-round-frame:url("../assets/ui/v28/png/frames/icon-frame-round.webp?v=28.2.4");
-  --p4-boss-bar:url("../assets/ui/v28/png/frames/boss.webp?v=28.2.4");
-  --p4-back:url("../assets/ui/v28/svg/navigation/back.svg?v=28.2.4");
-  --p4-close:url("../assets/ui/v28/svg/navigation/close-x.svg?v=28.2.4")}
+  --p4-ivory-card:url("../assets/ui/v28/png/frames/ivory-card-small.webp?v=28.11.28");
+  --p4-panel:url("../assets/ui/v28/png/frames/panel-large.webp?v=28.11.28");
+  --p4-navy-button:url("../assets/ui/v28/png/frames/navy-button-horizontal.webp?v=28.11.28");
+  --p4-gold-button:url("../assets/ui/v28/png/frames/gold-special-button.webp?v=28.11.28");
+  --p4-navy-tile:url("../assets/ui/v28/png/frames/navy-tile.webp?v=28.11.28");
+  --p4-achievement:url("../assets/ui/v28/png/frames/achievement-trophy-card.webp?v=28.11.28");
+  --p4-round-frame:url("../assets/ui/v28/png/frames/icon-frame-round.webp?v=28.11.28");
+  --p4-boss-bar:url("../assets/ui/v28/png/frames/boss.webp?v=28.11.28");
+  --p4-back:url("../assets/ui/v28/svg/navigation/back.svg?v=28.11.28");
+  --p4-close:url("../assets/ui/v28/svg/navigation/close-x.svg?v=28.11.28")}
 
 /* ---------- One navigation size everywhere ---------- */
 html[data-v28-rework="2"] .screen-topbar>button,
@@ -6513,7 +6513,7 @@ html[data-v28-rework="2"] #setup .p4-setup-label-icon{
    ============================================================ */
 
 :root{
-  --p5-danger-button:url("../assets/ui/v28/png/frames/danger-button.webp?v=28.2.5")}
+  --p5-danger-button:url("../assets/ui/v28/png/frames/danger-button.webp?v=28.11.28")}
 
 /* ---------- Quit action: paint the real ornamental danger asset ---------- */
 html[data-v28-rework="2"] #quitModal .utility-actions{
@@ -6653,12 +6653,12 @@ html[data-v28-rework="2"] .dd-select-close{
    ============================================================ */
 
 :root{
-  --p6-farm-node:url("../assets/ui/v28/png/components/campaign-node-farm-frame.webp?v=28.2.6");
-  --p6-xp-badge:url("../assets/ui/v28/png/components/xp-badge.webp?v=28.2.6");
-  --p6-encounter-button:url("../assets/ui/v28/png/components/encounter-button-green.webp?v=28.2.6");
-  --p6-hp-medallion:url("../assets/ui/v28/png/components/hp-heart-medallion.webp?v=28.2.6");
-  --p6-completed-medallion:url("../assets/ui/v28/png/components/completed-check-medallion.webp?v=28.2.6");
-  --p6-back-button:url("../assets/ui/v28/png/components/back-button.webp?v=28.2.6")}
+  --p6-farm-node:url("../assets/ui/v28/png/components/campaign-node-farm-frame.webp?v=28.11.28");
+  --p6-xp-badge:url("../assets/ui/v28/png/components/xp-badge.webp?v=28.11.28");
+  --p6-encounter-button:url("../assets/ui/v28/png/components/encounter-button-green.webp?v=28.11.28");
+  --p6-hp-medallion:url("../assets/ui/v28/png/components/hp-heart-medallion.webp?v=28.11.28");
+  --p6-completed-medallion:url("../assets/ui/v28/png/components/completed-check-medallion.webp?v=28.11.28");
+  --p6-back-button:url("../assets/ui/v28/png/components/back-button.webp?v=28.11.28")}
 
 /* ---------- One rendered back control on every real back action ---------- */
 html[data-v28-rework="2"] .screen-topbar>button,
@@ -6850,10 +6850,10 @@ html[data-v28-rework="2"] #masteryModal .mastery-node.owned .mastery-node-dot{
    ============================================================ */
 
 :root{
-  --p7-encounter-button:url("../assets/ui/v28/png/components/encounter-button-green.webp?v=28.2.7");
-  --p7-completed-medallion:url("../assets/ui/v28/png/components/completed-check-medallion.webp?v=28.2.7");
-  --p7-danger-button:url("../assets/ui/v28/png/frames/danger-button.webp?v=28.2.7");
-  --p7-navy-button:url("../assets/ui/v28/png/frames/navy-button-horizontal.webp?v=28.2.7")}
+  --p7-encounter-button:url("../assets/ui/v28/png/components/encounter-button-green.webp?v=28.11.28");
+  --p7-completed-medallion:url("../assets/ui/v28/png/components/completed-check-medallion.webp?v=28.11.28");
+  --p7-danger-button:url("../assets/ui/v28/png/frames/danger-button.webp?v=28.11.28");
+  --p7-navy-button:url("../assets/ui/v28/png/frames/navy-button-horizontal.webp?v=28.11.28")}
 
 /* ---------- Campaign header and primary encounter action ---------- */
 html[data-v28-rework="2"] #campaignProfileSummary{
@@ -7022,9 +7022,9 @@ html[data-v28-rework="2"] #tutorialHubCancelBtn{
    ============================================================ */
 
 :root{
-  --p8-close-button:url("../assets/ui/v28/png/components/close-button.webp?v=28.2.8");
-  --p8-lock-overlay:url("../assets/ui/v28/png/components/locked-padlock-overlay.webp?v=28.2.8");
-  --p8-boss-selected-glow:url("../assets/ui/v28/png/fx/premium-card-selected-glow-green.webp?v=28.2.8")}
+  --p8-close-button:url("../assets/ui/v28/png/components/close-button.webp?v=28.11.28");
+  --p8-lock-overlay:url("../assets/ui/v28/png/components/locked-padlock-overlay.webp?v=28.11.28");
+  --p8-boss-selected-glow:url("../assets/ui/v28/png/fx/premium-card-selected-glow-green.webp?v=28.11.28")}
 
 /* ---------- One rendered X medallion for every real close action ---------- */
 html[data-v28-rework="2"] .ability-mastery-lab-topbar>button,
@@ -7265,12 +7265,12 @@ html[data-v28-rework="2"] .campaign-hub .campaign-node.p6-farm-node:is(.current,
    ============================================================ */
 
 :root{
-  --p9-ability-choice:url("../assets/ui/v28/png/frames/ability-choice-card.webp?v=28.2.9");
-  --p9-gold-button:url("../assets/ui/v28/png/frames/gold-special-button.webp?v=28.2.9");
-  --p9-danger-button:url("../assets/ui/v28/png/frames/danger-button.webp?v=28.2.9");
-  --p9-active-player:url("../assets/ui/v28/png/frames/active-player-glow.webp?v=28.2.9");
-  --p9-close-button:url("../assets/ui/v28/png/components/close-button.webp?v=28.2.9");
-  --p9-completed-medallion:url("../assets/ui/v28/png/components/completed-check-medallion.webp?v=28.2.9")}
+  --p9-ability-choice:url("../assets/ui/v28/png/frames/ability-choice-card.webp?v=28.11.28");
+  --p9-gold-button:url("../assets/ui/v28/png/frames/gold-special-button.webp?v=28.11.28");
+  --p9-danger-button:url("../assets/ui/v28/png/frames/danger-button.webp?v=28.11.28");
+  --p9-active-player:url("../assets/ui/v28/png/frames/active-player-glow.webp?v=28.11.28");
+  --p9-close-button:url("../assets/ui/v28/png/components/close-button.webp?v=28.11.28");
+  --p9-completed-medallion:url("../assets/ui/v28/png/components/completed-check-medallion.webp?v=28.11.28")}
 
 /* ---------- Ability bonus: only icon, number and name ----------
    The supplied card already contains its ivory centre and right ring.
@@ -8557,7 +8557,7 @@ html[data-v28-rework="2"] #changelogScreen:not(.hidden) .screen-scroll-body{
   padding:0;
   border:0;
   border-radius:0;
-  background:url("../assets/ui/v28/png/components/close-button.webp") center/contain no-repeat;
+  background:url("../assets/ui/v28/png/components/close-button.webp?v=28.11.28") center/contain no-repeat;
   color:transparent;
   font-size:0;
   box-shadow:none;
@@ -8677,7 +8677,7 @@ html[data-v28-rework="2"] .v28-ability-trigger{
   padding:0 35px 0 52px;
   overflow:visible;
 
-  border-image-source:var(--p9-ability-choice, var(--p1-ability-card, url("../assets/ui/v28/png/frames/ability-choice-card.webp")));
+  border-image-source:var(--p9-ability-choice, var(--p1-ability-card, url("../assets/ui/v28/png/frames/ability-choice-card.webp?v=28.11.28")));
   /* Der rechte Slice war 165 und begann damit bei Quellpixel 1371. Die
      gemalte Fassung im Rahmen liegt aber bei 1327..1417, lag also zur
      Haelfte im mittleren, gestreckten Bereich - sie wurde je nach
@@ -8785,7 +8785,7 @@ html[data-v28-rework="2"] .v28-ability-option .v28-check{
 html[data-v28-rework="2"] .v28-ability-option.selected .v28-check{
   display:none}
 html[data-v28-rework="2"] .v28-ability-option.selected{
-  background-image:url("../assets/ui/v28/png/components/completed-check-medallion.webp")!important;
+  background-image:url("../assets/ui/v28/png/components/completed-check-medallion.webp?v=28.11.28")!important;
   background-repeat:no-repeat!important;
   background-position:right 15.58px top 29.70px!important;
   background-size:23px 20.30px!important;
@@ -8823,7 +8823,7 @@ html[data-v28-rework="2"] .v28-ability-picker-close.secondary{
   padding:10px 28px;
   border:0;
   border-radius:0;
-  background:url("../assets/ui/v28/png/frames/navy-button-horizontal.webp") center/100% 100% no-repeat;
+  background:url("../assets/ui/v28/png/frames/navy-button-horizontal.webp?v=28.11.28") center/100% 100% no-repeat;
   color:#fff2ca;
   box-shadow:none;
   font:800 16px/1 Georgia,"Times New Roman",serif}
@@ -8850,7 +8850,7 @@ html[data-v28-rework="2"] #prestigeShopScreen .prestige-item>button:disabled,
 html[data-v28-rework="2"] #prestigeShopScreen .prestige-item.expensive>button:disabled,
 html[data-v28-rework="2"] #prestigeShopScreen .prestige-item.owned>button:disabled{
   color:#102c51;
-  background:url("../assets/ui/v28/png/frames/gold-special-button.webp") center/100% 100% no-repeat;
+  background:url("../assets/ui/v28/png/frames/gold-special-button.webp?v=28.11.28") center/100% 100% no-repeat;
   opacity:1;
   filter:none}
 
@@ -9164,10 +9164,10 @@ html[data-v28-rework="2"] body.playing #game .controls>button{
 /* ---------- vormals 31-v28-marked-ui.css ---------- */
 /* 28.3.53 — marked screenshot pass. LAST stylesheet. Paths are ../assets from /css. */
 html[data-v28-rework="2"]{
-  --p53-navy:url("../assets/ui/v28/png/frames/navy-button-horizontal.webp");
-  --p53-gold:url("../assets/ui/v28/png/frames/gold-special-button.webp");
-  --p53-check:url("../assets/ui/v28/png/components/completed-check-medallion.webp");
-  --p53-lock:url("../assets/ui/v28/png/components/locked-padlock-overlay.webp")}
+  --p53-navy:url("../assets/ui/v28/png/frames/navy-button-horizontal.webp?v=28.11.28");
+  --p53-gold:url("../assets/ui/v28/png/frames/gold-special-button.webp?v=28.11.28");
+  --p53-check:url("../assets/ui/v28/png/components/completed-check-medallion.webp?v=28.11.28");
+  --p53-lock:url("../assets/ui/v28/png/components/locked-padlock-overlay.webp?v=28.11.28")}
 
 /* ========== ROT: Setup-Ready-Text weg. Fehler bleiben. ========== */
 html[data-v28-rework="2"] #setupStatus.setup-status:not(.error),
@@ -9402,7 +9402,7 @@ body:not(.test-lab-active) .die.locked::after{
   right:3px;
   width:20px;
   height:20px;
-  background:url("../assets/ui/v28/png/components/completed-check-medallion.webp") center/contain no-repeat;
+  background:url("../assets/ui/v28/png/components/completed-check-medallion.webp?v=28.11.28") center/contain no-repeat;
   filter:drop-shadow(0 1px 3px rgba(0,0,0,.7));
 }
 
@@ -9435,7 +9435,7 @@ body:not(.test-lab-active) .die.locked::after{
   height:20px;
   margin-right:7px;
   vertical-align:-5px;
-  background:url("../assets/ui/v28/svg/gameplay/boss.svg") center/contain no-repeat;
+  background:url("../assets/ui/v28/svg/gameplay/boss.svg?v=28.11.28") center/contain no-repeat;
 }
 
 .boss-rush-start:disabled{
@@ -9469,7 +9469,7 @@ body:not(.test-lab-active) .die.locked::after{
   width:18px;
   height:18px;
   margin-right:7px;
-  background:url("../assets/ui/v28/svg/gameplay/boss.svg") center/contain no-repeat;
+  background:url("../assets/ui/v28/svg/gameplay/boss.svg?v=28.11.28") center/contain no-repeat;
 }
 
 .boss-rush-reward-modal{
@@ -9703,10 +9703,10 @@ html[data-v28-rework="2"] #onlineScreen .online-connection{
    ============================================================ */
 
 :root{
-  --wd-strip: url("../assets/ui/v28/png/frames/slim-strip.webp?v=28.10.4");
-  --wd-card:  url("../assets/ui/v28/png/frames/slim-card.webp?v=28.10.4");
-  --wd-pill:  url("../assets/ui/v28/png/frames/slim-pill.webp?v=28.10.4");
-  --wd-die:   url("../assets/ui/v28/png/frames/die-button.webp?v=28.10.4");
+  --wd-strip: url("../assets/ui/v28/png/frames/slim-strip.webp?v=28.11.28");
+  --wd-card:  url("../assets/ui/v28/png/frames/slim-card.webp?v=28.11.28");
+  --wd-pill:  url("../assets/ui/v28/png/frames/slim-pill.webp?v=28.11.28");
+  --wd-die:   url("../assets/ui/v28/png/frames/die-button.webp?v=28.11.28");
   --wd-hell:  #f4ece3;
   --wd-navy:  #011b4b;
 }
@@ -10375,10 +10375,10 @@ html[data-v28-rework="2"] .campaign-node-detail .node-detail-desc{
 /* DiceDuel V28.10.4 — menu safe areas and framed utility screens. */
 
 :root{
-  --v2893-achievement-card:url("../assets/ui/v28/png/frames/achievement-trophy-card.webp?v=28.10.4");
-  --v2893-ivory-card:url("../assets/ui/v28/png/frames/ivory-card-small.webp?v=28.10.4");
-  --v2893-navy-button:url("../assets/ui/v28/png/frames/navy-button-horizontal.webp?v=28.10.4");
-  --v2893-green-button:url("../assets/ui/v28/png/components/encounter-button-green.webp?v=28.10.4");
+  --v2893-achievement-card:url("../assets/ui/v28/png/frames/achievement-trophy-card.webp?v=28.11.28");
+  --v2893-ivory-card:url("../assets/ui/v28/png/frames/ivory-card-small.webp?v=28.11.28");
+  --v2893-navy-button:url("../assets/ui/v28/png/frames/navy-button-horizontal.webp?v=28.11.28");
+  --v2893-green-button:url("../assets/ui/v28/png/components/encounter-button-green.webp?v=28.11.28");
 }
 
 /* Main menu: the icon leaves the ornamental end cap and gets its own safe area. */
@@ -11617,7 +11617,7 @@ html[data-v28-rework="2"] .campaign-hub .campaign-world-btn:disabled .campaign-w
   width:13px!important;
   height:13px!important;
   display:block!important;
-  background:url("../assets/ui/v28/svg/gameplay/locked.svg?v=28.11.2") center/contain no-repeat!important;
+  background:url("../assets/ui/v28/svg/gameplay/locked.svg?v=28.11.28") center/contain no-repeat!important;
   filter:drop-shadow(0 1px 2px rgba(0,0,0,.42))!important;
 }
 

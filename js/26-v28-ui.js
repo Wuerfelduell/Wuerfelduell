@@ -1,5 +1,4 @@
 (() => {
-  const VERSION = "28.0.2";
   const ABILITY_ICONS = {
     1:"◆",2:"♥",3:"⚄",4:"↻",5:"⚔",7:"✦",8:"◎",9:"♨",10:"↗",11:"◉",12:"✧",13:"♜",14:"⚓",15:"◇",16:"↯",17:"★",18:"⚅",19:"⬟",20:"◌",21:"⛨",22:"12",23:"♦",24:"⚔",25:"△"
   };
@@ -134,7 +133,7 @@
     });
     domObserver.observe(document.body,{childList:true,subtree:true});
 
-    console.info(`[DiceDuel] Bright Arcane UI ${VERSION} active.`);
+    console.info(`[DiceDuel] Bright Arcane UI ${ASSET_REV} active.`);
   }
 
   if(document.readyState==="loading") document.addEventListener("DOMContentLoaded",init,{once:true});

@@ -1,7 +1,6 @@
 (() => {
   "use strict";
 
-  const ASSET_REVISION="28.11.1";
   // These URLs are consumed by declarations in css/app.css. Relative URLs in
   // custom properties resolve against that stylesheet, so step out of /css.
   const ASSET_ROOT="../assets/ui/v28/png/worlds/";
@@ -59,9 +58,9 @@
     setProperty(element,"--world-secondary",value.secondary);
     setProperty(element,"--world-surface",value.surface);
     setProperty(element,"--world-glow",value.glow);
-    setProperty(element,"--world-emblem",`url(\"${value.emblem}?v=${ASSET_REVISION}\")`);
-    setProperty(element,"--world-frame-round",`url(\"${value.roundFrame}?v=${ASSET_REVISION}\")`);
-    setProperty(element,"--world-frame-rect",`url(\"${value.rectFrame}?v=${ASSET_REVISION}\")`);
+    setProperty(element,"--world-emblem",`url(\"${value.emblem}?v=${ASSET_REV}\")`);
+    setProperty(element,"--world-frame-round",`url(\"${value.roundFrame}?v=${ASSET_REV}\")`);
+    setProperty(element,"--world-frame-rect",`url(\"${value.rectFrame}?v=${ASSET_REV}\")`);
   }
 
   function applyToHub(hub,mode,worldId){

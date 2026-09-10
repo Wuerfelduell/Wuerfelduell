@@ -641,7 +641,7 @@
     modal.querySelector(".mastery-purchase-desc").textContent=window.t?window.t(desc||""): (desc||"");
     const after=Math.max(0,state.xp-cost);
     const tr=window.t?window.t:(value=>value);
-    modal.querySelector(".mastery-purchase-price").innerHTML=`<img src="assets/ui/v28/svg/gameplay/xp-star.svg?v=${GAME_VERSION}" alt="" aria-hidden="true"><span><small>${escapeHtml(tr("Kosten"))}</small><strong>${cost} XP</strong></span>`;
+    modal.querySelector(".mastery-purchase-price").innerHTML=`<img src="assets/ui/v28/svg/gameplay/xp-star.svg?v=${ASSET_REV}" alt="" aria-hidden="true"><span><small>${escapeHtml(tr("Kosten"))}</small><strong>${cost} XP</strong></span>`;
     modal.querySelector(".mastery-purchase-balance").innerHTML=`<span class="mastery-balance-value"><small>${escapeHtml(tr("Verfügbar"))}</small><strong>${state.xp} XP</strong></span><span class="mastery-balance-arrow" aria-hidden="true">→</span><span class="mastery-balance-value after"><small>${escapeHtml(tr("Danach"))}</small><strong>${after} XP</strong></span>`;
     modal.classList.remove("hidden");
   }

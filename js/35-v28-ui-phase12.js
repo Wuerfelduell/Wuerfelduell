@@ -1,5 +1,4 @@
 (() => {
-  const VERSION = "28.3.5";
 
   function abilitiesOpen(){
     const screen = document.getElementById("abilitiesScreen");
@@ -46,7 +45,7 @@
       setTimeout(syncLock, 0);
     }, true);
     syncLock();
-    console.info(`[DiceDuel] UI hotfix ${VERSION} active.`);
+    console.info(`[DiceDuel] UI hotfix ${ASSET_REV} active.`);
   }
 
   if(document.readyState === "loading") document.addEventListener("DOMContentLoaded", init, {once:true});

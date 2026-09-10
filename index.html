@@ -9,13 +9,13 @@
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-title" content="DiceDuel" />
   <link rel="manifest" href="manifest.json" />
-  <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png" />
-  <link rel="apple-touch-icon" sizes="192x192" href="icon-192.png" />
+  <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png?v=28.11.28" />
+  <link rel="apple-touch-icon" sizes="192x192" href="icon-192.png?v=28.11.28" />
   <title>DiceDuel · V28.11.28</title>
-  <link rel="preload" as="image" href="assets/ui/v28/bg-main-palace.webp">
+  <link rel="preload" as="image" href="assets/ui/v28/bg-main-palace.webp?v=28.11.28">
   <style>
     html.wd-booting,body.wd-booting{overflow:hidden!important;overscroll-behavior:none}
-    #wdBootGate{position:fixed;inset:0;z-index:2147483000;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:28px 22px;background:#061428 url("assets/ui/v28/bg-main-palace.webp") center/cover no-repeat;color:#f6e7c0;text-align:center;font-family:Georgia,"Times New Roman",serif}
+    #wdBootGate{position:fixed;inset:0;z-index:2147483000;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:28px 22px;background:#061428 url("assets/ui/v28/bg-main-palace.webp?v=28.11.28") center/cover no-repeat;color:#f6e7c0;text-align:center;font-family:Georgia,"Times New Roman",serif}
     #wdBootGate::before{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(6,20,40,.42),rgba(6,20,40,.78));pointer-events:none}
     #wdBootGate>*{position:relative;z-index:1}
     #wdBootGate img{width:92px;height:92px;object-fit:contain;filter:drop-shadow(0 8px 18px rgba(0,0,0,.45))}
@@ -30,7 +30,7 @@
 </head>
 <body class="wd-booting">
 <div id="wdBootGate" role="progressbar" aria-busy="true" aria-label="DiceDuel wird geladen">
-  <img src="assets/ui/v28/png/emblems/diceduel-crest.webp" alt="">
+  <img src="assets/ui/v28/png/emblems/diceduel-crest.webp?v=28.11.28" alt="">
   <h1>DiceDuel</h1>
   <p id="wdBootLabel">Lade Würfel & UI · 0%</p>
   <div id="wdBootBar"><span id="wdBootBarFill"></span></div>
@@ -199,23 +199,23 @@
 <div class="app">
   <section id="mainMenu" class="menu-screen">
     <div class="menu-hero">
-      <img class="menu-logo-img" src="assets/ui/v28/png/emblems/diceduel-crest.webp" alt="DiceDuel Crest">
+      <img class="menu-logo-img" src="assets/ui/v28/png/emblems/diceduel-crest.webp?v=28.11.28" alt="DiceDuel Crest">
       <h1 class="menu-title">DICEDUEL</h1>
       <div class="menu-tagline">Push your luck. Kill your friends.</div>
     </div>
     <div class="menu-actions">
-      <button id="menuPlayBtn" class="menu-play"><span class="menu-icon" data-v28-icon-ready="1"><img class="v28-menu-icon" src="assets/ui/v28/svg/menu/play.svg" alt="" aria-hidden="true"></span><span class="menu-primary-label">Spielen</span></button>
-      <button id="menuOnlineBtn" class="menu-online"><span class="menu-icon" data-v28-icon-ready="1"><img class="v28-menu-icon" src="assets/ui/v28/svg/menu/online.svg" alt="" aria-hidden="true"></span><span class="menu-primary-label">Online</span></button>
-      <button id="menuCampaignBtn" class="menu-campaign"><span class="menu-icon" data-v28-icon-ready="1"><img class="v28-menu-icon" src="assets/ui/v28/svg/menu/campaign.svg" alt="" aria-hidden="true"></span><span class="menu-primary-label">Kampagne</span></button>
-      <button id="menuTutorialBtn" class="menu-tutorial"><span class="menu-icon" data-v28-icon-ready="1"><img class="v28-menu-icon" src="assets/ui/v28/svg/menu/tutorial.svg" alt="" aria-hidden="true"></span><span class="menu-primary-label">Tutorial</span></button>
-      <button id="menuProfilesBtn" class="menu-profile"><span class="menu-icon" data-v28-icon-ready="1"><img class="v28-menu-icon" src="assets/ui/v28/svg/menu/profile.svg" alt="" aria-hidden="true"></span> Profile</button>
-      <button id="menuAccountBtn" class="menu-account"><span class="menu-icon" data-v28-icon-ready="1"><img class="v28-menu-icon" src="assets/ui/v28/svg/menu/account.svg" alt="" aria-hidden="true"></span> Account</button>
-      <button id="menuAchievementsBtn" class="menu-achievements"><span class="menu-icon" data-v28-icon-ready="1"><img class="v28-menu-icon" src="assets/ui/v28/svg/menu/achievements.svg" alt="" aria-hidden="true"></span> Achievements</button>
-      <button id="menuPrestigeShopBtn" class="menu-prestige"><span class="menu-icon" data-v28-icon-ready="1"><img class="v28-menu-icon" src="assets/ui/v28/svg/menu/trophy-shop.svg" alt="" aria-hidden="true"></span> Trophy Shop</button>
-      <button id="menuStatsBtn"><span class="menu-icon" data-v28-icon-ready="1"><img class="v28-menu-icon" src="assets/ui/v28/svg/menu/statistics.svg" alt="" aria-hidden="true"></span> Statistiken</button>
-      <button id="menuSettingsBtn"><span class="menu-icon" data-v28-icon-ready="1"><img class="v28-menu-icon" src="assets/ui/v28/svg/menu/settings.svg" alt="" aria-hidden="true"></span> Einstellungen</button>
-      <button id="menuRulesBtn"><span class="menu-icon" data-v28-icon-ready="1"><img class="v28-menu-icon" src="assets/ui/v28/svg/menu/rules.svg" alt="" aria-hidden="true"></span> Regeln</button>
-      <button id="menuChangelogBtn"><span class="menu-icon" data-v28-icon-ready="1"><img class="v28-menu-icon" src="assets/ui/v28/svg/menu/changelog.svg" alt="" aria-hidden="true"></span> Changelog</button>
+      <button id="menuPlayBtn" class="menu-play"><span class="menu-icon" data-v28-icon-ready="1"><img class="v28-menu-icon" src="assets/ui/v28/svg/menu/play.svg?v=28.11.28" alt="" aria-hidden="true"></span><span class="menu-primary-label">Spielen</span></button>
+      <button id="menuOnlineBtn" class="menu-online"><span class="menu-icon" data-v28-icon-ready="1"><img class="v28-menu-icon" src="assets/ui/v28/svg/menu/online.svg?v=28.11.28" alt="" aria-hidden="true"></span><span class="menu-primary-label">Online</span></button>
+      <button id="menuCampaignBtn" class="menu-campaign"><span class="menu-icon" data-v28-icon-ready="1"><img class="v28-menu-icon" src="assets/ui/v28/svg/menu/campaign.svg?v=28.11.28" alt="" aria-hidden="true"></span><span class="menu-primary-label">Kampagne</span></button>
+      <button id="menuTutorialBtn" class="menu-tutorial"><span class="menu-icon" data-v28-icon-ready="1"><img class="v28-menu-icon" src="assets/ui/v28/svg/menu/tutorial.svg?v=28.11.28" alt="" aria-hidden="true"></span><span class="menu-primary-label">Tutorial</span></button>
+      <button id="menuProfilesBtn" class="menu-profile"><span class="menu-icon" data-v28-icon-ready="1"><img class="v28-menu-icon" src="assets/ui/v28/svg/menu/profile.svg?v=28.11.28" alt="" aria-hidden="true"></span> Profile</button>
+      <button id="menuAccountBtn" class="menu-account"><span class="menu-icon" data-v28-icon-ready="1"><img class="v28-menu-icon" src="assets/ui/v28/svg/menu/account.svg?v=28.11.28" alt="" aria-hidden="true"></span> Account</button>
+      <button id="menuAchievementsBtn" class="menu-achievements"><span class="menu-icon" data-v28-icon-ready="1"><img class="v28-menu-icon" src="assets/ui/v28/svg/menu/achievements.svg?v=28.11.28" alt="" aria-hidden="true"></span> Achievements</button>
+      <button id="menuPrestigeShopBtn" class="menu-prestige"><span class="menu-icon" data-v28-icon-ready="1"><img class="v28-menu-icon" src="assets/ui/v28/svg/menu/trophy-shop.svg?v=28.11.28" alt="" aria-hidden="true"></span> Trophy Shop</button>
+      <button id="menuStatsBtn"><span class="menu-icon" data-v28-icon-ready="1"><img class="v28-menu-icon" src="assets/ui/v28/svg/menu/statistics.svg?v=28.11.28" alt="" aria-hidden="true"></span> Statistiken</button>
+      <button id="menuSettingsBtn"><span class="menu-icon" data-v28-icon-ready="1"><img class="v28-menu-icon" src="assets/ui/v28/svg/menu/settings.svg?v=28.11.28" alt="" aria-hidden="true"></span> Einstellungen</button>
+      <button id="menuRulesBtn"><span class="menu-icon" data-v28-icon-ready="1"><img class="v28-menu-icon" src="assets/ui/v28/svg/menu/rules.svg?v=28.11.28" alt="" aria-hidden="true"></span> Regeln</button>
+      <button id="menuChangelogBtn"><span class="menu-icon" data-v28-icon-ready="1"><img class="v28-menu-icon" src="assets/ui/v28/svg/menu/changelog.svg?v=28.11.28" alt="" aria-hidden="true"></span> Changelog</button>
     </div>
     <div class="version-footer">DICEDUEL · VERSION 28.11.28</div>
   </section>

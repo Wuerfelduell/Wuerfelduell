@@ -1,12 +1,11 @@
 (() => {
   "use strict";
 
-  const VERSION = "28.2.6";
   const COMPONENT_ROOT = "assets/ui/v28/png/components/";
   let decorateQueued = false;
 
   function component(path){
-    return `${COMPONENT_ROOT}${path}?v=${VERSION}`;
+    return `${COMPONENT_ROOT}${path}?v=${ASSET_REV}`;
   }
 
   function image(path, className, alt=""){
@@ -114,7 +113,7 @@
     document.addEventListener("click", () => setTimeout(scheduleDecorate, 0), true);
     observe();
     decorate();
-    console.info(`[DiceDuel] UI Rework Phase 6 ${VERSION} active.`);
+    console.info(`[DiceDuel] UI Rework Phase 6 ${ASSET_REV} active.`);
   }
 
   if(document.readyState === "loading") document.addEventListener("DOMContentLoaded", init, {once:true});

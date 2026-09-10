@@ -2,11 +2,6 @@
   const gate = document.getElementById("wdBootGate");
   const bar = document.getElementById("wdBootBarFill");
   const label = document.getElementById("wdBootLabel");
-  /* Cache-Buster fuer die Wuerfel-URLs. Faellt auf das <meta name="wd-build">
-     zurueck statt auf eine hartkodierte Version, die bei jedem Release veraltet. */
-  const version = typeof GAME_VERSION === "string"
-    ? GAME_VERSION
-    : (document.querySelector('meta[name="wd-build"]')?.content || "0");
 
   /* Block input only while the gate is up */
   const block = (event) => {
@@ -27,7 +22,9 @@
     let href = String(raw).trim();
     if (!href || href.startsWith("data:") || href.startsWith("blob:")) return;
     try {
-      href = new URL(href, location.href).href;
+      const url = new URL(href, location.href);
+      url.searchParams.set("v", ASSET_REV);
+      href = url.href;
     } catch {
       return;
     }
@@ -51,9 +48,9 @@
   /* Default dice set only (classic_v2 / ivory-royal) — other designs load when equipped */
   const defaultArt = "ivory-royal";
   ["1", "2", "3", "4", "5", "6", "question"].forEach((face) => {
-    add(critical, `assets/ui/v28/png/dice-designs/${defaultArt}/${defaultArt}-face-${face}.webp?v=${version}`);
+    add(critical, `assets/ui/v28/png/dice-designs/${defaultArt}/${defaultArt}-face-${face}.webp?v=${ASSET_REV}`);
   });
-  add(critical, `assets/ui/v28/png/dice-designs/${defaultArt}/${defaultArt}-beauty.webp?v=${version}`);
+  add(critical, `assets/ui/v28/png/dice-designs/${defaultArt}/${defaultArt}-beauty.webp?v=${ASSET_REV}`);
 
   /* DOM images already on the first paint (menu) */
   document.querySelectorAll("#mainMenu img[src], #wdBootGate img[src], img.preload-critical[src]").forEach((node) => {
@@ -67,15 +64,15 @@
       if (!artKey || artKey === defaultArt) return;
       if (design.previewAsset) add(background, design.previewAsset);
       ["1", "2", "3", "4", "5", "6", "question"].forEach((face) => {
-        add(background, `assets/ui/v28/png/dice-designs/${artKey}/${artKey}-face-${face}.webp?v=${version}`);
+        add(background, `assets/ui/v28/png/dice-designs/${artKey}/${artKey}-face-${face}.webp?v=${ASSET_REV}`);
       });
     });
   } else {
     ["sapphire-crown", "amethyst-rift"].forEach((key) => {
       ["1", "2", "3", "4", "5", "6", "question"].forEach((face) => {
-        add(background, `assets/ui/v28/png/dice-designs/${key}/${key}-face-${face}.webp?v=${version}`);
+        add(background, `assets/ui/v28/png/dice-designs/${key}/${key}-face-${face}.webp?v=${ASSET_REV}`);
       });
-      add(background, `assets/ui/v28/png/dice-designs/${key}/${key}-beauty.webp?v=${version}`);
+      add(background, `assets/ui/v28/png/dice-designs/${key}/${key}-beauty.webp?v=${ASSET_REV}`);
     });
   }
 

@@ -1,5 +1,4 @@
 (() => {
-  const VERSION = "28.2.0";
   const ROOT = "assets/ui/v28/svg/";
 
   const menuIcons = {
@@ -35,7 +34,7 @@
 
   function img(path, className, alt=""){
     const el=document.createElement("img");
-    el.src=ROOT+path;
+    el.src=`${ROOT}${path}?v=${ASSET_REV}`;
     el.className=className;
     el.alt=alt;
     el.setAttribute("aria-hidden","true");
@@ -155,7 +154,7 @@
     decorateScreenTitles();
     setupSceneObservers();
     setupCampaignDetailObservers();
-    console.info(`[DiceDuel] Bright Arcane asset system ${VERSION} active.`);
+    console.info(`[DiceDuel] Bright Arcane asset system ${ASSET_REV} active.`);
   }
 
   if(document.readyState==="loading") document.addEventListener("DOMContentLoaded",init,{once:true});

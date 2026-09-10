@@ -23,17 +23,17 @@
    ============================================================ */
 
 :root{
-  --p1-ivory-card:url("../assets/ui/v28/png/frames/ivory-card-small.webp?v=28.2.1");
-  --p1-navy-button:url("../assets/ui/v28/png/frames/navy-button-horizontal.webp?v=28.2.1");
-  --p1-gold-button:url("../assets/ui/v28/png/frames/gold-special-button.webp?v=28.2.1");
-  --p1-danger-button:url("../assets/ui/v28/png/frames/danger-button.webp?v=28.2.1");
-  --p1-ability-card:url("../assets/ui/v28/png/frames/ability-choice-card.webp?v=28.2.1");
-  --p1-player-card:url("../assets/ui/v28/png/frames/player-card-combat.webp?v=28.2.1");
-  --p1-player-active:url("../assets/ui/v28/png/frames/active-player-glow.webp?v=28.2.1");
-  --p1-boss-player:url("../assets/ui/v28/png/frames/boss-player-card.webp?v=28.2.1");
-  --p1-boss-bar:url("../assets/ui/v28/png/frames/boss.webp?v=28.2.1");
-  --p1-achievement:url("../assets/ui/v28/png/frames/achievement-trophy-card.webp?v=28.2.1");
-  --p1-selected-node:url("../assets/ui/v28/png/frames/campaign-node-selected.webp?v=28.2.1");
+  --p1-ivory-card:url("../assets/ui/v28/png/frames/ivory-card-small.webp?v=28.11.28");
+  --p1-navy-button:url("../assets/ui/v28/png/frames/navy-button-horizontal.webp?v=28.11.28");
+  --p1-gold-button:url("../assets/ui/v28/png/frames/gold-special-button.webp?v=28.11.28");
+  --p1-danger-button:url("../assets/ui/v28/png/frames/danger-button.webp?v=28.11.28");
+  --p1-ability-card:url("../assets/ui/v28/png/frames/ability-choice-card.webp?v=28.11.28");
+  --p1-player-card:url("../assets/ui/v28/png/frames/player-card-combat.webp?v=28.11.28");
+  --p1-player-active:url("../assets/ui/v28/png/frames/active-player-glow.webp?v=28.11.28");
+  --p1-boss-player:url("../assets/ui/v28/png/frames/boss-player-card.webp?v=28.11.28");
+  --p1-boss-bar:url("../assets/ui/v28/png/frames/boss.webp?v=28.11.28");
+  --p1-achievement:url("../assets/ui/v28/png/frames/achievement-trophy-card.webp?v=28.11.28");
+  --p1-selected-node:url("../assets/ui/v28/png/frames/campaign-node-selected.webp?v=28.11.28");
   --p1-gold:#d6a53c;
   --p1-gold-light:#ffe59a;
   --p1-ink:#082a55;
@@ -92,7 +92,7 @@ html[data-v28-rework="2"] .dd-select-trigger .dd-trigger-icon{
   filter:drop-shadow(0 2px 3px rgba(7,31,75,.18))}
 html[data-v28-rework="2"] .dd-select-trigger::after{
   width:24px!important;height:24px!important;
-  background-image:url("../assets/ui/v28/svg/navigation/chevron-down.svg?v=28.2.1")!important}
+  background-image:url("../assets/ui/v28/svg/navigation/chevron-down.svg?v=28.11.28")!important}
 html[data-v28-rework="2"] .dd-select-trigger>span{
   font-size:15px;
   line-height:1.15}
@@ -691,10 +691,10 @@ html[data-v28-rework="2"] body.playing .campaign-task-head{
    ============================================================ */
 
 :root{
-  --p2-navy-button:url("../assets/ui/v28/png/frames/navy-button-horizontal.webp?v=28.2.2");
-  --p2-gold-button:url("../assets/ui/v28/png/frames/gold-special-button.webp?v=28.2.2");
-  --p2-boss-bar:url("../assets/ui/v28/png/frames/boss.webp?v=28.2.2");
-  --p2-node-current:url("../assets/ui/v28/png/frames/campaign-node-selected.webp?v=28.2.2")}
+  --p2-navy-button:url("../assets/ui/v28/png/frames/navy-button-horizontal.webp?v=28.11.28");
+  --p2-gold-button:url("../assets/ui/v28/png/frames/gold-special-button.webp?v=28.11.28");
+  --p2-boss-bar:url("../assets/ui/v28/png/frames/boss.webp?v=28.11.28");
+  --p2-node-current:url("../assets/ui/v28/png/frames/campaign-node-selected.webp?v=28.11.28")}
 
 /* ---------- Global frame exterior fix ----------
    The PNGs already paint their own ivory centre via border-image fill.
@@ -986,16 +986,16 @@ html[data-v28-rework="2"] #masteryModal .mastery-node.owned .mastery-node-plaque
    ============================================================ */
 
 :root{
-  --p3-ivory-card:url("../assets/ui/v28/png/frames/ivory-card-small.webp?v=28.2.3");
-  --p3-panel:url("../assets/ui/v28/png/frames/panel-large.webp?v=28.2.3");
-  --p3-navy-button:url("../assets/ui/v28/png/frames/navy-button-horizontal.webp?v=28.2.3");
-  --p3-danger-button:url("../assets/ui/v28/png/frames/danger-button.webp?v=28.2.3");
-  --p3-navy-tile:url("../assets/ui/v28/png/frames/navy-tile.webp?v=28.2.3");
-  --p3-round-frame:url("../assets/ui/v28/png/frames/icon-frame-round.webp?v=28.2.3");
-  --p3-selected-node:url("../assets/ui/v28/png/frames/campaign-node-selected.webp?v=28.2.3");
-  --p3-player-frame:url("../assets/ui/v28/png/frames/player-card-combat.webp?v=28.2.3");
-  --p3-boss-bar:url("../assets/ui/v28/png/frames/boss.webp?v=28.2.3");
-  --p3-back:url("../assets/ui/v28/svg/navigation/back.svg?v=28.2.3")}
+  --p3-ivory-card:url("../assets/ui/v28/png/frames/ivory-card-small.webp?v=28.11.28");
+  --p3-panel:url("../assets/ui/v28/png/frames/panel-large.webp?v=28.11.28");
+  --p3-navy-button:url("../assets/ui/v28/png/frames/navy-button-horizontal.webp?v=28.11.28");
+  --p3-danger-button:url("../assets/ui/v28/png/frames/danger-button.webp?v=28.11.28");
+  --p3-navy-tile:url("../assets/ui/v28/png/frames/navy-tile.webp?v=28.11.28");
+  --p3-round-frame:url("../assets/ui/v28/png/frames/icon-frame-round.webp?v=28.11.28");
+  --p3-selected-node:url("../assets/ui/v28/png/frames/campaign-node-selected.webp?v=28.11.28");
+  --p3-player-frame:url("../assets/ui/v28/png/frames/player-card-combat.webp?v=28.11.28");
+  --p3-boss-bar:url("../assets/ui/v28/png/frames/boss.webp?v=28.11.28");
+  --p3-back:url("../assets/ui/v28/svg/navigation/back.svg?v=28.11.28")}
 
 /* ---------- Purple marks: remove opaque rectangles behind PNG frames ----------
    The border-image assets already paint their centre. Any additional CSS
@@ -1480,16 +1480,16 @@ html[data-v28-rework="2"] #profilesScreen .profile-name-edit{
    ============================================================ */
 
 :root{
-  --p4-ivory-card:url("../assets/ui/v28/png/frames/ivory-card-small.webp?v=28.2.4");
-  --p4-panel:url("../assets/ui/v28/png/frames/panel-large.webp?v=28.2.4");
-  --p4-navy-button:url("../assets/ui/v28/png/frames/navy-button-horizontal.webp?v=28.2.4");
-  --p4-gold-button:url("../assets/ui/v28/png/frames/gold-special-button.webp?v=28.2.4");
-  --p4-navy-tile:url("../assets/ui/v28/png/frames/navy-tile.webp?v=28.2.4");
-  --p4-achievement:url("../assets/ui/v28/png/frames/achievement-trophy-card.webp?v=28.2.4");
-  --p4-round-frame:url("../assets/ui/v28/png/frames/icon-frame-round.webp?v=28.2.4");
-  --p4-boss-bar:url("../assets/ui/v28/png/frames/boss.webp?v=28.2.4");
-  --p4-back:url("../assets/ui/v28/svg/navigation/back.svg?v=28.2.4");
-  --p4-close:url("../assets/ui/v28/svg/navigation/close-x.svg?v=28.2.4")}
+  --p4-ivory-card:url("../assets/ui/v28/png/frames/ivory-card-small.webp?v=28.11.28");
+  --p4-panel:url("../assets/ui/v28/png/frames/panel-large.webp?v=28.11.28");
+  --p4-navy-button:url("../assets/ui/v28/png/frames/navy-button-horizontal.webp?v=28.11.28");
+  --p4-gold-button:url("../assets/ui/v28/png/frames/gold-special-button.webp?v=28.11.28");
+  --p4-navy-tile:url("../assets/ui/v28/png/frames/navy-tile.webp?v=28.11.28");
+  --p4-achievement:url("../assets/ui/v28/png/frames/achievement-trophy-card.webp?v=28.11.28");
+  --p4-round-frame:url("../assets/ui/v28/png/frames/icon-frame-round.webp?v=28.11.28");
+  --p4-boss-bar:url("../assets/ui/v28/png/frames/boss.webp?v=28.11.28");
+  --p4-back:url("../assets/ui/v28/svg/navigation/back.svg?v=28.11.28");
+  --p4-close:url("../assets/ui/v28/svg/navigation/close-x.svg?v=28.11.28")}
 
 /* ---------- One navigation size everywhere ---------- */
 html[data-v28-rework="2"] .screen-topbar>button,
@@ -1970,7 +1970,7 @@ html[data-v28-rework="2"] #setup .p4-setup-label-icon{
    ============================================================ */
 
 :root{
-  --p5-danger-button:url("../assets/ui/v28/png/frames/danger-button.webp?v=28.2.5")}
+  --p5-danger-button:url("../assets/ui/v28/png/frames/danger-button.webp?v=28.11.28")}
 
 /* ---------- Quit action: paint the real ornamental danger asset ---------- */
 html[data-v28-rework="2"] #quitModal .utility-actions{
@@ -2110,12 +2110,12 @@ html[data-v28-rework="2"] .dd-select-close{
    ============================================================ */
 
 :root{
-  --p6-farm-node:url("../assets/ui/v28/png/components/campaign-node-farm-frame.webp?v=28.2.6");
-  --p6-xp-badge:url("../assets/ui/v28/png/components/xp-badge.webp?v=28.2.6");
-  --p6-encounter-button:url("../assets/ui/v28/png/components/encounter-button-green.webp?v=28.2.6");
-  --p6-hp-medallion:url("../assets/ui/v28/png/components/hp-heart-medallion.webp?v=28.2.6");
-  --p6-completed-medallion:url("../assets/ui/v28/png/components/completed-check-medallion.webp?v=28.2.6");
-  --p6-back-button:url("../assets/ui/v28/png/components/back-button.webp?v=28.2.6")}
+  --p6-farm-node:url("../assets/ui/v28/png/components/campaign-node-farm-frame.webp?v=28.11.28");
+  --p6-xp-badge:url("../assets/ui/v28/png/components/xp-badge.webp?v=28.11.28");
+  --p6-encounter-button:url("../assets/ui/v28/png/components/encounter-button-green.webp?v=28.11.28");
+  --p6-hp-medallion:url("../assets/ui/v28/png/components/hp-heart-medallion.webp?v=28.11.28");
+  --p6-completed-medallion:url("../assets/ui/v28/png/components/completed-check-medallion.webp?v=28.11.28");
+  --p6-back-button:url("../assets/ui/v28/png/components/back-button.webp?v=28.11.28")}
 
 /* ---------- One rendered back control on every real back action ---------- */
 html[data-v28-rework="2"] .screen-topbar>button,
@@ -2307,10 +2307,10 @@ html[data-v28-rework="2"] #masteryModal .mastery-node.owned .mastery-node-dot{
    ============================================================ */
 
 :root{
-  --p7-encounter-button:url("../assets/ui/v28/png/components/encounter-button-green.webp?v=28.2.7");
-  --p7-completed-medallion:url("../assets/ui/v28/png/components/completed-check-medallion.webp?v=28.2.7");
-  --p7-danger-button:url("../assets/ui/v28/png/frames/danger-button.webp?v=28.2.7");
-  --p7-navy-button:url("../assets/ui/v28/png/frames/navy-button-horizontal.webp?v=28.2.7")}
+  --p7-encounter-button:url("../assets/ui/v28/png/components/encounter-button-green.webp?v=28.11.28");
+  --p7-completed-medallion:url("../assets/ui/v28/png/components/completed-check-medallion.webp?v=28.11.28");
+  --p7-danger-button:url("../assets/ui/v28/png/frames/danger-button.webp?v=28.11.28");
+  --p7-navy-button:url("../assets/ui/v28/png/frames/navy-button-horizontal.webp?v=28.11.28")}
 
 /* ---------- Campaign header and primary encounter action ---------- */
 html[data-v28-rework="2"] #campaignProfileSummary{
@@ -2479,9 +2479,9 @@ html[data-v28-rework="2"] #tutorialHubCancelBtn{
    ============================================================ */
 
 :root{
-  --p8-close-button:url("../assets/ui/v28/png/components/close-button.webp?v=28.2.8");
-  --p8-lock-overlay:url("../assets/ui/v28/png/components/locked-padlock-overlay.webp?v=28.2.8");
-  --p8-boss-selected-glow:url("../assets/ui/v28/png/fx/premium-card-selected-glow-green.webp?v=28.2.8")}
+  --p8-close-button:url("../assets/ui/v28/png/components/close-button.webp?v=28.11.28");
+  --p8-lock-overlay:url("../assets/ui/v28/png/components/locked-padlock-overlay.webp?v=28.11.28");
+  --p8-boss-selected-glow:url("../assets/ui/v28/png/fx/premium-card-selected-glow-green.webp?v=28.11.28")}
 
 /* ---------- One rendered X medallion for every real close action ---------- */
 html[data-v28-rework="2"] .ability-mastery-lab-topbar>button,
@@ -2722,12 +2722,12 @@ html[data-v28-rework="2"] .campaign-hub .campaign-node.p6-farm-node:is(.current,
    ============================================================ */
 
 :root{
-  --p9-ability-choice:url("../assets/ui/v28/png/frames/ability-choice-card.webp?v=28.2.9");
-  --p9-gold-button:url("../assets/ui/v28/png/frames/gold-special-button.webp?v=28.2.9");
-  --p9-danger-button:url("../assets/ui/v28/png/frames/danger-button.webp?v=28.2.9");
-  --p9-active-player:url("../assets/ui/v28/png/frames/active-player-glow.webp?v=28.2.9");
-  --p9-close-button:url("../assets/ui/v28/png/components/close-button.webp?v=28.2.9");
-  --p9-completed-medallion:url("../assets/ui/v28/png/components/completed-check-medallion.webp?v=28.2.9")}
+  --p9-ability-choice:url("../assets/ui/v28/png/frames/ability-choice-card.webp?v=28.11.28");
+  --p9-gold-button:url("../assets/ui/v28/png/frames/gold-special-button.webp?v=28.11.28");
+  --p9-danger-button:url("../assets/ui/v28/png/frames/danger-button.webp?v=28.11.28");
+  --p9-active-player:url("../assets/ui/v28/png/frames/active-player-glow.webp?v=28.11.28");
+  --p9-close-button:url("../assets/ui/v28/png/components/close-button.webp?v=28.11.28");
+  --p9-completed-medallion:url("../assets/ui/v28/png/components/completed-check-medallion.webp?v=28.11.28")}
 
 /* ---------- Ability bonus: only icon, number and name ----------
    The supplied card already contains its ivory centre and right ring.

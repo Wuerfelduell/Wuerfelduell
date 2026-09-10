@@ -1,7 +1,6 @@
 (() => {
   "use strict";
 
-  const VERSION="28.5.3";
   const ROOT="assets/ui/v28/svg/";
 
   // Alle noch relevanten Laufzeit-Piktogramme landen hier auf vorhandenen
@@ -168,7 +167,7 @@
   function spriteImage(path,sourceGlyph=""){
     const image=document.createElement("img");
     image.className="dd-emoji-sprite";
-    image.src=ROOT+path;
+    image.src=`${ROOT}${path}?v=${ASSET_REV}`;
     image.alt="";
     image.draggable=false;
     image.setAttribute("aria-hidden","true");
@@ -262,7 +261,7 @@
       });
     });
     observer.observe(document.body,{subtree:true,childList:true,characterData:true,attributes:true,attributeFilter:["class"]});
-    console.info(`[DiceDuel] Emoji sprite pass ${VERSION} active.`);
+    console.info(`[DiceDuel] Emoji sprite pass ${ASSET_REV} active.`);
   }
 
   if(document.readyState==="loading") document.addEventListener("DOMContentLoaded",init,{once:true});

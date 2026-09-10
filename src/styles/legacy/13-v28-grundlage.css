@@ -113,7 +113,7 @@ button:disabled{opacity:.46;filter:saturate(.45)}
 .menu-hero::after{display:none}
 .menu-hero::before{
   content:"";display:block;margin:0 auto 2px;width:110px;height:64px;
-  background:url("../assets/ui/v28/svg/gameplay/dice.svg") center/contain no-repeat;
+  background:url("../assets/ui/v28/svg/gameplay/dice.svg?v=28.11.28") center/contain no-repeat;
   filter:drop-shadow(0 0 14px rgba(255,223,135,.76)) drop-shadow(0 10px 16px rgba(38,83,125,.18));
   transform:rotate(-4deg)}
 .menu-logo-img{display:none}
@@ -265,11 +265,11 @@ body.playing .controls button{border-color:rgba(215,173,82,.72)}body.playing .di
    Uses supplied Bright Arcane artwork. Gameplay/click handling untouched.
    ============================================================ */
 :root{
-  --v28-ui-main-bg:url("../assets/ui/v28/bg-main-palace.webp");
-  --v28-ui-combat-bg:url("../assets/ui/v28/bg-combat-hall.webp");
-  --v28-ui-button-ivory:url("../assets/ui/v28/frame-button-ivory.webp");
-  --v28-ui-tile-navy:url("../assets/ui/v28/frame-tile-navy.webp");
-  --v28-ui-panel-ivory:url("../assets/ui/v28/frame-panel-ivory.webp")}
+  --v28-ui-main-bg:url("../assets/ui/v28/bg-main-palace.webp?v=28.11.28");
+  --v28-ui-combat-bg:url("../assets/ui/v28/bg-combat-hall.webp?v=28.11.28");
+  --v28-ui-button-ivory:url("../assets/ui/v28/frame-button-ivory.webp?v=28.11.28");
+  --v28-ui-tile-navy:url("../assets/ui/v28/frame-tile-navy.webp?v=28.11.28");
+  --v28-ui-panel-ivory:url("../assets/ui/v28/frame-panel-ivory.webp?v=28.11.28")}
 
 #mainMenu{
   position:relative;isolation:isolate;
@@ -350,19 +350,19 @@ body.playing .controls button{border-color:rgba(215,173,82,.72)}body.playing .di
    Asset-driven presentation only. No gameplay rules are changed here.
    ============================================================ */
 :root{
-  --dd-bg-main:url("../assets/ui/v28/png/backgrounds/main-menu.webp");
-  --dd-bg-light:url("../assets/ui/v28/png/backgrounds/campaign-mastery-light.webp");
-  --dd-bg-combat:url("../assets/ui/v28/png/backgrounds/combat.webp");
-  --dd-crest:url("../assets/ui/v28/png/emblems/diceduel-crest.webp");
-  --dd-frame-ivory-button:url("../assets/ui/v28/png/frames/ivory-button.webp");
-  --dd-frame-navy-tile:url("../assets/ui/v28/png/frames/navy-tile.webp");
-  --dd-frame-panel:url("../assets/ui/v28/png/frames/panel-large.webp");
-  --dd-frame-modal:url("../assets/ui/v28/png/frames/modal-popup.webp");
-  --dd-frame-boss:url("../assets/ui/v28/png/frames/boss.webp");
-  --dd-frame-mastery:url("../assets/ui/v28/png/frames/mastery.webp");
-  --dd-frame-prestige:url("../assets/ui/v28/png/frames/prestige.webp");
-  --dd-fx-halo:url("../assets/ui/v28/png/fx/arcane-halo-blue.webp");
-  --dd-fx-burst:url("../assets/ui/v28/png/fx/divine-burst-gold.webp");
+  --dd-bg-main:url("../assets/ui/v28/png/backgrounds/main-menu.webp?v=28.11.28");
+  --dd-bg-light:url("../assets/ui/v28/png/backgrounds/campaign-mastery-light.webp?v=28.11.28");
+  --dd-bg-combat:url("../assets/ui/v28/png/backgrounds/combat.webp?v=28.11.28");
+  --dd-crest:url("../assets/ui/v28/png/emblems/diceduel-crest.webp?v=28.11.28");
+  --dd-frame-ivory-button:url("../assets/ui/v28/png/frames/ivory-button.webp?v=28.11.28");
+  --dd-frame-navy-tile:url("../assets/ui/v28/png/frames/navy-tile.webp?v=28.11.28");
+  --dd-frame-panel:url("../assets/ui/v28/png/frames/panel-large.webp?v=28.11.28");
+  --dd-frame-modal:url("../assets/ui/v28/png/frames/modal-popup.webp?v=28.11.28");
+  --dd-frame-boss:url("../assets/ui/v28/png/frames/boss.webp?v=28.11.28");
+  --dd-frame-mastery:url("../assets/ui/v28/png/frames/mastery.webp?v=28.11.28");
+  --dd-frame-prestige:url("../assets/ui/v28/png/frames/prestige.webp?v=28.11.28");
+  --dd-fx-halo:url("../assets/ui/v28/png/fx/arcane-halo-blue.webp?v=28.11.28");
+  --dd-fx-burst:url("../assets/ui/v28/png/fx/divine-burst-gold.webp?v=28.11.28");
   --dd-navy:#071f4b;
   --dd-navy-2:#0b3568;
   --dd-navy-3:#06162f;
@@ -559,7 +559,7 @@ body[data-v28-scene="combat"]::after{opacity:.04}
 #masteryCloseBtn{
   width:46px;height:46px;min-width:46px;
   padding:0;border:0;border-radius:50%;
-  background:url("../assets/ui/v28/svg/navigation/back-arrow.svg") center/contain no-repeat;
+  background:url("../assets/ui/v28/svg/navigation/back-arrow.svg?v=28.11.28") center/contain no-repeat;
   color:transparent;font-size:0;box-shadow:none;
 }
 .screen-subtitle,.setup-intro{color:#5d6e82}
@@ -989,19 +989,19 @@ body.playing .encounter-rule-banner .phase-live{color:#ffdfae}
    ============================================================ */
 
 :root{
-  --dd-bg-lobby:url("../assets/ui/v28/png/backgrounds/navy-lobby-profile.webp");
-  --dd-bg-boss:url("../assets/ui/v28/png/backgrounds/boss-finale.webp");
-  --dd-frame-card-small:url("../assets/ui/v28/png/frames/ivory-card-small.webp");
-  --dd-frame-button-navy:url("../assets/ui/v28/png/frames/navy-button-horizontal.webp");
-  --dd-frame-button-gold:url("../assets/ui/v28/png/frames/gold-special-button.webp");
-  --dd-frame-button-danger:url("../assets/ui/v28/png/frames/danger-button.webp");
-  --dd-frame-icon-round:url("../assets/ui/v28/png/frames/icon-frame-round.webp");
-  --dd-frame-ability-choice:url("../assets/ui/v28/png/frames/ability-choice-card.webp");
-  --dd-frame-player:url("../assets/ui/v28/png/frames/player-card-combat.webp");
-  --dd-frame-player-active:url("../assets/ui/v28/png/frames/active-player-glow.webp");
-  --dd-frame-player-boss:url("../assets/ui/v28/png/frames/boss-player-card.webp");
-  --dd-frame-node-selected:url("../assets/ui/v28/png/frames/campaign-node-selected.webp");
-  --dd-frame-achievement:url("../assets/ui/v28/png/frames/achievement-trophy-card.webp");
+  --dd-bg-lobby:url("../assets/ui/v28/png/backgrounds/navy-lobby-profile.webp?v=28.11.28");
+  --dd-bg-boss:url("../assets/ui/v28/png/backgrounds/boss-finale.webp?v=28.11.28");
+  --dd-frame-card-small:url("../assets/ui/v28/png/frames/ivory-card-small.webp?v=28.11.28");
+  --dd-frame-button-navy:url("../assets/ui/v28/png/frames/navy-button-horizontal.webp?v=28.11.28");
+  --dd-frame-button-gold:url("../assets/ui/v28/png/frames/gold-special-button.webp?v=28.11.28");
+  --dd-frame-button-danger:url("../assets/ui/v28/png/frames/danger-button.webp?v=28.11.28");
+  --dd-frame-icon-round:url("../assets/ui/v28/png/frames/icon-frame-round.webp?v=28.11.28");
+  --dd-frame-ability-choice:url("../assets/ui/v28/png/frames/ability-choice-card.webp?v=28.11.28");
+  --dd-frame-player:url("../assets/ui/v28/png/frames/player-card-combat.webp?v=28.11.28");
+  --dd-frame-player-active:url("../assets/ui/v28/png/frames/active-player-glow.webp?v=28.11.28");
+  --dd-frame-player-boss:url("../assets/ui/v28/png/frames/boss-player-card.webp?v=28.11.28");
+  --dd-frame-node-selected:url("../assets/ui/v28/png/frames/campaign-node-selected.webp?v=28.11.28");
+  --dd-frame-achievement:url("../assets/ui/v28/png/frames/achievement-trophy-card.webp?v=28.11.28");
   --dd-shadow-soft:0 12px 32px rgba(5,32,65,.16);
   --dd-shadow-deep:0 22px 58px rgba(2,14,34,.38)}
 
@@ -1167,14 +1167,14 @@ html[data-v28-rework="2"] .mastery-locked-card>button{
   border:0;border-radius:50%;
   padding:0;
   background:
-    url("../assets/ui/v28/svg/navigation/back.svg") center/39% 39% no-repeat,
+    url("../assets/ui/v28/svg/navigation/back.svg?v=28.11.28") center/39% 39% no-repeat,
     var(--dd-frame-icon-round) center/contain no-repeat;
   color:transparent;font-size:0;
   box-shadow:0 4px 12px rgba(5,29,61,.18)}
 html[data-v28-rework="2"] .ability-mastery-lab-topbar>button,
 html[data-v28-rework="2"] .mastery-locked-card>button{
   background:
-    url("../assets/ui/v28/svg/navigation/close-x.svg") center/36% 36% no-repeat,
+    url("../assets/ui/v28/svg/navigation/close-x.svg?v=28.11.28") center/36% 36% no-repeat,
     var(--dd-frame-icon-round) center/contain no-repeat}
 
 /* ---------- Custom selects: remove grey Android menus ---------- */
@@ -1201,7 +1201,7 @@ html[data-v28-rework="2"] select.dd-native-select{
 .dd-select-trigger::after{
   content:"";
   width:22px;height:22px;
-  background:url("../assets/ui/v28/svg/navigation/chevron-down.svg") center/contain no-repeat}
+  background:url("../assets/ui/v28/svg/navigation/chevron-down.svg?v=28.11.28") center/contain no-repeat}
 .dd-select-trigger>span{min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .dd-select-trigger.hidden{display:none}
 .dd-select-trigger:disabled{opacity:.48}
@@ -1229,7 +1229,7 @@ html[data-v28-rework="2"] select.dd-native-select{
 .dd-select-close{
   width:44px;height:44px;min-width:44px;padding:0;border:0;border-radius:50%;
   background:
-    url("../assets/ui/v28/svg/navigation/close-x.svg") center/36% 36% no-repeat,
+    url("../assets/ui/v28/svg/navigation/close-x.svg?v=28.11.28") center/36% 36% no-repeat,
     var(--dd-frame-icon-round) center/contain no-repeat;
   color:transparent;font-size:0;box-shadow:none}
 .dd-select-options{display:grid;gap:5px;overflow:auto;overscroll-behavior:contain;padding:2px 0 8px}

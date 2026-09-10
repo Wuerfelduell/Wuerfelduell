@@ -230,7 +230,7 @@
     const artKey=DICE_DESIGNS[designKey]?.artKey;
     if(!artKey) return "";
     const suffix=face==="question"?"question":String(Math.max(1,Math.min(6,Number(face)||1)));
-    return `assets/ui/v28/png/dice-designs/${artKey}/${artKey}-face-${suffix}.webp?v=${GAME_VERSION}`;
+    return `assets/ui/v28/png/dice-designs/${artKey}/${artKey}-face-${suffix}.webp?v=${ASSET_REV}`;
   }
   function clearDiceArtwork(el){
     el.classList.remove("theme-art-die");
@@ -642,7 +642,7 @@
   function battleAction(btn, label, icon){
     const img=document.createElement("img");
     img.className="p1-action-icon";
-    img.src=`assets/ui/v28/svg/${icon}?v=${GAME_VERSION}`;
+    img.src=`assets/ui/v28/svg/${icon}?v=${ASSET_REV}`;
     img.alt="";
     img.draggable=false;
     img.setAttribute("aria-hidden","true");

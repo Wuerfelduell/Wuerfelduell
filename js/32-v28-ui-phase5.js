@@ -1,7 +1,6 @@
 (() => {
   "use strict";
 
-  const VERSION = "28.2.5";
   const SVG_ROOT = "assets/ui/v28/svg/";
   const EMOJI_RE = /(?:\p{Extended_Pictographic}|\uFE0E|\uFE0F|\u200D)/gu;
   const MASTERY_ROOT_IDS = ["masteryModal", "abilityMasteryLabModal"];
@@ -10,7 +9,7 @@
   let decorateQueued = false;
 
   function asset(path){
-    return `${SVG_ROOT}${path}?v=${VERSION}`;
+    return `${SVG_ROOT}${path}?v=${ASSET_REV}`;
   }
 
   function icon(path, className, alt=""){
@@ -213,7 +212,7 @@
     document.addEventListener("click", () => setTimeout(scheduleDecorate, 0), true);
     observe();
     decorate();
-    console.info(`[DiceDuel] UI Rework Phase 5 ${VERSION} active.`);
+    console.info(`[DiceDuel] UI Rework Phase 5 ${ASSET_REV} active.`);
   }
 
   if(document.readyState === "loading") document.addEventListener("DOMContentLoaded", init, {once:true});

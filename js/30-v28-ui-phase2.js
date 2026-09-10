@@ -1,8 +1,7 @@
 (() => {
   "use strict";
 
-  const VERSION = "28.2.2";
-  const DICE_ICON = `assets/ui/v28/svg/gameplay/dice.svg?v=${VERSION}`;
+  const DICE_ICON = `assets/ui/v28/svg/gameplay/dice.svg?v=${ASSET_REV}`;
   const SUMMARY_IDS = ["campaignTrophySummary", "duoUnlockSummary", "trioTrophySummary"];
   let activeSelectId = "";
   let decorateQueued = false;
@@ -108,7 +107,7 @@
     const observer = new MutationObserver(scheduleDecorate);
     observer.observe(document.body, {childList:true, subtree:true});
     decorate();
-    console.info(`[DiceDuel] UI Rework Phase 2 ${VERSION} active.`);
+    console.info(`[DiceDuel] UI Rework Phase 2 ${ASSET_REV} active.`);
   }
 
   if(document.readyState === "loading") document.addEventListener("DOMContentLoaded", init, {once:true});

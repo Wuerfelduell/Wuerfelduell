@@ -16,9 +16,11 @@
    ausmacht. `scripts/verify-build.mjs` prueft danach, dass der neueste
    Eintrag zur Version passt.
 
-   Was NICHT angefasst wird: die `?v=` in den CSS-Quellen. Das sind
-   Revisionsnummern einzelner Bilder, keine App-Version; sie werden nur
-   hochgezogen, wenn sich das Bild wirklich aendert. */
+   Was NICHT angefasst wird: die Bild-`?v=` in HTML, Manifest und CSS sowie
+   ASSET_REV in js/01-config.js. Alle Bild-URLs teilen diesen einen
+   Cache-Schluessel. Bei einer Asset-Revision muessen ASSET_REV und alle
+   Bild-Queries in HTML, Manifest und CSS gemeinsam aktualisiert werden; ein
+   App-Versionswechsel allein aendert den Bild-Cache nicht. */
 
 import { readFile, writeFile } from "node:fs/promises";
 import { fileURLToPath } from "node:url";

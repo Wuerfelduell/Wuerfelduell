@@ -92,7 +92,7 @@
 
 
   function uiIcon(path){
-    return `<img class="dd-inline-icon" src="assets/ui/v28/svg/${path}?v=${GAME_VERSION}" alt="" draggable="false" aria-hidden="true">`;
+    return `<img class="dd-inline-icon" src="assets/ui/v28/svg/${path}?v=${ASSET_REV}" alt="" draggable="false" aria-hidden="true">`;
   }
 
   function prestigeItemOwned(profile,item){
@@ -135,7 +135,7 @@
       // Kosmetikeintraege wachsen auch in der Hoehe; obere und untere
       // Bildbereiche bleiben dabei ebenso proportional wie die Buttonenden.
       const ys=expand?[0,144,368,512]:[top,top+viewHeight];
-      const tiles=ys.slice(0,-1).flatMap((y,j)=>xs.slice(0,-1).map((x,i)=>`<svg viewBox="${x} ${y} ${xs[i+1]-x} ${ys[j+1]-y}" preserveAspectRatio="none" focusable="false"><image href="assets/ui/v28/png/${file}" width="${width}" height="${height}"/></svg>`)).join("");
+      const tiles=ys.slice(0,-1).flatMap((y,j)=>xs.slice(0,-1).map((x,i)=>`<svg viewBox="${x} ${y} ${xs[i+1]-x} ${ys[j+1]-y}" preserveAspectRatio="none" focusable="false"><image href="assets/ui/v28/png/${file}?v=${ASSET_REV}" width="${width}" height="${height}"/></svg>`)).join("");
       return `<span class="prestige-button-artwork" data-artwork="${kind}" aria-hidden="true">${tiles}</span>`;
     };
     const section=(key,label,content,bodyClass)=>{
@@ -210,7 +210,7 @@
         const unlockedNow=p.unlockedDice.includes(key),selected=p.selectedDice===key;
         const stateAsset=unlockedNow?"assets/ui/v28/png/components/completed-check-medallion.webp":"assets/ui/v28/png/components/locked-padlock-overlay.webp";
         const stateLabel=selected?"Ausgewählt":unlockedNow?"Freigeschaltet":d.unlockText||"Gesperrt";
-        return `<button type="button" class="dice-design-card${unlockedNow?" unlocked":" locked"}${selected?" selected":""}" data-dice-design="${escapeHtml(key)}"${unlockedNow?"":" disabled"} aria-label="${escapeHtml(`${d.name}: ${stateLabel}`)}"><span class="dice-design-preview"><img class="dice-design-beauty" src="${escapeHtml(d.previewAsset)}?v=${GAME_VERSION}" alt="" loading="lazy"><img class="dice-design-state" src="${stateAsset}?v=28.3.0" alt="" aria-hidden="true"></span><span class="dice-design-name">${escapeHtml(d.name)}</span><span class="dice-design-meta">${escapeHtml(stateLabel)}</span></button>`;
+        return `<button type="button" class="dice-design-card${unlockedNow?" unlocked":" locked"}${selected?" selected":""}" data-dice-design="${escapeHtml(key)}"${unlockedNow?"":" disabled"} aria-label="${escapeHtml(`${d.name}: ${stateLabel}`)}"><span class="dice-design-preview"><img class="dice-design-beauty" src="${escapeHtml(d.previewAsset)}?v=${ASSET_REV}" alt="" loading="lazy"><img class="dice-design-state" src="${stateAsset}?v=${ASSET_REV}" alt="" aria-hidden="true"></span><span class="dice-design-name">${escapeHtml(d.name)}</span><span class="dice-design-meta">${escapeHtml(stateLabel)}</span></button>`;
       }).join("");
       const unlocked=Object.entries(DICE_DESIGNS).filter(([,d])=>!d.previewAsset).map(([key,d])=>{
         const unlockedNow=p.unlockedDice.includes(key),selected=p.selectedDice===key;
@@ -325,7 +325,7 @@
       const owners=profiles.length?profiles.map(p=>{
         const earned=!!p.achievements[id];
         const mark=earned?"assets/ui/v28/png/components/completed-check-medallion.webp":"assets/ui/v28/png/components/locked-padlock-overlay.webp";
-        return `<div class="achievement-owner${earned?" done":""}"><span class="achievement-owner-name"><span>${escapeHtml(p.name)}</span><span class="battle-tag">#${escapeHtml(p.tagNumber)}</span></span><img class="achievement-owner-mark" src="${mark}" alt="${escapeHtml(tFn(earned?"Geschafft":"Nicht geschafft"))}" draggable="false"></div>`;
+        return `<div class="achievement-owner${earned?" done":""}"><span class="achievement-owner-name"><span>${escapeHtml(p.name)}</span><span class="battle-tag">#${escapeHtml(p.tagNumber)}</span></span><img class="achievement-owner-mark" src="${mark}?v=${ASSET_REV}" alt="${escapeHtml(tFn(earned?"Geschafft":"Nicht geschafft"))}" draggable="false"></div>`;
       }).join(""):`<div class="achievement-owner-empty">${escapeHtml(tFn("Noch keine Profile"))}</div>`;
       const detailsId=`achievement-owners-${escapeHtml(id)}`;
       const expanded=expandedAchievementIds.has(id);

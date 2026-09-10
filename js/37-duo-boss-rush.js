@@ -404,7 +404,7 @@
     $("duoBossRushRewardText").textContent=tr(`Spieler ${rewardTurn+1} von ${run.profileIds.length} · ${Math.max(0,hero.hp)} HP · Run: ${run.bossXpEarned} Boss XP je Profil · Wähle 1 von 3.`);
     $("duoBossRushRewardOptions").innerHTML=rewardChoices.map(choice=>`
       <button type="button" class="boss-rush-reward-card${choice.kind==="ability"?" is-ability":""}" data-boss-rush-reward="${safe(choice.id)}">
-        <img src="${safe(choiceIcon(choice))}" alt="" aria-hidden="true">
+        <img src="${safe(choiceIcon(choice))}?v=${ASSET_REV}" alt="" aria-hidden="true">
         <span class="boss-rush-reward-copy"><strong>${safe(tr(choice.name))}</strong><small>${safe(tr(choice.desc))}</small><em>${safe(choiceStateLabel(profileId,choice))}</em></span>
       </button>`).join("");
   }

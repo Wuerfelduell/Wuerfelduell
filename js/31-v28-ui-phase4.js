@@ -1,7 +1,6 @@
 (() => {
   "use strict";
 
-  const VERSION = "28.2.4";
   const SVG_ROOT = "assets/ui/v28/svg/";
   const DETAIL_MAPS = [
     ["campaignPath", "campaignEncounterDetail"],
@@ -12,7 +11,7 @@
   let decorateQueued = false;
 
   function asset(path){
-    return `${SVG_ROOT}${path}?v=${VERSION}`;
+    return `${SVG_ROOT}${path}?v=${ASSET_REV}`;
   }
 
   function icon(path, className, alt=""){
@@ -232,7 +231,7 @@
     document.addEventListener("change", scheduleDecorate, true);
     observe();
     decorate();
-    console.info(`[DiceDuel] UI Rework Phase 4 ${VERSION} active.`);
+    console.info(`[DiceDuel] UI Rework Phase 4 ${ASSET_REV} active.`);
   }
 
   if(document.readyState === "loading") document.addEventListener("DOMContentLoaded", init, {once:true});

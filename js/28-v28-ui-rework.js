@@ -1,7 +1,6 @@
 (() => {
   "use strict";
 
-  const VERSION = "28.2.0";
   const SVG_ROOT = "assets/ui/v28/svg/";
 
   const ABILITY_ICON_PATHS = {
@@ -55,7 +54,7 @@
 
   function icon(path, className, alt=""){
     const el = document.createElement("img");
-    el.src = SVG_ROOT + path;
+    el.src = `${SVG_ROOT}${path}?v=${ASSET_REV}`;
     el.className = className;
     el.alt = alt;
     el.draggable = false;
@@ -334,7 +333,7 @@
         tile.setAttribute("preserveAspectRatio", "none");
         tile.setAttribute("focusable", "false");
         const art = document.createElementNS("http://www.w3.org/2000/svg", "image");
-        art.setAttribute("href", "assets/ui/v28/png/frames/navy-button-horizontal.webp?v=28.2.1");
+        art.setAttribute("href", `assets/ui/v28/png/frames/navy-button-horizontal.webp?v=${ASSET_REV}`);
         art.setAttribute("width", "1536");
         art.setAttribute("height", "512");
         tile.append(art);
@@ -624,7 +623,7 @@
     observeDynamicUi();
     setupEventHooks();
     decorateAll();
-    console.info(`[DiceDuel] Full Bright Arcane UI rework ${VERSION} active.`);
+    console.info(`[DiceDuel] Full Bright Arcane UI rework ${ASSET_REV} active.`);
   }
 
   if(document.readyState === "loading") document.addEventListener("DOMContentLoaded", init, {once:true});

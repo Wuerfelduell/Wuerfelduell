@@ -1,7 +1,6 @@
 (() => {
   "use strict";
 
-  const VERSION = "28.3.6";
   const COMPONENT_ROOT = "assets/ui/v28/png/components/";
   const FX_ROOT = "assets/ui/v28/png/fx/";
   const LOCK_TEXT = /(?:\u{1F512}|\u{1F510})\uFE0F?/gu;
@@ -17,11 +16,11 @@
   const queuedRoots = new Set();
 
   function component(path){
-    return `${COMPONENT_ROOT}${path}?v=${VERSION}`;
+    return `${COMPONENT_ROOT}${path}?v=${ASSET_REV}`;
   }
 
   function effect(path){
-    return `${FX_ROOT}${path}?v=${VERSION}`;
+    return `${FX_ROOT}${path}?v=${ASSET_REV}`;
   }
 
   // classList.add()/remove() serialisieren das class-Attribut auch dann neu,
@@ -357,7 +356,7 @@
       const node = event.target.closest?.(".campaign-hub .campaign-node");
       if(node) setTimeout(() => scheduleDecorate(node), 0);
     }, true);
-    console.info(`[DiceDuel] UI Rework Phase 8 ${VERSION} active.`);
+    console.info(`[DiceDuel] UI Rework Phase 8 ${ASSET_REV} active.`);
   }
 
   if(document.readyState === "loading") document.addEventListener("DOMContentLoaded", init, {once:true});

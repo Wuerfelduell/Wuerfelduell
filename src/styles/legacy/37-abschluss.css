@@ -458,10 +458,10 @@ html[data-v28-rework="2"] .campaign-node-detail .node-detail-desc{
 /* DiceDuel V28.10.4 — menu safe areas and framed utility screens. */
 
 :root{
-  --v2893-achievement-card:url("../assets/ui/v28/png/frames/achievement-trophy-card.webp?v=28.10.4");
-  --v2893-ivory-card:url("../assets/ui/v28/png/frames/ivory-card-small.webp?v=28.10.4");
-  --v2893-navy-button:url("../assets/ui/v28/png/frames/navy-button-horizontal.webp?v=28.10.4");
-  --v2893-green-button:url("../assets/ui/v28/png/components/encounter-button-green.webp?v=28.10.4");
+  --v2893-achievement-card:url("../assets/ui/v28/png/frames/achievement-trophy-card.webp?v=28.11.28");
+  --v2893-ivory-card:url("../assets/ui/v28/png/frames/ivory-card-small.webp?v=28.11.28");
+  --v2893-navy-button:url("../assets/ui/v28/png/frames/navy-button-horizontal.webp?v=28.11.28");
+  --v2893-green-button:url("../assets/ui/v28/png/components/encounter-button-green.webp?v=28.11.28");
 }
 
 /* Main menu: the icon leaves the ornamental end cap and gets its own safe area. */
@@ -1700,7 +1700,7 @@ html[data-v28-rework="2"] .campaign-hub .campaign-world-btn:disabled .campaign-w
   width:13px!important;
   height:13px!important;
   display:block!important;
-  background:url("../assets/ui/v28/svg/gameplay/locked.svg?v=28.11.2") center/contain no-repeat!important;
+  background:url("../assets/ui/v28/svg/gameplay/locked.svg?v=28.11.28") center/contain no-repeat!important;
   filter:drop-shadow(0 1px 2px rgba(0,0,0,.42))!important;
 }
 

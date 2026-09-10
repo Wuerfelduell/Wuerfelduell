@@ -1,7 +1,6 @@
 (() => {
   "use strict";
 
-  const VERSION = "28.2.1";
   const ASSET_ROOT = "assets/ui/v28/";
   const SVG_ROOT = `${ASSET_ROOT}svg/`;
 
@@ -68,7 +67,7 @@
 
   function versionedAsset(relativePath){
     const clean = String(relativePath || "").replace(/^\/+/, "");
-    return `${clean.startsWith(ASSET_ROOT) ? "" : SVG_ROOT}${clean}?v=${VERSION}`;
+    return `${clean.startsWith(ASSET_ROOT) ? "" : SVG_ROOT}${clean}?v=${ASSET_REV}`;
   }
 
   function makeIcon(path, className, alt=""){
@@ -128,19 +127,16 @@
     return image;
   }
 
-  // Aufgabe dieser Funktion ist es, einen kaputten Pfad-Prefix zu reparieren -
-  // nicht, den Cache-Buster aller Phasen auf die Version von Phase 1 zu ziehen.
-  // Genau das tat sie vorher: sie schrieb jedes img unter assets/ui/v28/ auf
-  // ?v=28.2.1, waehrend Phase 5/6/8 ihre eigenen Icons auf ihre Versionen
-  // zurueckschrieben. Beide Seiten beobachten Attributaenderungen, also lief das
-  // endlos im Kreis und lud dieselben SVGs immer wieder neu. Ein bereits
-  // vorhandener Query-String bleibt daher jetzt unangetastet.
+  // Repariert einen kaputten Pfad-Prefix und ergaenzt fehlende Bild-Schluessel.
+  // Alle Erzeuger verwenden ASSET_REV bereits vor dem ersten Bildabruf.
+  // Vorhandene Queries bleiben unangetastet: konkurrierende Umschreibungen
+  // durch die Attributbeobachter hatten frueher eine Endlosschleife erzeugt.
   function repairAssetUrl(image){
     const raw = image?.getAttribute("src") || "";
     const assetIndex = raw.indexOf(ASSET_ROOT);
     if(assetIndex < 0) return;
     const rest = raw.slice(assetIndex);
-    const wanted = rest.includes("?") ? rest : `${rest}?v=${VERSION}`;
+    const wanted = rest.includes("?") ? rest : `${rest}?v=${ASSET_REV}`;
     if(raw !== wanted) image.setAttribute("src", wanted);
   }
 
@@ -442,7 +438,7 @@
     observeDynamicUi();
     setupEventHooks();
     decorateAll();
-    console.info(`[DiceDuel] UI Rework Phase 1 ${VERSION} active.`);
+    console.info(`[DiceDuel] UI Rework Phase 1 ${ASSET_REV} active.`);
   }
 
   if(document.readyState === "loading") document.addEventListener("DOMContentLoaded", init, {once:true});

@@ -49,9 +49,14 @@ Repo: `Wuerfelduell/Wuerfelduell`. Direkte Commits auf `main` sind erlaubt.
   nicht in CSS nachbauen. Der Nutzer liefert schnell; ein Notbehelf
   kostet später mehr. Dasselbe, wenn ein Auftrag nur mit einem hässlichen
   Kompromiss ginge: erst sagen, dann bauen.
-- Jede Bild-URL trägt denselben Cache-Schlüssel wie das CSS, also
-  `…/navy-button-horizontal.webp?v=28.2.1`. **Nie ohne `?v=`** — sonst
-  lädt und dekodiert der Browser dasselbe Bild ein zweites Mal.
+- Jede Bild-URL trägt den gemeinsamen Cache-Schlüssel `ASSET_REV` aus
+  `js/01-config.js`, derzeit `?v=28.11.28`. JavaScript verwendet diese
+  Konstante; Bild-URLs in HTML, Manifest und allen CSS-Quellen tragen denselben Wert.
+  **Nie ohne `?v=` und keine eigenen Phasen- oder Bildrevisionen** — sonst
+  lädt und dekodiert der Browser dasselbe Bild ein zweites Mal. Bei einer
+  Asset-Revision alle diese Stellen gemeinsam aktualisieren und das
+  CSS-Bündel neu erzeugen. `bump-version.mjs` verwaltet weiterhin nur die
+  App-Versionsmarker und die JS-/Sprach-/CSS-Einbindungen, nicht Bild-Queries.
 - Rahmen mit Eckornamenten oder Edelsteinen dürfen nicht mit der Boxform
   mitgedehnt werden. Zwei zulässige Techniken:
   - `border-image` mit `border-image-slice` und `border-image-width` im

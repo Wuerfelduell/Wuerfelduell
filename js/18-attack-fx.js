@@ -23,7 +23,7 @@
   const fxSprites=Object.fromEntries(Object.entries(FX_SPRITE_PATHS).map(([key,path])=>{
     const image=new Image();
     image.decoding="async";
-    image.src=FX_SPRITE_ROOT+path;
+    image.src=`${FX_SPRITE_ROOT}${path}?v=${ASSET_REV}`;
     return [key,image];
   }));
 
