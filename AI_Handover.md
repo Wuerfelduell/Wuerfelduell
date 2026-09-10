@@ -22,9 +22,9 @@ welche Fallen schon Zeit gekostet haben.
 
 | | |
 |---|---|
-| Version | **28.12.2** |
+| Version | **28.12.3** |
 | Branch | `main` |
-| Letzte Schritte | CSS-Stapel auf 10 Dateien zusammengelegt · Changelog englisch vervollständigt · Hauptmenü, Statistik, Profile, Achievements, Spielvorbereitung und Trophy Shop überarbeitet · Fähigkeits- und Shopflächen auf proportional gekachelte Bildrahmen umgestellt · alle Bild-URLs auf einen gemeinsamen Cache-Schlüssel · Trophy-Shop-Reste bereinigt und Aufklapppfeile angeglichen · Duo- und Trio-Boss-Rush mit Pfadwahl, gespeicherten Runs und 32 Perks einschließlich temporärer Ability-Mastery · Boss-XP-Umtausch 300:100 |
+| Letzte Schritte | CSS-Stapel auf 10 Dateien zusammengelegt · Changelog englisch vervollständigt · Hauptmenü, Statistik, Profile, Achievements, Spielvorbereitung und Trophy Shop überarbeitet · Fähigkeits- und Shopflächen auf proportional gekachelte Bildrahmen umgestellt · alle Bild-URLs auf einen gemeinsamen Cache-Schlüssel · Trophy-Shop-Reste bereinigt und Aufklapppfeile angeglichen · Duo- und Trio-Boss-Rush mit Pfadwahl, gespeicherten Runs und 32 Perks einschließlich temporärer Ability-Mastery · Boss-XP-Umtausch 300:100 · Zweitfund gedeckelt |
 
 **Die Arbeitsteilung hat sich geändert.** Bis V28.11.28 liefen zwei
 Sitzungen parallel: Codex hat umgesetzt, diese Sitzung geprüft. Ab jetzt
@@ -286,8 +286,17 @@ wird nur auf ausdrückliche Ansage geändert. Nicht ungefragt „reparieren".
   `scripts/qa/boss-xp-conversion.mjs` prüft alle drei Moduskonten, Profilwechsel,
   Reload, Doppelklickschutz, Guthaben 0/299/300/602, unveränderte L2-Daten,
   DE/EN in fünf Breiten und 0 DOM-Mutationen im offenen Mastery-Fenster.
-- Feldlazarett heilt alle drei. Zweitfund kopiert je Stapel an beide
-  Mitspieler (ohne Kopierketten); Wechselspiel gilt nach jedem Mitspieler,
+- Feldlazarett heilt alle drei. **Zweitfund seit 28.12.3 gedeckelt:** er
+  läuft zwei Stufen und gibt je Stufe höchstens eine Belohnung an einen
+  Mitspieler ab, ein erneuter Fund verlängert um zwei Stufen. Vorher war
+  die Menge Stapel × Partnerzahl, und drei Faktoren multiplizierten sich
+  ungebremst — im Trio sammelte ein Held so bis zu 52 statt zehn
+  Belohnungen (im Spieltest: 68 Schaden auf einen 1er, 150 HP). Gemessen
+  am echten Modul liegt es jetzt bei 10 ohne, 12/14/16 bei ein bis drei
+  Funden, in beiden Modi gleich. Wer ihn jede Stufe nimmt, bleibt bei 10 —
+  es wird ja nie eine andere Belohnung kopiert. Kopien erzeugen weiterhin
+  keine Kopien; die zweite fällige Kopie eines Helden rückt eine Stufe nach,
+  statt verloren zu gehen. Wechselspiel gilt nach jedem Mitspieler,
   solange alle drei leben; Proviantteilung berücksichtigt beide Empfänger.
   Diese Anpassungen stehen in den deutschen/englischen Perkbeschreibungen.
 - Gleiche Bildrahmen wie Duo, vorhandenes `trio.svg` für Team-Perks;

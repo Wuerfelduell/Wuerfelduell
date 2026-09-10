@@ -6,6 +6,8 @@
 
   Object.assign(pack.exact, {
     "Mastery tauscht pro Klick 300 Boss-XP gegen 100 XP für das ausgewählte Profil und den geöffneten Modus; unter 300 Boss-XP ist der Button gesperrt": "Mastery converts 300 Boss XP into 100 XP per click for the selected profile and open mode; the button is disabled below 300 Boss XP",
+    "Zweitfund läuft jetzt zwei Stufen und gibt je Stufe höchstens eine Belohnung an einen Mitspieler weiter; ein erneuter Fund verlängert um zwei Stufen": "Second Find now lasts two stages and passes at most one reward per stage to a teammate; finding it again extends this by two stages",
+    "Bisher vervielfachte der Perk sich mit Stapeln und Mitspielern: im Trio sammelte ein Held bis zu 52 statt zehn Belohnungen und damit weit überhöhte Schadens- und HP-Werte": "The perk used to multiply with stacks and teammates: in Trio a hero collected up to 52 instead of ten rewards, and damage and health values far beyond the intended range",
     "Duo- und Trio-Boss-Rush bieten jetzt 32 Perks: Feinschliff hebt eine ausgerüstete Fähigkeit für den Lauf auf Mastery-Level 1, Meisterschaft auf Level 2": "Duo and Trio Boss Rush now offer 32 perks: Refinement raises an equipped ability to Mastery level 1 for the run, Mastery to level 2",
     "Die gezielte Upgrade-Auswahl zeigt Namen und Wirkung, bleibt nach Neuladen erhalten und verändert weder Profil-Mastery noch dauerhaften L2-Fortschritt": "Targeted upgrade selection shows names and effects, survives reloading, and changes neither profile Mastery nor permanent L2 progress",
 

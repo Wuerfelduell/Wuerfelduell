@@ -53,7 +53,20 @@ r=fresh();for(let i=0;i<20;i++)assert(t.grant('a','gamble'));assert.equal(r.hero
 r=fresh();r.heroes.a.thirdAbility=9;assert.equal(t.grant('a','realign',{slot:'fourthAbility'}),false);assert(t.grant('a','realign',{slot:'secondAbility'}));assert(![3,4,9].includes(r.heroes.a.secondAbility));assert.equal(r.heroes.a.perks.realign,1);
 r=fresh();for(const difficulty of ['easy','normal','hard'])for(let i=0;i<100;i++){r.selectedPaths[0]={difficulty};const options=Array.from(t.newChoices('a',3));assert.equal(options.length,difficulty==='hard'?4:3);const perks=options.filter(id=>!id.startsWith('ability:')).map(id=>rush.rewardDefinitions().find(r=>r.id===id));if(difficulty==='easy')assert(perks.every(p=>p.rarity==='common'));else assert(perks.some(p=>p.rarity===(difficulty==='hard'?'epic':'rare')));}
 r=fresh();r.selectedPaths[0]={difficulty:'normal'};r.heroes.a.perks={supply:2};t.showRewardModal();assert.equal(r.rewardTasks[0].choices.length,4);assert.equal(r.heroes.a.suppliesUsed,1);r.rewardTasks=[];t.showRewardModal();assert.equal(r.heroes.a.suppliesUsed,2);r.rewardTasks=[];t.showRewardModal();assert.equal(r.rewardTasks[0].choices.length,3);
-r=fresh();r.heroes.a.perks={second_find:2};t.grant('a','rest');assert.equal(r.deferredRewards.length,2);assert(r.deferredRewards.every(x=>x.profileId==='b'&&x.dueStage===1));r.stage=1;r.selectedPaths[1]={difficulty:'easy'};t.showRewardModal();assert.equal(r.rewardTasks.filter(t=>t.copy).length,2);assert.equal(r.deferredRewards.length,0);t.grant('b','rest',{copyReward:true});assert.equal(r.deferredRewards.length,0,'Kopien erzeugen keine Kopierkette');
+// Zweitfund: zwei Stufen Laufzeit, je Stufe genau eine Kopie, ein erneuter Fund verlaengert.
+r=fresh();t.grant('a','second_find');assert.equal(r.deferredRewards.length,0,'der Fund selbst kopiert nichts');
+assert.equal(r.heroes.a.secondFindLeft,2,'zwei Stufen Laufzeit');
+t.grant('a','rest');assert.equal(r.deferredRewards.length,1);assert.equal(r.heroes.a.secondFindLeft,1);
+assert(r.deferredRewards.every(x=>x.profileId==='b'&&x.dueStage===1));
+t.grant('a','damage');assert.equal(r.deferredRewards.length,2);assert.equal(r.heroes.a.secondFindLeft,0);
+t.grant('a','damage');assert.equal(r.deferredRewards.length,2,'nach zwei Stufen ist Schluss');
+t.grant('a','second_find');assert.equal(r.heroes.a.secondFindLeft,2,'ein erneuter Fund verlaengert');
+// Je Stufe nimmt ein Held hoechstens eine Kopie an; der Rest rueckt nach.
+r.stage=1;r.selectedPaths[1]={difficulty:'easy'};t.showRewardModal();
+assert.equal(r.rewardTasks.filter(t=>t.copy).length,1,'hoechstens eine Kopie je Stufe');
+assert.equal(r.deferredRewards.length,1,'die zweite rueckt eine Stufe nach');
+assert.equal(r.deferredRewards[0].dueStage,2);
+t.grant('b','rest',{copyReward:true});assert.equal(r.deferredRewards.length,1,'Kopien erzeugen keine Kopierkette');
 r=fresh();r.heroes.a.perks={greed:2,plunder:1};r.heroes.a.stageKills=2;t.awardBossXp();assert.equal(r.bossXpAwards[0].amount,140);assert.equal(r.bossXpAwards[1].amount,50);
 r=fresh();for(const reward of rush.rewardDefinitions()){if(['realign','refinement','mastery'].includes(reward.id))t.grant('a',reward.id,{slot:'primaryAbility'});else t.grant('a',reward.id);}assert.equal(Object.keys(r.heroes.a.perks).length,32);assert(rush.rewardDefinitions().every(reward=>t.perkSummary('a').includes(reward.name)));assert.equal(r.rewardHistory.filter(h=>h.profileId==='a').length,32);
 const sanitized=c.sanitizeBossRushRuns({x:r,bad:{schema:1,profileIds:['a','a']}},[{id:'a'},{id:'b'}]);assert.equal(Object.keys(sanitized).length,1);r.finished=true;assert.equal(Object.keys(c.sanitizeBossRushRuns({x:r},[{id:'a'},{id:'b'}])).length,0);

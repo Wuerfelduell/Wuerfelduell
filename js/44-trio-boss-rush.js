@@ -83,7 +83,7 @@
     {kind:"perk",id:"realign",rarity:"epic",name:"Neuausrichtung",icon:"mastery.svg",desc:"Wähle einen belegten Fähigkeitsslot; seine Fähigkeit wird zufällig gegen eine noch nicht besessene getauscht."},
     {kind:"perk",id:"reroll",rarity:"common",name:"Neuwurf",icon:"dice.svg",desc:"Gewährt pro Stapel einen Neuwurf einer Belohnungsauswahl im Run."},
     {kind:"perk",id:"supply",rarity:"rare",name:"Vorratspaket",icon:"reward-gift.svg",desc:"Die nächste eigene Belohnungsauswahl enthält vier statt drei Perks; einmal pro Stapel."},
-    {kind:"perk",id:"second_find",rarity:"epic",name:"Zweitfund",icon:"trio.svg",desc:"Beide Mitspieler erhalten deine gewählte Belohnung eine Stufe später ebenfalls, jeweils einmal pro Stapel."},
+    {kind:"perk",id:"second_find",rarity:"epic",name:"Zweitfund",icon:"trio.svg",desc:"Die nächsten zwei Stufen erhält je ein Mitspieler eine deiner Belohnungen eine Stufe später ebenfalls. Ein erneuter Fund verlängert um zwei Stufen."},
     {kind:"perk",id:"scout",rarity:"common",name:"Kundschafter",icon:"encounter.svg",desc:"Zeigt bei der Pfadwahl die Fähigkeiten aller angebotenen Gegner."},
     {kind:"perk",id:"greed",rarity:"rare",name:"Trophäengier",icon:"trophy.svg",desc:"Erhöht die eigenen Boss-XP im restlichen Run um 50 % pro Stapel."},
     {kind:"perk",id:"relay",rarity:"rare",name:"Wechselspiel",icon:"trio.svg",desc:"Solange alle drei leben: Greift nach einem Mitspieler an und verursacht +2 Schaden pro Stapel."},
@@ -317,6 +317,18 @@
   function perk(profileId,id){return Math.max(0,Number(heroState(profileId)?.perks?.[id])||0);}
   function combatHero(index){return run?.active&&!run.finished&&players[index]?.campaignTeam==="hero"?heroState(players[index].profileId):null;}
   function partnerIds(profileId){return run.profileIds.filter(id=>String(id)!==String(profileId));}
+  // Zweitfund laeuft zwei Stufen und gibt je Stufe hoechstens eine Kopie ab.
+  // Vorher ging jeder Stapel an beide Mitspieler: bei drei Helden sammelte
+  // einer so bis zu 52 statt zehn Belohnungen. Empfaenger ist immer der
+  // Mitspieler mit den bisher wenigsten Kopien - fair, und die Zaehlung
+  // steckt schon in rewardHistory, ueberlebt also einen Reload.
+  const SECOND_FIND_STAGES=2;
+  function copyPartner(profileId){
+    const partner=partnerIds(profileId);
+    if(!partner.length)return null;
+    const erhalten=id=>run.rewardHistory.filter(h=>h.copy&&String(h.profileId)===String(id)).length;
+    return [...partner].sort((a,b)=>erhalten(a)-erhalten(b)||partner.indexOf(a)-partner.indexOf(b))[0];
+  }
   function persistRun(){
     if(!run)return;
     if(!saveData.trioBossRushRuns)saveData.trioBossRushRuns={};
@@ -493,7 +505,6 @@
 
   function grant(profileId,rewardId,{slot=null,abilityId=null,copyReward=false,automatic=false}={}){
     const hero=heroState(profileId),choice=choiceById(rewardId);if(!hero||!choice)return false;
-    const copies=perk(profileId,"second_find");
     if(choice.kind==="ability"){
       if(!copyReward&&[hero.primaryAbility,hero.secondAbility].includes(choice.abilityId))return false;
       if(![hero.primaryAbility,hero.secondAbility].includes(choice.abilityId))hero.thirdAbility=choice.abilityId;abilityId=choice.abilityId;
@@ -520,8 +531,12 @@
       if(rewardId==="blood_pact")hero.hp+=25;
     }
     run.rewardHistory.push({stage:run.stage+1,profileId:String(profileId),rewardId,slot,abilityId,copy:copyReward,automatic});
-    if(!copyReward&&!automatic&&copies>0&&run.stage<8){
-      for(let i=0;i<copies;i++)partnerIds(profileId).forEach(id=>run.deferredRewards.push({dueStage:run.stage+1,profileId:id,rewardId}));
+    if(!copyReward&&!automatic){
+      if(rewardId==="second_find")hero.secondFindLeft=(Number(hero.secondFindLeft)||0)+SECOND_FIND_STAGES;
+      else if((Number(hero.secondFindLeft)||0)>0&&run.stage<9){
+        const partner=copyPartner(profileId);
+        if(partner!=null){hero.secondFindLeft--;run.deferredRewards.push({dueStage:run.stage+1,profileId:partner,rewardId});}
+      }
     }
     mirrorHero(profileId);
     return true;
@@ -561,9 +576,16 @@
 
   function showRewardModal(){
     if(!run.rewardTasks.length){
-      const due=run.deferredRewards.filter(r=>r.dueStage<=run.stage);
-      run.deferredRewards=run.deferredRewards.filter(r=>r.dueStage>run.stage);
-      run.rewardTasks=due.map(r=>({profileId:r.profileId,copy:true,count:1,choices:[r.rewardId]}));
+      // Hoechstens eine Kopie je Held und Stufe; was darueber liegt, rueckt
+      // eine Stufe nach statt verloren zu gehen.
+      const faellig=[],warten=[],vergeben=new Set();
+      run.deferredRewards.forEach(r=>{
+        if(r.dueStage>run.stage){warten.push(r);return;}
+        if(vergeben.has(String(r.profileId))){if(run.stage<9)warten.push({...r,dueStage:run.stage+1});return;}
+        vergeben.add(String(r.profileId));faellig.push(r);
+      });
+      run.deferredRewards=warten;
+      run.rewardTasks=faellig.map(r=>({profileId:r.profileId,copy:true,count:1,choices:[r.rewardId]}));
       run.profileIds.forEach(profileId=>{
         const hero=heroState(profileId),supply=perk(profileId,"supply")>(hero.suppliesUsed||0);
         if(supply)hero.suppliesUsed=(hero.suppliesUsed||0)+1;

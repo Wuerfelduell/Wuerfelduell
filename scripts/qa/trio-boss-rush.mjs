@@ -32,8 +32,22 @@ c.players=[];c.current=0;c.pendingExtraHealFx=[];c.recordHealing=()=>{};c.addLog
 vm.runInContext('saveData.profiles=["a","b","c"].map(id=>({id,name:id,campaign:{bossRushXp:100}}));',c);
 function fresh(){const ids=['a','b','c'];const r={schema:1,active:true,finished:false,phase:'combat',stage:0,cleared:0,preparedStage:0,profileIds:ids,heroes:Object.fromEntries(ids.map(id=>[id,{hp:50,maxHp:50,primaryAbility:3,secondAbility:4,thirdAbility:null,perks:{},openingUsedStage:-1,bulwarkUsedStage:-1,successfulAttacks:0,stageKills:0,xpEarned:0}])),rewardHistory:[],bossXpAwards:[],paths:[],selectedPaths:[],seenEncounters:[],deferredRewards:[],rewardTasks:[],rewardTurn:0,swapPending:null,bossXpEarned:0};c.players=ids.map(id=>({profileId:id,campaignTeam:'hero',hp:50,maxHp:50,ability:3,secondAbility:4}));c.players.push({campaignTeam:'enemy',hp:50,maxHp:50});c.current=0;t.setRun(r);return r;}
 let r=fresh();r.heroes.b.perks={hospital:2};r.heroes.c.perks={hospital:1};t.applyStageRegeneration();assert.deepEqual(r.profileIds.map(id=>r.heroes[id].hp),[74,74,74]);
-r=fresh();r.heroes.a.perks={second_find:2};t.grant('a','rest');assert.equal(r.deferredRewards.length,4);for(const id of ['b','c'])assert.equal(r.deferredRewards.filter(x=>x.profileId===id&&x.dueStage===1).length,2);
-r.stage=1;r.selectedPaths[1]={difficulty:'easy'};t.showRewardModal();assert.equal(r.rewardTasks.filter(x=>x.copy).length,4);assert.deepEqual(plain(r.rewardTasks.filter(x=>!x.copy).map(x=>x.profileId)),['a','b','c']);
+// Zweitfund gibt auch bei drei Helden je Stufe genau eine Kopie ab, und zwar
+// abwechselnd - sonst sammelte ein Held ein Vielfaches der zehn Belohnungen.
+r=fresh();t.grant('a','second_find');assert.equal(r.deferredRewards.length,0);
+assert.equal(r.heroes.a.secondFindLeft,2);
+t.grant('a','rest');assert.equal(r.deferredRewards.length,1,'nicht an beide Mitspieler');
+const ersterEmpfaenger=r.deferredRewards[0].profileId;
+assert(['b','c'].includes(ersterEmpfaenger));assert.equal(r.deferredRewards[0].dueStage,1);
+r.rewardHistory.push({stage:1,profileId:ersterEmpfaenger,rewardId:'rest',copy:true});
+t.grant('a','damage');assert.equal(r.deferredRewards.length,2);
+assert.notEqual(r.deferredRewards[1].profileId,ersterEmpfaenger,'der andere Mitspieler ist dran');
+assert.equal(r.heroes.a.secondFindLeft,0,'nach zwei Stufen ist Schluss');
+r.stage=1;r.selectedPaths[1]={difficulty:'easy'};t.showRewardModal();
+// Zwei Kopien an zwei verschiedene Helden - je Held immer noch nur eine.
+assert.equal(r.rewardTasks.filter(x=>x.copy).length,2);
+assert.equal(new Set(r.rewardTasks.filter(x=>x.copy).map(x=>x.profileId)).size,2);
+assert.deepEqual(plain(r.rewardTasks.filter(x=>!x.copy).map(x=>x.profileId)),['a','b','c']);
 t.grant('b','rest',{copyReward:true});assert.equal(r.deferredRewards.length,0);
 r=fresh();r.heroes.a.perks={relay:2};for(const id of ['b','c']){r.lastAttacker=id;assert.equal(trio.attackDamageBonus(0,3).amount,4);}c.players[2].hp=0;assert.equal(trio.attackDamageBonus(0,3).amount,0);
 r=fresh();r.heroes.c.perks={scales:2,bulwark:2,dodge:2};c.players[2].hp=10;c.current=3;assert.equal(trio.incomingDamageModifier(2,10),-10);assert.equal(trio.incomingDamageModifier(2,10),-6);
