@@ -184,18 +184,33 @@
   async function subscribeRoom(roomId,onSnapshot,onStatus){
     const client=await root.getClient();
     const id=String(roomId||"");
+
+    /* Nur der Gast schreibt Aktionszeilen; der Host legt seine Aktion direkt in
+       die lokale Engine-Queue (js/online/01-online.js, Fast Path). Die eigene
+       INSERT-Meldung bringt dem Gast deshalb nichts, was er nicht schon weiss.
+       Ohne die eigene Uid wird nichts uebersprungen - im Zweifel lieber ein
+       Abruf zu viel als ein verpasster Zustand. */
+    let eigeneUid="";
+    try{eigeneUid=String((await identity()).uid||"");}catch(_error){}
+
     let closed=false,timer=0,inFlight=false,refreshAgain=false;
 
+    /* Trifft ein Ereignis waehrend eines laufenden Abrufs ein, wird direkt
+       nachgeholt statt noch einmal ueber den Debounce zu gehen. Der Debounce
+       ist dazu da, einen Schwall gleichzeitiger Tabellenaenderungen zu einem
+       Abruf zusammenzufassen - nicht dazu, eine bereits wartende Antwort
+       weiter zu verzoegern. */
     const refresh=async()=>{
       if(closed) return;
       if(inFlight){refreshAgain=true;return;}
       inFlight=true;
-      try{onSnapshot?.(await getSnapshot(id));}
-      catch(error){onStatus?.("ERROR",error);}
-      finally{
-        inFlight=false;
-        if(refreshAgain){refreshAgain=false;queue();}
-      }
+      try{
+        do{
+          refreshAgain=false;
+          try{onSnapshot?.(await getSnapshot(id));}
+          catch(error){onStatus?.("ERROR",error);}
+        }while(refreshAgain&&!closed);
+      }finally{inFlight=false;}
     };
     const queue=()=>{
       if(closed||timer) return;
@@ -203,8 +218,19 @@
     };
 
     const channel=client.channel(`dd-room:${id}`);
-    ["dd_battle_members","dd_battle_states","dd_battle_actions","dd_battle_events","dd_battle_post_match"].forEach(table=>{
+    ["dd_battle_members","dd_battle_states","dd_battle_events","dd_battle_post_match"].forEach(table=>{
       channel.on("postgres_changes",{event:"*",schema:"public",table,filter:`room_id=eq.${id}`},queue);
+    });
+    /* Aktionszeilen: die eigene Neuanlage ueberspringen, jede andere Meldung
+       zaehlt. Verworfene Aktionen kommen als UPDATE und muessen den Gast
+       weiterhin erreichen - daran haengt rejectAction. Der Host sieht die
+       Zeile des Gastes ohnehin, seine Uid ist eine andere. */
+    channel.on("postgres_changes",{event:"*",schema:"public",table:"dd_battle_actions",filter:`room_id=eq.${id}`},nachricht=>{
+      const eigeneNeuanlage=nachricht?.eventType==="INSERT"
+        && !!eigeneUid
+        && String(nachricht?.new?.actor_user_id||"")===eigeneUid;
+      if(eigeneNeuanlage) return;
+      queue();
     });
     // dd_battle_rooms uses its primary key as id rather than room_id.
     channel.on("postgres_changes",{event:"*",schema:"public",table:"dd_battle_rooms",filter:`id=eq.${id}`},queue);

@@ -22,7 +22,7 @@ welche Fallen schon Zeit gekostet haben.
 
 | | |
 |---|---|
-| Version | **28.11.31** |
+| Version | **28.11.32** |
 | Branch | `main` |
 | Letzte Schritte | CSS-Stapel auf 10 Dateien zusammengelegt · Changelog englisch vervollständigt · Hauptmenü, Statistik, Profile, Achievements, Spielvorbereitung und Trophy Shop überarbeitet · Fähigkeits- und Shopflächen auf proportional gekachelte Bildrahmen umgestellt · alle Bild-URLs auf einen gemeinsamen Cache-Schlüssel · Trophy-Shop-Reste bereinigt und Aufklapppfeile angeglichen |
 
@@ -249,22 +249,24 @@ wird nur auf ausdrückliche Ansage geändert. Nicht ungefragt „reparieren".
    1.700 ms; `waitForEngineSettled` deckelt bei 3.600 ms. Dazu kommen
    zwei Netzwege (Gast → DB → Host, Host → DB → Gast).
 
-   Kleinerer Zusatzposten: der Gast ist auf `dd_battle_actions` ohne
-   Akteursfilter abonniert und holt deshalb einen **vollen Schnappschuss
-   für seine eigene Aktionszeile** — nutzlos, und weil `refreshAgain` in
-   `subscribeRoom` (`js/43-supabase-battle.js:188`) erneut über den 45-ms-
-   Debounce geht, schiebt sich dieser Abruf vor den nützlichen. Modell der
-   zwölf Zeilen bei 180 ms Abfragedauer: 451 ms statt 376 ms.
+   **Offen ist davon nur noch der große Hebel:** direkt nach
+   `executeOnlineAction` einen vorläufigen Stand senden, damit der Gast
+   *parallel* zum Host animiert, danach den gesetzten Stand. Das nimmt
+   die Animationsdauer aus der Wartezeit. Echter Eingriff ins
+   Synchronisationsprotokoll — `seq`-Reihenfolge und `actionPending`
+   müssen mit.
 
-   Drei Hebel, nach Wirkung sortiert:
-   - **Zwei Veröffentlichungen statt einer.** Direkt nach
-     `executeOnlineAction` einen vorläufigen Stand senden, damit der Gast
-     *parallel* zum Host animiert, danach den gesetzten Stand. Nimmt die
-     Animationsdauer aus der Wartezeit des Gastes. Echter Eingriff ins
-     Synchronisationsprotokoll — `seq`-Reihenfolge und `actionPending`
-     müssen mit.
-   - Gast ignoriert Realtime-Ereignisse zu seinen **eigenen** Aktionen.
-   - `refreshAgain` sofort statt über den Debounce (45 ms).
+   Die zwei kleinen Hebel sind seit V28.11.32 erledigt: der Gast
+   überspringt Realtime-Meldungen zu seiner **eigenen** Aktionszeile, und
+   ein Ereignis, das während eines laufenden Abrufs eintrifft, wird direkt
+   nachgeholt statt noch einmal über den 45-ms-Debounce zu gehen. Gemessen
+   mit `scripts/qa/raum-abo-zeiten.mjs` bei 180 ms Abfragedauer: der
+   Verlust gegenüber dem Idealfall fiel von durchschnittlich 41 ms
+   (Spitze 167 ms) auf 1 ms, und je Gastzug wird ein Schnappschuss statt
+   zwei geholt. Der Gewinn liegt genau im Fenster 45–180 ms nach der
+   Gasteingabe — also dort, wohin der große Hebel die Antwortzeiten
+   verschiebt. Die beiden Änderungen werden dadurch **wertvoller**, nicht
+   überflüssig.
 
    Der ältere Verdacht auf tote Realtime-Verbindung ist damit erledigt.
    Das Prüfskript bleibt gültig: `scripts/qa/online-durchspielen.mjs` fährt
