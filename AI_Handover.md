@@ -22,8 +22,8 @@ welche Fallen schon Zeit gekostet haben.
 
 | | |
 |---|---|
-| Version | **28.11.32** |
-| Branch | `main` |
+| Version | **28.11.33** (Entwurf; Live-Nachweis offen) |
+| Branch | `online-guest-latency` |
 | Letzte Schritte | CSS-Stapel auf 10 Dateien zusammengelegt · Changelog englisch vervollständigt · Hauptmenü, Statistik, Profile, Achievements, Spielvorbereitung und Trophy Shop überarbeitet · Fähigkeits- und Shopflächen auf proportional gekachelte Bildrahmen umgestellt · alle Bild-URLs auf einen gemeinsamen Cache-Schlüssel · Trophy-Shop-Reste bereinigt und Aufklapppfeile angeglichen |
 
 **Die Arbeitsteilung hat sich geändert.** Bis V28.11.28 liefen zwei
@@ -233,28 +233,41 @@ wird nur auf ausdrückliche Ansage geändert. Nicht ungefragt „reparieren".
 
 ## Offen
 
-1. **Online läuft — aber der Gast wartet.** Der Nutzer hat am 10.09. mit
-   zwei echten Geräten durchgespielt: Lobby, Beitritt und Matchstart
-   funktionieren. Übrig bleibt eine deutliche Verzögerung **nur beim
-   Gast**. Das ist kein Netzproblem, sondern die Reihenfolge im Code:
+1. **Online-Zwischenstände implementiert; Live-Nachweis noch offen.**
+   V28.11.33 veröffentlicht direkt nach `executeOnlineAction` einen Stand
+   mit `settled:false`, nach `waitForEngineSettled` einen mit `settled:true`.
+   `stageHostState` vergibt synchron zwei aufsteigende Sequenzen und sendet
+   sie über die bestehende serielle Publish-Warteschlange. Der Host wartet
+   dabei auf keine Netzantwort. Die unveränderte RPC erhält die Aktions-ID
+   zur Quittierung erst beim Endstand; im JSON steht sie in beiden Ständen.
 
-   `hostExecuteAction` (`js/17-online-bridge.js:731`) führt die Aktion
-   aus und wartet dann mit `waitForEngineSettled` bis die **Animation des
-   Hosts vollständig abgelaufen** ist — erst danach veröffentlicht es den
-   Stand. Der Host sieht seine Animation also live, der Gast bekommt sie
-   erst hinterher als fertigen Zustand geschickt.
+   Beim Gast verwirft die bestehende Sequenzprüfung verspätete Stände.
+   Zwischenstände behalten Pending und den laufenden 8000-ms-Timer;
+   Endstände geben die Eingabe frei. Rollvorschau bleibt erhalten, Combat-FX
+   bleiben über ihre IDs dedupliziert, HP-FX entstehen aus der HP-Differenz.
 
-   Größenordnungen, aus dem Quelltext: ein Wurf ist 250 ms (schnell) bzw.
-   430 ms; eine Schadenskette läuft über `650 + i*520` ms, also bis rund
-   1.700 ms; `waitForEngineSettled` deckelt bei 3.600 ms. Dazu kommen
-   zwei Netzwege (Gast → DB → Host, Host → DB → Gast).
+   **Kein gemessener Geschwindigkeitsgewinn behauptet:** Die sichtbaren
+   Würfelergebnisse entstehen erst im Timer (250/430 ms). Ein sofortiger
+   Zwischenstand enthält dort noch die laufende Animation. Die Schadens-FX
+   mit `650 + i*520` ms setzen selbst kein von `engineBusy` geprüftes Flag;
+   ihre ganze Dauer ist deshalb keine nachgewiesene zusätzliche Host-Wartezeit.
+   Zwei Veröffentlichungen können außerdem zusätzliche Netzzeit verursachen.
 
-   **Offen ist davon nur noch der große Hebel:** direkt nach
-   `executeOnlineAction` einen vorläufigen Stand senden, damit der Gast
-   *parallel* zum Host animiert, danach den gesetzten Stand. Das nimmt
-   die Animationsdauer aus der Wartezeit. Echter Eingriff ins
-   Synchronisationsprotokoll — `seq`-Reihenfolge und `actionPending`
-   müssen mit.
+   `scripts/qa/online-durchspielen.mjs` behält die zwölf Zusicherungen und
+   misst jetzt sechs reproduzierbare Gastaktionen einschließlich Schaden:
+   sichtbarer Zustand und endgültige Freigabe getrennt, Vorschau separat.
+   `WD_SOURCE_ROOT` erlaubt denselben Prüfstand am Vorher-Checkout.
+   Der Live-Versuch am 10.09. kam durch beide Anmeldungen, wurde beim
+   Raumanlegen aber vom Ausführungsdienst mit „network approval was cancelled
+   before a decision was returned“ beendet. **Keine gültigen Vorher/Nachher-
+   Zeiten und keine erneute Bestätigung aller zwölf Live-Zusicherungen.**
+   Der Entwurf bleibt bis zu diesem Nachweis ungeprüft am echten Backend.
+
+   `scripts/qa/online-protokoll.mjs` ist der zusätzliche lokale Prüfstand:
+   echte Engine in zwei Browsern, kontrollierte Übertragung, produktive
+   Publish-Warteschlange mit zurückgehaltenen Antworten. Er prüft Sequenzen,
+   Pending, Vorschau, Abbruch, doppelte FX und den Messablauf. Das ersetzt
+   ausdrücklich keinen Durchlauf gegen das echte Projekt.
 
    Die zwei kleinen Hebel sind seit V28.11.32 erledigt: der Gast
    überspringt Realtime-Meldungen zu seiner **eigenen** Aktionszeile, und
@@ -268,16 +281,11 @@ wird nur auf ausdrückliche Ansage geändert. Nicht ungefragt „reparieren".
    verschiebt. Die beiden Änderungen werden dadurch **wertvoller**, nicht
    überflüssig.
 
-   Der ältere Verdacht auf tote Realtime-Verbindung ist damit erledigt.
-   Das Prüfskript bleibt gültig: `scripts/qa/online-durchspielen.mjs` fährt
-   zwei getrennte Browser gegen das echte Projekt, und alle zwölf
-   Zusicherungen sind grün: Anmeldung, Raumcode, Beitritt, der Host sieht
-   den Gast ohne Neuladen, die Bereitmeldung kommt an, beide landen im
-   Match, und der erste Wurf steht auf beiden Seiten mit denselben Augen.
-   Ebenso grün ist die Serverseite, lokal abgesichert in
-   `supabase/tests/20-matchstart.sql` **als Rolle `authenticated` mit
-   aktiven Zeilenregeln** — der ältere Test lief als Eigentümer und
-   umging sie.
+   Der ältere Live-Test der Anmeldung, Lobby, des Matchstarts und ersten
+   Wurfs war mit zwölf Zusicherungen grün. Ebenso war die Serverseite lokal
+   in `supabase/tests/20-matchstart.sql` als Rolle `authenticated` mit aktiven
+   Zeilenregeln abgesichert. Diese historischen Ergebnisse sind keine
+   Bestätigung des neuen Zwei-Stand-Protokolls.
 
 2. **`dd_touch_room` fehlt auf der Datenbank.** Die zweite Migration
    (`20260903120000_dd_room_idle_expiry.sql`, Räume laufen bei
