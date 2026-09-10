@@ -329,6 +329,10 @@
       if(!Number.isInteger(source.stage)||source.stage<0||source.stage>9||!["path","combat","reward"].includes(source.phase))continue;
       const runSave=clean(source);
       if(!runSave.heroes||!pair.every(id=>runSave.heroes[id]&&typeof runSave.heroes[id]==="object"))continue;
+      runSave.abilityLevelOverrides=Object.fromEntries(pair.map(id=>[id,
+        Object.fromEntries(Object.entries(runSave.abilityLevelOverrides?.[id]||{}).filter(([ability,level])=>
+          REAL_ABILITY_IDS.includes(Number(ability))&&String(Number(ability))===ability&&[1,2].includes(level)))
+      ]));
       let valid=true;
       pair.forEach(id=>{
         const hero=runSave.heroes[id];

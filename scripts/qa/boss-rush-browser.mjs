@@ -1,3 +1,4 @@
+import {checkRushMasteryBrowser} from './rush-mastery-browser-contract.mjs';
 import fs from 'node:fs';import path from 'node:path';import {createServer} from 'node:http';import assert from 'node:assert/strict';
 const {chromium}=await import(process.env.WD_PLAYWRIGHT||'/opt/node22/lib/node_modules/playwright/index.mjs');
 const root=process.cwd(),errors=[];
@@ -34,7 +35,12 @@ try{
  await p.click('[data-rush-slot="primaryAbility"]');await pause();r=await snap();assert.notEqual(r.heroes[ids[0]].primaryAbility,3);const changed=r.heroes[ids[0]].primaryAbility;
  assert.deepEqual(await p.evaluate(()=>saveData.profiles.map(p=>p.campaign.bossRushXp)),xp);
  await p.reload();await openPair(ids);await p.click('[data-rush-resume="yes"]');await pause();assert.equal((await snap()).heroes[ids[0]].primaryAbility,changed);
- await p.locator('[data-boss-rush-reward]').first().click();await pause();assert.equal((await snap()).stage,1);assert.equal(await p.locator('[data-rush-path]').count(),3);
+ while((await snap()).phase==='reward'){
+   const slots=p.locator('[data-rush-slot]');
+   if(await slots.count())await slots.first().click();else await p.locator('[data-boss-rush-reward]').first().click();
+   await pause();
+ }
+ assert.equal((await snap()).stage,1);assert.equal(await p.locator('[data-rush-path]').count(),3);
  await p.click('[data-rush-path="0"]');await pause();assert.equal(await p.evaluate(id=>players.find(p=>p.profileId===id).ability,ids[0]),changed);
  // A complete run using the real transition/reward UI; combat victories are test fixtures.
  for(let stage=1;stage<10;stage++){
@@ -86,6 +92,7 @@ try{
  assert.equal(mutations,0,'keine DOM-Mutationen im Leerlauf');
  console.log('ok: Neu starten, getrennte Profilpaare und 0 DOM-Mutationen/s im Pfaddialog');
  console.log('ok: Kartograph, Kundschafter, Vorratspaket, Neuwurf, DE/EN bei fünf Breiten und Speicher nach Niederlage leer');
+ await checkRushMasteryBrowser({p,ids,mode:'duo',open:openPair,win,pause,snap});
  assert.deepEqual(errors,[]);
  console.log('ok: drei Pfade, Gegner-HP, Kampf-Reload, zwei Schritte und Reward-Reload, XP einmalig, zehn Stufen, fester Endboss, Speicher nach Sieg leer');
 }catch(e){console.log('Browserfehler',errors);console.log('Status',await snap());throw e;}finally{await browser.close();server.close();}

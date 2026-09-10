@@ -1,6 +1,7 @@
 /* Portierungsvertrag: vorhandene Encounter vollständig, gleiche Perks und drei Helden. */
 import fs from 'node:fs';
 import vm from 'node:vm';
+import {checkRushMastery} from './rush-mastery-contract.mjs';
 import assert from 'node:assert/strict';
 assert(fs.existsSync('js/44-trio-boss-rush.js'),'Trio-Modul fehlt');
 const elements=new Map();
@@ -10,6 +11,7 @@ for(const f of ['01-config','02-campaign-solo-data','03-campaign-duo-data','03b-
 vm.runInContext('const duoEncounterById=id=>DUO_CAMPAIGN_ENCOUNTERS.find(e=>e.id===id); const trioEncounterById=id=>TRIO_CAMPAIGN_ENCOUNTERS.find(e=>e.id===id);',c);
 vm.runInContext(fs.readFileSync('js/37-duo-boss-rush.js','utf8'),c);
 vm.runInContext(fs.readFileSync('js/44-trio-boss-rush.js','utf8').replace('  window.WDTrioBossRush=','  window.__trioTest={setRun:r=>run=r,grant,newChoices,showRewardModal,applyStageRegeneration,perkSummary,awardBossXp,ensurePaths};\n  window.WDTrioBossRush='),c);
+vm.runInContext(fs.readFileSync('js/23-mastery.js','utf8').replace('  init();',''),c);
 const abilitySource=fs.readFileSync('js/05-game-data-state.js','utf8');vm.runInContext(abilitySource.slice(0,abilitySource.indexOf('  const SEATS')),c);
 const trio=c.window.WDTrioBossRush,duo=c.window.WDDuoBossRush,t=c.window.__trioTest;
 const plain=v=>JSON.parse(JSON.stringify(v));
@@ -37,7 +39,9 @@ r=fresh();r.heroes.a.perks={relay:2};for(const id of ['b','c']){r.lastAttacker=i
 r=fresh();r.heroes.c.perks={scales:2,bulwark:2,dodge:2};c.players[2].hp=10;c.current=3;assert.equal(trio.incomingDamageModifier(2,10),-10);assert.equal(trio.incomingDamageModifier(2,10),-6);
 r=fresh();r.heroes.c.perks={revenge:2};c.players[0].hp=0;c.players[1].hp=0;assert.equal(trio.attackDamageBonus(2,3).amount,12);
 r=fresh();for(const difficulty of ['easy','normal','hard'])for(let i=0;i<30;i++){r.selectedPaths[0]={difficulty};const options=t.newChoices('c',3);assert.equal(options.length,difficulty==='hard'?4:3);const perks=options.filter(id=>!id.startsWith('ability:')).map(id=>trio.rewardDefinitions().find(x=>x.id===id));if(difficulty==='easy')assert(perks.every(p=>p.rarity==='common'));else assert(perks.some(p=>p.rarity===(difficulty==='normal'?'rare':'epic')));}
-r=fresh();for(const reward of trio.rewardDefinitions())assert(t.grant('c',reward.id,reward.id==='realign'?{slot:'primaryAbility'}:{}));assert.equal(Object.keys(r.heroes.c.perks).length,30);assert.equal(r.rewardHistory.length,30);assert(trio.rewardDefinitions().every(x=>t.perkSummary('c').includes(x.name)));
+r=fresh();for(const reward of trio.rewardDefinitions())assert(t.grant('c',reward.id,['realign','refinement','mastery'].includes(reward.id)?{slot:'primaryAbility'}:{}));assert.equal(Object.keys(r.heroes.c.perks).length,32);assert.equal(r.rewardHistory.length,32);assert(trio.rewardDefinitions().every(x=>t.perkSummary('c').includes(x.name)));
 r=fresh();r.heroes.c.perks={greed:1};t.awardBossXp();assert.deepEqual(r.bossXpAwards.map(x=>x.amount),[50,50,75]);assert.equal(vm.runInContext('saveData.profiles[2].campaign.bossRushXp',c),175);
 const clean=c.sanitizeBossRushRuns({x:r},[{id:'a'},{id:'b'},{id:'c'}],3);assert.equal(Object.keys(clean).length,1);assert.equal(Object.keys(c.sanitizeBossRushRuns({x:r},[{id:'a'},{id:'b'},{id:'c'}])).length,0);r.finished=true;assert.equal(Object.keys(c.sanitizeBossRushRuns({x:r},[{id:'a'},{id:'b'},{id:'c'}],3)).length,0);
-console.log(`ok: Trio-Portierungsvertrag, ${seen.size} vollständige Encounter, 10 steigende Stufen, 30 identische Perks, Teamhaken für drei Profile, Zweitfund, XP und Speicherbereinigung`);
+console.log(`ok: Trio-Portierungsvertrag, ${seen.size} vollständige Encounter, 10 steigende Stufen, 32 identische Perks, Teamhaken für drei Profile, Zweitfund, XP und Speicherbereinigung`);
+
+checkRushMastery({c,t,rush:trio,fresh,mode:'trio'});

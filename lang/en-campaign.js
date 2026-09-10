@@ -772,6 +772,17 @@
       (m, tr) => `P${m[1]}${m[2]} ${tr(m[3])} · P${m[4]}${m[2]} ${tr(m[5])}`]
   );
   Object.assign(pack.exact, {
+    "Feinschliff": "Refinement",
+    "Meisterschaft": "Mastery",
+    "Hebt eine ausgerüstete Fähigkeit dieses Helden für diesen Lauf auf Mastery-Level 1.": "Raises one of this hero’s equipped abilities to Mastery level 1 for this run.",
+    "Hebt eine ausgerüstete Fähigkeit dieses Helden für diesen Lauf auf Mastery-Level 2; beide Upgradestufen wirken.": "Raises one of this hero’s equipped abilities to Mastery level 2 for this run; both upgrades apply.",
+    "Fähigkeit verbessern": "Upgrade an ability",
+    "Second Chance darf 2-mal verwendet werden.": "Second Chance can be used twice.",
+    "+1 % Chance auf 6er.": "+1% chance to roll sixes.",
+    "Noch einmal +1 % Chance auf 6er.": "Another +1% chance to roll sixes.",
+    "Snake Eyes ist auch im Angriffswurf nutzbar.": "Snake Eyes can also be used on the attack roll.",
+    "Bonus = floor(Angriffstreffer × 1,5): 1→+1, 2→+3, 3→+4, 4→+6, 5→+7.": "Bonus = floor(attack hits × 1.5): 1→+1, 2→+3, 3→+4, 4→+6, 5→+7.",
+
     "Klingenfokus":"Blade Focus","Verschnaufpause":"Respite","Regeneration":"Regeneration","Eröffnungsschlag":"Opening Strike","Blutdurst":"Bloodthirst","Trophäenjäger":"Trophy Hunter",
     "Alle eigenen Hauptangriffe verursachen dauerhaft +1 Schaden pro Stapel.":"All of your main attacks permanently deal +1 damage per stack.",
     "Heilt diesen Spieler sofort um 12 HP. Kann erneut gewählt werden.":"Immediately heals this player for 12 HP. Can be chosen again.",

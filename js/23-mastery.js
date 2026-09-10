@@ -442,7 +442,7 @@
       const p=players?.[Number(index)];
       if(!p||p.campaignTeam!=="hero") return 0;
       const profile=getProfile(p.profileId);
-      return abilityLevel(profile,currentBattleMode(),id);
+      return Math.max(abilityLevel(profile,currentBattleMode(),id),window.WDBossRush?.abilityLevelOverride?.(p.profileId,id)||0);
     }catch(_err){return 0;}
   }
   function hasAbilityUpgrade(id,level=1,index=current){return abilityLevelForPlayer(id,index)>=level;}
@@ -647,9 +647,39 @@
   }
 
 
+  function bossXpBalance(profile){
+    const value=Number(profile?.campaign?.bossRushXp);
+    return Number.isFinite(value)?Math.max(0,Math.floor(value)):0;
+  }
+
+  function renderBossXpConversion(profile,summary){
+    const mode=activeMode,balance=bossXpBalance(profile),tr=window.t||String;
+    // Dasselbe vollständige Goldbild wie im Shop, mit proportionalen Ornamentzonen.
+    const xs=[0,192,688,848,1344,1536];
+    const artwork=xs.slice(0,-1).map((x,i)=>`<svg viewBox="${x} 0 ${xs[i+1]-x} 512" preserveAspectRatio="none" focusable="false"><image href="assets/ui/v28/png/frames/gold-special-button.webp?v=${ASSET_REV}" width="1536" height="512"/></svg>`).join("");
+    const row=document.createElement("div");row.className="mastery-boss-xp-conversion";
+    row.innerHTML=`<span>${escapeHtml(tr("Boss-XP verfügbar"))}: <b>${balance}</b></span><button type="button" id="masteryBossXpConvertBtn" class="gold" ${balance<300?"disabled":""}><span class="mastery-boss-xp-art" aria-hidden="true">${artwork}</span><span class="mastery-boss-xp-label"><strong>${escapeHtml(tr("Konvertieren"))}</strong><span>300 Boss-XP → 100 XP</span></span></button>`;
+    summary.appendChild(row);
+    const button=row.querySelector("button");
+    button.addEventListener("click",()=>{
+      // Auch ein veralteter Button oder ein zweiter Klick darf kein anderes Konto belasten.
+      if(button.disabled||activeMode!==mode||selectedMasteryProfile()?.id!==profile.id)return;
+      const currentProfile=resolveMasteryProfile(profile.id),available=bossXpBalance(currentProfile);
+      if(!currentProfile||available<300){renderModal();return;}
+      button.disabled=true;
+      const state=ensure(currentProfile,mode);
+      currentProfile.campaign.bossRushXp=available-300;
+      state.xp+=100;state.lifetimeXp+=100;
+      saveGameData();
+      renderModal();refreshAll();
+      window.WDDuoBossRush?.refreshButton?.();window.WDTrioBossRush?.refreshButton?.();
+    });
+  }
+
   function renderStandard(profile){
     const m=ensure(profile,activeMode),summary=document.getElementById("masterySummary"),content=document.getElementById("masteryContent");
     summary.innerHTML=`<div class="mastery-summary-main"><strong>${escapeHtml(profile.name)}</strong><span>${modeLabel(activeMode)}</span></div><div class="mastery-xp-line"><span>⭐ ${m.xp} XP verfügbar</span><span>Σ ${m.lifetimeXp} verdient</span><span>-${totalSpent(profile,activeMode)} investiert</span></div><div class="mastery-xp-track mastery-xp-currency"></div><small>Standard-Mastery: ${activeMode==="solo"?"ab Solo W2L10":activeMode==="duo"?"ab Duo W1L10":"ab Trio L1"}. XP-Farming: Solo ab W2L10 · Duo ab W1L10 · Trio ab L1.</small>`;
+    renderBossXpConversion(profile,summary);
     content.innerHTML=branchData(profile).map(branch=>`<section class="mastery-branch branch-${branch.key}"><div class="mastery-branch-head"><span class="mastery-branch-icon">${branch.icon}</span><div><strong>${branch.title}</strong><small>${branch.desc}</small></div><span class="mastery-branch-level">${branch.level}/${branch.max}</span></div><div class="mastery-tree-line">${Array.from({length:branch.max},(_,i)=>standardNode(branch,i,m.xp)).join("")}</div></section>`).join("");
     content.querySelectorAll("[data-standard-branch]").forEach(btn=>btn.addEventListener("click",()=>{
       const p=selectedMasteryProfile();if(!p)return;
@@ -971,7 +1001,15 @@
     document.getElementById("campaignMasteryBtn")?.addEventListener("click",()=>open("solo"));document.getElementById("duoCampaignMasteryBtn")?.addEventListener("click",()=>open("duo"));document.getElementById("trioCampaignMasteryBtn")?.addEventListener("click",()=>open("trio"));document.getElementById("masteryCloseBtn")?.addEventListener("click",close);document.getElementById("masteryModal")?.addEventListener("click",e=>{if(e.target?.id==="masteryModal")close()});document.getElementById("masteryProfilePicker")?.addEventListener("change",e=>{activeProfileId=e.target.value;renderModal();});["campaignProfileSelect","duoProfile1Select","duoProfile2Select","trioProfile1Select","trioProfile2Select","trioProfile3Select"].forEach(id=>document.getElementById(id)?.addEventListener("change",()=>setTimeout(refreshAll,0)));refreshAll();
   }
 
+  // Nur lesende Kopien; die beiden Standalone-Fähigkeiten führen dieselben L1/L2-Spalten.
+  function abilityUpgrade(id,level){
+    if(level!==1&&level!==2)return null;
+    const entry=ABILITY_SHEET.find(row=>row[0]===Number(id))||STANDALONE.find(row=>row[0]===Number(id));
+    return entry?Object.freeze({name:entry[level*2],text:entry[level*2+1]}):null;
+  }
+
   window.WDMastery=Object.freeze({
+    abilityUpgrade,
     ensure,ensureModes,encounterEligible,standardEligible,modeUnlocked,hpBonus,damageBonus,damageBonusForPlayer,abilityThreshold,abilityThresholdForPlayer,isBossMasteryEncounter,xpReward,awardXp,applyRetroBackfill,abilityLevel,abilityLevelForPlayer,hasAbilityUpgrade,abilityGate,abilityGateLabel,abilityGateReached,l2Unlocked,l2Progress,l2ChallengeEligible,l2TrackingContext,unlockL2ForPlayer,addL2Progress,runState,noteAbilityUse,noteSelfDamage,noteHealing,noteKill,noteAttackRoll,noteRerolledSixes,noteAnyD6,noteAttackStart,noteAttackResolved,notePoison,noteInsurance,noteCounterDamage,noteTurnStart,notePerfect25Base,notePerfect25Break,notePerfect25Permit,notePerfect25D4,noteMatchEnd,refreshCampaignUi,refreshAll,open
   });
   init();

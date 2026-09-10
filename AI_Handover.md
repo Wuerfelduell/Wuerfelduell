@@ -22,9 +22,9 @@ welche Fallen schon Zeit gekostet haben.
 
 | | |
 |---|---|
-| Version | **28.12.1** |
+| Version | **28.12.2** |
 | Branch | `main` |
-| Letzte Schritte | CSS-Stapel auf 10 Dateien zusammengelegt · Changelog englisch vervollständigt · Hauptmenü, Statistik, Profile, Achievements, Spielvorbereitung und Trophy Shop überarbeitet · Fähigkeits- und Shopflächen auf proportional gekachelte Bildrahmen umgestellt · alle Bild-URLs auf einen gemeinsamen Cache-Schlüssel · Trophy-Shop-Reste bereinigt und Aufklapppfeile angeglichen · Duo- und Trio-Boss-Rush mit Pfadwahl, gespeicherten Runs und 30 Perks |
+| Letzte Schritte | CSS-Stapel auf 10 Dateien zusammengelegt · Changelog englisch vervollständigt · Hauptmenü, Statistik, Profile, Achievements, Spielvorbereitung und Trophy Shop überarbeitet · Fähigkeits- und Shopflächen auf proportional gekachelte Bildrahmen umgestellt · alle Bild-URLs auf einen gemeinsamen Cache-Schlüssel · Trophy-Shop-Reste bereinigt und Aufklapppfeile angeglichen · Duo- und Trio-Boss-Rush mit Pfadwahl, gespeicherten Runs und 32 Perks einschließlich temporärer Ability-Mastery · Boss-XP-Umtausch 300:100 |
 
 **Die Arbeitsteilung hat sich geändert.** Bis V28.11.28 liefen zwei
 Sitzungen parallel: Codex hat umgesetzt, diese Sitzung geprüft. Ab jetzt
@@ -246,8 +246,9 @@ wird nur auf ausdrückliche Ansage geändert. Nicht ungefragt „reparieren".
   Helden, Perkzähler und Belohnungsschritte. Ein Kampf-Reload beginnt am
   gespeicherten Stufenanfang; Sieg/Niederlage löschen den offenen Run.
   Boss-XP und Kampfabschluss werden gemeinsam gespeichert.
-- 30 stapelbare Perks: 6 bisherige + 19 vorgegebene + Wechselspiel,
-  Proviantteilung, Kartograph, Auslese und Plünderer. Neuausrichtung sichert
+- 32 stapelbare Perks: 6 bisherige + 19 vorgegebene + Wechselspiel,
+  Proviantteilung, Kartograph, Auslese und Plünderer sowie Feinschliff und
+  Meisterschaft (seit 28.12.2). Neuausrichtung sichert
   auch den zweiten Schritt mit belegten Slots; Zweitfund kopiert ohne
   rekursive Verdopplung. Der Endboss bietet keine weitere Belohnungswahl.
 - Die drei Verteidigungsperks verwenden ausdrücklich alle `shield.svg`;
@@ -264,7 +265,7 @@ wird nur auf ausdrückliche Ansage geändert. Nicht ungefragt „reparieren".
 ## Trio-Boss-Rush seit 28.12.1
 
 - `js/44-trio-boss-rush.js` portiert den Duo-Ablauf mit derselben Schnittstelle
-  und allen 30 Perks. `window.WDBossRush` in `js/06-campaign.js` verteilt
+  und allen 32 Perks. `window.WDBossRush` in `js/06-campaign.js` verteilt
   die Motorhaken nach Trio-/Duo-Modus; auf den Karten nach Rückkehrziel,
   damit Start und Buttonzustand auch vor dem Kampf funktionieren.
 - Quelle sind alle 60 vorhandenen Trio-Encounter aus vier Welten. Nach
@@ -276,8 +277,15 @@ wird nur auf ausdrückliche Ansage geändert. Nicht ungefragt „reparieren".
   Die unveränderte Gegnerzahl-Gewichtung und HP-Verteilung gelten auch
   für den Endboss; die Stufen steigen über alle drei Pfade.
 - `saveData.trioBossRushRuns` ist separat nach sortierten drei Profil-IDs
-  indiziert. Derselbe Bereiniger wie Duo mit Teamgröße 3. Der Lebenszeit-
-  Zähler `profile.campaign.bossRushXp` bleibt für beide Modi gemeinsam.
+  indiziert. Derselbe Bereiniger wie Duo mit Teamgröße 3.
+  `profile.campaign.bossRushXp` bleibt für beide Modi gemeinsam. Seit 28.12.2
+  ist er auf Nutzerwunsch ein ausgebbares Guthaben statt Lebenszeit-Zähler: Der
+  Mastery-Button zieht je Klick 300 ab und schreibt 100 XP im ausgewählten
+  Profil/Modus gut (auch `lifetimeXp` +100). Rest bleibt, unter 300 gesperrt.
+  Keine separate Verbrauchsbuchung und kein neuer Speicherschlüssel.
+  `scripts/qa/boss-xp-conversion.mjs` prüft alle drei Moduskonten, Profilwechsel,
+  Reload, Doppelklickschutz, Guthaben 0/299/300/602, unveränderte L2-Daten,
+  DE/EN in fünf Breiten und 0 DOM-Mutationen im offenen Mastery-Fenster.
 - Feldlazarett heilt alle drei. Zweitfund kopiert je Stapel an beide
   Mitspieler (ohne Kopierketten); Wechselspiel gilt nach jedem Mitspieler,
   solange alle drei leben; Proviantteilung berücksichtigt beide Empfänger.
@@ -291,6 +299,28 @@ wird nur auf ausdrückliche Ansage geändert. Nicht ungefragt „reparieren".
   `validate-endgame.mjs` prüft beide Module und vollständige Trio-Gruppen.
   Alle Prüfläufe grün, keine JS-Fehler/404; im Pfaddialog 0 DOM-Mutationen/s.
   Der folgende mobile Altfehler ist davon ausdrücklich nicht abgedeckt.
+
+
+- Lauf-Mastery seit 28.12.2 gilt identisch in Duo/Trio: `refinement` (selten,
+  `xp-star.svg`) auf L1, `mastery` (episch, `prestige.svg`) auf L2, auch 0→2.
+  Angebote und Slotlisten berücksichtigen max(Profilstufe, Lauf-Override).
+  Die Zielwahl zeigt die vorhandenen Upgrade-Namen und -Texte, bei 0→2 beide.
+  `WDMastery.abilityUpgrade(id,level)` liefert eingefrorene Lesekopien aus
+  ABILITY_SHEET bzw. den beiden Standalone-Einträgen (7/22).
+- `run.abilityLevelOverrides[profileId][abilityId]` wird mit dem Run bereinigt
+  gespeichert. Der zweite Auswahl-Schritt bleibt über Reload gesperrt;
+  Neuausrichtung lässt alte Einträge liegen, unequippt/bei Laufende wirken
+  sie nicht. Wirkungslose Zweitfund-Kopien werden übersprungen, veraltete
+  reguläre Angebote unter Beibehaltung der Seltenheitsgarantie neu gezogen.
+- Einziger zusätzlicher Motorzugriff: `abilityLevelForPlayer` nimmt das
+  Maximum aus Profil und `WDBossRush.abilityLevelOverride`. L2-Tracking und
+  Mastery-Laden bleiben profilbasiert; Offen 5 (HP/Schaden) ist unverändert.
+- Alle vier Rush-Prüfstände nutzen ergänzende Mastery-Verträge unter
+  `scripts/qa/rush-mastery*-contract.mjs`: 32 identische Perks, wirkungslose
+  Angebote, Speicherbereinigung, Reload vor/nach Zielwahl, Doppelklickschutz,
+  0→2, weggetauschte Fähigkeiten, Profil/L2 vor und nach Run unverändert.
+  Alle 48 Upgrade-Texte haben exakte englische Paare. Browser: DE/EN bei
+  320/360/390/412/1280 px, vorhandenes Prestige-Symbol vollständig sichtbar.
 
 ---
 

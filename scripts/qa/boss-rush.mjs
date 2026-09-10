@@ -2,6 +2,7 @@
    Browserablauf und Reload werden zusaetzlich mit boss-rush-browser.mjs geprueft. */
 import fs from 'node:fs';
 import vm from 'node:vm';
+import {checkRushMastery} from './rush-mastery-contract.mjs';
 import assert from 'node:assert/strict';
 const elements = new Map();
 const node = id => { if(!elements.has(id)) elements.set(id,{value:'',textContent:'',innerHTML:'',dataset:{},classList:{add(){},remove(){},toggle(){},contains(){return false;}},addEventListener(){},querySelector(){return null;},querySelectorAll(){return []},append(){},replaceChildren(){},setAttribute(){}}); return elements.get(id); };
@@ -10,10 +11,11 @@ const files=['01-config','02-campaign-solo-data','03-campaign-duo-data','03b-cam
 vm.runInContext(files.map(f=>fs.readFileSync(`js/${f}.js`,'utf8')).join('\n'),c);
 vm.runInContext(`const duoEncounterById=id=>DUO_CAMPAIGN_ENCOUNTERS.find(e=>e.id===id);`,c);
 vm.runInContext(fs.readFileSync('js/37-duo-boss-rush.js','utf8').replace('  window.WDDuoBossRush=', '  window.__rushTest={setRun:r=>{run=r},getRun:()=>run,grant,perkChoicesFor,newChoices,ensurePaths,applyStageRegeneration,awardBossXp,perkSummary,showRewardModal};\n  window.WDDuoBossRush='),c);
+vm.runInContext(fs.readFileSync('js/23-mastery.js','utf8').replace('  init();',''),c);
 const abilitySource=fs.readFileSync('js/05-game-data-state.js','utf8');
 vm.runInContext(abilitySource.slice(0,abilitySource.indexOf('  const SEATS')),c);
 const rush=c.window.WDDuoBossRush;
-assert.equal(rush.rewardDefinitions().length,30,'30 Perks');
+assert.equal(rush.rewardDefinitions().length,32,'32 Perks');
 const tiers=rush.stageDefinitions();
 assert.equal(tiers.length,10,'10 Stufen');
 for(const [i,tier] of tiers.entries()){
@@ -25,7 +27,7 @@ for(const [i,tier] of tiers.entries()){
 }
 assert.equal(tiers[9].candidates.length,1,'fester Endboss');
 for(let i=1;i<tiers.length;i++) assert(Math.min(...tiers[i].candidates.map(o=>o.pressure))>Math.max(...tiers[i-1].candidates.map(o=>o.pressure)),'Druck steigt ueber alle Pfade');
-console.log('ok: 30 Perks, 10 Stufen, vorhandene Encounter, hoechstens drei Gegner, steigender Pfaddruck');
+console.log('ok: 32 Perks, 10 Stufen, vorhandene Encounter, hoechstens drei Gegner, steigender Pfaddruck');
 
 const t=c.window.__rushTest;
 c.players=[];c.current=0;c.pendingExtraHealFx=[];c.recordHealing=()=>{};c.addLog=()=>{};
@@ -53,6 +55,8 @@ r=fresh();for(const difficulty of ['easy','normal','hard'])for(let i=0;i<100;i++
 r=fresh();r.selectedPaths[0]={difficulty:'normal'};r.heroes.a.perks={supply:2};t.showRewardModal();assert.equal(r.rewardTasks[0].choices.length,4);assert.equal(r.heroes.a.suppliesUsed,1);r.rewardTasks=[];t.showRewardModal();assert.equal(r.heroes.a.suppliesUsed,2);r.rewardTasks=[];t.showRewardModal();assert.equal(r.rewardTasks[0].choices.length,3);
 r=fresh();r.heroes.a.perks={second_find:2};t.grant('a','rest');assert.equal(r.deferredRewards.length,2);assert(r.deferredRewards.every(x=>x.profileId==='b'&&x.dueStage===1));r.stage=1;r.selectedPaths[1]={difficulty:'easy'};t.showRewardModal();assert.equal(r.rewardTasks.filter(t=>t.copy).length,2);assert.equal(r.deferredRewards.length,0);t.grant('b','rest',{copyReward:true});assert.equal(r.deferredRewards.length,0,'Kopien erzeugen keine Kopierkette');
 r=fresh();r.heroes.a.perks={greed:2,plunder:1};r.heroes.a.stageKills=2;t.awardBossXp();assert.equal(r.bossXpAwards[0].amount,140);assert.equal(r.bossXpAwards[1].amount,50);
-r=fresh();for(const reward of rush.rewardDefinitions()){if(reward.id==='realign')t.grant('a',reward.id,{slot:'primaryAbility'});else t.grant('a',reward.id);}assert.equal(Object.keys(r.heroes.a.perks).length,30);assert(rush.rewardDefinitions().every(reward=>t.perkSummary('a').includes(reward.name)));assert.equal(r.rewardHistory.filter(h=>h.profileId==='a').length,30);
+r=fresh();for(const reward of rush.rewardDefinitions()){if(['realign','refinement','mastery'].includes(reward.id))t.grant('a',reward.id,{slot:'primaryAbility'});else t.grant('a',reward.id);}assert.equal(Object.keys(r.heroes.a.perks).length,32);assert(rush.rewardDefinitions().every(reward=>t.perkSummary('a').includes(reward.name)));assert.equal(r.rewardHistory.filter(h=>h.profileId==='a').length,32);
 const sanitized=c.sanitizeBossRushRuns({x:r,bad:{schema:1,profileIds:['a','a']}},[{id:'a'},{id:'b'}]);assert.equal(Object.keys(sanitized).length,1);r.finished=true;assert.equal(Object.keys(c.sanitizeBossRushRuns({x:r},[{id:'a'},{id:'b'}])).length,0);
-console.log('ok: Schadensperks und Schwellen, Stapel, Heilung, Verteidigung, Slots, Seltenheiten, Vorratspaket, Zweitfund, XP, alle 30 Historieneinträge, Save-Bereinigung');
+console.log('ok: Schadensperks und Schwellen, Stapel, Heilung, Verteidigung, Slots, Seltenheiten, Vorratspaket, Zweitfund, XP, alle 32 Historieneinträge, Save-Bereinigung');
+
+checkRushMastery({c,t,rush:rush,fresh,mode:'duo'});

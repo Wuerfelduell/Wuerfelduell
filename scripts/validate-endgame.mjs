@@ -111,7 +111,7 @@ function validateRush(mode,file,moduleName){
     if(index&&Math.min(...stage.candidates.map(c=>c.pressure))<=Math.max(...stages[index-1].candidates.map(c=>c.pressure)))errors.push(`${mode} Boss Rush pressure must rise across ALL paths at stage ${index+1}`);
   }
   const rewards=rush.rewardDefinitions();
-  if(rewards.length!==30||new Set(rewards.map(r=>r.id)).size!==30)errors.push(`${mode} Boss Rush requires 30 unique perks`);
+  if(rewards.length!==32||new Set(rewards.map(r=>r.id)).size!==32)errors.push(`${mode} Boss Rush requires 32 unique perks`);
   for(const reward of rewards){
     if(!["common","rare","epic"].includes(reward.rarity))errors.push(`${mode} Boss Rush rarity missing: ${reward.id}`);
     if(!fs.existsSync(`assets/ui/v28/svg/gameplay/${reward.icon}`))errors.push(`${mode} Boss Rush icon missing: ${reward.icon}`);

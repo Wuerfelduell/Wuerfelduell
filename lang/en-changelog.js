@@ -5,6 +5,10 @@
   if (!pack) return;
 
   Object.assign(pack.exact, {
+    "Mastery tauscht pro Klick 300 Boss-XP gegen 100 XP für das ausgewählte Profil und den geöffneten Modus; unter 300 Boss-XP ist der Button gesperrt": "Mastery converts 300 Boss XP into 100 XP per click for the selected profile and open mode; the button is disabled below 300 Boss XP",
+    "Duo- und Trio-Boss-Rush bieten jetzt 32 Perks: Feinschliff hebt eine ausgerüstete Fähigkeit für den Lauf auf Mastery-Level 1, Meisterschaft auf Level 2": "Duo and Trio Boss Rush now offer 32 perks: Refinement raises an equipped ability to Mastery level 1 for the run, Mastery to level 2",
+    "Die gezielte Upgrade-Auswahl zeigt Namen und Wirkung, bleibt nach Neuladen erhalten und verändert weder Profil-Mastery noch dauerhaften L2-Fortschritt": "Targeted upgrade selection shows names and effects, survives reloading, and changes neither profile Mastery nor permanent L2 progress",
+
     "Der Trio-Boss-Rush übernimmt Pfadwahl, gespeicherte Runs und alle 30 Perks des Duo-Modus; Belohnungen gehen nacheinander an drei Helden": "Trio Boss Rush adopts path choices, saved runs and all 30 perks from Duo mode; three heroes choose their rewards in turn",
     "Vollständige Trio-Encounter bilden die Gegnergruppen; Boss-Angebote erscheinen auf Stufe 5, Helix Apex beendet den Lauf auf Stufe 10": "Complete trio encounters form the enemy groups; boss offers appear on stage 5, and Helix Apex ends the run on stage 10",
 

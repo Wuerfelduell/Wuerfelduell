@@ -90,6 +90,8 @@
     {kind:"perk",id:"sharing",rarity:"common",name:"Proviantteilung",icon:"trio.svg",desc:"Vor jedem Boss gibt der gesündeste Held jedem schwächeren Mitspieler bis zu 3 HP pro Stapel, höchstens bis zum jeweiligen Gleichstand."},
     {kind:"perk",id:"cartographer",rarity:"common",name:"Kartograph",icon:"world.svg",desc:"Gewährt pro Stapel einen Austausch eines Pfadangebots gegen einen ungesehenen Encounter derselben Stufe."},
     {kind:"perk",id:"flawless",rarity:"epic",name:"Auslese",icon:"completed.svg",desc:"Nach einem Boss ohne erlittenen Schaden erhält dieser Held je Stapel zusätzlich einen zufälligen gewöhnlichen Perk."},
+    {kind:"perk",id:"refinement",rarity:"rare",name:"Feinschliff",icon:"xp-star.svg",desc:"Hebt eine ausgerüstete Fähigkeit dieses Helden für diesen Lauf auf Mastery-Level 1."},
+    {kind:"perk",id:"mastery",rarity:"epic",name:"Meisterschaft",icon:"prestige.svg",desc:"Hebt eine ausgerüstete Fähigkeit dieses Helden für diesen Lauf auf Mastery-Level 2; beide Upgradestufen wirken."},
     {kind:"perk",id:"plunder",rarity:"rare",name:"Plünderer",icon:"xp-star.svg",desc:"Jeder eigene Gegner-Kill bringt bei einem gewonnenen Boss 10 zusätzliche eigene Boss-XP pro Stapel."}
   ]);
 
@@ -367,8 +369,36 @@
     return healHero(players[index].profileId,perk(players[index].profileId,"hunter")*4,{combat:true,reason:"Boss Rush · Trophäenjäger"});
   }
 
+  const MASTERY_REWARD_LEVELS=Object.freeze({refinement:1,mastery:2});
+  const ABILITY_SLOTS=Object.freeze(["primaryAbility","secondAbility","thirdAbility"]);
+  function abilityLevelOverride(profileId,id){
+    const hero=heroState(profileId);
+    if(!run?.active||run.finished||!hero||!ABILITY_SLOTS.some(slot=>hero[slot]===Number(id)))return 0;
+    return Math.max(0,Math.min(2,Number(run.abilityLevelOverrides?.[String(profileId)]?.[Number(id)])||0));
+  }
+  function masteryTargets(profileId,rewardId){
+    const hero=heroState(profileId),level=MASTERY_REWARD_LEVELS[rewardId];
+    if(!hero||!level)return [];
+    return ABILITY_SLOTS.flatMap((slot,index)=>{
+      const id=validAbility(hero[slot]);if(id==null)return [];
+      const effective=Math.max(window.WDMastery?.abilityLevel?.(getProfile(profileId),"trio",id)||0,abilityLevelOverride(profileId,id));
+      if(effective>=level)return [];
+      const upgrades=[];
+      for(let next=effective+1;next<=level;next++){
+        const upgrade=window.WDMastery?.abilityUpgrade?.(id,next);
+        if(!upgrade)return [];
+        upgrades.push(upgrade);
+      }
+      return [{slot,index,id,upgrades}];
+    });
+  }
+  function rewardEligible(profileId,rewardId){
+    return !MASTERY_REWARD_LEVELS[rewardId]||masteryTargets(profileId,rewardId).length>0;
+  }
+  function needsTarget(rewardId){return rewardId==="realign"||!!MASTERY_REWARD_LEVELS[rewardId];}
+
   function perkChoicesFor(profileId,count,difficulty=stageConfig()?.difficulty||"easy"){
-    const eligible=REWARDS.filter(r=>difficulty!=="easy"||r.rarity==="common");
+    const eligible=REWARDS.filter(r=>(difficulty!=="easy"||r.rarity==="common")&&rewardEligible(profileId,r.id));
     const mandatory=difficulty==="hard"?"epic":difficulty==="normal"?"rare":"common";
     const chosen=shuffled(eligible.filter(r=>r.rarity===mandatory)).slice(0,1);
     shuffled(eligible).forEach(r=>{if(chosen.length<count&&!chosen.includes(r))chosen.push(r);});
@@ -419,10 +449,26 @@
     const task=currentTask();if(!task)return;
     rewardTurn=run.rewardTurn;
     const profile=getProfile(task.profileId),hero=heroState(task.profileId);
+    // Frühere Zweitfunde können die später vorbereitete Auswahl bereits verbessern.
+    // Eine wirkungslose Kopie überspringen; reguläre Auswahl mit Seltenheitsgarantie neu ziehen.
+    if(task.choices.some(id=>!rewardEligible(task.profileId,id))){
+      run.swapPending=null;
+      if(task.copy){completeReward();return;}
+      task.choices=newChoices(task.profileId,task.count);persistRun();
+    }
     rewardChoices=task.choices.map(choiceById).filter(Boolean);
     selectionLocked=!!run.swapPending;
     const intro=`${profile.name} · ${hero.hp} HP · ${tr("Wähle eine Belohnung")}`;
-    modal(run.swapPending?"Fähigkeit zum Tauschen wählen":"Run-Belohnung",intro,task.copy?"Zweitfund":"Boss besiegt");
+    modal(run.swapPending?(run.swapPending.rewardId==="realign"?"Fähigkeit zum Tauschen wählen":"Fähigkeit verbessern"):"Run-Belohnung",intro,task.copy?"Zweitfund":"Boss besiegt");
+    if(run.swapPending&&MASTERY_REWARD_LEVELS[run.swapPending.rewardId]){
+      const reward=rewardById(run.swapPending.rewardId);
+      $("trioBossRushRewardOptions").innerHTML=masteryTargets(task.profileId,reward.id).map(target=>
+        optionButton(`${target.index+1}. ${tr("Fähigkeit")}: ${abilityName(target.id)}`,
+          target.upgrades.map(upgrade=>`${upgrade.name}: ${tr(upgrade.text)}`).join(" · "),
+          reward.icon,"data-rush-slot",target.slot,tr(reward.name))
+      ).join("");
+      return;
+    }
     if(run.swapPending){
       $("trioBossRushRewardOptions").innerHTML=["primaryAbility","secondAbility","thirdAbility"].map((slot,i)=>{
         const ability=validAbility(hero[slot]);
@@ -452,6 +498,14 @@
       if(!copyReward&&[hero.primaryAbility,hero.secondAbility].includes(choice.abilityId))return false;
       if(![hero.primaryAbility,hero.secondAbility].includes(choice.abilityId))hero.thirdAbility=choice.abilityId;abilityId=choice.abilityId;
     }else{
+      if(MASTERY_REWARD_LEVELS[rewardId]){
+        const target=masteryTargets(profileId,rewardId).find(target=>target.slot===slot);
+        if(!target)return false;
+        abilityId=target.id;
+        run.abilityLevelOverrides??={};
+        run.abilityLevelOverrides[String(profileId)]??={};
+        run.abilityLevelOverrides[String(profileId)][abilityId]=MASTERY_REWARD_LEVELS[rewardId];
+      }
       if(rewardId==="realign"){
         if(!["primaryAbility","secondAbility","thirdAbility"].includes(slot)||validAbility(hero[slot])==null)return false;
         const available=REAL_ABILITY_IDS.filter(id=>![hero.primaryAbility,hero.secondAbility,hero.thirdAbility].includes(id));
@@ -482,9 +536,9 @@
 
   function selectReward(rewardId){
     const task=currentTask();
-    if(inputBlocked()||selectionLocked||!run||run.finished||run.phase!=="reward"||!task?.choices.includes(rewardId))return;
+    if(inputBlocked()||selectionLocked||!run||run.finished||run.phase!=="reward"||!task?.choices.includes(rewardId)||!rewardEligible(task.profileId,rewardId))return;
     lockSelection();
-    if(rewardId==="realign"){
+    if(needsTarget(rewardId)){
       run.swapPending={profileId:task.profileId,rewardId};persistRun();renderRewardTurn();return;
     }
     if(!grant(task.profileId,rewardId,{copyReward:!!task.copy})){selectionLocked=false;return;}
@@ -494,7 +548,7 @@
   function selectSlot(slot){
     if(inputBlocked()||!run?.swapPending||!selectionLocked)return;
     const task=currentTask();lockSelection();
-    if(!grant(task.profileId,"realign",{slot,copyReward:!!task.copy}))return;
+    if(!grant(task.profileId,run.swapPending.rewardId,{slot,copyReward:!!task.copy}))return;
     completeReward();
   }
 
@@ -737,7 +791,7 @@
     for(const [index,chosen] of candidate.selectedPaths.entries())if(chosen&&!candidate.paths[index]?.some(o=>JSON.stringify(o)===JSON.stringify(chosen)))return false;
     if(candidate.phase==="combat"&&!candidate.selectedPaths[candidate.stage])return false;
     for(const task of candidate.rewardTasks)if(!task||!candidate.profileIds.includes(task.profileId)||!Array.isArray(task.choices)||!task.choices.length||task.choices.some(id=>!choiceById(id)))return false;
-    if(candidate.swapPending&&(!candidate.rewardTasks[candidate.rewardTurn]?.choices.includes("realign")||candidate.swapPending.profileId!==candidate.rewardTasks[candidate.rewardTurn]?.profileId))return false;
+    if(candidate.swapPending&&(!needsTarget(candidate.swapPending.rewardId)||!candidate.rewardTasks[candidate.rewardTurn]?.choices.includes(candidate.swapPending.rewardId)||candidate.swapPending.profileId!==candidate.rewardTasks[candidate.rewardTurn]?.profileId))return false;
     if(!Number.isInteger(candidate.rewardTurn)||candidate.rewardTurn<0||!Number.isInteger(candidate.cleared)||candidate.cleared<0||candidate.cleared>10)return false;
     if(candidate.deferredRewards.some(r=>!r||!candidate.profileIds.includes(r.profileId)||!Number.isInteger(r.dueStage)||r.dueStage<0||r.dueStage>9||!choiceById(r.rewardId)))return false;
     if(candidate.phase==="reward"&&!candidate.rewardTasks[candidate.rewardTurn])return false;
@@ -748,7 +802,7 @@
     const p1=getProfile($("trioProfile1Select").value),p2=getProfile($("trioProfile2Select").value),p3=getProfile($("trioProfile3Select").value);
     run={schema:1,active:true,finished:false,phase:"path",stage:0,cleared:0,preparedStage:-1,bossXpEarned:0,lastBossXpAward:0,
       profileIds:[String(p1.id),String(p2.id),String(p3.id)],previousEncounterId:trioCampaignEncounterId,previousWorldId:trioWorldId,
-      rewardHistory:[],bossXpAwards:[],paths:[],selectedPaths:[],seenEncounters:[],deferredRewards:[],rewardTasks:[],rewardTurn:0,swapPending:null,lastAttacker:null,
+      abilityLevelOverrides:{},rewardHistory:[],bossXpAwards:[],paths:[],selectedPaths:[],seenEncounters:[],deferredRewards:[],rewardTasks:[],rewardTurn:0,swapPending:null,lastAttacker:null,
       heroes:Object.fromEntries([p1,p2,p3].map((p,i)=>[p.id,{hp:null,maxHp:null,primaryAbility:validAbility($("trioAbility"+(i+1)+"Select").value)??3,
         secondAbility:null,thirdAbility:null,perks:{},openingUsedStage:-1,bulwarkUsedStage:-1,successfulAttacks:0,stageKills:0,xpEarned:0}]))};
     resumeCandidate=null;ensurePaths();persistRun();showPaths();refreshButton();return true;
@@ -805,7 +859,7 @@
 
   window.WDTrioBossRush=Object.freeze({
     start,reset,abort,isActive,currentEncounter,stageNumber,statusText,worldThemeKey,worldThemeSequence,startingVitals,startingLoadout,
-    finishEncounter,attackDamageBonus,incomingDamageModifier,afterHeroAttack,onHeroKill,refreshButton,snapshot,rewardDefinitions,stageDefinitions,profileBossXp
+    finishEncounter,attackDamageBonus,incomingDamageModifier,abilityLevelOverride,afterHeroAttack,onHeroKill,refreshButton,snapshot,rewardDefinitions,stageDefinitions,profileBossXp
   });
 
   $("trioBossRushStartBtn")?.addEventListener("click",start);

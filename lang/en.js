@@ -3,6 +3,8 @@ window.WD_LANG_PACKS.en = {
   code: 'en',
   name: 'English',
   exact: {
+    "Boss-XP verfügbar":"Available Boss XP",
+    "Konvertieren":"Convert",
     "DiceDuel Logo":"DiceDuel Logo",
     "DICEDUEL":"DICEDUEL",
     "Spielen":"Play",
