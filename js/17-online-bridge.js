@@ -495,7 +495,8 @@
     pendingCounterattack=cloneJson(b.pendingCounterattack,null);
     deferredAttackFinish=!!b.deferredAttackFinish;
 
-    // Netzwerk-Snapshots werden immer in einem stabilen Zustand veröffentlicht.
+    // Transiente Engine-Flags werden nicht auf dem Spiegelclient ausgeführt.
+    // Ein Zwischenstand stellt seine Rollvorschau anschließend gesondert wieder her.
     isAnimating=false;
     gamblingRolling=false;
     perfect25Rolling=false;
@@ -522,8 +523,8 @@
         const value=rawValue===""?null:Number(rawValue);
         renderSpecialDieFace(die,players[current]?.diceDesign||"classic",Number.isFinite(value)?value:null);
       }else die.textContent=String(snapshot.dieText||"");
-      // Snapshots werden erst nach abgeschlossener Engine-Animation veröffentlicht.
-      // Ein noch offenes Spezialmodal ist deshalb definitionsgemäß wieder interaktiv.
+      // Ein offenes Spezialmodal wird zunächst wieder interaktiv.
+      // Beim Zwischenstand sperren Vorschau/Pending es anschließend erneut.
       // Transiente disabled-Flags vom Host dürfen nicht auf dem Spiegelclient kleben.
       die.disabled=!open;
       die.classList.remove("rolling");
@@ -590,7 +591,8 @@
   }
 
   function applyStateNow(state,previousHp){
-    const settlingRoll=isOnlineRollVisual(state?.actionType||onlineSession.previewType||onlineSession.pendingActionType);
+    const settled=state.settled!==false;
+    const settlingRoll=settled&&isOnlineRollVisual(state?.actionType||onlineSession.previewType||onlineSession.pendingActionType);
     if(settlingRoll) prepareOnlineRollCommit();
 
     const turnUid=String(state.currentPlayerUid||"");
@@ -631,7 +633,13 @@
       });
     }
 
-    clearPendingAction();
+    if(settled) clearPendingAction();
+    else if(!onlineSession.isHost){
+      // Auch ein Eigentümerwechsel im Zwischenstand gibt noch keinen Folgezug frei.
+      // Den laufenden 8000-ms-Timer der Gasteingabe weder löschen noch verlängern.
+      onlineSession.actionPending=true;
+      beginActionPreview(state.actionType,state.actionId);
+    }
     enforceOnlineControls();
   }
 
@@ -645,7 +653,7 @@
     // Das Firebase-Echo wird deshalb NICHT noch einmal in DOM/State zurückgespielt.
     // Das entfernt einen kompletten Doppel-Render pro Aktion.
     if(onlineSession.isHost){
-      clearPendingAction();
+      if(state.settled!==false) clearPendingAction();
       enforceOnlineControls();
       return true;
     }
@@ -728,15 +736,18 @@
     if(actionType==="ability_choice") await new Promise(resolve=>setTimeout(resolve,145));
   }
 
-  async function hostExecuteAction(request){
+  async function hostExecuteAction(request,publishProvisional){
     if(!isOnlineMatch() || !onlineSession.isHost || !request) throw new Error("ONLINE_NOT_HOST");
     if(!actionOwnerMatches(request)) throw new Error("WRONG_INTERACTION_OWNER");
     const rollVisual=isOnlineRollVisual(request.type);
     try{
       executeOnlineAction(request);
+      // Nur in die bestehende Publish-Warteschlange einreihen: kein Netz-Await
+      // im lokalen Eingabepfad. Der Transport vergibt beide Sequenzen synchron.
+      publishProvisional?.({...exportOnlineState(request.id,request.type),settled:false});
       await waitForEngineSettled(String(request.type||""));
       enforceOnlineControls();
-      return exportOnlineState(request.id,request.type);
+      return {...exportOnlineState(request.id,request.type),settled:true};
     }finally{
       if(rollVisual) finishOnlineRollWindow();
     }
