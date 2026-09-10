@@ -22,9 +22,9 @@ welche Fallen schon Zeit gekostet haben.
 
 | | |
 |---|---|
-| Version | **28.12.4** |
+| Version | **28.12.5** |
 | Branch | `main` |
-| Letzte Schritte | CSS-Stapel auf 10 Dateien zusammengelegt · Changelog englisch vervollständigt · Hauptmenü, Statistik, Profile, Achievements, Spielvorbereitung und Trophy Shop überarbeitet · Fähigkeits- und Shopflächen auf proportional gekachelte Bildrahmen umgestellt · alle Bild-URLs auf einen gemeinsamen Cache-Schlüssel · Trophy-Shop-Reste bereinigt und Aufklapppfeile angeglichen · Duo- und Trio-Boss-Rush mit Pfadwahl, gespeicherten Runs und 32 Perks einschließlich temporärer Ability-Mastery · Boss-XP-Umtausch 300:100 · Zweitfund gedeckelt · Trio-Rush 15 Stufen, ab 10 ultraschwer |
+| Letzte Schritte | CSS-Stapel auf 10 Dateien zusammengelegt · Changelog englisch vervollständigt · Hauptmenü, Statistik, Profile, Achievements, Spielvorbereitung und Trophy Shop überarbeitet · Fähigkeits- und Shopflächen auf proportional gekachelte Bildrahmen umgestellt · alle Bild-URLs auf einen gemeinsamen Cache-Schlüssel · Trophy-Shop-Reste bereinigt und Aufklapppfeile angeglichen · Duo- und Trio-Boss-Rush mit Pfadwahl, gespeicherten Runs und 32 Perks einschließlich temporärer Ability-Mastery · Boss-XP-Umtausch 300:100 · Zweitfund gedeckelt · Trio-Rush 15 Stufen, ab 10 ultraschwer · Boss-Rush-HUD auf die Weltregel reduziert |
 
 **Die Arbeitsteilung hat sich geändert.** Bis V28.11.28 liefen zwei
 Sitzungen parallel: Codex hat umgesetzt, diese Sitzung geprüft. Ab jetzt
@@ -423,7 +423,20 @@ wird nur auf ausdrückliche Ansage geändert. Nicht ungefragt „reparieren".
    was im Browser bleibt — kein Auftrag über ein paar Stunden. Ebenfalls
    offen und dann fällig: die Zuordnung von `Profiles` zu `auth.users`.
 
-4. **Mobiles Boss-Rush-Statusbanner bei langen Namen.** Bei der Trio-Portierung
+4. **Der Rahmen der Regelleiste kann keine drei Textzeilen halten.**
+   Seit 28.12.5 steht im Boss Rush nur noch die Weltregel in der Leiste, und
+   Regelname und Erklärung fließen wieder in einer Zeile. Was bleibt: bei den
+   längsten Regeln (Void Clock, Casino Floor) braucht der Text ab etwa 390 px
+   drei bis vier Zeilen und steht dann über den gemalten roten Bereich hinaus.
+   **Mit Innenabstand ist das nicht zu lösen** — nachgemessen mit 16 px und
+   26 px am selben Text: `--p3-boss-bar` liegt als
+   `background: center/100% 100%`, der Zierrand wird also mit der Leiste
+   mitgestreckt, das Verhältnis bleibt gleich. Die saubere Lösung ist der
+   Wechsel auf `border-image` mit festen Slices, damit die Randbreite
+   unabhängig von der Höhe konstant bleibt. Dafür fehlen die Slice-Werte für
+   `boss.webp` (512 × 171) — nach Projektregel nicht raten, sondern erfragen.
+
+5. **Mobiles Boss-Rush-Statusbanner bei langen Namen.** Bei der Trio-Portierung
    auch im unveränderten Duo-Modul reproduziert: Der gemeinsame
    `.encounter-rule-banner` legt Statusraster und Regeltexte nebeneinander
    in eine Flexzeile. Lange Profil-/Gruppennamen werden schmal umgebrochen;
@@ -432,7 +445,7 @@ wird nur auf ausdrückliche Ansage geändert. Nicht ungefragt „reparieren".
    nur 34 px. Trio mit Helix Apex und allen drei Seals ist ebenfalls betroffen.
    Auftragsgemäß keine gemeinsame UI-Überarbeitung in der reinen Portierung.
 
-5. **Mastery greift im Boss Rush nur teilweise.** Nachgesehen am 10.09.,
+6. **Mastery greift im Boss Rush nur teilweise.** Nachgesehen am 10.09.,
    dreigeteiltes Bild: Die **Fähigkeits-Upgrades L1/L2** wirken immer —
    `abilityLevel` (`js/23-mastery.js:236`) hat keine Encounter-Prüfung.
    Der **Schadensbonus** wird je Angriff über
@@ -444,7 +457,7 @@ wird nur auf ausdrückliche Ansage geändert. Nicht ungefragt „reparieren".
    („Mastery erst ab Welt 2"). Noch nicht entschieden, ob der Boss Rush
    Mastery ganz, gar nicht oder wie heute halb tragen soll.
 
-6. **Kleinigkeiten**, gesammelt und vom Nutzer zurückgestellt:
+7. **Kleinigkeiten**, gesammelt und vom Nutzer zurückgestellt:
    - `"von"` als sehr kurzer, generischer `exact`-Schlüssel.
    - In den Nicht-Classic-Modi steht vor dem Wurf nicht mehr, wie viele
      Startfähigkeiten es gibt.

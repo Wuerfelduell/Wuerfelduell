@@ -80,9 +80,12 @@
       // Erklärung steht bereits in Welt- und Encounter-Detail.
       parts.push(`<strong>${escapeHtml(label)} · ${escapeHtml(tx(mechanic.name))}</strong>`);
     }
-    const rushStatus=window.WDBossRush?.statusText?.();
-    if(rushStatus)parts.unshift(`<strong class="boss-rush-live">${escapeHtml(rushStatus)}</strong>`);
-    if(phase){
+    // Im Boss Rush bleiben nur die Weltregeln stehen. Stufe, Boss, XP und die
+    // Phasenzeile standen zusaetzlich in der Leiste und machten sie auf dem
+    // Handy hoeher als den Spielbereich; die Angaben stehen ohnehin auf den
+    // Karten und im Abschlussfenster.
+    const bossRush=!!window.WDBossRush?.isActive?.();
+    if(phase&&!bossRush){
       const phases=Array.isArray(phase.phases)?phase.phases:[phase];
       const triggered=new Set(encounterRuntime.phaseTriggeredIds||[]);
       const next=phases.map((entry,index)=>({entry,index})).filter(item=>!triggered.has(item.index)).sort((a,b)=>(b.entry.threshold||.5)-(a.entry.threshold||.5))[0];
@@ -93,7 +96,11 @@
         parts.push(`<span class="phase-live">👹 ${escapeHtml(tx("Finalphase aktiv"))}</span>`);
       }
     }
-    encounterRuleBanner.classList.toggle("hidden",parts.length===0);encounterRuleBanner.innerHTML=parts.join("<br>");
+    // Ein Wrapper, weil die Leiste ein Flex-Container ist: ohne ihn wird jedes
+    // <strong> zu einem eigenen Flex-Element neben dem Beschreibungstext, und
+    // Regelname und Erklärung stehen nebeneinander statt in einem Textfluss.
+    encounterRuleBanner.classList.toggle("hidden",parts.length===0);
+    encounterRuleBanner.innerHTML=parts.length?`<span class="encounter-rule-text">${parts.join("<br>")}</span>`:"";
   }
   function campaignHeroIndices(){
     return players.map((p,i)=>p?.campaignTeam==="hero"?i:null).filter(i=>i!=null);
@@ -198,7 +205,9 @@
     if(!campaignTaskProgress)return;
     if(!campaignMode){campaignTaskProgress.classList.add("hidden");campaignTaskProgress.innerHTML="";return;}
     const encounter=currentEncounterObject(),heroIndex=campaignHeroIndices()[0];
-    if(!encounter?.challenge||heroIndex==null){campaignTaskProgress.classList.add("hidden");campaignTaskProgress.innerHTML="";return;}
+    // Im Boss Rush gibt es keine Encounter-Aufgabe zu erfuellen - der Lauf
+    // selbst ist die Aufgabe. Die Anzeige waere nur Fuellmaterial.
+    if(!encounter?.challenge||heroIndex==null||window.WDBossRush?.isActive?.()){campaignTaskProgress.classList.add("hidden");campaignTaskProgress.innerHTML="";return;}
     const rules=encounter.challenge.type==="all"?(encounter.challenge.rules||[]):[encounter.challenge];
     const rows=rules.map(rule=>{
       const met=campaignChallengeRuleMet(rule,heroIndex),info=campaignChallengeProgressInfo(rule,heroIndex),state=met?"done":info.failed?"failed":"";

@@ -218,45 +218,6 @@
     return tr(`1 · ${Math.round((Number(phase.threshold)||.5)*100)} % → ${phase.title}`);
   }
 
-  function liveStatusItem(label,value){
-    const item=document.createElement("span"),caption=document.createElement("small"),content=document.createElement("b");
-    item.className="boss-rush-status-item";
-    caption.textContent=tr(label);
-    content.textContent=String(value);
-    item.append(caption,content);
-    return item;
-  }
-
-  function syncLiveStatus(){
-    if(!run?.active)return;
-    const banner=$("encounterRuleBanner"),status=banner?.querySelector(".boss-rush-live"),stage=stageConfig();
-    if(!banner||!status||!stage)return;
-    const phaseValue=livePhaseValue();
-    const signature=[stageCount(),run.stage,stage.label,phaseValue,run.bossXpEarned].join("|");
-    if(status.dataset.bossRushStatus!==signature){
-      status.dataset.bossRushStatus=signature;
-      status.classList.add("boss-rush-status-items");
-      status.replaceChildren(
-        liveStatusItem("Stufe",`${run.stage+1} / ${stageCount()}`),
-        liveStatusItem("Boss",stage.label),
-        liveStatusItem("Phase",phaseValue),
-        liveStatusItem("XP",run.profileIds.map(id=>`${getProfile(id)?.name}: ${heroState(id)?.xpEarned||0}`).join(" · "))
-      );
-      status.setAttribute("aria-label",tr(`Boss Rush, Stufe ${run.stage+1} von ${stageCount()}, Boss ${stage.label}, Phase ${phaseValue}, ${run.bossXpEarned} ${tr("Basis-Boss-XP")}`));
-    }
-    banner.querySelectorAll(".phase-live").forEach(line=>{
-      line.dataset.bossRushLegacyPhase="1";
-      line.setAttribute("aria-hidden","true");
-    });
-  }
-
-  function statusText(){
-    const stage=stageConfig();
-    if(!run||!stage)return "";
-    queueMicrotask(syncLiveStatus);
-    return tr(`Boss Rush ${run.stage+1}/${stageCount()} · ${stage.label} · ${run.bossXpEarned} ${tr("Basis-Boss-XP")}`);
-  }
-
   function findHeroIndex(profileId){
     return players.findIndex(player=>player?.campaignTeam==="hero"&&String(player.profileId)===String(profileId));
   }
@@ -888,7 +849,7 @@
   function worldThemeSequence(){return [...BOSS_RUSH_WORLD_THEME_KEYS];}
 
   window.WDTrioBossRush=Object.freeze({
-    start,reset,abort,isActive,currentEncounter,stageNumber,statusText,worldThemeKey,worldThemeSequence,startingVitals,startingLoadout,
+    start,reset,abort,isActive,currentEncounter,stageNumber,worldThemeKey,worldThemeSequence,startingVitals,startingLoadout,
     finishEncounter,attackDamageBonus,incomingDamageModifier,abilityLevelOverride,afterHeroAttack,onHeroKill,refreshButton,snapshot,rewardDefinitions,stageDefinitions,profileBossXp
   });
 

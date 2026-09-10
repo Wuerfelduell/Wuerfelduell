@@ -122,21 +122,6 @@ body:not(.test-lab-active) .die.locked::after{
   text-align:center;
 }
 
-.boss-rush-live{
-  display:inline-flex;
-  align-items:center;
-  color:#ffe19a;
-  letter-spacing:.035em;
-}
-
-.boss-rush-live::before{
-  content:"";
-  width:18px;
-  height:18px;
-  margin-right:7px;
-  background:url("../assets/ui/v28/svg/gameplay/boss.svg?v=28.11.28") center/contain no-repeat;
-}
-
 .boss-rush-reward-modal{
   z-index:2147482100;
   padding:18px 14px;

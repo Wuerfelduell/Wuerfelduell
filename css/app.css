@@ -9417,21 +9417,6 @@ body:not(.test-lab-active) .die.locked::after{
   text-align:center;
 }
 
-.boss-rush-live{
-  display:inline-flex;
-  align-items:center;
-  color:#ffe19a;
-  letter-spacing:.035em;
-}
-
-.boss-rush-live::before{
-  content:"";
-  width:18px;
-  height:18px;
-  margin-right:7px;
-  background:url("../assets/ui/v28/svg/gameplay/boss.svg?v=28.11.28") center/contain no-repeat;
-}
-
 .boss-rush-reward-modal{
   z-index:2147482100;
   padding:18px 14px;
@@ -11822,44 +11807,6 @@ html[data-v28-rework="2"] body.playing #game.boss-rush-game #players .player.bos
 }
 
 /* JS 37 replaces the run-on sentence with four explicit label/value cells. */
-html[data-v28-rework="2"] body.playing .boss-rush-live.boss-rush-status-items{
-  box-sizing:border-box;
-  width:100%;
-  display:grid;
-  grid-template-columns:repeat(4,minmax(0,1fr));
-  gap:6px;
-  letter-spacing:normal;
-}
-html[data-v28-rework="2"] body.playing .boss-rush-live.boss-rush-status-items::before{
-  display:none;
-}
-html[data-v28-rework="2"] body.playing .boss-rush-status-item{
-  min-width:0;
-  display:flex;
-  flex-direction:column;
-  align-items:flex-start;
-  gap:2px;
-  padding:6px 7px;
-  border:0!important;
-  border-radius:8px;
-  background:rgba(4,22,49,.58);
-}
-html[data-v28-rework="2"] body.playing .boss-rush-status-item>small{
-  color:#9fb3cd;
-  font-size:8px;
-  font-weight:900;
-  letter-spacing:.08em;
-  line-height:1;
-  text-transform:uppercase;
-}
-html[data-v28-rework="2"] body.playing .boss-rush-status-item>b{
-  max-width:100%;
-  color:#ffe19a;
-  font-size:10px;
-  line-height:1.18;
-  overflow-wrap:anywhere;
-  white-space:normal;
-}
 html[data-v28-rework="2"] body.playing .phase-live[data-boss-rush-legacy-phase]{
   display:none;
 }
@@ -11910,10 +11857,6 @@ html[data-v28-rework="2"] body.playing .phase-live[data-boss-rush-legacy-phase]{
   }
   html[data-v28-rework="2"] .campaign-hub .campaign-node-detail[data-p4-detail-tone="boss"] .node-detail-title{
     font-size:clamp(15px,4.5vw,18px);
-  }
-  html[data-v28-rework="2"] body.playing .boss-rush-live.boss-rush-status-items{
-    grid-template-columns:repeat(2,minmax(0,1fr));
-    gap:5px;
   }
 }
 
@@ -12522,3 +12465,14 @@ html[data-v28-rework="2"] #masteryBossXpConvertBtn{
   flex-direction:column;
   align-items:center;
 }
+
+/* ===== Regelleiste: ein Textfluss statt Flex-Elemente ===== */
+/* Die Leiste zentriert ihren Inhalt per Flex. Ohne Wrapper wird jedes
+   <strong> darin zu einem eigenen Flex-Element, wodurch der Regelname
+   neben seiner Erklärung stand und beide aus dem Rahmen liefen. */
+.encounter-rule-banner .encounter-rule-text{
+  display:block;
+  width:100%;
+  min-width:0;
+  text-align:center;
+  overflow-wrap:anywhere}

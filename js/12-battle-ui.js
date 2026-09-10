@@ -591,6 +591,10 @@
     else if(phase==="base_auto_end"){statusEl.textContent="Basiszug beendet – nächster Spieler...";}
     else if(phase==="turn_done"){statusEl.textContent="Angriff beendet.";}
 
+    // Im Boss Rush bleibt die Fähigkeitsliste aus: die Loadouts wechseln je
+    // Stufe und stehen im Belohnungsfenster, hier kosten sie nur Platz.
+    if(window.WDBossRush?.isActive?.()){abilityState.innerHTML="";abilityState.classList.add("hidden");return;}
+    abilityState.classList.remove("hidden");
     const abilityLines=playerAbilities().map(a=>{
       let usage="passiv";
       if(a===3) usage=baseRerollUsed?"bereits benutzt":"noch verfügbar";
