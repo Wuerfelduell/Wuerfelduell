@@ -14,7 +14,7 @@
   function emptyAbilityStat(){return {equipped:0,primary:0,secondary:0,chosen:0,wins:0};}
   function emptyProfileStats(){return {rounds:0,wins:0,kills:0,damageDealt:0,damageTaken:0,selfDamage:0,healed:0,ones:0,sixes:0,maxTurnDamage:0,currentWinStreak:0,bestWinStreak:0,abilities:{}};}
   function createDefaultSave(){
-    return {schemaVersion:SAVE_SCHEMA_VERSION,campaignVersion:CAMPAIGN_VERSION,lastGameVersion:GAME_VERSION,settings:{animation:"normal",botSpeed:"normal"},global:{completedRounds:0},profiles:[],duoCampaigns:{},trioCampaigns:{},bossRushRuns:{}};
+    return {schemaVersion:SAVE_SCHEMA_VERSION,campaignVersion:CAMPAIGN_VERSION,lastGameVersion:GAME_VERSION,settings:{animation:"normal",botSpeed:"normal"},global:{completedRounds:0},profiles:[],duoCampaigns:{},trioCampaigns:{},bossRushRuns:{},trioBossRushRuns:{}};
   }
 
   let storageAvailable=true;
@@ -308,7 +308,7 @@
     return p;
   }
 
-  function sanitizeBossRushRuns(raw,profiles){
+  function sanitizeBossRushRuns(raw,profiles,teamSize=2){
     const result={};
     if(!raw||typeof raw!=="object"||Array.isArray(raw))return result;
     const ids=new Set(profiles.map(p=>String(p.id)));
@@ -323,9 +323,9 @@
       return null;
     };
     for(const source of Object.values(raw).slice(0,100)){
-      if(!source||source.schema!==1||source.finished||!Array.isArray(source.profileIds)||source.profileIds.length!==2)continue;
+      if(!source||source.schema!==1||source.finished||!Array.isArray(source.profileIds)||source.profileIds.length!==teamSize)continue;
       const pair=source.profileIds.map(String);
-      if(pair[0]===pair[1]||!pair.every(id=>ids.has(id)))continue;
+      if(new Set(pair).size!==teamSize||!pair.every(id=>ids.has(id)))continue;
       if(!Number.isInteger(source.stage)||source.stage<0||source.stage>9||!["path","combat","reward"].includes(source.phase))continue;
       const runSave=clean(source);
       if(!runSave.heroes||!pair.every(id=>runSave.heroes[id]&&typeof runSave.heroes[id]==="object"))continue;
@@ -361,6 +361,7 @@
     saveData=next; // normalizeProfile nutzt die bereits aufgebauten Profile für eindeutige Tags.
     rawProfiles.forEach(rawProfile=>next.profiles.push(normalizeProfile(rawProfile)));
     next.bossRushRuns=sanitizeBossRushRuns(migrated.bossRushRuns,next.profiles);
+    next.trioBossRushRuns=sanitizeBossRushRuns(migrated.trioBossRushRuns,next.profiles,3);
     return next;
   }
 

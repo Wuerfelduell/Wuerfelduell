@@ -22,9 +22,9 @@ welche Fallen schon Zeit gekostet haben.
 
 | | |
 |---|---|
-| Version | **28.12.0** |
+| Version | **28.12.1** |
 | Branch | `main` |
-| Letzte Schritte | CSS-Stapel auf 10 Dateien zusammengelegt · Changelog englisch vervollständigt · Hauptmenü, Statistik, Profile, Achievements, Spielvorbereitung und Trophy Shop überarbeitet · Fähigkeits- und Shopflächen auf proportional gekachelte Bildrahmen umgestellt · alle Bild-URLs auf einen gemeinsamen Cache-Schlüssel · Trophy-Shop-Reste bereinigt und Aufklapppfeile angeglichen · Duo-Boss-Rush mit Pfadwahl, gespeicherten Runs und 30 Perks |
+| Letzte Schritte | CSS-Stapel auf 10 Dateien zusammengelegt · Changelog englisch vervollständigt · Hauptmenü, Statistik, Profile, Achievements, Spielvorbereitung und Trophy Shop überarbeitet · Fähigkeits- und Shopflächen auf proportional gekachelte Bildrahmen umgestellt · alle Bild-URLs auf einen gemeinsamen Cache-Schlüssel · Trophy-Shop-Reste bereinigt und Aufklapppfeile angeglichen · Duo- und Trio-Boss-Rush mit Pfadwahl, gespeicherten Runs und 30 Perks |
 
 **Die Arbeitsteilung hat sich geändert.** Bis V28.11.28 liefen zwei
 Sitzungen parallel: Codex hat umgesetzt, diese Sitzung geprüft. Ab jetzt
@@ -261,6 +261,39 @@ wird nur auf ausdrückliche Ansage geändert. Nicht ungefragt „reparieren".
 
 ---
 
+## Trio-Boss-Rush seit 28.12.1
+
+- `js/44-trio-boss-rush.js` portiert den Duo-Ablauf mit derselben Schnittstelle
+  und allen 30 Perks. `window.WDBossRush` in `js/06-campaign.js` verteilt
+  die Motorhaken nach Trio-/Duo-Modus; auf den Karten nach Rückkehrziel,
+  damit Start und Buttonzustand auch vor dem Kampf funktionieren.
+- Quelle sind alle 60 vorhandenen Trio-Encounter aus vier Welten. Nach
+  Nutzerklärung bleiben die Gruppen vollständig, auch mit vier Gegnern.
+  Boss-/Miniboss-Encounter (Weltposition 5/10/15 oder Datenflag) werden nur
+  auf Rush-Stufe 5 angeboten; Stufe 10 ist fest `trio_helix_apex` mit seinen
+  drei Seals. Alle anderen Stufen ziehen normale Encounter, ohne Wiederholung.
+- Druckbudgets = Duo × 1,5: 45 bis 210, für drei statt zwei Helden.
+  Die unveränderte Gegnerzahl-Gewichtung und HP-Verteilung gelten auch
+  für den Endboss; die Stufen steigen über alle drei Pfade.
+- `saveData.trioBossRushRuns` ist separat nach sortierten drei Profil-IDs
+  indiziert. Derselbe Bereiniger wie Duo mit Teamgröße 3. Der Lebenszeit-
+  Zähler `profile.campaign.bossRushXp` bleibt für beide Modi gemeinsam.
+- Feldlazarett heilt alle drei. Zweitfund kopiert je Stapel an beide
+  Mitspieler (ohne Kopierketten); Wechselspiel gilt nach jedem Mitspieler,
+  solange alle drei leben; Proviantteilung berücksichtigt beide Empfänger.
+  Diese Anpassungen stehen in den deutschen/englischen Perkbeschreibungen.
+- Gleiche Bildrahmen wie Duo, vorhandenes `trio.svg` für Team-Perks;
+  die drei Verteidigungsperks bleiben bei `shield.svg`.
+- Prüfung: `scripts/qa/trio-boss-rush.mjs` und
+  `scripts/qa/trio-boss-rush-browser.mjs`; zusätzlich die bestehenden
+  Duo-Prüfstände. Zehn Stufen mit Test-Siegen, Reloads, alle drei Helden,
+  Moduswechsel, normale Trio-Kampagne und DE/EN bei fünf Bildschirmbreiten.
+  `validate-endgame.mjs` prüft beide Module und vollständige Trio-Gruppen.
+  Alle Prüfläufe grün, keine JS-Fehler/404; im Pfaddialog 0 DOM-Mutationen/s.
+  Der folgende mobile Altfehler ist davon ausdrücklich nicht abgedeckt.
+
+---
+
 ## Offen
 
 1. **Online läuft — aber der Gast wartet.** Der Nutzer hat am 10.09. mit
@@ -341,7 +374,16 @@ wird nur auf ausdrückliche Ansage geändert. Nicht ungefragt „reparieren".
    was im Browser bleibt — kein Auftrag über ein paar Stunden. Ebenfalls
    offen und dann fällig: die Zuordnung von `Profiles` zu `auth.users`.
 
-4. **Kleinigkeiten**, gesammelt und vom Nutzer zurückgestellt:
+4. **Mobiles Boss-Rush-Statusbanner bei langen Namen.** Bei der Trio-Portierung
+   auch im unveränderten Duo-Modul reproduziert: Der gemeinsame
+   `.encounter-rule-banner` legt Statusraster und Regeltexte nebeneinander
+   in eine Flexzeile. Lange Profil-/Gruppennamen werden schmal umgebrochen;
+   dadurch schrumpft die Höhe der scrollbaren Spielerkarten stark. Duo-Test
+   bei 390 px: Status 108 px breit, Banner 329 px hoch, Spielerkartenbereich
+   nur 34 px. Trio mit Helix Apex und allen drei Seals ist ebenfalls betroffen.
+   Auftragsgemäß keine gemeinsame UI-Überarbeitung in der reinen Portierung.
+
+5. **Kleinigkeiten**, gesammelt und vom Nutzer zurückgestellt:
    - `"von"` als sehr kurzer, generischer `exact`-Schlüssel.
    - In den Nicht-Classic-Modi steht vor dem Wurf nicht mehr, wie viele
      Startfähigkeiten es gibt.

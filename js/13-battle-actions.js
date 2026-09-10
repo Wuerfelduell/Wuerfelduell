@@ -1639,7 +1639,7 @@
       rawDamage+=masteryDamageBonus;
       addLog(`⚔️ Mastery · Force: +${masteryDamageBonus} Gesamtschaden.`);
     }
-    const rushDamageBonus=rawDamage>0?window.WDDuoBossRush?.attackDamageBonus?.(current,attackTarget):null;
+    const rushDamageBonus=rawDamage>0?window.WDBossRush?.attackDamageBonus?.(current,attackTarget):null;
     if((rushDamageBonus?.amount||0)>0){
       rawDamage+=rushDamageBonus.amount;
       addLog(`Boss Rush: ${rushDamageBonus.parts.join(" · ")}.`);
@@ -1757,7 +1757,7 @@
       addLog(`🩸 Lifesteal: ${p.name} heilt ${actualHeal} Leben${over}.`);
     }
 
-    window.WDDuoBossRush?.afterHeroAttack?.(current,actualDamage+ricochetActual+ricochetSecondActual);
+    window.WDBossRush?.afterHeroAttack?.(current,actualDamage+ricochetActual+ricochetSecondActual);
     campaignAfterSuccessfulAttack(current,actualDamage+ricochetActual+ricochetSecondActual);
 
     if(campaignMode&&players[current]?.campaignTeam==="hero"&&rawDamage>0&&encounterRuleActive("overcharge")&&players[current].hp>1){const result=applyDamageToPlayer(current,1,"self");const lost=result.lost;if(lost>0){recordSelfDamage(current,lost);players[current].damageSinceLastOwnTurn=true;pendingExtraDamageFx.push({target:current,amount:lost});addLog(`⚡ Overcharge-Rückstoß: ${players[current].name} verliert ${lost} HP.`);}}

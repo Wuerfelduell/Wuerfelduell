@@ -5,6 +5,9 @@
   if (!pack) return;
 
   Object.assign(pack.exact, {
+    "Der Trio-Boss-Rush übernimmt Pfadwahl, gespeicherte Runs und alle 30 Perks des Duo-Modus; Belohnungen gehen nacheinander an drei Helden": "Trio Boss Rush adopts path choices, saved runs and all 30 perks from Duo mode; three heroes choose their rewards in turn",
+    "Vollständige Trio-Encounter bilden die Gegnergruppen; Boss-Angebote erscheinen auf Stufe 5, Helix Apex beendet den Lauf auf Stufe 10": "Complete trio encounters form the enemy groups; boss offers appear on stage 5, and Helix Apex ends the run on stage 10",
+
     "Der Duo-Boss-Rush bietet vor den ersten neun Stufen je drei Pfade mit sichtbarer Beute und endet beim festen zehnten Boss": "Duo Boss Rush offers three paths with visible rewards before each of the first nine stages and ends with the fixed tenth boss",
     "Offene Runs lassen sich je Profilpaar fortsetzen; 30 stapelbare Perks, seltenheitsabhängige Belohnungen und ein gezielter Fähigkeitstausch ermöglichen unterschiedliche Builds": "Unfinished runs can be resumed per profile pair; 30 stackable perks, rarity-based rewards and a targeted ability swap enable different builds",
 

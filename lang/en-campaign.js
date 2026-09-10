@@ -1218,3 +1218,21 @@
   "Fähigkeit": "Ability",
   "Stufe": "Stage"
 }); })();
+
+// Trio-Portierung: nur modusspezifische Texte, der Perk-Pool bleibt derselbe.
+(() => {
+  const pack=(window.WD_LANG_PACKS||{}).en;if(!pack)return;
+  Object.assign(pack.exact,{
+    "Fortlaufender Trio-Gruppenkampf":"Continuous trio group battle",
+    "Fortlaufender Trio-Bosskampf":"Continuous trio boss battle",
+    "Nach jedem Boss heilen alle drei Helden 8 HP pro Stapel.":"After each boss, all three heroes heal 8 HP per stack.",
+    "Beide Mitspieler erhalten deine gewählte Belohnung eine Stufe später ebenfalls, jeweils einmal pro Stapel.":"Both teammates also receive your chosen reward one stage later, once each per stack.",
+    "Solange alle drei leben: Greift nach einem Mitspieler an und verursacht +2 Schaden pro Stapel.":"While all three heroes live, attacking after either teammate deals +2 damage per stack.",
+    "Vor jedem Boss gibt der gesündeste Held jedem schwächeren Mitspieler bis zu 3 HP pro Stapel, höchstens bis zum jeweiligen Gleichstand.":"Before each boss, the healthiest hero gives each weaker teammate up to 3 HP per stack, at most until their HP are equal.",
+    "Drei verschiedene Trio-Profile wählen":"Select three different trio profiles",
+    "Trio-Kampagne zuerst freischalten":"Unlock the trio campaign first",
+    "Boss XP · drei Profile wählen":"Boss XP · select three profiles",
+    "Zur Trio-Kampagne":"Back to Trio Campaign"
+  });
+  pack.patterns.push([/^Trio-Spieler · (\d+) HP · Boss XP gesamt (\d+)$/,m=>`Trio player · ${m[1]} HP · total Boss XP ${m[2]}`]);
+})();

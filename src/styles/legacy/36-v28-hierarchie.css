@@ -46,7 +46,7 @@
 html[data-v28-rework="2"] .dd-select-trigger,
 html[data-v28-rework="2"] #abilitiesScreen .ability-list-item,
 html[data-v28-rework="2"] .campaign-hub .campaign-complete,
-html[data-v28-rework="2"] #duoCampaignScreen .boss-rush-xp-summary,
+html[data-v28-rework="2"] :is(#duoCampaignScreen,#trioCampaignScreen) .boss-rush-xp-summary,
 html[data-v28-rework="2"] #settingsScreen input[type="text"],
 html[data-v28-rework="2"] #settingsScreen input:not([type]),
 html[data-v28-rework="2"] #profilesScreen #newProfileName,

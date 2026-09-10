@@ -82,34 +82,47 @@ const fingerprint=encounter=>JSON.stringify({count:encounter.enemies.length,role
 const compareWorlds=(a,b)=>{const left=encounters.filter(e=>e.world===a),right=encounters.filter(e=>e.world===b),same=left.filter((e,i)=>right[i]&&fingerprint(e)===fingerprint(right[i])).length;if(same>4)errors.push(`content diversity regression: ${a}/${b} share ${same}/15 positional fingerprints`);return same;};
 const duoSame=compareWorlds("eclipse","bloodmoon"),trioSame=compareWorlds("prism","singularity");
 
-const rushSource=fs.readFileSync("js/37-duo-boss-rush.js","utf8");
 context.document={getElementById:()=>null};context.queueMicrotask=()=>{};
-vm.runInContext('function duoEncounterById(id){return DUO_CAMPAIGN_ENCOUNTERS.find(e=>e.id===id);}',context);
-vm.runInContext(rushSource,context,{filename:"boss-rush-validation.js"});
-const rush=context.window.WDDuoBossRush,rushStages=rush.stageDefinitions();
-if(rushStages.length!==10)errors.push("Boss Rush requires 10 stages");
-const usedRushIds=new Set();
-for(const [index,stage] of rushStages.entries()){
-  const stageIds=new Set(stage.candidates.map(c=>c.encounterId));
-  if(stageIds.size<(index===9?1:3))errors.push(`Boss Rush stage ${index+1} has too few encounters`);
-  if(index===9&&stage.candidates.length!==1)errors.push("Boss Rush needs one fixed final boss");
-  for(const id of stageIds){if(usedRushIds.has(id))errors.push(`Boss Rush repeated stage pool: ${id}`);usedRushIds.add(id);}
-  for(const choice of stage.candidates){
-    const source=encounters.find(e=>e.id===choice.encounterId&&e.id.startsWith("duo_"));
-    if(!source)errors.push(`Boss Rush missing Duo encounter: ${choice.encounterId}`);
-    if(choice.enemies.length<1||choice.enemies.length>3)errors.push("Boss Rush exceeds supported enemy UI count");
-    if(source&&choice.enemies.some((e,i)=>e.name!==source.enemies[i]?.name||!Number.isInteger(e.hp)||e.hp<=0))errors.push(`Boss Rush invalid enemy: ${choice.encounterId}`);
-    const pressure=choice.enemies.reduce((n,e)=>n+e.hp,0)*(1+.25*(choice.enemies.length-1));
-    if(pressure!==choice.pressure)errors.push("Boss Rush pressure metadata differs from actual enemies");
+vm.runInContext('function duoEncounterById(id){return DUO_CAMPAIGN_ENCOUNTERS.find(e=>e.id===id);} function trioEncounterById(id){return TRIO_CAMPAIGN_ENCOUNTERS.find(e=>e.id===id);}',context);
+function validateRush(mode,file,moduleName){
+  const rushSource=fs.readFileSync(file,"utf8");
+  vm.runInContext(rushSource,context,{filename:file});
+  const rush=context.window[moduleName],stages=rush.stageDefinitions(),used=new Set();
+  if(stages.length!==10)errors.push(`${mode} Boss Rush requires 10 stages`);
+  for(const [index,stage] of stages.entries()){
+    const stageIds=new Set(stage.candidates.map(c=>c.encounterId));
+    if(stageIds.size<(index===9?1:3))errors.push(`${mode} Boss Rush stage ${index+1} has too few encounters`);
+    if(index===9&&(stage.candidates.length!==1||stage.candidates[0].encounterId!==(mode==="trio"?"trio_helix_apex":"duo_bloodmoon_empress")))errors.push(`${mode} Boss Rush fixed final boss missing`);
+    for(const id of stageIds){if(used.has(id))errors.push(`${mode} Boss Rush repeated stage pool: ${id}`);used.add(id);}
+    for(const choice of stage.candidates){
+      const source=encounters.find(e=>e.id===choice.encounterId&&e.id.startsWith(mode+"_"));
+      if(!source)errors.push(`${mode} Boss Rush missing encounter: ${choice.encounterId}`);
+      // Trio übernimmt auf Nutzerwunsch vollständige Gruppen, auch mit vier Gegnern.
+      if(choice.enemies.length<1||(mode==="duo"&&choice.enemies.length>3)||source&&choice.enemies.length!==source.enemies.length)errors.push(`${mode} Boss Rush enemy group mismatch`);
+      if(source&&choice.enemies.some((e,i)=>e.name!==source.enemies[i]?.name||!Number.isInteger(e.hp)||e.hp<=0))errors.push(`${mode} Boss Rush invalid enemy: ${choice.encounterId}`);
+      const pressure=choice.enemies.reduce((n,e)=>n+e.hp,0)*(1+.25*(choice.enemies.length-1));
+      if(pressure!==choice.pressure)errors.push(`${mode} Boss Rush pressure differs from actual enemies`);
+      if(mode==="trio"&&source){
+        const world=encounters.filter(e=>e.id.startsWith("trio_")&&e.world===source.world);
+        const boss=source.isBoss||source.isMiniBoss||[4,9,14].includes(world.findIndex(e=>e.id===source.id));
+        if(!!boss!==[4,9].includes(index))errors.push(`Trio Boss Rush boss outside stage 5/10: ${source.id}`);
+      }
+    }
+    if(index&&Math.min(...stage.candidates.map(c=>c.pressure))<=Math.max(...stages[index-1].candidates.map(c=>c.pressure)))errors.push(`${mode} Boss Rush pressure must rise across ALL paths at stage ${index+1}`);
   }
-  if(index&&Math.min(...stage.candidates.map(c=>c.pressure))<=Math.max(...rushStages[index-1].candidates.map(c=>c.pressure)))errors.push(`Boss Rush pressure must rise across ALL paths at stage ${index+1}`);
+  const rewards=rush.rewardDefinitions();
+  if(rewards.length!==30||new Set(rewards.map(r=>r.id)).size!==30)errors.push(`${mode} Boss Rush requires 30 unique perks`);
+  for(const reward of rewards){
+    if(!["common","rare","epic"].includes(reward.rarity))errors.push(`${mode} Boss Rush rarity missing: ${reward.id}`);
+    if(!fs.existsSync(`assets/ui/v28/svg/gameplay/${reward.icon}`))errors.push(`${mode} Boss Rush icon missing: ${reward.icon}`);
+    for(const key of ["name","desc"])if(!translations[reward[key]])errors.push(`missing EN localization: ${mode} reward ${reward.id} ${key}`);
+  }
+  if(rushSource.includes("fourthAbility=abilityId"))errors.push(`${mode} Boss Rush ability cap regression`);
+  for(const match of rushSource.matchAll(/\.textContent\s*=\s*"([^"]+)"/g))if(germanHint.test(match[1]))errors.push(`hardcoded ${mode} Boss Rush UI string without tr(): ${match[1]}`);
+  return {stages,rewards,ids:used,hp:stages.map(s=>`${Math.min(...s.candidates.map(c=>c.pressure))}-${Math.max(...s.candidates.map(c=>c.pressure))}`)};
 }
-const rushRewards=rush.rewardDefinitions();
-if(rushRewards.length!==30||new Set(rushRewards.map(r=>r.id)).size!==30)errors.push("Boss Rush requires 30 unique perks");
-for(const reward of rushRewards){if(!["common","rare","epic"].includes(reward.rarity))errors.push(`Boss Rush rarity missing: ${reward.id}`);if(!fs.existsSync(`assets/ui/v28/svg/gameplay/${reward.icon}`))errors.push(`Boss Rush icon missing: ${reward.icon}`);}
-if(rushSource.includes("fourthAbility=abilityId"))errors.push("Boss Rush ability cap regression");
-const rushIds=[...usedRushIds];
-const rushHp=rushStages.map(s=>`${Math.min(...s.candidates.map(c=>c.pressure))}-${Math.max(...s.candidates.map(c=>c.pressure))}`);
-const rewardSource=rushSource.split("const REWARDS=Object.freeze([")[1]?.split("]);")[0]||"";for(const match of rewardSource.matchAll(/(?:name|desc):"([^"]+)"/g))assertTranslation(match[1],"Boss Rush reward");for(const match of rushSource.matchAll(/\.textContent\s*=\s*"([^"]+)"/g))if(germanHint.test(match[1]))errors.push(`hardcoded Boss Rush UI string without tr(): ${match[1]}`);
+const duoRush=validateRush("duo","js/37-duo-boss-rush.js","WDDuoBossRush"),trioRush=validateRush("trio","js/44-trio-boss-rush.js","WDTrioBossRush");
+if(JSON.stringify(duoRush.rewards.map(r=>[r.id,r.name,r.rarity]))!==JSON.stringify(trioRush.rewards.map(r=>[r.id,r.name,r.rarity])))errors.push("Trio perk pool differs from Duo");
+if(trioRush.ids.size!==encounters.filter(e=>e.id.startsWith("trio_")).length)errors.push("Trio Boss Rush must retain all existing encounters");
 if(errors.length){console.error(errors.map(x=>`- ${x}`).join("\n"));process.exit(1);}
-const endgame=encounters.filter(e=>endgameWorldIds.has(e.world));console.log(`Endgame validated: ${endgame.length} encounters, ${Object.keys(profiles).length} AI profiles, ${Object.keys(mutators).length} mutators, ${Object.keys(modifiers).length} modifiers, ${ruleIds.size} world rules, ${rushStages.length} Boss Rush stages / ${rushIds.length} encounters (pressure ${rushHp.join("/")}), ${Object.keys(translations).length} static DE/EN pairs; positional fingerprints equal duo=${duoSame}/15, trio=${trioSame}/15.`);
+const endgame=encounters.filter(e=>endgameWorldIds.has(e.world));console.log(`Endgame validated: ${endgame.length} encounters, ${Object.keys(profiles).length} AI profiles, ${Object.keys(mutators).length} mutators, ${Object.keys(modifiers).length} modifiers, ${ruleIds.size} world rules, 10 Boss Rush stages each: Duo ${duoRush.ids.size} encounters (${duoRush.hp.join("/")}); Trio ${trioRush.ids.size} encounters (${trioRush.hp.join("/")}), ${Object.keys(translations).length} static DE/EN pairs; positional fingerprints equal duo=${duoSame}/15, trio=${trioSame}/15.`);
