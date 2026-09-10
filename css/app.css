@@ -6187,27 +6187,6 @@ html[data-v28-rework="2"] #prestigeShopScreen .prestige-item-name{
 html[data-v28-rework="2"] #prestigeShopScreen .prestige-item-desc{
   min-height:0;
   line-height:1.42}
-html[data-v28-rework="2"] #prestigeShopScreen .prestige-item>button{
-  padding:9px 31px;
-  border:0;
-  border-radius:0;
-  box-shadow:none;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  gap:6px}
-html[data-v28-rework="2"] #prestigeShopScreen .prestige-item>button.good,
-html[data-v28-rework="2"] #prestigeShopScreen .prestige-item>button:disabled:not(.gold){
-  color:#fff1cb;
-  background:var(--p4-navy-button) center/100% 100% no-repeat}
-html[data-v28-rework="2"] #prestigeShopScreen .prestige-item>button.gold{
-  color:#102c51;
-  background:var(--p4-gold-button) center/100% 100% no-repeat}
-html[data-v28-rework="2"] #prestigeShopScreen .prestige-item>button.gold:disabled{
-  color:#233b56;
-  background:var(--p4-gold-button) center/100% 100% no-repeat;
-  opacity:.52;
-  filter:grayscale(.68) saturate(.58)}
 html[data-v28-rework="2"] #prestigeShopScreen .p4-inline-icon{
   width:18px;
   height:18px;
@@ -8846,13 +8825,6 @@ html[data-v28-rework="2"] #prestigeShopScreen .prestige-item-desc{
   margin:6px 0 12px;
   padding:0}
 
-html[data-v28-rework="2"] #prestigeShopScreen .prestige-item>button:disabled,
-html[data-v28-rework="2"] #prestigeShopScreen .prestige-item.expensive>button:disabled,
-html[data-v28-rework="2"] #prestigeShopScreen .prestige-item.owned>button:disabled{
-  color:#102c51;
-  background:url("../assets/ui/v28/png/frames/gold-special-button.webp?v=28.11.28") center/100% 100% no-repeat;
-  opacity:1;
-  filter:none}
 
 /* Achievements: Inhalt im Rahmen, Owner-Chips mit Medaillon */
 html[data-v28-rework="2"] #achievementsScreen .achievement-card{
@@ -9233,18 +9205,6 @@ html[data-v28-rework="2"] #prestigeShopScreen .prestige-active-chip{
   min-height:44px;
   padding:8px 22px;
   border-radius:0;
-  box-shadow:none}
-html[data-v28-rework="2"] #prestigeShopScreen .prestige-item>button:disabled,
-html[data-v28-rework="2"] #prestigeShopScreen .prestige-item.owned>button:disabled,
-html[data-v28-rework="2"] #prestigeShopScreen .prestige-item.expensive>button:disabled{
-  min-height:54px;
-  border:0;
-  border-radius:0;
-  color:#102c51;
-  background:var(--p53-gold) center/100% 100% no-repeat;
-  background-color:transparent;
-  opacity:1;
-  filter:none;
   box-shadow:none}
 
 /* ========== ORANGE: Shop-Text aus dem Goldornament ========== */
@@ -10829,6 +10789,7 @@ html[data-v28-rework="2"] #prestigeShopScreen .prestige-section-chevron{
   border-right:2px solid #ffe09a;
   border-bottom:2px solid #ffe09a;
   transform:rotate(45deg) translate(-2px,-2px);
+  transition:transform .16s ease;
 }
 html[data-v28-rework="2"] #prestigeShopScreen .prestige-section-toggle[aria-expanded="true"] .prestige-section-chevron{
   transform:rotate(225deg) translate(-2px,-2px);

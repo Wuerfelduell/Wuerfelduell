@@ -14,7 +14,7 @@
   let localModeId="classic";
   function localModeRules(){return LOCAL_MODES[localModeId]||LOCAL_MODES.classic;}
 
-  const GAME_VERSION="28.11.29";
+  const GAME_VERSION="28.11.30";
   // Gemeinsamer Bild-Cache-Schluessel; identisch mit den Bild-URLs in HTML und CSS.
   const ASSET_REV="28.11.28";
   const SAVE_KEY="wuerfelduell_save_v1"; // absichtlich stabil: Updates lesen denselben Browser-Save
@@ -115,7 +115,7 @@
     {id:"dice_toxic",type:"dice",name:"Toxic Dice",value:"toxic",cost:12,desc:"Leuchtendes Giftgrün."},
     {id:"dice_rose",type:"dice",name:"Rose Dice",value:"rose",cost:15,desc:"Helles Rosé mit dunklen Pips."},
     {id:"dice_galaxy",type:"dice",name:"Galaxy Dice",value:"galaxy",cost:20,desc:"Violett-blauer Weltraum-Look."},
-    {id:"dice_prestige",type:"dice",name:"Prestige Dice",value:"prestige",cost:30,desc:"Teuerstes Würfelset im Shop. Maximalpreis 30 🏆."},
+    {id:"dice_prestige",type:"dice",name:"Prestige Dice",value:"prestige",cost:30,desc:"Teuerstes Würfelset im Shop."},
     {id:"fx_frost",type:"attackfx",name:"Frost Lance",value:"frost",cost:10,desc:"Eisiger Projektil-Effekt mit Splitter-Einschlag."},
     {id:"fx_rift",type:"attackfx",name:"Rift Tear",value:"rift",cost:18,desc:"Violett-cyaner Riss als Angriffseffekt."},
     {id:"fx_crown",type:"attackfx",name:"Crownfall",value:"crown",cost:28,desc:"Goldener Endgame-Angriffseffekt. Reiner Prestige-Flex."}

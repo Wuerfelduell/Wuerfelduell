@@ -912,6 +912,7 @@ html[data-v28-rework="2"] #prestigeShopScreen .prestige-section-chevron{
   border-right:2px solid #ffe09a;
   border-bottom:2px solid #ffe09a;
   transform:rotate(45deg) translate(-2px,-2px);
+  transition:transform .16s ease;
 }
 html[data-v28-rework="2"] #prestigeShopScreen .prestige-section-toggle[aria-expanded="true"] .prestige-section-chevron{
   transform:rotate(225deg) translate(-2px,-2px);

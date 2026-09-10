@@ -619,13 +619,6 @@ html[data-v28-rework="2"] #prestigeShopScreen .prestige-item-desc{
   margin:6px 0 12px;
   padding:0}
 
-html[data-v28-rework="2"] #prestigeShopScreen .prestige-item>button:disabled,
-html[data-v28-rework="2"] #prestigeShopScreen .prestige-item.expensive>button:disabled,
-html[data-v28-rework="2"] #prestigeShopScreen .prestige-item.owned>button:disabled{
-  color:#102c51;
-  background:url("../assets/ui/v28/png/frames/gold-special-button.webp?v=28.11.28") center/100% 100% no-repeat;
-  opacity:1;
-  filter:none}
 
 /* Achievements: Inhalt im Rahmen, Owner-Chips mit Medaillon */
 html[data-v28-rework="2"] #achievementsScreen .achievement-card{
@@ -1006,18 +999,6 @@ html[data-v28-rework="2"] #prestigeShopScreen .prestige-active-chip{
   min-height:44px;
   padding:8px 22px;
   border-radius:0;
-  box-shadow:none}
-html[data-v28-rework="2"] #prestigeShopScreen .prestige-item>button:disabled,
-html[data-v28-rework="2"] #prestigeShopScreen .prestige-item.owned>button:disabled,
-html[data-v28-rework="2"] #prestigeShopScreen .prestige-item.expensive>button:disabled{
-  min-height:54px;
-  border:0;
-  border-radius:0;
-  color:#102c51;
-  background:var(--p53-gold) center/100% 100% no-repeat;
-  background-color:transparent;
-  opacity:1;
-  filter:none;
   box-shadow:none}
 
 /* ========== ORANGE: Shop-Text aus dem Goldornament ========== */

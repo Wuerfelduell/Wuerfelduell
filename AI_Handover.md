@@ -22,9 +22,9 @@ welche Fallen schon Zeit gekostet haben.
 
 | | |
 |---|---|
-| Version | **28.11.29** |
+| Version | **28.11.30** |
 | Branch | `main` |
-| Letzte Schritte | CSS-Stapel auf 10 Dateien zusammengelegt · Changelog englisch vervollständigt · Hauptmenü, Statistik, Profile, Achievements, Spielvorbereitung und Trophy Shop überarbeitet · Fähigkeits- und Shopflächen auf proportional gekachelte Bildrahmen umgestellt · alle Bild-URLs auf einen gemeinsamen Cache-Schlüssel |
+| Letzte Schritte | CSS-Stapel auf 10 Dateien zusammengelegt · Changelog englisch vervollständigt · Hauptmenü, Statistik, Profile, Achievements, Spielvorbereitung und Trophy Shop überarbeitet · Fähigkeits- und Shopflächen auf proportional gekachelte Bildrahmen umgestellt · alle Bild-URLs auf einen gemeinsamen Cache-Schlüssel · Trophy-Shop-Reste bereinigt und Aufklapppfeile angeglichen |
 
 **Die Arbeitsteilung hat sich geändert.** Bis V28.11.28 liefen zwei
 Sitzungen parallel: Codex hat umgesetzt, diese Sitzung geprüft. Ab jetzt
@@ -286,16 +286,9 @@ wird nur auf ausdrückliche Ansage geändert. Nicht ungefragt „reparieren".
    schließen.
 
 5. **Kleinigkeiten**, gesammelt und vom Nutzer zurückgestellt:
-   - Alte Phasenregeln zielen noch auf `.prestige-item > button`
-     (`css/app.css` ~6204, ~8852, ~9243) und überschreiben neuere Farben.
-   - `dice_prestige` wird im Renderer umgeschrieben statt in den Daten
-     (`js/08-profiles-stats.js` gegen `js/01-config.js`); der alte Text
-     und seine Übersetzung in `lang/en.js` sind tot.
-   - Tote Schlüssel `"noch nicht gewürfelt"`, `"Startfähigkeiten:"`.
    - `"von"` als sehr kurzer, generischer `exact`-Schlüssel.
    - In den Nicht-Classic-Modi steht vor dem Wurf nicht mehr, wie viele
      Startfähigkeiten es gibt.
-   - Der Shop-Chevron hat keine `transition`, der Profil-Chevron schon.
    - Die 22 Rahmenbilder in `frames/` (1,6 MB) sind beim Runterskalieren
      ausgespart — jeder `border-image-slice` müsste neu gerechnet werden.
 

@@ -1644,27 +1644,6 @@ html[data-v28-rework="2"] #prestigeShopScreen .prestige-item-name{
 html[data-v28-rework="2"] #prestigeShopScreen .prestige-item-desc{
   min-height:0;
   line-height:1.42}
-html[data-v28-rework="2"] #prestigeShopScreen .prestige-item>button{
-  padding:9px 31px;
-  border:0;
-  border-radius:0;
-  box-shadow:none;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  gap:6px}
-html[data-v28-rework="2"] #prestigeShopScreen .prestige-item>button.good,
-html[data-v28-rework="2"] #prestigeShopScreen .prestige-item>button:disabled:not(.gold){
-  color:#fff1cb;
-  background:var(--p4-navy-button) center/100% 100% no-repeat}
-html[data-v28-rework="2"] #prestigeShopScreen .prestige-item>button.gold{
-  color:#102c51;
-  background:var(--p4-gold-button) center/100% 100% no-repeat}
-html[data-v28-rework="2"] #prestigeShopScreen .prestige-item>button.gold:disabled{
-  color:#233b56;
-  background:var(--p4-gold-button) center/100% 100% no-repeat;
-  opacity:.52;
-  filter:grayscale(.68) saturate(.58)}
 html[data-v28-rework="2"] #prestigeShopScreen .p4-inline-icon{
   width:18px;
   height:18px;

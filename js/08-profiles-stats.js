@@ -160,9 +160,7 @@
         const owned=prestigeItemOwned(profile,item),equipped=prestigeItemEquipped(profile,item),afford=trophies>=item.cost;
         const typeName=tFn(item.type==="attackfx"?"Angriffseffekt":categoryNames[item.type]);
         const action=equipped?`<div class="prestige-item-action prestige-item-active">${buttonArtwork("green")}${uiIcon("gameplay/completed.svg")}<span>${tFn("Aktiv")}</span></div>`:owned?`<button type="button" class="prestige-item-action prestige-item-equip" data-shop-equip="${item.id}">${buttonArtwork("navy")}${uiIcon("gameplay/prestige.svg")}<span>${tFn("Aktivieren")}</span></button>`:`<button type="button" class="prestige-item-action prestige-item-buy gold" data-shop-buy="${item.id}" ${afford?"":"disabled"}>${buttonArtwork("gold")}${uiIcon("gameplay/trophy.svg")}<span>${item.cost} · ${tFn("Kaufen")}</span></button>`;
-        // Auch der bisherige Maximalpreis im Beschreibungstext erscheint nur im Kaufbutton.
-        const description=item.id==="dice_prestige"?"Teuerstes Würfelset im Shop.":item.desc;
-        return `<div class="prestige-item${owned?" owned":""}${item.cost>=25?" expensive":""}" data-shop-item="${item.id}"><div class="prestige-item-kicker">${typeName}</div><div class="prestige-item-name">${escapeHtml(item.name)}</div><div class="prestige-item-desc">${escapeHtml(description)}</div>${action}</div>`;
+        return `<div class="prestige-item${owned?" owned":""}${item.cost>=25?" expensive":""}" data-shop-item="${item.id}"><div class="prestige-item-kicker">${typeName}</div><div class="prestige-item-name">${escapeHtml(item.name)}</div><div class="prestige-item-desc">${escapeHtml(item.desc)}</div>${action}</div>`;
       }).join("");
       return `<div class="prestige-category">${section(type,categoryNames[type],cards,"prestige-category-items")}</div>`;
     }).join("");
