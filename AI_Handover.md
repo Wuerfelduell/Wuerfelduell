@@ -383,7 +383,19 @@ wird nur auf ausdrückliche Ansage geändert. Nicht ungefragt „reparieren".
    nur 34 px. Trio mit Helix Apex und allen drei Seals ist ebenfalls betroffen.
    Auftragsgemäß keine gemeinsame UI-Überarbeitung in der reinen Portierung.
 
-5. **Kleinigkeiten**, gesammelt und vom Nutzer zurückgestellt:
+5. **Mastery greift im Boss Rush nur teilweise.** Nachgesehen am 10.09.,
+   dreigeteiltes Bild: Die **Fähigkeits-Upgrades L1/L2** wirken immer —
+   `abilityLevel` (`js/23-mastery.js:236`) hat keine Encounter-Prüfung.
+   Der **Schadensbonus** wird je Angriff über
+   `standardEligible(mode, aktueller Encounter)` geprüft und schaltet sich
+   deshalb mitten im Lauf stumm zu, sobald die Pfadwahl aus einer späteren
+   Welt zieht. Der **HP-Bonus** greift gar nicht: `startingVitals` setzt
+   `maxHp` nur einmal, auf Stufe 1, und dort ist die Prüfung noch falsch.
+   Kein Fehler im Boss Rush, sondern eine geerbte Kampagnenkartenregel
+   („Mastery erst ab Welt 2"). Noch nicht entschieden, ob der Boss Rush
+   Mastery ganz, gar nicht oder wie heute halb tragen soll.
+
+6. **Kleinigkeiten**, gesammelt und vom Nutzer zurückgestellt:
    - `"von"` als sehr kurzer, generischer `exact`-Schlüssel.
    - In den Nicht-Classic-Modi steht vor dem Wurf nicht mehr, wie viele
      Startfähigkeiten es gibt.
