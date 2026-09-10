@@ -5,6 +5,7 @@
   if (!pack) return;
 
   Object.assign(pack.exact, {
+    "Der Bildschlüssel lässt sich mit einem Befehl anheben und die Buildprüfung meldet jede Bild-URL, die davon abweicht oder gar keinen Schlüssel trägt": "The image key can be raised with a single command, and the build check reports every image URL that deviates from it or carries no key at all",
     "Kaufbare Artikel im Trophy Shop verwenden die vorgesehene Schriftfarbe; die Aufklapppfeile drehen sich weich wie in der Profilverwaltung": "Purchasable items in the Trophy Shop use the intended text colour; section arrows rotate smoothly as they do in profile management",
     "Veraltete Shopregeln, ungenutzte Übersetzungen und ein nicht geladenes UI-Skript sind entfernt; die Beschreibung von Prestige Dice benötigt keine Sonderbehandlung mehr": "Obsolete shop rules, unused translations and an unloaded UI script have been removed; the Prestige Dice description no longer needs special handling",
     "Alle Bilder teilen einen gemeinsamen Cache-Schlüssel; dieselbe Datei wurde bisher unter bis zu sieben Adressen geladen und dadurch mehrfach übertragen und entpackt": "All images share one common cache key; the same file used to be loaded under as many as seven addresses and was therefore transferred and decoded several times",

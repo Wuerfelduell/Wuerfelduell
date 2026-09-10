@@ -50,13 +50,21 @@ Repo: `Wuerfelduell/Wuerfelduell`. Direkte Commits auf `main` sind erlaubt.
   kostet später mehr. Dasselbe, wenn ein Auftrag nur mit einem hässlichen
   Kompromiss ginge: erst sagen, dann bauen.
 - Jede Bild-URL trägt den gemeinsamen Cache-Schlüssel `ASSET_REV` aus
-  `js/01-config.js`, derzeit `?v=28.11.28`. JavaScript verwendet diese
-  Konstante; Bild-URLs in HTML, Manifest und allen CSS-Quellen tragen denselben Wert.
-  **Nie ohne `?v=` und keine eigenen Phasen- oder Bildrevisionen** — sonst
-  lädt und dekodiert der Browser dasselbe Bild ein zweites Mal. Bei einer
-  Asset-Revision alle diese Stellen gemeinsam aktualisieren und das
-  CSS-Bündel neu erzeugen. `bump-version.mjs` verwaltet weiterhin nur die
-  App-Versionsmarker und die JS-/Sprach-/CSS-Einbindungen, nicht Bild-Queries.
+  `js/01-config.js`. JavaScript verwendet die Konstante; HTML, Manifest und
+  die CSS-Quellen tragen denselben Wert als Literal, weil CSS keine
+  JS-Konstante lesen kann. **Nie ohne `?v=` und keine eigenen Phasen- oder
+  Bildrevisionen** — sonst lädt und dekodiert der Browser dasselbe Bild ein
+  zweites Mal.
+- **Ein Bild ausgetauscht? Revision anheben:**
+  `node scripts/bump-version.mjs --assets <major.minor.patch>`, danach
+  `npm run build:styles`. Das setzt alle Stellen in einem Zug und bricht
+  ab, wenn irgendwo der alte Schlüssel stehen bleibt. Nie von Hand — genau
+  diese Handarbeit hat die zwölf auseinandergelaufenen Phasenkonstanten
+  erzeugt.
+- Die Bildrevision ist **unabhängig von der App-Version**. Ein Release
+  ändert den Bild-Cache nicht, und ein Bildwechsel ändert die App-Version
+  nicht. `npm run check` schlägt Alarm, sobald eine Bild-URL abweicht oder
+  den Schlüssel ganz verliert.
 - Rahmen mit Eckornamenten oder Edelsteinen dürfen nicht mit der Boxform
   mitgedehnt werden. Zwei zulässige Techniken:
   - `border-image` mit `border-image-slice` und `border-image-width` im

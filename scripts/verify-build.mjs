@@ -166,6 +166,44 @@ if (!worldRootMatch) {
   }
 }
 
+/* Bildschluessel: eine Revision fuer alle.
+   ------------------------------------------------------------------
+   Alle Bilder teilen einen Cache-Schluessel, damit dieselbe Datei nicht
+   unter mehreren Adressen geladen und dekodiert wird. Bis V28.11.28 war
+   das nicht so: zwoelf Phasenkonstanten liefen auseinander, 41 von 110
+   Bildern kamen unter mehreren Adressen, 890 KB umsonst.
+
+   Weil CSS keine JS-Konstante lesen kann, steht derselbe Wert in
+   js/01-config.js, index.html, manifest.json und jeder CSS-Quelle. Diese
+   Pruefung haelt sie zusammen. Anheben mit
+   `node scripts/bump-version.mjs --assets <rev>`. */
+const assetRev = configText.match(/ASSET_REV\s*=\s*"([^"]+)"/)?.[1];
+if (!assetRev) {
+  errors.push("js/01-config.js: ASSET_REV fehlt.");
+} else {
+  const bildQuelle = [["index.html", html], ["manifest.json", await readFile(path.join(root, "manifest.json"), "utf8")]];
+  for (const name of (await readdir(path.join(root, "src/styles/legacy"))).sort()) {
+    if (name.endsWith(".css")) bildQuelle.push([`src/styles/legacy/${name}`, await readFile(path.join(root, "src/styles/legacy", name), "utf8")]);
+  }
+  const abweichend = new Map();
+  let ohneSchluessel = 0;
+  for (const [datei, text] of bildQuelle) {
+    for (const treffer of text.matchAll(/[\w./-]+\.(?:webp|png|svg|jpe?g|gif)(\?v=[\d.]+)?/g)) {
+      if (/^(?:https?:)?\/\//.test(treffer[0])) continue;
+      if (!treffer[1]) { ohneSchluessel++; continue; }
+      const rev = treffer[1].slice(3);
+      if (rev !== assetRev) abweichend.set(`${datei}: ${treffer[0]}`, rev);
+    }
+  }
+  if (abweichend.size) {
+    const beispiele = [...abweichend.keys()].slice(0, 4).join("; ");
+    errors.push(`${abweichend.size} Bild-URLs weichen von ASSET_REV ${assetRev} ab (${beispiele}). Anheben mit: node scripts/bump-version.mjs --assets <rev>`);
+  }
+  if (ohneSchluessel) {
+    errors.push(`${ohneSchluessel} Bild-URLs ohne ?v=. Jede Bild-URL braucht ASSET_REV, sonst laedt der Browser die Datei ein zweites Mal.`);
+  }
+}
+
 const jsFiles = (await readdir(path.join(root, "js")))
   .filter((file) => file.endsWith(".js"))
   .sort();

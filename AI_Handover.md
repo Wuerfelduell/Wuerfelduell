@@ -22,7 +22,7 @@ welche Fallen schon Zeit gekostet haben.
 
 | | |
 |---|---|
-| Version | **28.11.30** |
+| Version | **28.11.31** |
 | Branch | `main` |
 | Letzte Schritte | CSS-Stapel auf 10 Dateien zusammengelegt · Changelog englisch vervollständigt · Hauptmenü, Statistik, Profile, Achievements, Spielvorbereitung und Trophy Shop überarbeitet · Fähigkeits- und Shopflächen auf proportional gekachelte Bildrahmen umgestellt · alle Bild-URLs auf einen gemeinsamen Cache-Schlüssel · Trophy-Shop-Reste bereinigt und Aufklapppfeile angeglichen |
 
@@ -274,18 +274,7 @@ wird nur auf ausdrückliche Ansage geändert. Nicht ungefragt „reparieren".
    `Profiles` zu `auth.users`. Entwurfsarbeit, kein Fließbandthema — und
    der beste Kandidat für eine zweite, unabhängige Umsetzung.
 
-4. **Die Asset-Revision anzuheben ist Handarbeit in acht Dateien.**
-   Seit V28.11.29 tragen alle Bilder einen gemeinsamen Schlüssel; die
-   Quelle ist `ASSET_REV` in `js/01-config.js`. Sie steht aber zusätzlich
-   als Literal in `index.html`, `manifest.json` und sechs CSS-Quellen,
-   weil CSS nicht aus einer JS-Konstanten lesen kann. Wer künftig ein
-   Bild austauscht, muss alle acht Stellen gemeinsam anheben —
-   `bump-version.mjs` fasst sie bewusst nicht an. Genau diese Handarbeit
-   hat die zwölf auseinandergelaufenen Phasenkonstanten erzeugt. Ein
-   `--assets <rev>`-Schalter für `bump-version.mjs` würde die Falle
-   schließen.
-
-5. **Kleinigkeiten**, gesammelt und vom Nutzer zurückgestellt:
+4. **Kleinigkeiten**, gesammelt und vom Nutzer zurückgestellt:
    - `"von"` als sehr kurzer, generischer `exact`-Schlüssel.
    - In den Nicht-Classic-Modi steht vor dem Wurf nicht mehr, wie viele
      Startfähigkeiten es gibt.
@@ -344,10 +333,13 @@ Testlabor bleibt für spätere Angriffsanimationen.
   `js/32`, `js/34`.
 - **Testdaten.** Ein Prüflauf mit „alles freigeschaltet" übersieht genau
   die Fehler, die nur im gesperrten Zustand auftreten. Beides testen.
-- **Jede Bild-URL braucht denselben `?v=`-Schlüssel wie das CSS.** Wer im
-  Skript `assets/…/bild.webp` ohne Schlüssel schreibt, während das CSS
-  `bild.webp?v=28.2.1` nutzt, erzeugt für den Browser eine zweite Datei:
-  zweiter Download, zweite dekodierte Bitmap. Siehe „Offen" Punkt 4.
+- **Jede Bild-URL braucht den Schlüssel `ASSET_REV`.** Wer im Skript
+  `assets/…/bild.webp` ohne Schlüssel schreibt oder eine eigene Revision
+  erfindet, erzeugt für den Browser eine zweite Datei: zweiter Download,
+  zweite dekodierte Bitmap. Bis V28.11.28 liefen so zwölf Phasenkonstanten
+  auseinander, 41 von 110 Bildern kamen unter mehreren Adressen, 890 KB
+  umsonst. Seit V28.11.31 hält `verify-build.mjs` die Stellen zusammen und
+  `bump-version.mjs --assets <rev>` hebt sie gemeinsam an.
 - **`border-image-slice` ist nicht die sichtbare Rahmenstärke.** Der
   Slice enthält oft Füllfläche jenseits der Zierschiene. Abstände am Bild
   messen, nicht am Slice-Wert — sonst meldet man Kollisionen, die es
