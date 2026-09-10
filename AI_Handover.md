@@ -233,9 +233,41 @@ wird nur auf ausdrückliche Ansage geändert. Nicht ungefragt „reparieren".
 
 ## Offen
 
-1. **Online-Match** — der Nutzer meldet, es gehe nicht: die Lobby werde
-   gefunden, das Match starte nicht. **Im Stand V28.11.13 ist der Fehler
-   nicht reproduzierbar.** `scripts/qa/online-durchspielen.mjs` fährt
+1. **Online läuft — aber der Gast wartet.** Der Nutzer hat am 10.09. mit
+   zwei echten Geräten durchgespielt: Lobby, Beitritt und Matchstart
+   funktionieren. Übrig bleibt eine deutliche Verzögerung **nur beim
+   Gast**. Das ist kein Netzproblem, sondern die Reihenfolge im Code:
+
+   `hostExecuteAction` (`js/17-online-bridge.js:731`) führt die Aktion
+   aus und wartet dann mit `waitForEngineSettled` bis die **Animation des
+   Hosts vollständig abgelaufen** ist — erst danach veröffentlicht es den
+   Stand. Der Host sieht seine Animation also live, der Gast bekommt sie
+   erst hinterher als fertigen Zustand geschickt.
+
+   Größenordnungen, aus dem Quelltext: ein Wurf ist 250 ms (schnell) bzw.
+   430 ms; eine Schadenskette läuft über `650 + i*520` ms, also bis rund
+   1.700 ms; `waitForEngineSettled` deckelt bei 3.600 ms. Dazu kommen
+   zwei Netzwege (Gast → DB → Host, Host → DB → Gast).
+
+   Kleinerer Zusatzposten: der Gast ist auf `dd_battle_actions` ohne
+   Akteursfilter abonniert und holt deshalb einen **vollen Schnappschuss
+   für seine eigene Aktionszeile** — nutzlos, und weil `refreshAgain` in
+   `subscribeRoom` (`js/43-supabase-battle.js:188`) erneut über den 45-ms-
+   Debounce geht, schiebt sich dieser Abruf vor den nützlichen. Modell der
+   zwölf Zeilen bei 180 ms Abfragedauer: 451 ms statt 376 ms.
+
+   Drei Hebel, nach Wirkung sortiert:
+   - **Zwei Veröffentlichungen statt einer.** Direkt nach
+     `executeOnlineAction` einen vorläufigen Stand senden, damit der Gast
+     *parallel* zum Host animiert, danach den gesetzten Stand. Nimmt die
+     Animationsdauer aus der Wartezeit des Gastes. Echter Eingriff ins
+     Synchronisationsprotokoll — `seq`-Reihenfolge und `actionPending`
+     müssen mit.
+   - Gast ignoriert Realtime-Ereignisse zu seinen **eigenen** Aktionen.
+   - `refreshAgain` sofort statt über den Debounce (45 ms).
+
+   Der ältere Verdacht auf tote Realtime-Verbindung ist damit erledigt.
+   Das Prüfskript bleibt gültig: `scripts/qa/online-durchspielen.mjs` fährt
    zwei getrennte Browser gegen das echte Projekt, und alle zwölf
    Zusicherungen sind grün: Anmeldung, Raumcode, Beitritt, der Host sieht
    den Gast ohne Neuladen, die Bereitmeldung kommt an, beide landen im
@@ -244,22 +276,6 @@ wird nur auf ausdrückliche Ansage geändert. Nicht ungefragt „reparieren".
    `supabase/tests/20-matchstart.sql` **als Rolle `authenticated` mit
    aktiven Zeilenregeln** — der ältere Test lief als Eigentümer und
    umging sie.
-
-   Bleibt die Frage, warum es auf dem Gerät des Nutzers nicht geht. Der
-   naheliegendste Verdacht ist der Service Worker: `sw.js` liefert `js/`
-   und `css/` nach *stale-while-revalidate* aus, also beim ersten Besuch
-   nach einem Update noch den alten Stand und erst beim zweiten den
-   neuen. Ein einzelnes Neuladen behebt das. Zuerst zu klären ist deshalb,
-   welchen Build das Gerät tatsächlich fährt (Fußzeile im Hauptmenü) und
-   was in der Lobby als Verbindungsanzeige steht.
-
-   **Das Fehlerbild bei totem Realtime ist genau das gemeldete.** Beim
-   Bauen des Prüfskripts war die WebSocket-Brücke einmal falsch maskiert,
-   Realtime schwieg also. Ergebnis: Raum anlegen und Beitreten
-   funktionierten weiter (beides sind einzelne Anfragen), aber der Host
-   sah den Gast nie, die Bereitmeldung kam nie an, das Match startete
-   nie. Wenn der Nutzer dasselbe sieht, liegt es an der Live-Verbindung,
-   nicht am Matchstart.
 
 2. **`dd_touch_room` fehlt auf der Datenbank.** Die zweite Migration
    (`20260903120000_dd_room_idle_expiry.sql`, Räume laufen bei
