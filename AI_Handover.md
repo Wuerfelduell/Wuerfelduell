@@ -284,11 +284,30 @@ wird nur auf ausdrückliche Ansage geändert. Nicht ungefragt „reparieren".
    alle Funktionen der ersten Migration antworten mit „permission
    denied". Einspielen mit `supabase db push`. **Nutzerseite.**
 
-3. **Host-autoritativ.** Der Spielstand kommt vom Gerät des Hosts,
-   niemand prüft ihn nach. Ohne öffentliche Bestenliste unkritisch, mit
-   einer wird es das Hauptproblem. Ebenso offen: die Zuordnung von
-   `Profiles` zu `auth.users`. Entwurfsarbeit, kein Fließbandthema — und
-   der beste Kandidat für eine zweite, unabhängige Umsetzung.
+3. **Serverautoritativ — vertagt, mit klarer Bedingung.** Heute kommt der
+   Spielstand vom Gerät des Hosts und niemand prüft ihn nach.
+
+   **Angefasst wird das erst, wenn es eine öffentliche Bestenliste gibt
+   oder gegen Fremde gespielt wird.** Solange man gegen Leute spielt, die
+   neben einem sitzen, schützt der Umbau vor nichts.
+
+   Am 10.09. bewusst gegen einen sofortigen Umbau entschieden, aus drei
+   Gründen:
+   - Er löst die Gastverzögerung **nicht besser** als das frühe
+     Veröffentlichen (Punkt 1) und macht den **Host langsamer**: der
+     spielt heute mit 0 ms und wartete danach auf denselben Roundtrip.
+   - Umfang: rund 5.000 Zeilen Spiellogik in `js/09`, `10`, `12`, `13`,
+     `14`, `03d`, `23`, dazu 25 Fähigkeiten, 90 Encounter, 8 Mutatoren,
+     7 Modifikatoren, 6 Weltregeln, 10 Boss-Rush-Stufen. Die vorhandenen
+     902 Zeilen SQL sind reine Raumverwaltung, **null Spiellogik**.
+   - Solo, Kampagne, Tutorial und lokales Spiel brauchen die JS-Engine
+     weiter. Es blieben also dieselben Regeln in zwei Sprachen, und jede
+     Balanceänderung müsste zweimal gemacht und zweimal geprüft werden.
+     Das ist die eigentliche Dauerlast, nicht der Port.
+
+   Wenn es soweit ist: erst ein Entwurf, was serverseitig liegen muss und
+   was im Browser bleibt — kein Auftrag über ein paar Stunden. Ebenfalls
+   offen und dann fällig: die Zuordnung von `Profiles` zu `auth.users`.
 
 4. **Kleinigkeiten**, gesammelt und vom Nutzer zurückgestellt:
    - `"von"` als sehr kurzer, generischer `exact`-Schlüssel.
