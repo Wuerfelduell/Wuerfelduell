@@ -2,7 +2,11 @@
   const ICON_ROOT="assets/ui/v28/svg/gameplay/";
   // Druckbudget = Gesamt-HP * (1 + 0,25 je zusätzlichem Gegner).
   // Getrennte, chronologisch geordnete Vorräte verhindern Wiederholungen.
-  const STAGES=Object.freeze([45,54,64.5,76.5,91.5,108,127.5,150,177,280,350,440,550,690,870]);
+  // Ab Stufe 10 traegt der Schaden die Schwierigkeit (enemyHitBonus), nicht
+  // mehr die HP. Die Ultra-Kurve steigt deshalb seit 28.12.8 nur noch mit
+  // 1,15x statt 1,25x und startet mit 1,25x statt 1,58x: vorher waren die
+  // Kaempfe lang UND ab jetzt auch gefaehrlich, das waere zu viel.
+  const STAGES=Object.freeze([45,54,64.5,76.5,91.5,108,127.5,150,177,220,255,290,335,385,445]);
   // Offene Runs vor 28.12.4 behalten ihre zehn Stufen samt Originalangeboten.
   const stageCount=()=>run?.stageCount||STAGES.length;
   const ultraStage=()=>stageCount()===15&&run?.stage>=9;

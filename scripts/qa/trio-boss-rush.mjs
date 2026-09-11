@@ -62,7 +62,22 @@ console.log(`ok: Trio-Portierungsvertrag, ${seen.size} vollständige Encounter, 
 
 checkRushMastery({c,t,rush:trio,fresh,mode:'trio'});
 
-assert(Math.min(...stages[9].candidates.map(o=>o.pressure))>1.35*Math.max(...stages[8].candidates.map(o=>o.pressure)),'Ultra-Sprung ab Stufe 10');
+// Der Ultra-Aufschlag liegt seit 28.12.8 im Schaden statt in den HP: je
+// Ultra-Stufe +1 pro Wuerfeltreffer, davor nichts, und nie fuer Helden.
+// Die HP-Kurve muss nur noch monoton steigen - das prueft Zeile 27.
+{
+  const r2=fresh();
+  c.players=[{profileId:'a',campaignTeam:'hero',hp:50,maxHp:50},{campaignTeam:'enemy',hp:50,maxHp:50}];
+  for(const [stufe,erwartet] of [[0,0],[8,0],[9,1],[11,3],[14,6]]){
+    r2.stage=stufe;
+    assert.equal(trio.enemyHitBonus(1),erwartet,`Ultra-Aufschlag auf Stufe ${stufe+1}`);
+    assert.equal(trio.enemyHitBonus(0),0,'Helden bekommen nie einen Aufschlag');
+  }
+  r2.finished=true;r2.stage=14;
+  assert.equal(trio.enemyHitBonus(1),0,'nach dem Run kein Aufschlag');
+}
+// Die Ultra-Kurve bleibt spuerbar, aber gemaessigt: hoechstens 1,3x je Stufe.
+for(let i=9;i<15;i++)assert(Math.max(...stages[i].candidates.map(o=>o.pressure))<=1.3*Math.max(...stages[i-1].candidates.map(o=>o.pressure)),'Ultra-HP steigen gemaessigt');
 for(let i=9;i<15;i++)assert(stages[i].candidates.every(o=>o.phaseHeal>=12+4*(i-9)),'Ultra-Phasenheilung steigt');
 for(let attempt=0;attempt<50;attempt++){
  const r=fresh();

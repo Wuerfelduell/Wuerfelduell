@@ -22,9 +22,9 @@ welche Fallen schon Zeit gekostet haben.
 
 | | |
 |---|---|
-| Version | **28.12.7** |
+| Version | **28.12.8** |
 | Branch | `main` |
-| Letzte Schritte | CSS-Stapel auf 10 Dateien zusammengelegt · Changelog englisch vervollständigt · Hauptmenü, Statistik, Profile, Achievements, Spielvorbereitung und Trophy Shop überarbeitet · Fähigkeits- und Shopflächen auf proportional gekachelte Bildrahmen umgestellt · alle Bild-URLs auf einen gemeinsamen Cache-Schlüssel · Trophy-Shop-Reste bereinigt und Aufklapppfeile angeglichen · Duo- und Trio-Boss-Rush mit Pfadwahl, gespeicherten Runs und 32 Perks einschließlich temporärer Ability-Mastery · Boss-XP-Umtausch 300:100 · Zweitfund gedeckelt · Trio-Rush 15 Stufen, ab 10 ultraschwer · Boss-Rush-HUD auf die Weltregel reduziert · Zweitfund-Kopien ablehnbar und weitergebbar · Ultra-Stufen treffen härter |
+| Letzte Schritte | CSS-Stapel auf 10 Dateien zusammengelegt · Changelog englisch vervollständigt · Hauptmenü, Statistik, Profile, Achievements, Spielvorbereitung und Trophy Shop überarbeitet · Fähigkeits- und Shopflächen auf proportional gekachelte Bildrahmen umgestellt · alle Bild-URLs auf einen gemeinsamen Cache-Schlüssel · Trophy-Shop-Reste bereinigt und Aufklapppfeile angeglichen · Duo- und Trio-Boss-Rush mit Pfadwahl, gespeicherten Runs und 32 Perks einschließlich temporärer Ability-Mastery · Boss-XP-Umtausch 300:100 · Zweitfund gedeckelt · Trio-Rush 15 Stufen, ab 10 ultraschwer · Boss-Rush-HUD auf die Weltregel reduziert · Zweitfund-Kopien ablehnbar und weitergebbar · Ultra-Stufen treffen härter statt länger zu dauern |
 
 **Die Arbeitsteilung hat sich geändert.** Bis V28.11.28 liefen zwei
 Sitzungen parallel: Codex hat umgesetzt, diese Sitzung geprüft. Ab jetzt
@@ -322,7 +322,13 @@ wird nur auf ausdrückliche Ansage geändert. Nicht ungefragt „reparieren".
   Stufe 9, 10 auf Stufe 15; bei drei Treffern 12 gegen 30. Heldenschaden
   bleibt unverändert. Der Duo-Rush hat keine Ultra-Phase, sein
   `enemyHitBonus` gibt immer 0 und existiert nur für die gleiche
-  Schnittstelle.
+  Schnittstelle. **Im Gegenzug sank die HP-Kurve** (28.12.8): die
+  Ultra-Stufen steigen mit 1,15× statt 1,25× und beginnen mit 1,25× statt
+  1,58×, Stufe 15 hat 445 statt 870 Druckbudget. Lang *und* gefährlich wäre
+  zu viel gewesen. Der Prüfstand verlangte bis dahin einen HP-Sprung von
+  mindestens 1,35× ab Stufe 10 — diese Zusicherung kodierte die alte
+  Annahme „Ultra heißt mehr HP" und ist durch eine ersetzt, die den
+  Schadensaufschlag prüft und die HP-Kurve nach oben deckelt.
 
 - Gleiche Bildrahmen wie Duo, vorhandenes `trio.svg` für Team-Perks;
   die drei Verteidigungsperks bleiben bei `shield.svg`.
