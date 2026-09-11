@@ -494,6 +494,9 @@
   function damagePerAttackHit(){
     let dmg=(attackFace===1&&hasAbility(1)) ? 3 : attackFace;
     dmg+=stackingDamageBonus();
+    // Ultra-Stufen im Boss Rush: der Gegner trifft haerter je Wuerfel, nicht
+    // nur haeufiger. Die Zeile "Jeder Treffer macht X Schaden" zieht mit.
+    dmg+=window.WDBossRush?.enemyHitBonus?.(current)||0;
     return dmg;
   }
 

@@ -218,6 +218,15 @@
     return tr(`1 · ${Math.round((Number(phase.threshold)||.5)*100)} % → ${phase.title}`);
   }
 
+  // Ab Stufe 10 schlaegt jeder Gegner pro Ultra-Stufe 1 Schaden mehr je
+  // Wuerfeltreffer. Vorher skalierte nur die Gegner-HP: die Ultra-Stufen
+  // dauerten laenger, waren aber nie gefaehrlicher. Der Bonus waechst mit
+  // der Trefferzahl mit, ein guter Gegnerwurf tut also wirklich weh.
+  function enemyHitBonus(index){
+    if(!run?.active||run.finished||!ultraStage())return 0;
+    return players[index]?.campaignTeam==="enemy"?Math.max(0,run.stage-8):0;
+  }
+
   function findHeroIndex(profileId){
     return players.findIndex(player=>player?.campaignTeam==="hero"&&String(player.profileId)===String(profileId));
   }
@@ -646,7 +655,11 @@
   function showPaths(){
     if(run.stage===stageCount()-1){choosePath(0,true);return;}
     selectionLocked=false;
-    modal("Nächsten Gegner wählen",`${tr("Stufe")} ${run.stage+1} / ${stageCount()} · ${tr(ultraStage()?"Ultraschwer":"Schwerer Pfad, bessere Beute")}`);
+    // Auf den Ultra-Stufen steht der Aufschlag da, sonst wirkt der
+    // Schadenssprung wie ein Fehler statt wie eine Regel.
+    modal("Nächsten Gegner wählen",ultraStage()
+      ?`${tr("Stufe")} ${run.stage+1} / ${stageCount()} · ${tr("Ultraschwer")} · ${tr("Gegner treffen")} +${Math.max(0,run.stage-8)} ${tr("pro Würfeltreffer")}`
+      :`${tr("Stufe")} ${run.stage+1} / ${stageCount()} · ${tr("Schwerer Pfad, bessere Beute")}`);
     const scouting=run.profileIds.some(id=>perk(id,"scout")>0);
     $("trioBossRushRewardOptions").innerHTML=run.paths[run.stage].map((o,i)=>{
       const difficulty=DIFFICULTIES.find(d=>d.id===o.difficulty);
@@ -883,7 +896,7 @@
 
   window.WDTrioBossRush=Object.freeze({
     start,reset,abort,isActive,currentEncounter,stageNumber,worldThemeKey,worldThemeSequence,startingVitals,startingLoadout,
-    finishEncounter,attackDamageBonus,incomingDamageModifier,abilityLevelOverride,afterHeroAttack,onHeroKill,refreshButton,snapshot,rewardDefinitions,stageDefinitions,profileBossXp
+    finishEncounter,attackDamageBonus,incomingDamageModifier,enemyHitBonus,abilityLevelOverride,afterHeroAttack,onHeroKill,refreshButton,snapshot,rewardDefinitions,stageDefinitions,profileBossXp
   });
 
   $("trioBossRushStartBtn")?.addEventListener("click",start);

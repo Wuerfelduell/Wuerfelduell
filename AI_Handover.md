@@ -22,9 +22,9 @@ welche Fallen schon Zeit gekostet haben.
 
 | | |
 |---|---|
-| Version | **28.12.6** |
+| Version | **28.12.7** |
 | Branch | `main` |
-| Letzte Schritte | CSS-Stapel auf 10 Dateien zusammengelegt · Changelog englisch vervollständigt · Hauptmenü, Statistik, Profile, Achievements, Spielvorbereitung und Trophy Shop überarbeitet · Fähigkeits- und Shopflächen auf proportional gekachelte Bildrahmen umgestellt · alle Bild-URLs auf einen gemeinsamen Cache-Schlüssel · Trophy-Shop-Reste bereinigt und Aufklapppfeile angeglichen · Duo- und Trio-Boss-Rush mit Pfadwahl, gespeicherten Runs und 32 Perks einschließlich temporärer Ability-Mastery · Boss-XP-Umtausch 300:100 · Zweitfund gedeckelt · Trio-Rush 15 Stufen, ab 10 ultraschwer · Boss-Rush-HUD auf die Weltregel reduziert · Zweitfund-Kopien ablehnbar und weitergebbar |
+| Letzte Schritte | CSS-Stapel auf 10 Dateien zusammengelegt · Changelog englisch vervollständigt · Hauptmenü, Statistik, Profile, Achievements, Spielvorbereitung und Trophy Shop überarbeitet · Fähigkeits- und Shopflächen auf proportional gekachelte Bildrahmen umgestellt · alle Bild-URLs auf einen gemeinsamen Cache-Schlüssel · Trophy-Shop-Reste bereinigt und Aufklapppfeile angeglichen · Duo- und Trio-Boss-Rush mit Pfadwahl, gespeicherten Runs und 32 Perks einschließlich temporärer Ability-Mastery · Boss-XP-Umtausch 300:100 · Zweitfund gedeckelt · Trio-Rush 15 Stufen, ab 10 ultraschwer · Boss-Rush-HUD auf die Weltregel reduziert · Zweitfund-Kopien ablehnbar und weitergebbar · Ultra-Stufen treffen härter |
 
 **Die Arbeitsteilung hat sich geändert.** Bis V28.11.28 liefen zwei
 Sitzungen parallel: Codex hat umgesetzt, diese Sitzung geprüft. Ab jetzt
@@ -311,6 +311,19 @@ wird nur auf ausdrückliche Ansage geändert. Nicht ungefragt „reparieren".
   statt verloren zu gehen. Wechselspiel gilt nach jedem Mitspieler,
   solange alle drei leben; Proviantteilung berücksichtigt beide Empfänger.
   Diese Anpassungen stehen in den deutschen/englischen Perkbeschreibungen.
+- **Ultra-Stufen treffen seit 28.12.7 härter.** Nach fünf Stunden Spieltest:
+  ab Stufe 10 war es „nur noch Grind ohne Gefahr" — ein Held endete mit über
+  200 HP. Grund war strukturell: `optionFor` skaliert nur Gegner-**HP**, und
+  `campaignOutgoingDamageModifier` kennt die Stufe gar nicht. Heldenschaden
+  und Heilung wachsen mit jeder Belohnung, die Bedrohung blieb konstant.
+  Jetzt gibt `enemyHitBonus` je Ultra-Stufe +1 Schaden **pro Würfeltreffer**,
+  gehakt in `damagePerAttackHit` (`js/12-battle-ui.js:494`) — der Bonus
+  wächst also mit der Trefferzahl mit. Gemessen mit Auge 4: je Treffer 4 auf
+  Stufe 9, 10 auf Stufe 15; bei drei Treffern 12 gegen 30. Heldenschaden
+  bleibt unverändert. Der Duo-Rush hat keine Ultra-Phase, sein
+  `enemyHitBonus` gibt immer 0 und existiert nur für die gleiche
+  Schnittstelle.
+
 - Gleiche Bildrahmen wie Duo, vorhandenes `trio.svg` für Team-Perks;
   die drei Verteidigungsperks bleiben bei `shield.svg`.
 - Prüfung: `scripts/qa/trio-boss-rush.mjs` und

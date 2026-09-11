@@ -202,6 +202,10 @@
     return tr(`1 · ${Math.round((Number(phase.threshold)||.5)*100)} % → ${phase.title}`);
   }
 
+  // Der Duo-Rush endet auf Stufe 10 und kennt keine Ultra-Phase; der Haken
+  // existiert nur, damit beide Module dieselbe Schnittstelle tragen.
+  function enemyHitBonus(){return 0;}
+
   function findHeroIndex(profileId){
     return players.findIndex(player=>player?.campaignTeam==="hero"&&String(player.profileId)===String(profileId));
   }
@@ -856,7 +860,7 @@
 
   window.WDDuoBossRush=Object.freeze({
     start,reset,abort,isActive,currentEncounter,stageNumber,worldThemeKey,worldThemeSequence,startingVitals,startingLoadout,
-    finishEncounter,attackDamageBonus,incomingDamageModifier,abilityLevelOverride,afterHeroAttack,onHeroKill,refreshButton,snapshot,rewardDefinitions,stageDefinitions,profileBossXp
+    finishEncounter,attackDamageBonus,incomingDamageModifier,enemyHitBonus,abilityLevelOverride,afterHeroAttack,onHeroKill,refreshButton,snapshot,rewardDefinitions,stageDefinitions,profileBossXp
   });
 
   $("duoBossRushStartBtn")?.addEventListener("click",start);

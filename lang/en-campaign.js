@@ -1240,6 +1240,8 @@
     "Fortlaufender Trio-Gruppenkampf":"Continuous trio group battle",
     "Fortlaufender Trio-Bosskampf":"Continuous trio boss battle",
     "Nach jedem Boss heilen alle drei Helden 8 HP pro Stapel.":"After each boss, all three heroes heal 8 HP per stack.",
+    "Gegner treffen":"Enemy hits deal",
+    "pro Würfeltreffer":"more per die hit",
     "Weitergeben":"Pass on",
     "Ablehnen":"Decline",
     "Diese Belohnung geht stattdessen an":"This reward goes to",
