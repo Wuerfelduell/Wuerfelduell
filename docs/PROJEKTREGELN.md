@@ -122,6 +122,13 @@ Repo: `Wuerfelduell/Wuerfelduell`. Direkte Commits auf `main` sind erlaubt.
   pro Sekunde.
 - Ein Prüfstand ist nur so gut wie der Zustand, den er erreicht. Vor dem
   Vertrauen darauf fragen: welchen Bildschirm sieht er nie?
+- **Keine Auswahlfenster.** Rückfragen kommen als normaler Text im Chat.
+  Das eingebaute Frage-Werkzeug mit Antwortkacheln (`AskUserQuestion`) wird
+  nicht benutzt — der Nutzer antwortet ohnehin frei und genauer, als die
+  Kacheln es vorgeben, und die Fenster sind in der App schon einmal
+  hängengeblieben. Wo eine naheliegende Wahl existiert: entscheiden,
+  umsetzen, und im Abschluss sagen, was gewählt wurde und wie man es
+  zurückdreht.
 - Commitnachrichten auf Deutsch, sie erklären **warum**, nicht nur was.
 - Im Abschluss nennen: geänderte Dateien, tatsächlich verwendete
   Bildassets, durchgeführte Prüfungen.
