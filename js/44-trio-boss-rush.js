@@ -6,7 +6,7 @@
   // mehr die HP. Die Ultra-Kurve steigt deshalb seit 28.12.8 nur noch mit
   // 1,15x statt 1,25x und startet mit 1,25x statt 1,58x: vorher waren die
   // Kaempfe lang UND ab jetzt auch gefaehrlich, das waere zu viel.
-  const STAGES=Object.freeze([45,54,64.5,76.5,91.5,108,127.5,150,177,220,255,290,335,385,445]);
+  const STAGES=Object.freeze([45,54,64.5,76.5,91.5,108,127.5,150,177,220,255,290,335,385,560]);
   // Offene Runs vor 28.12.4 behalten ihre zehn Stufen samt Originalangeboten.
   const stageCount=()=>run?.stageCount||STAGES.length;
   const ultraStage=()=>stageCount()===15&&run?.stage>=9;
@@ -43,13 +43,23 @@
     const budget=count===10&&index===9?210:STAGES[index];
     const total=Math.round(budget*(index===count-1?1:DIFFICULTIES.find(d=>d.id===difficulty).factor)/weight);
     let remaining=total;
+    // Auf der letzten Stufe hat jeder Gegner mindestens FINAL_MIN_HP. Ohne
+    // diese Untergrenze fielen die drei Seals der Apex bei nur 46 HP fast
+    // nebenbei; der Endkampf soll eine Wand sein, keine Aufwaermrunde.
+    // Nur das Finale des 15-Stufen-Laufs. Gespeicherte Zehner-Laeufe muessen
+    // ihre alten Gegnerwerte behalten, sonst gelten sie als ungueltig.
+    const finale=count===15&&index===count-1;
     const enemies=encounter.enemies.map((e,i)=>{
-      const hp=i===encounter.enemies.length-1?remaining:Math.max(1,Math.round(total*e.hp/rawTotal));
+      let hp=i===encounter.enemies.length-1?remaining:Math.max(1,Math.round(total*e.hp/rawTotal));
       remaining-=hp;
+      if(finale)hp=Math.max(FINAL_MIN_HP,hp);
       return {name:e.name,hp,abilityCount:index<3?2:3};
     });
+    // Der Druck folgt den tatsaechlichen HP, sonst passt er nach der
+    // Untergrenze nicht mehr zur Summe.
+    const druck=enemies.reduce((n,e)=>n+e.hp,0)*weight;
     return {encounterId:encounter.id,label:enemies.map(e=>e.name).join(" + "),difficulty,
-      phaseHeal:count===15&&index>=9?12+4*(index-9):Math.min(8,3+Math.floor(index*.6)),phaseAbilityCount:index<3?2:3,enemies,pressure:total*weight};
+      phaseHeal:count===15&&index>=9?12+4*(index-9):Math.min(8,3+Math.floor(index*.6)),phaseAbilityCount:index<3?2:3,enemies,pressure:druck};
   }
 
   // Visual world identities are indexed by stage, never rolled. Repeated
@@ -84,7 +94,7 @@
     {kind:"perk",id:"drill",rarity:"rare",name:"Präzisionsdrill",icon:"target.svg",desc:"Jeder dritte erfolgreiche eigene Hauptangriff im Run verursacht +6 Schaden pro Stapel."},
     {kind:"perk",id:"gamble",rarity:"epic",name:"Glücksspiel",icon:"dice.svg",desc:"Dauerhaft +5 Angriffsschaden und -5 maximale HP pro Stapel; mindestens 10 maximale HP bleiben."},
     {kind:"perk",id:"hospital",rarity:"rare",name:"Feldlazarett",icon:"heal.svg",desc:"Nach jedem Boss heilen alle drei Helden 8 HP pro Stapel."},
-    {kind:"perk",id:"second_wind",rarity:"epic",name:"Zweiter Atem",icon:"heart-hp.svg",desc:"Ein gefallener Held startet den nächsten Boss mit 15 HP."},
+    {kind:"perk",id:"second_wind",rarity:"epic",name:"Zweiter Atem",icon:"heart-hp.svg",desc:"Ein gefallener Held startet den nächsten Boss mit 15 statt 1 HP."},
     {kind:"perk",id:"constitution",rarity:"common",name:"Eiserne Konstitution",icon:"heart-hp.svg",desc:"Erhöht die maximalen und aktuellen HP sofort um 10 pro Stapel."},
     {kind:"perk",id:"blood_pact",rarity:"rare",name:"Blutpakt",icon:"self-damage-blood.svg",desc:"Heilt sofort 25 HP; nach jedem weiteren Boss kostet jeder Stapel 3 HP, ohne zu töten."},
     {kind:"perk",id:"scales",rarity:"common",name:"Schuppenpanzer",icon:"shield.svg",desc:"Eingehender Gegnerangriffsschaden sinkt um 1 pro Stapel, mindestens auf 0."},
@@ -226,9 +236,13 @@
   // Wuerfeltreffer. Vorher skalierte nur die Gegner-HP: die Ultra-Stufen
   // dauerten laenger, waren aber nie gefaehrlicher. Der Bonus waechst mit
   // der Trefferzahl mit, ein guter Gegnerwurf tut also wirklich weh.
+  function ultraActive(){return !!run?.active&&!run.finished&&ultraStage();}
   function enemyHitBonus(index){
     if(!run?.active||run.finished||!ultraStage())return 0;
-    return players[index]?.campaignTeam==="enemy"?Math.max(0,run.stage-8):0;
+    // Zwei Schaden je Wuerfeltreffer und Ultra-Stufe, Stufe 15 also +10.
+    // Gezaehlt ab Stufe 11, damit Stufe 10 noch der Einstieg bleibt - dort
+    // wirkt bereits die Eskalation.
+    return players[index]?.campaignTeam==="enemy"?Math.max(0,2*(run.stage-9)):0;
   }
 
   function findHeroIndex(profileId){
@@ -259,7 +273,10 @@
       hero.maxHp=Math.max(10,hero.maxHp);
       hero.hp=Math.max(0,Number(hero.hp)||0);
     }
-    if(hero.hp<=0&&perk(profile.id,"second_wind")>0)hero.hp=15;
+    // Ein gefallener Held kehrt zur naechsten Stufe mit 1 HP zurueck - seit
+    // die Heilung gedeckelt ist, waere er sonst fuer den restlichen Lauf
+    // verloren. Zweiter Atem zieht vor und gibt stattdessen 15.
+    if(hero.hp<=0)hero.hp=perk(profile.id,"second_wind")>0?15:1;
     return {hp:hero.hp,maxHp:hero.maxHp};
   }
 
@@ -284,14 +301,20 @@
     };
   }
 
+  // Jede Heilung im Lauf geht hier durch und endet am Maximum. Die Perks
+  // heilten frueher direkt auf hero.hp und umgingen damit auch den
+  // Ueberheilungsdeckel des Motors - im Trio-Lauf standen Helden dadurch
+  // beim Zwoelffachen ihres Maximums.
+  function heroCap(hero){return Math.max(1,Number(hero?.maxHp)||START_HP);}
   function healHero(profileId,amount,{combat=false,reason="Boss Rush"}={}){
     const hero=heroState(profileId),index=findHeroIndex(profileId),player=players[index];
     if(!hero||amount<=0)return 0;
     const before=Math.max(0,Number(combat?player?.hp:hero.hp)||0);
-    hero.hp=before+amount;
+    hero.hp=Math.min(heroCap(hero),before+amount);
+    const healed=Math.max(0,hero.hp-before);
     if(player)player.hp=hero.hp;
-    if(combat&&player){recordHealing(index,amount);pendingExtraHealFx.push({target:index,amount});addLog(`${tr(reason)}: ${player.name} +${amount} HP`);}
-    return amount;
+    if(combat&&player&&healed>0){recordHealing(index,healed);pendingExtraHealFx.push({target:index,amount:healed});addLog(`${tr(reason)}: ${player.name} +${healed} HP`);}
+    return healed;
   }
 
   function perk(profileId,id){return Math.max(0,Number(heroState(profileId)?.perks?.[id])||0);}
@@ -302,6 +325,8 @@
   // einer so bis zu 52 statt zehn Belohnungen. Empfaenger ist immer der
   // Mitspieler mit den bisher wenigsten Kopien - fair, und die Zaehlung
   // steckt schon in rewardHistory, ueberlebt also einen Reload.
+  const FINAL_MIN_HP=100;
+  const MAX_HP_PER_STAGE=5;
   const SECOND_FIND_STAGES=3;
   function copyPartner(profileId){
     const partner=partnerIds(profileId);
@@ -537,11 +562,11 @@
         hero[slot]=abilityId;
       }
       hero.perks[rewardId]=perk(profileId,rewardId)+1;
-      if(rewardId==="constitution"){hero.maxHp+=10;hero.hp+=10;}
+      if(rewardId==="constitution"){hero.maxHp+=10;hero.hp=Math.min(heroCap(hero),hero.hp+10);}
       if(rewardId==="gamble"){hero.maxHp=Math.max(10,hero.maxHp-5);hero.hp=Math.min(hero.hp,hero.maxHp);}
-      if(rewardId==="rest")hero.hp+=12;
-      if(rewardId==="regen")hero.hp+=5;
-      if(rewardId==="blood_pact")hero.hp+=25;
+      if(rewardId==="rest")hero.hp=Math.min(heroCap(hero),hero.hp+12);
+      if(rewardId==="regen")hero.hp=Math.min(heroCap(hero),hero.hp+5);
+      if(rewardId==="blood_pact")hero.hp=Math.min(heroCap(hero),hero.hp+25);
     }
     run.rewardHistory.push({stage:run.stage+1,profileId:String(profileId),rewardId,slot,abilityId,copy:copyReward,automatic});
     if(!copyReward&&!automatic){
@@ -662,7 +687,7 @@
     // Auf den Ultra-Stufen steht der Aufschlag da, sonst wirkt der
     // Schadenssprung wie ein Fehler statt wie eine Regel.
     modal("Nächsten Gegner wählen",ultraStage()
-      ?`${tr("Stufe")} ${run.stage+1} / ${stageCount()} · ${tr("Ultraschwer")} · ${tr("Gegner treffen")} +${Math.max(0,run.stage-8)} ${tr("pro Würfeltreffer")}`
+      ?`${tr("Stufe")} ${run.stage+1} / ${stageCount()} · ${tr("Ultraschwer")} · ${tr("Gegner treffen")} +${Math.max(0,2*(run.stage-9))} ${tr("pro Würfeltreffer")}`
       :`${tr("Stufe")} ${run.stage+1} / ${stageCount()} · ${tr("Schwerer Pfad, bessere Beute")}`);
     const scouting=run.profileIds.some(id=>perk(id,"scout")>0);
     $("trioBossRushRewardOptions").innerHTML=run.paths[run.stage].map((o,i)=>{
@@ -697,6 +722,10 @@
       run.profileIds.forEach(id=>{
         const profile=getProfile(id),hero=heroState(id);
         startingVitals(profile,START_HP+(window.WDMastery?.hpBonus?.(profile,"trio",encounter)||0));
+        // Je Stufe waechst das Maximum um 5, das aktuelle Leben nicht. So
+        // bekommen die Heilperks ueberhaupt erst eine Luecke zu fuellen -
+        // vorher lief alles in eine ungedeckelte Ueberheilung.
+        if(run.stage>0)hero.maxHp=Math.max(1,(Number(hero.maxHp)||START_HP)+MAX_HP_PER_STAGE);
         hero.stageKills=0;
       });
       const heroes=run.profileIds.map(heroState);
@@ -704,7 +733,10 @@
         const ordered=[...heroes].sort((a,b)=>b.hp-a.hp),stacks=run.profileIds.reduce((n,id)=>n+perk(id,"sharing"),0);
         for(const recipient of ordered.slice(1).reverse()){
           const transfer=Math.max(0,Math.min(3*stacks,Math.floor((ordered[0].hp-recipient.hp)/2)));
-          ordered[0].hp-=transfer;recipient.hp+=transfer;
+          // Proviantteilung ist ein Nullsummentausch, der Empfaenger darf
+          // sein eigenes Maximum trotzdem nicht ueberschreiten.
+          const angenommen=Math.min(transfer,Math.max(0,heroCap(recipient)-recipient.hp));
+          ordered[0].hp-=angenommen;recipient.hp+=angenommen;
         }
       }
       run.preparedStage=run.stage;
@@ -900,7 +932,7 @@
 
   window.WDTrioBossRush=Object.freeze({
     start,reset,abort,isActive,currentEncounter,stageNumber,worldThemeKey,worldThemeSequence,startingVitals,startingLoadout,
-    finishEncounter,attackDamageBonus,incomingDamageModifier,enemyHitBonus,abilityLevelOverride,afterHeroAttack,onHeroKill,refreshButton,snapshot,rewardDefinitions,stageDefinitions,profileBossXp
+    finishEncounter,attackDamageBonus,incomingDamageModifier,enemyHitBonus,ultraActive,abilityLevelOverride,afterHeroAttack,onHeroKill,refreshButton,snapshot,rewardDefinitions,stageDefinitions,profileBossXp
   });
 
   $("trioBossRushStartBtn")?.addEventListener("click",start);

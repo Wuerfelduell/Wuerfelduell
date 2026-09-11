@@ -22,9 +22,9 @@ welche Fallen schon Zeit gekostet haben.
 
 | | |
 |---|---|
-| Version | **28.12.8** |
+| Version | **28.12.9** |
 | Branch | `main` |
-| Letzte Schritte | CSS-Stapel auf 10 Dateien zusammengelegt · Changelog englisch vervollständigt · Hauptmenü, Statistik, Profile, Achievements, Spielvorbereitung und Trophy Shop überarbeitet · Fähigkeits- und Shopflächen auf proportional gekachelte Bildrahmen umgestellt · alle Bild-URLs auf einen gemeinsamen Cache-Schlüssel · Trophy-Shop-Reste bereinigt und Aufklapppfeile angeglichen · Duo- und Trio-Boss-Rush mit Pfadwahl, gespeicherten Runs und 32 Perks einschließlich temporärer Ability-Mastery · Boss-XP-Umtausch 300:100 · Zweitfund gedeckelt · Trio-Rush 15 Stufen, ab 10 ultraschwer · Boss-Rush-HUD auf die Weltregel reduziert · Zweitfund-Kopien ablehnbar und weitergebbar · Ultra-Stufen treffen härter statt länger zu dauern |
+| Letzte Schritte | CSS-Stapel auf 10 Dateien zusammengelegt · Changelog englisch vervollständigt · Hauptmenü, Statistik, Profile, Achievements, Spielvorbereitung und Trophy Shop überarbeitet · Fähigkeits- und Shopflächen auf proportional gekachelte Bildrahmen umgestellt · alle Bild-URLs auf einen gemeinsamen Cache-Schlüssel · Trophy-Shop-Reste bereinigt und Aufklapppfeile angeglichen · Duo- und Trio-Boss-Rush mit Pfadwahl, gespeicherten Runs und 32 Perks einschließlich temporärer Ability-Mastery · Boss-XP-Umtausch 300:100 · Zweitfund gedeckelt · Trio-Rush 15 Stufen, ab 10 ultraschwer · Boss-Rush-HUD auf die Weltregel reduziert · Zweitfund-Kopien ablehnbar und weitergebbar · Ultra-Stufen treffen härter statt länger zu dauern · Heilung gedeckelt, Maximum wächst je Stufe |
 
 **Die Arbeitsteilung hat sich geändert.** Bis V28.11.28 liefen zwei
 Sitzungen parallel: Codex hat umgesetzt, diese Sitzung geprüft. Ab jetzt
@@ -311,6 +311,26 @@ wird nur auf ausdrückliche Ansage geändert. Nicht ungefragt „reparieren".
   statt verloren zu gehen. Wechselspiel gilt nach jedem Mitspieler,
   solange alle drei leben; Proviantteilung berücksichtigt beide Empfänger.
   Diese Anpassungen stehen in den deutschen/englischen Perkbeschreibungen.
+- **Überheilung ist seit 28.12.9 aus dem Rush verschwunden.** Der Spieltest
+  zeigte Helden mit 347–370 HP bei einem Maximum von 27–39, also dem Neun-
+  bis Zwölffachen. Zwei Ursachen: `applyHealingToPlayer`
+  (`js/12-battle-ui.js`) lässt Kampagnenhelden seit V24.2 unbegrenzt
+  überheilen — **und die Rush-Perks liefen gar nicht dort durch.** `healHero`
+  schrieb direkt auf `hero.hp`, ebenso die Sofortheilungen in `grant`
+  (Verschnaufpause, Regeneration, Blutpakt) und die Proviantteilung. Jetzt
+  gehen alle über `heroCap(hero)` und enden am Maximum; der Motor-Deckel
+  greift zusätzlich, aber nur im Rush — die normale Kampagne behält ihren
+  Overheal. Als Ausgleich wächst `hero.maxHp` je Stufe um
+  `MAX_HP_PER_STAGE` (5), im Trio also von 25 auf 95. Der Zuwachs addiert
+  auf das vorhandene Maximum, ein Mastery-HP-Bonus trägt also mit.
+  **Nebenwirkung, die damit verschwindet:** Aufopferung und
+  Ausweichinstinkt vergleichen HP gegen Maximum und waren bei einem
+  Verhältnis von 11 dauerhaft tot.
+
+- **Gefallene Helden kehren mit 1 HP zurück** (28.12.9), Zweiter Atem gibt
+  weiterhin 15. Ohne das wäre ein Held seit dem Heilungsdeckel für den
+  restlichen Lauf verloren.
+
 - **Ultra-Stufen treffen seit 28.12.7 härter.** Nach fünf Stunden Spieltest:
   ab Stufe 10 war es „nur noch Grind ohne Gefahr" — ein Held endete mit über
   200 HP. Grund war strukturell: `optionFor` skaliert nur Gegner-**HP**, und
@@ -318,8 +338,15 @@ wird nur auf ausdrückliche Ansage geändert. Nicht ungefragt „reparieren".
   und Heilung wachsen mit jeder Belohnung, die Bedrohung blieb konstant.
   Jetzt gibt `enemyHitBonus` je Ultra-Stufe +1 Schaden **pro Würfeltreffer**,
   gehakt in `damagePerAttackHit` (`js/12-battle-ui.js:494`) — der Bonus
-  wächst also mit der Trefferzahl mit. Gemessen mit Auge 4: je Treffer 4 auf
-  Stufe 9, 10 auf Stufe 15; bei drei Treffern 12 gegen 30. Heldenschaden
+  wächst also mit der Trefferzahl mit. Seit 28.12.9 sind es **+2 je Stufe ab Stufe 11**, gemessen mit Auge 4:
+  je Treffer 4 bis Stufe 10, 14 auf Stufe 15; bei drei Treffern 12 gegen 42.
+  Dazu ist in den Ultra-Stufen die vorhandene **Eskalation** immer aktiv
+  (`updateEncounterEscalation`, +1 nach vier und +2 nach sieben
+  Gegnerzügen). Das **Finale** hat seit 28.12.9 eine Untergrenze von 100 HP
+  je Gegner (`FINAL_MIN_HP`): Helix Apex 145, jedes Seal 100 statt 46,
+  Druck 779 statt 445. Die Untergrenze gilt ausdrücklich nur für das
+  15-Stufen-Finale — sonst werden gespeicherte Zehner-Läufe ungültig, was
+  der Prüfstand mit dem echten Spielstand-Fixture auch gefangen hat. Heldenschaden
   bleibt unverändert. Der Duo-Rush hat keine Ultra-Phase, sein
   `enemyHitBonus` gibt immer 0 und existiert nur für die gleiche
   Schnittstelle. **Im Gegenzug sank die HP-Kurve** (28.12.8): die

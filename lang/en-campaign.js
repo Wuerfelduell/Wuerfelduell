@@ -1171,7 +1171,7 @@
   "Feldlazarett": "Field Hospital",
   "Nach jedem Boss heilen beide Helden 8 HP pro Stapel.": "After each boss, both heroes heal 8 HP per stack.",
   "Zweiter Atem": "Second Wind",
-  "Ein gefallener Held startet den nächsten Boss mit 15 HP.": "A fallen hero starts the next boss with 15 HP.",
+  "Ein gefallener Held startet den nächsten Boss mit 15 statt 1 HP.": "A fallen hero starts the next boss with 15 HP instead of 1.",
   "Eiserne Konstitution": "Iron Constitution",
   "Erhöht die maximalen und aktuellen HP sofort um 10 pro Stapel.": "Immediately increases maximum and current HP by 10 per stack.",
   "Blutpakt": "Blood Pact",

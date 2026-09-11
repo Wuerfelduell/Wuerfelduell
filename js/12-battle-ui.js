@@ -124,7 +124,11 @@
       }
     }
     const before=p.hp;
-    const campaignHeroOverheal=campaignMode && p.campaignTeam==="hero";
+    // Ueberheilung ohne Deckel stammt aus V24.2 und ist fuer kurze
+    // Kampagnen-Encounter gedacht. Im Boss Rush ueber 15 Stufen wurde
+    // daraus ein Fass ohne Boden: Helden liefen mit dem Zwoelffachen ihres
+    // Maximums herum, und jeder Perk mit einer HP-Prozentschwelle war tot.
+    const campaignHeroOverheal=campaignMode && p.campaignTeam==="hero" && !window.WDBossRush?.isActive?.();
     p.hp=campaignHeroOverheal ? p.hp+heal : Math.min(maxHpForPlayer(p),p.hp+heal);
     return Math.max(0,p.hp-before);
   }

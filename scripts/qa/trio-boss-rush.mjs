@@ -31,7 +31,17 @@ assert.equal(stages[14].candidates[0].enemies.length,4,'Helix Apex samt drei Sea
 c.players=[];c.current=0;c.pendingExtraHealFx=[];c.recordHealing=()=>{};c.addLog=()=>{};c.renderPlayers=()=>{};c.saveGameData=()=>true;
 vm.runInContext('saveData.profiles=["a","b","c"].map(id=>({id,name:id,campaign:{bossRushXp:100}}));',c);
 function fresh(){const ids=['a','b','c'];const r={schema:1,stageCount:15,active:true,finished:false,phase:'combat',stage:0,cleared:0,preparedStage:0,profileIds:ids,heroes:Object.fromEntries(ids.map(id=>[id,{hp:50,maxHp:50,primaryAbility:3,secondAbility:4,thirdAbility:null,perks:{},openingUsedStage:-1,bulwarkUsedStage:-1,successfulAttacks:0,stageKills:0,xpEarned:0}])),rewardHistory:[],bossXpAwards:[],paths:[],selectedPaths:[],seenEncounters:[],deferredRewards:[],rewardTasks:[],rewardTurn:0,swapPending:null,bossXpEarned:0};c.players=ids.map(id=>({profileId:id,campaignTeam:'hero',hp:50,maxHp:50,ability:3,secondAbility:4}));c.players.push({campaignTeam:'enemy',hp:50,maxHp:50});c.current=0;t.setRun(r);return r;}
-let r=fresh();r.heroes.b.perks={hospital:2};r.heroes.c.perks={hospital:1};t.applyStageRegeneration();assert.deepEqual(r.profileIds.map(id=>r.heroes[id].hp),[74,74,74]);
+// Feldlazarett heilt alle drei, endet aber seit 28.12.9 am Maximum -
+// ungedeckelt liefen Helden im 15-Stufen-Lauf beim Zwoelffachen davon.
+let r=fresh();r.heroes.b.perks={hospital:2};r.heroes.c.perks={hospital:1};
+r.profileIds.forEach(id=>{r.heroes[id].hp=40;});
+t.applyStageRegeneration();
+assert.deepEqual(r.profileIds.map(id=>r.heroes[id].hp),[50,50,50],'Heilung nur bis zum Maximum');
+// Mit hoeherem Maximum wirkt dieselbe Heilung wieder voll.
+r=fresh();r.heroes.b.perks={hospital:2};r.heroes.c.perks={hospital:1};
+r.profileIds.forEach(id=>{r.heroes[id].maxHp=90;r.heroes[id].hp=40;});
+t.applyStageRegeneration();
+assert.deepEqual(r.profileIds.map(id=>r.heroes[id].hp),[64,64,64],'unter dem Maximum heilt es voll');
 // Zweitfund gibt auch bei drei Helden je Stufe genau eine Kopie ab, und zwar
 // abwechselnd - sonst sammelte ein Held ein Vielfaches der zehn Belohnungen.
 r=fresh();t.grant('a','second_find');assert.equal(r.deferredRewards.length,0);
@@ -68,7 +78,7 @@ checkRushMastery({c,t,rush:trio,fresh,mode:'trio'});
 {
   const r2=fresh();
   c.players=[{profileId:'a',campaignTeam:'hero',hp:50,maxHp:50},{campaignTeam:'enemy',hp:50,maxHp:50}];
-  for(const [stufe,erwartet] of [[0,0],[8,0],[9,1],[11,3],[14,6]]){
+  for(const [stufe,erwartet] of [[0,0],[8,0],[9,0],[10,2],[11,4],[13,8],[14,10]]){
     r2.stage=stufe;
     assert.equal(trio.enemyHitBonus(1),erwartet,`Ultra-Aufschlag auf Stufe ${stufe+1}`);
     assert.equal(trio.enemyHitBonus(0),0,'Helden bekommen nie einen Aufschlag');
@@ -77,7 +87,11 @@ checkRushMastery({c,t,rush:trio,fresh,mode:'trio'});
   assert.equal(trio.enemyHitBonus(1),0,'nach dem Run kein Aufschlag');
 }
 // Die Ultra-Kurve bleibt spuerbar, aber gemaessigt: hoechstens 1,3x je Stufe.
-for(let i=9;i<15;i++)assert(Math.max(...stages[i].candidates.map(o=>o.pressure))<=1.3*Math.max(...stages[i-1].candidates.map(o=>o.pressure)),'Ultra-HP steigen gemaessigt');
+// Die Ultra-Kurve bleibt gemaessigt - ausser auf der letzten Stufe, die
+// bewusst eine Wand ist.
+for(let i=9;i<14;i++)assert(Math.max(...stages[i].candidates.map(o=>o.pressure))<=1.3*Math.max(...stages[i-1].candidates.map(o=>o.pressure)),'Ultra-HP steigen gemaessigt');
+assert(stages[14].candidates.every(o=>o.enemies.every(e=>e.hp>=100)),'im Finale hat jeder Gegner mindestens 100 HP');
+assert(Math.min(...stages[14].candidates.map(o=>o.pressure))>1.5*Math.max(...stages[13].candidates.map(o=>o.pressure)),'das Finale springt deutlich');
 for(let i=9;i<15;i++)assert(stages[i].candidates.every(o=>o.phaseHeal>=12+4*(i-9)),'Ultra-Phasenheilung steigt');
 for(let attempt=0;attempt<50;attempt++){
  const r=fresh();

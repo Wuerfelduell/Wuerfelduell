@@ -65,7 +65,7 @@
     {kind:"perk",id:"drill",rarity:"rare",name:"Präzisionsdrill",icon:"target.svg",desc:"Jeder dritte erfolgreiche eigene Hauptangriff im Run verursacht +6 Schaden pro Stapel."},
     {kind:"perk",id:"gamble",rarity:"epic",name:"Glücksspiel",icon:"dice.svg",desc:"Dauerhaft +5 Angriffsschaden und -5 maximale HP pro Stapel; mindestens 10 maximale HP bleiben."},
     {kind:"perk",id:"hospital",rarity:"rare",name:"Feldlazarett",icon:"heal.svg",desc:"Nach jedem Boss heilen beide Helden 8 HP pro Stapel."},
-    {kind:"perk",id:"second_wind",rarity:"epic",name:"Zweiter Atem",icon:"heart-hp.svg",desc:"Ein gefallener Held startet den nächsten Boss mit 15 HP."},
+    {kind:"perk",id:"second_wind",rarity:"epic",name:"Zweiter Atem",icon:"heart-hp.svg",desc:"Ein gefallener Held startet den nächsten Boss mit 15 statt 1 HP."},
     {kind:"perk",id:"constitution",rarity:"common",name:"Eiserne Konstitution",icon:"heart-hp.svg",desc:"Erhöht die maximalen und aktuellen HP sofort um 10 pro Stapel."},
     {kind:"perk",id:"blood_pact",rarity:"rare",name:"Blutpakt",icon:"self-damage-blood.svg",desc:"Heilt sofort 25 HP; nach jedem weiteren Boss kostet jeder Stapel 3 HP, ohne zu töten."},
     {kind:"perk",id:"scales",rarity:"common",name:"Schuppenpanzer",icon:"shield.svg",desc:"Eingehender Gegnerangriffsschaden sinkt um 1 pro Stapel, mindestens auf 0."},
@@ -204,6 +204,7 @@
 
   // Der Duo-Rush endet auf Stufe 10 und kennt keine Ultra-Phase; der Haken
   // existiert nur, damit beide Module dieselbe Schnittstelle tragen.
+  function ultraActive(){return false;}
   function enemyHitBonus(){return 0;}
 
   function findHeroIndex(profileId){
@@ -234,7 +235,10 @@
       hero.maxHp=Math.max(10,hero.maxHp);
       hero.hp=Math.max(0,Number(hero.hp)||0);
     }
-    if(hero.hp<=0&&perk(profile.id,"second_wind")>0)hero.hp=15;
+    // Ein gefallener Held kehrt zur naechsten Stufe mit 1 HP zurueck - seit
+    // die Heilung gedeckelt ist, waere er sonst fuer den restlichen Lauf
+    // verloren. Zweiter Atem zieht vor und gibt stattdessen 15.
+    if(hero.hp<=0)hero.hp=perk(profile.id,"second_wind")>0?15:1;
     return {hp:hero.hp,maxHp:hero.maxHp};
   }
 
@@ -259,14 +263,20 @@
     };
   }
 
+  // Jede Heilung im Lauf geht hier durch und endet am Maximum. Die Perks
+  // heilten frueher direkt auf hero.hp und umgingen damit auch den
+  // Ueberheilungsdeckel des Motors - im Trio-Lauf standen Helden dadurch
+  // beim Zwoelffachen ihres Maximums.
+  function heroCap(hero){return Math.max(1,Number(hero?.maxHp)||START_HP);}
   function healHero(profileId,amount,{combat=false,reason="Boss Rush"}={}){
     const hero=heroState(profileId),index=findHeroIndex(profileId),player=players[index];
     if(!hero||amount<=0)return 0;
     const before=Math.max(0,Number(combat?player?.hp:hero.hp)||0);
-    hero.hp=before+amount;
+    hero.hp=Math.min(heroCap(hero),before+amount);
+    const healed=Math.max(0,hero.hp-before);
     if(player)player.hp=hero.hp;
-    if(combat&&player){recordHealing(index,amount);pendingExtraHealFx.push({target:index,amount});addLog(`${tr(reason)}: ${player.name} +${amount} HP`);}
-    return amount;
+    if(combat&&player&&healed>0){recordHealing(index,healed);pendingExtraHealFx.push({target:index,amount:healed});addLog(`${tr(reason)}: ${player.name} +${healed} HP`);}
+    return healed;
   }
 
   function perk(profileId,id){return Math.max(0,Number(heroState(profileId)?.perks?.[id])||0);}
@@ -505,11 +515,11 @@
         hero[slot]=abilityId;
       }
       hero.perks[rewardId]=perk(profileId,rewardId)+1;
-      if(rewardId==="constitution"){hero.maxHp+=10;hero.hp+=10;}
+      if(rewardId==="constitution"){hero.maxHp+=10;hero.hp=Math.min(heroCap(hero),hero.hp+10);}
       if(rewardId==="gamble"){hero.maxHp=Math.max(10,hero.maxHp-5);hero.hp=Math.min(hero.hp,hero.maxHp);}
-      if(rewardId==="rest")hero.hp+=12;
-      if(rewardId==="regen")hero.hp+=5;
-      if(rewardId==="blood_pact")hero.hp+=25;
+      if(rewardId==="rest")hero.hp=Math.min(heroCap(hero),hero.hp+12);
+      if(rewardId==="regen")hero.hp=Math.min(heroCap(hero),hero.hp+5);
+      if(rewardId==="blood_pact")hero.hp=Math.min(heroCap(hero),hero.hp+25);
     }
     run.rewardHistory.push({stage:run.stage+1,profileId:String(profileId),rewardId,slot,abilityId,copy:copyReward,automatic});
     if(!copyReward&&!automatic){
@@ -667,7 +677,9 @@
       if(heroes.every(h=>h.hp>0)){
         const ordered=[...heroes].sort((a,b)=>b.hp-a.hp),stacks=run.profileIds.reduce((n,id)=>n+perk(id,"sharing"),0);
         const transfer=Math.min(3*stacks,Math.floor((ordered[0].hp-ordered[1].hp)/2));
-        ordered[0].hp-=transfer;ordered[1].hp+=transfer;
+        // Nullsummentausch, der Empfaenger bleibt trotzdem an seinem Maximum.
+        const angenommen=Math.min(transfer,Math.max(0,heroCap(ordered[1])-ordered[1].hp));
+        ordered[0].hp-=angenommen;ordered[1].hp+=angenommen;
       }
       run.preparedStage=run.stage;
     }
@@ -860,7 +872,7 @@
 
   window.WDDuoBossRush=Object.freeze({
     start,reset,abort,isActive,currentEncounter,stageNumber,worldThemeKey,worldThemeSequence,startingVitals,startingLoadout,
-    finishEncounter,attackDamageBonus,incomingDamageModifier,enemyHitBonus,abilityLevelOverride,afterHeroAttack,onHeroKill,refreshButton,snapshot,rewardDefinitions,stageDefinitions,profileBossXp
+    finishEncounter,attackDamageBonus,incomingDamageModifier,enemyHitBonus,ultraActive,abilityLevelOverride,afterHeroAttack,onHeroKill,refreshButton,snapshot,rewardDefinitions,stageDefinitions,profileBossXp
   });
 
   $("duoBossRushStartBtn")?.addEventListener("click",start);
