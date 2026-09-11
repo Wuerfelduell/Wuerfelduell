@@ -35,20 +35,22 @@ let r=fresh();r.heroes.b.perks={hospital:2};r.heroes.c.perks={hospital:1};t.appl
 // Zweitfund gibt auch bei drei Helden je Stufe genau eine Kopie ab, und zwar
 // abwechselnd - sonst sammelte ein Held ein Vielfaches der zehn Belohnungen.
 r=fresh();t.grant('a','second_find');assert.equal(r.deferredRewards.length,0);
-assert.equal(r.heroes.a.secondFindLeft,2);
+assert.equal(r.heroes.a.secondFindLeft,3);
 t.grant('a','rest');assert.equal(r.deferredRewards.length,1,'nicht an beide Mitspieler');
 const ersterEmpfaenger=r.deferredRewards[0].profileId;
 assert(['b','c'].includes(ersterEmpfaenger));assert.equal(r.deferredRewards[0].dueStage,1);
 r.rewardHistory.push({stage:1,profileId:ersterEmpfaenger,rewardId:'rest',copy:true});
 t.grant('a','damage');assert.equal(r.deferredRewards.length,2);
 assert.notEqual(r.deferredRewards[1].profileId,ersterEmpfaenger,'der andere Mitspieler ist dran');
-assert.equal(r.heroes.a.secondFindLeft,0,'nach zwei Stufen ist Schluss');
+t.grant('a','damage');assert.equal(r.heroes.a.secondFindLeft,0,'nach drei Stufen ist Schluss');
 r.stage=1;r.selectedPaths[1]={difficulty:'easy'};t.showRewardModal();
 // Zwei Kopien an zwei verschiedene Helden - je Held immer noch nur eine.
 assert.equal(r.rewardTasks.filter(x=>x.copy).length,2);
 assert.equal(new Set(r.rewardTasks.filter(x=>x.copy).map(x=>x.profileId)).size,2);
 assert.deepEqual(plain(r.rewardTasks.filter(x=>!x.copy).map(x=>x.profileId)),['a','b','c']);
-t.grant('b','rest',{copyReward:true});assert.equal(r.deferredRewards.length,0);
+// Kopien erzeugen keine Kopierkette; die dritte Kopie wartet auf die naechste Stufe.
+t.grant('b','rest',{copyReward:true});assert.equal(r.deferredRewards.length,1);
+assert.equal(r.deferredRewards[0].dueStage,2);
 r=fresh();r.heroes.a.perks={relay:2};for(const id of ['b','c']){r.lastAttacker=id;assert.equal(trio.attackDamageBonus(0,3).amount,4);}c.players[2].hp=0;assert.equal(trio.attackDamageBonus(0,3).amount,0);
 r=fresh();r.heroes.c.perks={scales:2,bulwark:2,dodge:2};c.players[2].hp=10;c.current=3;assert.equal(trio.incomingDamageModifier(2,10),-10);assert.equal(trio.incomingDamageModifier(2,10),-6);
 r=fresh();r.heroes.c.perks={revenge:2};c.players[0].hp=0;c.players[1].hp=0;assert.equal(trio.attackDamageBonus(2,3).amount,12);

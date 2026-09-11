@@ -22,9 +22,9 @@ welche Fallen schon Zeit gekostet haben.
 
 | | |
 |---|---|
-| Version | **28.12.5** |
+| Version | **28.12.6** |
 | Branch | `main` |
-| Letzte Schritte | CSS-Stapel auf 10 Dateien zusammengelegt · Changelog englisch vervollständigt · Hauptmenü, Statistik, Profile, Achievements, Spielvorbereitung und Trophy Shop überarbeitet · Fähigkeits- und Shopflächen auf proportional gekachelte Bildrahmen umgestellt · alle Bild-URLs auf einen gemeinsamen Cache-Schlüssel · Trophy-Shop-Reste bereinigt und Aufklapppfeile angeglichen · Duo- und Trio-Boss-Rush mit Pfadwahl, gespeicherten Runs und 32 Perks einschließlich temporärer Ability-Mastery · Boss-XP-Umtausch 300:100 · Zweitfund gedeckelt · Trio-Rush 15 Stufen, ab 10 ultraschwer · Boss-Rush-HUD auf die Weltregel reduziert |
+| Letzte Schritte | CSS-Stapel auf 10 Dateien zusammengelegt · Changelog englisch vervollständigt · Hauptmenü, Statistik, Profile, Achievements, Spielvorbereitung und Trophy Shop überarbeitet · Fähigkeits- und Shopflächen auf proportional gekachelte Bildrahmen umgestellt · alle Bild-URLs auf einen gemeinsamen Cache-Schlüssel · Trophy-Shop-Reste bereinigt und Aufklapppfeile angeglichen · Duo- und Trio-Boss-Rush mit Pfadwahl, gespeicherten Runs und 32 Perks einschließlich temporärer Ability-Mastery · Boss-XP-Umtausch 300:100 · Zweitfund gedeckelt · Trio-Rush 15 Stufen, ab 10 ultraschwer · Boss-Rush-HUD auf die Weltregel reduziert · Zweitfund-Kopien ablehnbar und weitergebbar |
 
 **Die Arbeitsteilung hat sich geändert.** Bis V28.11.28 liefen zwei
 Sitzungen parallel: Codex hat umgesetzt, diese Sitzung geprüft. Ab jetzt
@@ -292,14 +292,20 @@ wird nur auf ausdrückliche Ansage geändert. Nicht ungefragt „reparieren".
   `scripts/qa/boss-xp-conversion.mjs` prüft alle drei Moduskonten, Profilwechsel,
   Reload, Doppelklickschutz, Guthaben 0/299/300/602, unveränderte L2-Daten,
   DE/EN in fünf Breiten und 0 DOM-Mutationen im offenen Mastery-Fenster.
-- Feldlazarett heilt alle drei. **Zweitfund seit 28.12.3 gedeckelt:** er
+- Feldlazarett heilt alle drei. **Zweitfund, gedeckelt seit 28.12.3, entschärft seit 28.12.6:** er
   läuft zwei Stufen und gibt je Stufe höchstens eine Belohnung an einen
   Mitspieler ab, ein erneuter Fund verlängert um zwei Stufen. Vorher war
   die Menge Stapel × Partnerzahl, und drei Faktoren multiplizierten sich
   ungebremst — im Trio sammelte ein Held so bis zu 52 statt zehn
   Belohnungen (im Spieltest: 68 Schaden auf einen 1er, 150 HP). Gemessen
   am echten Modul liegt es jetzt bei 10 ohne, 12/14/16 bei ein bis drei
-  Funden, in beiden Modi gleich. Wer ihn jede Stufe nimmt, bleibt bei 10 —
+  Funden, in beiden Modi gleich. Seit 28.12.6 laeuft er drei statt zwei
+  Stufen (gemessen 13/16/16), weil er sich im Spieltest zu schwach anfuehlte,
+  und eine Kopie ist ein Angebot statt einer Pflicht: **Ablehnen** gibt es
+  immer, **Weitergeben** nur im Trio und nur an den dritten Helden. Nie
+  zurueck an den Geber und nie ein zweites Mal - sonst liefe die Belohnung
+  im Kreis. Anlass war, dass eine Zweitfund-Kopie dem Partner eine
+  Faehigkeit aufzwang, die er nicht wollte. Wer ihn jede Stufe nimmt, bleibt bei 10 —
   es wird ja nie eine andere Belohnung kopiert. Kopien erzeugen weiterhin
   keine Kopien; die zweite fällige Kopie eines Helden rückt eine Stufe nach,
   statt verloren zu gehen. Wechselspiel gilt nach jedem Mitspieler,

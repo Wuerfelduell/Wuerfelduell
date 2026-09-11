@@ -74,7 +74,7 @@
     {kind:"perk",id:"realign",rarity:"epic",name:"Neuausrichtung",icon:"mastery.svg",desc:"Wähle einen belegten Fähigkeitsslot; seine Fähigkeit wird zufällig gegen eine noch nicht besessene getauscht."},
     {kind:"perk",id:"reroll",rarity:"common",name:"Neuwurf",icon:"dice.svg",desc:"Gewährt pro Stapel einen Neuwurf einer Belohnungsauswahl im Run."},
     {kind:"perk",id:"supply",rarity:"rare",name:"Vorratspaket",icon:"reward-gift.svg",desc:"Die nächste eigene Belohnungsauswahl enthält vier statt drei Perks; einmal pro Stapel."},
-    {kind:"perk",id:"second_find",rarity:"epic",name:"Zweitfund",icon:"duo.svg",desc:"Die nächsten zwei Stufen erhält der Partner je eine deiner Belohnungen eine Stufe später ebenfalls. Ein erneuter Fund verlängert um zwei Stufen."},
+    {kind:"perk",id:"second_find",rarity:"epic",name:"Zweitfund",icon:"duo.svg",desc:"Die nächsten drei Stufen erhält der Partner je eine deiner Belohnungen eine Stufe später ebenfalls. Ein erneuter Fund verlängert um drei Stufen."},
     {kind:"perk",id:"scout",rarity:"common",name:"Kundschafter",icon:"encounter.svg",desc:"Zeigt bei der Pfadwahl die Fähigkeiten aller angebotenen Gegner."},
     {kind:"perk",id:"greed",rarity:"rare",name:"Trophäengier",icon:"trophy.svg",desc:"Erhöht die eigenen Boss-XP im restlichen Run um 50 % pro Stapel."},
     {kind:"perk",id:"relay",rarity:"rare",name:"Wechselspiel",icon:"duo.svg",desc:"Solange beide leben: Greift nach dem Partner an und verursacht +2 Schaden pro Stapel."},
@@ -271,7 +271,7 @@
   // Zweitfund laeuft zwei Stufen und gibt je Stufe hoechstens eine Kopie ab.
   // Vorher war die Menge Stapel mal Partnerzahl; ohne Deckel sammelte ein
   // Held so ein Vielfaches der zehn regulaeren Belohnungen an.
-  const SECOND_FIND_STAGES=2;
+  const SECOND_FIND_STAGES=3;
   function copyPartner(profileId){return partnerId(profileId)??null;}
   function persistRun(){
     if(!run)return;
@@ -401,6 +401,39 @@
   function inputBlocked(){return performance.now()<inputReadyAt;}
   function currentTask(){return run?.rewardTasks?.[run.rewardTurn];}
 
+  // Eine Kopie ist ein Angebot, kein Zwang. Ablehnen geht immer; weitergeben
+  // nur an den dritten Helden, und nie zurueck an den Geber - sonst liefe die
+  // Belohnung im Kreis. Im Duo gibt es keinen Dritten, dort bleibt nur
+  // ablehnen.
+  function passTarget(task){
+    if(!task?.copy||task.passed||!run)return null;
+    return run.profileIds.find(id=>String(id)!==String(task.profileId)&&String(id)!==String(task.from))??null;
+  }
+  function copyActions(task){
+    if(!task?.copy)return "";
+    const ziel=passTarget(task),knoepfe=[];
+    if(ziel!=null)knoepfe.push(optionButton(tr("Weitergeben"),`${tr("Diese Belohnung geht stattdessen an")} ${getProfile(ziel)?.name||""}.`,"duo.svg","data-rush-pass","1",tr("Zweitfund")));
+    knoepfe.push(optionButton(tr("Ablehnen"),tr("Diese Belohnung verfällt ersatzlos."),"loss.svg","data-rush-decline","1",tr("Zweitfund")));
+    return knoepfe.join("");
+  }
+  function declineCopy(){
+    const task=currentTask();
+    if(inputBlocked()||selectionLocked||!run||run.finished||run.phase!=="reward"||!task?.copy)return;
+    lockSelection();
+    run.rewardHistory.push({stage:run.stage+1,profileId:String(task.profileId),rewardId:task.choices[0],copy:true,declined:true});
+    completeReward();
+  }
+  function passCopy(){
+    const task=currentTask(),ziel=passTarget(task);
+    if(inputBlocked()||selectionLocked||!run||run.finished||run.phase!=="reward"||!task?.copy||ziel==null)return;
+    lockSelection();
+    // Direkt hinter die laufende Aufgabe einreihen, damit der Dritte sofort
+    // entscheidet. passed verhindert ein weiteres Durchreichen.
+    run.rewardTasks.splice(run.rewardTurn+1,0,{profileId:String(ziel),copy:true,from:task.from??null,passed:true,count:1,choices:[...task.choices]});
+    run.rewardHistory.push({stage:run.stage+1,profileId:String(task.profileId),rewardId:task.choices[0],copy:true,passedTo:String(ziel)});
+    completeReward();
+  }
+
   function renderRewardTurn(){
     const task=currentTask();if(!task)return;
     rewardTurn=run.rewardTurn;
@@ -432,7 +465,7 @@
       }).join("");
       return;
     }
-    $("duoBossRushRewardOptions").innerHTML=rewardChoices.map(choice=>optionButton(tr(choice.name),tr(choice.desc),choice.icon,"data-boss-rush-reward",choice.id,choiceStateLabel(task.profileId,choice))).join("");
+    $("duoBossRushRewardOptions").innerHTML=rewardChoices.map(choice=>optionButton(tr(choice.name),tr(choice.desc),choice.icon,"data-boss-rush-reward",choice.id,choiceStateLabel(task.profileId,choice))).join("")+copyActions(task);
     const left=perk(task.profileId,"reroll")-(hero.rerollsUsed||0);
     const reroll=$("duoBossRushRerollBtn");
     reroll.classList.toggle("hidden",task.copy||left<=0);
@@ -479,7 +512,7 @@
       if(rewardId==="second_find")hero.secondFindLeft=(Number(hero.secondFindLeft)||0)+SECOND_FIND_STAGES;
       else if((Number(hero.secondFindLeft)||0)>0&&run.stage<9){
         const partner=copyPartner(profileId);
-        if(partner!=null){hero.secondFindLeft--;run.deferredRewards.push({dueStage:run.stage+1,profileId:partner,rewardId});}
+        if(partner!=null){hero.secondFindLeft--;run.deferredRewards.push({dueStage:run.stage+1,profileId:partner,rewardId,from:String(profileId)});}
       }
     }
     mirrorHero(profileId);
@@ -529,7 +562,7 @@
         vergeben.add(String(r.profileId));faellig.push(r);
       });
       run.deferredRewards=warten;
-      run.rewardTasks=faellig.map(r=>({profileId:r.profileId,copy:true,count:1,choices:[r.rewardId]}));
+      run.rewardTasks=faellig.map(r=>({profileId:r.profileId,copy:true,from:r.from??null,count:1,choices:[r.rewardId]}));
       run.profileIds.forEach(profileId=>{
         const hero=heroState(profileId),supply=perk(profileId,"supply")>(hero.suppliesUsed||0);
         if(supply)hero.suppliesUsed=(hero.suppliesUsed||0)+1;
@@ -831,6 +864,8 @@
     const button=event.target.closest("button");if(!button)return;
     if(button.hasAttribute("data-boss-rush-reward"))selectReward(button.dataset.bossRushReward);
     else if(button.hasAttribute("data-rush-slot"))selectSlot(button.dataset.rushSlot);
+    else if(button.hasAttribute("data-rush-pass"))passCopy();
+    else if(button.hasAttribute("data-rush-decline"))declineCopy();
     else if(button.hasAttribute("data-rush-path"))choosePath(Number(button.dataset.rushPath));
     else if(button.hasAttribute("data-rush-redraw"))redrawPath(Number(button.dataset.rushRedraw));
     else if(button.hasAttribute("data-rush-resume"))resumeRun(button.dataset.rushResume);
