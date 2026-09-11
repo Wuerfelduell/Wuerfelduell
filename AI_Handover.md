@@ -456,10 +456,23 @@ wird nur auf ausdrückliche Ansage geändert. Nicht ungefragt „reparieren".
    **Mit Innenabstand ist das nicht zu lösen** — nachgemessen mit 16 px und
    26 px am selben Text: `--p3-boss-bar` liegt als
    `background: center/100% 100%`, der Zierrand wird also mit der Leiste
-   mitgestreckt, das Verhältnis bleibt gleich. Die saubere Lösung ist der
-   Wechsel auf `border-image` mit festen Slices, damit die Randbreite
-   unabhängig von der Höhe konstant bleibt. Dafür fehlen die Slice-Werte für
-   `boss.webp` (512 × 171) — nach Projektregel nicht raten, sondern erfragen.
+   mitgestreckt, das Verhältnis bleibt gleich.
+
+   **`border-image` ist hier der falsche Weg**, auch wenn es naheliegt und
+   bis 28.12.8 genau so in dieser Datei stand. Ein Blick ins vergrößerte
+   Bild zeigt warum: `boss.webp` trägt mittig oben *und* unten ein
+   Kronenornament mit Edelstein. Eine border-image-Kante wird waagerecht
+   gedehnt oder gekachelt — das Ornament würde verschmieren oder sich
+   wiederholen. Die waagerechten Kanten sind gemessen (oben 63 px, unten
+   65 px von 171); die senkrechten lassen sich nicht sinnvoll messen, weil
+   das Feld einen Farbverlauf über die ganze Breite hat.
+
+   Richtig ist das **Kachelgitter für Bilder mit Mittelornament**, das es
+   im Projekt längst gibt (siehe oben, `buttonArtwork` in
+   `js/08-profiles-stats.js`, und `renderBossXpConversion` in
+   `js/23-mastery.js` als jüngstes Beispiel): feste Spalten für Enden und
+   Ornament, `1fr` dazwischen, dabei die Proportionsbedingung einhalten.
+   Damit bleibt die Randstärke konstant und der Text kann wachsen.
 
 5. **Mobiles Boss-Rush-Statusbanner bei langen Namen.** Bei der Trio-Portierung
    auch im unveränderten Duo-Modul reproduziert: Der gemeinsame
