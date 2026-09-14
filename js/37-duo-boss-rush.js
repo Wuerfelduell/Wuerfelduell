@@ -237,12 +237,15 @@
       hero.hp=fallback;
     }else{
       hero.maxHp=Math.max(10,hero.maxHp);
-      hero.hp=Math.max(0,Number(hero.hp)||0);
+      // Der Deckel gehoert auch hierher: ein gespeicherter Stand kann mehr HP
+      // tragen als sein Maximum - aus einer aelteren Version, aus einem
+      // ungedeckelten Heileffekt oder von Hand im localStorage.
+      hero.hp=Math.min(hero.maxHp,Math.max(0,Number(hero.hp)||0));
     }
     // Ein gefallener Held kehrt zur naechsten Stufe mit 1 HP zurueck - seit
     // die Heilung gedeckelt ist, waere er sonst fuer den restlichen Lauf
     // verloren. Zweiter Atem zieht vor und gibt stattdessen 15.
-    if(hero.hp<=0)hero.hp=perk(profile.id,"second_wind")>0?15:1;
+    if(hero.hp<=0)hero.hp=Math.min(hero.maxHp,perk(profile.id,"second_wind")>0?15:1);
     return {hp:hero.hp,maxHp:hero.maxHp};
   }
 
@@ -289,6 +292,10 @@
   // Zweitfund laeuft zwei Stufen und gibt je Stufe hoechstens eine Kopie ab.
   // Vorher war die Menge Stapel mal Partnerzahl; ohne Deckel sammelte ein
   // Held so ein Vielfaches der zehn regulaeren Belohnungen an.
+  // Der Heilungsdeckel gilt in beiden Modi; das Wachstum stand bis 28.12.12
+  // nur im Trio. Damit hatte das Duo den Deckel ohne den Ausgleich, und die
+  // Heilperks hatten nie eine Luecke zu fuellen.
+  const MAX_HP_PER_STAGE=5;
   const SECOND_FIND_STAGES=3;
   function copyPartner(profileId){return partnerId(profileId)??null;}
   function persistRun(){
@@ -537,6 +544,14 @@
     return true;
   }
 
+  // Ablehnen und Weitergeben schreiben denselben rewardId in die Historie wie
+  // das Annehmen - nur mit declined bzw. passedTo daneben. Wer nur nach der
+  // ID sucht, zaehlt eine abgelehnte Verschnaufpause als genommen und nimmt
+  // dem Team no_rest_for_legends weg, obwohl nie jemand geheilt hat.
+  function restWasTaken(){
+    return !!run?.rewardHistory?.some(entry=>entry.rewardId==="rest"&&!entry.declined&&!entry.passedTo);
+  }
+
   function completeReward(){
     run.swapPending=null;run.rewardTurn++;
     if(run.rewardTurn<run.rewardTasks.length){persistRun();renderPlayers();renderRewardTurn();return;}
@@ -675,6 +690,10 @@
       run.profileIds.forEach(id=>{
         const profile=getProfile(id),hero=heroState(id);
         startingVitals(profile,START_HP+(window.WDMastery?.hpBonus?.(profile,"duo",encounter)||0));
+        // Je Stufe waechst das Maximum um 5, das aktuelle Leben nicht -
+        // gleiche Regel wie im Trio. Der Zuwachs addiert auf das vorhandene
+        // Maximum, ein Mastery-HP-Bonus traegt also mit.
+        if(run.stage>0)hero.maxHp=Math.max(1,(Number(hero.maxHp)||START_HP)+MAX_HP_PER_STAGE);
         hero.stageKills=0;
       });
       const heroes=run.profileIds.map(heroState);
@@ -754,7 +773,7 @@
     syncRunStateFromPlayers();
     if(run.stage>=STAGES.length-1){
       heroIndices.forEach(index=>unlockAchievementForPlayer(index,"rush_finale"));
-      const usedRest=run.rewardHistory.some(entry=>entry.rewardId==="rest");
+      const usedRest=restWasTaken();
       if(!usedRest)heroIndices.forEach(index=>unlockAchievementForPlayer(index,"no_rest_for_legends"));
       showOutcome(true);return true;
     }

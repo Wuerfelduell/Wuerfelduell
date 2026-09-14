@@ -275,12 +275,15 @@
       hero.hp=fallback;
     }else{
       hero.maxHp=Math.max(10,hero.maxHp);
-      hero.hp=Math.max(0,Number(hero.hp)||0);
+      // Der Deckel gehoert auch hierher: ein gespeicherter Stand kann mehr HP
+      // tragen als sein Maximum - aus einer aelteren Version, aus einem
+      // ungedeckelten Heileffekt oder von Hand im localStorage.
+      hero.hp=Math.min(hero.maxHp,Math.max(0,Number(hero.hp)||0));
     }
     // Ein gefallener Held kehrt zur naechsten Stufe mit 1 HP zurueck - seit
     // die Heilung gedeckelt ist, waere er sonst fuer den restlichen Lauf
     // verloren. Zweiter Atem zieht vor und gibt stattdessen 15.
-    if(hero.hp<=0)hero.hp=perk(profile.id,"second_wind")>0?15:1;
+    if(hero.hp<=0)hero.hp=Math.min(hero.maxHp,perk(profile.id,"second_wind")>0?15:1);
     return {hp:hero.hp,maxHp:hero.maxHp};
   }
 
@@ -335,7 +338,9 @@
   function copyPartner(profileId){
     const partner=partnerIds(profileId);
     if(!partner.length)return null;
-    const erhalten=id=>run.rewardHistory.filter(h=>h.copy&&String(h.profileId)===String(id)).length;
+    // Nur BEHALTENE Kopien zaehlen. Wer ablehnt oder weitergibt, hat nichts
+    // bekommen und darf deswegen nicht hinten anstehen.
+    const erhalten=id=>run.rewardHistory.filter(h=>h.copy&&!h.declined&&!h.passedTo&&String(h.profileId)===String(id)).length;
     return [...partner].sort((a,b)=>erhalten(a)-erhalten(b)||partner.indexOf(a)-partner.indexOf(b))[0];
   }
   function persistRun(){
@@ -492,9 +497,22 @@
     const task=currentTask(),ziel=passTarget(task);
     if(inputBlocked()||selectionLocked||!run||run.finished||run.phase!=="reward"||!task?.copy||ziel==null)return;
     lockSelection();
-    // Direkt hinter die laufende Aufgabe einreihen, damit der Dritte sofort
-    // entscheidet. passed verhindert ein weiteres Durchreichen.
-    run.rewardTasks.splice(run.rewardTurn+1,0,{profileId:String(ziel),copy:true,from:task.from??null,passed:true,count:1,choices:[...task.choices]});
+    // Hoechstens eine Kopie je Held und Stufe - dieselbe Grenze, die
+    // showRewardModal zieht. Das Einreihen lief bis 28.12.12 daran vorbei:
+    // hatte der Dritte in dieser Stufe schon eine Kopie, bekam er durch das
+    // Weitergeben eine zweite. Ist der Platz belegt, rueckt die Kopie eine
+    // Stufe nach, statt sich zu stapeln.
+    const belegt=run.rewardTasks.some(t=>t?.copy&&String(t.profileId)===String(ziel))
+      ||run.rewardHistory.some(h=>h.copy&&h.stage===run.stage+1&&String(h.profileId)===String(ziel));
+    if(belegt){
+      // Auf der letzten Stufe gibt es kein Nachruecken mehr; dann verfaellt
+      // sie, genau wie eine ueberzaehlige Kopie in showRewardModal.
+      if(run.stage<stageCount()-1)run.deferredRewards.push({dueStage:run.stage+1,profileId:String(ziel),rewardId:task.choices[0],from:task.from??null,passed:true});
+    }else{
+      // Direkt hinter die laufende Aufgabe einreihen, damit der Dritte sofort
+      // entscheidet. passed verhindert ein weiteres Durchreichen.
+      run.rewardTasks.splice(run.rewardTurn+1,0,{profileId:String(ziel),copy:true,from:task.from??null,passed:true,count:1,choices:[...task.choices]});
+    }
     run.rewardHistory.push({stage:run.stage+1,profileId:String(task.profileId),rewardId:task.choices[0],copy:true,passedTo:String(ziel)});
     completeReward();
   }
@@ -584,6 +602,14 @@
     return true;
   }
 
+  // Ablehnen und Weitergeben schreiben denselben rewardId in die Historie wie
+  // das Annehmen - nur mit declined bzw. passedTo daneben. Wer nur nach der
+  // ID sucht, zaehlt eine abgelehnte Verschnaufpause als genommen und nimmt
+  // dem Team no_rest_for_legends weg, obwohl nie jemand geheilt hat.
+  function restWasTaken(){
+    return !!run?.rewardHistory?.some(entry=>entry.rewardId==="rest"&&!entry.declined&&!entry.passedTo);
+  }
+
   function completeReward(){
     run.swapPending=null;run.rewardTurn++;
     if(run.rewardTurn<run.rewardTasks.length){persistRun();renderPlayers();renderRewardTurn();return;}
@@ -627,7 +653,7 @@
         vergeben.add(String(r.profileId));faellig.push(r);
       });
       run.deferredRewards=warten;
-      run.rewardTasks=faellig.map(r=>({profileId:r.profileId,copy:true,from:r.from??null,count:1,choices:[r.rewardId]}));
+      run.rewardTasks=faellig.map(r=>({profileId:r.profileId,copy:true,from:r.from??null,...(r.passed?{passed:true}:{}),count:1,choices:[r.rewardId]}));
       run.profileIds.forEach(profileId=>{
         const hero=heroState(profileId),supply=perk(profileId,"supply")>(hero.suppliesUsed||0);
         if(supply)hero.suppliesUsed=(hero.suppliesUsed||0)+1;
@@ -812,7 +838,7 @@
     syncRunStateFromPlayers();
     if(run.stage>=stageCount()-1){
       heroIndices.forEach(index=>unlockAchievementForPlayer(index,"rush_finale"));
-      const usedRest=run.rewardHistory.some(entry=>entry.rewardId==="rest");
+      const usedRest=restWasTaken();
       if(!usedRest)heroIndices.forEach(index=>unlockAchievementForPlayer(index,"no_rest_for_legends"));
       showOutcome(true);return true;
     }

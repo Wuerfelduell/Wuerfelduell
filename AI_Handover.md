@@ -22,7 +22,7 @@ welche Fallen schon Zeit gekostet haben.
 
 | | |
 |---|---|
-| Version | **28.12.12** |
+| Version | **28.12.13** |
 | Branch | `main` |
 | Letzte Schritte | CSS-Stapel auf 10 Dateien zusammengelegt · Changelog englisch vervollständigt · Hauptmenü, Statistik, Profile, Achievements, Spielvorbereitung und Trophy Shop überarbeitet · Fähigkeits- und Shopflächen auf proportional gekachelte Bildrahmen umgestellt · alle Bild-URLs auf einen gemeinsamen Cache-Schlüssel · Trophy-Shop-Reste bereinigt und Aufklapppfeile angeglichen · Duo- und Trio-Boss-Rush mit Pfadwahl, gespeicherten Runs und 32 Perks einschließlich temporärer Ability-Mastery · Boss-XP-Umtausch 300:100 · Zweitfund gedeckelt · Trio-Rush 15 Stufen, ab 10 ultraschwer · Boss-Rush-HUD auf die Weltregel reduziert · Zweitfund-Kopien ablehnbar und weitergebbar · Ultra-Stufen treffen härter statt länger zu dauern · Heilung gedeckelt, Maximum wächst je Stufe · Regelleiste als Kachelgitter, wächst mit dem Text · gespeicherte Runs überleben Balanceänderungen |
 
@@ -555,35 +555,22 @@ wird nur auf ausdrückliche Ansage geändert. Nicht ungefragt „reparieren".
    wird weiterhin **ohne Rückfrage** gelöscht (`js/44:899`, `js/37:839`).
    Das ist jetzt ein seltener Fall, aber immer noch die falsche Geste.
 
-7. **Ablehnen, Weitergeben und der Speicher haben fünf Lücken.** Alle am
-   14.09. aus dem Codex-Durchgang, alle einzeln am Code nachgeprüft, alle
-   aus meinen eigenen Änderungen V28.12.7 bis .9:
+7. **Ablehnen, Weitergeben und der Speicher — erledigt in V28.12.13.**
+   Fünf Lücken, alle aus eigenen Änderungen V28.12.7 bis .9, alle mit
+   `scripts/qa/rush-regeln.mjs` vorher rot und nachher grün:
+   `passCopy` prüft jetzt, ob das Ziel in dieser Stufe schon eine Kopie hat,
+   und schiebt sonst nach `deferredRewards` (auf der letzten Stufe verfällt
+   sie, wie bei jeder überzähligen Kopie); der neue Helfer `restWasTaken`
+   zählt nur genommene Belohnungen, nicht abgelehnte oder weitergegebene;
+   `copyPartner` zählt ebenso nur behaltene Kopien; `startingVitals` deckelt
+   `hero.hp` auf `hero.maxHp`, und Zweiter Atem liegt unter demselben Deckel;
+   `js/04-save.js` kappt beim Laden ebenfalls.
 
-   - **Weitergeben umgeht die Kopien-Grenze.** `passCopy`
-     (`js/44:497`) schiebt die Kopie direkt in `rewardTasks` und läuft
-     damit an der Ein-Kopie-pro-Held-und-Stufe-Regel in `showRewardModal`
-     (`:624`) vorbei. Hat C schon eine Kopie und B reicht seine an C
-     weiter, bekommt C zwei Angebote in derselben Stufe.
-   - **Abgelehnte Belohnungen zählen als genommen.** Ablehnen schreibt
-     `rewardId:"rest"` mit `declined:true`; die Abschlussprüfung
-     (`js/44:815`, `js/37:757`) sucht nur nach der ID. Eine *abgelehnte*
-     Verschnaufpause verhindert `no_rest_for_legends`.
-   - **Dasselbe bei der Empfängerwahl.** `copyPartner` (`js/44:338`)
-     zählt jeden `copy`-Eintrag, also auch abgelehnte und weitergegebene.
-   - **Überheilung über den Speicher.** `js/04-save.js:342` prüft
-     gespeicherte HP nur auf endlich und `>= 0`, nie gegen `maxHp`;
-     `startingVitals` (`js/44:278`, `js/37:240`) ebenso. 370 HP bei
-     Maximum 27 überleben Bereinigung und Startwertberechnung.
-   - **Zweiter Atem kann über das Maximum heben.** `:283` bzw. `:245`
-     setzt pauschal 15 HP, auch bei Maximum 10.
-
-8. **Duo fehlt das Max-HP-Wachstum je Stufe.** Trio erhöht in `startStage`
-   um `MAX_HP_PER_STAGE` (`js/44:732`), im Duo (`js/37:675`) fehlt der
-   Schritt ganz. Ausgangsmaximum 50 ergibt auf der nächsten Stufe Duo 50,
-   Trio 55. **Selbst verursacht:** der Heilungsdeckel wurde in beide
-   Module gespiegelt, der Ausgleich nur ins Trio. Duo hat damit die
-   schlechtere Hälfte von beidem. Nicht durch die bewusst fehlende
-   Duo-Ultra-Phase erklärbar, es trifft schon Stufe 2.
+8. **Duo-Maximum wächst je Stufe — erledigt in V28.12.13.**
+   `MAX_HP_PER_STAGE` gibt es jetzt auch im Duo-Modul, mit demselben Schritt
+   im `startStage` wie im Trio. End-to-end gemessen, nicht am Dateitext:
+   ein erster Entwurf des Prüfstands suchte die Zuwachszeile per Regex in der
+   Quelle — das prüft die Schreibweise, nicht das Verhalten.
 
 9. **Der Deutsch-Erkenner hält das englische „die" für deutsch.**
    `germanHints` (`js/00-i18n.js:12`) listet `die` als deutschen

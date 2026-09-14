@@ -341,6 +341,10 @@
         const hero=runSave.heroes[id];
         if(hero.hp!==null&&(!Number.isFinite(hero.hp)||hero.hp<0))valid=false;
         if(hero.maxHp!==null&&(!Number.isFinite(hero.maxHp)||hero.maxHp<10))valid=false;
+        // Bis 28.12.12 wurde nur nach unten geprueft. Ein Stand aus der Zeit
+        // vor dem Heilungsdeckel trug bis zum Zwoelffachen des Maximums und
+        // kam ungebremst zurueck ins Spiel.
+        if(hero.hp!==null&&hero.maxHp!==null&&Number.isFinite(hero.hp)&&Number.isFinite(hero.maxHp))hero.hp=Math.min(hero.hp,hero.maxHp);
         for(const slot of ["primaryAbility","secondAbility","thirdAbility"]){
           if(hero[slot]!=null&&!REAL_ABILITY_IDS.includes(hero[slot]))valid=false;
         }
