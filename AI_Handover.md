@@ -522,11 +522,32 @@ wird nur auf ausdrückliche Ansage geändert. Nicht ungefragt „reparieren".
    („Mastery erst ab Welt 2"). Noch nicht entschieden, ob der Boss Rush
    Mastery ganz, gar nicht oder wie heute halb tragen soll.
 
-7. **Kleinigkeiten**, gesammelt und vom Nutzer zurückgestellt:
-   - Die 22 Rahmenbilder in `frames/` (1,52 MB) sind beim Runterskalieren
-     ausgespart — jeder `border-image-slice` müsste neu gerechnet werden.
-     Die größten: `achievement-trophy-card` 234 KB, `boss-player-card`
-     204 KB, `player-card-combat` 166 KB.
+7. **Kleinigkeiten** — die Liste ist leer.
+
+   **Die Rahmenbilder wurden am 14.09. gemessen und bleiben, wie sie
+   sind.** Der Punkt nahm an, die 22 Dateien (1,52 MB) seien zu groß. Im
+   Browser bei 412 und 1280 px nachgemessen, gegen den Bedarf für eine
+   scharfe Darstellung auf 2×-Displays:
+
+   | Bild | Quelle | gezeichnet | für 2× nötig | Reserve breit |
+   |---|---|---|---|---|
+   | `player-card-combat` | 1200×704 | 826×102 | 1652×204 | 0,73× |
+   | `navy-tile` | 768×768 | 728×539 | 1456×1078 | 0,53× |
+   | `panel-large` | 768×1024 | 728×1785 | 1456×3570 | 0,53× |
+   | `modal-popup` | 768×960 | 520×445 | 1040×890 | 0,74× |
+   | `slim-card` | 1024×512 | 872×62 | 1744×124 | 0,59× |
+
+   **Kein einziges Bild hat in beiden Achsen Reserve.** Werte unter 1,0
+   heißen: die Quelle ist bereits kleiner als nötig. Runterskalieren würde
+   die Rahmen weicher machen. Überschuss gibt es nur in der Höhe (bis
+   4,1× bei `slim-card`), und der ließe sich nur durch neu gezeichnete,
+   flachere Bilder ernten — verboten nach Projektregel und würde jede
+   Slice-Rechnung umwerfen.
+
+   Wer es doch angehen will: der einzige saubere Hebel wären **kleinere
+   Varianten für schmale Fenster** über `image-set()` oder Media Queries.
+   Das kostet 22 zusätzliche Dateien in der Pflege und bringt nur auf
+   Telefonen etwas.
 
    **Zwei davon sind am 14.09. geschlossen worden**, beide nach Prüfung
    gegenstandslos: Der Schlüssel `"von"` ist ungefährlich, weil die
