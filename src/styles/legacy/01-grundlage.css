@@ -703,8 +703,18 @@
     }
 
     /* Damage FX */
+    /* Schaden und Heilung melden Zahlen, die der Spieler sehen MUSS. Auf
+       9996 bis 9999 lagen sie unter allen sieben Kampf-Overlays (10040 bis
+       10055) und waren weg, sobald eines offen war - genau dann, wenn
+       Counterattack oder Insurance gerade Schaden veraendern. Jetzt im
+       Band 11890 bis 11893: ueber den Overlays, unter dem Ereignis-Popup
+       (11900), damit eine Freischaltung eine Zahl schlaegt, und unter dem
+       Achievement-Toast (12000). Alle vier bleiben pointer-events:none.
+       Die .heal-pop in der Spielerkarte bleibt, wo sie ist: sie steckt im
+       Stapelkontext der Karte und waere nur durch einen Umbau zu heben -
+       #healFx traegt dieselbe Zahl und ist jetzt sichtbar. */
     #damageTint{
-      position:fixed;inset:0;pointer-events:none;z-index:9998;
+      position:fixed;inset:0;pointer-events:none;z-index:11892;
       background:rgba(255,25,48,0)}
     #damageTint.active{animation:damageFlash .58s ease-out}
     @keyframes damageFlash{
@@ -714,7 +724,7 @@
       100%{background:rgba(255,25,48,0)}
     }
     #damageFx{
-      position:fixed;left:50%;top:42%;z-index:9999;pointer-events:none;
+      position:fixed;left:50%;top:42%;z-index:11893;pointer-events:none;
       transform:translate(-50%,-50%) scale(.7);
       opacity:0;font-size:clamp(42px,13vw,78px);font-weight:1000;
       color:#ff4d61;text-shadow:0 5px 20px rgba(0,0,0,.65);
@@ -751,7 +761,7 @@
 
     /* Heal / Lifesteal FX */
     #healTint{
-      position:fixed;inset:0;pointer-events:none;z-index:9996;
+      position:fixed;inset:0;pointer-events:none;z-index:11890;
       background:rgba(60,255,135,0)}
     #healTint.active{animation:healFlash .72s ease-out}
     @keyframes healFlash{
@@ -761,7 +771,7 @@
       100%{background:rgba(60,255,135,0)}
     }
     #healFx{
-      position:fixed;left:50%;top:42%;z-index:9997;pointer-events:none;
+      position:fixed;left:50%;top:42%;z-index:11891;pointer-events:none;
       transform:translate(-50%,-50%) scale(.7);opacity:0;
       font-size:clamp(42px,13vw,78px);font-weight:1000;color:#57ef8b;
       text-shadow:0 5px 20px rgba(0,0,0,.65);white-space:nowrap}

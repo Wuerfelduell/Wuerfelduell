@@ -6,9 +6,11 @@
  * darueber. Der Kampflog ist in index.html fest auf "hidden", es gab also
  * keinen zweiten Kanal, auf dem die Meldung haette ankommen koennen.
  *
- * Anforderung: #eventPopup liegt ueber JEDEM Overlay, das waehrend eines
- * Kampfes aufgehen kann, und bleibt dabei klickdurchlaessig, damit es die
- * Wuerfelknoepfe darunter nicht blockiert.
+ * Anforderung: die Meldeschichten - Ereignis-Popup, Schadenszahl,
+ * Heilzahl und die beiden Vollbild-Tints - liegen ueber JEDEM Overlay, das
+ * waehrend eines Kampfes aufgehen kann, und bleiben dabei klickdurchlaessig,
+ * damit sie die Wuerfelknoepfe darunter nicht blockieren. Untereinander
+ * gilt: Freischaltung schlaegt Zahl, Achievement-Toast bleibt ganz oben.
  */
 import fs from 'node:fs';import path from 'node:path';import {createServer} from 'node:http';
 const {chromium}=await import(process.env.WD_PLAYWRIGHT||'/opt/node22/lib/node_modules/playwright/index.mjs');
@@ -45,12 +47,26 @@ try{
     }
     // Der Achievement-Toast gilt als Obergrenze: er soll oben bleiben.
     out.toast=zahl(document.getElementById('achievementToastLayer'));
+    // Schaden, Heilung und die beiden Vollbild-Tints melden Zahlen und
+    // muessen ebenfalls durch ein offenes Overlay durchkommen.
+    out.melder={};out.melderPointer={};
+    for(const id of ['damageFx','healFx','damageTint','healTint']){
+      const el=document.getElementById(id);
+      out.melder[id]=zahl(el);
+      out.melderPointer[id]=el?getComputedStyle(el).pointerEvents:null;
+    }
     return out;
   },overlays);
 
+  const hoechstesOverlay=Math.max(...Object.values(werte.overlays).filter(z=>typeof z==='number'));
   for(const [id,z] of Object.entries(werte.overlays)){
     if(z==='fehlt'){pruefe(`${id} existiert`,false,true);continue;}
     pruefe(`Popup liegt ueber ${id}`,werte.popup!=null&&z!=null&&werte.popup>z,true);
+  }
+  for(const [id,z] of Object.entries(werte.melder)){
+    pruefe(`${id} liegt ueber allen Overlays`,z!=null&&z>hoechstesOverlay,true);
+    pruefe(`${id} blockiert keine Klicks`,werte.melderPointer[id]==='none',true);
+    pruefe(`${id} liegt unter dem Popup`,z!=null&&z<werte.popup,true);
   }
   pruefe('Popup blockiert keine Klicks',werte.popupPointerEvents==='none',true);
   if(werte.toast!=null)pruefe('Achievement-Toast bleibt ueber dem Popup',werte.toast>werte.popup,true);
@@ -75,7 +91,7 @@ try{
   pruefe('Popup steckt nicht hinter dem Overlay',sichtbar.hinterOverlay===false,true);
 
 }catch(e){absturz=e;}finally{
-  const ERWARTET=11;
+  const ERWARTET=23;
   let fehler=ergebnisse.length<ERWARTET?1:0;
   if(fehler)console.log(`ACHTUNG: nur ${ergebnisse.length} von ${ERWARTET} Zusicherungen erreicht.`);
   const breite=Math.max(1,...ergebnisse.map(r=>r[0].length));

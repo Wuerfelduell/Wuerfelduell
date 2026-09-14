@@ -22,7 +22,7 @@ welche Fallen schon Zeit gekostet haben.
 
 | | |
 |---|---|
-| Version | **28.12.14** |
+| Version | **28.12.15** |
 | Branch | `main` |
 | Letzte Schritte | CSS-Stapel auf 10 Dateien zusammengelegt · Changelog englisch vervollständigt · Hauptmenü, Statistik, Profile, Achievements, Spielvorbereitung und Trophy Shop überarbeitet · Fähigkeits- und Shopflächen auf proportional gekachelte Bildrahmen umgestellt · alle Bild-URLs auf einen gemeinsamen Cache-Schlüssel · Trophy-Shop-Reste bereinigt und Aufklapppfeile angeglichen · Duo- und Trio-Boss-Rush mit Pfadwahl, gespeicherten Runs und 32 Perks einschließlich temporärer Ability-Mastery · Boss-XP-Umtausch 300:100 · Zweitfund gedeckelt · Trio-Rush 15 Stufen, ab 10 ultraschwer · Boss-Rush-HUD auf die Weltregel reduziert · Zweitfund-Kopien ablehnbar und weitergebbar · Ultra-Stufen treffen härter statt länger zu dauern · Heilung gedeckelt, Maximum wächst je Stufe · Regelleiste als Kachelgitter, wächst mit dem Text · gespeicherte Runs überleben Balanceänderungen |
 
@@ -667,7 +667,16 @@ Testlabor bleibt für spätere Angriffsanimationen.
   Kampf-Overlays (10040–10055): eine L2-Freischaltung verschwand hinter dem
   Counterattack-Overlay, und der Spieler suchte den Fehler in der Mastery.
   Seit V28.12.14 liegt er auf 11900, unter dem Achievement-Toast (12000).
-  Geprüft mit `scripts/qa/popup-schichten.mjs`.
+  Dasselbe galt für Schadens- und Heilzahlen (`#damageFx`, `#healFx`) und
+  die beiden Vollbild-Blitze (`#damageTint`, `#healTint`), die auf 9996 bis
+  9999 lagen — verdeckt also ausgerechnet dann, wenn Counterattack oder
+  Insurance den Schaden gerade verändern. Seit V28.12.15 im Band 11890 bis
+  11893. **Die Rangfolge ist jetzt eine Entscheidung, kein Zufall:**
+  Zahlen < Popup (11900) < Achievement-Toast (12000), alle mit
+  `pointer-events:none`. Wer eine neue Meldeschicht einzieht, ordnet sie
+  dort ein. Nicht gehoben wurde `.heal-pop` in der Spielerkarte — sie steckt
+  im Stapelkontext der Karte; `#healFx` trägt dieselbe Zahl.
+  Geprüft mit `scripts/qa/popup-schichten.mjs` (23 Zusicherungen).
 
 - **Ein Prüffall, der grün wird, obwohl er rot sein müsste, ist kaputt —
   nicht bestanden.** Am 14.09. zweimal im selben Skript passiert:
