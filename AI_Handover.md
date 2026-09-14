@@ -22,9 +22,9 @@ welche Fallen schon Zeit gekostet haben.
 
 | | |
 |---|---|
-| Version | **28.12.11** |
+| Version | **28.12.12** |
 | Branch | `main` |
-| Letzte Schritte | CSS-Stapel auf 10 Dateien zusammengelegt · Changelog englisch vervollständigt · Hauptmenü, Statistik, Profile, Achievements, Spielvorbereitung und Trophy Shop überarbeitet · Fähigkeits- und Shopflächen auf proportional gekachelte Bildrahmen umgestellt · alle Bild-URLs auf einen gemeinsamen Cache-Schlüssel · Trophy-Shop-Reste bereinigt und Aufklapppfeile angeglichen · Duo- und Trio-Boss-Rush mit Pfadwahl, gespeicherten Runs und 32 Perks einschließlich temporärer Ability-Mastery · Boss-XP-Umtausch 300:100 · Zweitfund gedeckelt · Trio-Rush 15 Stufen, ab 10 ultraschwer · Boss-Rush-HUD auf die Weltregel reduziert · Zweitfund-Kopien ablehnbar und weitergebbar · Ultra-Stufen treffen härter statt länger zu dauern · Heilung gedeckelt, Maximum wächst je Stufe · Regelleiste als Kachelgitter, wächst mit dem Text |
+| Letzte Schritte | CSS-Stapel auf 10 Dateien zusammengelegt · Changelog englisch vervollständigt · Hauptmenü, Statistik, Profile, Achievements, Spielvorbereitung und Trophy Shop überarbeitet · Fähigkeits- und Shopflächen auf proportional gekachelte Bildrahmen umgestellt · alle Bild-URLs auf einen gemeinsamen Cache-Schlüssel · Trophy-Shop-Reste bereinigt und Aufklapppfeile angeglichen · Duo- und Trio-Boss-Rush mit Pfadwahl, gespeicherten Runs und 32 Perks einschließlich temporärer Ability-Mastery · Boss-XP-Umtausch 300:100 · Zweitfund gedeckelt · Trio-Rush 15 Stufen, ab 10 ultraschwer · Boss-Rush-HUD auf die Weltregel reduziert · Zweitfund-Kopien ablehnbar und weitergebbar · Ultra-Stufen treffen härter statt länger zu dauern · Heilung gedeckelt, Maximum wächst je Stufe · Regelleiste als Kachelgitter, wächst mit dem Text · gespeicherte Runs überleben Balanceänderungen |
 
 **Die Arbeitsteilung hat sich geändert.** Bis V28.11.28 liefen zwei
 Sitzungen parallel: Codex hat umgesetzt, diese Sitzung geprüft. Ab jetzt
@@ -275,8 +275,12 @@ wird nur auf ausdrückliche Ansage geändert. Nicht ungefragt „reparieren".
   Normale Encounter verteilen sich auf zwölf getrennte Stufenvorräte;
   Boss-/Miniboss-Angebote auf Stufe 5 und 10. Stufe 15 ist fest
   `trio_helix_apex` mit seinen drei Seals. Kein Encounter wiederholt sich.
-- Stufe 1–9 behalten ihre Druckbudgets (45 bis 177). Ultraschwer ab Stufe 10:
-  280 / 350 / 440 / 550 / 690 / 870, Phasenheilung 12 / 16 / 20 / 24 / 28 / 32 HP.
+- Stufe 1–9 behalten ihre Druckbudgets (45 bis 177). Ultraschwer ab Stufe 10.
+  Die Budgets standen hier bis 14.09. als 280 / 350 / 440 / 550 / 690 / 870 —
+  **das war der Stand vor 28.12.8.** Heute gilt `STAGES`
+  (`js/44-trio-boss-rush.js:9`): 220 / 255 / 290 / 335 / 385 / 560, dazu die
+  Untergrenze `FINAL_MIN_HP` von 100 HP je Gegner auf Stufe 15.
+  Phasenheilung 12 / 16 / 20 / 24 / 28 / 32 HP.
   Druck = Gesamt-HP × (1 + 0,25 je zusätzlichem Gegner); auch der leichteste
   Zehner-Pfad liegt mehr als 35 % über dem schwersten Neuner-Pfad.
   Loadouts, Perks, Kopiergrenzen, Preise und die Duo-Kurve bleiben unverändert.
@@ -313,7 +317,9 @@ wird nur auf ausdrückliche Ansage geändert. Nicht ungefragt „reparieren".
   statt verloren zu gehen. Wechselspiel gilt nach jedem Mitspieler,
   solange alle drei leben; Proviantteilung berücksichtigt beide Empfänger.
   Diese Anpassungen stehen in den deutschen/englischen Perkbeschreibungen.
-- **Überheilung ist seit 28.12.9 aus dem Rush verschwunden.** Der Spieltest
+- **Überheilung im Rush — gedeckelt, aber nicht überall.** *Diese Aussage
+  stand bis 14.09. als „verschwunden" hier und war zu weit gegriffen; der
+  Codex-Durchgang hat zwei offene Wege gefunden, siehe Offen 7.* Der Spieltest
   zeigte Helden mit 347–370 HP bei einem Maximum von 27–39, also dem Neun-
   bis Zwölffachen. Zwei Ursachen: `applyHealingToPlayer`
   (`js/12-battle-ui.js`) lässt Kampagnenhelden seit V24.2 unbegrenzt
@@ -325,6 +331,8 @@ wird nur auf ausdrückliche Ansage geändert. Nicht ungefragt „reparieren".
   Overheal. Als Ausgleich wächst `hero.maxHp` je Stufe um
   `MAX_HP_PER_STAGE` (5), im Trio also von 25 auf 95. Der Zuwachs addiert
   auf das vorhandene Maximum, ein Mastery-HP-Bonus trägt also mit.
+  **Achtung: diesen Ausgleich gibt es nur im Trio.** Im Duo wurde der
+  Deckel mitgespiegelt, das Wachstum nicht — siehe Offen 8.
   **Nebenwirkung, die damit verschwindet:** Aufopferung und
   Ausweichinstinkt vergleichen HP gegen Maximum und waren bei einem
   Verhältnis von 11 dauerhaft tot.
@@ -353,7 +361,7 @@ wird nur auf ausdrückliche Ansage geändert. Nicht ungefragt „reparieren".
   `enemyHitBonus` gibt immer 0 und existiert nur für die gleiche
   Schnittstelle. **Im Gegenzug sank die HP-Kurve** (28.12.8): die
   Ultra-Stufen steigen mit 1,15× statt 1,25× und beginnen mit 1,25× statt
-  1,58×, Stufe 15 hat 445 statt 870 Druckbudget. Lang *und* gefährlich wäre
+  1,58×, Stufe 15 hat 445 statt 870 Druckbudget (seit 28.12.9 560, plus Untergrenze). Lang *und* gefährlich wäre
   zu viel gewesen. Der Prüfstand verlangte bis dahin einen HP-Sprung von
   mindestens 1,35× ab Stufe 10 — diese Zusicherung kodierte die alte
   Annahme „Ultra heißt mehr HP" und ist durch eine ersetzt, die den
@@ -368,6 +376,11 @@ wird nur auf ausdrückliche Ansage geändert. Nicht ungefragt „reparieren".
   Moduswechsel, normale Trio-Kampagne und DE/EN bei fünf Bildschirmbreiten.
   `validate-endgame.mjs` prüft beide Module und vollständige Trio-Gruppen.
   Alle Prüfläufe grün, keine JS-Fehler/404; im Pfaddialog 0 DOM-Mutationen/s.
+- **Seit 14.09. dazu `scripts/qa/rush-run-haltbarkeit.mjs`**: ein Run unter
+  einer verschobenen Kurve muss den Start überleben, ein manipulierter
+  weiterhin abgelehnt werden. Neun Zusicherungen, Duo und Trio.
+  **Zweimal am eigenen Messfehler vorbeigelaufen** — die Lehre steht unter
+  „Fallen".
   50 vollständige Pfadziehungen ohne Wiederholung; Ultra-Angebote zusätzlich
   bei allen fünf Breiten auf DE/EN geprüft. Keine vollständige Balance-Simulation:
   Kämpfe werden im Browser-Prüfstand durch Test-Siege abgeschlossen.
@@ -506,28 +519,108 @@ wird nur auf ausdrückliche Ansage geändert. Nicht ungefragt „reparieren".
    Wurf auf, deshalb bleibt das Gitter stehen und nur der Text wird
    ersetzt.
 
-5. **Mobiles Boss-Rush-Statusbanner bei langen Namen.** Bei der Trio-Portierung
-   auch im unveränderten Duo-Modul reproduziert: Der gemeinsame
-   `.encounter-rule-banner` legt Statusraster und Regeltexte nebeneinander
-   in eine Flexzeile. Lange Profil-/Gruppennamen werden schmal umgebrochen;
-   dadurch schrumpft die Höhe der scrollbaren Spielerkarten stark. Duo-Test
-   bei 390 px: Status 108 px breit, Banner 329 px hoch, Spielerkartenbereich
-   nur 34 px. Trio mit Helix Apex und allen drei Seals ist ebenfalls betroffen.
-   Auftragsgemäß keine gemeinsame UI-Überarbeitung in der reinen Portierung.
+5. **Mastery greift im Boss Rush weiter, als hier stand.** Korrigiert am
+   14.09. — der alte Absatz behauptete, Mastery sei durch die
+   Kampagnenkartenregel „erst ab Welt 2" halb stumm. **Für Trio ist das
+   falsch:** `standardEligible` (`js/23-mastery.js:190`) endet mit
+   `return mode==="trio"`, gibt Standard-Mastery also immer frei. Auf
+   Stufe 1 reproduziert: HP-Level 3 ergibt +6 HP, der Schadensbonus
+   wartet auf nichts. Für **Duo** gilt die Einschränkung weiter
+   (`:186`, Welt 1 ab Level 10). Offen bleibt allein die
+   Gestaltungsfrage: soll der Boss Rush Mastery ganz, gar nicht oder
+   wie heute je Modus verschieden tragen?
 
-6. **Mastery greift im Boss Rush nur teilweise.** Nachgesehen am 10.09.,
-   dreigeteiltes Bild: Die **Fähigkeits-Upgrades L1/L2** wirken immer —
-   `abilityLevel` (`js/23-mastery.js:236`) hat keine Encounter-Prüfung.
-   Der **Schadensbonus** wird je Angriff über
-   `standardEligible(mode, aktueller Encounter)` geprüft und schaltet sich
-   deshalb mitten im Lauf stumm zu, sobald die Pfadwahl aus einer späteren
-   Welt zieht. Der **HP-Bonus** greift gar nicht: `startingVitals` setzt
-   `maxHp` nur einmal, auf Stufe 1, und dort ist die Prüfung noch falsch.
-   Kein Fehler im Boss Rush, sondern eine geerbte Kampagnenkartenregel
-   („Mastery erst ab Welt 2"). Noch nicht entschieden, ob der Boss Rush
-   Mastery ganz, gar nicht oder wie heute halb tragen soll.
+6. **Alte Runs überleben eine Balanceänderung — erledigt in V28.12.12.**
+   `validStored` verglich jedes gespeicherte Angebot per `JSON.stringify`
+   mit einem frisch gerechneten `optionFor`, also mit der **heutigen**
+   Kurve; bei Abweichung löschte `start()` den Run ohne Rückfrage.
+   V28.12.9 hatte das ausgelöst (`STAGES[14]` 445 → 560, dazu
+   `FINAL_MIN_HP`).
 
-7. **Kleinigkeiten** — die Liste ist leer.
+   Ersetzt durch `plausibleOption` in beiden Modulen: geprüft wird das
+   **Kurvenunabhängige** — Encounter, Schwierigkeit, Aufstellung samt
+   Namen und Reihenfolge, `abilityCount`, `phaseAbilityCount`, das Label
+   und die Stimmigkeit von `pressure` zur HP-Summe. Für die HP bleibt ein
+   Band von einem Drittel bis zum Dreifachen des heutigen Erwartungswerts.
+
+   **Das ist bewusst schwächer als Gleichheit, und das gehört gesagt:**
+   wer die Gegner auf die Hälfte setzt, kommt jetzt durch. Der
+   Vollvergleich war aber nie eine Sperre gegen Schummeln — `saveData`
+   liegt im Klartext im `localStorage`, und zur Laufzeit lässt sich
+   ohnehin alles ändern —, sondern nur eine gegen kaputte Daten. Kommt
+   einmal eine öffentliche Bestenliste (Offen 3), braucht es Signaturen,
+   kein engeres Band.
+
+   **Noch offen daran:** ein Run, der die Prüfung wirklich nicht besteht,
+   wird weiterhin **ohne Rückfrage** gelöscht (`js/44:899`, `js/37:839`).
+   Das ist jetzt ein seltener Fall, aber immer noch die falsche Geste.
+
+7. **Ablehnen, Weitergeben und der Speicher haben fünf Lücken.** Alle am
+   14.09. aus dem Codex-Durchgang, alle einzeln am Code nachgeprüft, alle
+   aus meinen eigenen Änderungen V28.12.7 bis .9:
+
+   - **Weitergeben umgeht die Kopien-Grenze.** `passCopy`
+     (`js/44:497`) schiebt die Kopie direkt in `rewardTasks` und läuft
+     damit an der Ein-Kopie-pro-Held-und-Stufe-Regel in `showRewardModal`
+     (`:624`) vorbei. Hat C schon eine Kopie und B reicht seine an C
+     weiter, bekommt C zwei Angebote in derselben Stufe.
+   - **Abgelehnte Belohnungen zählen als genommen.** Ablehnen schreibt
+     `rewardId:"rest"` mit `declined:true`; die Abschlussprüfung
+     (`js/44:815`, `js/37:757`) sucht nur nach der ID. Eine *abgelehnte*
+     Verschnaufpause verhindert `no_rest_for_legends`.
+   - **Dasselbe bei der Empfängerwahl.** `copyPartner` (`js/44:338`)
+     zählt jeden `copy`-Eintrag, also auch abgelehnte und weitergegebene.
+   - **Überheilung über den Speicher.** `js/04-save.js:342` prüft
+     gespeicherte HP nur auf endlich und `>= 0`, nie gegen `maxHp`;
+     `startingVitals` (`js/44:278`, `js/37:240`) ebenso. 370 HP bei
+     Maximum 27 überleben Bereinigung und Startwertberechnung.
+   - **Zweiter Atem kann über das Maximum heben.** `:283` bzw. `:245`
+     setzt pauschal 15 HP, auch bei Maximum 10.
+
+8. **Duo fehlt das Max-HP-Wachstum je Stufe.** Trio erhöht in `startStage`
+   um `MAX_HP_PER_STAGE` (`js/44:732`), im Duo (`js/37:675`) fehlt der
+   Schritt ganz. Ausgangsmaximum 50 ergibt auf der nächsten Stufe Duo 50,
+   Trio 55. **Selbst verursacht:** der Heilungsdeckel wurde in beide
+   Module gespiegelt, der Ausgleich nur ins Trio. Duo hat damit die
+   schlechtere Hälfte von beidem. Nicht durch die bewusst fehlende
+   Duo-Ultra-Phase erklärbar, es trifft schon Stufe 2.
+
+9. **Der Deutsch-Erkenner hält das englische „die" für deutsch.**
+   `germanHints` (`js/00-i18n.js:12`) listet `die` als deutschen
+   Hinweis — in einem Würfelspiel. Folge: eine **korrekt übersetzte**
+   englische Beschreibung, die das Wort enthält, wird bei `:89` durch den
+   generischen Ersatztext überschrieben. Nachgewiesen an
+   `lang/en-campaign.js:346` („…must die last"), betroffen sind
+   `duo_omega_crown_touch` und `duo_omega_throne`. Der Fallback ist also
+   nicht tot, wie hier früher stand — er feuert an der falschen Stelle.
+   Beim Entschärfen aufpassen: `die` ersatzlos streichen macht den
+   Erkenner für echtes Deutsch schwächer.
+
+10. **Verschachteltes `tr` bricht die Mustertexte.** `js/44:771` baut
+    `…+${xp} ${tr("Basis-Boss-XP")}` — das innere `tr` übersetzt zuerst,
+    danach passt die zusammengesetzte Zeile nicht mehr auf das Muster in
+    `lang/en-campaign.js:819`, und Wortersetzung greift wegen der Länge
+    nicht. Im englischen Spiel steht deshalb „Besiegt: 0 / 10 · +0 Base
+    boss XP behalten". **Das ist eine Bauart-Falle, kein Einzelfall:**
+    ein `tr` innerhalb eines Textes, der selbst per Muster übersetzt wird,
+    zerstört immer den Mustertreffer. Beide Rush-Abschlusstafeln sind
+    betroffen (`js/37:713`, `js/44:771`).
+
+11. **Toter Code und eine falsche Anzeige.** `livePhaseValue`
+    (`js/37:199`, `js/44:229`) und `choiceIcon` (`js/37:402`, `js/44:449`)
+    sind definiert und werden nirgends aufgerufen. Die Modulvariable
+    `rewardTurn` (`js/37:90`, `js/44:119`) wird nur beschrieben, gelesen
+    wird `run.rewardTurn`. Der Trio-Kampfstart protokolliert fest `/10`,
+    auch auf Stufe 15 (`js/06-campaign.js:1163`).
+
+12. **Widerspruch zwischen zwei Regeltexten — ungeprüft.**
+    `AI_Handover.md:75` verlangt, Bildrevisionen beim Release mit
+    hochzuziehen; `docs/PROJEKTREGELN.md:64` beschreibt die
+    Asset-Revision als davon unabhängig. Aus dem Codex-Durchgang
+    übernommen und **nicht selbst nachgesehen** — wer das anfasst, prüft
+    zuerst, welche der beiden Stellen die gelebte Praxis beschreibt.
+
+13. **Kleinigkeiten** — die Liste ist leer.
 
    **Die Rahmenbilder wurden am 14.09. gemessen und bleiben, wie sie
    sind.** Der Punkt nahm an, die 22 Dateien (1,52 MB) seien zu groß. Im
@@ -577,6 +670,18 @@ Testlabor bleibt für spätere Angriffsanimationen.
 ---
 
 ## Fallen in diesem Repo
+
+- **Ein Prüffall, der grün wird, obwohl er rot sein müsste, ist kaputt —
+  nicht bestanden.** Am 14.09. zweimal im selben Skript passiert:
+  (a) der Testfall mutierte `run.paths[10..14]`, aber `ensurePaths` legt nur
+  den Vorrat der **aktuellen** Stufe an — `run.paths` hatte genau einen
+  Eintrag, die Mutation ging ins Leere und der Fehlerfall lief grün durch;
+  (b) „der Run liegt noch im Speicher" war grün, weil `newRun()` nach dem
+  Löschen sofort einen **anderen** Run unter demselben Schlüssel anlegt.
+  Beides fiel nur auf, weil das Ergebnis unplausibel war. Gegenmittel: jeder
+  Fall, der scheitern soll, wird **einmal gegen den ungepatchten Stand
+  laufen gelassen** und muss dort scheitern; und ein Testfall zählt, was er
+  verändert hat (`assert(beruehrt>0)`), statt es anzunehmen.
 
 - **`js/01-config.js` bis `js/15-app.js` sind Fragmente eines früher
   zusammenhängenden IIFE.** Sie teilen sich den globalen Lexical Scope

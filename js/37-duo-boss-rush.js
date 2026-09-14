@@ -784,6 +784,25 @@
     }
   }
 
+  // Spiegelbild zum Trio (js/44): der Validator verglich gespeicherte Angebote
+  // per JSON.stringify mit der HEUTIGEN Kurve, wodurch jede Balanceaenderung
+  // alle offenen Runs geloescht haette. Geprueft wird jetzt das
+  // Kurvenunabhaengige - Aufstellung, Namen, Zaehlwerte, Stimmigkeit - und
+  // fuer die HP ein weites Band. Begruendung ausfuehrlich in js/44.
+  const HP_BAND=Object.freeze({min:1/3,max:3});
+  function plausibleOption(option,expected,base){
+    if(option.encounterId!==expected.encounterId||option.difficulty!==expected.difficulty)return false;
+    if(!Array.isArray(option.enemies)||option.enemies.length!==base.enemies.length)return false;
+    if(option.enemies.some((e,i)=>!e||e.name!==base.enemies[i].name||e.abilityCount!==expected.enemies[i].abilityCount))return false;
+    if(option.enemies.some(e=>!Number.isFinite(e.hp)||e.hp<1))return false;
+    if(option.label!==option.enemies.map(e=>e.name).join(" + "))return false;
+    if(option.phaseAbilityCount!==expected.phaseAbilityCount||!Number.isFinite(option.phaseHeal)||option.phaseHeal<0)return false;
+    const summe=option.enemies.reduce((n,e)=>n+e.hp,0),gewicht=1+.25*(option.enemies.length-1);
+    if(!Number.isFinite(option.pressure)||option.pressure<=0||Math.abs(option.pressure-summe*gewicht)>summe*gewicht*.25)return false;
+    const soll=expected.enemies.reduce((n,e)=>n+e.hp,0);
+    return summe>=soll*HP_BAND.min&&summe<=soll*HP_BAND.max;
+  }
+
   function validStored(candidate,ids){
     if(!candidate||candidate.schema!==1||candidate.finished||!Array.isArray(candidate.profileIds)||candidate.profileIds.length!==2||pairKey(candidate.profileIds)!==pairKey(ids))return false;
     if(!["path","combat","reward"].includes(candidate.phase)||!Number.isInteger(candidate.stage)||candidate.stage<0||candidate.stage>9)return false;
@@ -800,8 +819,7 @@
         const base=stagePool(index).find(e=>e.id===option.encounterId);
         if(!base||!DIFFICULTIES.some(d=>d.id===option.difficulty)||!option.build)return false;
         const expected=optionFor(base,index,option.difficulty);
-        const {build,...spec}=option;
-        if(JSON.stringify(spec)!==JSON.stringify(expected))return false;
+        if(!plausibleOption(option,expected,base))return false;
         if(!Array.isArray(option.build.enemies)||option.build.enemies.length!==expected.enemies.length||!option.build.enemies.every(e=>Array.isArray(e.abilities)&&e.abilities.length===expected.phaseAbilityCount&&new Set(e.abilities).size===e.abilities.length&&e.abilities.every(id=>validAbility(id)!=null))||!Array.isArray(option.build.phaseAbilities)||option.build.phaseAbilities.length!==expected.phaseAbilityCount||new Set(option.build.phaseAbilities).size!==option.build.phaseAbilities.length||option.build.phaseAbilities.some(id=>validAbility(id)==null))return false;
       }
     }

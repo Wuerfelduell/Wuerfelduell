@@ -842,6 +842,38 @@
     }
   }
 
+  // Frueher verglich der Validator jedes gespeicherte Angebot per
+  // JSON.stringify mit einem frisch gerechneten optionFor - also mit der
+  // HEUTIGEN Kurve. Damit erklaerte jede Balanceaenderung alle offenen Runs
+  // fuer ungueltig, und start() loeschte sie ohne Rueckfrage. Ausgeloest hat
+  // es V28.12.9: STAGES[14] von 445 auf 560 plus FINAL_MIN_HP.
+  //
+  // Geprueft wird jetzt, was von der Kurve unabhaengig ist: Aufstellung,
+  // Reihenfolge, Namen, Zaehlwerte und die Stimmigkeit der Zahlen
+  // untereinander. Fuer die HP bleibt ein weites Band um den heutigen
+  // Erwartungswert.
+  //
+  // Das ist bewusst schwaecher als Gleichheit. Der Vollvergleich war aber
+  // ohnehin keine Sperre gegen Schummeln - saveData liegt im Klartext im
+  // localStorage und laesst sich zur Laufzeit ohnehin aendern -, sondern nur
+  // eine gegen kaputte Daten. Kommt einmal eine oeffentliche Bestenliste
+  // (Offen 3), braucht es Signaturen, kein engeres Band.
+  const HP_BAND=Object.freeze({min:1/3,max:3});
+  function plausibleOption(option,expected,base){
+    if(option.encounterId!==expected.encounterId||option.difficulty!==expected.difficulty)return false;
+    if(!Array.isArray(option.enemies)||option.enemies.length!==base.enemies.length)return false;
+    if(option.enemies.some((e,i)=>!e||e.name!==base.enemies[i].name||e.abilityCount!==expected.enemies[i].abilityCount))return false;
+    if(option.enemies.some(e=>!Number.isFinite(e.hp)||e.hp<1))return false;
+    if(option.label!==option.enemies.map(e=>e.name).join(" + "))return false;
+    if(option.phaseAbilityCount!==expected.phaseAbilityCount||!Number.isFinite(option.phaseHeal)||option.phaseHeal<0)return false;
+    const summe=option.enemies.reduce((n,e)=>n+e.hp,0),gewicht=1+.25*(option.enemies.length-1);
+    // Vor 28.12.9 kam der Druck aus dem Budget statt aus den Gegnerwerten;
+    // deshalb ein Band statt Gleichheit.
+    if(!Number.isFinite(option.pressure)||option.pressure<=0||Math.abs(option.pressure-summe*gewicht)>summe*gewicht*.25)return false;
+    const soll=expected.enemies.reduce((n,e)=>n+e.hp,0);
+    return summe>=soll*HP_BAND.min&&summe<=soll*HP_BAND.max;
+  }
+
   function validStored(candidate,ids){
     const count=candidate?.stageCount??10;
     if(![10,15].includes(count))return false;
@@ -860,8 +892,7 @@
         const base=stagePool(index,count).find(e=>e.id===option.encounterId);
         if(!base||!DIFFICULTIES.some(d=>d.id===option.difficulty)||!option.build)return false;
         const expected=optionFor(base,index,option.difficulty,count);
-        const {build,...spec}=option;
-        if(JSON.stringify(spec)!==JSON.stringify(expected))return false;
+        if(!plausibleOption(option,expected,base))return false;
         if(!Array.isArray(option.build.enemies)||option.build.enemies.length!==expected.enemies.length||!option.build.enemies.every(e=>Array.isArray(e.abilities)&&e.abilities.length===expected.phaseAbilityCount&&new Set(e.abilities).size===e.abilities.length&&e.abilities.every(id=>validAbility(id)!=null))||!Array.isArray(option.build.phaseAbilities)||option.build.phaseAbilities.length!==expected.phaseAbilityCount||new Set(option.build.phaseAbilities).size!==option.build.phaseAbilities.length||option.build.phaseAbilities.some(id=>validAbility(id)==null))return false;
       }
     }
