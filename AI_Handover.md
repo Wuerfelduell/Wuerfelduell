@@ -523,11 +523,17 @@ wird nur auf ausdrückliche Ansage geändert. Nicht ungefragt „reparieren".
    Mastery ganz, gar nicht oder wie heute halb tragen soll.
 
 7. **Kleinigkeiten**, gesammelt und vom Nutzer zurückgestellt:
-   - `"von"` als sehr kurzer, generischer `exact`-Schlüssel.
-   - In den Nicht-Classic-Modi steht vor dem Wurf nicht mehr, wie viele
-     Startfähigkeiten es gibt.
-   - Die 22 Rahmenbilder in `frames/` (1,6 MB) sind beim Runterskalieren
+   - Die 22 Rahmenbilder in `frames/` (1,52 MB) sind beim Runterskalieren
      ausgespart — jeder `border-image-slice` müsste neu gerechnet werden.
+     Die größten: `achievement-trophy-card` 234 KB, `boss-player-card`
+     204 KB, `player-card-combat` 166 KB.
+
+   **Zwei davon sind am 14.09. geschlossen worden**, beide nach Prüfung
+   gegenstandslos: Der Schlüssel `"von"` ist ungefährlich, weil die
+   Übersetzung nur ganze Textknoten trifft (`js/00-i18n.js:24-35`) und
+   nicht als Teilzeichenkette greift. Und die Anzahl der Startfähigkeiten
+   **steht** in allen vier lokalen Modi sichtbar in `localModeInfo`, im
+   Browser geprüft.
 
 **Entschieden, nicht mehr offen:** Fähigkeitsnamen mischen absichtlich
 Deutsch und Englisch — Eigennamen wie Snake Eyes oder Loaded Dice werden
