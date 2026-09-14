@@ -22,7 +22,7 @@ welche Fallen schon Zeit gekostet haben.
 
 | | |
 |---|---|
-| Version | **28.12.19** |
+| Version | **28.12.20** |
 | Branch | `main` |
 | Letzte Schritte | CSS-Stapel auf 10 Dateien zusammengelegt · Changelog englisch vervollständigt · Hauptmenü, Statistik, Profile, Achievements, Spielvorbereitung und Trophy Shop überarbeitet · Fähigkeits- und Shopflächen auf proportional gekachelte Bildrahmen umgestellt · alle Bild-URLs auf einen gemeinsamen Cache-Schlüssel · Trophy-Shop-Reste bereinigt und Aufklapppfeile angeglichen · Duo- und Trio-Boss-Rush mit Pfadwahl, gespeicherten Runs und 32 Perks einschließlich temporärer Ability-Mastery · Boss-XP-Umtausch 300:100 · Zweitfund gedeckelt · Trio-Rush 15 Stufen, ab 10 ultraschwer · Boss-Rush-HUD auf die Weltregel reduziert · Zweitfund-Kopien ablehnbar und weitergebbar · Ultra-Stufen treffen härter statt länger zu dauern · Heilung gedeckelt, Maximum wächst je Stufe · Regelleiste als Kachelgitter, wächst mit dem Text · gespeicherte Runs überleben Balanceänderungen |
 
@@ -420,6 +420,10 @@ wird nur auf ausdrückliche Ansage geändert. Nicht ungefragt „reparieren".
 
 ## Offen
 
+Zwei Punkte. Alles andere aus dem Codex-Durchgang vom 14.09. ist
+abgearbeitet und steht unten als Chronik — dort nur noch das, was man
+wissen muss, nicht mehr die volle Beweisführung.
+
 1. **Online läuft — aber der Gast wartet.** Der Nutzer hat am 10.09. mit
    zwei echten Geräten durchgespielt: Lobby, Beitritt und Matchstart
    funktionieren. Übrig bleibt eine deutliche Verzögerung **nur beim
@@ -466,14 +470,21 @@ wird nur auf ausdrückliche Ansage geändert. Nicht ungefragt „reparieren".
    aktiven Zeilenregeln** — der ältere Test lief als Eigentümer und
    umging sie.
 
-2. **`dd_touch_room` ist eingespielt.** Erledigt am 14.09.: der Nutzer hat
-   `20260903120000_dd_room_idle_expiry.sql` im Supabase-SQL-Editor
-   ausgeführt („Success. No rows returned"). Damit laufen Räume nach 45
-   Minuten Untätigkeit in der Lobby bzw. 2 Stunden im laufenden Match ab
-   statt nach festen 6 Stunden mitten im Spiel, und der Spielstand wird
-   nicht mehr doppelt geschrieben. **Noch nicht gegengeprüft**, ob die
-   Funktion aus dem Spiel heraus wie erwartet antwortet — beim nächsten
-   Online-Durchlauf mitprüfen.
+2. **`dd_touch_room` ist auf der Datenbank — erledigt am 14.09.**
+   Die Migration `20260903120000_dd_room_idle_expiry.sql` wurde vom Nutzer
+   im Supabase-SQL-Editor eingespielt. Gegengeprüft mit dem neuen
+   `scripts/qa/supabase-funktionen.mjs`, das jede Funktion anonym über
+   PostgREST anspricht: `dd_touch_room` und die vier Wrapper antworten mit
+   **42501 permission denied**, sind also vorhanden und geschützt. Räume
+   laufen damit nach 45 Minuten Untätigkeit in der Lobby bzw. 2 Stunden im
+   laufenden Match ab statt nach festen 6 Stunden mitten im Spiel.
+
+   **Der Client ruft `dd_touch_room` nie selbst.** Die Funktion ist von
+   `anon` entzogen und wird nur aus `dd_join_battle_room`,
+   `dd_set_battle_ready`, `dd_submit_battle_action` und
+   `dd_publish_battle_state` heraus ausgeführt — alle vier ruft
+   `js/43-supabase-battle.js`. Sie läuft also bei jedem Beitritt,
+   Bereitmelden, Zug und Veröffentlichen mit.
 
 3. **Serverautoritativ — vertagt, mit klarer Bedingung.** Heute kommt der
    Spielstand vom Gerät des Hosts und niemand prüft ihn nach.
@@ -500,210 +511,57 @@ wird nur auf ausdrückliche Ansage geändert. Nicht ungefragt „reparieren".
    was im Browser bleibt — kein Auftrag über ein paar Stunden. Ebenfalls
    offen und dann fällig: die Zuordnung von `Profiles` zu `auth.users`.
 
-4. **Die Regelleiste trägt jetzt beliebig viele Textzeilen.** Erledigt in
-   V28.12.11. Der Rahmen kommt nicht mehr als gedehnter Hintergrund,
-   sondern als Kachelgitter aus 5 × 5 `<svg viewBox>`-Ausschnitten —
-   `bossBarArtwork` in `js/06-campaign.js`, Raster in
-   `src/styles/legacy/37-abschluss.css`.
-
-   **Am Bild gemessen, nicht geschätzt:** Motiv liegt bei y 37..130 von
-   171 — das obere und untere Drittel der Datei ist leer, deshalb wirkte
-   die Leiste als `100% 100%` so flach. Schnitte in ruhigen Spalten
-   (x 0/88/190/322/424/512: Endornamente 88 px, Mittelkrone 132 px) und
-   ruhigen Zeilen (y 37/70/78/96/102/130). Die beiden Dehnbänder
-   (y 70..78 und 96..102) liegen bewusst **über und unter** den seitlichen
-   Edelsteinen (y 78..96), sonst würden die verschmieren; dadurch wächst
-   die Leiste symmetrisch. Alle Maße hängen an `--dd-boss-bar-scale`
-   (0,62), damit die Proportionsbedingung von oben eingehalten bleibt.
-
-   **Die Falle dabei:** fünf Rasterzeilen im CSS brauchen *sechs* Grenzen
-   im JS. Mit fünf Grenzen blieb die letzte Zeile leer und die untere
-   Rahmenleiste rutschte in den Text — im Messskript sofort sichtbar
-   (20 statt 25 Kacheln), mit bloßem Auge kaum.
-
-   Gemessen mit einem Wegwerfskript gegen den echten Duo-Rush bei
-   320/390/430 px: Leiste wächst 57,7 → 94,7 px, kein waagerechter
-   Überlauf, keine Seitenfehler. `renderAll()` ruft die Leiste bei jedem
-   Wurf auf, deshalb bleibt das Gitter stehen und nur der Text wird
-   ersetzt.
-
-5. **Mastery greift im Boss Rush weiter, als hier stand.** Korrigiert am
-   14.09. — der alte Absatz behauptete, Mastery sei durch die
-   Kampagnenkartenregel „erst ab Welt 2" halb stumm. **Für Trio ist das
-   falsch:** `standardEligible` (`js/23-mastery.js:190`) endet mit
-   `return mode==="trio"`, gibt Standard-Mastery also immer frei. Auf
-   Stufe 1 reproduziert: HP-Level 3 ergibt +6 HP, der Schadensbonus
-   wartet auf nichts. Für **Duo** gilt die Einschränkung weiter
-   (`:186`, Welt 1 ab Level 10). Offen bleibt allein die
-   Gestaltungsfrage: soll der Boss Rush Mastery ganz, gar nicht oder
-   wie heute je Modus verschieden tragen?
-
-   **Eine Teilfrage ist am 14.09. entschieden und steht jetzt in
-   `docs/PROJEKTREGELN.md`:** geliehene Mastery aus den Rush-Perks
-   „Feinschliff" und „Meisterschaft" schaltet **nichts Dauerhaftes** frei.
-   `l2TrackingContext` liest deshalb `abilityLevel` und nicht
-   `abilityLevelForPlayer` — kein Versehen, nicht angleichen. Anlass war
-   ein gemeldeter Fehler, der keiner war.
-
-6. **Alte Runs überleben eine Balanceänderung — erledigt in V28.12.12.**
-   `validStored` verglich jedes gespeicherte Angebot per `JSON.stringify`
-   mit einem frisch gerechneten `optionFor`, also mit der **heutigen**
-   Kurve; bei Abweichung löschte `start()` den Run ohne Rückfrage.
-   V28.12.9 hatte das ausgelöst (`STAGES[14]` 445 → 560, dazu
-   `FINAL_MIN_HP`).
-
-   Ersetzt durch `plausibleOption` in beiden Modulen: geprüft wird das
-   **Kurvenunabhängige** — Encounter, Schwierigkeit, Aufstellung samt
-   Namen und Reihenfolge, `abilityCount`, `phaseAbilityCount`, das Label
-   und die Stimmigkeit von `pressure` zur HP-Summe. Für die HP bleibt ein
-   Band von einem Drittel bis zum Dreifachen des heutigen Erwartungswerts.
-
-   **Das ist bewusst schwächer als Gleichheit, und das gehört gesagt:**
-   wer die Gegner auf die Hälfte setzt, kommt jetzt durch. Der
-   Vollvergleich war aber nie eine Sperre gegen Schummeln — `saveData`
-   liegt im Klartext im `localStorage`, und zur Laufzeit lässt sich
-   ohnehin alles ändern —, sondern nur eine gegen kaputte Daten. Kommt
-   einmal eine öffentliche Bestenliste (Offen 3), braucht es Signaturen,
-   kein engeres Band.
-
-   **Noch offen daran:** ein Run, der die Prüfung wirklich nicht besteht,
-   wird weiterhin **ohne Rückfrage** gelöscht (`js/44:899`, `js/37:839`).
-   Das ist jetzt ein seltener Fall, aber immer noch die falsche Geste.
-
-7. **Ablehnen, Weitergeben und der Speicher — erledigt in V28.12.13.**
-   Fünf Lücken, alle aus eigenen Änderungen V28.12.7 bis .9, alle mit
-   `scripts/qa/rush-regeln.mjs` vorher rot und nachher grün:
-   `passCopy` prüft jetzt, ob das Ziel in dieser Stufe schon eine Kopie hat,
-   und schiebt sonst nach `deferredRewards` (auf der letzten Stufe verfällt
-   sie, wie bei jeder überzähligen Kopie); der neue Helfer `restWasTaken`
-   zählt nur genommene Belohnungen, nicht abgelehnte oder weitergegebene;
-   `copyPartner` zählt ebenso nur behaltene Kopien; `startingVitals` deckelt
-   `hero.hp` auf `hero.maxHp`, und Zweiter Atem liegt unter demselben Deckel;
-   `js/04-save.js` kappt beim Laden ebenfalls.
-
-8. **Duo-Maximum wächst je Stufe — erledigt in V28.12.13.**
-   `MAX_HP_PER_STAGE` gibt es jetzt auch im Duo-Modul, mit demselben Schritt
-   im `startStage` wie im Trio. End-to-end gemessen, nicht am Dateitext:
-   ein erster Entwurf des Prüfstands suchte die Zuwachszeile per Regex in der
-   Quelle — das prüft die Schreibweise, nicht das Verhalten.
-
-9. **Der Deutsch-Erkenner — erledigt in V28.12.16.** `germanHints`
-   (`js/00-i18n.js`) listete `die` als deutschen Hinweis, in einem
-   Würfelspiel. Am Sprachpaket nachgemessen mit
-   `scripts/qa/deutsch-erkenner.mjs`: **14** fertig übersetzte englische
-   Texte schlugen an und wurden durch den generischen Ersatztext
-   überschrieben, und **kein einziger** deutscher Text hängt allein an
-   diesem Wort. Streichen kostete also nichts und nahm alle 14 mit.
-
-   **Erst messen, dann streichen:** ein erster Durchgang meldete 135
-   Fehlalarme. Der Sammler lief blind über `Object.values` — `exact` ist
-   ein Objekt deutsch→englisch, `replacements` aber eine **Liste von
-   Paaren**, wodurch die deutschen Quellwörter als englische Zieltexte
-   mitgezählt wurden. Wer hier ein Wort ergänzt, lässt das Skript laufen.
-
-10. **Verschachteltes `tr` — erledigt in V28.12.16.** `tr(\`… ${tr("Basis-Boss-XP")}\`)`
-    übersetzte das innere Stück zuerst; danach passte die zusammengesetzte
-    Zeile auf kein Muster mehr, und Wortersetzung greift bei der Länge
-    nicht. Dazu erwarteten die Muster in `lang/en-campaign.js` noch
-    „Boss XP je Profil", während der Code „Basis-Boss-XP" baut — zwei
-    Fehler übereinander. Beides behoben, geprüft mit
-    `scripts/qa/rush-abschluss-sprache.mjs`.
-
-    **Die Bauart-Regel dahinter:** ein `tr` innerhalb eines Textes, der
-    selbst per Muster übersetzt wird, zerstört immer den Mustertreffer.
-    Entweder die ganze Zeile durch ein `tr`, oder alle Teile einzeln —
-    nie gemischt.
-
-    **Und eine Falle bei der Prüfung:** `germanHints` taugt hier *nicht*
-    als Kriterium. „Besiegt: 0 / 10 · +0 Base boss XP behalten" enthält
-    weder ein Wort aus der Liste noch einen Umlaut. Der erste Entwurf des
-    Prüfstands war deshalb grün, obwohl der Fehler offen dastand. Geprüft
-    wird jetzt positiv gegen den erwarteten englischen Satz.
-
-11. **Toter Code — erledigt in V28.12.16.** `livePhaseValue` und
-    `choiceIcon` waren in beiden Rush-Modulen definiert und nirgends
-    aufgerufen; die Modulvariable `rewardTurn` wurde nur beschrieben.
-    Alles entfernt. Das feste `/10` im Trio-Kampflog
-    (`js/06-campaign.js`) liest jetzt `window.WDBossRush.stageCount()` —
-    dafür exportieren beide Module neu ein `stageCount`.
-
-12. **Der Regelwiderspruch — aufgelöst am 14.09.** `docs/PROJEKTREGELN.md`
-    hatte recht: Bildrevision und App-Version laufen getrennt. Nachweis:
-    `ASSET_REV` steht auf 28.11.28, `GAME_VERSION` auf 28.12.16, und
-    `npm run check` ist grün. Der Absatz oben in dieser Datei behauptete
-    das Gegenteil und ist korrigiert.
-
-13. **Bonus-Fähigkeitsknöpfe — erledigt in V28.12.17.** Sobald ein
-    Bonusknopf erschien, brach sein Text um und das Knopffeld sprang.
-    Bei 360/390/430 px nachgemessen, und die Ursache war nicht die Textlänge
-    allein: ab 390 px kippt `.controls` durch `flex:1 1 140px` auf **zwei
-    Spalten**, jeder Knopf ist dann rund 152 px breit — bei 42 px Polsterung
-    je Seite bleiben **76 px** für den Text. Selbst „Blutpreis" braucht
-    100 px. Basis jetzt 200 px (auf dem Telefon also einspaltig),
-    Seitenpolster 12 px, Texte auf den reinen Fähigkeitsnamen gekürzt.
-
-    **Das Symbol kommt nicht aus dem Text.** `js/36-emoji-sprite-pass.js`
-    hängt es über `ID_ICONS` an die **Element-ID** — ohne Emoji im Text.
-    Ein erster Versuch setzte zusätzlich ein eigenes Icon über
-    `battleAction`; die Duplikatsperre dort prüft nur
-    `:scope > .dd-emoji-sprite` und sah es nicht, also standen zwei Symbole
-    im Knopf. Wer einen Knopf mit Symbol braucht: ID in `ID_ICONS`
-    eintragen, Text ohne Emoji lassen.
-
-    **`white-space:nowrap` ist hier keine Lösung** — es unterdrückt nur den
-    Umbruch, der Text läuft dann aus dem Knopf. Im Prüfstand deshalb Umbruch
-    *und* Überlauf messen (Textbreite gegen Innenbreite).
-
-14. **Kleinigkeiten** — die Liste ist leer.
-
-   **Die Rahmenbilder wurden am 14.09. gemessen und bleiben, wie sie
-   sind.** Der Punkt nahm an, die 22 Dateien (1,52 MB) seien zu groß. Im
-   Browser bei 412 und 1280 px nachgemessen, gegen den Bedarf für eine
-   scharfe Darstellung auf 2×-Displays:
-
-   | Bild | Quelle | gezeichnet | für 2× nötig | Reserve breit |
-   |---|---|---|---|---|
-   | `player-card-combat` | 1200×704 | 826×102 | 1652×204 | 0,73× |
-   | `navy-tile` | 768×768 | 728×539 | 1456×1078 | 0,53× |
-   | `panel-large` | 768×1024 | 728×1785 | 1456×3570 | 0,53× |
-   | `modal-popup` | 768×960 | 520×445 | 1040×890 | 0,74× |
-   | `slim-card` | 1024×512 | 872×62 | 1744×124 | 0,59× |
-
-   **Kein einziges Bild hat in beiden Achsen Reserve.** Werte unter 1,0
-   heißen: die Quelle ist bereits kleiner als nötig. Runterskalieren würde
-   die Rahmen weicher machen. Überschuss gibt es nur in der Höhe (bis
-   4,1× bei `slim-card`), und der ließe sich nur durch neu gezeichnete,
-   flachere Bilder ernten — verboten nach Projektregel und würde jede
-   Slice-Rechnung umwerfen.
-
-   Wer es doch angehen will: der einzige saubere Hebel wären **kleinere
-   Varianten für schmale Fenster** über `image-set()` oder Media Queries.
-   Das kostet 22 zusätzliche Dateien in der Pflege und bringt nur auf
-   Telefonen etwas.
-
-   **Zwei davon sind am 14.09. geschlossen worden**, beide nach Prüfung
-   gegenstandslos: Der Schlüssel `"von"` ist ungefährlich, weil die
-   Übersetzung nur ganze Textknoten trifft (`js/00-i18n.js:24-35`) und
-   nicht als Teilzeichenkette greift. Und die Anzahl der Startfähigkeiten
-   **steht** in allen vier lokalen Modi sichtbar in `localModeInfo`, im
-   Browser geprüft.
-
-**Entschieden, nicht mehr offen:** Fähigkeitsnamen mischen absichtlich
-Deutsch und Englisch — Eigennamen wie Snake Eyes oder Loaded Dice werden
-nicht eingedeutscht. Das Würfeldesign-Feld im Setup bleibt reine
-Anzeige, trägt seit V28.11.2 aber den Stil seiner Nachbarn. Die
-Rundenvorbereitung und der Fähigkeits-Picker sind seit V28.11.10 bis
-28.11.12 überarbeitet. Der englische Changelog ist vollständig: 769 von
-770 Zeilen haben ihr Paar in `lang/en-changelog.js`; die eine Ausnahme
-trägt ein `<code>`-Tag, das der Exact-Match-Weg nicht greifen kann. Die
-doppelten Changelog-Bezeichnungen vor V28 bleiben unangetastet. `.git`
-ist rund 100 MB (67 tote PNG-Blobs) — das kostet nur Klonzeit und wird
-nicht aufgeräumt. Die 3D-Würfel sind seit V28.11.21 ganz entfernt; das
-Testlabor bleibt für spätere Angriffsanimationen.
-
 ---
 
+### Chronik: am 14.09. geschlossen
+
+Der Codex-Durchgang gegen V28.12.11 meldete zwölf Befunde. Jeder wurde am
+Code nachgeprüft, jeder mit eigenem Prüfstand behoben. Was davon dauerhaft
+gilt, steht in „Fallen in diesem Repo" und in `docs/PROJEKTREGELN.md`;
+hier nur die Zuordnung.
+
+| Befund | Fassung |
+|---|---|
+| Gespeicherte Runs wurden bei jeder Balanceänderung kommentarlos gelöscht | V28.12.12 |
+| Fünf Lücken bei Ablehnen, Weitergeben und Speicher (Überheilung, Kopiengrenze, Achievement, Empfängerwahl, Zweiter Atem) | V28.12.13 |
+| Duo fehlte das Max-HP-Wachstum je Stufe | V28.12.13 |
+| Ereignis-Popup lag unter allen sieben Kampf-Overlays | V28.12.14 |
+| Schadens- und Heilzahlen ebenso | V28.12.15 |
+| Deutsch-Erkenner hielt das englische „die" für deutsch | V28.12.16 |
+| Verschachteltes `tr` zerlegte die Mustertexte der Abschlusstafel | V28.12.16 |
+| Toter Code und festes `/10` im Trio-Log | V28.12.16 |
+| Bonus-Fähigkeitsknöpfe brachen um und ließen das Feld springen | V28.12.17 |
+| Hauptknopf stand niedriger als die Bonusknöpfe | V28.12.18 |
+| Emoji-Bestand: nichts zu bereinigen, Löschen wäre ein Fehler | V28.12.19 |
+| Regelleiste hielt keine drei Textzeilen | V28.12.11 |
+
+**Zwei Aussagen in dieser Datei waren falsch und sind korrigiert:**
+Mastery greift im Trio-Boss-Rush voll (`standardEligible` endet mit
+`return mode==="trio"`), nicht halb; und Bildrevision und App-Version
+laufen getrennt, wie `docs/PROJEKTREGELN.md` immer sagte.
+
+**Offen geblieben ist daraus eine Gestaltungsfrage:** soll der Boss Rush
+Mastery ganz, gar nicht oder wie heute je Modus verschieden tragen? Die
+L1/L2-Upgrades wirken immer, der Schadensbonus hängt an der Welt des
+gezogenen Encounters und schaltet sich mitten im Lauf stumm zu, der
+HP-Bonus greift nur auf Stufe 1. Kein Fehler, sondern eine geerbte
+Kampagnenkartenregel. Entschieden ist nur die Teilfrage: geliehene
+Mastery aus den Rush-Perks schaltet nichts Dauerhaftes frei
+(`docs/PROJEKTREGELN.md`).
+
+**Kleinigkeiten** — die Liste ist leer. Drei Emojis stehen noch in der
+Testumgebung; der Sprite-Pass nimmt diese Entwicklerfläche über
+`TEST_SELECTOR` bewusst aus.
+
 ## Fallen in diesem Repo
+
+- **`PGRST202` heißt nicht zwingend „Funktion fehlt".** PostgREST löst die
+  Funktion über die **Argumentnamen** auf. Fehlt ein Pflichtargument, kommt
+  dieselbe Meldung „Could not find the function" wie bei einer nie
+  eingespielten Funktion. Am 14.09. meldete eine erste Sonde deshalb
+  `dd_submit_battle_action` und `dd_publish_battle_state` als fehlend,
+  obwohl beide längst da waren — die Sonde schickte nur `p_room_id`. Wer
+  eine RPC anpingt, nimmt die vollständige Signatur aus der Migration.
 
 - **Die Emojis im Markup sind die QUELLE, kein Schmutz.**
   `js/36-emoji-sprite-pass.js` ersetzt sie im DOM durch Sprites — für
