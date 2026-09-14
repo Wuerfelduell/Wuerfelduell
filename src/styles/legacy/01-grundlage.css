@@ -788,8 +788,17 @@
     }
 
     /* Elimination / round-win popups */
+    /* Der Popup meldet Dinge, die genau einmal passieren: Phasenwechsel,
+       Tod, Mastery-Freischaltung. Auf 10020 lag er UNTER allen sieben
+       Kampf-Overlays (10040 bis 10055) und war damit unsichtbar, sobald
+       eines davon offen war - gemeldet am 14.09., als eine L2-Freischaltung
+       hinter dem Counterattack-Overlay verschwand. Einen zweiten Kanal gibt
+       es nicht: #log steht in index.html fest auf "hidden".
+       Jetzt ueber den Overlays, aber unter dem Achievement-Toast (12000),
+       der schon immer oben lag. pointer-events:none bleibt, der Popup darf
+       die Wuerfelknoepfe darunter nicht blockieren. */
     #eventPopup{
-      position:fixed;inset:0;z-index:10020;pointer-events:none;
+      position:fixed;inset:0;z-index:11900;pointer-events:none;
       display:flex;align-items:center;justify-content:center;
       opacity:0}
     #eventPopup .event-panel{

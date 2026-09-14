@@ -22,7 +22,7 @@ welche Fallen schon Zeit gekostet haben.
 
 | | |
 |---|---|
-| Version | **28.12.13** |
+| Version | **28.12.14** |
 | Branch | `main` |
 | Letzte Schritte | CSS-Stapel auf 10 Dateien zusammengelegt · Changelog englisch vervollständigt · Hauptmenü, Statistik, Profile, Achievements, Spielvorbereitung und Trophy Shop überarbeitet · Fähigkeits- und Shopflächen auf proportional gekachelte Bildrahmen umgestellt · alle Bild-URLs auf einen gemeinsamen Cache-Schlüssel · Trophy-Shop-Reste bereinigt und Aufklapppfeile angeglichen · Duo- und Trio-Boss-Rush mit Pfadwahl, gespeicherten Runs und 32 Perks einschließlich temporärer Ability-Mastery · Boss-XP-Umtausch 300:100 · Zweitfund gedeckelt · Trio-Rush 15 Stufen, ab 10 ultraschwer · Boss-Rush-HUD auf die Weltregel reduziert · Zweitfund-Kopien ablehnbar und weitergebbar · Ultra-Stufen treffen härter statt länger zu dauern · Heilung gedeckelt, Maximum wächst je Stufe · Regelleiste als Kachelgitter, wächst mit dem Text · gespeicherte Runs überleben Balanceänderungen |
 
@@ -657,6 +657,17 @@ Testlabor bleibt für spätere Angriffsanimationen.
 ---
 
 ## Fallen in diesem Repo
+
+- **Es gibt nur einen Meldekanal, und der ist schmal.** `#log` steht in
+  `index.html:810` fest auf `class="hidden"` — der Kampflog ist dauerhaft
+  unsichtbar, `addLog` schreibt ins Leere. Alles, was der Spieler mitbekommen
+  soll, muss über `queueEventPopup` oder den Achievement-Toast gehen. Wer
+  eine Meldung nur loggt, hat sie nicht gemeldet. Am 14.09. kam dazu, dass
+  der Popup selbst auf z-index 10020 lag und damit unter allen sieben
+  Kampf-Overlays (10040–10055): eine L2-Freischaltung verschwand hinter dem
+  Counterattack-Overlay, und der Spieler suchte den Fehler in der Mastery.
+  Seit V28.12.14 liegt er auf 11900, unter dem Achievement-Toast (12000).
+  Geprüft mit `scripts/qa/popup-schichten.mjs`.
 
 - **Ein Prüffall, der grün wird, obwohl er rot sein müsste, ist kaputt —
   nicht bestanden.** Am 14.09. zweimal im selben Skript passiert:
