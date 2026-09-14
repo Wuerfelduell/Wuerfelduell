@@ -681,7 +681,7 @@
         const secondLuck=hasMasteryUpgrade(3,1,current)&&luckRerollUses>0&&!luckRerollSecondUsed&&luckRerollIndex!=null&&dice[luckRerollIndex]&&!dice[luckRerollIndex].locked;
         if(standardLuck||secondLuck){
           baseRerollBtn.classList.remove("hidden");
-          baseRerollBtn.textContent=secondLuck?`🍀 Reroll the Reroll: ${dice[luckRerollIndex].value} neu würfeln`:`🍀 Glückswurf ${luckRerollUses+1}/${maxLuckUses}: 1 neu würfeln`;
+          baseRerollBtn.textContent=tx(secondLuck?"Reroll the Reroll":"Glückswurf");
         }
       }
 
@@ -694,14 +694,14 @@
         if(selectedEligible.length===1){
           const v=selectedEligible[0].d.value;
           loadedDiceBtn.classList.remove("hidden");
-          const shownCost=(hasMasteryUpgrade(18,2,current)&&loadedDiceUses===1)?1:2;loadedDiceBtn.textContent=`🎲 Loaded Dice ${loadedDiceUses+1}/${loadedMax}: ${v} → 5 (-${shownCost} HP)`;
+          const shownCost=(hasMasteryUpgrade(18,2,current)&&loadedDiceUses===1)?1:2;loadedDiceBtn.textContent=tx("Loaded Dice");
         }
       }
 
       const snakeGroup=snakeEyesGroup();
       if(hasAbility(20) && snakeGroup){
         snakeEyesBtn.classList.remove("hidden");
-        snakeEyesBtn.textContent=`🐍 Snake Eyes: ${snakeGroup.indices.length}× ${snakeGroup.face}er neu würfeln`;
+        snakeEyesBtn.textContent=tx("Snake Eyes");
       }
     }
     if(phase==="base_ready"){primaryBtn.classList.remove("hidden");battleAction(primaryBtn,"Rest würfeln","gameplay/dice.svg");}
@@ -721,18 +721,18 @@
         if(attackFace<6) neighbors.push(attackFace+1);
         if(neighbors.length){
           bloodLowerBtn.classList.remove("hidden");
-          bloodLowerBtn.textContent=`🩸 3 HP: ${[attackFace,...neighbors].sort((a,b)=>a-b).join(" + ")}`;
+          bloodLowerBtn.textContent=tx("Blutpreis");
         }
       }
     }
     if(phase==="attack_after_roll"){
       if(hasAbility(11)&&hasMasteryUpgrade(11,2,current)&&!bloodPriceWasPreActivatedThisRoll&&bloodPriceNeighbors.length===0&&players[current].hp>5){
         const neighbors=[];if(attackFace>1)neighbors.push(attackFace-1);if(attackFace<6)neighbors.push(attackFace+1);
-        if(neighbors.length){bloodLowerBtn.classList.remove("hidden");bloodLowerBtn.textContent=`🩸 Blood Credit · 5 HP: ${[attackFace,...neighbors].sort((a,b)=>a-b).join(" + ")}`;}
+        if(neighbors.length){bloodLowerBtn.classList.remove("hidden");bloodLowerBtn.textContent=tx("Blood Credit");}
       }
       if(hasAbility(23)&&hasMasteryUpgrade(23,2,current)&&!bloodRushActiveThisAttack&&players[current].hp>1){
         bloodRushMasteryBtn.classList.remove("hidden");
-        bloodRushMasteryBtn.textContent="🩸 Self Harm · 1 HP → Blood Rush";
+        bloodRushMasteryBtn.textContent=tx("Self Harm");
       }
       const secondChanceMax=hasMasteryUpgrade(4,1,current)?2:1;
       const secondChanceAvailable=hasAbility(4)&&attackPowerUses<secondChanceMax&&dice.some(d=>!d.locked);
@@ -740,12 +740,12 @@
 
       if(secondChanceAvailable){
         attackPowerBtn.classList.remove("hidden");
-        attackPowerBtn.textContent=`⚡ Second Chance ${attackPowerUses+1}/${secondChanceMax}`;
+        attackPowerBtn.textContent=tx("Zweite Chance");
       }
       const attackSnakeGroup=hasMasteryUpgrade(20,1,current)?snakeEyesGroup():null;
       if(hasAbility(20)&&attackSnakeGroup){
         snakeEyesBtn.classList.remove("hidden");
-        snakeEyesBtn.textContent=`🐍 Snake Bite: ${attackSnakeGroup.indices.length}× ${attackSnakeGroup.face}er neu würfeln`;
+        snakeEyesBtn.textContent=tx("Snake Bite");
       }
 
       // Double Tap ist eine echte Entscheidung: exakt 2 Treffer sichern ODER

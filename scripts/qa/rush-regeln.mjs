@@ -74,7 +74,6 @@ try{
   // Entwurf suchte die Zuwachszeile per Regex im Dateitext - das prueft die
   // Schreibweise, nicht das Verhalten.
   const stufenwechsel=async(qa,startBtn,pathSel)=>{
-    const vorher=await p.evaluate(qa=>window[qa].heroState(window[qa].getRun().profileIds[0]).maxHp,qa);
     // Kampf gewinnen, alle Belohnungen abraeumen, naechste Stufe betreten.
     await p.evaluate(qa=>{
       players.filter(x=>x.campaignTeam==='enemy').forEach(x=>x.hp=0);
@@ -93,6 +92,12 @@ try{
       await p.waitForTimeout(220);
     }
     await p.waitForTimeout(250);
+    // ERST HIER messen, nicht vor dem Kampf: die Belohnung "constitution"
+    // gibt +10 Max-HP und "gamble" nimmt 5. Wer vor der Belohnungsrunde misst,
+    // misst deren Wirkung mit und bekommt je nach Zufallsangebot +5, +15
+    // oder 0. Der Zuwachs selbst passiert in startStage, also beim Klick auf
+    // den naechsten Pfad - gemessen wird genau um diesen Klick herum.
+    const vorher=await p.evaluate(qa=>window[qa].heroState(window[qa].getRun().profileIds[0]).maxHp,qa);
     if(await p.locator(pathSel).count())await p.locator(pathSel).first().click();
     await p.waitForTimeout(450);
     const nachher=await p.evaluate(qa=>{

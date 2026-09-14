@@ -12545,3 +12545,31 @@ html[data-v28-rework="2"] body.playing .encounter-rule-banner>.encounter-rule-ar
   min-height:0;
   overflow:hidden;
 }
+
+
+/* ===== Kampfknoepfe: Sprite plus Name, eine Zeile =====
+   Ab 390 px wird .controls zweispaltig (flex-basis 140px), jeder Knopf ist
+   dann nur noch rund 152 px breit. Mit 42 px Polsterung je Seite blieben
+   76 px fuer den Text - selbst "Blutpreis" braucht 100 px, also brach jeder
+   Bonusknopf um und das Feld sprang nach oben, sobald einer auftauchte.
+   Gemessen bei 360/390/430 px.
+   Die Polsterung stammt vom Rahmenbild fuer volle Breite; auf einem halb so
+   breiten Knopf ist sie nicht noetig. Zusammen mit den gekuerzten Texten
+   (nur noch der Faehigkeitsname, Emoji durch das vorhandene Sprite ersetzt)
+   bleibt jeder Knopf einzeilig und die Leiste waechst nur noch in ganzen
+   Zeilen statt in halben. */
+body.playing #game .controls>button,
+html[data-v28-rework="2"] body.playing #game .controls>button{
+  /* Basis 200px statt 140px: auf dem Telefon (Leiste 282 bis 352 px) passt
+     damit nur noch EIN Knopf je Zeile, und jeder hat die volle Breite. Mit
+     140px kippte es ab 390 px auf zwei Spalten mit 128 px Innenbreite - dort
+     passt nicht einmal "Blutpreis" samt Sprite (152 px). Auf breiten
+     Bildschirmen stehen weiterhin zwei nebeneinander. */
+  flex:1 1 200px;
+  padding-inline:12px;
+  gap:6px;
+}
+body.playing #game .controls>button>.p1-action-icon,
+html[data-v28-rework="2"] body.playing #game .controls>button>.p1-action-icon{
+  flex:0 0 auto;
+}

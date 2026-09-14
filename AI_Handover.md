@@ -22,7 +22,7 @@ welche Fallen schon Zeit gekostet haben.
 
 | | |
 |---|---|
-| Version | **28.12.16** |
+| Version | **28.12.17** |
 | Branch | `main` |
 | Letzte Schritte | CSS-Stapel auf 10 Dateien zusammengelegt · Changelog englisch vervollständigt · Hauptmenü, Statistik, Profile, Achievements, Spielvorbereitung und Trophy Shop überarbeitet · Fähigkeits- und Shopflächen auf proportional gekachelte Bildrahmen umgestellt · alle Bild-URLs auf einen gemeinsamen Cache-Schlüssel · Trophy-Shop-Reste bereinigt und Aufklapppfeile angeglichen · Duo- und Trio-Boss-Rush mit Pfadwahl, gespeicherten Runs und 32 Perks einschließlich temporärer Ability-Mastery · Boss-XP-Umtausch 300:100 · Zweitfund gedeckelt · Trio-Rush 15 Stufen, ab 10 ultraschwer · Boss-Rush-HUD auf die Weltregel reduziert · Zweitfund-Kopien ablehnbar und weitergebbar · Ultra-Stufen treffen härter statt länger zu dauern · Heilung gedeckelt, Maximum wächst je Stufe · Regelleiste als Kachelgitter, wächst mit dem Text · gespeicherte Runs überleben Balanceänderungen |
 
@@ -633,14 +633,26 @@ wird nur auf ausdrückliche Ansage geändert. Nicht ungefragt „reparieren".
     `npm run check` ist grün. Der Absatz oben in dieser Datei behauptete
     das Gegenteil und ist korrigiert.
 
-13. **Bonus-Fähigkeitsknöpfe lassen das Würfelfeld springen.** Vom Nutzer
-    am 14.09. gemeldet, noch nicht angefasst: sobald ein Bonusknopf
-    erscheint (Loaded Dice, Snake Eyes, Blutpreis und weitere), werden die
-    Knöpfe breiter, das Feld wächst und der Bereich springt nach oben.
-    Gewünschte Lösung: die Knopftexte kürzen, bis nur noch der
-    Fähigkeitsname dasteht — dann ist das Feld genauso hoch wie das
-    Würfelfeld selbst und bleibt es auch. Vorher am Gerät messen, bei
-    welcher Breite der Umbruch kippt.
+13. **Bonus-Fähigkeitsknöpfe — erledigt in V28.12.17.** Sobald ein
+    Bonusknopf erschien, brach sein Text um und das Knopffeld sprang.
+    Bei 360/390/430 px nachgemessen, und die Ursache war nicht die Textlänge
+    allein: ab 390 px kippt `.controls` durch `flex:1 1 140px` auf **zwei
+    Spalten**, jeder Knopf ist dann rund 152 px breit — bei 42 px Polsterung
+    je Seite bleiben **76 px** für den Text. Selbst „Blutpreis" braucht
+    100 px. Basis jetzt 200 px (auf dem Telefon also einspaltig),
+    Seitenpolster 12 px, Texte auf den reinen Fähigkeitsnamen gekürzt.
+
+    **Das Symbol kommt nicht aus dem Text.** `js/36-emoji-sprite-pass.js`
+    hängt es über `ID_ICONS` an die **Element-ID** — ohne Emoji im Text.
+    Ein erster Versuch setzte zusätzlich ein eigenes Icon über
+    `battleAction`; die Duplikatsperre dort prüft nur
+    `:scope > .dd-emoji-sprite` und sah es nicht, also standen zwei Symbole
+    im Knopf. Wer einen Knopf mit Symbol braucht: ID in `ID_ICONS`
+    eintragen, Text ohne Emoji lassen.
+
+    **`white-space:nowrap` ist hier keine Lösung** — es unterdrückt nur den
+    Umbruch, der Text läuft dann aus dem Knopf. Im Prüfstand deshalb Umbruch
+    *und* Überlauf messen (Textbreite gegen Innenbreite).
 
 14. **Kleinigkeiten** — die Liste ist leer.
 
@@ -712,6 +724,14 @@ Testlabor bleibt für spätere Angriffsanimationen.
   dort ein. Nicht gehoben wurde `.heal-pop` in der Spielerkarte — sie steckt
   im Stapelkontext der Karte; `#healFx` trägt dieselbe Zahl.
   Geprüft mit `scripts/qa/popup-schichten.mjs` (23 Zusicherungen).
+
+- **Zufällige Belohnungen machen Messungen unzuverlässig.** Der Prüfstand
+  `rush-regeln.mjs` maß den Max-HP-Zuwachs je Stufe über einen ganzen
+  Stufenwechsel hinweg — und die Belohnungsrunde dazwischen bietet
+  `constitution` (+10 Max-HP) und `gamble` (−5). Je nach Zufallsangebot kam
+  +5, +15 oder 0 heraus, der Test meldete sporadisch rot bei korrektem Code.
+  Gemessen wird jetzt **eng um den Auslöser herum** (der Zuwachs passiert in
+  `startStage`, also beim Pfadklick), nicht über eine Phase mit Zufall darin.
 
 - **Ein Prüffall, der grün wird, obwohl er rot sein müsste, ist kaputt —
   nicht bestanden.** Am 14.09. zweimal im selben Skript passiert:
