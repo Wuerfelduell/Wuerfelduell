@@ -2692,3 +2692,15 @@ body.playing #game .controls>button>.p1-action-icon,
 html[data-v28-rework="2"] body.playing #game .controls>button>.p1-action-icon{
   flex:0 0 auto;
 }
+
+
+/* Der Hauptknopf (Basiswurf / Angriffswurf) ist der, den man jeden Zug
+   drueckt - er darf sich von den Bonusknoepfen abheben. 13-v28-grundlage
+   gibt ihm dafuer min-height:60px, doch die spaetere Sammelregel
+   ".controls>button{min-height:46px}" in 29-v28-korrekturen zieht ihn wieder
+   flach; gemessen stand er am Ende sogar einen Pixel NIEDRIGER als die
+   Bonusknoepfe daneben. Hier bekommt er seine Extrahoehe zurueck. */
+body.playing #game .controls>#primaryBtn,
+html[data-v28-rework="2"] body.playing #game .controls>#primaryBtn{
+  min-height:58px;
+}
