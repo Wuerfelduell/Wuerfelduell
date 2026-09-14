@@ -22,7 +22,7 @@ welche Fallen schon Zeit gekostet haben.
 
 | | |
 |---|---|
-| Version | **28.12.18** |
+| Version | **28.12.19** |
 | Branch | `main` |
 | Letzte Schritte | CSS-Stapel auf 10 Dateien zusammengelegt · Changelog englisch vervollständigt · Hauptmenü, Statistik, Profile, Achievements, Spielvorbereitung und Trophy Shop überarbeitet · Fähigkeits- und Shopflächen auf proportional gekachelte Bildrahmen umgestellt · alle Bild-URLs auf einen gemeinsamen Cache-Schlüssel · Trophy-Shop-Reste bereinigt und Aufklapppfeile angeglichen · Duo- und Trio-Boss-Rush mit Pfadwahl, gespeicherten Runs und 32 Perks einschließlich temporärer Ability-Mastery · Boss-XP-Umtausch 300:100 · Zweitfund gedeckelt · Trio-Rush 15 Stufen, ab 10 ultraschwer · Boss-Rush-HUD auf die Weltregel reduziert · Zweitfund-Kopien ablehnbar und weitergebbar · Ultra-Stufen treffen härter statt länger zu dauern · Heilung gedeckelt, Maximum wächst je Stufe · Regelleiste als Kachelgitter, wächst mit dem Text · gespeicherte Runs überleben Balanceänderungen |
 
@@ -704,6 +704,18 @@ Testlabor bleibt für spätere Angriffsanimationen.
 ---
 
 ## Fallen in diesem Repo
+
+- **Die Emojis im Markup sind die QUELLE, kein Schmutz.**
+  `js/36-emoji-sprite-pass.js` ersetzt sie im DOM durch Sprites — für
+  Elemente in `ID_ICONS` anhand der Element-ID, für alle anderen anhand des
+  Emojis im Text. Wer sie aus `index.html` löscht, nimmt der Stelle ihr
+  Symbol. Am 14.09. nachgemessen (`scripts/qa/emoji-rest.mjs`): im
+  sichtbaren Spiel steht **kein** rohes Emoji; übrig bleiben nur drei in der
+  Testumgebung, die der Pass über `TEST_SELECTOR` bewusst ausnimmt.
+  Der Quelltext zählt über 900 Vorkommen — die stecken fast alle in
+  `addLog` (unsichtbar), in den Sprachpaketen als Suchschlüssel und in der
+  `ICONS`-Tabelle des Passes selbst. **Die Zahl im Quelltext sagt nichts
+  über das Bild.**
 
 - **Es gibt nur einen Meldekanal, und der ist schmal.** `#log` steht in
   `index.html:810` fest auf `class="hidden"` — der Kampflog ist dauerhaft
