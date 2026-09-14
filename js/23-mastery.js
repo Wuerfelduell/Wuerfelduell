@@ -263,6 +263,18 @@
       return {profile,mode,player:p,encounter};
     }catch(_err){return null;}
   }
+  // ACHTUNG, hier steht absichtlich abilityLevel und NICHT
+  // abilityLevelForPlayer. Der Unterschied: abilityLevelForPlayer rechnet den
+  // Boss-Rush-Override mit, dieses Tor nicht.
+  //
+  // Folge, und die ist gewollt: wer L1 nur durch den Rush-Perk "Feinschliff"
+  // (bzw. "Meisterschaft" fuer L2) geliehen hat, sieht die Wirkung im Kampf,
+  // sammelt aber KEINEN Fortschritt fuer die dauerhafte L2-Challenge.
+  // Nutzerentscheidung vom 14.09.: L1 muss vorher gekauft sein. Eine
+  // geliehene Stufe darf keine dauerhafte freischalten.
+  //
+  // Das sieht beim Lesen wie ein Fehler aus - es ist am 14.09. schon einmal
+  // als einer gemeldet worden. Nicht "angleichen".
   function l2TrackingContext(index,id){
     const ctx=playerProfileAndMode(index);
     if(!ctx)return null;

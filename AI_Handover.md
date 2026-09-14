@@ -530,6 +530,13 @@ wird nur auf ausdrückliche Ansage geändert. Nicht ungefragt „reparieren".
    Gestaltungsfrage: soll der Boss Rush Mastery ganz, gar nicht oder
    wie heute je Modus verschieden tragen?
 
+   **Eine Teilfrage ist am 14.09. entschieden und steht jetzt in
+   `docs/PROJEKTREGELN.md`:** geliehene Mastery aus den Rush-Perks
+   „Feinschliff" und „Meisterschaft" schaltet **nichts Dauerhaftes** frei.
+   `l2TrackingContext` liest deshalb `abilityLevel` und nicht
+   `abilityLevelForPlayer` — kein Versehen, nicht angleichen. Anlass war
+   ein gemeldeter Fehler, der keiner war.
+
 6. **Alte Runs überleben eine Balanceänderung — erledigt in V28.12.12.**
    `validStored` verglich jedes gespeicherte Angebot per `JSON.stringify`
    mit einem frisch gerechneten `optionFor`, also mit der **heutigen**

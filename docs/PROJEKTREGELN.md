@@ -106,6 +106,13 @@ Repo: `Wuerfelduell/Wuerfelduell`. Direkte Commits auf `main` sind erlaubt.
 - `.git` ist rund 100 MB. Wird nicht aufgeräumt.
 - Kein Modellname in Commits, Pull Requests, Codekommentaren oder
   sonstigen Inhalten im Repo.
+- **Geliehene Mastery schaltet nichts Dauerhaftes frei.** Die Boss-Rush-Perks
+  „Feinschliff" (L1) und „Meisterschaft" (L2) gelten nur für den Lauf. Wer L1
+  darüber bekommt, sieht die Wirkung im Kampf, sammelt aber keinen Fortschritt
+  für die dauerhafte L2-Challenge — dafür muss L1 gekauft sein. So gebaut in
+  `l2TrackingContext` (`js/23-mastery.js`), das absichtlich `abilityLevel`
+  liest statt `abilityLevelForPlayer`. Sieht beim Lesen wie ein Fehler aus und
+  ist am 14.09. schon einmal als einer gemeldet worden.
 
 ## Arbeitsweise
 
