@@ -9,7 +9,18 @@
     lang = nav === "en" ? "en" : DEFAULT_LANG;
   }
 
-  const germanHints = /[äöüÄÖÜß]|\b(?:der|die|das|den|dem|des|ein|eine|einen|einem|einer|und|oder|du|dein|deine|wird|werden|wurde|wurden|ist|sind|hat|haben|mit|ohne|gegen|für|bei|nach|vor|während|wenn|darf|musst|kannst|können|soll|Spieler|Runde|Würfel|Schaden|Fähigkeit|Kampagne|Gegner|Profil|Welt|Zug|Wurf|Heilung|Treffer|Angriff)\b/i;
+  // "die" stand hier bis V28.12.16 mit in der Liste - in einem Wuerfelspiel.
+  // "die" ist im Englischen der Singular von "dice" und ausserdem das Verb
+  // sterben, und beides kommt staendig vor ("per die hit", "must die last",
+  // "Have an opponent die to your Counterattack"). Folge: 14 fertig
+  // uebersetzte englische Texte galten als Deutsch und wurden unten durch den
+  // generischen Ersatztext ueberschrieben.
+  // Am Sprachpaket nachgemessen (scripts/qa/deutsch-erkenner.mjs): KEIN
+  // deutscher Text haengt allein an "die" - jeder trägt noch einen zweiten
+  // Marker. Das Streichen kostet also keine Erkennung und nimmt alle 14
+  // Fehlalarme mit. Wer hier ein Wort ergaenzt, laesst das Skript laufen:
+  // englische Zieltexte duerfen nicht anschlagen.
+  const germanHints = /[äöüÄÖÜß]|\b(?:der|das|den|dem|des|ein|eine|einen|einem|einer|und|oder|du|dein|deine|wird|werden|wurde|wurden|ist|sind|hat|haben|mit|ohne|gegen|für|bei|nach|vor|während|wenn|darf|musst|kannst|können|soll|Spieler|Runde|Würfel|Schaden|Fähigkeit|Kampagne|Gegner|Profil|Welt|Zug|Wurf|Heilung|Treffer|Angriff)\b/i;
 
   function replaceAllLiteral(text, from, to) {
     return text.split(from).join(to);

@@ -22,7 +22,7 @@ welche Fallen schon Zeit gekostet haben.
 
 | | |
 |---|---|
-| Version | **28.12.15** |
+| Version | **28.12.16** |
 | Branch | `main` |
 | Letzte Schritte | CSS-Stapel auf 10 Dateien zusammengelegt · Changelog englisch vervollständigt · Hauptmenü, Statistik, Profile, Achievements, Spielvorbereitung und Trophy Shop überarbeitet · Fähigkeits- und Shopflächen auf proportional gekachelte Bildrahmen umgestellt · alle Bild-URLs auf einen gemeinsamen Cache-Schlüssel · Trophy-Shop-Reste bereinigt und Aufklapppfeile angeglichen · Duo- und Trio-Boss-Rush mit Pfadwahl, gespeicherten Runs und 32 Perks einschließlich temporärer Ability-Mastery · Boss-XP-Umtausch 300:100 · Zweitfund gedeckelt · Trio-Rush 15 Stufen, ab 10 ultraschwer · Boss-Rush-HUD auf die Weltregel reduziert · Zweitfund-Kopien ablehnbar und weitergebbar · Ultra-Stufen treffen härter statt länger zu dauern · Heilung gedeckelt, Maximum wächst je Stufe · Regelleiste als Kachelgitter, wächst mit dem Text · gespeicherte Runs überleben Balanceänderungen |
 
@@ -70,11 +70,19 @@ dieselbe. Im Text steht über jedem Abschnitt, aus welcher Datei er stammt:
   Kaskade.
 
 Bei einem Release werden gemeinsam hochgezogen: `index.html`
-(`meta wd-build`, `<title>`, `.version-footer`, alle `?v=`),
-`js/01-config.js` (`GAME_VERSION`), `sw.js` (`CACHE_VERSION`),
-`version.json`, dazu die Bild-URLs in `src/styles/legacy/36-v28-hierarchie.css`.
-Sonst liefern HTTP-Cache und Service Worker einmal alte Dateien — genau
-den „Mischbuild", vor dem `js/19-build-integrity.js` warnt.
+(`meta wd-build`, `<title>`, `.version-footer`), `js/01-config.js`
+(`GAME_VERSION`), `sw.js` (`CACHE_VERSION`) und `version.json` — in einem
+Zug mit `node scripts/bump-version.mjs <version>`. Sonst liefern
+HTTP-Cache und Service Worker einmal alte Dateien, genau den
+„Mischbuild", vor dem `js/19-build-integrity.js` warnt.
+
+**Die Bildrevision gehört NICHT dazu.** Dieser Absatz behauptete das bis
+zum 14.09. und widersprach damit `docs/PROJEKTREGELN.md`. Nachgesehen:
+`ASSET_REV` steht auf 28.11.28, `GAME_VERSION` auf 28.12.15, und
+`npm run check` ist grün — die beiden laufen absichtlich getrennt.
+`bump-version.mjs` hat dafür einen eigenen Modus (`--assets <rev>`), der
+`ASSET_REV` und alle `?v=` zusammen setzt. Die Regel gilt, der Satz hier
+war falsch.
 
 ---
 
@@ -579,42 +587,62 @@ wird nur auf ausdrückliche Ansage geändert. Nicht ungefragt „reparieren".
    ein erster Entwurf des Prüfstands suchte die Zuwachszeile per Regex in der
    Quelle — das prüft die Schreibweise, nicht das Verhalten.
 
-9. **Der Deutsch-Erkenner hält das englische „die" für deutsch.**
-   `germanHints` (`js/00-i18n.js:12`) listet `die` als deutschen
-   Hinweis — in einem Würfelspiel. Folge: eine **korrekt übersetzte**
-   englische Beschreibung, die das Wort enthält, wird bei `:89` durch den
-   generischen Ersatztext überschrieben. Nachgewiesen an
-   `lang/en-campaign.js:346` („…must die last"), betroffen sind
-   `duo_omega_crown_touch` und `duo_omega_throne`. Der Fallback ist also
-   nicht tot, wie hier früher stand — er feuert an der falschen Stelle.
-   Beim Entschärfen aufpassen: `die` ersatzlos streichen macht den
-   Erkenner für echtes Deutsch schwächer.
+9. **Der Deutsch-Erkenner — erledigt in V28.12.16.** `germanHints`
+   (`js/00-i18n.js`) listete `die` als deutschen Hinweis, in einem
+   Würfelspiel. Am Sprachpaket nachgemessen mit
+   `scripts/qa/deutsch-erkenner.mjs`: **14** fertig übersetzte englische
+   Texte schlugen an und wurden durch den generischen Ersatztext
+   überschrieben, und **kein einziger** deutscher Text hängt allein an
+   diesem Wort. Streichen kostete also nichts und nahm alle 14 mit.
 
-10. **Verschachteltes `tr` bricht die Mustertexte.** `js/44:771` baut
-    `…+${xp} ${tr("Basis-Boss-XP")}` — das innere `tr` übersetzt zuerst,
-    danach passt die zusammengesetzte Zeile nicht mehr auf das Muster in
-    `lang/en-campaign.js:819`, und Wortersetzung greift wegen der Länge
-    nicht. Im englischen Spiel steht deshalb „Besiegt: 0 / 10 · +0 Base
-    boss XP behalten". **Das ist eine Bauart-Falle, kein Einzelfall:**
-    ein `tr` innerhalb eines Textes, der selbst per Muster übersetzt wird,
-    zerstört immer den Mustertreffer. Beide Rush-Abschlusstafeln sind
-    betroffen (`js/37:713`, `js/44:771`).
+   **Erst messen, dann streichen:** ein erster Durchgang meldete 135
+   Fehlalarme. Der Sammler lief blind über `Object.values` — `exact` ist
+   ein Objekt deutsch→englisch, `replacements` aber eine **Liste von
+   Paaren**, wodurch die deutschen Quellwörter als englische Zieltexte
+   mitgezählt wurden. Wer hier ein Wort ergänzt, lässt das Skript laufen.
 
-11. **Toter Code und eine falsche Anzeige.** `livePhaseValue`
-    (`js/37:199`, `js/44:229`) und `choiceIcon` (`js/37:402`, `js/44:449`)
-    sind definiert und werden nirgends aufgerufen. Die Modulvariable
-    `rewardTurn` (`js/37:90`, `js/44:119`) wird nur beschrieben, gelesen
-    wird `run.rewardTurn`. Der Trio-Kampfstart protokolliert fest `/10`,
-    auch auf Stufe 15 (`js/06-campaign.js:1163`).
+10. **Verschachteltes `tr` — erledigt in V28.12.16.** `tr(\`… ${tr("Basis-Boss-XP")}\`)`
+    übersetzte das innere Stück zuerst; danach passte die zusammengesetzte
+    Zeile auf kein Muster mehr, und Wortersetzung greift bei der Länge
+    nicht. Dazu erwarteten die Muster in `lang/en-campaign.js` noch
+    „Boss XP je Profil", während der Code „Basis-Boss-XP" baut — zwei
+    Fehler übereinander. Beides behoben, geprüft mit
+    `scripts/qa/rush-abschluss-sprache.mjs`.
 
-12. **Widerspruch zwischen zwei Regeltexten — ungeprüft.**
-    `AI_Handover.md:75` verlangt, Bildrevisionen beim Release mit
-    hochzuziehen; `docs/PROJEKTREGELN.md:64` beschreibt die
-    Asset-Revision als davon unabhängig. Aus dem Codex-Durchgang
-    übernommen und **nicht selbst nachgesehen** — wer das anfasst, prüft
-    zuerst, welche der beiden Stellen die gelebte Praxis beschreibt.
+    **Die Bauart-Regel dahinter:** ein `tr` innerhalb eines Textes, der
+    selbst per Muster übersetzt wird, zerstört immer den Mustertreffer.
+    Entweder die ganze Zeile durch ein `tr`, oder alle Teile einzeln —
+    nie gemischt.
 
-13. **Kleinigkeiten** — die Liste ist leer.
+    **Und eine Falle bei der Prüfung:** `germanHints` taugt hier *nicht*
+    als Kriterium. „Besiegt: 0 / 10 · +0 Base boss XP behalten" enthält
+    weder ein Wort aus der Liste noch einen Umlaut. Der erste Entwurf des
+    Prüfstands war deshalb grün, obwohl der Fehler offen dastand. Geprüft
+    wird jetzt positiv gegen den erwarteten englischen Satz.
+
+11. **Toter Code — erledigt in V28.12.16.** `livePhaseValue` und
+    `choiceIcon` waren in beiden Rush-Modulen definiert und nirgends
+    aufgerufen; die Modulvariable `rewardTurn` wurde nur beschrieben.
+    Alles entfernt. Das feste `/10` im Trio-Kampflog
+    (`js/06-campaign.js`) liest jetzt `window.WDBossRush.stageCount()` —
+    dafür exportieren beide Module neu ein `stageCount`.
+
+12. **Der Regelwiderspruch — aufgelöst am 14.09.** `docs/PROJEKTREGELN.md`
+    hatte recht: Bildrevision und App-Version laufen getrennt. Nachweis:
+    `ASSET_REV` steht auf 28.11.28, `GAME_VERSION` auf 28.12.16, und
+    `npm run check` ist grün. Der Absatz oben in dieser Datei behauptete
+    das Gegenteil und ist korrigiert.
+
+13. **Bonus-Fähigkeitsknöpfe lassen das Würfelfeld springen.** Vom Nutzer
+    am 14.09. gemeldet, noch nicht angefasst: sobald ein Bonusknopf
+    erscheint (Loaded Dice, Snake Eyes, Blutpreis und weitere), werden die
+    Knöpfe breiter, das Feld wächst und der Bereich springt nach oben.
+    Gewünschte Lösung: die Knopftexte kürzen, bis nur noch der
+    Fähigkeitsname dasteht — dann ist das Feld genauso hoch wie das
+    Würfelfeld selbst und bleibt es auch. Vorher am Gerät messen, bei
+    welcher Breite der Umbruch kippt.
+
+14. **Kleinigkeiten** — die Liste ist leer.
 
    **Die Rahmenbilder wurden am 14.09. gemessen und bleiben, wie sie
    sind.** Der Punkt nahm an, die 22 Dateien (1,52 MB) seien zu groß. Im

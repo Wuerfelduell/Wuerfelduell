@@ -816,8 +816,8 @@
     [/^Setzt die 3\. Fähigkeit für die nächsten Stufen\. (.+)$/, m=>`Sets the 3rd ability for the next stages. ${m[1]}`],
     [/^Boss (\d+) besiegt$/, m=>`Boss ${m[1]} defeated`],[/^\+(\d+) Boss XP je Profil · Belohnungen wählen$/, m=>`+${m[1]} Boss XP per profile · choose rewards`],
     [/^Spieler (\d+)$/, m=>`Player ${m[1]}`],[/^Duo-Spieler · (\d+) HP · Boss XP gesamt (\d+)$/, m=>`Duo player · ${m[1]} HP · total Boss XP ${m[2]}`],
-    [/^Alle (\d+) Bossstufen wurden besiegt\.$/, m=>`All ${m[1]} boss stages were defeated.`],[/^Run abgeschlossen: (\d+) \/ (\d+) · \+(\d+) Boss XP je Profil$/, m=>`Run complete: ${m[1]} / ${m[2]} · +${m[3]} Boss XP per profile`],
-    [/^Euer Team ist bei Boss (\d+) gefallen\.$/, m=>`Your team fell at boss ${m[1]}.`],[/^Besiegt: (\d+) \/ (\d+) · \+(\d+) Boss XP je Profil behalten$/, m=>`Defeated: ${m[1]} / ${m[2]} · keep +${m[3]} Boss XP per profile`]
+    [/^Alle (\d+) Bossstufen wurden besiegt\.$/, m=>`All ${m[1]} boss stages were defeated.`],[/^Run abgeschlossen: (\d+) \/ (\d+) · \+(\d+) Basis-Boss-XP$/, m=>`Run complete: ${m[1]} / ${m[2]} · +${m[3]} Boss XP per profile`],
+    [/^Euer Team ist bei Boss (\d+) gefallen\.$/, m=>`Your team fell at boss ${m[1]}.`],[/^Besiegt: (\d+) \/ (\d+) · \+(\d+) Basis-Boss-XP behalten$/, m=>`Defeated: ${m[1]} / ${m[2]} · keep +${m[3]} Boss XP per profile`]
   );
   /* V28.9 endgame campaign source-of-truth. Content files only carry their
      German source strings; every player-facing English counterpart lives here. */

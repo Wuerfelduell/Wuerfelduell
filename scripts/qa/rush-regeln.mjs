@@ -95,10 +95,11 @@ try{
     await p.waitForTimeout(250);
     if(await p.locator(pathSel).count())await p.locator(pathSel).first().click();
     await p.waitForTimeout(450);
-    const nachher=await p.evaluate(qa=>({
-      maxHp:window[qa].heroState(window[qa].getRun().profileIds[0]).maxHp,
-      stage:window[qa].getRun().stage
-    }),qa);
+    const nachher=await p.evaluate(qa=>{
+      const run=window[qa].getRun(),hero=window[qa].heroState(run.profileIds[0]);
+      return {maxHp:hero.maxHp,stage:run.stage,preparedStage:run.preparedStage,
+              hp:hero.hp,phase:run.phase};
+    },qa);
     return {vorher,...nachher};
   };
 
@@ -106,6 +107,7 @@ try{
   await p.locator('[data-rush-path]').first().click();await p.waitForTimeout(500);
   const trioWachstum=await stufenwechsel('__trioQA','#trioBossRushStartBtn','[data-rush-path]');
   pruefe('Trio: Stufenwechsel erreicht',trioWachstum.stage===1,true);
+  if(trioWachstum.maxHp-trioWachstum.vorher!==5)console.log('      trio:',JSON.stringify(trioWachstum));
   pruefe('Trio: Maximum waechst um 5',trioWachstum.maxHp-trioWachstum.vorher===5,true);
 
   // ---------- (2) Deckel beim Start, (3) Zweiter Atem ----------
@@ -189,6 +191,7 @@ try{
   await p.locator('[data-rush-path]').first().click();await p.waitForTimeout(500);
   const duoWachstum=await stufenwechsel('__duoQA','#duoBossRushStartBtn','[data-rush-path]');
   pruefe('Duo:  Stufenwechsel erreicht',duoWachstum.stage===1,true);
+  if(duoWachstum.maxHp-duoWachstum.vorher!==5)console.log('      duo:',JSON.stringify(duoWachstum));
   pruefe('Duo:  Maximum waechst um 5',duoWachstum.maxHp-duoWachstum.vorher===5,true);
   const duoVitals=await p.evaluate(ids=>{
     const q=window.__duoQA,hero=q.heroState(ids[0]),profil=getProfile(ids[0]);

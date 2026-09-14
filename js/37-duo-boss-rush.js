@@ -87,7 +87,6 @@
   ]);
 
   let run=null;
-  let rewardTurn=0;
   let rewardChoices=[];
   let selectionLocked=false;
   let inputReadyAt=0;
@@ -196,15 +195,7 @@
   }
 
   function stageNumber(){return run?run.stage+1:1;}
-  function livePhaseValue(){
-    const encounter=currentEncounter(),phase=encounter?.bossRushPhase;
-    if(!phase)return tr("–");
-    const triggered=typeof encounterRuntime!=="undefined"&&Array.isArray(encounterRuntime?.phaseTriggeredIds)
-      ?encounterRuntime.phaseTriggeredIds.length
-      :0;
-    if(triggered>0)return tr(`2 · ${phase.title}`);
-    return tr(`1 · ${Math.round((Number(phase.threshold)||.5)*100)} % → ${phase.title}`);
-  }
+  function stageCount(){return run?.stageCount||STAGES.length;}
 
   // Der Duo-Rush endet auf Stufe 10 und kennt keine Ultra-Phase; der Haken
   // existiert nur, damit beide Module dieselbe Schnittstelle tragen.
@@ -406,7 +397,6 @@
     return [...perkChoicesFor(profileId,count,difficulty),...(difficulty==="hard"?abilityChoicesFor(profileId):[])].map(c=>c.id);
   }
 
-  function choiceIcon(choice){return `${ICON_ROOT}${choice.icon}`;}
   function choiceStateLabel(profileId,choice){
     if(choice.kind==="ability")return tr("Einmalig · bleibt bis Rush-Ende");
     return `${tr(RARITIES[choice.rarity])} · ${tr("Stapel")}: ${perk(profileId,choice.id)}`;
@@ -461,7 +451,6 @@
 
   function renderRewardTurn(){
     const task=currentTask();if(!task)return;
-    rewardTurn=run.rewardTurn;
     const profile=getProfile(task.profileId),hero=heroState(task.profileId);
     // Frühere Zweitfunde können die später vorbereitete Auswahl bereits verbessern.
     // Eine wirkungslose Kopie überspringen; reguläre Auswahl mit Seltenheitsgarantie neu ziehen.
@@ -729,8 +718,8 @@
     }).join("");
     winnerText.textContent=tr(completed?"BOSS RUSH GESCHAFFT!":"BOSS RUSH GESCHEITERT");
     roundResultText.innerHTML=completed
-      ?`${safe(tr(`Alle ${STAGES.length} Bossstufen wurden besiegt.`))}<br><strong>${safe(tr(`Run abgeschlossen: ${cleared} / ${STAGES.length} · +${run.bossXpEarned} ${tr("Basis-Boss-XP")}`))}</strong><br>${safe(tr("Rush-Belohnungen und zusätzliche Fähigkeiten sind nur für diesen Lauf gültig und werden beim Verlassen entfernt."))}`
-      :`${safe(tr(`Euer Team ist bei Boss ${Math.min(STAGES.length,run.stage+1)} gefallen.`))}<br><strong>${safe(tr(`Besiegt: ${cleared} / ${STAGES.length} · +${run.bossXpEarned} ${tr("Basis-Boss-XP")} behalten`))}</strong>${technicalMessage?`<br>${safe(technicalMessage)}`:""}<br>${safe(tr("Kampagnenfortschritt, Mastery XP und Trophäen bleiben unverändert."))}`;
+      ?`${safe(tr(`Alle ${STAGES.length} Bossstufen wurden besiegt.`))}<br><strong>${safe(tr(`Run abgeschlossen: ${cleared} / ${STAGES.length} · +${run.bossXpEarned} Basis-Boss-XP`))}</strong><br>${safe(tr("Rush-Belohnungen und zusätzliche Fähigkeiten sind nur für diesen Lauf gültig und werden beim Verlassen entfernt."))}`
+      :`${safe(tr(`Euer Team ist bei Boss ${Math.min(STAGES.length,run.stage+1)} gefallen.`))}<br><strong>${safe(tr(`Besiegt: ${cleared} / ${STAGES.length} · +${run.bossXpEarned} Basis-Boss-XP behalten`))}</strong>${technicalMessage?`<br>${safe(technicalMessage)}`:""}<br>${safe(tr("Kampagnenfortschritt, Mastery XP und Trophäen bleiben unverändert."))}`;
     roundStandings.innerHTML=heroRows;
     renderRoundStats();
     clearBotAutomation();
@@ -893,7 +882,6 @@
     $("duoBossRushRewardModal")?.classList.add("hidden");
     game?.classList.remove("boss-rush-game");
     run=null;
-    rewardTurn=0;
     rewardChoices=[];
     selectionLocked=false;
     resumeCandidate=null;
@@ -912,7 +900,7 @@
   function worldThemeSequence(){return [...BOSS_RUSH_WORLD_THEME_KEYS];}
 
   window.WDDuoBossRush=Object.freeze({
-    start,reset,abort,isActive,currentEncounter,stageNumber,worldThemeKey,worldThemeSequence,startingVitals,startingLoadout,
+    start,reset,abort,isActive,currentEncounter,stageNumber,stageCount,worldThemeKey,worldThemeSequence,startingVitals,startingLoadout,
     finishEncounter,attackDamageBonus,incomingDamageModifier,enemyHitBonus,ultraActive,abilityLevelOverride,afterHeroAttack,onHeroKill,refreshButton,snapshot,rewardDefinitions,stageDefinitions,profileBossXp
   });
 
