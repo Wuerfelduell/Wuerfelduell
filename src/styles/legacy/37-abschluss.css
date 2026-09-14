@@ -2614,3 +2614,53 @@ html[data-v28-rework="2"] #masteryBossXpConvertBtn{
   min-width:0;
   text-align:center;
   overflow-wrap:anywhere}
+
+/* ===== Regelleiste: Kachelgitter statt gedehntem Hintergrundbild =====
+   Das Bild hinter --p3-boss-bar misst 512x171, das Motiv liegt darin bei
+   y 37..130; oben und unten ist es leer. Als center/100% 100% lag es exakt auf der
+   Leiste gezogen: eine zweizeilige Weltregel machte die Leiste hoeher und
+   quetschte damit Endornamente und Mittelkrone. Mehr Polster half nicht,
+   weil der Hintergrund mit der Box mitwaechst.
+   Das Gitter schneidet das Bild in 5x4 Kacheln. Feste Spalten tragen die
+   beiden Enden (je 88px) und die Mittelkrone (132px), feste Zeilen die
+   Rahmenleisten (33px oben, 28px unten) und das Band der seitlichen
+   Edelsteine (18px). Nur die vier 1fr-Felder dehnen sich, und die liegen
+   in ruhigen, flaechigen Bildbereichen.
+   Bedingung fuer unverzerrte Ornamente: feste Spaltenbreite geteilt durch
+   Quellbreite muss gleich Kachelhoehe geteilt durch Quellhoehe sein -
+   deshalb haengen alle Masse an derselben Skala. */
+.encounter-rule-art{display:none}
+html[data-v28-rework="2"] body.playing .encounter-rule-banner{
+  --dd-boss-bar-scale:.62;
+  position:relative;
+  isolation:isolate;
+  box-sizing:border-box;
+  background:none;
+  min-height:calc(93px * var(--dd-boss-bar-scale));
+  padding:calc(30px * var(--dd-boss-bar-scale))
+          calc(60px * var(--dd-boss-bar-scale))
+          calc(36px * var(--dd-boss-bar-scale));
+}
+html[data-v28-rework="2"] body.playing .encounter-rule-banner>.encounter-rule-art{
+  position:absolute;
+  inset:0;
+  z-index:-1;
+  display:grid;
+  pointer-events:none;
+  grid-template-columns:
+    calc(88px * var(--dd-boss-bar-scale)) minmax(0,1fr)
+    calc(132px * var(--dd-boss-bar-scale)) minmax(0,1fr)
+    calc(88px * var(--dd-boss-bar-scale));
+  grid-template-rows:
+    calc(33px * var(--dd-boss-bar-scale)) minmax(0,1fr)
+    calc(18px * var(--dd-boss-bar-scale)) minmax(0,1fr)
+    calc(28px * var(--dd-boss-bar-scale));
+}
+html[data-v28-rework="2"] body.playing .encounter-rule-banner>.encounter-rule-art>svg{
+  display:block;
+  width:100%;
+  height:100%;
+  min-width:0;
+  min-height:0;
+  overflow:hidden;
+}

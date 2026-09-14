@@ -68,6 +68,22 @@
   function playerCosmeticsFromProfile(profile){return {cosmeticTitle:profileCosmeticTitle(profile),cosmeticFrame:profileCosmeticFrame(profile),attackFx:profile?.selectedAttackFx||"classic"};}
   function encounterVoluntaryCost(base){return Math.max(0,base+(encounterRuleActive("blood_tax")?1:0));}
   function encounterHealAmount(index,base){return Math.max(0,base+(campaignMode&&encounterRuleActive("blood_moon")?1:0));}
+  // Das Rahmenbild der Regelleiste traegt zwei Endornamente und oben wie
+  // unten eine Mittelkrone. Als gedehnter Hintergrund (center/100% 100%)
+  // wurden genau diese Ornamente mitgestreckt, sobald eine lange Weltregel
+  // zweizeilig wurde - die Leiste wuchs, das Bild wurde flach gequetscht.
+  // Das Kachelgitter zeigt die Ornamente im Originalmassstab und dehnt nur
+  // die glatten Zwischenstuecke; dieselbe Technik wie bei den Shopbuttons.
+  // Die Schnitte liegen bewusst in ruhigen Bildspalten bzw. -zeilen: die
+  // seitlichen Edelsteine (y 78..96) und die Kronen bleiben ungedehnt.
+  function bossBarArtwork(){
+    // Sechs Grenzen ergeben fuenf Zeilen, genau die fuenf Rasterzeilen im
+    // Stylesheet. Mit nur fuenf Grenzen blieb die letzte Zeile leer und die
+    // untere Rahmenleiste rutschte eine Spur nach oben in den Text.
+    const cols=[0,88,190,322,424,512],rows=[37,70,78,96,102,130];
+    const tiles=rows.slice(0,-1).flatMap((y,j)=>cols.slice(0,-1).map((x,i)=>`<svg viewBox="${x} ${y} ${cols[i+1]-x} ${rows[j+1]-y}" preserveAspectRatio="none" focusable="false"><image href="assets/ui/v28/png/frames/boss.webp?v=${ASSET_REV}" width="512" height="171"/></svg>`)).join("");
+    return `<span class="encounter-rule-art" aria-hidden="true">${tiles}</span>`;
+  }
   function renderEncounterRuleBanner(){
     if(!encounterRuleBanner) return;
     if(!campaignMode){encounterRuleBanner.classList.add("hidden");encounterRuleBanner.innerHTML="";return;}
@@ -100,7 +116,16 @@
     // <strong> zu einem eigenen Flex-Element neben dem Beschreibungstext, und
     // Regelname und Erklärung stehen nebeneinander statt in einem Textfluss.
     encounterRuleBanner.classList.toggle("hidden",parts.length===0);
-    encounterRuleBanner.innerHTML=parts.length?`<span class="encounter-rule-text">${parts.join("<br>")}</span>`:"";
+    if(!parts.length){encounterRuleBanner.innerHTML="";return;}
+    // renderAll() ruft die Leiste bei jedem Wurf neu auf. Das Rahmengitter
+    // bleibt deshalb stehen und nur der Text wird ersetzt; sonst baut der
+    // Browser pro Zug 25 SVG-Kacheln neu auf.
+    let text=encounterRuleBanner.querySelector(":scope > .encounter-rule-text");
+    if(!text||!encounterRuleBanner.querySelector(":scope > .encounter-rule-art")){
+      encounterRuleBanner.innerHTML=`${bossBarArtwork()}<span class="encounter-rule-text"></span>`;
+      text=encounterRuleBanner.querySelector(":scope > .encounter-rule-text");
+    }
+    text.innerHTML=parts.join("<br>");
   }
   function campaignHeroIndices(){
     return players.map((p,i)=>p?.campaignTeam==="hero"?i:null).filter(i=>i!=null);

@@ -22,9 +22,9 @@ welche Fallen schon Zeit gekostet haben.
 
 | | |
 |---|---|
-| Version | **28.12.10** |
+| Version | **28.12.11** |
 | Branch | `main` |
-| Letzte Schritte | CSS-Stapel auf 10 Dateien zusammengelegt · Changelog englisch vervollständigt · Hauptmenü, Statistik, Profile, Achievements, Spielvorbereitung und Trophy Shop überarbeitet · Fähigkeits- und Shopflächen auf proportional gekachelte Bildrahmen umgestellt · alle Bild-URLs auf einen gemeinsamen Cache-Schlüssel · Trophy-Shop-Reste bereinigt und Aufklapppfeile angeglichen · Duo- und Trio-Boss-Rush mit Pfadwahl, gespeicherten Runs und 32 Perks einschließlich temporärer Ability-Mastery · Boss-XP-Umtausch 300:100 · Zweitfund gedeckelt · Trio-Rush 15 Stufen, ab 10 ultraschwer · Boss-Rush-HUD auf die Weltregel reduziert · Zweitfund-Kopien ablehnbar und weitergebbar · Ultra-Stufen treffen härter statt länger zu dauern · Heilung gedeckelt, Maximum wächst je Stufe |
+| Letzte Schritte | CSS-Stapel auf 10 Dateien zusammengelegt · Changelog englisch vervollständigt · Hauptmenü, Statistik, Profile, Achievements, Spielvorbereitung und Trophy Shop überarbeitet · Fähigkeits- und Shopflächen auf proportional gekachelte Bildrahmen umgestellt · alle Bild-URLs auf einen gemeinsamen Cache-Schlüssel · Trophy-Shop-Reste bereinigt und Aufklapppfeile angeglichen · Duo- und Trio-Boss-Rush mit Pfadwahl, gespeicherten Runs und 32 Perks einschließlich temporärer Ability-Mastery · Boss-XP-Umtausch 300:100 · Zweitfund gedeckelt · Trio-Rush 15 Stufen, ab 10 ultraschwer · Boss-Rush-HUD auf die Weltregel reduziert · Zweitfund-Kopien ablehnbar und weitergebbar · Ultra-Stufen treffen härter statt länger zu dauern · Heilung gedeckelt, Maximum wächst je Stufe · Regelleiste als Kachelgitter, wächst mit dem Text |
 
 **Die Arbeitsteilung hat sich geändert.** Bis V28.11.28 liefen zwei
 Sitzungen parallel: Codex hat umgesetzt, diese Sitzung geprüft. Ab jetzt
@@ -176,8 +176,10 @@ Mehrere Buttonbilder haben mittig oben und unten einen Edelstein — ein
 normales `border-image` würde ihn mitdehnen. Seit V28.11.25 gibt es dafür
 ein Gitter aus `<svg viewBox>`-Ausschnitten: feste Spalten für Ecken und
 Edelstein, dehnbare `1fr` dazwischen. Umgesetzt in `buttonArtwork`
-(`js/08-profiles-stats.js`) und `decorateSetupAbilityResults`
-(`js/28-v28-ui-rework.js`).
+(`js/08-profiles-stats.js`), `decorateSetupAbilityResults`
+(`js/28-v28-ui-rework.js`) und seit V28.12.11 in `bossBarArtwork`
+(`js/06-campaign.js`) — dort erstmals **in beide Richtungen**, mit je zwei
+Dehnbändern waagerecht und senkrecht.
 
 **Die Bedingung, an der alles hängt:** feste Spaltenbreite geteilt durch
 Quellbreite muss denselben Faktor ergeben wie Kachelhöhe geteilt durch
@@ -443,12 +445,14 @@ wird nur auf ausdrückliche Ansage geändert. Nicht ungefragt „reparieren".
    aktiven Zeilenregeln** — der ältere Test lief als Eigentümer und
    umging sie.
 
-2. **`dd_touch_room` fehlt auf der Datenbank.** Die zweite Migration
-   (`20260903120000_dd_room_idle_expiry.sql`, Räume laufen bei
-   Untätigkeit nach 45 Minuten bzw. 2 Stunden ab) ist im Repo, aber nicht
-   eingespielt. Nachweis: die Funktion antwortet mit „nicht gefunden",
-   alle Funktionen der ersten Migration antworten mit „permission
-   denied". Einspielen mit `supabase db push`. **Nutzerseite.**
+2. **`dd_touch_room` ist eingespielt.** Erledigt am 14.09.: der Nutzer hat
+   `20260903120000_dd_room_idle_expiry.sql` im Supabase-SQL-Editor
+   ausgeführt („Success. No rows returned"). Damit laufen Räume nach 45
+   Minuten Untätigkeit in der Lobby bzw. 2 Stunden im laufenden Match ab
+   statt nach festen 6 Stunden mitten im Spiel, und der Spielstand wird
+   nicht mehr doppelt geschrieben. **Noch nicht gegengeprüft**, ob die
+   Funktion aus dem Spiel heraus wie erwartet antwortet — beim nächsten
+   Online-Durchlauf mitprüfen.
 
 3. **Serverautoritativ — vertagt, mit klarer Bedingung.** Heute kommt der
    Spielstand vom Gerät des Hosts und niemand prüft ihn nach.
@@ -475,31 +479,32 @@ wird nur auf ausdrückliche Ansage geändert. Nicht ungefragt „reparieren".
    was im Browser bleibt — kein Auftrag über ein paar Stunden. Ebenfalls
    offen und dann fällig: die Zuordnung von `Profiles` zu `auth.users`.
 
-4. **Der Rahmen der Regelleiste kann keine drei Textzeilen halten.**
-   Seit 28.12.5 steht im Boss Rush nur noch die Weltregel in der Leiste, und
-   Regelname und Erklärung fließen wieder in einer Zeile. Was bleibt: bei den
-   längsten Regeln (Void Clock, Casino Floor) braucht der Text ab etwa 390 px
-   drei bis vier Zeilen und steht dann über den gemalten roten Bereich hinaus.
-   **Mit Innenabstand ist das nicht zu lösen** — nachgemessen mit 16 px und
-   26 px am selben Text: `--p3-boss-bar` liegt als
-   `background: center/100% 100%`, der Zierrand wird also mit der Leiste
-   mitgestreckt, das Verhältnis bleibt gleich.
+4. **Die Regelleiste trägt jetzt beliebig viele Textzeilen.** Erledigt in
+   V28.12.11. Der Rahmen kommt nicht mehr als gedehnter Hintergrund,
+   sondern als Kachelgitter aus 5 × 5 `<svg viewBox>`-Ausschnitten —
+   `bossBarArtwork` in `js/06-campaign.js`, Raster in
+   `src/styles/legacy/37-abschluss.css`.
 
-   **`border-image` ist hier der falsche Weg**, auch wenn es naheliegt und
-   bis 28.12.8 genau so in dieser Datei stand. Ein Blick ins vergrößerte
-   Bild zeigt warum: `boss.webp` trägt mittig oben *und* unten ein
-   Kronenornament mit Edelstein. Eine border-image-Kante wird waagerecht
-   gedehnt oder gekachelt — das Ornament würde verschmieren oder sich
-   wiederholen. Die waagerechten Kanten sind gemessen (oben 63 px, unten
-   65 px von 171); die senkrechten lassen sich nicht sinnvoll messen, weil
-   das Feld einen Farbverlauf über die ganze Breite hat.
+   **Am Bild gemessen, nicht geschätzt:** Motiv liegt bei y 37..130 von
+   171 — das obere und untere Drittel der Datei ist leer, deshalb wirkte
+   die Leiste als `100% 100%` so flach. Schnitte in ruhigen Spalten
+   (x 0/88/190/322/424/512: Endornamente 88 px, Mittelkrone 132 px) und
+   ruhigen Zeilen (y 37/70/78/96/102/130). Die beiden Dehnbänder
+   (y 70..78 und 96..102) liegen bewusst **über und unter** den seitlichen
+   Edelsteinen (y 78..96), sonst würden die verschmieren; dadurch wächst
+   die Leiste symmetrisch. Alle Maße hängen an `--dd-boss-bar-scale`
+   (0,62), damit die Proportionsbedingung von oben eingehalten bleibt.
 
-   Richtig ist das **Kachelgitter für Bilder mit Mittelornament**, das es
-   im Projekt längst gibt (siehe oben, `buttonArtwork` in
-   `js/08-profiles-stats.js`, und `renderBossXpConversion` in
-   `js/23-mastery.js` als jüngstes Beispiel): feste Spalten für Enden und
-   Ornament, `1fr` dazwischen, dabei die Proportionsbedingung einhalten.
-   Damit bleibt die Randstärke konstant und der Text kann wachsen.
+   **Die Falle dabei:** fünf Rasterzeilen im CSS brauchen *sechs* Grenzen
+   im JS. Mit fünf Grenzen blieb die letzte Zeile leer und die untere
+   Rahmenleiste rutschte in den Text — im Messskript sofort sichtbar
+   (20 statt 25 Kacheln), mit bloßem Auge kaum.
+
+   Gemessen mit einem Wegwerfskript gegen den echten Duo-Rush bei
+   320/390/430 px: Leiste wächst 57,7 → 94,7 px, kein waagerechter
+   Überlauf, keine Seitenfehler. `renderAll()` ruft die Leiste bei jedem
+   Wurf auf, deshalb bleibt das Gitter stehen und nur der Text wird
+   ersetzt.
 
 5. **Mobiles Boss-Rush-Statusbanner bei langen Namen.** Bei der Trio-Portierung
    auch im unveränderten Duo-Modul reproduziert: Der gemeinsame
