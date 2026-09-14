@@ -140,7 +140,11 @@
     return {enemies,phaseAbilities};
   }
 
-  function abilityName(id){const name=ABILITIES[id]?.name||String(id);return window.WD_LANG_PACKS?.en?.exact?.[name]||name;}
+  // Der Name folgt der eingestellten Sprache. Vorher wurde fest ins
+  // englische Paket gegriffen, wodurch im deutschen Spiel "Head Start"
+  // statt "Angriffsvorsprung" stand - ueberall, wo der Rush eine
+  // Faehigkeit benennt: Slotauswahl, Faehigkeitsangebote, Kundschafter.
+  function abilityName(id){return tr(ABILITIES[id]?.name||String(id));}
   function abilityNames(ids){return (ids||[]).map(abilityName).join(" + ");}
 
   function currentEncounter(){

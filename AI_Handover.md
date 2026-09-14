@@ -22,7 +22,7 @@ welche Fallen schon Zeit gekostet haben.
 
 | | |
 |---|---|
-| Version | **28.12.9** |
+| Version | **28.12.10** |
 | Branch | `main` |
 | Letzte Schritte | CSS-Stapel auf 10 Dateien zusammengelegt · Changelog englisch vervollständigt · Hauptmenü, Statistik, Profile, Achievements, Spielvorbereitung und Trophy Shop überarbeitet · Fähigkeits- und Shopflächen auf proportional gekachelte Bildrahmen umgestellt · alle Bild-URLs auf einen gemeinsamen Cache-Schlüssel · Trophy-Shop-Reste bereinigt und Aufklapppfeile angeglichen · Duo- und Trio-Boss-Rush mit Pfadwahl, gespeicherten Runs und 32 Perks einschließlich temporärer Ability-Mastery · Boss-XP-Umtausch 300:100 · Zweitfund gedeckelt · Trio-Rush 15 Stufen, ab 10 ultraschwer · Boss-Rush-HUD auf die Weltregel reduziert · Zweitfund-Kopien ablehnbar und weitergebbar · Ultra-Stufen treffen härter statt länger zu dauern · Heilung gedeckelt, Maximum wächst je Stufe |
 
@@ -602,6 +602,20 @@ Testlabor bleibt für spätere Angriffsanimationen.
 ---
 
 ## Das Sprachpaket
+
+**Falle, die am 14.09. Zeit gekostet hat:** `abilityName` in beiden
+Rush-Modulen griff fest ins **englische** Paket
+(`window.WD_LANG_PACKS?.en?.exact?.[name]`), unabhängig von der
+eingestellten Sprache. Im deutschen Spiel stand dadurch „Head Start" statt
+„Angriffsvorsprung" — in der Slotauswahl von Neuausrichtung, Feinschliff
+und Meisterschaft, bei den Fähigkeitsangeboten und beim Kundschafter.
+Jetzt über `tr()`. **Wer einen Namen aus einer Datentabelle anzeigt, muss
+ihn übersetzen, nicht nachschlagen.**
+
+Ebenfalls dort gelernt: der Übersetzer überspringt die Wortersetzung bei
+Texten über 24 Zeichen oder mit Satzzeichen (`js/00-i18n.js`). Das war
+**nicht** die Ursache des obigen Fehlers — im Browser geprüft und
+widerlegt —, ist aber eine echte Grenze für zusammengesetzte Zeilen.
 
 Englisch ist **keine zweite Textquelle**, sondern eine Schicht über dem
 deutschen DOM: `js/00-i18n.js` übersetzt Textknoten einzeln, in der
