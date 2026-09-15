@@ -22,9 +22,9 @@ welche Fallen schon Zeit gekostet haben.
 
 | | |
 |---|---|
-| Version | **28.12.23** |
+| Version | **28.12.24** |
 | Branch | `main` |
-| Letzte Schritte | CSS-Stapel auf 10 Dateien zusammengelegt · Changelog englisch vervollständigt · Hauptmenü, Statistik, Profile, Achievements, Spielvorbereitung und Trophy Shop überarbeitet · Fähigkeits- und Shopflächen auf proportional gekachelte Bildrahmen umgestellt · alle Bild-URLs auf einen gemeinsamen Cache-Schlüssel · Trophy-Shop-Reste bereinigt und Aufklapppfeile angeglichen · Duo- und Trio-Boss-Rush mit Pfadwahl, gespeicherten Runs und 32 Perks einschließlich temporärer Ability-Mastery · Boss-XP-Umtausch 300:100 · Zweitfund gedeckelt · Trio-Rush 15 Stufen, ab 10 ultraschwer · Boss-Rush-HUD auf die Weltregel reduziert · Zweitfund-Kopien ablehnbar und weitergebbar · Ultra-Stufen treffen härter statt länger zu dauern · Heilung gedeckelt, Maximum wächst je Stufe · Regelleiste als Kachelgitter, wächst mit dem Text · gespeicherte Runs überleben Balanceänderungen · Meldeschichten über den Kampf-Overlays geordnet · großer Spezialwürfel dreht sich als echter 3D-Würfel wie der normale |
+| Letzte Schritte | CSS-Stapel auf 10 Dateien zusammengelegt · Changelog englisch vervollständigt · Hauptmenü, Statistik, Profile, Achievements, Spielvorbereitung und Trophy Shop überarbeitet · Fähigkeits- und Shopflächen auf proportional gekachelte Bildrahmen umgestellt · alle Bild-URLs auf einen gemeinsamen Cache-Schlüssel · Trophy-Shop-Reste bereinigt und Aufklapppfeile angeglichen · Duo- und Trio-Boss-Rush mit Pfadwahl, gespeicherten Runs und 32 Perks einschließlich temporärer Ability-Mastery · Boss-XP-Umtausch 300:100 · Zweitfund gedeckelt · Trio-Rush 15 Stufen, ab 10 ultraschwer · Boss-Rush-HUD auf die Weltregel reduziert · Zweitfund-Kopien ablehnbar und weitergebbar · Ultra-Stufen treffen härter statt länger zu dauern · Heilung gedeckelt, Maximum wächst je Stufe · Regelleiste als Kachelgitter, wächst mit dem Text · gespeicherte Runs überleben Balanceänderungen · Meldeschichten über den Kampf-Overlays geordnet · großer Spezialwürfel dreht sich als echter 3D-Würfel wie der normale und füllt seinen Rahmen |
 
 **Die Arbeitsteilung hat sich geändert.** Bis V28.11.28 liefen zwei
 Sitzungen parallel: Codex hat umgesetzt, diese Sitzung geprüft. Ab jetzt
@@ -576,12 +576,40 @@ Testumgebung; der Sprite-Pass nimmt diese Entwicklerfläche über
   immer weiß". `render3DDieNode` setzt `--die-half` aus der **Rahmenbox**
   (168 px) — der 3D-Körper wurde damit doppelt so groß wie sein Platz und
   füllte den ganzen Knopf als weiße Fläche. `sizeSpecialCube`
-  (`js/12-battle-ui.js`) rechnet ihn jetzt aus der Innenbox, mal 1.24 —
-  demselben Faktor, mit dem `16-v28-phasen.css` das Ruhe-Sprite vergrößert,
-  damit der Würfel beim Übergang Sprite → Wurf → Sprite nicht springt.
+  (`js/12-battle-ui.js`) rechnet ihn seither selbst aus.
   Die Kantenlänge kommt dabei aus der **Kubusbox**: `--die-half` allein zu
   vergrößern zieht die sechs Flächen auseinander, der Würfel zerfällt in
   Plättchen. Beides wächst zusammen, über `--die-cube-inset`.
+
+  **Nachtrag V28.12.24, drei Folgefehler aus genau dieser Ecke:**
+
+  1. Der Würfel war danach **unsichtbar**. `.die-face` holt Fläche, Augen
+     und Kante aus `--die-bg` / `--die-pip` / `--die-edge` — und die waren
+     nur für `.die` definiert. Ein nicht definiertes `var()` ohne Reserve
+     macht die Deklaration ungültig: Hintergrund weg, Augenfarbe geerbt,
+     also transparent. Die Designtabelle für den Spezialwürfel setzt die
+     drei jetzt selbst und malt sich daraus (`background:var(--die-bg)`),
+     damit es **eine** Quelle je Design bleibt.
+  2. Er saß ein Fünftel zu klein im Rahmen. Vom 40px-Rand sind nur die
+     äußeren **8px bemalt** (Band 30 von 640 im Rahmenbild, mit
+     `border-image-slice:150` auf `border-width:40px`). Die Öffnung ist
+     also Rahmenbox − 16, nicht Innenbox. Die Sprite bekommt denselben
+     Wert über `--die-sprite-scale`; ihr fester Faktor 1.24 gleicht nur
+     den durchsichtigen Rand der Würfelbilder aus (rund 19%).
+  3. **Gemessen wird nur, was auf dem Schirm steht.** `openInsurance` &
+     Co. zeichnen den Würfel, während ihr Fenster noch versteckt ist —
+     dort ist jede Breite 0, der Würfel blieb bis zum ersten Wurf zu
+     klein. Ein `ResizeObserver` holt die Messung nach. Und:
+     `getBoundingClientRect` zählt Transformationen mit; der Knopf
+     pulsiert beim Wurf, jede Messung wäre eine andere. Für Layoutmaße
+     `offsetWidth`/`clientWidth`, für skalierte Bilder das Rechteck.
+
+  Dazu eine Falle, die nichts mit Würfeln zu tun hat: Der Würfel ist nach
+  dem Wurf `disabled`, und die allgemeine Regel für Knöpfe
+  (`13-v28-grundlage.css`: `opacity:.48` plus `grayscale/saturate`) machte
+  ausgerechnet aus dem **Wurfergebnis** ein blasses Bild. Wer ein Element
+  als Knopf baut, das eigentlich eine Anzeige ist, erbt dessen
+  Zustandsoptik mit.
 
 - **Gleiche Gewichtung schlägt gute Absicht.** Die Regeln für den
   Artwork-Würfel in `16-v28-phasen.css` tragen `.theme-art-die` im Selektor

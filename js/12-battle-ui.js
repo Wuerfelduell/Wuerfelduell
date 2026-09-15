@@ -431,18 +431,46 @@
   // so tief wie breit, die Flaechen fuellen den ganzen Knopf und der Wurf
   // sieht aus wie eine weisse Flaeche. Gemessen wird deshalb clientWidth.
   //
-  // SPRITE_SCALE ist derselbe Faktor, mit dem .theme-art-die>.die-art-sprite
-  // im Stylesheet vergroessert wird. Der Kubus uebernimmt ihn, sonst springt
-  // die Wuerfelgroesse beim Uebergang Sprite -> Wurf -> Sprite.
+  // Der Wuerfel soll die OEFFNUNG des Rahmens fuellen, nicht die Innenbox.
+  // Der gemalte Rahmen belegt nur die aeusseren rund 8px des 40px breiten
+  // Randes: im Rahmenbild (640px) ist das Band 30px breit, und mit
+  // border-image-slice:150 auf border-width:40px wird daraus 30*40/150 = 8px.
+  // Der Rest des Randes ist durchsichtig. Ohne diese Rechnung sass der
+  // Wuerfel sichtbar zu klein in einem viel zu grossen Rahmen.
+  const RAHMEN_BAND=8, RAHMEN_LUFT=4;
+  // SPRITE_SCALE ist derselbe Faktor wie bei .theme-art-die>.die-art-sprite:
+  // die Wuerfelbilder tragen rund 19% durchsichtigen Rand, die Sprite muss
+  // also groesser sein als der Kubus, damit BEIDE gleich gross aussehen.
   const SPRITE_SCALE=1.24;
+
+  // Gemessen wird erst, wenn der Knopf wirklich auf dem Schirm steht.
+  // openInsurance & Co. zeichnen den Wuerfel, WAEHREND ihr Fenster noch
+  // versteckt ist - dort ist jede Breite 0, und der Wuerfel bliebe bis zum
+  // ersten Wurf zu klein. Der Beobachter holt die Messung nach, sobald der
+  // Knopf seine Groesse bekommt. Er kann sich nicht selbst ausloesen: er
+  // setzt nur CSS-Variablen, keine Masse des Knopfes.
+  const gemesseneWuerfel=new WeakSet();
   function sizeSpecialCube(el){
+    if(!gemesseneWuerfel.has(el)&&typeof ResizeObserver==="function"){
+      gemesseneWuerfel.add(el);
+      new ResizeObserver(()=>messeSpecialCube(el)).observe(el);
+    }
+    messeSpecialCube(el);
+  }
+
+  function messeSpecialCube(el){
+    // offsetWidth, nicht getBoundingClientRect: der Knopf pulsiert waehrend
+    // des Wurfs (wdWuerfelPuls), und die Rechteckmessung zaehlt diese
+    // Skalierung mit - der Kubus haette bei jedem Tick eine andere Kante.
     const innen=el.clientWidth;
-    if(innen<=0)return;
-    const seite=innen*SPRITE_SCALE;
+    const aussen=el.offsetWidth;
+    if(innen<=0||aussen<=0)return;
+    const seite=Math.max(innen,aussen-2*(RAHMEN_BAND+RAHMEN_LUFT));
     el.style.setProperty("--die-half",`${seite/2}px`);
     el.style.setProperty("--die-cube-inset",`${(innen-seite)/2}px`);
-    el.style.setProperty("--die-pip-size",`${Math.max(8,Math.min(26,seite*.17))}px`);
-    el.style.setProperty("--die-question-size",`${Math.max(34,Math.min(92,seite*.62))}px`);
+    el.style.setProperty("--die-sprite-scale",`${seite*SPRITE_SCALE/innen}`);
+    el.style.setProperty("--die-pip-size",`${Math.max(8,Math.min(30,seite*.17))}px`);
+    el.style.setProperty("--die-question-size",`${Math.max(34,Math.min(110,seite*.62))}px`);
   }
 
   function render3DDieNode(el,value,designKey="classic"){

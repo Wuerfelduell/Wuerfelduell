@@ -53,8 +53,46 @@ async function wurf(design){
   },ids);
   await p.click('#duoBossRushStartBtn');await p.waitForTimeout(400);
   await p.locator('[data-rush-path]').first().click();await p.waitForTimeout(800);
+  // Sichtbarkeit und Groesse der stehenden Wuerfelflaeche. Gemeldet wurde ein
+  // "zu 99% durchsichtiger" Wuerfel, "ca 20% kleiner als der Rahmen": die
+  // Kubusflaeche liest ihre Farben aus --die-bg/--die-pip/--die-edge, und die
+  // waren nur fuer .die definiert, nicht fuer den Spezialwuerfel.
+  await p.evaluate(()=>{
+    window.__wdWuerfelAussehen=e=>{
+      const sprite=e.querySelector('img.die-art-sprite');
+      const spriteAn=sprite&&getComputedStyle(sprite).display!=='none';
+      const face=e.querySelector(`.die-face-${e.dataset.value}`)||e.querySelector('.die-face');
+      const cs=face?getComputedStyle(face):null;
+      const pip=face?.querySelector('.die-pip.active');
+      const undurchsichtig=w=>{const m=/rgba?\(([^)]+)\)/.exec(w||'');if(!m)return false;
+        const t=m[1].split(',').map(s=>parseFloat(s));return t.length<4||t[3]>0.9;};
+      // Gemalte Flaeche: beim Artwork die Sprite (sie traegt rund 19%
+      // durchsichtigen Rand), sonst die Kubusflaeche. offsetWidth fuer die
+      // Flaeche, weil sie gedreht im Raum steht; fuer die Sprite die
+      // Rechteckmessung, weil ihre Groesse aus einem scale() kommt.
+      const gemalt=spriteAn?sprite.getBoundingClientRect().width*0.81:(face?face.offsetWidth:0);
+      return {
+        flaecheGefuellt:spriteAn
+          ? Number(getComputedStyle(sprite).opacity)>0.9&&!!sprite.getAttribute('src')&&sprite.naturalWidth>0
+          : !!cs&&(cs.backgroundImage!=='none'||undurchsichtig(cs.backgroundColor)),
+        augenSichtbar:spriteAn?true:!!pip&&undurchsichtig(getComputedStyle(pip).backgroundColor),
+        gemalt:Math.round(gemalt),rahmen:e.offsetWidth,
+        // Der Knopf ist nach dem Wurf disabled. Die allgemeine Ausgrau-Regel
+        // fuer Knoepfe darf das Ergebnis nicht blass machen.
+        deckkraft:Number(getComputedStyle(e).opacity),filter:getComputedStyle(e).filter,
+        // Oeffnung des Rahmens: vom 40px-Rand sind nur die aeusseren 8px
+        // bemalt (Band 30 von 640 im Bild, slice 150 auf border-width 40).
+        oeffnung:e.offsetWidth-16
+      };
+    };
+  });
   await p.evaluate(()=>{current=players.findIndex(x=>x.campaignTeam==='hero');openInsurance(20,6,'finish');});
   await p.waitForTimeout(350);
+
+  // Zustand VOR dem Wurf. openInsurance zeichnet den Wuerfel, waehrend sein
+  // Fenster noch versteckt ist - dort ist jede Breite 0. Wer das nicht
+  // nachholt, zeigt bis zum ersten Wurf einen viel zu kleinen Wuerfel.
+  const vorher=await p.evaluate(()=>window.__wdWuerfelAussehen(insuranceDie));
 
   await p.evaluate(()=>rollInsurance());
   // Waehrend des Wurfs mehrfach hinsehen: zeigt der Wuerfel eine Flaeche,
@@ -81,7 +119,7 @@ async function wurf(design){
       return {
         rollt:e.classList.contains('rolling'),
         wert:e.dataset.value||'',
-        kubus:cubeSichtbar,dreht,halb,innen:e.clientWidth,
+        kubus:cubeSichtbar,dreht,halb,innen:e.clientWidth,aussen:e.offsetWidth,
         // offsetWidth ist die LAYOUT-Breite, von der Drehung unberuehrt.
         kubusBreite:cube?cube.offsetWidth:0,
         flaeche:sichtbar?(sprite.getAttribute('src').split('/').pop().replace(/\?.*$/,'')):(pipsSichtbar?'pips':'KEINE')
@@ -94,6 +132,7 @@ async function wurf(design){
   // Panel 600ms spaeter. Wer zu spaet hinsieht, misst einen geschlossenen
   // Dialog - dort ist clientWidth 0 und jede Flaeche "fehlt".
   await p.waitForFunction(()=>!insuranceDie.classList.contains('rolling'),null,{timeout:3000});
+  const aussehen=await p.evaluate(()=>window.__wdWuerfelAussehen(insuranceDie));
   const danach=await p.evaluate(()=>{
     const e=insuranceDie,sprite=e.querySelector('img.die-art-sprite');
     const sichtbar=sprite&&getComputedStyle(sprite).display!=='none';
@@ -107,12 +146,12 @@ async function wurf(design){
       flaeche:sichtbar?sprite.getAttribute('src').split('/').pop().replace(/\?.*$/,''):((pips&&!pips.classList.contains('hidden'))?'pips':(kubus?'kubus':'KEINE'))};
   });
   await p.close();
-  return {proben,danach};
+  return {proben,danach,aussehen,vorher};
 }
 
 try{
   for(const design of ['classic','sapphire_crown']){
-    const {proben,danach}=await wurf(design);
+    const {proben,danach,aussehen,vorher}=await wurf(design);
     const rollend=proben.filter(x=>x.rollt);
     const ohneFlaeche=rollend.filter(x=>x.flaeche==='KEINE');
     const werte=new Set(rollend.map(x=>x.wert+'|'+x.flaeche));
@@ -121,12 +160,13 @@ try{
     // JEDE Probe waehrend des Wurfs, nicht nur drei: eine Drehung, die
     // mittendrin stehenbleibt, ist genau der gemeldete Fehler.
     pruefe(`${design}: 3D-Kubus dreht sich waehrend des Wurfs`,mitKubus.length===rollend.length&&rollend.length>=5,true);
-    // Groesse: bei 40px Rahmen ist die Rahmenbox fast doppelt so breit wie
-    // die Innenbox - wer die misst, baut einen Kubus, der den ganzen Knopf
-    // ausfuellt (die Meldung "der Wuerfel ist immer weiss"). Soll ist die
-    // Innenbox mal 1.24, die Groesse der Sprite im Ruhezustand.
-    const groesseOk=rollend.every(x=>x.innen>0&&Math.abs(x.kubusBreite-x.innen*1.24)<=x.innen*0.08);
-    pruefe(`${design}: Kubus so gross wie die Sprite`,groesseOk,true);
+    // Groesse: der Kubus soll die OEFFNUNG des Rahmens fuellen. Vom 40px
+    // breiten Rand sind nur die aeusseren 8px bemalt, die Oeffnung ist also
+    // Rahmenbox minus 16 - deutlich mehr als die Innenbox (Rahmenbox minus
+    // 80). Wer die Innenbox nimmt, laesst den Wuerfel ein Fuenftel zu klein
+    // im Rahmen sitzen; wer die Rahmenbox nimmt, laesst ihn ueberstehen.
+    const groesseOk=rollend.every(x=>x.aussen>0&&Math.abs(x.kubusBreite-(x.aussen-24))<=6);
+    pruefe(`${design}: Kubus fuellt die Rahmenoeffnung`,groesseOk,true);
     // Tiefe: --die-half muss die halbe Kante sein. Passt das nicht, stehen
     // die sechs Flaechen einzeln im Raum statt einen Wuerfel zu bilden.
     const tiefeOk=rollend.every(x=>x.kubusBreite>0&&Math.abs(x.halb-x.kubusBreite/2)<=2);
@@ -134,13 +174,29 @@ try{
     if(mitKubus.length<rollend.length||!tiefeOk||!groesseOk)
       console.log(`      ${design}: ${JSON.stringify(proben.slice(0,3))}`);
     void ohneFlaeche;void werte;
+    // Sichtbar und gross genug - sonst steht ein unsichtbarer Wuerfel in
+    // einem viel zu grossen Rahmen, und die Animation nuetzt niemandem.
+    pruefe(`${design}: Wuerfelflaeche ist gefuellt`,aussehen.flaecheGefuellt,true);
+    pruefe(`${design}: Augenzahl ist sichtbar`,aussehen.augenSichtbar,true);
+    const klar=aussehen.deckkraft>0.9&&aussehen.filter==='none';
+    pruefe(`${design}: Ergebnis nicht ausgegraut`,klar,true);
+    if(!klar)console.log(`      ${design} ausgegraut: ${JSON.stringify(aussehen)}`);
+    const fuellt=aussehen.gemalt>=aussehen.oeffnung*0.82;
+    pruefe(`${design}: Wuerfel fuellt die Rahmenoeffnung`,fuellt,true);
+    // Derselbe Anspruch schon beim Oeffnen, vor dem ersten Wurf.
+    const fuelltVorher=vorher.gemalt>=vorher.oeffnung*0.82;
+    pruefe(`${design}: schon beim Oeffnen richtig gross`,fuelltVorher&&vorher.flaecheGefuellt,true);
+    if(!aussehen.flaecheGefuellt||!aussehen.augenSichtbar||!fuellt)
+      console.log(`      ${design} Aussehen: ${JSON.stringify(aussehen)}`);
+    if(!fuelltVorher||!vorher.flaecheGefuellt)
+      console.log(`      ${design} vor dem Wurf: ${JSON.stringify(vorher)}`);
     pruefe(`${design}: Ergebnisflaeche bleibt stehen`,danach.rollt===false&&danach.offen&&danach.flaeche!=='KEINE'&&danach.wert!=='',true);
     if(danach.rollt||!danach.offen||danach.flaeche==='KEINE'||!danach.wert)
       console.log(`      ${design} danach: ${JSON.stringify(danach)}`);
   }
 }catch(e){absturz=e;}
 
-const ERWARTET=10;
+const ERWARTET=20;
 let fehler=ergebnisse.length<ERWARTET?1:0;
 if(fehler)console.log(`ACHTUNG: nur ${ergebnisse.length} von ${ERWARTET} Zusicherungen erreicht.`);
 const breite=Math.max(1,...ergebnisse.map(r=>r[0].length));

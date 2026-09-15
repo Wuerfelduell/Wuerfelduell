@@ -2742,18 +2742,18 @@ html[data-v28-rework="2"] body.playing #game .controls>#primaryBtn{
 :is(.special-big-die,.gambling-die):not(.d4).rolling>.die-art-sprite{
   display:none;
 }
-/* Nicht abschneiden. Der Kubus ist so gross wie die Innenbox; beim Taumeln
-   steht seine Diagonale darueber hinaus. Mit overflow:hidden schnitt genau
-   dort eine harte Kante mitten durch die Wuerfelflaeche. Der Rahmen ist
-   40px breit und weitgehend leer, der Ueberstand bleibt also innerhalb des
-   Knopfes - genau wie beim normalen Wuerfel, der ebenfalls frei taumelt. */
-:is(.special-big-die,.gambling-die):not(.d4).rolling{
+/* Nicht abschneiden, auch nicht im Ruhezustand. Wuerfelkoerper und Sprite
+   sind groesser als die Innenbox - sie fuellen die OEFFNUNG des Rahmens,
+   und die ist breiter, weil vom 40px-Rand nur die aeusseren 8px bemalt
+   sind. Mit overflow:hidden schnitt eine harte Kante mitten durch die
+   Wuerfelflaeche; beim Taumeln steht die Diagonale ohnehin darueber. */
+:is(.special-big-die,.gambling-die):not(.d4),
+:is(.special-big-die,.gambling-die).theme-art-die:not(.d4){
   overflow:visible;
 }
-/* Der Kubus ist so gross wie die Sprite im Ruhezustand (Faktor 1.24 in
-   16-v28-phasen). Die Kantenlaenge kommt aus der Kubusbox, deshalb wird sie
-   ueber negative inset-Werte aufgezogen; js/12-battle-ui.js rechnet sie aus
-   der Innenbox aus.
+/* Kantenlaenge des Kubus: sie kommt aus der Kubusbox, deshalb wird die ueber
+   negative inset-Werte aufgezogen; js/12-battle-ui.js rechnet sie aus der
+   Rahmenbox aus.
    Die zweite Zeile ist kein Versehen: 16-v28-phasen setzt inset:0 mit
    .theme-art-die im Selektor. Ohne die gleiche Gewichtung bliebe die
    Kubusbox dort bei der Innenbox, waehrend --die-half schon groesser ist -
@@ -2762,11 +2762,19 @@ html[data-v28-rework="2"] body.playing #game .controls>#primaryBtn{
 :is(.special-big-die,.gambling-die).theme-art-die:not(.d4)>.die-cube{
   inset:var(--die-cube-inset,0);
 }
+/* Die Sprite im Ruhezustand wird auf dieselbe Wuerfelgroesse gezogen. Der
+   feste Faktor 1.24 aus 16-v28-phasen rechnet gegen die Innenbox und liess
+   den Wuerfel rund ein Fuenftel zu klein im Rahmen sitzen. */
+:is(.special-big-die,.gambling-die).theme-art-die:not(.d4)>.die-art-sprite{
+  transform:translate(-50%,-50%) scale(var(--die-sprite-scale,1.24));
+}
 
 /* Classic und die Farbdesigns brachten ihre Wuerfelflaeche bisher als
    Hintergrund des Knopfes mit - eine weisse Flaeche ueber der ganzen
    Innenbox, vor der der 3D-Kubus als zweiter, kleinerer Wuerfel stand.
-   Wie bei .theme-art-die traegt jetzt allein der Kubus die Flaeche.
+   Wie bei .theme-art-die traegt jetzt allein der Kubus die Flaeche; seine
+   Farben holt er sich aus --die-bg/--die-pip/--die-edge, die bei
+   .special-big-die und den Designklassen stehen.
    Die Testumgebung bleibt aussen vor: dort zeigt der Spezialwuerfel eine
    Textziffer, die ohne Farbe und Schriftgroesse unsichtbar waere. */
 body:not(.test-lab-active) :is(.special-big-die,.gambling-die):not(.d4):not(.theme-art-die){
@@ -2775,4 +2783,21 @@ body:not(.test-lab-active) :is(.special-big-die,.gambling-die):not(.d4):not(.the
   color:transparent;
   font-size:0;
   box-shadow:none;
+}
+/* Der Wuerfel ist waehrend des Wurfs und bis zum Schliessen des Fensters
+   disabled - richtig so, er darf nicht ein zweites Mal geklickt werden.
+   Die allgemeine Ausgrau-Regel fuer Knoepfe (13-v28-grundlage: opacity .48
+   und grayscale/saturate) macht daraus aber ein blasses, entfaerbtes Bild -
+   ausgerechnet beim Wurfergebnis, das der Spieler ablesen soll. Der Wuerfel
+   ist kein gesperrter Knopf, er ist eine Anzeige. */
+html[data-v28-rework="2"] :is(.special-big-die,.gambling-die):disabled{
+  filter:none;
+  opacity:1;
+}
+
+/* Die feste Eckenrundung von 14px stammt vom kleinen Wuerfel (rund 62px
+   breit). Auf der mehr als doppelt so grossen Flaeche des Spezialwuerfels
+   wirkt sie eckig - deshalb derselbe Anteil, nur relativ. */
+:is(.special-big-die,.gambling-die):not(.d4):not(.theme-art-die)>.die-cube>.die-face{
+  border-radius:22%;
 }

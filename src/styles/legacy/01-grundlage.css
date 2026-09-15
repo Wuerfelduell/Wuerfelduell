@@ -529,6 +529,13 @@
     .special-roll-title{font-size:clamp(25px,8vw,40px);font-weight:1000;margin:5px 0}
     .special-roll-sub{color:var(--muted);font-size:13px;line-height:1.4;margin-bottom:13px}
     .special-big-die{
+      /* Grundfarben des Wuerfels. Der 3D-Kubus liest sie ueber .die-face;
+         ohne sie ist seine Flaeche durchsichtig und der Wuerfel unsichtbar.
+         Gleiche Werte wie .die.theme-classic, damit der grosse Wuerfel
+         aussieht wie der kleine. Die Designklassen ueberschreiben sie. */
+      --die-bg:linear-gradient(145deg,#ffffff,#dfe4eb);
+      --die-pip:#111827;
+      --die-edge:#c9d0da;
       width:min(43vw,175px);aspect-ratio:1/1;margin:0 auto 10px;padding:0;
       display:flex;align-items:center;justify-content:center;border-radius:25px;
       font-size:clamp(82px,26vw,140px);line-height:1;
@@ -675,6 +682,10 @@
     .gambling-sub{color:var(--muted);font-size:13px;line-height:1.4;margin-bottom:14px}
     .gambling-die{
       --dice-accent:#ffc857;
+      /* wie beim .special-big-die: Grundfarben fuer den 3D-Kubus */
+      --die-bg:linear-gradient(145deg,#ffffff,#dfe4eb);
+      --die-pip:#111827;
+      --die-edge:#c9d0da;
       width:min(46vw,190px);
       aspect-ratio:1/1;
       margin:0 auto 10px;
@@ -1238,16 +1249,16 @@
 
 /* ---------- vormals 04-prestige-polish.css ---------- */
     /* V23.1: Spezialwürfel übernehmen das gewählte Profildesign ebenfalls. */
-    :is(.special-big-die,.gambling-die).theme-obsidian{background:linear-gradient(145deg,#303746,#090b10);color:#f7f8fb;border-color:#4b5568}
-    :is(.special-big-die,.gambling-die).theme-gold{background:linear-gradient(145deg,#ffe38a,#c58b18);color:#2a1b00;border-color:#f8c84e}
-    :is(.special-big-die,.gambling-die).theme-blood{background:linear-gradient(145deg,#ff6673,#6f0713);color:#fff3f4;border-color:#d42c3d}
-    :is(.special-big-die,.gambling-die).theme-arcane{background:linear-gradient(145deg,#b991ff,#35176d);color:#fff;border-color:#9f78ff}
-    :is(.special-big-die,.gambling-die).theme-emerald{background:linear-gradient(145deg,#71f0a3,#075b34);color:#f2fff7;border-color:#42d985}
-    :is(.special-big-die,.gambling-die).theme-frost{background:linear-gradient(145deg,#e8fbff,#68b9d4);color:#083042;border-color:#9deeff}
-    :is(.special-big-die,.gambling-die).theme-pearl{background:linear-gradient(145deg,#fffdf8,#e7cddd);color:#3a2332;border-color:#f5d7e8}
-    :is(.special-big-die,.gambling-die).theme-neon{background:linear-gradient(145deg,#ff4bd8,#2b1173);color:#fff;border-color:#43f4e9}
-    :is(.special-big-die,.gambling-die).theme-void{background:linear-gradient(145deg,#171322,#020205);color:#d7c5ff;border-color:#6c49bb}
-    :is(.special-big-die,.gambling-die).theme-sapphire{background:linear-gradient(145deg,#2f80ed,#08234f);color:#eef7ff;border-color:#4f9df3}
+    :is(.special-big-die,.gambling-die).theme-obsidian{--die-bg:linear-gradient(145deg,#303746,#090b10);--die-pip:#f7f8fb;--die-edge:#4b5568;background:var(--die-bg);color:var(--die-pip);border-color:var(--die-edge)}
+    :is(.special-big-die,.gambling-die).theme-gold{--die-bg:linear-gradient(145deg,#ffe38a,#c58b18);--die-pip:#2a1b00;--die-edge:#f8c84e;background:var(--die-bg);color:var(--die-pip);border-color:var(--die-edge)}
+    :is(.special-big-die,.gambling-die).theme-blood{--die-bg:linear-gradient(145deg,#ff6673,#6f0713);--die-pip:#fff3f4;--die-edge:#d42c3d;background:var(--die-bg);color:var(--die-pip);border-color:var(--die-edge)}
+    :is(.special-big-die,.gambling-die).theme-arcane{--die-bg:linear-gradient(145deg,#b991ff,#35176d);--die-pip:#fff;--die-edge:#9f78ff;background:var(--die-bg);color:var(--die-pip);border-color:var(--die-edge)}
+    :is(.special-big-die,.gambling-die).theme-emerald{--die-bg:linear-gradient(145deg,#71f0a3,#075b34);--die-pip:#f2fff7;--die-edge:#42d985;background:var(--die-bg);color:var(--die-pip);border-color:var(--die-edge)}
+    :is(.special-big-die,.gambling-die).theme-frost{--die-bg:linear-gradient(145deg,#e8fbff,#68b9d4);--die-pip:#083042;--die-edge:#9deeff;background:var(--die-bg);color:var(--die-pip);border-color:var(--die-edge)}
+    :is(.special-big-die,.gambling-die).theme-pearl{--die-bg:linear-gradient(145deg,#fffdf8,#e7cddd);--die-pip:#3a2332;--die-edge:#f5d7e8;background:var(--die-bg);color:var(--die-pip);border-color:var(--die-edge)}
+    :is(.special-big-die,.gambling-die).theme-neon{--die-bg:linear-gradient(145deg,#ff4bd8,#2b1173);--die-pip:#fff;--die-edge:#43f4e9;background:var(--die-bg);color:var(--die-pip);border-color:var(--die-edge)}
+    :is(.special-big-die,.gambling-die).theme-void{--die-bg:linear-gradient(145deg,#171322,#020205);--die-pip:#d7c5ff;--die-edge:#6c49bb;background:var(--die-bg);color:var(--die-pip);border-color:var(--die-edge)}
+    :is(.special-big-die,.gambling-die).theme-sapphire{--die-bg:linear-gradient(145deg,#2f80ed,#08234f);--die-pip:#eef7ff;--die-edge:#4f9df3;background:var(--die-bg);color:var(--die-pip);border-color:var(--die-edge)}
 
     /* V24 – Prestige Shop, Node Maps, Boss Rules */
     .menu-actions button.menu-prestige{background:linear-gradient(135deg,#3a2f17,#231b39);color:#ffe6a1;border:1px solid rgba(255,200,87,.32)}
@@ -1319,11 +1330,11 @@
     @keyframes frameCrownGlow{0%,100%{filter:drop-shadow(0 0 3px rgba(255,198,63,.34))}50%{filter:drop-shadow(0 0 10px rgba(255,225,135,.66))}}
     @media (prefers-reduced-motion:reduce){.player.frame-rift,.profile-card.frame-rift,.player.frame-void,.profile-card.frame-void,.player.frame-crown,.profile-card.frame-crown{animation:none}}
 
-    .die.theme-sunset,.gambling-die.theme-sunset,.special-big-die.theme-sunset{background:linear-gradient(145deg,#ffcc70,#ff6b8a);color:#3b1322;border-color:#ffd89a}
-    .die.theme-toxic,.gambling-die.theme-toxic,.special-big-die.theme-toxic{background:linear-gradient(145deg,#d7ff4f,#47e38b);color:#0c2919;border-color:#b9ff75}
-    .die.theme-rose,.gambling-die.theme-rose,.special-big-die.theme-rose{background:linear-gradient(145deg,#ffd7e5,#e864a1);color:#3a1024;border-color:#ffc0d9}
-    .die.theme-galaxy,.gambling-die.theme-galaxy,.special-big-die.theme-galaxy{background:radial-gradient(circle at 25% 20%,#f3a8ff,#5b62db 42%,#17172e 78%);color:#fff;border-color:#aab1ff;text-shadow:0 0 8px rgba(255,255,255,.4)}
-    .die.theme-prestige,.gambling-die.theme-prestige,.special-big-die.theme-prestige{background:linear-gradient(135deg,#fff3a8,#b68cff 34%,#6ee7ff 66%,#fff3a8);color:#171320;border-color:#fff1a1;box-shadow:inset 0 -5px 0 rgba(0,0,0,.12),0 0 18px rgba(255,220,120,.35)}
+    .die.theme-sunset,.gambling-die.theme-sunset,.special-big-die.theme-sunset{--die-bg:linear-gradient(145deg,#ffcc70,#ff6b8a);--die-pip:#3b1322;--die-edge:#ffd89a;background:var(--die-bg);color:var(--die-pip);border-color:var(--die-edge)}
+    .die.theme-toxic,.gambling-die.theme-toxic,.special-big-die.theme-toxic{--die-bg:linear-gradient(145deg,#d7ff4f,#47e38b);--die-pip:#0c2919;--die-edge:#b9ff75;background:var(--die-bg);color:var(--die-pip);border-color:var(--die-edge)}
+    .die.theme-rose,.gambling-die.theme-rose,.special-big-die.theme-rose{--die-bg:linear-gradient(145deg,#ffd7e5,#e864a1);--die-pip:#3a1024;--die-edge:#ffc0d9;background:var(--die-bg);color:var(--die-pip);border-color:var(--die-edge)}
+    .die.theme-galaxy,.gambling-die.theme-galaxy,.special-big-die.theme-galaxy{--die-bg:radial-gradient(circle at 25% 20%,#f3a8ff,#5b62db 42%,#17172e 78%);--die-pip:#fff;--die-edge:#aab1ff;background:var(--die-bg);color:var(--die-pip);border-color:var(--die-edge);text-shadow:0 0 8px rgba(255,255,255,.4)}
+    .die.theme-prestige,.gambling-die.theme-prestige,.special-big-die.theme-prestige{--die-bg:linear-gradient(135deg,#fff3a8,#b68cff 34%,#6ee7ff 66%,#fff3a8);--die-pip:#171320;--die-edge:#fff1a1;background:var(--die-bg);color:var(--die-pip);border-color:var(--die-edge);box-shadow:inset 0 -5px 0 rgba(0,0,0,.12),0 0 18px rgba(255,220,120,.35)}
 
     /* V24.0: Button bewusst tiefer im normalen Dokumentfluss, damit Mobile-Browser-Chrome ihn nicht anschneidet. */
     body.playing .game-menu-btn{margin-top:5px}
