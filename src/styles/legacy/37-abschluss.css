@@ -2909,3 +2909,44 @@ html[data-v28-rework="2"] body.playing #game .controls>button.secondary{
   box-shadow:none;
   text-shadow:0 1px 3px rgba(2,17,41,.70);
 }
+
+/* ===== Spielerkarten: der gemalte Rahmen liegt UEBER der Innenflaeche =====
+   Die Karten zeichnen ihren Rahmen mit border-image-width (19/22px, beim
+   Boss 26/32px), haben aber border-width:0. Eine Randbreite bekommen sie
+   nur unter 540px (16-v28-phasen.css). Darueber wird das Bild also in die
+   Innenflaeche hineingemalt, und der Inhalt beginnt trotzdem am Rand der
+   Karte: auf dem Desktop lag der Name halb unter der Leiste, im
+   Trio-Boss-Rush war vom Gegnernamen nur das Ende zu lesen ("...oreman").
+   Die Polsterung haelt jetzt genau das Band frei, plus zwei Pixel Luft. */
+@media(min-width:541px){
+  /* Zwei ids, weil "#game.trio-game > .card:first-child .player" mit vier
+     Klassen dagegenhaelt - eine Klasse mehr als die uebliche Kampfregel. */
+  html[data-v28-rework="2"] body.playing #game #players .player{
+    padding:21px 24px;
+  }
+  html[data-v28-rework="2"] body.playing #game #players .player.v28-boss-player{
+    padding:28px 34px 28px;
+  }
+}
+
+/* ===== Gegnerkarten im Boss Rush: Platz fuer das Seitenband =====
+   Sie malen ihren Weltrahmen als ::after ueber die Karte und ziehen das
+   Bild auf 100% 100% - das ist eine feste Entscheidung (kein 9-Slice, der
+   Pruefstand verify-build.mjs wacht darueber). Das Band ist damit ein
+   ANTEIL der Karte: an den Bildern gemessen bis 9.8% der Breite je Seite.
+   Die Polsterung stand bei clamp(14px,4.5vw,19px), auf dem Desktop also
+   bei 19px - einem Drittel dessen, was der Rahmen verdeckt. Vom
+   Gegnernamen war deshalb nur das Ende zu lesen ("...oreman").
+
+   Prozent, nicht Pixel: waagrechte Polsterung rechnet gegen die Breite,
+   und genau die bestimmt auch das Seitenband. Oben und unten geht das
+   nicht - dort rechnet Prozent ebenfalls gegen die BREITE, und das Band
+   haengt an der Hoehe. Die beiden bleiben deshalb, wie sie sind; dort
+   stoert die Ueberlappung auch niemanden, der Name steht lesbar. */
+@media(min-width:541px){
+  html[data-v28-rework="2"] body.playing #game.boss-rush-game #players .player.boss-rush-world-enemy{
+    padding-left:11%;
+    padding-right:11%;
+  }
+}
+

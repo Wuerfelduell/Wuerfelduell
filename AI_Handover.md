@@ -22,9 +22,9 @@ welche Fallen schon Zeit gekostet haben.
 
 | | |
 |---|---|
-| Version | **28.12.28** |
+| Version | **28.12.29** |
 | Branch | `main` |
-| Letzte Schritte | CSS-Stapel auf 10 Dateien zusammengelegt · Changelog englisch vervollständigt · Hauptmenü, Statistik, Profile, Achievements, Spielvorbereitung und Trophy Shop überarbeitet · Fähigkeits- und Shopflächen auf proportional gekachelte Bildrahmen umgestellt · alle Bild-URLs auf einen gemeinsamen Cache-Schlüssel · Trophy-Shop-Reste bereinigt und Aufklapppfeile angeglichen · Duo- und Trio-Boss-Rush mit Pfadwahl, gespeicherten Runs und 32 Perks einschließlich temporärer Ability-Mastery · Boss-XP-Umtausch 300:100 · Zweitfund gedeckelt · Trio-Rush 15 Stufen, ab 10 ultraschwer · Boss-Rush-HUD auf die Weltregel reduziert · Zweitfund-Kopien ablehnbar und weitergebbar · Ultra-Stufen treffen härter statt länger zu dauern · Heilung gedeckelt, Maximum wächst je Stufe · Regelleiste als Kachelgitter, wächst mit dem Text · gespeicherte Runs überleben Balanceänderungen · Meldeschichten über den Kampf-Overlays geordnet · großer Spezialwürfel dreht sich als echter 3D-Würfel wie der normale und füllt seinen Rahmen · Kampflog, Infos-Blatt und Weltregel hinter einem Knopf, Knopfleiste gekürzt und beruhigt |
+| Letzte Schritte | CSS-Stapel auf 10 Dateien zusammengelegt · Changelog englisch vervollständigt · Hauptmenü, Statistik, Profile, Achievements, Spielvorbereitung und Trophy Shop überarbeitet · Fähigkeits- und Shopflächen auf proportional gekachelte Bildrahmen umgestellt · alle Bild-URLs auf einen gemeinsamen Cache-Schlüssel · Trophy-Shop-Reste bereinigt und Aufklapppfeile angeglichen · Duo- und Trio-Boss-Rush mit Pfadwahl, gespeicherten Runs und 32 Perks einschließlich temporärer Ability-Mastery · Boss-XP-Umtausch 300:100 · Zweitfund gedeckelt · Trio-Rush 15 Stufen, ab 10 ultraschwer · Boss-Rush-HUD auf die Weltregel reduziert · Zweitfund-Kopien ablehnbar und weitergebbar · Ultra-Stufen treffen härter statt länger zu dauern · Heilung gedeckelt, Maximum wächst je Stufe · Regelleiste als Kachelgitter, wächst mit dem Text · gespeicherte Runs überleben Balanceänderungen · Meldeschichten über den Kampf-Overlays geordnet · großer Spezialwürfel dreht sich als echter 3D-Würfel wie der normale und füllt seinen Rahmen · Kampflog, Infos-Blatt und Weltregel hinter einem Knopf, Knopfleiste gekürzt und beruhigt · Kartentexte aus den gemalten Rahmen geholt |
 
 **Die Arbeitsteilung hat sich geändert.** Bis V28.11.28 liefen zwei
 Sitzungen parallel: Codex hat umgesetzt, diese Sitzung geprüft. Ab jetzt
@@ -594,13 +594,7 @@ wissen muss, nicht mehr die volle Beweisführung.
    Pixel hoch.
 
    **Offen bleibt die Frage, was noch ins Blatt gehört** — Statuszeile und
-   Angriffszielkasten sind die nächsten Kandidaten. Ebenfalls offen: eine
-   Meldung über Texte, die auf dem **Desktop** aus den Gegnerrahmen laufen.
-   Nachgemessen bei 390/820/1280/1600 px, im Boss Rush und im lokalen Spiel
-   mit 2/4/6 Spielern, gegen die Innenbox jeder Karte: **keine Fundstelle**.
-   Der einzige echte Überstand ist die Weltenleiste der Kampagne, und die
-   ist ein waagrechter Scrollstreifen. Ohne Bildschirmfoto der Stelle ist
-   das nicht zu greifen.
+   Angriffszielkasten sind die nächsten Kandidaten.
 
 ---
 
@@ -710,6 +704,38 @@ Testumgebung; der Sprite-Pass nimmt diese Entwicklerfläche über
   Classic der neuen Regel folgte: derselbe Würfel, zwei Verhaltensweisen.
   Wer eine solche Regel ablöst, schreibt den Selektor **beide Male** hin,
   einmal allgemein und einmal mit `.theme-art-die`.
+
+- **Ein gemalter Rahmen liegt nicht immer im Rand.** Zwei Bauweisen im
+  Spiel malen ihn **in** die Innenfläche, und beide hatten denselben
+  Fehler: der Inhalt begann trotzdem am Kartenrand.
+
+  1. `border-image-width` **ohne** `border-width`. Die Spielerkarten
+     zeichnen so (19/22 px, Boss 26/32 px), eine echte Randbreite bekamen
+     sie aber nur unter 540 px (`16-v28-phasen.css`). Auf dem Desktop lagen
+     die Namen deshalb halb unter der Leiste. Seit V28.12.29 hält die
+     Polsterung ab 541 px genau das Band frei.
+  2. Ein `::after` mit `background-size:100% 100%`. So malen die
+     Boss-Rush-Gegner ihren Weltrahmen — und dabei bleibt es: die
+     `world-*-frame-rect.webp` sind **ungeschnittene Hintergründe, kein
+     9-Slice**, `scripts/verify-build.mjs` weist ein `border-image` mit
+     ihnen ausdrücklich zurück. Das Band ist damit ein **Anteil** der
+     Karte: an den Bildern gemessen bis 9.8 % der Breite je Seite, 27.9 %
+     der Höhe oben, 35.5 % unten. Die Polsterung stand bei 19 px an den
+     Seiten — einem Drittel davon; im Trio-Boss-Rush war vom Gegnernamen
+     nur das Ende zu lesen („...oreman").
+
+  **Die Seiten lassen sich in Prozent lösen, oben und unten nicht.**
+  Waagrechte Polsterung rechnet gegen die Breite, und genau die bestimmt
+  auch das Seitenband — `padding-inline:11%` sitzt deshalb exakt. Senkrecht
+  rechnet Prozent **ebenfalls gegen die Breite**, das Band hängt aber an der
+  Höhe, und jede Erhöhung der Polsterung macht die Karte höher und das Band
+  mit. Ein Festwert jagt dem hinterher: die Rechnung endet bei einer
+  293 px hohen Karte für 107 px Inhalt. Oben und unten bleibt die
+  Überlappung deshalb bewusst stehen; dort steht der Name lesbar.
+
+  Gemessen von `scripts/qa/kartenrahmen.mjs` am laufenden Trio-Boss-Rush
+  bei 700/1000/1280/1600 px — gegen das Band, das die Karte sich selbst
+  gibt, nicht gegen eine Zahl aus dem Stylesheet.
 
 - **Die Emojis im Markup sind die QUELLE, kein Schmutz.**
   `js/36-emoji-sprite-pass.js` ersetzt sie im DOM durch Sprites — für
