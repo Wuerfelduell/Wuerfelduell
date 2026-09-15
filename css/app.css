@@ -12699,11 +12699,14 @@ html[data-v28-rework="2"] :is(.special-big-die,.gambling-die):disabled{
 }
 
 /* ===== Platzmanagement im Kampf =====
-   Faehigkeitszeilen und Aufgabenfortschritt stehen im Infos-Blatt, nicht
-   mehr im Zug. Sie bleiben im Baum, wo sie hingehoeren - nur unsichtbar;
-   das Blatt zeigt eine Kopie. */
+   Faehigkeitszeilen, Aufgabenfortschritt und die Weltregel stehen im
+   Infos-Blatt, nicht mehr im Kampf. Sie bleiben im Baum, wo sie
+   hingehoeren - nur unsichtbar; das Blatt zeigt eine Kopie.
+   Die Regelleiste kostete ueber den Spielerkarten 58 Pixel, jeden Zug,
+   fuer einen Satz, den man einmal liest. */
 #game .ability-state,
-#game .campaign-task-progress{
+#game .campaign-task-progress,
+#game .encounter-rule-banner{
   display:none;
 }
 
@@ -12714,10 +12717,14 @@ html[data-v28-rework="2"] :is(.special-big-die,.gambling-die):disabled{
    schief. */
 html[data-v28-rework="2"] body.playing .game-menu-btn.battle-info-btn{
   flex:0 0 auto;
-  align-self:center;
-  min-height:30px;
-  padding:3px 16px;
+  /* baseline statt center: die Kopfzeile richtet sich an der Schrift aus.
+     Ein zentrierter Knopf sass 10px tiefer als die Augenzahl und machte
+     die Zeile 30 statt 20 Pixel hoch. */
+  align-self:baseline;
+  min-height:0;
+  padding:1px 12px;
   font-size:12px;
+  line-height:1.3;
   letter-spacing:.02em;
 }
 

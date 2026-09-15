@@ -88,7 +88,9 @@
     if(!encounterRuleBanner) return;
     if(!campaignMode){encounterRuleBanner.classList.add("hidden");encounterRuleBanner.innerHTML="";return;}
     const enc=currentEncounterObject(),staticRules=encounterRuleText(enc),phase=bossPhaseFor(enc);
-    const parts=staticRules.map(r=>`<strong>⚙ ${escapeHtml(r.name)}:</strong> ${escapeHtml(r.desc)}`);
+    // Ohne Symbol: die Leiste steht seit V28.12.28 im Infos-Blatt, und dort
+    // ist Text Text - ein Zahnrad davor war nur Dekoration.
+    const parts=staticRules.map(r=>`<strong>${escapeHtml(r.name)}:</strong> ${escapeHtml(r.desc)}`);
     for(const mechanic of campaignMechanicSummary?.(enc)||[]){
       if(mechanic.kind==="mutator")continue;
       const label=mechanic.kind==="rule"?tx("Weltregel"):tx("Aktive Mechanik");
@@ -107,9 +109,9 @@
       const next=phases.map((entry,index)=>({entry,index})).filter(item=>!triggered.has(item.index)).sort((a,b)=>(b.entry.threshold||.5)-(a.entry.threshold||.5))[0];
       const currentNumber=Math.min(phases.length+1,triggered.size+1);
       if(next){
-        parts.push(`<span class="phase-live">👹 ${escapeHtml(tx(`Phase ${currentNumber}`))} · ${escapeHtml(tx("Nächster Übergang"))}: ${Math.round((next.entry.threshold||.5)*100)} % · ${escapeHtml(next.entry.title)}</span>`);
+        parts.push(`<span class="phase-live">${escapeHtml(tx(`Phase ${currentNumber}`))} · ${escapeHtml(tx("Nächster Übergang"))}: ${Math.round((next.entry.threshold||.5)*100)} % · ${escapeHtml(next.entry.title)}</span>`);
       }else{
-        parts.push(`<span class="phase-live">👹 ${escapeHtml(tx("Finalphase aktiv"))}</span>`);
+        parts.push(`<span class="phase-live">${escapeHtml(tx("Finalphase aktiv"))}</span>`);
       }
     }
     // Ein Wrapper, weil die Leiste ein Flex-Container ist: ohne ihn wird jedes

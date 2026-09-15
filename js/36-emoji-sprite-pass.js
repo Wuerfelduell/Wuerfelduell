@@ -118,13 +118,11 @@
     bloodHigherBtn:"abilities/11-blutpreis.svg",
     nextRoundPrepBtn:"gameplay/dice.svg",
     onlineMainMenuBtn:"navigation/back.svg",
-    // Beide erscheinen vorerst nur in der Testumgebung, und dort laesst der
-    // Pass die Kampfflaechen bewusst in Ruhe. Die Eintraege stehen trotzdem
-    // schon hier, damit sie ihr Symbol mitbringen, sobald die Knoepfe in
-    // den normalen Kampf wandern.
-    combatLogBtn:"menu/changelog.svg",
-    battleInfoBtn:"navigation/info.svg"
+    combatLogBtn:"menu/changelog.svg"
   });
+  // battleInfoBtn steht bewusst NICHT in der Liste. Der Knopf ist erst da,
+  // wenn es etwas zu zeigen gibt - das Symbol erschien deshalb mitten im
+  // Kampf nachtraeglich im Knopf und schob die Kopfzeile. Nur das Wort.
 
   const TEST_SELECTOR=[
     "#testLabAbilityModal",
@@ -140,10 +138,11 @@
     "#gamblingModal","#highStakesModal","#perfect25Modal",
     "#perfect25D4Modal","#insuranceModal","#counterModal"
   ].join(",");
-  // .battle-log-list steht mit drin, weil der Kampflog ein Protokoll ist,
-  // kein geschmueckter Text: dort sollen Zeichen wie "•" oder "✕" Zeichen
-  // bleiben. #log selbst ist ohnehin unsichtbar, das Blatt zeigt eine Kopie.
-  const ALWAYS_SKIP="script,style,template,textarea,select,option,#log,.battle-log-list,.dd-emoji-sprite";
+  // Das Kampf-Blatt steht mit drin: Kampflog und Infos sind Protokoll und
+  // Nachschlagewerk, kein geschmueckter Text. Zeichen wie "•" oder "✕"
+  // bleiben dort Zeichen, und es taucht kein Symbol auf, das der Spieler
+  // im Kampf nicht sehen will. #log selbst ist ohnehin unsichtbar.
+  const ALWAYS_SKIP="script,style,template,textarea,select,option,#log,#battleSheetBody,.battle-log-list,.dd-emoji-sprite";
   const DICE_SKIP=".die,.special-big-die,.gambling-die,.counter-die,.die-cube,.die-flat-face,.special-die-flat-face";
 
   const escapeRegExp=value=>value.replace(/[.*+?^${}()|[\]\\]/g,"\\$&");

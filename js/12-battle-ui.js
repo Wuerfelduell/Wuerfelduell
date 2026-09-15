@@ -118,6 +118,12 @@
     // getElementById liefert danach irgendeinen von beiden.
     copy.removeAttribute("id");
     copy.querySelectorAll("[id]").forEach(node=>node.removeAttribute("id"));
+    // Ohne Symbole. Die Quelle im Kampf traegt Sprites (der Sprite-Pass
+    // ersetzt dort jedes Emoji); im Blatt ist Text Text. #battleSheetBody
+    // steht zwar in ALWAYS_SKIP, aber die KOPIE bringt die fertigen Bilder
+    // schon mit - der Pass muesste sie gar nicht erst setzen.
+    copy.querySelectorAll("img.dd-emoji-sprite,img.p1-inline-icon,img.dd-inline-icon")
+      .forEach(node=>node.remove());
     copy.classList.remove("hidden");
     return copy;
   }
@@ -125,7 +131,10 @@
     return !!el && !el.classList.contains("hidden") && el.innerHTML.trim()!=="";
   }
   function renderBattleSheetInfo(body){
-    const parts=[["Fähigkeiten",abilityState],["Aufgaben",campaignTaskProgress]];
+    // Die Weltregel stand bis V28.12.28 als eigene Leiste ueber den
+    // Spielerkarten und kostete dort 58 Pixel - jeden Zug, obwohl man sie
+    // einmal liest. Im Blatt steht sie zuoberst, sie gilt fuer alles andere.
+    const parts=[["Weltregel",encounterRuleBanner],["Fähigkeiten",abilityState],["Aufgaben",campaignTaskProgress]];
     let any=false;
     for(const [title,source] of parts){
       if(!battleSheetHasContent(source)) continue;
@@ -133,7 +142,12 @@
       const head=document.createElement("div");
       head.className="battle-sheet-head";
       head.textContent=tx(title);
-      body.append(head,battleSheetCopy(source));
+      // Von der Regelleiste nur den Text: ihr Rahmen besteht aus 25 SVG-
+      // Kacheln, die auf die Proportionen der Leiste gerechnet sind.
+      const inner=source===encounterRuleBanner
+        ? source.querySelector(":scope > .encounter-rule-text")||source
+        : source;
+      body.append(head,battleSheetCopy(inner));
     }
     if(!any){
       const empty=document.createElement("div");
@@ -178,7 +192,9 @@
     if(!battleInfoBtn) return;
     // Der Knopf selbst wird versteckt, nicht sein Elternteil: er steht in
     // der Zugkopfzeile neben der Augenzahl, und die muss stehen bleiben.
-    const something=battleSheetHasContent(abilityState)||battleSheetHasContent(campaignTaskProgress);
+    const something=battleSheetHasContent(encounterRuleBanner)
+      ||battleSheetHasContent(abilityState)
+      ||battleSheetHasContent(campaignTaskProgress);
     battleInfoBtn.classList.toggle("hidden",!something);
   }
   function maxHpForPlayer(playerOrIndex){

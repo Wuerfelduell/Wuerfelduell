@@ -22,9 +22,9 @@ welche Fallen schon Zeit gekostet haben.
 
 | | |
 |---|---|
-| Version | **28.12.27** |
+| Version | **28.12.28** |
 | Branch | `main` |
-| Letzte Schritte | CSS-Stapel auf 10 Dateien zusammengelegt · Changelog englisch vervollständigt · Hauptmenü, Statistik, Profile, Achievements, Spielvorbereitung und Trophy Shop überarbeitet · Fähigkeits- und Shopflächen auf proportional gekachelte Bildrahmen umgestellt · alle Bild-URLs auf einen gemeinsamen Cache-Schlüssel · Trophy-Shop-Reste bereinigt und Aufklapppfeile angeglichen · Duo- und Trio-Boss-Rush mit Pfadwahl, gespeicherten Runs und 32 Perks einschließlich temporärer Ability-Mastery · Boss-XP-Umtausch 300:100 · Zweitfund gedeckelt · Trio-Rush 15 Stufen, ab 10 ultraschwer · Boss-Rush-HUD auf die Weltregel reduziert · Zweitfund-Kopien ablehnbar und weitergebbar · Ultra-Stufen treffen härter statt länger zu dauern · Heilung gedeckelt, Maximum wächst je Stufe · Regelleiste als Kachelgitter, wächst mit dem Text · gespeicherte Runs überleben Balanceänderungen · Meldeschichten über den Kampf-Overlays geordnet · großer Spezialwürfel dreht sich als echter 3D-Würfel wie der normale und füllt seinen Rahmen · Kampflog und Infos-Blatt im Kampf, Knopfleiste gekürzt und beruhigt |
+| Letzte Schritte | CSS-Stapel auf 10 Dateien zusammengelegt · Changelog englisch vervollständigt · Hauptmenü, Statistik, Profile, Achievements, Spielvorbereitung und Trophy Shop überarbeitet · Fähigkeits- und Shopflächen auf proportional gekachelte Bildrahmen umgestellt · alle Bild-URLs auf einen gemeinsamen Cache-Schlüssel · Trophy-Shop-Reste bereinigt und Aufklapppfeile angeglichen · Duo- und Trio-Boss-Rush mit Pfadwahl, gespeicherten Runs und 32 Perks einschließlich temporärer Ability-Mastery · Boss-XP-Umtausch 300:100 · Zweitfund gedeckelt · Trio-Rush 15 Stufen, ab 10 ultraschwer · Boss-Rush-HUD auf die Weltregel reduziert · Zweitfund-Kopien ablehnbar und weitergebbar · Ultra-Stufen treffen härter statt länger zu dauern · Heilung gedeckelt, Maximum wächst je Stufe · Regelleiste als Kachelgitter, wächst mit dem Text · gespeicherte Runs überleben Balanceänderungen · Meldeschichten über den Kampf-Overlays geordnet · großer Spezialwürfel dreht sich als echter 3D-Würfel wie der normale und füllt seinen Rahmen · Kampflog, Infos-Blatt und Weltregel hinter einem Knopf, Knopfleiste gekürzt und beruhigt |
 
 **Die Arbeitsteilung hat sich geändert.** Bis V28.11.28 liefen zwei
 Sitzungen parallel: Codex hat umgesetzt, diese Sitzung geprüft. Ab jetzt
@@ -573,8 +573,34 @@ wissen muss, nicht mehr die volle Beweisführung.
      `scripts/qa/kampf-platz.mjs`: der misst in sechs Phasen, ob jeder
      sichtbare Knopf ein Rahmenbild trägt.
 
+   **Nachtrag V28.12.28:** die **Weltregel** steht jetzt ebenfalls im Blatt
+   (zuoberst, sie gilt für alles andere) statt als eigene Leiste über den
+   Spielerkarten — das waren 58 Pixel, jeden Zug, für einen Satz, den man
+   einmal liest. Kopiert wird nur `.encounter-rule-text`: der Rahmen der
+   Leiste besteht aus 25 SVG-Kacheln, die auf ihre Proportionen gerechnet
+   sind.
+
+   **Im Blatt ist Text Text.** `#battleSheetBody` steht in `ALWAYS_SKIP`
+   des Sprite-Passes, und `battleSheetCopy` wirft die Sprites, die die
+   Kopie aus dem Kampf mitbringt, heraus — der Pass hat die Quelle dort
+   längst dekoriert, `display:none` hält ihn nicht auf (er prüft die
+   Klasse `.hidden`, nicht die Sichtbarkeit). Aus demselben Grund steht
+   `battleInfoBtn` **nicht** in `ID_ICONS`: sein Symbol erschien erst,
+   wenn der Knopf auftauchte — also mitten im Kampf — und schob die
+   Kopfzeile.
+
+   Der Knopf sitzt mit `align-self:baseline` auf der Schriftlinie. Zentriert
+   saß er 10 px tiefer als die Augenzahl und machte die Zeile 30 statt 20
+   Pixel hoch.
+
    **Offen bleibt die Frage, was noch ins Blatt gehört** — Statuszeile und
-   Angriffszielkasten sind die nächsten Kandidaten.
+   Angriffszielkasten sind die nächsten Kandidaten. Ebenfalls offen: eine
+   Meldung über Texte, die auf dem **Desktop** aus den Gegnerrahmen laufen.
+   Nachgemessen bei 390/820/1280/1600 px, im Boss Rush und im lokalen Spiel
+   mit 2/4/6 Spielern, gegen die Innenbox jeder Karte: **keine Fundstelle**.
+   Der einzige echte Überstand ist die Weltenleiste der Kampagne, und die
+   ist ein waagrechter Scrollstreifen. Ohne Bildschirmfoto der Stelle ist
+   das nicht zu greifen.
 
 ---
 

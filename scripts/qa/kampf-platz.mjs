@@ -118,8 +118,18 @@ try{
     &&stand.infoKnopf.x+stand.infoKnopf.b<=stand.summe.x
     &&stand.infoKnopf.y+stand.infoKnopf.h<=stand.wuerfel.y;
   pruefe('Infos-Knopf steht in der Kopfzeile neben der Augenzahl',!!infoOk,true);
-  pruefe('Infos-Knopf ist klein',!!stand.infoKnopf&&stand.infoKnopf.h<=34&&stand.infoKnopf.b<=stand.wuerfel.b*0.5,true);
+  // Auf Texthoehe, nicht daneben: zentriert sass er 10px tiefer als die
+  // Augenzahl und machte die Zeile 30 statt 20 Pixel hoch.
+  const aufTexthoehe=stand.infoKnopf&&stand.summe
+    &&Math.abs((stand.infoKnopf.y+stand.infoKnopf.h/2)-(stand.summe.y+stand.summe.h/2))<=4
+    &&stand.infoKnopf.h<=stand.summe.h+6;
+  pruefe('Infos-Knopf sitzt auf der Texthoehe',!!aufTexthoehe,true);
+  if(!aufTexthoehe)console.log(`      Kopfzeile: ${JSON.stringify({knopf:stand.infoKnopf,summe:stand.summe})}`);
   pruefe('Keine eigene Knopfreihe mehr ueber den Wuerfeln',stand.infoReihe===null,true);
+  // Kein Symbol im Knopf: es erschien erst, wenn der Knopf auftauchte -
+  // also mitten im Kampf - und schob die Kopfzeile.
+  const knopfBilder=await p.evaluate(()=>document.getElementById('battleInfoBtn').querySelectorAll('img').length);
+  pruefe('Infos-Knopf traegt kein Symbol',knopfBilder===0,true);
   pruefe('Faehigkeitszeilen belegen im Zug keinen Platz',stand.faehigkeiten.h===0&&stand.faehigkeiten.anzeige==='none',true);
   pruefe('Aufgabenfortschritt belegt im Zug keinen Platz',stand.aufgaben.h===0,true);
 
@@ -223,7 +233,8 @@ try{
       koepfe:[...document.querySelectorAll('.battle-sheet-head')].map(k=>k.textContent),
       text:norm(document.getElementById('battleSheetBody').textContent),
       quelle:norm(document.getElementById('abilityState').textContent),
-      doppelt:['abilityState','campaignTaskProgress','battleSheetBody'].map(id=>document.querySelectorAll(`#${id}`).length)
+      doppelt:['abilityState','campaignTaskProgress','battleSheetBody'].map(id=>document.querySelectorAll(`#${id}`).length),
+      sprites:document.querySelectorAll('#battleSheetBody img').length
     };
   });
   pruefe('Infos-Blatt geht auf',blatt.offen&&blatt.titel==='Infos',true);
@@ -231,11 +242,36 @@ try{
     blatt.koepfe.includes('Fähigkeiten')&&blatt.quelle.length>0&&blatt.text.includes(blatt.quelle),true);
   if(!blatt.text.includes(blatt.quelle))console.log(`      Blatt: ${JSON.stringify(blatt)}`);
   pruefe('Keine doppelten ids',blatt.doppelt.every(n=>n===1),true);
+  pruefe('Infos-Blatt zeigt keine Sprites',blatt.sprites===0,true);
+  await p.click('#battleSheetCloseBtn');await p.waitForTimeout(200);
+
+  // Die Weltregel gehoert ins Blatt, nicht ueber die Spielerkarten. Der
+  // Inhalt kommt aus der Kampagne; gemessen wird die Verdrahtung.
+  const regel=await p.evaluate(()=>{
+    encounterRuleBanner.classList.remove('hidden');
+    encounterRuleBanner.innerHTML='<span class="encounter-rule-text"><strong>Voidclock:</strong> Pruefsatz</span>';
+    refreshBattleInfoButton();
+    const r=encounterRuleBanner.getBoundingClientRect();
+    return {imKampfSichtbar:r.height>0,anzeige:getComputedStyle(encounterRuleBanner).display};
+  });
+  pruefe('Regelleiste belegt im Kampf keinen Platz',!regel.imKampfSichtbar&&regel.anzeige==='none',true);
+  await p.click('#battleInfoBtn');await p.waitForTimeout(300);
+  const imBlatt=await p.evaluate(()=>({
+    koepfe:[...document.querySelectorAll('.battle-sheet-head')].map(k=>k.textContent),
+    text:document.getElementById('battleSheetBody').textContent.replace(/\s+/g,' '),
+    kacheln:document.querySelectorAll('#battleSheetBody svg').length
+  }));
+  pruefe('Weltregel steht im Infos-Blatt',
+    imBlatt.koepfe[0]==='Weltregel'&&imBlatt.text.includes('Voidclock')&&imBlatt.text.includes('Pruefsatz'),true);
+  // Nur der Text, nicht das 25-teilige Rahmengitter der Leiste.
+  pruefe('Ohne das Rahmengitter der Leiste',imBlatt.kacheln===0,true);
+  if(imBlatt.koepfe[0]!=='Weltregel')console.log(`      Blatt: ${JSON.stringify(imBlatt)}`);
   await p.click('#battleSheetCloseBtn');await p.waitForTimeout(200);
 
   // 3b. Kein Inhalt, kein Knopf - aber die Kopfzeile bleibt stehen.
   const ohne=await p.evaluate(()=>{
     abilityState.innerHTML='';campaignTaskProgress.innerHTML='';
+    encounterRuleBanner.innerHTML='';encounterRuleBanner.classList.add('hidden');
     refreshBattleInfoButton();
     return {knopf:window.__k('#battleInfoBtn'),kopf:window.__k('#game .turn-head'),
       summe:window.__k('#sum')};
@@ -280,7 +316,7 @@ try{
   await l.close();
 }catch(e){absturz=e;}
 
-const ERWARTET=26;
+const ERWARTET=32;
 let fehler=ergebnisse.length<ERWARTET?1:0;
 if(fehler)console.log(`ACHTUNG: nur ${ergebnisse.length} von ${ERWARTET} Zusicherungen erreicht.`);
 const breite=Math.max(1,...ergebnisse.map(r=>r[0].length));
