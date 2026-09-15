@@ -22,9 +22,9 @@ welche Fallen schon Zeit gekostet haben.
 
 | | |
 |---|---|
-| Version | **28.12.33** |
+| Version | **28.12.34** |
 | Branch | `main` |
-| Letzte Schritte | CSS-Stapel auf 10 Dateien zusammengelegt · Changelog englisch vervollständigt · Hauptmenü, Statistik, Profile, Achievements, Spielvorbereitung und Trophy Shop überarbeitet · Fähigkeits- und Shopflächen auf proportional gekachelte Bildrahmen umgestellt · alle Bild-URLs auf einen gemeinsamen Cache-Schlüssel · Trophy-Shop-Reste bereinigt und Aufklapppfeile angeglichen · Duo- und Trio-Boss-Rush mit Pfadwahl, gespeicherten Runs und 32 Perks einschließlich temporärer Ability-Mastery · Boss-XP-Umtausch 300:100 · Zweitfund gedeckelt · Trio-Rush 15 Stufen, ab 10 ultraschwer · Boss-Rush-HUD auf die Weltregel reduziert · Zweitfund-Kopien ablehnbar und weitergebbar · Ultra-Stufen treffen härter statt länger zu dauern · Heilung gedeckelt, Maximum wächst je Stufe · Regelleiste als Kachelgitter, wächst mit dem Text · gespeicherte Runs überleben Balanceänderungen · Meldeschichten über den Kampf-Overlays geordnet · großer Spezialwürfel dreht sich als echter 3D-Würfel wie der normale und füllt seinen Rahmen · Kampflog, Infos-Blatt und Weltregel hinter einem Knopf, Knopfleiste gekürzt und beruhigt · Kartentexte aus den gemalten Rahmen geholt · fünf neue Würfeldesigns in der Testumgebung · Matchbar auf schmalen Telefonen wieder einzeilig · fünf Würfeldesigns mit fertigem Artwork und nachgemessenem Augenraster · Live-Online-Prüfstand repariert und um eine Latenzmessung erweitert · sieben weitere Würfeldesigns |
+| Letzte Schritte | CSS-Stapel auf 10 Dateien zusammengelegt · Changelog englisch vervollständigt · Hauptmenü, Statistik, Profile, Achievements, Spielvorbereitung und Trophy Shop überarbeitet · Fähigkeits- und Shopflächen auf proportional gekachelte Bildrahmen umgestellt · alle Bild-URLs auf einen gemeinsamen Cache-Schlüssel · Trophy-Shop-Reste bereinigt und Aufklapppfeile angeglichen · Duo- und Trio-Boss-Rush mit Pfadwahl, gespeicherten Runs und 32 Perks einschließlich temporärer Ability-Mastery · Boss-XP-Umtausch 300:100 · Zweitfund gedeckelt · Trio-Rush 15 Stufen, ab 10 ultraschwer · Boss-Rush-HUD auf die Weltregel reduziert · Zweitfund-Kopien ablehnbar und weitergebbar · Ultra-Stufen treffen härter statt länger zu dauern · Heilung gedeckelt, Maximum wächst je Stufe · Regelleiste als Kachelgitter, wächst mit dem Text · gespeicherte Runs überleben Balanceänderungen · Meldeschichten über den Kampf-Overlays geordnet · großer Spezialwürfel dreht sich als echter 3D-Würfel wie der normale und füllt seinen Rahmen · Kampflog, Infos-Blatt und Weltregel hinter einem Knopf, Knopfleiste gekürzt und beruhigt · Kartentexte aus den gemalten Rahmen geholt · fünf neue Würfeldesigns in der Testumgebung · Matchbar auf schmalen Telefonen wieder einzeilig · fünf Würfeldesigns mit fertigem Artwork und nachgemessenem Augenraster · Live-Online-Prüfstand repariert und um eine Latenzmessung erweitert · Common-Satz mit zehn Würfeldesigns vollständig |
 
 **Die Arbeitsteilung hat sich geändert.** Bis V28.11.28 liefen zwei
 Sitzungen parallel: Codex hat umgesetzt, diese Sitzung geprüft. Ab jetzt
@@ -256,8 +256,11 @@ auf 1024 px — umgerechnet exakt die 8,8 %/91,2 %, 31/50/67 % und 13 % aus
 `docs/WUERFELDESIGN-BRIEF.md`. Der Brief wird also gelesen und befolgt;
 Nacharbeit fällt seither keine mehr an.
 
-Der Satz „Common" umfasst **zehn** Designs. Es fehlen noch
-**slatewatch**, **sandcarver** und **redclay**.
+**V28.12.34 schließt den Satz ab:** Slatewatch, Sandcarver und Redclay.
+Der Satz „Common" umfasst damit **zehn** Designs, alle in einer Bauart.
+Sandcarver ist das einzige mit **dunklen Augen auf heller Fläche** — es
+liest sich bei 56 px am weitesten und ist der Kandidat, wenn ein Design
+freigeschaltet werden soll.
 
 Die Liste der zu prüfenden Designs steht **nicht mehr im Prüfstand**:
 `scripts/qa/wuerfeldesigns.mjs` liest sie aus `DICE_DESIGNS` und nimmt

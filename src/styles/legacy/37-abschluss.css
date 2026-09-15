@@ -2998,6 +2998,17 @@ html[data-v28-rework="2"] body.playing #game .controls>button.secondary{
 .special-big-die.d4.theme-oakbound{background:linear-gradient(145deg,#b45c1f,#5a2a0d);color:#ebe0c1;border-color:#a67621}
 .special-big-die.d4.theme-mossstone{background:linear-gradient(145deg,#65724a,#2c3420);color:#ebe0bd;border-color:#78552b}
 
+/* Die letzten drei des Common-Satzes. Sandcarver ist das einzige Design
+   mit DUNKLEN Augen auf heller Flaeche - die Glut nimmt deshalb den
+   Sandton, nicht das Auge, sonst glueht ein schwarzer Rand. */
+.die.theme-slatewatch{--dice-accent:#9aa6b4;--dice-glow:rgba(154,166,180,.82)}
+.die.theme-sandcarver{--dice-accent:#e1a564;--dice-glow:rgba(225,165,100,.86)}
+.die.theme-redclay{--dice-accent:#c9603a;--dice-glow:rgba(201,96,58,.86)}
+
+.special-big-die.d4.theme-slatewatch{background:linear-gradient(145deg,#4a525d,#22272e);color:#ebe0c9;border-color:#7a7671}
+.special-big-die.d4.theme-sandcarver{background:linear-gradient(145deg,#f0c18a,#c08840);color:#201a15;border-color:#a16f24}
+.special-big-die.d4.theme-redclay{background:linear-gradient(145deg,#d1603c,#6e2614);color:#ebe0c3;border-color:#5b4023}
+
 
 /* ===== Die Matchbar auf schmalen Telefonen =====
    Seit dort zwei Knoepfe stehen, passt die Leiste nicht mehr ueberall in

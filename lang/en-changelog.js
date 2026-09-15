@@ -5,6 +5,8 @@
   if (!pack) return;
 
   Object.assign(pack.exact, {
+    "Der Common-Satz ist vollständig: Slatewatch, Sandcarver und Redclay schließen ihn ab – zehn Designs in einer Bauart": "The common set is complete: Slatewatch, Sandcarver and Redclay round it off, ten designs of one build",
+    "Auswählbar sind sie weiterhin nur in der Testumgebung": "They can still only be picked in the test lab",
     "Sieben weitere Würfeldesigns sind eingebaut: Frost Porcelain, Ashwood, Coppertrail, Midnight Enamel, Ironkeep, Oakbound und Mossstone": "Seven more dice designs are in: Frost Porcelain, Ashwood, Coppertrail, Midnight Enamel, Ironkeep, Oakbound and Mossstone",
     "Auch sie lassen sich vorerst nur in der Testumgebung auswählen": "They too can only be picked in the test lab for now",
     // V28.12.29 bis .32 - die Eintraege .29 und .30 waren beim Ausliefern
