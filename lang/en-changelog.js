@@ -5,6 +5,15 @@
   if (!pack) return;
 
   Object.assign(pack.exact, {
+    // V28.12.29 bis .31 - die Eintraege .29 und .30 waren beim Ausliefern
+    // ohne Uebersetzung geblieben und standen im englischen Spiel deutsch.
+    "Auf schmalen Telefonen standen „Kampflog“ und „Hauptmenü“ übereinander statt nebeneinander – die Leiste war doppelt so hoch und nahm den Spielerkarten 55 Pixel weg": "On narrow phones Combat Log and Main Menu stacked instead of sitting side by side; the bar was twice as tall and took 55 pixels from the player cards",
+    "Beide Knöpfe passen jetzt in jeder Breite in eine Zeile; unter 350 Pixeln treten dafür ihre Symbole zurück, die Beschriftung bleibt": "Both buttons now fit on one line at every width; below 350 pixels their icons step aside and the labels stay",
+    "Fünf neue Würfeldesigns sind eingebaut: Walnut Lodge, Tide Pearl, Azure Storm, Nebula Veil und Solar Relic": "Five new dice designs are in: Walnut Lodge, Tide Pearl, Azure Storm, Nebula Veil and Solar Relic",
+    "Sie lassen sich vorerst nur in der Testumgebung auswählen – freischalten kann man sie noch nicht": "For now they can only be picked in the test lab; there is no way to unlock them yet",
+    "Auf dem Desktop lagen die Namen auf den Spielerkarten halb unter dem gemalten Rahmen – im Boss Rush war vom Gegnernamen nur das Ende zu lesen. Der Rahmen hält jetzt überall seinen Platz frei": "On desktop the names on the player cards sat half under the painted frame; in Boss Rush only the end of an enemy name was readable. The frame now keeps its space clear everywhere",
+    "Die Gegnerkarten im Boss Rush halten seitlich 11 % der Kartenbreite frei – genau dort, wo der gemalte Weltrahmen sein Seitenband zeichnet": "Enemy cards in Boss Rush keep 11% of the card width clear on each side, exactly where the painted world frame draws its band",
+
     "Der Trio-Boss-Rush umfasst jetzt 15 Stufen; ab Stufe 10 steigen Gegner-HP und Phasenheilung stark an": "Trio Boss Rush now spans 15 stages; enemy HP and phase healing rise sharply from stage 10",
     "Boss-Auswahlen warten auf Stufe 5 und 10, Helix Apex bildet das Finale auf Stufe 15; bereits gespeicherte Zehner-Runs bleiben unverändert fortsetzbar": "Boss choices await on stages 5 and 10, with Helix Apex as the stage 15 finale; saved ten-stage runs remain resumable under their original rules",
 

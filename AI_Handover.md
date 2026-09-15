@@ -22,9 +22,9 @@ welche Fallen schon Zeit gekostet haben.
 
 | | |
 |---|---|
-| Version | **28.12.30** |
+| Version | **28.12.31** |
 | Branch | `main` |
-| Letzte Schritte | CSS-Stapel auf 10 Dateien zusammengelegt · Changelog englisch vervollständigt · Hauptmenü, Statistik, Profile, Achievements, Spielvorbereitung und Trophy Shop überarbeitet · Fähigkeits- und Shopflächen auf proportional gekachelte Bildrahmen umgestellt · alle Bild-URLs auf einen gemeinsamen Cache-Schlüssel · Trophy-Shop-Reste bereinigt und Aufklapppfeile angeglichen · Duo- und Trio-Boss-Rush mit Pfadwahl, gespeicherten Runs und 32 Perks einschließlich temporärer Ability-Mastery · Boss-XP-Umtausch 300:100 · Zweitfund gedeckelt · Trio-Rush 15 Stufen, ab 10 ultraschwer · Boss-Rush-HUD auf die Weltregel reduziert · Zweitfund-Kopien ablehnbar und weitergebbar · Ultra-Stufen treffen härter statt länger zu dauern · Heilung gedeckelt, Maximum wächst je Stufe · Regelleiste als Kachelgitter, wächst mit dem Text · gespeicherte Runs überleben Balanceänderungen · Meldeschichten über den Kampf-Overlays geordnet · großer Spezialwürfel dreht sich als echter 3D-Würfel wie der normale und füllt seinen Rahmen · Kampflog, Infos-Blatt und Weltregel hinter einem Knopf, Knopfleiste gekürzt und beruhigt · Kartentexte aus den gemalten Rahmen geholt · fünf neue Würfeldesigns in der Testumgebung |
+| Letzte Schritte | CSS-Stapel auf 10 Dateien zusammengelegt · Changelog englisch vervollständigt · Hauptmenü, Statistik, Profile, Achievements, Spielvorbereitung und Trophy Shop überarbeitet · Fähigkeits- und Shopflächen auf proportional gekachelte Bildrahmen umgestellt · alle Bild-URLs auf einen gemeinsamen Cache-Schlüssel · Trophy-Shop-Reste bereinigt und Aufklapppfeile angeglichen · Duo- und Trio-Boss-Rush mit Pfadwahl, gespeicherten Runs und 32 Perks einschließlich temporärer Ability-Mastery · Boss-XP-Umtausch 300:100 · Zweitfund gedeckelt · Trio-Rush 15 Stufen, ab 10 ultraschwer · Boss-Rush-HUD auf die Weltregel reduziert · Zweitfund-Kopien ablehnbar und weitergebbar · Ultra-Stufen treffen härter statt länger zu dauern · Heilung gedeckelt, Maximum wächst je Stufe · Regelleiste als Kachelgitter, wächst mit dem Text · gespeicherte Runs überleben Balanceänderungen · Meldeschichten über den Kampf-Overlays geordnet · großer Spezialwürfel dreht sich als echter 3D-Würfel wie der normale und füllt seinen Rahmen · Kampflog, Infos-Blatt und Weltregel hinter einem Knopf, Knopfleiste gekürzt und beruhigt · Kartentexte aus den gemalten Rahmen geholt · fünf neue Würfeldesigns in der Testumgebung · Matchbar auf schmalen Telefonen wieder einzeilig |
 
 **Die Arbeitsteilung hat sich geändert.** Bis V28.11.28 liefen zwei
 Sitzungen parallel: Codex hat umgesetzt, diese Sitzung geprüft. Ab jetzt
@@ -626,6 +626,33 @@ wissen muss, nicht mehr die volle Beweisführung.
    Der Knopf sitzt mit `align-self:baseline` auf der Schriftlinie. Zentriert
    saß er 10 px tiefer als die Augenzahl und machte die Zeile 30 statt 20
    Pixel hoch.
+
+   **Nachtrag V28.12.31: die Matchbar stapelte sich auf schmalen
+   Telefonen.** Gemessen im laufenden Kampf: bei **320 und 360 px** standen
+   „Kampflog" und „Hauptmenü" übereinander statt nebeneinander — die
+   Leiste war **104 statt 49 Pixel** hoch. Die 12-px-Polsterung aus
+   V28.12.27 reicht erst ab 390 px; bei 360 px fehlten drei Pixel. Jetzt
+   in zwei Stufen: unter 390 px 8 px Polsterung (reicht ab 350 px),
+   unter 350 px treten zusätzlich die **Symbole** zurück — die
+   Beschriftung bleibt, denn ein Knopf ohne Text ist ein Rätsel. Die
+   beiden Symbole tragen **zwei verschiedene Klassen**: das des Kampflogs
+   kommt aus dem Sprite-Pass (`.dd-emoji-sprite`), das des Hauptmenüs aus
+   dem Markup (`.dd-inline-icon`) — die Regel greift deshalb auf `img`.
+
+   Die Höhe der Zugkarte ändert das nicht: die Leiste sitzt in der oberen
+   Karte, die gewonnenen 55 Pixel gehen an die **Spielerkarten**.
+
+   Gemessen wird das jetzt in `scripts/qa/kampf-platz.mjs` bei 320, 360,
+   390 und 412 px — eine Zeile, beide Knöpfe beschriftet.
+
+   **Nebenbefund, mitbehoben:** der Changelog-Eintrag zu V28.12.29 sagte,
+   die Gegnerkarten zeichneten ihren Weltrahmen „als echten Rand statt als
+   Bild darüber". Das stimmte nicht — `border-image` wurde von
+   `verify-build.mjs` abgelehnt (gemalte 3:1-Weltrahmen dürfen keine
+   border-image sein), geblieben ist die seitliche Polsterung von 11 %.
+   Der Eintrag sagt das jetzt. Die Einträge V28.12.29 und .30 standen
+   außerdem im englischen Spiel **deutsch** — sie hatten nie ein Paar in
+   `lang/en-changelog.js` bekommen. Nachgetragen, zusammen mit .31.
 
    **Offen bleibt die Frage, was noch ins Blatt gehört** — Statuszeile und
    Angriffszielkasten sind die nächsten Kandidaten.

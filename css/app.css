@@ -12859,3 +12859,25 @@ html[data-v28-rework="2"] body.playing #game .controls>button.secondary{
 .special-big-die.d4.theme-azure-storm{background:linear-gradient(145deg,#1140c8,#03155e);color:#eaf4ff;border-color:#f0cf7e}
 .special-big-die.d4.theme-nebula-veil{background:linear-gradient(145deg,#8c34c0,#360d63);color:#efe0ff;border-color:#eec27a}
 .special-big-die.d4.theme-solar-relic{background:linear-gradient(145deg,#f6e6c2,#c9973c);color:#5a3c0c;border-color:#ffd97a}
+
+
+/* ===== Die Matchbar auf schmalen Telefonen =====
+   Seit dort zwei Knoepfe stehen, passt die Leiste nicht mehr ueberall in
+   eine Zeile. Im laufenden Kampf nachgemessen: bei 320 und 360 px
+   stapelten sich Kampflog und Hauptmenue uebereinander - die Leiste war
+   104 statt 49 Pixel hoch, und die 55 Pixel fehlten den Spielerkarten.
+   Mit 8 px Polsterung stehen sie ab 350 px nebeneinander; darunter muessen
+   zusaetzlich die Symbole weichen, der Text allein sagt dasselbe. */
+@media(max-width:389px){
+  html[data-v28-rework="2"] body.playing #game .matchbar-actions>.game-menu-btn{
+    padding-inline:8px;
+  }
+}
+@media(max-width:349px){
+  /* Die beiden Symbole kommen aus zwei Quellen und tragen zwei Klassen:
+     der Kampflog eines aus dem Sprite-Pass (.dd-emoji-sprite), das
+     Hauptmenue eines aus dem Markup (.dd-inline-icon). Deshalb img. */
+  html[data-v28-rework="2"] body.playing #game .matchbar-actions>.game-menu-btn>img{
+    display:none;
+  }
+}

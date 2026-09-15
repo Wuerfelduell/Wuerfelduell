@@ -279,6 +279,30 @@ try{
   pruefe('Infos-Knopf verschwindet, wenn es nichts zu zeigen gibt',
     !ohne.knopf||ohne.knopf.h===0||ohne.knopf.anzeige==='none',true);
   pruefe('Die Augenzahl bleibt dabei stehen',ohne.summe.h>0&&ohne.kopf.h>0,true);
+
+  // Zwei Knoepfe in der Matchbar passen nicht ueberall nebeneinander: bei
+  // 320 und 360 px stapelten sie sich auf zwei Zeilen (104 statt 49 px),
+  // und die 55 Pixel fehlten den Spielerkarten. Gemessen wird in jeder
+  // Breite, in der hier sonst geprueft wird.
+  const schmal=[];
+  for(const breite of [320,360,390,412]){
+    await p.setViewportSize({width:breite,height:740});
+    await p.waitForTimeout(160);
+    const m=await p.evaluate(()=>{
+      const l=document.getElementById('combatLogBtn').getBoundingClientRect();
+      const g=document.getElementById('gameMenuBtn').getBoundingClientRect();
+      return {h:Math.round(document.querySelector('#game .matchbar').getBoundingClientRect().height),
+        eineZeile:Math.abs(l.y-g.y)<2,
+        // Beschriftet bleiben muessen sie in jeder Breite - nur die
+        // Symbole duerfen weichen.
+        beschriftet:l.width>0&&g.width>0
+          &&document.getElementById('combatLogBtn').textContent.trim().length>0
+          &&document.getElementById('gameMenuBtn').textContent.trim().length>0};
+    });
+    if(!m.eineZeile||!m.beschriftet||m.h>60) schmal.push(`${breite}px: ${JSON.stringify(m)}`);
+  }
+  pruefe('Matchbar bleibt in jeder Breite einzeilig',schmal.length===0,true);
+  if(schmal.length)console.log(`      Matchbar: ${schmal.join(' | ')}`);
   await p.close();
 
   // 7b. Englisch: derselbe Knopf heisst "Roll".
@@ -316,7 +340,7 @@ try{
   await l.close();
 }catch(e){absturz=e;}
 
-const ERWARTET=32;
+const ERWARTET=33;
 let fehler=ergebnisse.length<ERWARTET?1:0;
 if(fehler)console.log(`ACHTUNG: nur ${ergebnisse.length} von ${ERWARTET} Zusicherungen erreicht.`);
 const breite=Math.max(1,...ergebnisse.map(r=>r[0].length));
