@@ -71,6 +71,59 @@ try{
   pruefe('Popup blockiert keine Klicks',werte.popupPointerEvents==='none',true);
   if(werte.toast!=null)pruefe('Achievement-Toast bleibt ueber dem Popup',werte.toast>werte.popup,true);
 
+  // Fuer die Kartenzahlen braucht es einen echten Kampf - playDamageAnimation
+  // sucht sich die Karte ueber players[]. Ohne das laeuft der Fall ins Leere
+  // und meldet "fehlt", was wie ein Fehler aussieht, aber keiner waere.
+  const ids=await p.evaluate(()=>{
+    const a=createProfile('Alpha'),b=createProfile('Bravo');
+    [a,b].forEach(x=>x.campaign.completedEncounters.push('black_table'));
+    saveGameData();return[a.id,b.id];
+  });
+  await p.evaluate(ids=>{
+    duoProfile1Id=ids[0];duoProfile2Id=ids[1];
+    openDuoCampaignScreen();
+    duoProfile1Select.value=ids[0];duoProfile2Select.value=ids[1];
+    renderDuoCampaign();
+    duoAbility1Select.value='3';duoAbility2Select.value='3';
+    window.WDDuoBossRush.refreshButton();
+  },ids);
+  await p.click('#duoBossRushStartBtn');await p.waitForTimeout(400);
+  await p.locator('[data-rush-path]').first().click();await p.waitForTimeout(800);
+
+  // Die Schadens- und Heilzahl AN DER SPIELERKARTE (.damage-pop / .heal-pop)
+  // ist eine eigene Schicht: sie wird in die Karte gehaengt und steckt damit
+  // in deren Stapelkontext. Am 15.09. gemeldet: das Counterattack-Overlay
+  // liegt darueber. Geprueft wird ueber die echten Animationsfunktionen.
+  const kartenZahlen=await p.evaluate(()=>{
+    document.getElementById('counterModal').classList.remove('hidden');
+    const modalZ=Number(getComputedStyle(document.getElementById('counterModal')).zIndex);
+    const ziel=players.findIndex(x=>x?.campaignTeam==='hero');
+    playDamageAnimation(ziel,14);
+    playHealAnimation(ziel,7);
+    const werte={modalZ,gefunden:{}};
+    for(const klasse of ['damage-pop','heal-pop']){
+      const el=document.querySelector('.'+klasse);
+      if(!el){werte.gefunden[klasse]='fehlt';continue;}
+      const z=getComputedStyle(el).zIndex;
+      // Entscheidend ist nicht die eigene z-index-Zahl, sondern ob ein
+      // Vorfahre einen Stapelkontext aufmacht, der unter dem Overlay liegt.
+      let kontext=null;
+      for(let e=el.parentElement;e&&e!==document.body;e=e.parentElement){
+        const cs=getComputedStyle(e);
+        if(cs.position!=='static'&&cs.zIndex!=='auto'){kontext={wo:(e.id?'#'+e.id:'.'+String(e.className).split(' ')[0]),z:Number(cs.zIndex)};break;}
+        if(cs.transform!=='none'||cs.filter!=='none'||cs.isolation==='isolate'||cs.opacity!=='1'){kontext={wo:(e.id?'#'+e.id:'.'+String(e.className).split(' ')[0]),z:'neuer Kontext ohne z-index'};break;}
+      }
+      werte.gefunden[klasse]={z,elternKontext:kontext,
+        obenAuf:kontext===null?Number(z)>modalZ:(typeof kontext.z==='number'?kontext.z>modalZ:false)};
+    }
+    return werte;
+  });
+  for(const [klasse,w] of Object.entries(kartenZahlen.gefunden)){
+    if(w==='fehlt'){pruefe(`${klasse} wird erzeugt`,false,true);continue;}
+    pruefe(`${klasse} liegt ueber dem Kampf-Overlay`,w.obenAuf===true,true);
+    if(w.obenAuf!==true)console.log(`      ${klasse}: z=${w.z}, eingesperrt von ${JSON.stringify(w.elternKontext)} (Overlay liegt auf ${kartenZahlen.modalZ})`);
+  }
+
   // Sichtprobe: Overlay auf, Popup an - ist die Popup-Flaeche zu sehen?
   const sichtbar=await p.evaluate(()=>{
     const modal=document.getElementById('counterModal');
@@ -91,7 +144,7 @@ try{
   pruefe('Popup steckt nicht hinter dem Overlay',sichtbar.hinterOverlay===false,true);
 
 }catch(e){absturz=e;}finally{
-  const ERWARTET=23;
+  const ERWARTET=25;
   let fehler=ergebnisse.length<ERWARTET?1:0;
   if(fehler)console.log(`ACHTUNG: nur ${ergebnisse.length} von ${ERWARTET} Zusicherungen erreicht.`);
   const breite=Math.max(1,...ergebnisse.map(r=>r[0].length));

@@ -794,6 +794,25 @@
     },1080);
   }
 
+  // Die Zahl an der Spielerkarte ("-14 HP") hing bis V28.12.21 IN der Karte.
+  // Damit steckte sie in deren Stapelkontext und lag zwangslaeufig unter
+  // jedem Kampf-Overlay - beim Counterattack also genau dann unsichtbar,
+  // wenn der Schaden entsteht. Eine hoehere z-index am Element selbst hilft
+  // dagegen nicht; sie muss aus der Karte heraus.
+  // Sie wird deshalb fest ueber der Karte positioniert an den Koerper
+  // gehaengt, im selben Band wie die uebrigen Meldeschichten.
+  function cardValuePop(card,klasse,text,dauer){
+    if(!card)return;
+    const box=card.getBoundingClientRect();
+    const pop=document.createElement("div");
+    pop.className=`${klasse} dd-card-pop`;
+    pop.textContent=text;
+    pop.style.left=`${Math.round(box.left+box.width/2)}px`;
+    pop.style.top=`${Math.round(box.top)}px`;
+    document.body.appendChild(pop);
+    setTimeout(()=>pop.remove(),dauer);
+  }
+
   function playDamageAnimation(targetIndex,amount){
     if(amount<=0) return;
     const card=$("playerCard"+targetIndex);
@@ -809,11 +828,7 @@
       card.classList.remove("damage-shake");
       void card.offsetWidth;
       card.classList.add("damage-shake");
-      const pop=document.createElement("div");
-      pop.className="damage-pop";
-      pop.textContent=`−${amount} HP`;
-      card.appendChild(pop);
-      setTimeout(()=>pop.remove(),950);
+      cardValuePop(card,"damage-pop",`−${amount} HP`,950);
       setTimeout(()=>card.classList.remove("damage-shake"),650);
     }
     setTimeout(()=>{
@@ -837,11 +852,7 @@
       card.classList.remove("heal-pulse");
       void card.offsetWidth;
       card.classList.add("heal-pulse");
-      const pop=document.createElement("div");
-      pop.className="heal-pop";
-      pop.textContent=`+${amount} HP`;
-      card.appendChild(pop);
-      setTimeout(()=>pop.remove(),1050);
+      cardValuePop(card,"heal-pop",`+${amount} HP`,1050);
       setTimeout(()=>card.classList.remove("heal-pulse"),850);
     }
     setTimeout(()=>{

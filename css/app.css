@@ -12585,3 +12585,18 @@ body.playing #game .controls>#primaryBtn,
 html[data-v28-rework="2"] body.playing #game .controls>#primaryBtn{
   min-height:58px;
 }
+
+
+/* ===== Schadens- und Heilzahl an der Spielerkarte =====
+   Beide hingen IN der Karte (z-index:30) und steckten damit in deren
+   Stapelkontext - unter jedem Kampf-Overlay. Beim Counterattack war die
+   Schadenszahl also genau dann verdeckt, wenn der Schaden entsteht.
+   Sie haengen jetzt am Koerper und werden ueber die Karte positioniert
+   (cardValuePop in js/12-battle-ui.js), im selben Band wie die uebrigen
+   Meldeschichten: unter Ereignis-Popup (11900) und Achievement-Toast. */
+.dd-card-pop{
+  position:fixed;
+  z-index:11894;
+  pointer-events:none;
+  transform:translateX(-50%);
+}
