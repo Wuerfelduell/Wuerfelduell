@@ -16,9 +16,14 @@
     },ROLL_ANIM_MS);
   }
 
-  function tickClassicSpecialDie(el){
+  // Waehrend eines Spezialwurfs blinken die Flaechen durch. Das galt bis
+  // V28.12.22 nur fuer Designs OHNE Artwork: der fruehe Ausstieg liess jedes
+  // Art-Design ohne Flaechenwechsel, und weil .theme-art-die.rolling
+  // zusaetzlich die Sprite ausblendet, war der grosse Wuerfel waehrend des
+  // ganzen Wurfs leer - nur Rahmen und weisse Flaeche. Genau das war als
+  // "fehlende Wuerfelanimation, der Wuerfel ist immer weiss" gemeldet.
+  function tickSpecialDie(el){
     const key=players[current]?.diceDesign||"classic";
-    if(DICE_DESIGNS[key]?.artKey) return;
     renderSpecialDieFace(el,key,randDie());
   }
 
@@ -642,7 +647,7 @@
 
     let ticks=0;
     const timer=setInterval(()=>{
-      tickClassicSpecialDie(gamblingDie);
+      tickSpecialDie(gamblingDie);
       ticks++;
       if(ticks>=8) clearInterval(timer);
     },60);
@@ -714,7 +719,7 @@
 
     let ticks=0;
     const timer=setInterval(()=>{
-      tickClassicSpecialDie(perfect25Die);
+      tickSpecialDie(perfect25Die);
       if(++ticks>=8) clearInterval(timer);
     },60);
 
@@ -831,7 +836,7 @@
     const before=attackDamage;
     let ticks=0;
     const timer=setInterval(()=>{
-      tickClassicSpecialDie(highStakesDie);
+      tickSpecialDie(highStakesDie);
       if(++ticks>=8) clearInterval(timer);
     },60);
 
@@ -947,7 +952,7 @@
 
     let ticks=0;
     const timer=setInterval(()=>{
-      tickClassicSpecialDie(insuranceDie);
+      tickSpecialDie(insuranceDie);
       if(++ticks>=8) clearInterval(timer);
     },60);
 

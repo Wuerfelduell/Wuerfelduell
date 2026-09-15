@@ -22,7 +22,7 @@ welche Fallen schon Zeit gekostet haben.
 
 | | |
 |---|---|
-| Version | **28.12.21** |
+| Version | **28.12.22** |
 | Branch | `main` |
 | Letzte Schritte | CSS-Stapel auf 10 Dateien zusammengelegt · Changelog englisch vervollständigt · Hauptmenü, Statistik, Profile, Achievements, Spielvorbereitung und Trophy Shop überarbeitet · Fähigkeits- und Shopflächen auf proportional gekachelte Bildrahmen umgestellt · alle Bild-URLs auf einen gemeinsamen Cache-Schlüssel · Trophy-Shop-Reste bereinigt und Aufklapppfeile angeglichen · Duo- und Trio-Boss-Rush mit Pfadwahl, gespeicherten Runs und 32 Perks einschließlich temporärer Ability-Mastery · Boss-XP-Umtausch 300:100 · Zweitfund gedeckelt · Trio-Rush 15 Stufen, ab 10 ultraschwer · Boss-Rush-HUD auf die Weltregel reduziert · Zweitfund-Kopien ablehnbar und weitergebbar · Ultra-Stufen treffen härter statt länger zu dauern · Heilung gedeckelt, Maximum wächst je Stufe · Regelleiste als Kachelgitter, wächst mit dem Text · gespeicherte Runs überleben Balanceänderungen · Meldeschichten über den Kampf-Overlays geordnet |
 
@@ -562,6 +562,15 @@ Testumgebung; der Sprite-Pass nimmt diese Entwicklerfläche über
   `dd_submit_battle_action` und `dd_publish_battle_state` als fehlend,
   obwohl beide längst da waren — die Sonde schickte nur `p_room_id`. Wer
   eine RPC anpingt, nimmt die vollständige Signatur aus der Migration.
+
+- **Ein eigener Rahmen verkleinert alles, was absolut darin liegt.** Der
+  grosse Spezialwürfel hat seit dem Rahmenumbau `border-width:40px` mit
+  `border-image` (`36-v28-hierarchie.css:190`). Bei 168 px Würfel bleibt
+  damit eine **Innenbox von 88 px** — und `width:100%` an einem absolut
+  positionierten Kind rechnet gegen genau diese Innenbox, nicht gegen die
+  Rahmenbox. Das Artwork-Sprite landete deshalb bei 88 px statt 168.
+  Wer an diesen Würfeln etwas misst, misst `clientWidth`, nicht
+  `getBoundingClientRect()`.
 
 - **Die Emojis im Markup sind die QUELLE, kein Schmutz.**
   `js/36-emoji-sprite-pass.js` ersetzt sie im DOM durch Sprites — für

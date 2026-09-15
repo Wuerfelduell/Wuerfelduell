@@ -12600,3 +12600,25 @@ html[data-v28-rework="2"] body.playing #game .controls>#primaryBtn{
   pointer-events:none;
   transform:translateX(-50%);
 }
+
+
+/* ===== Grosser Spezialwuerfel: Flaeche auch waehrend des Wurfs =====
+   .theme-art-die.rolling blendet die Sprite aus, weil beim NORMALEN Wuerfel
+   an ihrer Stelle der 3D-Wuerfel rotiert. Beim grossen Spezialwuerfel gibt
+   es diesen Ersatz nicht sichtbar - dort blieb waehrend des Wurfs nur der
+   leere Rahmen stehen. Die Sprite bleibt hier deshalb stehen; die Flaechen
+   wechseln ueber tickSpecialDie (js/13-battle-actions.js), das ist die
+   Animation. */
+:is(.special-big-die,.gambling-die).theme-art-die:not(.d4).rolling>.die-art-sprite{
+  display:block;
+}
+/* Der rotierende 3D-Wuerfel ist beim grossen Spezialwuerfel der falsche
+   Ersatz: seine Flaechen stehen weit ueber den Rahmen hinaus, und neben der
+   wechselnden Sprite braucht es ihn gar nicht. Der Flaechenwechsel IST die
+   Animation. */
+:is(.special-big-die,.gambling-die).theme-art-die:not(.d4).rolling>.die-cube{
+  display:none;
+}
+:is(.special-big-die,.gambling-die).theme-art-die:not(.d4).rolling{
+  overflow:hidden;
+}
