@@ -22,8 +22,8 @@ welche Fallen schon Zeit gekostet haben.
 
 | | |
 |---|---|
-| Version | **28.12.33** |
-| Branch | `main` |
+| Version | **28.12.34** (Branch; Live-Nachweis offen) |
+| Branch | `online-guest-latency` |
 | Letzte Schritte | CSS-Stapel auf 10 Dateien zusammengelegt · Changelog englisch vervollständigt · Hauptmenü, Statistik, Profile, Achievements, Spielvorbereitung und Trophy Shop überarbeitet · Fähigkeits- und Shopflächen auf proportional gekachelte Bildrahmen umgestellt · alle Bild-URLs auf einen gemeinsamen Cache-Schlüssel · Trophy-Shop-Reste bereinigt und Aufklapppfeile angeglichen · Duo- und Trio-Boss-Rush mit Pfadwahl, gespeicherten Runs und 32 Perks einschließlich temporärer Ability-Mastery · Boss-XP-Umtausch 300:100 · Zweitfund gedeckelt · Trio-Rush 15 Stufen, ab 10 ultraschwer · Boss-Rush-HUD auf die Weltregel reduziert · Zweitfund-Kopien ablehnbar und weitergebbar · Ultra-Stufen treffen härter statt länger zu dauern · Heilung gedeckelt, Maximum wächst je Stufe · Regelleiste als Kachelgitter, wächst mit dem Text · gespeicherte Runs überleben Balanceänderungen · Meldeschichten über den Kampf-Overlays geordnet · großer Spezialwürfel dreht sich als echter 3D-Würfel wie der normale und füllt seinen Rahmen · Kampflog, Infos-Blatt und Weltregel hinter einem Knopf, Knopfleiste gekürzt und beruhigt · Kartentexte aus den gemalten Rahmen geholt · fünf neue Würfeldesigns in der Testumgebung · Matchbar auf schmalen Telefonen wieder einzeilig · fünf Würfeldesigns mit fertigem Artwork und nachgemessenem Augenraster · Live-Online-Prüfstand repariert und um eine Latenzmessung erweitert · sieben weitere Würfeldesigns |
 
 **Die Arbeitsteilung hat sich geändert.** Bis V28.11.28 liefen zwei
@@ -502,57 +502,24 @@ Zwei Punkte. Alles andere aus dem Codex-Durchgang vom 14.09. ist
 abgearbeitet und steht unten als Chronik — dort nur noch das, was man
 wissen muss, nicht mehr die volle Beweisführung.
 
-1. **Online läuft — aber der Gast wartet.** Der Nutzer hat am 10.09. mit
-   zwei echten Geräten durchgespielt: Lobby, Beitritt und Matchstart
-   funktionieren. Übrig bleibt eine deutliche Verzögerung **nur beim
-   Gast**. Das ist kein Netzproblem, sondern die Reihenfolge im Code:
+1. **Online-Gast: Wuerfergebnis vorgezogen, Live-Nachweis noch offen.**
+   `online-guest-latency` ist auf `main` (9cbdcae) rebasiert, nicht gemergt.
+   Schritt 0 bleibt: Zwischenstand und Endstand mit eigener Sequenz, Pending
+   bis zum Endstand. Basis fuer den neuen Vorher-Vergleich: e3028b1.
 
-   `hostExecuteAction` (`js/17-online-bridge.js:731`) führt die Aktion
-   aus und wartet dann mit `waitForEngineSettled` bis die **Animation des
-   Hosts vollständig abgelaufen** ist — erst danach veröffentlicht es den
-   Stand. Der Host sieht seine Animation also live, der Gast bekommt sie
-   erst hinterher als fertigen Zustand geschickt.
+   Seit 28.12.34 zieht `animateIndices` die Werte vor dem Timer. Der Host
+   verbirgt sie ueber rolling auch im DOM, im flachen Renderer und in der
+   Summe; Twelve-Heilung und Log bleiben beim Aufdecken. Der Gast schreibt
+   Hauptwuerfe mit gueltigen vorgezogenen Augen sofort fest, ohne Pending
+   oder dessen Timer zu loeschen. Spezialwuerfe und Gegenangriff ziehen
+   weiterhin in ihren eigenen Pfaden und behalten ihre Vorschau.
 
-   Größenordnungen, aus dem Quelltext: ein Wurf ist 250 ms (schnell) bzw.
-   430 ms; eine Schadenskette läuft über `650 + i*520` ms, also bis rund
-   1.700 ms; `waitForEngineSettled` deckelt bei 3.600 ms. Dazu kommen
-   zwei Netzwege (Gast → DB → Host, Host → DB → Gast).
-
-   **Dieser Plan ist am 15.09. live nachgemessen worden — und er trägt
-   nicht.** Der Branch `online-guest-latency` setzt ihn sauber um: nach
-   `executeOnlineAction` geht ein Zwischenstand (`settled:false`) raus,
-   danach der Endstand, beide mit eigener `seq`, und `actionPending` bleibt
-   bis zum Endstand stehen. Das funktioniert auch wirklich — beim Gast
-   kommt der Zwischenstand bei Würfen **500 bis 990 ms vor** dem Endstand
-   an (gemessen: Basiswurf 1396 statt 2382 ms, Restwurf 1279 statt 1771 ms,
-   Angriffswurf 803 statt 1303 ms).
-
-   **Nur sieht der Gast dadurch nichts früher.** Der Grund steht in
-   `js/13-battle-actions.js:1` (`animateIndices`): die Augenzahlen werden
-   **am Ende** der Animation gewürfelt, nicht am Anfang. Der Zwischenstand
-   trägt deshalb `dice[i].value: null` und `rolling: true` — es gibt noch
-   kein Ergebnis zu zeigen. Nachgemessen als Feldvergleich Zwischenstand
-   gegen Endstand: 13 Unterschiede, darunter alle fünf Augenzahlen und
-   `phase: idle -> base_select`.
-
-   Live gegen das echte Projekt, je zwei Läufe mit demselben Prüfstand und
-   demselben Startzustand: **vorher 1511 / 1474 ms, nachher 1511 / 1356 ms**
-   Mittel über sechs Gastaktionen. Der Unterschied liegt unter der Streuung
-   zwischen zwei Läufen derselben Fassung. In **allen 24 gemessenen
-   Aktionen** war `sichtbar` gleich `bestätigt` — kein einziges Mal wurde
-   etwas vor der Freigabe sichtbar.
-
-   **Der Weg, der wirklich etwas bringt, ist damit vermessen:**
-   1. Das Wurfergebnis **vor** der Animation ziehen. `animateIndices` setzt
-      heute `rolling=true`, rendert, und ruft `finalRoll(i)` erst nach
-      `ROLL_ANIM_MS`. Umgedreht — erst ziehen, dann animieren, dann
-      aufdecken — trägt der Zwischenstand die echten Augen.
-   2. Dann darf `applyStateNow` den Zwischenstand auch **festschreiben**
-      statt die Vorschau neu zu starten; der Gast animiert auf dasselbe
-      Ergebnis zu.
-   Erst beide Schritte zusammen nehmen die 500–990 ms aus der Wartezeit.
-   Der Branch ist Schritt 0 und bleibt dafür stehen — **ungemergt**, weil
-   er allein Protokollkomplexität ohne messbaren Gewinn wäre.
+   `scripts/qa/wurf-vorab.mjs` besteht lokal und faellt gegen e3028b1 an
+   der erwarteten Zusicherung (Wert vor Timer). Es prueft 430/250 ms,
+   eigene Finalfunktion, einmalige Ziehung, Heilungszeitpunkt und die
+   Snapshot-Anwendung samt Pending/Timer. `online-protokoll.mjs` prueft
+   jetzt fruehe echte Augen statt einer weiterlaufenden Gastvorschau.
+   Browser-/Live-Ergebnisse werden nach dem Lauf hier nachgetragen.
 
    **Und der Rest ist nicht die Animation.** „Rest sichern" hat gar keine
    Animation und kostet trotzdem 1051–1290 ms. Die Wartezeit ist zum

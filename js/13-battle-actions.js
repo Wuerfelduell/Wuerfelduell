@@ -3,15 +3,19 @@
     const previewRoll=typeof rollOptions.preview==="function"?rollOptions.preview:()=>randDie();
     const finalRoll=typeof rollOptions.final==="function"?rollOptions.final:()=>rollTrackedD6(current);
     isAnimating=true;
-    indices.forEach(i=>dice[i].rolling=true);
+    // Das Ergebnis muss bereits im Online-Zwischenstand stehen. Sichtbar wird
+    // es lokal erst beim Aufdecken; rolling schirmt Augen und Summe ab.
+    indices.forEach(i=>{dice[i].value=finalRoll(i);dice[i].rolling=true;});
     renderAll();
 
     // 3D-Cube (CSS und Art-Flächen) zeigt beim Spin alle sechs Seiten.
     // Keine 55-ms-Neurenders: Animation bleibt auf dem Compositor.
     setTimeout(()=>{
-      indices.forEach(i=>{dice[i].value=finalRoll(i);dice[i].rolling=false;});
+      indices.forEach(i=>{dice[i].rolling=false;});
+      // Heilung und Log bleiben wie bisher am Ende der Animation.
       applyTwelveHeal(current,indices.map(i=>dice[i].value),phase.startsWith("attack")?"Angriffswurf":"Basiswurf");
       isAnimating=false;
+      renderAll();
       finalizer();
     },ROLL_ANIM_MS);
   }

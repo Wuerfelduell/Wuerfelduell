@@ -592,7 +592,13 @@
 
   function applyStateNow(state,previousHp){
     const settled=state.settled!==false;
-    const settlingRoll=settled&&isOnlineRollVisual(state?.actionType||onlineSession.previewType||onlineSession.pendingActionType);
+    const actionType=state?.actionType||onlineSession.previewType||onlineSession.pendingActionType;
+    // Nur Hauptwuerfe liefern ihre Augen vorab. Spezial- und Gegenwuerfe
+    // ziehen weiterhin spaeter und behalten bis dahin ihre Vorschau.
+    const earlyRoll=!settled&&MAIN_ROLL_ACTIONS.has(actionType)&&
+      Array.isArray(state.dice)&&state.dice.some(d=>d?.rolling)&&
+      state.dice.filter(d=>d?.rolling).every(d=>Number.isInteger(d.value)&&d.value>=1&&d.value<=6);
+    const settlingRoll=(settled||earlyRoll)&&isOnlineRollVisual(actionType);
     if(settlingRoll) prepareOnlineRollCommit();
 
     const turnUid=String(state.currentPlayerUid||"");
@@ -602,6 +608,7 @@
     syncLocalOnlineAchievements();
     applyBattleSnapshot(state.battle||{});
     if(Array.isArray(state.dice)) dice=cloneJson(state.dice,[])||[];
+    if(earlyRoll) dice.forEach(d=>{d.rolling=false;});
     phase=String(state.phase||phase||"idle");
 
     renderAll();
@@ -638,7 +645,7 @@
       // Auch ein Eigentümerwechsel im Zwischenstand gibt noch keinen Folgezug frei.
       // Den laufenden 8000-ms-Timer der Gasteingabe weder löschen noch verlängern.
       onlineSession.actionPending=true;
-      beginActionPreview(state.actionType,state.actionId);
+      if(!earlyRoll) beginActionPreview(state.actionType,state.actionId);
     }
     enforceOnlineControls();
   }

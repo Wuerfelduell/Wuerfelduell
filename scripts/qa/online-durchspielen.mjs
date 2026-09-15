@@ -189,7 +189,9 @@ async function seite(name, profilname) {
   await p.waitForSelector("#mainMenu:not(.hidden)", { timeout: 15000 });
   await p.waitForTimeout(800);
   await p.click("#menuOnlineBtn");
-  await p.waitForTimeout(6000);
+  // Der Verbindungsaufbau liegt ausserhalb der Latenzmessung. Auf den
+  // wirklichen Zustand warten, statt langsame Anmeldung als Fehler zu werten.
+  await p.waitForFunction(() => document.querySelector("#onlineStatusDot")?.dataset.state === "online", null, { timeout: 45000 });
   return p;
 }
 
@@ -215,23 +217,26 @@ try {
 
   console.log("\n== Lobby ==");
   await host.click("#onlineCreateBtn");
-  await host.waitForTimeout(6000);
+  await host.waitForFunction(() => /^[A-Z0-9]{6}$/.test(document.querySelector("#onlineRoomCode")?.textContent || ""), null, { timeout: 45000 });
   const raum = await lage(host);
   pruefe(/^[A-Z0-9]{6}$/.test(raum.code), `der Host bekommt einen Raumcode (${raum.code})`);
   if (!/^[A-Z0-9]{6}$/.test(raum.code)) throw new Error("kein Raum");
 
   await gast.fill("#onlineJoinCode", raum.code);
   await gast.click("#onlineJoinBtn");
-  await gast.waitForTimeout(6000);
+  await gast.waitForFunction(() => document.querySelectorAll(".online-player").length === 2, null, { timeout: 45000 });
+  await host.waitForFunction(() => document.querySelectorAll(".online-player").length === 2, null, { timeout: 45000 });
   pruefe((await lage(gast)).spieler === 2, "der Gast tritt bei und sieht beide Spieler");
   pruefe((await lage(host)).spieler === 2, "der Host sieht den Gast, ohne neu zu laden");
 
   console.log("\n== Bereit und Start ==");
   await gast.click("#onlineReadyBtn");
-  await gast.waitForTimeout(2500);
+  await host.waitForFunction(() => document.querySelectorAll(".online-player.ready").length === 1, null, { timeout: 45000 });
   pruefe((await lage(host)).bereit === 1, "die Bereitmeldung des Gastes erreicht den Host");
   await host.click("#onlineReadyBtn");
-  await host.waitForTimeout(9000);
+  for (const p of [host, gast]) await p.waitForFunction(() =>
+    !document.querySelector("#game")?.classList.contains("hidden") &&
+    document.querySelector("#onlineScreen")?.classList.contains("hidden"), null, { timeout: 45000 });
   pruefe((await lage(host)).imSpiel, "der Host landet im Match");
   pruefe((await lage(gast)).imSpiel, "der Gast landet im Match");
 

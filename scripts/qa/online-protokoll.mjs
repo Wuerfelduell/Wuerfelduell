@@ -103,14 +103,41 @@ try {
   });
   await gast.evaluate(() => { window.WDOnlineTransport = { requestAction: window.qaSend }; });
 
+  // Beide Darstellungswege muessen den vorgezogenen Wert bis zum Aufdecken
+  // verbergen: klassischer Wuerfel und Artwork, dazu flacher Telefonmodus.
+  for (const flat of [false, true]) {
+    await host.evaluate(flat => {
+      const original=galaxyA50CompatibilityMode;
+      galaxyA50CompatibilityMode=()=>flat;
+      document.documentElement.classList.toggle("legacy-flat-dice",flat);
+      for(const design of ["classic",Object.keys(DICE_DESIGNS).find(k=>DICE_DESIGNS[k].artKey)]){
+        players[current].diceDesign=design;
+        diceEl.replaceChildren();
+        dice=freshDice(); dice.forEach(d=>d.value=2); phase="base_select"; renderAll();
+        const before=document.querySelector("#sum").textContent;
+        dice.forEach(d=>{d.value=6;d.rolling=true;}); renderAll();
+        if([...document.querySelectorAll("#dice .die")].some(d=>d.dataset.value!=="2") || document.querySelector("#sum").textContent!==before) throw Error("Vorgezogene Augen sichtbar");
+        dice.forEach(d=>d.rolling=false); renderAll();
+        if([...document.querySelectorAll("#dice .die")].some(d=>d.dataset.value!=="6")) throw Error("Aufdecken fehlt");
+      }
+      galaxyA50CompatibilityMode=original;
+      document.documentElement.classList.remove("legacy-flat-dice");
+      diceEl.replaceChildren();
+      players[current].diceDesign="classic";
+    },flat);
+  }
+  console.log("ok: Host verbirgt Augen und Summe bis zum Aufdecken, klassisch/Artwork/flach");
+
   await fixture(); snapshots = [];
   await gast.click("#primaryBtn");
-  await gast.waitForFunction(() => window.__qa.session().actionPending && document.querySelector("#dice .rolling"));
+  await gast.waitForFunction(() => window.__qa.session().actionPending && window.__qa.session().lastStateSeq > 1);
   await pause(100);
   assert.equal(snapshots.length, 1, "Zwischenstand vor dem Ende des Wurfs");
   assert.equal(snapshots[0].settled, false);
+  assert(snapshots[0].dice.every(d => Number.isInteger(d.value)), "Zwischenstand enthaelt echte Augen");
+  assert.deepEqual(await gast.evaluate(() => [...document.querySelectorAll("#dice .die")].map(d => Number(d.dataset.value))), snapshots[0].dice.map(d => d.value), "Gast zeigt die autoritativen Augen vor der Bestaetigung");
   const pending = await gast.evaluate(() => ({ pending: window.__qa.session().actionPending, timer: !!window.__qa.session().pendingTimer, rolling: !!document.querySelector("#dice .rolling") }));
-  assert.deepEqual(pending, { pending: true, timer: true, rolling: true }, "Vorschau und Abbruchtimer bleiben aktiv");
+  assert.deepEqual(pending, { pending: true, timer: true, rolling: false }, "Augen festgeschrieben, Pending und Abbruchtimer bleiben aktiv");
   await gast.evaluate(() => document.querySelector("#primaryBtn").dispatchEvent(new MouseEvent("click", { bubbles: true })));
   assert.equal(sent, 1, "Keine zweite Gastaktion waehrend des Zwischenstands");
   await waitFinal();
@@ -170,7 +197,7 @@ try {
     for (const width of [320, 360, 390, 412, 1280]) {
       await gast.setViewportSize({ width, height: 900 });
       await apply({ ...rollStates[0], seq: ++seq });
-      assert(await gast.evaluate(() => window.__qa.session().actionPending && !!document.querySelector("#dice .rolling") && document.querySelector("#primaryBtn").disabled));
+      assert(await gast.evaluate(() => window.__qa.session().actionPending && !document.querySelector("#dice .rolling") && document.querySelector("#primaryBtn").disabled));
       await apply({ ...rollStates[1], seq: ++seq });
       assert(await gast.evaluate(() => !window.__qa.session().actionPending && !document.querySelector("#dice .rolling")));
     }

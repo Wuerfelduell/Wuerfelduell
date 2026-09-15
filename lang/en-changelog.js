@@ -5,6 +5,8 @@
   if (!pack) return;
 
   Object.assign(pack.exact, {
+    "Online-Hauptwürfe senden die gezogenen Augen bereits im Zwischenstand; der Gast zeigt sie vor der abschließenden Bestätigung und bleibt bis dahin für weitere Aktionen gesperrt": "Online main rolls send their rolled values in the intermediate state; the guest displays them before final confirmation and remains blocked from further actions until then",
+    "Beim Host bleiben Augen und Summe während der Wurfanimation verborgen; Twelve heilt weiterhin erst beim Aufdecken": "On the host, rolled values and their sum stay hidden during the roll animation; Twelve still heals only when the dice are revealed",
     "Sieben weitere Würfeldesigns sind eingebaut: Frost Porcelain, Ashwood, Coppertrail, Midnight Enamel, Ironkeep, Oakbound und Mossstone": "Seven more dice designs are in: Frost Porcelain, Ashwood, Coppertrail, Midnight Enamel, Ironkeep, Oakbound and Mossstone",
     "Auch sie lassen sich vorerst nur in der Testumgebung auswählen": "They too can only be picked in the test lab for now",
     // V28.12.29 bis .32 - die Eintraege .29 und .30 waren beim Ausliefern
