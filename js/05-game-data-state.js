@@ -120,6 +120,9 @@
   const trioCampaignBackBtn=$("trioCampaignBackBtn"), trioCampaignBanner=$("trioCampaignBanner"), trioCampaignWorldTabs=$("trioCampaignWorldTabs"), trioCampaignWorldDesc=$("trioCampaignWorldDesc"), trioTeamSummary=$("trioTeamSummary"), trioProgressSummary=$("trioProgressSummary"), trioTrophySummary=$("trioTrophySummary"), trioCampaignPath=$("trioCampaignPath"), trioCampaignEncounterDetail=$("trioCampaignEncounterDetail");
   const trioProfile1Select=$("trioProfile1Select"), trioProfile2Select=$("trioProfile2Select"), trioProfile3Select=$("trioProfile3Select"), trioAbility1Select=$("trioAbility1Select"), trioAbility2Select=$("trioAbility2Select"), trioAbility3Select=$("trioAbility3Select"), trioCampaignStartBtn=$("trioCampaignStartBtn"), trioCampaignProfilesBtn=$("trioCampaignProfilesBtn");
   const encounterRuleBanner=$("encounterRuleBanner"), campaignTaskProgress=$("campaignTaskProgress");
+  const combatLogBtn=$("combatLogBtn"), battleInfoBtn=$("battleInfoBtn");
+  const battleSheetOverlay=$("battleSheetOverlay"), battleSheetKicker=$("battleSheetKicker");
+  const battleSheetTitle=$("battleSheetTitle"), battleSheetBody=$("battleSheetBody"), battleSheetCloseBtn=$("battleSheetCloseBtn");
 
   let players=[], setupAbilityRolls=[], current=0, dice=[], phase="idle", isAnimating=false;
   let attackFace=null, attackTarget=null, attackHits=0, attackDamage=0, firstAttackRoll=true, currentAttackRollNewHits=0;

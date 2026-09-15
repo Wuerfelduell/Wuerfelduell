@@ -12571,12 +12571,16 @@ html[data-v28-rework="2"] body.playing .encounter-rule-banner>.encounter-rule-ar
    Zeilen statt in halben. */
 body.playing #game .controls>button,
 html[data-v28-rework="2"] body.playing #game .controls>button{
-  /* Basis 200px statt 140px: auf dem Telefon (Leiste 282 bis 352 px) passt
-     damit nur noch EIN Knopf je Zeile, und jeder hat die volle Breite. Mit
-     140px kippte es ab 390 px auf zwei Spalten mit 128 px Innenbreite - dort
-     passt nicht einmal "Blutpreis" samt Sprite (152 px). Auf breiten
-     Bildschirmen stehen weiterhin zwei nebeneinander. */
-  flex:1 1 200px;
+  /* flex-basis:auto statt einer festen Zahl. Eine feste Basis entscheidet
+     ueber die Spaltenzahl, BEVOR jemand den Text gesehen hat: mit 140px
+     standen ab 390px zwei Spalten mit 128px Innenbreite, in die "Blutpreis"
+     samt Sprite (152px) nicht passte - der Text brach mitten im Knopf um.
+     Mit 200px passte dafuer nur noch einer je Zeile.
+     Mit auto entscheidet der Inhalt: "Wuerfeln" und "Blutpreis" brauchen je
+     129px, die stehen auf jedem Telefon nebeneinander; "Ausgewaehlte
+     einlocken" braucht 188px und bekommt seine Zeile allein. Gewachsen wird
+     wie bisher, bis die Zeile voll ist. */
+  flex:1 1 auto;
   padding-inline:12px;
   gap:6px;
 }
@@ -12694,13 +12698,12 @@ html[data-v28-rework="2"] :is(.special-big-die,.gambling-die):disabled{
   border-radius:22%;
 }
 
-/* ===== Platzmanagement im Kampf – Versuch in der Testumgebung =====
+/* ===== Platzmanagement im Kampf =====
    Faehigkeitszeilen und Aufgabenfortschritt stehen im Infos-Blatt, nicht
    mehr im Zug. Sie bleiben im Baum, wo sie hingehoeren - nur unsichtbar;
-   das Blatt zeigt eine Kopie. Ausserhalb der Testumgebung greift keine
-   dieser Regeln, der normale Kampf bleibt unveraendert. */
-body.test-lab-active #game .ability-state,
-body.test-lab-active #game .campaign-task-progress{
+   das Blatt zeigt eine Kopie. */
+#game .ability-state,
+#game .campaign-task-progress{
   display:none;
 }
 
@@ -12719,12 +12722,18 @@ html[data-v28-rework="2"] body.playing .game-menu-btn.battle-info-btn{
   letter-spacing:.02em;
 }
 
-/* Zwei Knoepfe in der Matchbar: sie duerfen umbrechen statt sich
-   gegenseitig zu quetschen. */
-body.test-lab-active #game .matchbar-actions{
+/* Zwei Knoepfe in der Matchbar statt einem. Sie teilen sich eine Zeile;
+   die Polsterung von 28px je Seite stammt aus der Zeit, als dort nur der
+   Hauptmenue-Knopf stand - zu zweit passten sie damit nicht mehr neben
+   "Runde 1" und stapelten sich auf drei Zeilen (104px hoch). */
+#game .matchbar-actions{
   flex-wrap:wrap;
   justify-content:flex-end;
   gap:6px;
+}
+html[data-v28-rework="2"] body.playing #game .matchbar-actions>.game-menu-btn{
+  padding-inline:12px;
+  min-width:0;
 }
 
 /* Das Blatt selbst. Der Log kann lang werden - er scrollt im Panel,

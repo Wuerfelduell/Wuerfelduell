@@ -140,7 +140,10 @@
     "#gamblingModal","#highStakesModal","#perfect25Modal",
     "#perfect25D4Modal","#insuranceModal","#counterModal"
   ].join(",");
-  const ALWAYS_SKIP="script,style,template,textarea,select,option,#log,.dd-emoji-sprite";
+  // .battle-log-list steht mit drin, weil der Kampflog ein Protokoll ist,
+  // kein geschmueckter Text: dort sollen Zeichen wie "•" oder "✕" Zeichen
+  // bleiben. #log selbst ist ohnehin unsichtbar, das Blatt zeigt eine Kopie.
+  const ALWAYS_SKIP="script,style,template,textarea,select,option,#log,.battle-log-list,.dd-emoji-sprite";
   const DICE_SKIP=".die,.special-big-die,.gambling-die,.counter-die,.die-cube,.die-flat-face,.special-die-flat-face";
 
   const escapeRegExp=value=>value.replace(/[.*+?^${}()|[\]\\]/g,"\\$&");

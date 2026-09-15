@@ -103,6 +103,83 @@
     if(!cleanText) return;
     const d=document.createElement("div"); d.textContent=cleanText; logEl.prepend(d);
   }
+
+  /* ===== Kampflog und Infos: ein Blatt für beide =====
+     #log ist und bleibt unsichtbar - der Verlauf steht hinter einem Knopf
+     in der Matchbar, die Fähigkeits- und Aufgabenzeilen hinter "Infos" über
+     den Würfeln. Beides gibt im Zug seinen Platz frei.
+
+     Das Blatt zeigt KOPIEN. #abilityState und #campaignTaskProgress bleiben
+     an ihrem Platz im Baum und werden nur per CSS ausgeblendet; so kann
+     kein Renderpfad ins Leere schreiben und nichts muss aufgeräumt werden. */
+  function battleSheetCopy(source){
+    const copy=source.cloneNode(true);
+    // Zwei Knoten mit derselben id waeren ein stiller Fehler:
+    // getElementById liefert danach irgendeinen von beiden.
+    copy.removeAttribute("id");
+    copy.querySelectorAll("[id]").forEach(node=>node.removeAttribute("id"));
+    copy.classList.remove("hidden");
+    return copy;
+  }
+  function battleSheetHasContent(el){
+    return !!el && !el.classList.contains("hidden") && el.innerHTML.trim()!=="";
+  }
+  function renderBattleSheetInfo(body){
+    const parts=[["Fähigkeiten",abilityState],["Aufgaben",campaignTaskProgress]];
+    let any=false;
+    for(const [title,source] of parts){
+      if(!battleSheetHasContent(source)) continue;
+      any=true;
+      const head=document.createElement("div");
+      head.className="battle-sheet-head";
+      head.textContent=tx(title);
+      body.append(head,battleSheetCopy(source));
+    }
+    if(!any){
+      const empty=document.createElement("div");
+      empty.className="battle-sheet-leer";
+      empty.textContent=tx("Gerade gibt es nichts zu berichten.");
+      body.append(empty);
+    }
+  }
+  function renderBattleSheetLog(body){
+    // addLog stellt neue Eintraege VORNE ein. Im Blatt steht der Kampf in
+    // der Reihenfolge, in der er passiert ist: Zeile 1 ist die erste Aktion.
+    const lines=[...logEl.children].map(node=>node.textContent).filter(t=>t&&t.trim()).reverse();
+    if(!lines.length){
+      const empty=document.createElement("div");
+      empty.className="battle-sheet-leer";
+      empty.textContent=tx("Noch kein Eintrag in dieser Partie.");
+      body.append(empty);
+      return;
+    }
+    const list=document.createElement("ol");
+    list.className="battle-log-list";
+    for(const text of lines){
+      const row=document.createElement("li");
+      row.textContent=text;
+      list.append(row);
+    }
+    body.append(list);
+  }
+  function openBattleSheet(kind){
+    if(!battleSheetOverlay) return;
+    battleSheetBody.replaceChildren();
+    battleSheetKicker.textContent=tx(kind==="log"?"Verlauf":"Im Zug");
+    battleSheetTitle.textContent=tx(kind==="log"?"Kampflog":"Infos");
+    if(kind==="log") renderBattleSheetLog(battleSheetBody);
+    else renderBattleSheetInfo(battleSheetBody);
+    battleSheetOverlay.classList.remove("hidden");
+  }
+  function closeBattleSheet(){ battleSheetOverlay?.classList.add("hidden"); }
+  // Der Infos-Knopf steht nur da, wenn es etwas zu zeigen gibt - im Boss
+  // Rush zum Beispiel sind die Faehigkeitszeilen bewusst leer.
+  function refreshBattleInfoButton(){
+    const row=battleInfoBtn?.parentElement;
+    if(!row) return;
+    const something=battleSheetHasContent(abilityState)||battleSheetHasContent(campaignTaskProgress);
+    row.classList.toggle("hidden",!something);
+  }
   function maxHpForPlayer(playerOrIndex){
     const p=typeof playerOrIndex==="number"?players[playerOrIndex]:playerOrIndex;
     const value=Number(p?.maxHp);
@@ -723,7 +800,7 @@
     if(isAnimating) return;
     if(phase==="campaign_target"){renderCampaignTargetChoices();return;}
 
-    if(phase==="idle"){primaryBtn.classList.remove("hidden");battleAction(primaryBtn,"Basiswurf","gameplay/dice.svg");}
+    if(phase==="idle"){primaryBtn.classList.remove("hidden");battleAction(primaryBtn,"Würfeln","gameplay/dice.svg");}
     if(phase==="base_select"){
       lockBtn.classList.remove("hidden");
       lockBtn.disabled=!dice.some(d=>d.selected&&!d.locked);
@@ -756,14 +833,17 @@
         snakeEyesBtn.textContent=tx("Snake Eyes");
       }
     }
-    if(phase==="base_ready"){primaryBtn.classList.remove("hidden");battleAction(primaryBtn,"Rest würfeln","gameplay/dice.svg");}
+    if(phase==="base_ready"){primaryBtn.classList.remove("hidden");battleAction(primaryBtn,"Würfeln","gameplay/dice.svg");}
     if(phase==="attack_ready"||phase==="attack_continue"){
       primaryBtn.classList.remove("hidden");
+      // Kurz halten: der Knopf heisst in jeder Phase "Wuerfeln". Welche
+      // Zahl gesucht ist, welche Nachbarzahlen der Blutpreis mittraegt und
+      // was ein Treffer kostet, steht vollstaendig in der Statuszeile
+      // darueber - auf dem Knopf war es doppelt und machte ihn so breit,
+      // dass kein zweiter daneben passte.
       battleAction(
         primaryBtn,
-        bloodPriceNeighbors.length
-          ? `Würfeln: ${[attackFace,...bloodPriceNeighbors].sort((a,b)=>a-b).join(" / ")}`
-          : (phase==="attack_ready"?`Auf ${attackFace}er würfeln`:"Angriff weiterwürfeln"),
+        "Würfeln",
         bloodPriceNeighbors.length ? "gameplay/heart-hp.svg" : "gameplay/attack.svg"
       );
 
@@ -805,7 +885,7 @@
       // der Cash-out auf dem Auswerten-Button.
       if(doubleTapChoice){
         primaryBtn.classList.remove("hidden");
-        battleAction(primaryBtn,"Mit 2 Treffern weiterwürfeln","gameplay/dice.svg");
+        battleAction(primaryBtn,"Würfeln","gameplay/dice.svg");
         resolveAttackBtn.classList.remove("hidden");
         resolveAttackBtn.textContent="🔫 2 Treffer sichern · Double Tap";
       }
@@ -948,6 +1028,9 @@
     roundNumberEl.textContent=roundNumber;
     if(winTrackerLabel) winTrackerLabel.classList.toggle("hidden",!!campaignMode);
     renderPlayers(); renderDice(); updateHeader(); updateButtons(); renderEncounterRuleBanner(); renderCampaignTaskProgress();
+    // Nach den beiden Rendern, die den Inhalt setzen: erst dann steht fest,
+    // ob es ueberhaupt etwas zu zeigen gibt.
+    refreshBattleInfoButton();
     // Während eines Würfelwurfs bleibt die Board-Geometrie eingefroren.
     // Die Würfel selbst dürfen rotieren/skalieren; nur die äußere Board-Geometrie bleibt konstant.
     if(!isAnimating) applySeatRotation();

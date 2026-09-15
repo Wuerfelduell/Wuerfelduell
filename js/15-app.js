@@ -186,6 +186,12 @@
 
   gameMenuBtn.onclick=()=>requestLeaveCurrentGame();
 
+  if(combatLogBtn) combatLogBtn.onclick=()=>openBattleSheet("log");
+  if(battleInfoBtn) battleInfoBtn.onclick=()=>openBattleSheet("infos");
+  if(battleSheetCloseBtn) battleSheetCloseBtn.onclick=closeBattleSheet;
+  // Klick auf den dunklen Rand schliesst, Klick im Blatt nicht.
+  if(battleSheetOverlay) battleSheetOverlay.onclick=ev=>{if(ev.target===battleSheetOverlay) closeBattleSheet();};
+
   quitCancelBtn.onclick=()=>{
     quitModal.classList.add("hidden");
     scheduleBotAction(100);

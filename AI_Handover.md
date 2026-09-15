@@ -22,9 +22,9 @@ welche Fallen schon Zeit gekostet haben.
 
 | | |
 |---|---|
-| Version | **28.12.25** |
+| Version | **28.12.26** |
 | Branch | `main` |
-| Letzte Schritte | CSS-Stapel auf 10 Dateien zusammengelegt · Changelog englisch vervollständigt · Hauptmenü, Statistik, Profile, Achievements, Spielvorbereitung und Trophy Shop überarbeitet · Fähigkeits- und Shopflächen auf proportional gekachelte Bildrahmen umgestellt · alle Bild-URLs auf einen gemeinsamen Cache-Schlüssel · Trophy-Shop-Reste bereinigt und Aufklapppfeile angeglichen · Duo- und Trio-Boss-Rush mit Pfadwahl, gespeicherten Runs und 32 Perks einschließlich temporärer Ability-Mastery · Boss-XP-Umtausch 300:100 · Zweitfund gedeckelt · Trio-Rush 15 Stufen, ab 10 ultraschwer · Boss-Rush-HUD auf die Weltregel reduziert · Zweitfund-Kopien ablehnbar und weitergebbar · Ultra-Stufen treffen härter statt länger zu dauern · Heilung gedeckelt, Maximum wächst je Stufe · Regelleiste als Kachelgitter, wächst mit dem Text · gespeicherte Runs überleben Balanceänderungen · Meldeschichten über den Kampf-Overlays geordnet · großer Spezialwürfel dreht sich als echter 3D-Würfel wie der normale und füllt seinen Rahmen · Kampflog und Infos-Blatt als Platzversuch in der Testumgebung |
+| Letzte Schritte | CSS-Stapel auf 10 Dateien zusammengelegt · Changelog englisch vervollständigt · Hauptmenü, Statistik, Profile, Achievements, Spielvorbereitung und Trophy Shop überarbeitet · Fähigkeits- und Shopflächen auf proportional gekachelte Bildrahmen umgestellt · alle Bild-URLs auf einen gemeinsamen Cache-Schlüssel · Trophy-Shop-Reste bereinigt und Aufklapppfeile angeglichen · Duo- und Trio-Boss-Rush mit Pfadwahl, gespeicherten Runs und 32 Perks einschließlich temporärer Ability-Mastery · Boss-XP-Umtausch 300:100 · Zweitfund gedeckelt · Trio-Rush 15 Stufen, ab 10 ultraschwer · Boss-Rush-HUD auf die Weltregel reduziert · Zweitfund-Kopien ablehnbar und weitergebbar · Ultra-Stufen treffen härter statt länger zu dauern · Heilung gedeckelt, Maximum wächst je Stufe · Regelleiste als Kachelgitter, wächst mit dem Text · gespeicherte Runs überleben Balanceänderungen · Meldeschichten über den Kampf-Overlays geordnet · großer Spezialwürfel dreht sich als echter 3D-Würfel wie der normale und füllt seinen Rahmen · Kampflog und Infos-Blatt im Kampf, Wurfknopf gekürzt |
 
 **Die Arbeitsteilung hat sich geändert.** Bis V28.11.28 liefen zwei
 Sitzungen parallel: Codex hat umgesetzt, diese Sitzung geprüft. Ab jetzt
@@ -511,28 +511,47 @@ wissen muss, nicht mehr die volle Beweisführung.
    was im Browser bleibt — kein Auftrag über ein paar Stunden. Ebenfalls
    offen und dann fällig: die Zuordnung von `Profiles` zu `auth.users`.
 
-4. **Platzmanagement im Kampf — Versuch läuft, nur in der Testumgebung.**
-   Seit V28.12.25 stehen dort drei Dinge anders: die FX-Werkbank startet
-   eingeklappt, ein **Kampflog**-Knopf neben dem Hauptmenü öffnet den
-   Verlauf (`#log` ist weiter dauerhaft unsichtbar, `addLog` schreibt
-   hinein), und ein kleiner **Infos**-Knopf über den Würfeln zeigt
-   Fähigkeitszeilen und Aufgabenfortschritt. Die beiden geben damit ihren
-   Platz im Zug frei: der Wurfknopf rückt rund 55 px nach oben.
+4. **Platzmanagement im Kampf — erster Schritt steht im Spiel.**
+   Seit V28.12.26 im **normalen Kampf**, nicht mehr nur in der
+   Testumgebung:
 
-   **Alles nur in der Testumgebung** — `body.test-lab-active`. Der normale
-   Kampf ist unverändert, und zwar absichtlich so gebaut, dass er es auch
-   bleibt, wenn der Versuch schiefgeht: die Blätter zeigen **Kopien**,
-   `#abilityState` und `#campaignTaskProgress` hängen weiter an ihrem
-   Platz und werden nur per CSS ausgeblendet. Kein Umzug, keine
-   Aufräumpflicht.
+   - **Kampflog** neben dem Hauptmenü. `#log` bleibt dauerhaft unsichtbar
+     und `addLog` schreibt weiter hinein; das Blatt liest bei jedem Öffnen
+     neu. Zeile 1 ist die **erste** Aktion des Kampfes (`#log` hält sie
+     hinten, `addLog` stellt vorne ein — das Blatt dreht um). Sprites sind
+     dort ausgeschaltet: `.battle-log-list` steht in `ALWAYS_SKIP` des
+     Sprite-Passes, ein Protokoll bleibt Text.
+   - **Infos** über den Würfeln zeigt Fähigkeitszeilen und
+     Aufgabenfortschritt; beide belegen im Zug keinen Platz mehr. Der
+     Knopf verschwindet, wenn es nichts zu zeigen gibt
+     (`refreshBattleInfoButton`).
+   - Der Wurfknopf heißt in **jeder** Phase nur noch „Würfeln" (englisch
+     „Roll"). Welche Zahl gesucht ist, was der Blutpreis mitträgt und was
+     ein Treffer kostet, steht vollständig in der Statuszeile darüber.
+     Dadurch passt ein Zusatzknopf **neben** ihn: „Würfeln" und
+     „Blutpreis" brauchen je 129 px und stehen auf jedem Telefon in einer
+     Zeile (vorher zwei Zeilen, 113 px hoch).
+   - Die Werkbank der Testumgebung startet eingeklappt.
 
-   Der Code steht in `js/21-test-lab.js` unter „Platzmanagement im Kampf",
-   das CSS am Ende von `37-abschluss.css`, gemessen von
-   `scripts/qa/kampf-platz.mjs` (20 Zusicherungen). Wandert das Ganze in
-   den normalen Kampf, gehören Knöpfe und Blatt nach `index.html` und
-   `js/12-battle-ui.js`; die Einträge in `ID_ICONS`
-   (`js/36-emoji-sprite-pass.js`) stehen schon bereit und bringen dann ihr
-   Symbol mit.
+   **Zwei Maße, die man kennen muss:** die Knöpfe der Kampfleiste stehen
+   auf `flex:1 1 auto` — eine feste Basis entscheidet über die Spaltenzahl,
+   bevor jemand den Text gesehen hat (mit 140 px brach „Blutpreis" mitten
+   im Knopf um, mit 200 px passte nur einer je Zeile). Und die beiden
+   Matchbar-Knöpfe tragen `padding-inline:12px` statt 28: zu zweit passten
+   sie sonst nicht neben „Runde 1" und stapelten sich auf drei Zeilen.
+
+   Das Blatt zeigt **Kopien**. `#abilityState` und `#campaignTaskProgress`
+   hängen weiter an ihrem Platz im Baum und werden nur per CSS
+   ausgeblendet — kein Renderpfad schreibt ins Leere, nichts muss
+   aufgeräumt werden. Die Kopien tragen keine ids.
+
+   Code: `js/12-battle-ui.js` („Kampflog und Infos"), Markup in
+   `index.html`, Verdrahtung in `js/15-app.js`, CSS am Ende von
+   `37-abschluss.css`. Gemessen von `scripts/qa/kampf-platz.mjs`
+   (24 Zusicherungen, deutsch und englisch).
+
+   **Offen bleibt die Frage, was noch ins Blatt gehört** — Statuszeile und
+   Angriffszielkasten sind die nächsten Kandidaten.
 
 ---
 
