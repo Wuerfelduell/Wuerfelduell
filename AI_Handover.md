@@ -24,7 +24,7 @@ welche Fallen schon Zeit gekostet haben.
 |---|---|
 | Version | **28.12.34** (Branch; Live-Nachweis offen) |
 | Branch | `online-guest-latency` |
-| Letzte Schritte | CSS-Stapel auf 10 Dateien zusammengelegt · Changelog englisch vervollständigt · Hauptmenü, Statistik, Profile, Achievements, Spielvorbereitung und Trophy Shop überarbeitet · Fähigkeits- und Shopflächen auf proportional gekachelte Bildrahmen umgestellt · alle Bild-URLs auf einen gemeinsamen Cache-Schlüssel · Trophy-Shop-Reste bereinigt und Aufklapppfeile angeglichen · Duo- und Trio-Boss-Rush mit Pfadwahl, gespeicherten Runs und 32 Perks einschließlich temporärer Ability-Mastery · Boss-XP-Umtausch 300:100 · Zweitfund gedeckelt · Trio-Rush 15 Stufen, ab 10 ultraschwer · Boss-Rush-HUD auf die Weltregel reduziert · Zweitfund-Kopien ablehnbar und weitergebbar · Ultra-Stufen treffen härter statt länger zu dauern · Heilung gedeckelt, Maximum wächst je Stufe · Regelleiste als Kachelgitter, wächst mit dem Text · gespeicherte Runs überleben Balanceänderungen · Meldeschichten über den Kampf-Overlays geordnet · großer Spezialwürfel dreht sich als echter 3D-Würfel wie der normale und füllt seinen Rahmen · Kampflog, Infos-Blatt und Weltregel hinter einem Knopf, Knopfleiste gekürzt und beruhigt · Kartentexte aus den gemalten Rahmen geholt · fünf neue Würfeldesigns in der Testumgebung · Matchbar auf schmalen Telefonen wieder einzeilig · fünf Würfeldesigns mit fertigem Artwork und nachgemessenem Augenraster · Live-Online-Prüfstand repariert und um eine Latenzmessung erweitert · sieben weitere Würfeldesigns |
+| Letzte Schritte | CSS-Stapel auf 10 Dateien zusammengelegt · Changelog englisch vervollständigt · Hauptmenü, Statistik, Profile, Achievements, Spielvorbereitung und Trophy Shop überarbeitet · Fähigkeits- und Shopflächen auf proportional gekachelte Bildrahmen umgestellt · alle Bild-URLs auf einen gemeinsamen Cache-Schlüssel · Trophy-Shop-Reste bereinigt und Aufklapppfeile angeglichen · Duo- und Trio-Boss-Rush mit Pfadwahl, gespeicherten Runs und 32 Perks einschließlich temporärer Ability-Mastery · Boss-XP-Umtausch 300:100 · Zweitfund gedeckelt · Trio-Rush 15 Stufen, ab 10 ultraschwer · Boss-Rush-HUD auf die Weltregel reduziert · Zweitfund-Kopien ablehnbar und weitergebbar · Ultra-Stufen treffen härter statt länger zu dauern · Heilung gedeckelt, Maximum wächst je Stufe · Regelleiste als Kachelgitter, wächst mit dem Text · gespeicherte Runs überleben Balanceänderungen · Meldeschichten über den Kampf-Overlays geordnet · großer Spezialwürfel dreht sich als echter 3D-Würfel wie der normale und füllt seinen Rahmen · Kampflog, Infos-Blatt und Weltregel hinter einem Knopf, Knopfleiste gekürzt und beruhigt · Kartentexte aus den gemalten Rahmen geholt · fünf neue Würfeldesigns in der Testumgebung · Matchbar auf schmalen Telefonen wieder einzeilig · fünf Würfeldesigns mit fertigem Artwork und nachgemessenem Augenraster · Live-Online-Prüfstand repariert und um eine Latenzmessung erweitert · sieben weitere Würfeldesigns · Online-Wurfwerte vorgezogen, Live-Nachweis offen |
 
 **Die Arbeitsteilung hat sich geändert.** Bis V28.11.28 liefen zwei
 Sitzungen parallel: Codex hat umgesetzt, diese Sitzung geprüft. Ab jetzt
@@ -505,7 +505,7 @@ wissen muss, nicht mehr die volle Beweisführung.
 1. **Online-Gast: Wuerfergebnis vorgezogen, Live-Nachweis noch offen.**
    `online-guest-latency` ist auf `main` (9cbdcae) rebasiert, nicht gemergt.
    Schritt 0 bleibt: Zwischenstand und Endstand mit eigener Sequenz, Pending
-   bis zum Endstand. Basis fuer den neuen Vorher-Vergleich: e3028b1.
+   bis zum Endstand. Basis fuer den neuen Vorher-Vergleich: 472f995.
 
    Seit 28.12.34 zieht `animateIndices` die Werte vor dem Timer. Der Host
    verbirgt sie ueber rolling auch im DOM, im flachen Renderer und in der
@@ -514,12 +514,26 @@ wissen muss, nicht mehr die volle Beweisführung.
    oder dessen Timer zu loeschen. Spezialwuerfe und Gegenangriff ziehen
    weiterhin in ihren eigenen Pfaden und behalten ihre Vorschau.
 
-   `scripts/qa/wurf-vorab.mjs` besteht lokal und faellt gegen e3028b1 an
+   `scripts/qa/wurf-vorab.mjs` besteht lokal und faellt gegen 472f995 an
    der erwarteten Zusicherung (Wert vor Timer). Es prueft 430/250 ms,
    eigene Finalfunktion, einmalige Ziehung, Heilungszeitpunkt und die
    Snapshot-Anwendung samt Pending/Timer. `online-protokoll.mjs` prueft
    jetzt fruehe echte Augen statt einer weiterlaufenden Gastvorschau.
-   Browser-/Live-Ergebnisse werden nach dem Lauf hier nachgetragen.
+   Der lokale Zwei-Browser-Test besteht samt Pending, 8000-ms-Abbruch,
+   Paketfolge, einmaligen FX und DE/EN bei 320/360/390/412/1280 px.
+   Der Renderer-Test setzt beim kuenstlichen Wechsel in den flachen Modus
+   auch dessen HTML-Klasse und beginnt mit frischen Wuerfel-Nodes.
+   Live-Latenz ist noch nicht belegt: Anmeldung/Lobby sind hier so langsam,
+   dass feste Aufbaupausen ersetzt werden mussten. Der Messabschnitt und
+   der 8000-ms-Pending-Timer bleiben unveraendert. Zwei Vorher- und zwei
+   Nachher-Gesamtlaeufe scheiterten, dazu zwei Nachher-Diagnosen mit Teilwerten.
+   Einzelne Basiswuerfe sind live frueher sichtbar, aber kein belastbarer
+   Gesamtvergleich liegt vor. Details und Rohdaten: `docs/ONLINE-GAST-LATENZ.md`
+   und `.json`. Der geforderte Live-Nachweis bleibt offen.
+
+   Historischer Vergleich vom 15.09., vor dieser Umstellung: 1511/1474 ms
+   gegen 1511/1356 ms ueber sechs Aktionen; sichtbar war stets bestaetigt.
+   Das sind keine Messwerte der neuen Fassung.
 
    **Und der Rest ist nicht die Animation.** „Rest sichern" hat gar keine
    Animation und kostet trotzdem 1051–1290 ms. Die Wartezeit ist zum

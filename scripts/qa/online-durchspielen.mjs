@@ -243,8 +243,14 @@ try {
   console.log("\n== Ein Zug ==");
   const vorher = await lage(host);
   const dran = vorher.knopfGesperrt ? { s: gast, n: "Gast" } : { s: host, n: "Host" };
+  const vorWurfSeq = await gast.evaluate(() => window.__wdQaBridge.session().lastStateSeq);
   await dran.s.click("#primaryBtn", { timeout: 10000 });
-  await dran.s.waitForTimeout(7000);
+  // Auch der erste Kontrollwurf gehoert noch zum Aufbau. Erst vergleichen,
+  // wenn beide Seiten den abgeschlossenen Zustand wirklich erhalten haben.
+  for (const p of [host, gast]) await p.waitForFunction(seq =>
+    window.__wdQaBridge.session().lastStateSeq > seq &&
+    !window.__wdQaBridge.session().actionPending && !isAnimating && phase === "base_select",
+    vorWurfSeq, { timeout: 45000 });
   const nachHost = await lage(host), nachGast = await lage(gast);
   pruefe(nachHost.summe !== "" && nachHost.summe !== "0", `der Wurf des ${dran.n} steht beim Host (Summe ${nachHost.summe})`);
   pruefe(nachGast.summe === nachHost.summe, `beide Seiten zeigen dieselbe Summe (${nachGast.summe})`);
@@ -265,7 +271,18 @@ try {
     renderAll();
     return window.__wdQaPublish(window.__wdQaBridge.snapshot()).seq;
   }, gastUid);
-  await gast.waitForFunction(seq => window.__wdQaBridge.session().lastStateSeq >= seq, fixtureSeq);
+  try {
+    await gast.waitForFunction(seq => window.__wdQaBridge.session().lastStateSeq >= seq, fixtureSeq);
+  } catch (err) {
+    // Nur Diagnosefelder ausgeben, niemals Identitaeten oder Zugangsdaten.
+    for (const [name, p] of [["host", host], ["gast", gast]]) console.log("Messaufbau", name, await p.evaluate(() => ({
+      seq: window.__wdQaBridge.session().lastStateSeq,
+      pending: window.__wdQaBridge.session().actionPending,
+      phase, status: document.querySelector("#onlineStatus")?.textContent,
+      hinweis: document.querySelector("#onlineNotice")?.textContent
+    })), "erwartete Sequenz", fixtureSeq);
+    throw err;
+  }
 
   async function messen(name, selector, vorherAuswahl = false) {
     if (vorherAuswahl) {
@@ -302,7 +319,18 @@ try {
       }, { capture: true, once: true });
     }, { name, selector });
     await gast.click(selector);
-    await gast.waitForFunction(() => window.__wdQaMessung.fertig, null, { timeout: 15000 });
+    try {
+      await gast.waitForFunction(() => window.__wdQaMessung.fertig, null, { timeout: 15000 });
+    } catch (err) {
+      for (const [seite, p] of [["host", host], ["gast", gast]]) console.log("Aktionsabbruch", name, seite, await p.evaluate(() => ({
+        seq: window.__wdQaBridge.session().lastStateSeq,
+        pending: window.__wdQaBridge.session().actionPending,
+        phase, status: document.querySelector("#status")?.textContent,
+        hinweis: document.querySelector("#onlineNotice")?.textContent,
+        gesichert: dice.map(d => !!d.locked)
+      })));
+      throw err;
+    }
     const m = await gast.evaluate(() => { const { name, sichtbarMs, bestaetigtMs, vorschauMs } = window.__wdQaMessung; return { name, sichtbarMs: Math.round(sichtbarMs), bestaetigtMs: Math.round(bestaetigtMs), vorschauMs: vorschauMs == null ? null : Math.round(vorschauMs) }; });
     messungen.push(m);
     console.log(`  ${name}: sichtbar ${m.sichtbarMs} ms, bestaetigt ${m.bestaetigtMs} ms`);

@@ -1,0 +1,121 @@
+{
+  "version": "28.12.34",
+  "basis": "472f995b2236229d1ad05fc28ffac1281ef475e3",
+  "main": "9cbdcae",
+  "liveNachweisErbracht": false,
+  "laeufe": [
+    {
+      "label": "vorher-aktuell-1",
+      "aktionen": [
+        {
+          "name": "Basiswurf",
+          "sichtbarMs": 1863,
+          "bestaetigtMs": 1863,
+          "vorschauMs": 46
+        },
+        {
+          "name": "Einen Wuerfel sichern",
+          "sichtbarMs": 1125,
+          "bestaetigtMs": 1125,
+          "vorschauMs": null
+        },
+        {
+          "name": "Rest wuerfeln",
+          "sichtbarMs": 1716,
+          "bestaetigtMs": 1716,
+          "vorschauMs": 44
+        },
+        {
+          "name": "Rest sichern",
+          "sichtbarMs": 1156,
+          "bestaetigtMs": 1156,
+          "vorschauMs": null
+        },
+        {
+          "name": "Angriffswurf",
+          "sichtbarMs": 2249,
+          "bestaetigtMs": 2249,
+          "vorschauMs": 47
+        },
+        {
+          "name": "Angriff mit Schaden",
+          "sichtbarMs": 1172,
+          "bestaetigtMs": 1172,
+          "vorschauMs": null
+        }
+      ],
+      "mittelSichtbarMs": 1547,
+      "mittelBestaetigtMs": 1547,
+      "technischeFehler": [],
+      "bestanden": false,
+      "einordnung": "Sechs Messaktionen vollstaendig, aber vorgelagerter Kontrollwurf nach fester Pause noch nicht synchron. Gesamtlauf fehlgeschlagen."
+    },
+    {
+      "label": "vorher-aktuell-2",
+      "aktionen": [],
+      "mittelSichtbarMs": null,
+      "mittelBestaetigtMs": null,
+      "technischeFehler": [],
+      "bestanden": false,
+      "einordnung": "Timeout 15000 ms bei der ersten Messaktion, keine Messwerte."
+    },
+    {
+      "label": "nachher-1",
+      "aktionen": [],
+      "mittelSichtbarMs": null,
+      "mittelBestaetigtMs": null,
+      "technischeFehler": [],
+      "bestanden": false,
+      "einordnung": "Timeout 30000 ms beim Warten auf die Fixture-Sequenz, keine Messwerte."
+    },
+    {
+      "label": "nachher-2",
+      "aktionen": [],
+      "mittelSichtbarMs": null,
+      "mittelBestaetigtMs": null,
+      "technischeFehler": [],
+      "bestanden": false,
+      "einordnung": "Timeout 30000 ms beim Warten auf die Fixture-Sequenz, keine Messwerte."
+    },
+    {
+      "label": "nachher-diagnose",
+      "aktionen": [
+        {
+          "name": "Basiswurf",
+          "sichtbarMs": 1403,
+          "bestaetigtMs": 2404,
+          "vorschauMs": 49
+        }
+      ],
+      "mittelSichtbarMs": 1403,
+      "mittelBestaetigtMs": 2404,
+      "technischeFehler": [],
+      "bestanden": false,
+      "einordnung": "Eine Messaktion, danach Timeout 15000 ms beim Sichern eines Wuerfels."
+    },
+    {
+      "label": "nachher-diagnose-2",
+      "aktionen": [
+        {
+          "name": "Basiswurf",
+          "sichtbarMs": 1263,
+          "bestaetigtMs": 2311,
+          "vorschauMs": 49
+        },
+        {
+          "name": "Einen Wuerfel sichern",
+          "sichtbarMs": 1042,
+          "bestaetigtMs": 1042,
+          "vorschauMs": null
+        }
+      ],
+      "mittelSichtbarMs": 1153,
+      "mittelBestaetigtMs": 1677,
+      "technischeFehler": [],
+      "bestanden": false,
+      "einordnung": "Zwei Messaktionen, danach Timeout 15000 ms beim Restwurf. Beide Seiten seq 7, phase base_ready; Gast meldet Host antwortet nicht."
+    }
+  ],
+  "lokalePruefbasis": "a3f505e1a556b8a5418da06dd6a76655bdfeb93d",
+  "identischerBasisbaum": "6f3e463184852e372445467e8ded5383430312e7"
+}
