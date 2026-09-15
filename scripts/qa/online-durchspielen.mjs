@@ -5,11 +5,15 @@
    ineinander; faellt eines aus, sieht der Spieler dasselbe Nichts. Dieses
    Skript startet zwei getrennte Browser gegen das echte Projekt, legt
    einen Raum an, tritt bei, meldet beide bereit, laesst das Match starten
-   und spielt einen Wurf. Danach raeumt es auf.
+   und prueft den ersten Wurf (die bestehenden zwoelf Zusicherungen).
+   Danach misst es sechs reproduzierbare Gastaktionen samt Schadensangriff.
 
-   Es misst dabei nicht den Bildschirm, sondern den Ablauf: Kommt die
-   Anmeldung durch, sieht der Host den Gast, springen beide ins Match,
-   und traegt der Wurf des einen beim anderen an.
+   Die Messung beginnt im Capture-Handler der echten Gasteingabe. Pro Frame
+   werden sichtbare Augen, Sicherungsmarken, HP, Summe und Zuganzeige geprueft.
+   Reine lokale Rollvorschau zaehlt nicht als bestaetigtes Wuerfelergebnis.
+   Sichtbare Zustandsaenderung und finale Freigabe werden getrennt berichtet.
+   Die sechs Aktionen benutzen ausschliesslich isolierte QA-Profile und eine
+   festgelegte Wuerfelfolge, damit Vorher und Nachher dieselben Zustaende sehen.
 
    ------------------------------------------------------------------
    Zwei Umwege, die nur in dieser Sandbox noetig sind:
@@ -31,7 +35,7 @@
 
      npx http-server -p 8099 -c-1 --silent .          # in einem zweiten Fenster
      mkdir -p /var/tmp/sbtest && cd /var/tmp/sbtest
-     npm init -y && npm i @supabase/supabase-js@2.114.0 ws esbuild
+     npm init -y && npm i @supabase/supabase-js@2.114.0 ws esbuild https-proxy-agent
      echo 'export * from "@supabase/supabase-js";' > entry.mjs
      npx esbuild entry.mjs --bundle --format=esm --platform=browser \
        --outfile=supabase-esm.js
@@ -39,17 +43,25 @@
    Das Buendel wird gebraucht, weil die Seite die Bibliothek sonst vom
    CDN holt und auch das hier gesperrt ist.
 
-   Aufruf:  node scripts/qa/online-durchspielen.mjs
+   Aufruf: WD_SERVE=1 WD_LABEL=nachher WD_REPORT=/tmp/nachher.json \
+     node scripts/qa/online-durchspielen.mjs
+   WD_PLAYWRIGHT: Pfad zur Playwright-index.mjs; WD_CHROMIUM: Browserpfad.
+   WD_SOURCE_ROOT: anderer Checkout fuer die Vorher-Messung mit demselben
+   Pruefstand (z.B. git worktree add --detach /tmp/wd-vorher <Basiscommit>).
+   Ohne WD_SERVE wird der bereits laufende Server unter WD_BASIS verwendet.
+   Keine Messwerte aus einem abgebrochenen Lauf als Nachweis verwenden.
 */
-import { chromium } from "/opt/node22/lib/node_modules/playwright/index.mjs";
+const { chromium } = await import(process.env.WD_PLAYWRIGHT || "/opt/node22/lib/node_modules/playwright/index.mjs");
 import wsPaket from "/var/tmp/sbtest/node_modules/ws/index.js";
-import { readFileSync } from "node:fs";
+import { HttpsProxyAgent } from "/var/tmp/sbtest/node_modules/https-proxy-agent/dist/index.js";
+import { readFileSync, writeFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import path from "node:path";
+import { createServer } from "node:http";
 
 const { WebSocketServer, WebSocket } = wsPaket;
 
-const wurzel = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..", "..");
+const wurzel = process.env.WD_SOURCE_ROOT ? path.resolve(process.env.WD_SOURCE_ROOT) : path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..", "..");
 const BASIS = process.env.WD_BASIS || "http://127.0.0.1:8099/index.html";
 const WSPORT = 8123;
 const LIB = readFileSync("/var/tmp/sbtest/supabase-esm.js", "utf8");
@@ -66,8 +78,8 @@ function starteBruecke() {
   const server = new WebSocketServer({ port: WSPORT });
   server.on("connection", (client, req) => {
     const ziel = new URL(req.url, "http://x").searchParams.get("target");
-    if (!ziel) return client.close();
-    const oben = new WebSocket(ziel);
+    if (!ziel || new URL(ziel).hostname !== wirt || new URL(ziel).protocol !== "wss:") return client.close();
+    const oben = new WebSocket(ziel, process.env.HTTPS_PROXY ? { agent: new HttpsProxyAgent(process.env.HTTPS_PROXY) } : {});
     const puffer = [];
     oben.on("open", () => { for (const m of puffer.splice(0)) oben.send(m); });
     oben.on("message", d => { if (client.readyState === 1) client.send(d.toString()); });
@@ -114,7 +126,7 @@ async function durchreichen(route) {
     raus["access-control-allow-origin"] = "*";
     await route.fulfill({ status: antwort.status, headers: raus, body: roh });
   } catch (e) {
-    console.log("[netz]", req.method(), req.url().slice(0, 80), e.message);
+    console.log("[netz]", req.method(), new URL(req.url()).pathname, e.message);
     await route.abort();
   }
 }
@@ -123,17 +135,43 @@ async function durchreichen(route) {
 let fehler = 0;
 const pruefe = (bedingung, text) => { console.log(`  ${bedingung ? "ok" : "FEHLER"}: ${text}`); if (!bedingung) fehler = 1; };
 
+const lokal = process.env.WD_SERVE ? createServer((req, res) => {
+  const datei = path.resolve(wurzel, "." + decodeURIComponent(new URL(req.url, BASIS).pathname));
+  if (!datei.startsWith(wurzel + path.sep)) { res.writeHead(403).end(); return; }
+  try {
+    const typ = { ".html": "text/html", ".js": "text/javascript", ".css": "text/css", ".json": "application/json", ".svg": "image/svg+xml", ".webp": "image/webp", ".png": "image/png" }[path.extname(datei)] || "application/octet-stream";
+    res.writeHead(200, { "content-type": typ, "cache-control": "no-store" }); res.end(readFileSync(datei));
+  } catch { res.writeHead(404).end(); }
+}) : null;
+if (lokal) await new Promise(r => lokal.listen(Number(new URL(BASIS).port), "127.0.0.1", r));
 const bruecke = starteBruecke();
-const browser = await chromium.launch();
+const browserOptionen = process.env.WD_CHROMIUM ? { executablePath: process.env.WD_CHROMIUM, args: ["--no-sandbox"] } : {};
+const browsers = [];
+const messungen = [];
+const technischeFehler = [];
+const berichten = () => {
+  const mittel = feld => messungen.length ? Math.round(messungen.reduce((s, m) => s + m[feld], 0) / messungen.length) : null;
+  const bericht = { label: process.env.WD_LABEL || "Messung", aktionen: messungen, mittelSichtbarMs: mittel("sichtbarMs"), mittelBestaetigtMs: mittel("bestaetigtMs"), technischeFehler, bestanden: !fehler };
+  console.log(JSON.stringify(bericht, null, 2));
+  if (process.env.WD_REPORT) writeFileSync(process.env.WD_REPORT, JSON.stringify(bericht, null, 2) + "\n");
+};
 
 async function seite(name, profilname) {
-  const p = await (await browser.newContext({ viewport: { width: 412, height: 900 } })).newPage();
+  const browser = await chromium.launch(browserOptionen);
+  browsers.push(browser);
+  const p = await (await browser.newContext({ locale: "de-DE", serviceWorkers: "block", viewport: { width: 412, height: 900 } })).newPage();
   await p.addInitScript(wsErsatz);
-  p.on("pageerror", e => console.log(`  [${name}] Seitenfehler: ${String(e).slice(0, 160)}`));
-  p.on("response", async r => {
-    if (r.status() >= 400 && r.url().includes(wirt))
-      console.log(`  [${name}] HTTP ${r.status()} ${r.url().slice(-50)} ${(await r.text().catch(() => "")).slice(0, 140)}`);
+  p.on("pageerror", e => { technischeFehler.push(`${name}: ${e.message}`); fehler = 1; });
+  p.on("response", r => {
+    if (r.status() >= 400) { technischeFehler.push(`${name}: HTTP ${r.status()} ${new URL(r.url()).pathname}`); fehler = 1; }
   });
+  // Nur im Pruefstand: Beobachtung der privaten Bridge und reproduzierbare
+  // Ausgangslage. Aktionen, Engine, RPCs und Realtime bleiben der echte App-Code.
+  await p.route("**/js/17-online-bridge.js?*", route => {
+    const code = readFileSync(path.join(wurzel, "js/17-online-bridge.js"), "utf8").replace("  window.WDOnlineBridge=", "  window.__wdQaBridge={snapshot:exportOnlineState,session:()=>({...onlineSession,pendingTimer:!!onlineSession.pendingTimer})};\n  window.WDOnlineBridge=");
+    return route.fulfill({ contentType: "text/javascript", body: code });
+  });
+  await p.route("**/js/online/01-online.js?*", route => route.fulfill({ contentType: "text/javascript", body: readFileSync(path.join(wurzel, "js/online/01-online.js"), "utf8") + "\nwindow.__wdQaPublish=stageHostState;" }));
   await p.route(`**/*${wirt}/**`, durchreichen);
   await p.route("**/cdn.jsdelivr.net/**", route => /supabase-js/.test(route.request().url())
     ? route.fulfill({ status: 200, contentType: "text/javascript", body: LIB })
@@ -143,6 +181,7 @@ async function seite(name, profilname) {
   // Ohne Profil bleibt "Raum erstellen" gesperrt.
   await p.click("#menuProfilesBtn");
   await p.waitForSelector("#profilesScreen:not(.hidden)", { timeout: 15000 });
+  await p.click("#profileCreateToggle");
   await p.fill("#newProfileName", profilname);
   await p.click("#createProfileBtn");
   await p.waitForTimeout(1500);
@@ -207,15 +246,87 @@ try {
   pruefe(nachGast.augen === nachHost.augen && nachGast.augen !== "", `beide Seiten zeigen dieselben Augen (${nachGast.augen})`);
   pruefe(nachGast.zug === nachHost.zug, `beide Seiten zeigen denselben Zug (${nachGast.zug})`);
 
-  await host.click("#onlineLeaveBtn").catch(() => {});
-  await gast.click("#onlineLeaveBtn").catch(() => {});
+  console.log("\n== Fuenf reproduzierbare Gastaktionen ==");
+  const gastUid = await gast.evaluate(() => window.__wdQaBridge.session().uid);
+  // Isolierte QA-Profile, gleicher Startzustand in A und B. Nur der Test
+  // legt die Wuerfelfolge fest; die Produktions-Wuerfellogik wird nicht editiert.
+  const fixtureSeq = await host.evaluate(gastUid => {
+    current = players.findIndex(p => p.onlineUid === gastUid);
+    players.forEach(p => { p.ability = 3; p.secondAbility = null; p.thirdAbility = null; p.hp = 25; });
+    phase = "idle"; dice = freshDice(); isAnimating = false;
+    window.__wdQaRolls = [6, 5, 5, 5, 5, 5, 5, 5, 5, 1, 1, 1, 1, 1];
+    const echt = rollTrackedD6;
+    rollTrackedD6 = (...args) => window.__wdQaRolls.length ? window.__wdQaRolls.shift() : echt(...args);
+    renderAll();
+    return window.__wdQaPublish(window.__wdQaBridge.snapshot()).seq;
+  }, gastUid);
+  await gast.waitForFunction(seq => window.__wdQaBridge.session().lastStateSeq >= seq, fixtureSeq);
+
+  async function messen(name, selector, vorherAuswahl = false) {
+    if (vorherAuswahl) {
+      for (const die of (await gast.locator("#dice .die:not(.locked)").all()).slice(0, vorherAuswahl === "eins" ? 1 : undefined)) await die.click();
+    }
+    await gast.evaluate(({ name, selector }) => {
+      const signatur = () => JSON.stringify({
+        summe: document.querySelector("#sum")?.textContent,
+        augen: [...document.querySelectorAll("#dice .die")].map(d => [d.dataset.value, d.classList.contains("locked")]),
+        hp: [...document.querySelectorAll("#players .hp strong")].map(el => el.textContent),
+        zug: document.querySelector("#turnLine")?.textContent
+      });
+      const vorher = signatur();
+      const startSeq = window.__wdQaBridge.session().lastStateSeq;
+      const m = window.__wdQaMessung = { name, fertig: false };
+      const knopf = document.querySelector(selector);
+      document.addEventListener("click", event => {
+        if (!knopf.contains(event.target)) return;
+        m.start = performance.now();
+        const bild = () => {
+          const session = window.__wdQaBridge.session();
+          const rollt = !!document.querySelector("#dice .rolling");
+          if (m.vorschauMs == null && rollt) m.vorschauMs = performance.now() - m.start;
+          // Auch identische Augen sind ein sichtbares Wurfergebnis, sobald
+          // die bestaetigte Animation endet. Der lokale Start zaehlt separat.
+          if (m.sichtbarMs == null && session.lastStateSeq > startSeq &&
+              (signatur() !== vorher || (selector === "#primaryBtn" && !rollt))) m.sichtbarMs = performance.now() - m.start;
+          if (session.lastStateSeq > startSeq && !session.actionPending && m.sichtbarMs != null) {
+            m.bestaetigtMs = performance.now() - m.start; m.fertig = true; return;
+          }
+          requestAnimationFrame(bild);
+        };
+        requestAnimationFrame(bild);
+      }, { capture: true, once: true });
+    }, { name, selector });
+    await gast.click(selector);
+    await gast.waitForFunction(() => window.__wdQaMessung.fertig, null, { timeout: 15000 });
+    const m = await gast.evaluate(() => { const { name, sichtbarMs, bestaetigtMs, vorschauMs } = window.__wdQaMessung; return { name, sichtbarMs: Math.round(sichtbarMs), bestaetigtMs: Math.round(bestaetigtMs), vorschauMs: vorschauMs == null ? null : Math.round(vorschauMs) }; });
+    messungen.push(m);
+    console.log(`  ${name}: sichtbar ${m.sichtbarMs} ms, bestaetigt ${m.bestaetigtMs} ms`);
+    await warte(200);
+  }
+  await messen("Basiswurf", "#primaryBtn");
+  await messen("Einen Wuerfel sichern", "#lockBtn", "eins");
+  await messen("Rest wuerfeln", "#primaryBtn");
+  await messen("Rest sichern", "#lockBtn", true);
+  await messen("Angriffswurf", "#primaryBtn");
+  const hpVorher = await gast.evaluate(() => players.map(p => p.hp));
+  await messen("Angriff mit Schaden", "#resolveAttackBtn");
+  pruefe(await gast.evaluate(vorher => players.some((p, i) => p.hp < vorher[i]), hpVorher), "der gemessene Angriff verursacht Schaden");
+
+  pruefe(messungen.length >= 5, "mindestens fuenf Gastaktionen gemessen");
+  // Der Lobbybutton ist im Match unsichtbar, sein bestehender Handler bleibt
+  // fuer die Testbereinigung nutzbar (keine zusaetzlichen RPCs).
+  await gast.evaluate(() => document.querySelector("#onlineLeaveBtn").click());
+  await warte(1000);
+  await host.evaluate(() => document.querySelector("#onlineLeaveBtn").click());
   await warte(2000);
 } catch (e) {
   console.error("Abbruch:", e?.message || e);
   fehler = 1;
 } finally {
-  await browser.close();
+  for (const browser of browsers) await browser.close();
   bruecke.close();
-  console.log(fehler ? "\nEs gab Abweichungen." : "\nDas Online-Match laeuft von der Anmeldung bis zum ersten Wurf.");
+  lokal?.close();
+  berichten();
+  console.log(fehler ? "\nEs gab Abweichungen." : "\nZwoelf bestehende Zusicherungen und sechs Gastaktionen bestanden.");
   process.exit(fehler);
 }

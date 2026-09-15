@@ -24,7 +24,7 @@ welche Fallen schon Zeit gekostet haben.
 |---|---|
 | Version | **28.12.32** |
 | Branch | `main` |
-| Letzte Schritte | CSS-Stapel auf 10 Dateien zusammengelegt · Changelog englisch vervollständigt · Hauptmenü, Statistik, Profile, Achievements, Spielvorbereitung und Trophy Shop überarbeitet · Fähigkeits- und Shopflächen auf proportional gekachelte Bildrahmen umgestellt · alle Bild-URLs auf einen gemeinsamen Cache-Schlüssel · Trophy-Shop-Reste bereinigt und Aufklapppfeile angeglichen · Duo- und Trio-Boss-Rush mit Pfadwahl, gespeicherten Runs und 32 Perks einschließlich temporärer Ability-Mastery · Boss-XP-Umtausch 300:100 · Zweitfund gedeckelt · Trio-Rush 15 Stufen, ab 10 ultraschwer · Boss-Rush-HUD auf die Weltregel reduziert · Zweitfund-Kopien ablehnbar und weitergebbar · Ultra-Stufen treffen härter statt länger zu dauern · Heilung gedeckelt, Maximum wächst je Stufe · Regelleiste als Kachelgitter, wächst mit dem Text · gespeicherte Runs überleben Balanceänderungen · Meldeschichten über den Kampf-Overlays geordnet · großer Spezialwürfel dreht sich als echter 3D-Würfel wie der normale und füllt seinen Rahmen · Kampflog, Infos-Blatt und Weltregel hinter einem Knopf, Knopfleiste gekürzt und beruhigt · Kartentexte aus den gemalten Rahmen geholt · fünf neue Würfeldesigns in der Testumgebung · Matchbar auf schmalen Telefonen wieder einzeilig · fünf Würfeldesigns mit fertigem Artwork und nachgemessenem Augenraster |
+| Letzte Schritte | CSS-Stapel auf 10 Dateien zusammengelegt · Changelog englisch vervollständigt · Hauptmenü, Statistik, Profile, Achievements, Spielvorbereitung und Trophy Shop überarbeitet · Fähigkeits- und Shopflächen auf proportional gekachelte Bildrahmen umgestellt · alle Bild-URLs auf einen gemeinsamen Cache-Schlüssel · Trophy-Shop-Reste bereinigt und Aufklapppfeile angeglichen · Duo- und Trio-Boss-Rush mit Pfadwahl, gespeicherten Runs und 32 Perks einschließlich temporärer Ability-Mastery · Boss-XP-Umtausch 300:100 · Zweitfund gedeckelt · Trio-Rush 15 Stufen, ab 10 ultraschwer · Boss-Rush-HUD auf die Weltregel reduziert · Zweitfund-Kopien ablehnbar und weitergebbar · Ultra-Stufen treffen härter statt länger zu dauern · Heilung gedeckelt, Maximum wächst je Stufe · Regelleiste als Kachelgitter, wächst mit dem Text · gespeicherte Runs überleben Balanceänderungen · Meldeschichten über den Kampf-Overlays geordnet · großer Spezialwürfel dreht sich als echter 3D-Würfel wie der normale und füllt seinen Rahmen · Kampflog, Infos-Blatt und Weltregel hinter einem Knopf, Knopfleiste gekürzt und beruhigt · Kartentexte aus den gemalten Rahmen geholt · fünf neue Würfeldesigns in der Testumgebung · Matchbar auf schmalen Telefonen wieder einzeilig · fünf Würfeldesigns mit fertigem Artwork und nachgemessenem Augenraster · Live-Online-Prüfstand repariert und um eine Latenzmessung erweitert |
 
 **Die Arbeitsteilung hat sich geändert.** Bis V28.11.28 liefen zwei
 Sitzungen parallel: Codex hat umgesetzt, diese Sitzung geprüft. Ab jetzt
@@ -501,12 +501,49 @@ wissen muss, nicht mehr die volle Beweisführung.
    1.700 ms; `waitForEngineSettled` deckelt bei 3.600 ms. Dazu kommen
    zwei Netzwege (Gast → DB → Host, Host → DB → Gast).
 
-   **Offen ist davon nur noch der große Hebel:** direkt nach
-   `executeOnlineAction` einen vorläufigen Stand senden, damit der Gast
-   *parallel* zum Host animiert, danach den gesetzten Stand. Das nimmt
-   die Animationsdauer aus der Wartezeit. Echter Eingriff ins
-   Synchronisationsprotokoll — `seq`-Reihenfolge und `actionPending`
-   müssen mit.
+   **Dieser Plan ist am 15.09. live nachgemessen worden — und er trägt
+   nicht.** Der Branch `online-guest-latency` setzt ihn sauber um: nach
+   `executeOnlineAction` geht ein Zwischenstand (`settled:false`) raus,
+   danach der Endstand, beide mit eigener `seq`, und `actionPending` bleibt
+   bis zum Endstand stehen. Das funktioniert auch wirklich — beim Gast
+   kommt der Zwischenstand bei Würfen **500 bis 990 ms vor** dem Endstand
+   an (gemessen: Basiswurf 1396 statt 2382 ms, Restwurf 1279 statt 1771 ms,
+   Angriffswurf 803 statt 1303 ms).
+
+   **Nur sieht der Gast dadurch nichts früher.** Der Grund steht in
+   `js/13-battle-actions.js:1` (`animateIndices`): die Augenzahlen werden
+   **am Ende** der Animation gewürfelt, nicht am Anfang. Der Zwischenstand
+   trägt deshalb `dice[i].value: null` und `rolling: true` — es gibt noch
+   kein Ergebnis zu zeigen. Nachgemessen als Feldvergleich Zwischenstand
+   gegen Endstand: 13 Unterschiede, darunter alle fünf Augenzahlen und
+   `phase: idle -> base_select`.
+
+   Live gegen das echte Projekt, je zwei Läufe mit demselben Prüfstand und
+   demselben Startzustand: **vorher 1511 / 1474 ms, nachher 1511 / 1356 ms**
+   Mittel über sechs Gastaktionen. Der Unterschied liegt unter der Streuung
+   zwischen zwei Läufen derselben Fassung. In **allen 24 gemessenen
+   Aktionen** war `sichtbar` gleich `bestätigt` — kein einziges Mal wurde
+   etwas vor der Freigabe sichtbar.
+
+   **Der Weg, der wirklich etwas bringt, ist damit vermessen:**
+   1. Das Wurfergebnis **vor** der Animation ziehen. `animateIndices` setzt
+      heute `rolling=true`, rendert, und ruft `finalRoll(i)` erst nach
+      `ROLL_ANIM_MS`. Umgedreht — erst ziehen, dann animieren, dann
+      aufdecken — trägt der Zwischenstand die echten Augen.
+   2. Dann darf `applyStateNow` den Zwischenstand auch **festschreiben**
+      statt die Vorschau neu zu starten; der Gast animiert auf dasselbe
+      Ergebnis zu.
+   Erst beide Schritte zusammen nehmen die 500–990 ms aus der Wartezeit.
+   Der Branch ist Schritt 0 und bleibt dafür stehen — **ungemergt**, weil
+   er allein Protokollkomplexität ohne messbaren Gewinn wäre.
+
+   **Und der Rest ist nicht die Animation.** „Rest sichern" hat gar keine
+   Animation und kostet trotzdem 1051–1290 ms. Die Wartezeit ist zum
+   größten Teil der Weg Gast → RPC → Realtime → Host → RPC → Realtime →
+   Gast. Die Messungen laufen hier durch den Sandbox-Proxy und eine
+   WebSocket-Brücke, sind also absolut zu hoch; das Verhältnis stimmt
+   trotzdem. Wer die Wartezeit wirklich halbieren will, muss an die Zahl
+   der Netzwege, nicht an die Animation.
 
    Die zwei kleinen Hebel sind seit V28.11.32 erledigt: der Gast
    überspringt Realtime-Meldungen zu seiner **eigenen** Aktionszeile, und
@@ -519,6 +556,23 @@ wissen muss, nicht mehr die volle Beweisführung.
    Gasteingabe — also dort, wohin der große Hebel die Antwortzeiten
    verschiebt. Die beiden Änderungen werden dadurch **wertvoller**, nicht
    überflüssig.
+
+   **Der Live-Prüfstand war 40 Versionen lang kaputt und ist repariert.**
+   `online-durchspielen.mjs` füllte `#newProfileName` direkt; seit die
+   Profilfelder hinter dem Knopf „Neues Profil" (`#profileCreateToggle`)
+   liegen, ist das Feld zwar vorhanden, aber unsichtbar, und `fill()` lief
+   in den 30-Sekunden-Timeout. Damit lief der **einzige** Test, der Online
+   gegen das echte Projekt prüft, seit V28.11.x nicht mehr durch. Er kann
+   jetzt außerdem messen: sechs reproduzierbare Gastaktionen mit
+   festgelegter Würfelfolge, getrennt nach „sichtbar" und „bestätigt",
+   und über `WD_SOURCE_ROOT` gegen einen zweiten Checkout, damit Vorher
+   und Nachher denselben Prüfstand benutzen.
+
+   **Offen, bei beiden Fassungen beobachtet:** in zwei von fünf Läufen
+   meldet der Gast einmal `HTTP 400 /rest/v1/rpc/dd_get_battle_snapshot`.
+   Es tritt auch ohne den Branch auf, bricht nichts ab und steht
+   vermutlich am Ende, wenn der Raum schon aufgeräumt ist — nachgesehen
+   hat es noch niemand.
 
    Der ältere Verdacht auf tote Realtime-Verbindung ist damit erledigt.
    Das Prüfskript bleibt gültig: `scripts/qa/online-durchspielen.mjs` fährt
