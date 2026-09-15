@@ -37,7 +37,14 @@ let absturz=null;
 // Das Mass der vorhandenen Designs, am Bild nachgemessen: der Wuerfel
 // sitzt waagrecht von 8.8% bis 91.2% der 512er Kante.
 const FELD={links:8.8,rechts:91.2,toleranz:1.2};
-const NEU=['walnut_lodge','tide_pearl','azure_storm','nebula_veil','solar_relic'];
+// Nicht von Hand pflegen: geprueft wird, was DICE_DESIGNS als testOnly
+// fuehrt. Ein neues Design ohne Eintrag hier waere sonst still ungeprueft.
+const NEU=await (async()=>{
+  const quelle=fs.readFileSync(path.join(root,'js/05-game-data-state.js'),'utf8');
+  const block=quelle.slice(quelle.indexOf('DICE_DESIGNS'),quelle.indexOf('DICE_DESIGNS')+9000);
+  return [...block.matchAll(/(\w+):\{name:"[^"]+",className:"[^"]*theme-art-die"[^}]*testOnly:true/g)].map(m=>m[1]);
+})();
+if(NEU.length<5){console.log(`ACHTUNG: nur ${NEU.length} testOnly-Designs erkannt.`);process.exit(1);}
 
 try{
   const p=await browser.newPage({locale:'de-DE',viewport:{width:390,height:844},serviceWorkers:'block'});

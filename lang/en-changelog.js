@@ -5,6 +5,8 @@
   if (!pack) return;
 
   Object.assign(pack.exact, {
+    "Sieben weitere Würfeldesigns sind eingebaut: Frost Porcelain, Ashwood, Coppertrail, Midnight Enamel, Ironkeep, Oakbound und Mossstone": "Seven more dice designs are in: Frost Porcelain, Ashwood, Coppertrail, Midnight Enamel, Ironkeep, Oakbound and Mossstone",
+    "Auch sie lassen sich vorerst nur in der Testumgebung auswählen": "They too can only be picked in the test lab for now",
     // V28.12.29 bis .32 - die Eintraege .29 und .30 waren beim Ausliefern
     // ohne Uebersetzung geblieben und standen im englischen Spiel deutsch.
     "Die fünf neuen Würfeldesigns tragen jetzt ihr fertiges Artwork: echte Ruheflächen mit Fragezeichen und echte 3D-Vorschauen statt der Behelfsbilder": "The five new dice designs now carry their finished artwork: real resting faces with a question mark and real 3D previews instead of the stand-ins",

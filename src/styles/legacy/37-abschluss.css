@@ -2968,6 +2968,36 @@ html[data-v28-rework="2"] body.playing #game .controls>button.secondary{
 .special-big-die.d4.theme-nebula-veil{background:linear-gradient(145deg,#8c34c0,#360d63);color:#efe0ff;border-color:#eec27a}
 .special-big-die.d4.theme-solar-relic{background:linear-gradient(145deg,#f6e6c2,#c9973c);color:#5a3c0c;border-color:#ffd97a}
 
+/* Drei weitere Artwork-Wuerfel. Farben am Bild abgelesen: Flaeche, Fassung
+   und Auge der Eins. Frost Porcelain hat als einziges dunkle Augen auf
+   heller Flaeche - die Glut darf deshalb nicht weiss sein, sonst
+   verschwindet der Wuerfel im eigenen Schein. */
+.die.theme-frostporcelain{--dice-accent:#8fb6d8;--dice-glow:rgba(143,182,216,.85)}
+.die.theme-ashwood{--dice-accent:#e4d6ad;--dice-glow:rgba(228,214,173,.82)}
+.die.theme-coppertrail{--dice-accent:#c77a42;--dice-glow:rgba(199,122,66,.88)}
+
+.special-big-die.d4.theme-frostporcelain{background:linear-gradient(145deg,#d3e2ef,#8ca4bb);color:#17283e;border-color:#b9c4cc}
+.special-big-die.d4.theme-ashwood{background:linear-gradient(145deg,#6b5540,#33271e);color:#ebe0c1;border-color:#8d8880}
+.special-big-die.d4.theme-coppertrail{background:linear-gradient(145deg,#7a3a24,#3a1a10);color:#ebdbb7;border-color:#c77a42}
+
+/* Zwei weitere. Midnight Enamel traegt Gold auf tiefem Blau, Ironkeep
+   Stahl auf Eisengrau - die Glut nimmt jeweils die Fassung, nicht das
+   Auge: bei beiden sind die Augen cremeweiss und als Glut kaum von der
+   Auswahlmarkierung zu unterscheiden. */
+.die.theme-midnightenamel{--dice-accent:#d4a44a;--dice-glow:rgba(212,164,74,.88)}
+.die.theme-ironkeep{--dice-accent:#b9b0a8;--dice-glow:rgba(185,176,168,.82)}
+
+.special-big-die.d4.theme-midnightenamel{background:linear-gradient(145deg,#12306e,#050d24);color:#ebe0bf;border-color:#b3812a}
+.special-big-die.d4.theme-ironkeep{background:linear-gradient(145deg,#4e4744,#241f1d);color:#ebe0c9;border-color:#7b736f}
+
+/* Und zwei aus dem Wald: Oakbound mit Messingfassung auf Eiche,
+   Mossstone mit Bronze auf moosgruenem Stein. */
+.die.theme-oakbound{--dice-accent:#c79340;--dice-glow:rgba(199,147,64,.86)}
+.die.theme-mossstone{--dice-accent:#9aa96a;--dice-glow:rgba(154,169,106,.84)}
+
+.special-big-die.d4.theme-oakbound{background:linear-gradient(145deg,#b45c1f,#5a2a0d);color:#ebe0c1;border-color:#a67621}
+.special-big-die.d4.theme-mossstone{background:linear-gradient(145deg,#65724a,#2c3420);color:#ebe0bd;border-color:#78552b}
+
 
 /* ===== Die Matchbar auf schmalen Telefonen =====
    Seit dort zwei Knoepfe stehen, passt die Leiste nicht mehr ueberall in
