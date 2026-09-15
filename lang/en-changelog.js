@@ -5,8 +5,10 @@
   if (!pack) return;
 
   Object.assign(pack.exact, {
-    // V28.12.29 bis .31 - die Eintraege .29 und .30 waren beim Ausliefern
+    // V28.12.29 bis .32 - die Eintraege .29 und .30 waren beim Ausliefern
     // ohne Uebersetzung geblieben und standen im englischen Spiel deutsch.
+    "Die fünf neuen Würfeldesigns tragen jetzt ihr fertiges Artwork: echte Ruheflächen mit Fragezeichen und echte 3D-Vorschauen statt der Behelfsbilder": "The five new dice designs now carry their finished artwork: real resting faces with a question mark and real 3D previews instead of the stand-ins",
+    "Die Augen sitzen bei allen fünf auf demselben Raster wie bei den älteren Designs – beim Würfeln springt nichts mehr zwischen den Flächen": "On all five the pips sit on the same grid as the older designs, so nothing jumps between faces while rolling",
     "Auf schmalen Telefonen standen „Kampflog“ und „Hauptmenü“ übereinander statt nebeneinander – die Leiste war doppelt so hoch und nahm den Spielerkarten 55 Pixel weg": "On narrow phones Combat Log and Main Menu stacked instead of sitting side by side; the bar was twice as tall and took 55 pixels from the player cards",
     "Beide Knöpfe passen jetzt in jeder Breite in eine Zeile; unter 350 Pixeln treten dafür ihre Symbole zurück, die Beschriftung bleibt": "Both buttons now fit on one line at every width; below 350 pixels their icons step aside and the labels stay",
     "Fünf neue Würfeldesigns sind eingebaut: Walnut Lodge, Tide Pearl, Azure Storm, Nebula Veil und Solar Relic": "Five new dice designs are in: Walnut Lodge, Tide Pearl, Azure Storm, Nebula Veil and Solar Relic",

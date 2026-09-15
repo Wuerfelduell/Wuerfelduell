@@ -22,9 +22,9 @@ welche Fallen schon Zeit gekostet haben.
 
 | | |
 |---|---|
-| Version | **28.12.31** |
+| Version | **28.12.32** |
 | Branch | `main` |
-| Letzte Schritte | CSS-Stapel auf 10 Dateien zusammengelegt · Changelog englisch vervollständigt · Hauptmenü, Statistik, Profile, Achievements, Spielvorbereitung und Trophy Shop überarbeitet · Fähigkeits- und Shopflächen auf proportional gekachelte Bildrahmen umgestellt · alle Bild-URLs auf einen gemeinsamen Cache-Schlüssel · Trophy-Shop-Reste bereinigt und Aufklapppfeile angeglichen · Duo- und Trio-Boss-Rush mit Pfadwahl, gespeicherten Runs und 32 Perks einschließlich temporärer Ability-Mastery · Boss-XP-Umtausch 300:100 · Zweitfund gedeckelt · Trio-Rush 15 Stufen, ab 10 ultraschwer · Boss-Rush-HUD auf die Weltregel reduziert · Zweitfund-Kopien ablehnbar und weitergebbar · Ultra-Stufen treffen härter statt länger zu dauern · Heilung gedeckelt, Maximum wächst je Stufe · Regelleiste als Kachelgitter, wächst mit dem Text · gespeicherte Runs überleben Balanceänderungen · Meldeschichten über den Kampf-Overlays geordnet · großer Spezialwürfel dreht sich als echter 3D-Würfel wie der normale und füllt seinen Rahmen · Kampflog, Infos-Blatt und Weltregel hinter einem Knopf, Knopfleiste gekürzt und beruhigt · Kartentexte aus den gemalten Rahmen geholt · fünf neue Würfeldesigns in der Testumgebung · Matchbar auf schmalen Telefonen wieder einzeilig |
+| Letzte Schritte | CSS-Stapel auf 10 Dateien zusammengelegt · Changelog englisch vervollständigt · Hauptmenü, Statistik, Profile, Achievements, Spielvorbereitung und Trophy Shop überarbeitet · Fähigkeits- und Shopflächen auf proportional gekachelte Bildrahmen umgestellt · alle Bild-URLs auf einen gemeinsamen Cache-Schlüssel · Trophy-Shop-Reste bereinigt und Aufklapppfeile angeglichen · Duo- und Trio-Boss-Rush mit Pfadwahl, gespeicherten Runs und 32 Perks einschließlich temporärer Ability-Mastery · Boss-XP-Umtausch 300:100 · Zweitfund gedeckelt · Trio-Rush 15 Stufen, ab 10 ultraschwer · Boss-Rush-HUD auf die Weltregel reduziert · Zweitfund-Kopien ablehnbar und weitergebbar · Ultra-Stufen treffen härter statt länger zu dauern · Heilung gedeckelt, Maximum wächst je Stufe · Regelleiste als Kachelgitter, wächst mit dem Text · gespeicherte Runs überleben Balanceänderungen · Meldeschichten über den Kampf-Overlays geordnet · großer Spezialwürfel dreht sich als echter 3D-Würfel wie der normale und füllt seinen Rahmen · Kampflog, Infos-Blatt und Weltregel hinter einem Knopf, Knopfleiste gekürzt und beruhigt · Kartentexte aus den gemalten Rahmen geholt · fünf neue Würfeldesigns in der Testumgebung · Matchbar auf schmalen Telefonen wieder einzeilig · fünf Würfeldesigns mit fertigem Artwork und nachgemessenem Augenraster |
 
 **Die Arbeitsteilung hat sich geändert.** Bis V28.11.28 liefen zwei
 Sitzungen parallel: Codex hat umgesetzt, diese Sitzung geprüft. Ab jetzt
@@ -223,16 +223,35 @@ Flächendateien in genau demselben Feld — **8,8 % bis 91,2 % der Kante**,
 also 422 × 422 mittig auf 512 × 512, auf allen vier Seiten identisch. Weicht
 eine Datei ab, springt der Würfel beim Flächenwechsel.
 
-Die fünf neuen Sätze (V28.12.30) kamen als 1024 × 1024 mit nur 3,4 % Rand.
-Sie wurden deshalb **nicht halbiert**, sondern auf das Zielfeld gerechnet —
-je Design mit *einer* gemeinsamen Transformation über alle sechs Flächen,
-damit die Augenpositionen untereinander stimmen.
+Die erste Lieferung der fünf neuen Sätze (V28.12.30) kam als 1024 × 1024
+mit nur 3,4 % Rand und musste je Design mit *einer* gemeinsamen
+Transformation auf das Zielfeld gerechnet werden. Ihre Augen wanderten
+dabei um bis zu **5 Prozentpunkte** — das war der Anlass für
+`docs/WUERFELDESIGN-BRIEF.md`.
 
-`-face-question` (die Ruhefläche mit dem Fragezeichen) und `-beauty` (der
-Würfel von drei Seiten, für die Vorschau) waren **nicht dabei** und sind
-derzeit Platzhalter: das Auge der Eins überdeckt, ein Fragezeichen darauf,
-und drei Flächen isometrisch zusammengesetzt. Sie gehören ersetzt, sobald
-echtes Artwork da ist.
+**Seit V28.12.32 erledigt sich das von selbst.** Die Neulieferung nach dem
+Brief sitzt bereits im Zielfeld: alle sieben Flächendateien jedes Designs
+messen exakt 8,8 %–91,2 %, waagrecht wie senkrecht. Es wird nur noch von
+1024 auf 512 skaliert, keine eigene Transformation mehr. Die Augen liegen
+auf dem Raster: Tide Pearl ±0,0 · Walnut Lodge ±0,2 · Azure Storm ±0,2 ·
+Solar Relic ±0,6 · Nebula Veil ±1,1 Prozentpunkte. `-face-question` und
+`-beauty` sind jetzt echtes Artwork, keine Platzhalter mehr.
+
+**Das Format ist nachgemessen, nicht geraten.** WebP speichert den
+Alphakanal auch bei verlustbehafteter Kompression **verlustfrei** —
+Alphafehler über alle Qualitätsstufen: 0. Die runden Ecken und die
+Silhouette der 3D-Vorschau bleiben exakt. Der Farbfehler bei q88 beträgt
+bei 512 px im Mittel 8,3 von 255, bei 145 px (Spezialwürfel) 3,9 und bei
+56 px (Würfel im Kampf) **1,4** — er landet also nie auf dem Bildschirm.
+Dieselbe Fläche als PNG: 365 statt 61 kB, Faktor sechs. q94 senkt den
+Fehler bei 56 px auf 1,2 und kostet 30 % mehr Bytes; das lohnt nur, falls
+eine `-beauty` einmal groß gezeigt wird.
+
+**Wer Bilder unter gleichem Dateinamen austauscht, hebt ASSET_REV an**
+(`node scripts/bump-version.mjs --assets <rev>`). Sonst liefert der
+Browser-Cache die alte Datei aus, denn die URL ist unverändert. Bei einer
+reinen Versionsanhebung genügt das nicht: `CACHE_VERSION` in `sw.js` leert
+nur den Service-Worker-Cache, nicht den HTTP-Cache.
 
 `testOnly:true` in `DICE_DESIGNS` hält ein Design aus der Profilliste
 heraus; die Testumgebung listet trotzdem alles. Soll ein Design
@@ -241,8 +260,16 @@ freischaltbar werden, fällt das Flag weg und es braucht einen Weg dorthin
 `unlockText`.
 
 Gemessen von `scripts/qa/wuerfeldesigns.mjs`: acht Dateien je Design, alle
-512 × 512, alle im selben Feld, keines im Profil, alle in der Testumgebung,
-und der Würfel trägt die Fläche im Kampf wirklich.
+512 × 512, alle im selben Feld, **die Augen auf dem Raster 31/50/67**,
+keines im Profil, alle in der Testumgebung, und der Würfel trägt die
+Fläche im Kampf wirklich.
+
+Das Augenraster wird über die **Streuung der sechs Flächen** gemessen: wo
+ein Auge mal da und mal weg ist, ändert sich die Farbe stark. Das braucht
+kein Wissen über die Farben des jeweiligen Designs und funktioniert
+deshalb auch bei Sätzen, die noch niemand gesehen hat. Gegenprobe
+gefahren: mit einem Sollraster von 25/50/75 meldet die Zusicherung
+8 Prozentpunkte Abweichung und fällt.
 
 ### Weltassets seit 28.11.4
 

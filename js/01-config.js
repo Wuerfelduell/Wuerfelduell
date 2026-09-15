@@ -14,9 +14,9 @@
   let localModeId="classic";
   function localModeRules(){return LOCAL_MODES[localModeId]||LOCAL_MODES.classic;}
 
-  const GAME_VERSION="28.12.31";
+  const GAME_VERSION="28.12.32";
   // Gemeinsamer Bild-Cache-Schluessel; identisch mit den Bild-URLs in HTML und CSS.
-  const ASSET_REV="28.11.28";
+  const ASSET_REV="28.12.32";
   const SAVE_KEY="wuerfelduell_save_v1"; // absichtlich stabil: Updates lesen denselben Browser-Save
   // Versionsanzeige immer aus derselben Quelle ziehen, damit Titel/Footer nicht mehr hinterherhinken.
   document.title=`DiceDuel · V${GAME_VERSION}`;

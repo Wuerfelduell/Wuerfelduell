@@ -73,9 +73,16 @@ Bezogen auf die Würfelfläche selbst (422 px) sind das 27 %, 50 % und 73 %.
 **Augendurchmesser: rund 13 % der Leinwandkante** (etwa 67 px bei 512),
 gleich groß auf allen sechs Flächen.
 
-Bei den fünf Sätzen aus V28.12.30 wandern die Augen je nach Design um bis
-zu 5 Prozentpunkte — das ist der Grund für dieses Dokument. Es fällt beim
-Würfeln auf, weil die Augen zwischen den Flächen springen.
+Bei der ersten Lieferung der fünf Sätze (V28.12.30) wanderten die Augen je
+nach Design um bis zu 5 Prozentpunkte — das war der Anlass für dieses
+Dokument. Die Neulieferung nach diesem Brief (V28.12.32) liegt bei
+**±0,0 bis ±1,1 Prozentpunkten**, und das Feld stimmt bei allen sieben
+Flächendateien auf die Kommastelle. Das Spiel-Repo musste nichts mehr
+verschieben, nur skalieren — so soll es sein.
+
+Geprüft wird das maschinell: `scripts/qa/wuerfeldesigns.mjs` misst das
+Raster über die Streuung der sechs Flächen und lässt höchstens
+2 Prozentpunkte Abweichung durch.
 
 ---
 
@@ -98,6 +105,8 @@ transparent, der Würfel füllt etwa 80 % der Leinwand.
 Empfohlene Augenzahlen: oben 1, links 2, rechts 3.
 
 Diese Datei ist die Karte im Profil und im Shop; sie verkauft das Design.
+Sie ist die einzige, die eventuell einmal groß gezeigt wird — bei ihr lohnt
+die höhere WebP-Qualität, bei den Flächen nicht.
 
 ---
 

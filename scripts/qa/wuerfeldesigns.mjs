@@ -9,6 +9,12 @@
  *      Vorschau) und jede laedt wirklich.
  *   2. Alle Bilder sind 512x512, und der Wuerfel sitzt in demselben Feld
  *      wie bei den vorhandenen Designs - sonst springt er beim Wechsel.
+ *   2b. Die Augen sitzen auf dem Raster 31/50/67 aus
+ *      docs/WUERFELDESIGN-BRIEF.md. Gemessen wird ueber die Streuung der
+ *      sechs Flaechen: wo ein Auge mal da und mal weg ist, aendert sich
+ *      die Farbe stark. Das braucht kein Wissen ueber die Farben des
+ *      jeweiligen Designs. Gegenprobe gefahren: mit SOLL=[25,50,75]
+ *      meldet die Zusicherung 8 Prozentpunkte Abweichung und faellt.
  *   3. Im Kampf traegt der grosse Wuerfel die Flaeche des Designs.
  *   4. Die Testumgebung kann sie auswaehlen.
  *   5. Im Profil taucht KEINES davon auf: es gibt noch keinen Weg, sie
@@ -93,6 +99,71 @@ try{
   pruefe('Wuerfelfeld wie bei den vorhandenen Designs',falschesFeld.length===0,true);
   if(falschesFeld.length)console.log(`      Feld: ${falschesFeld.slice(0,6).join(', ')}`);
 
+  // 2b. Das Augenraster. Gemessen wird nicht "wo ist ein Auge", sondern
+  // wo sich die sechs Flaechen UNTERSCHEIDEN - genau an den sieben
+  // genutzten Rasterpunkten ist ein Auge mal da und mal weg. Das kommt
+  // ohne Farbwissen ueber das jeweilige Design aus.
+  const raster=await p.evaluate(async neu=>{
+    const N=256,SOLL=[31,50,67];
+    const hole=async quelle=>{
+      const img=new Image();img.src=quelle;await img.decode();
+      const c=document.createElement('canvas');c.width=N;c.height=N;
+      const g=c.getContext('2d');g.drawImage(img,0,0,N,N);
+      return g.getImageData(0,0,N,N).data;
+    };
+    const aus={};
+    for(const schluessel of neu){
+      const art=DICE_DESIGNS[schluessel].artKey;
+      const flaechen=[];
+      for(let i=1;i<=6;i++)
+        flaechen.push(await hole(`assets/ui/v28/png/dice-designs/${art}/${art}-face-${i}.webp?v=${ASSET_REV}`));
+      // Streuung je Bildpunkt ueber die sechs Flaechen
+      const streu=new Uint8Array(N*N);let hoch=0;
+      for(let i=0;i<N*N;i++){
+        let s=0;
+        for(let k=0;k<3;k++){
+          let min=255,max=0;
+          for(const f of flaechen){const v=f[i*4+k];if(v<min)min=v;if(v>max)max=v;}
+          if(max-min>s)s=max-min;
+        }
+        streu[i]=s;if(s>hoch)hoch=s;
+      }
+      const grenze=Math.max(40,hoch*0.45);
+      // Zusammenhaengende Flecken, Schwerpunkt je Fleck
+      const gesehen=new Uint8Array(N*N),flecken=[];
+      for(let start=0;start<N*N;start++){
+        if(gesehen[start]||streu[start]<grenze)continue;
+        const stapel=[start];gesehen[start]=1;let n=0,sx=0,sy=0;
+        while(stapel.length){
+          const i=stapel.pop();n++;sx+=i%N;sy+=Math.floor(i/N);
+          const x=i%N,y=Math.floor(i/N);
+          for(const [dx,dy] of [[1,0],[-1,0],[0,1],[0,-1]]){
+            const a=x+dx,b=y+dy;if(a<0||a>=N||b<0||b>=N)continue;
+            const j=b*N+a;if(gesehen[j]||streu[j]<grenze)continue;
+            gesehen[j]=1;stapel.push(j);
+          }
+        }
+        // Glanzlichter und Kanten sind klein; ein Auge misst rund 13% der
+        // Kante, also gut 500 Bildpunkte bei N=256.
+        if(n>=250)flecken.push({x:100*(sx/n+.5)/N,y:100*(sy/n+.5)/N,
+          durchmesser:100*2*Math.sqrt(n/Math.PI)/N});
+      }
+      const nah=w=>SOLL.reduce((a,s)=>Math.abs(s-w)<Math.abs(a-w)?s:a,SOLL[0]);
+      const abweichung=Math.max(0,...flecken.flatMap(f=>[Math.abs(f.x-nah(f.x)),Math.abs(f.y-nah(f.y))]));
+      aus[schluessel]={punkte:flecken.length,
+        abweichung:Math.round(abweichung*10)/10,
+        durchmesser:Math.round(10*flecken.reduce((a,f)=>a+f.durchmesser,0)/Math.max(1,flecken.length))/10};
+    }
+    return aus;
+  },NEU);
+  // Sieben genutzte Rasterpunkte: Mitte, vier Ecken, zwei Seitenmitten.
+  const falschesRaster=Object.entries(raster)
+    .filter(([,r])=>r.punkte!==7||r.abweichung>2)
+    .map(([d,r])=>`${d} ${JSON.stringify(r)}`);
+  pruefe('Augen sitzen auf dem Raster 31/50/67',falschesRaster.length===0,true);
+  if(falschesRaster.length)console.log(`      Raster: ${falschesRaster.join(' | ')}`);
+  else console.log(`      Raster: ${Object.entries(raster).map(([d,r])=>`${d} ±${r.abweichung}pp Ø${r.durchmesser}%`).join(', ')}`);
+
   // 5. Im Profil taucht keines auf.
   await p.evaluate(()=>{createProfile('Prueferin');saveGameData();});
   await p.click('#menuProfilesBtn');await p.waitForTimeout(500);
@@ -140,7 +211,7 @@ try{
   await p.close();
 }catch(e){absturz=e;}
 
-const ERWARTET=6;
+const ERWARTET=7;
 let fehler=ergebnisse.length<ERWARTET?1:0;
 if(fehler)console.log(`ACHTUNG: nur ${ergebnisse.length} von ${ERWARTET} Zusicherungen erreicht.`);
 const breite=Math.max(1,...ergebnisse.map(r=>r[0].length));
