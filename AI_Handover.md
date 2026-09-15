@@ -591,9 +591,23 @@ Testumgebung; der Sprite-Pass nimmt diese Entwicklerfläche über
   11893. **Die Rangfolge ist jetzt eine Entscheidung, kein Zufall:**
   Zahlen < Popup (11900) < Achievement-Toast (12000), alle mit
   `pointer-events:none`. Wer eine neue Meldeschicht einzieht, ordnet sie
-  dort ein. Nicht gehoben wurde `.heal-pop` in der Spielerkarte — sie steckt
-  im Stapelkontext der Karte; `#healFx` trägt dieselbe Zahl.
-  Geprüft mit `scripts/qa/popup-schichten.mjs` (23 Zusicherungen).
+  dort ein.
+
+  **Nachtrag V28.12.21, und eine Lehre:** `.damage-pop` und `.heal-pop` an
+  der Spielerkarte hatte ich zunächst ausgelassen, mit der Begründung
+  „`#healFx` trägt dieselbe Zahl". Das war zu bequem — die Zahl an der Karte
+  sagt, **wen** es getroffen hat, die große in der Mitte nicht. Im Spiel fiel
+  genau das auf: beim Counterattack war die Schadenszahl verdeckt, also
+  gerade dann, wenn der Schaden entsteht. Beide hingen per `appendChild` *in*
+  der Karte und steckten damit in deren Stapelkontext; dagegen hilft keine
+  z-index am Element selbst, sie müssen aus der Karte heraus. `cardValuePop`
+  (`js/12-battle-ui.js`) hängt sie an den Körper und positioniert sie über
+  die Karte, Band 11894.
+
+  Geprüft mit `scripts/qa/popup-schichten.mjs` (25 Zusicherungen). Der Fall
+  prüft **nicht** die z-index am Element, sondern ob ein Vorfahre einen
+  Stapelkontext unter dem Overlay aufmacht — sonst hätte er das Problem gar
+  nicht sehen können.
 
 - **Zufällige Belohnungen machen Messungen unzuverlässig.** Der Prüfstand
   `rush-regeln.mjs` maß den Max-HP-Zuwachs je Stufe über einen ganzen
