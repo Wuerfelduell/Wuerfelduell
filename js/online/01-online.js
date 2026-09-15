@@ -375,7 +375,7 @@ function publishVisual(request){
 
 function stageHostState(rawState,request){
   if(!rawState||!currentRoomCode) throw new Error("EMPTY_HOST_STATE");
-  // Die logische Sequenz wird SOFORT vergeben, sobald die Host-Engine stabil ist.
+  // Zwischenstand und Endstand erhalten SOFORT je eine eigene logische Sequenz.
   // Firebase-Publishing läuft danach seriell im Hintergrund. Dadurch hängt kein
   // lokaler Folgebutton mehr an Netzwerklatenz.
   const seq=++hostStateSeq;
@@ -390,7 +390,10 @@ function stageHostState(rawState,request){
   hostPublishChain=hostPublishChain.then(async()=>{
     if(!currentRoomCode||!enteredMatchId) return;
     if(isSupabaseOnline){
-      await supabaseBackend.publishState(currentRoomId,{seq,state,actionId:state.actionId,actionType:state.actionType});
+      // Die unveränderte RPC quittiert p_action_id sofort als "applied".
+      // Erst der Endstand darf die Aktionszeile quittieren; im JSON behalten
+      // beide Stände dieselbe actionId zur Zuordnung der Vorschau.
+      await supabaseBackend.publishState(currentRoomId,{seq,state,actionId:state.settled===false?"":state.actionId,actionType:state.actionType});
       return;
     }
     await update(matchRef(),{state,currentPlayerUid:nextUid,turnNumber:Number(state?.battle?.roundNumber)||1,lastStateAt:serverTimestamp()});
@@ -453,7 +456,7 @@ async function drainHostActionQueue(){
         // entstandenen Modal klicken, während dessen Snapshot noch zu Firebase fließt.
         if((item.fromFirebase||item.fromSupabase) && baseSeq!==hostStateSeq) throw new Error(`STALE_STATE_${baseSeq}_${hostStateSeq}`);
         publishVisual(request);
-        const rawState=await bridge?.hostExecuteAction?.(request);
+        const rawState=await bridge?.hostExecuteAction?.(request,provisional=>stageHostState(provisional,request));
         if(!rawState) throw new Error("HOST_STATE_EMPTY");
         stageHostState(rawState,request);
         lastProcessedActionId=id;
