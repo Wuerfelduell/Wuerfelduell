@@ -22,9 +22,9 @@ welche Fallen schon Zeit gekostet haben.
 
 | | |
 |---|---|
-| Version | **28.12.29** |
+| Version | **28.12.30** |
 | Branch | `main` |
-| Letzte Schritte | CSS-Stapel auf 10 Dateien zusammengelegt · Changelog englisch vervollständigt · Hauptmenü, Statistik, Profile, Achievements, Spielvorbereitung und Trophy Shop überarbeitet · Fähigkeits- und Shopflächen auf proportional gekachelte Bildrahmen umgestellt · alle Bild-URLs auf einen gemeinsamen Cache-Schlüssel · Trophy-Shop-Reste bereinigt und Aufklapppfeile angeglichen · Duo- und Trio-Boss-Rush mit Pfadwahl, gespeicherten Runs und 32 Perks einschließlich temporärer Ability-Mastery · Boss-XP-Umtausch 300:100 · Zweitfund gedeckelt · Trio-Rush 15 Stufen, ab 10 ultraschwer · Boss-Rush-HUD auf die Weltregel reduziert · Zweitfund-Kopien ablehnbar und weitergebbar · Ultra-Stufen treffen härter statt länger zu dauern · Heilung gedeckelt, Maximum wächst je Stufe · Regelleiste als Kachelgitter, wächst mit dem Text · gespeicherte Runs überleben Balanceänderungen · Meldeschichten über den Kampf-Overlays geordnet · großer Spezialwürfel dreht sich als echter 3D-Würfel wie der normale und füllt seinen Rahmen · Kampflog, Infos-Blatt und Weltregel hinter einem Knopf, Knopfleiste gekürzt und beruhigt · Kartentexte aus den gemalten Rahmen geholt |
+| Letzte Schritte | CSS-Stapel auf 10 Dateien zusammengelegt · Changelog englisch vervollständigt · Hauptmenü, Statistik, Profile, Achievements, Spielvorbereitung und Trophy Shop überarbeitet · Fähigkeits- und Shopflächen auf proportional gekachelte Bildrahmen umgestellt · alle Bild-URLs auf einen gemeinsamen Cache-Schlüssel · Trophy-Shop-Reste bereinigt und Aufklapppfeile angeglichen · Duo- und Trio-Boss-Rush mit Pfadwahl, gespeicherten Runs und 32 Perks einschließlich temporärer Ability-Mastery · Boss-XP-Umtausch 300:100 · Zweitfund gedeckelt · Trio-Rush 15 Stufen, ab 10 ultraschwer · Boss-Rush-HUD auf die Weltregel reduziert · Zweitfund-Kopien ablehnbar und weitergebbar · Ultra-Stufen treffen härter statt länger zu dauern · Heilung gedeckelt, Maximum wächst je Stufe · Regelleiste als Kachelgitter, wächst mit dem Text · gespeicherte Runs überleben Balanceänderungen · Meldeschichten über den Kampf-Overlays geordnet · großer Spezialwürfel dreht sich als echter 3D-Würfel wie der normale und füllt seinen Rahmen · Kampflog, Infos-Blatt und Weltregel hinter einem Knopf, Knopfleiste gekürzt und beruhigt · Kartentexte aus den gemalten Rahmen geholt · fünf neue Würfeldesigns in der Testumgebung |
 
 **Die Arbeitsteilung hat sich geändert.** Bis V28.11.28 liefen zwei
 Sitzungen parallel: Codex hat umgesetzt, diese Sitzung geprüft. Ab jetzt
@@ -209,6 +209,40 @@ Kollisionen, die es nicht gibt — am Bild messen.
 (Statistik-Überschriften, Hauptmenüknöpfe, Profilkopf, `prestige-wallet`).
 **Nutzerentscheidung: das bleibt so.** Etwas Streckung ist akzeptiert und
 wird nur auf ausdrückliche Ansage geändert. Nicht ungefragt „reparieren".
+
+### Würfeldesigns: das Maß
+
+Ein Artwork-Würfel besteht aus **acht** Dateien in
+`assets/ui/v28/png/dice-designs/<artKey>/`:
+`<artKey>-face-1` bis `-face-6`, `<artKey>-face-question` und
+`<artKey>-beauty`. Alle **512 × 512 WebP mit Alpha**.
+
+**Pixelgenau nachgemessen** an den drei Originalen (ivory-royal,
+sapphire-crown, amethyst-rift): die Würfelfläche liegt in allen sieben
+Flächendateien in genau demselben Feld — **8,8 % bis 91,2 % der Kante**,
+also 422 × 422 mittig auf 512 × 512, auf allen vier Seiten identisch. Weicht
+eine Datei ab, springt der Würfel beim Flächenwechsel.
+
+Die fünf neuen Sätze (V28.12.30) kamen als 1024 × 1024 mit nur 3,4 % Rand.
+Sie wurden deshalb **nicht halbiert**, sondern auf das Zielfeld gerechnet —
+je Design mit *einer* gemeinsamen Transformation über alle sechs Flächen,
+damit die Augenpositionen untereinander stimmen.
+
+`-face-question` (die Ruhefläche mit dem Fragezeichen) und `-beauty` (der
+Würfel von drei Seiten, für die Vorschau) waren **nicht dabei** und sind
+derzeit Platzhalter: das Auge der Eins überdeckt, ein Fragezeichen darauf,
+und drei Flächen isometrisch zusammengesetzt. Sie gehören ersetzt, sobald
+echtes Artwork da ist.
+
+`testOnly:true` in `DICE_DESIGNS` hält ein Design aus der Profilliste
+heraus; die Testumgebung listet trotzdem alles. Soll ein Design
+freischaltbar werden, fällt das Flag weg und es braucht einen Weg dorthin
+(`DICE_UNLOCK_ACHIEVEMENT`, Trophy Shop oder Kampagnenbelohnung) plus einen
+`unlockText`.
+
+Gemessen von `scripts/qa/wuerfeldesigns.mjs`: acht Dateien je Design, alle
+512 × 512, alle im selben Feld, keines im Profil, alle in der Testumgebung,
+und der Würfel trägt die Fläche im Kampf wirklich.
 
 ### Weltassets seit 28.11.4
 

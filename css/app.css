@@ -12841,3 +12841,21 @@ html[data-v28-rework="2"] body.playing #game .controls>button.secondary{
     padding-right:11%;
   }
 }
+
+
+/* ===== Fuenf neue Artwork-Wuerfel, vorerst nur in der Testumgebung =====
+   Wie die drei vorhandenen brauchen sie zwei Dinge, die nicht aus dem
+   Bildersatz kommen: die Glut-/Auswahlfarbe des kleinen Wuerfels und die
+   Flaeche des D4 (fuer den gibt es kein Artwork). Die Werte sind an den
+   Bildern abgelesen - Flaeche, Rahmen und Auge der Sechs. */
+.die.theme-walnut-lodge{--dice-accent:#d8a85a;--dice-glow:rgba(216,168,90,.85)}
+.die.theme-tide-pearl{--dice-accent:#49e2d4;--dice-glow:rgba(73,226,212,.88)}
+.die.theme-azure-storm{--dice-accent:#4aa4ff;--dice-glow:rgba(74,164,255,.9)}
+.die.theme-nebula-veil{--dice-accent:#c77bff;--dice-glow:rgba(199,123,255,.9)}
+.die.theme-solar-relic{--dice-accent:#ffcf5a;--dice-glow:rgba(255,207,90,.92)}
+
+.special-big-die.d4.theme-walnut-lodge{background:linear-gradient(145deg,#8c4a22,#3d1c0b);color:#f2e7d2;border-color:#c0934a}
+.special-big-die.d4.theme-tide-pearl{background:linear-gradient(145deg,#0a6d78,#02323a);color:#d8f7f8;border-color:#e6c46a}
+.special-big-die.d4.theme-azure-storm{background:linear-gradient(145deg,#1140c8,#03155e);color:#eaf4ff;border-color:#f0cf7e}
+.special-big-die.d4.theme-nebula-veil{background:linear-gradient(145deg,#8c34c0,#360d63);color:#efe0ff;border-color:#eec27a}
+.special-big-die.d4.theme-solar-relic{background:linear-gradient(145deg,#f6e6c2,#c9973c);color:#5a3c0c;border-color:#ffd97a}

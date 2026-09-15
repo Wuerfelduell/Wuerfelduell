@@ -204,13 +204,15 @@
     [...expandedProfileIds].forEach(id=>{if(!existingIds.has(id)) expandedProfileIds.delete(id);});
 
     profileList.innerHTML=saveData.profiles.map((p,profileIndex)=>{
-      const featuredDice=Object.entries(DICE_DESIGNS).filter(([,d])=>d.previewAsset).map(([key,d])=>{
+      // testOnly bleibt aussen vor: diese Designs gibt es nur in der
+      // Testumgebung, hier waeren sie ein Schloss ohne Schluessel.
+      const featuredDice=Object.entries(DICE_DESIGNS).filter(([,d])=>d.previewAsset&&!d.testOnly).map(([key,d])=>{
         const unlockedNow=p.unlockedDice.includes(key),selected=p.selectedDice===key;
         const stateAsset=unlockedNow?"assets/ui/v28/png/components/completed-check-medallion.webp":"assets/ui/v28/png/components/locked-padlock-overlay.webp";
         const stateLabel=selected?"Ausgewählt":unlockedNow?"Freigeschaltet":d.unlockText||"Gesperrt";
         return `<button type="button" class="dice-design-card${unlockedNow?" unlocked":" locked"}${selected?" selected":""}" data-dice-design="${escapeHtml(key)}"${unlockedNow?"":" disabled"} aria-label="${escapeHtml(`${d.name}: ${stateLabel}`)}"><span class="dice-design-preview"><img class="dice-design-beauty" src="${escapeHtml(d.previewAsset)}?v=${ASSET_REV}" alt="" loading="lazy"><img class="dice-design-state" src="${stateAsset}?v=${ASSET_REV}" alt="" aria-hidden="true"></span><span class="dice-design-name">${escapeHtml(d.name)}</span><span class="dice-design-meta">${escapeHtml(stateLabel)}</span></button>`;
       }).join("");
-      const unlocked=Object.entries(DICE_DESIGNS).filter(([,d])=>!d.previewAsset).map(([key,d])=>{
+      const unlocked=Object.entries(DICE_DESIGNS).filter(([,d])=>!d.previewAsset&&!d.testOnly).map(([key,d])=>{
         const unlockedNow=p.unlockedDice.includes(key),selected=p.selectedDice===key;
         const shopItem=PRESTIGE_SHOP_ITEMS.find(x=>x.type==="dice"&&x.value===key);
         const req=DICE_UNLOCK_ACHIEVEMENT[key]?ACHIEVEMENTS[DICE_UNLOCK_ACHIEVEMENT[key]]?.name:(shopItem?`Trophy Shop · ${shopItem.cost}`:"");

@@ -38,6 +38,17 @@
     classic_v2:{name:"ClassicV2",className:"theme-classic-v2 theme-art-die",artKey:"ivory-royal",previewAsset:"assets/ui/v28/png/dice-designs/ivory-royal/ivory-royal-beauty.webp",unlockText:"Von Anfang an"},
     sapphire_crown:{name:"Sapphire Crown",className:"theme-sapphire-crown theme-art-die",artKey:"sapphire-crown",previewAsset:"assets/ui/v28/png/dice-designs/sapphire-crown/sapphire-crown-beauty.webp",unlockText:"Solo · Welt 3 Boss"},
     amethyst_rift:{name:"Amethyst Rift",className:"theme-amethyst-rift theme-art-die",artKey:"amethyst-rift",previewAsset:"assets/ui/v28/png/dice-designs/amethyst-rift/amethyst-rift-beauty.webp",unlockText:"Solo · Welt 4 Boss"},
+    // Fünf neue Artwork-Würfel, vorerst NUR in der Testumgebung. testOnly
+    // hält sie aus der Profilliste heraus: dort stünden sie sonst als
+    // gesperrte Karten, obwohl es noch keinen Weg gibt, sie zu bekommen.
+    // Wenn sie freigeschaltet werden sollen, fällt testOnly weg und sie
+    // brauchen einen Eintrag in DICE_UNLOCK_ACHIEVEMENT, im Trophy Shop
+    // oder als Kampagnenbelohnung - plus einen unlockText.
+    walnut_lodge:{name:"Walnut Lodge",className:"theme-walnut-lodge theme-art-die",artKey:"walnut-lodge",previewAsset:"assets/ui/v28/png/dice-designs/walnut-lodge/walnut-lodge-beauty.webp",testOnly:true},
+    tide_pearl:{name:"Tide Pearl",className:"theme-tide-pearl theme-art-die",artKey:"tide-pearl",previewAsset:"assets/ui/v28/png/dice-designs/tide-pearl/tide-pearl-beauty.webp",testOnly:true},
+    azure_storm:{name:"Azure Storm",className:"theme-azure-storm theme-art-die",artKey:"azure-storm",previewAsset:"assets/ui/v28/png/dice-designs/azure-storm/azure-storm-beauty.webp",testOnly:true},
+    nebula_veil:{name:"Nebula Veil",className:"theme-nebula-veil theme-art-die",artKey:"nebula-veil",previewAsset:"assets/ui/v28/png/dice-designs/nebula-veil/nebula-veil-beauty.webp",testOnly:true},
+    solar_relic:{name:"Solar Relic",className:"theme-solar-relic theme-art-die",artKey:"solar-relic",previewAsset:"assets/ui/v28/png/dice-designs/solar-relic/solar-relic-beauty.webp",testOnly:true},
     obsidian:{name:"Obsidian",className:"theme-obsidian"},
     gold:{name:"Gold",className:"theme-gold"},
     blood:{name:"Blood",className:"theme-blood"},
