@@ -2801,3 +2801,70 @@ html[data-v28-rework="2"] :is(.special-big-die,.gambling-die):disabled{
 :is(.special-big-die,.gambling-die):not(.d4):not(.theme-art-die)>.die-cube>.die-face{
   border-radius:22%;
 }
+
+/* ===== Platzmanagement im Kampf – Versuch in der Testumgebung =====
+   Faehigkeitszeilen und Aufgabenfortschritt stehen im Infos-Blatt, nicht
+   mehr im Zug. Sie bleiben im Baum, wo sie hingehoeren - nur unsichtbar;
+   das Blatt zeigt eine Kopie. Ausserhalb der Testumgebung greift keine
+   dieser Regeln, der normale Kampf bleibt unveraendert. */
+body.test-lab-active #game .ability-state,
+body.test-lab-active #game .campaign-task-progress{
+  display:none;
+}
+
+/* Der Infos-Knopf steht ueber den Wuerfeln, mittig und klein. Er traegt
+   .game-menu-btn, damit er aus derselben Familie kommt wie der
+   Hauptmenue-Knopf; hier nur schmaler. */
+.battle-info-row{
+  display:flex;
+  justify-content:center;
+  margin:0 0 6px;
+}
+html[data-v28-rework="2"] body.playing .game-menu-btn.battle-info-btn{
+  min-height:32px;
+  padding:4px 26px;
+  font-size:12px;
+  letter-spacing:.02em;
+}
+
+/* Zwei Knoepfe in der Matchbar: sie duerfen umbrechen statt sich
+   gegenseitig zu quetschen. */
+body.test-lab-active #game .matchbar-actions{
+  flex-wrap:wrap;
+  justify-content:flex-end;
+  gap:6px;
+}
+
+/* Das Blatt selbst. Der Log kann lang werden - er scrollt im Panel,
+   nicht die Seite. */
+.battle-sheet-body{
+  margin:10px 0 4px;
+  max-height:58vh;
+  overflow-y:auto;
+  overscroll-behavior:contain;
+}
+.battle-sheet-head{
+  margin:10px 0 4px;
+  font-size:12px;
+  font-weight:1000;
+  letter-spacing:.08em;
+  text-transform:uppercase;
+  color:var(--gold);
+}
+.battle-sheet-head:first-child{margin-top:0}
+.battle-sheet-leer{
+  padding:14px 2px;
+  color:var(--muted);
+  font-size:13px;
+}
+.battle-log-list{
+  margin:0;
+  padding:0 0 0 22px;
+  display:flex;
+  flex-direction:column;
+  gap:6px;
+  color:var(--muted);
+  font-size:13px;
+  line-height:1.35;
+}
+.battle-log-list li{padding-left:2px}

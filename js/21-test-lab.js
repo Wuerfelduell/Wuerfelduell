@@ -8,7 +8,10 @@
   const startBtn=$lab('testLabStartBtn');
   const selected=[];
   let hotDemoLevel=0;
-  let benchCollapsed=false;
+  // Die Werkbank startet eingeklappt. Aufgeklappt belegt sie den ganzen
+  // ersten Bildschirm und schiebt den Kampf aus dem Blick - zum Testen des
+  // Kampfes soll die Testumgebung aussehen wie eine normale Partie.
+  let benchCollapsed=true;
 
   if(!hub || !picker || !grid || !startBtn) return;
 
@@ -199,11 +202,16 @@
 
     body.append(diceCtl.wrap,fxCtl.wrap,frameCtl.wrap,bannerCtl.wrap,hotCtl.wrap,preview);
 
-    bench.querySelector('#testLabBenchToggle').addEventListener('click',()=>{
-      benchCollapsed=!benchCollapsed;
+    const toggle=bench.querySelector('#testLabBenchToggle');
+    const zeigeStand=()=>{
       body.classList.toggle('hidden',benchCollapsed);
-      bench.querySelector('#testLabBenchToggle').textContent=benchCollapsed?'+':'−';
+      toggle.textContent=benchCollapsed?'+':'−';
+    };
+    toggle.addEventListener('click',()=>{
+      benchCollapsed=!benchCollapsed;
+      zeigeStand();
     });
+    zeigeStand();
   }
 
   function startTestLab(){
@@ -237,7 +245,132 @@
     addLog(`🧪 Testumgebung: ${ABILITIES[selected[0]].name} + ${ABILITIES[selected[1]].name} · Test-Bot 100 HP · nur 5er/6er Würfel · kein Save.`);
     renderAll();
     labHpSnapshot=players.map(p=>Number(p?.hp)||0);
-    requestAnimationFrame(()=>{createWorkbench();applyWorkbench();});
+    requestAnimationFrame(()=>{createWorkbench();applyWorkbench();kampfInfoAufbauen();});
+  }
+
+  /* ===== Platzmanagement im Kampf – vorerst nur Testumgebung =====
+     Zwei Knöpfe, ein Blatt:
+
+     · "Kampflog" oben neben dem Hauptmenü, im selben Design. #log steht in
+       index.html dauerhaft auf .hidden, addLog schreibt also ins Leere -
+       aus Platzgründen. Zum Nachschlagen bei Fehlern ist der Verlauf aber
+       Gold wert, und als Knopf kostet er keine Zeile im Kampf.
+     · "Infos" über den Würfeln. Fähigkeitszeilen und Aufgabenfortschritt
+       wandern dorthin und geben ihren Platz im Zug frei.
+
+     KOPIERT wird, nicht verschoben. Wer die Testumgebung auf einem Weg
+     verlässt, den wir hier nicht kennen, findet im normalen Kampf trotzdem
+     alles an seinem Platz - die Knoten hängen nie woanders. */
+  function kampfInfoAufbauen(){
+    const leiste=document.querySelector('#game .matchbar-actions');
+    if(leiste&&!$lab('combatLogBtn')){
+      const knopf=document.createElement('button');
+      knopf.type='button';
+      knopf.id='combatLogBtn';
+      knopf.className='game-menu-btn';
+      knopf.textContent='Kampflog';
+      knopf.addEventListener('click',()=>oeffneBlatt('log'));
+      leiste.append(knopf);
+    }
+    const wuerfel=$lab('dice');
+    if(wuerfel&&!$lab('battleInfoBtn')){
+      const reihe=document.createElement('div');
+      reihe.className='battle-info-row';
+      const knopf=document.createElement('button');
+      knopf.type='button';
+      knopf.id='battleInfoBtn';
+      knopf.className='game-menu-btn battle-info-btn';
+      knopf.textContent='Infos';
+      knopf.addEventListener('click',()=>oeffneBlatt('infos'));
+      reihe.append(knopf);
+      wuerfel.parentElement.insertBefore(reihe,wuerfel);
+    }
+  }
+
+  function blattUeberlagerung(){
+    let blatt=$lab('battleSheetOverlay');
+    if(blatt) return blatt;
+    blatt=document.createElement('div');
+    blatt.id='battleSheetOverlay';
+    blatt.className='utility-overlay hidden';
+    blatt.innerHTML=`
+      <div class="utility-panel battle-sheet-panel">
+        <div class="utility-kicker" id="battleSheetKicker"></div>
+        <div class="utility-title" id="battleSheetTitle"></div>
+        <div class="battle-sheet-body" id="battleSheetBody"></div>
+        <div class="utility-actions">
+          <button type="button" id="battleSheetCloseBtn" class="secondary">Schließen</button>
+        </div>
+      </div>`;
+    document.body.append(blatt);
+    // Klick auf den dunklen Rand schließt, Klick im Blatt nicht.
+    blatt.addEventListener('click',ev=>{if(ev.target===blatt) schliesseBlatt();});
+    blatt.querySelector('#battleSheetCloseBtn').addEventListener('click',schliesseBlatt);
+    return blatt;
+  }
+
+  function schliesseBlatt(){$lab('battleSheetOverlay')?.classList.add('hidden');}
+
+  // Eine Kopie ohne id: zwei Knoten mit derselben id waeren ein stiller
+  // Fehler - getElementById liefert dann irgendeinen von beiden.
+  function kopieOhneId(quelle){
+    const kopie=quelle.cloneNode(true);
+    kopie.removeAttribute('id');
+    kopie.querySelectorAll('[id]').forEach(k=>k.removeAttribute('id'));
+    kopie.classList.remove('hidden');
+    return kopie;
+  }
+
+  function hatInhalt(el){return !!el&&!el.classList.contains('hidden')&&el.innerHTML.trim()!=='';}
+
+  function fuelleInfos(koerper){
+    const teile=[['Fähigkeiten',$lab('abilityState')],['Aufgaben',$lab('campaignTaskProgress')]];
+    let etwas=false;
+    for(const [titel,quelle] of teile){
+      if(!hatInhalt(quelle)) continue;
+      etwas=true;
+      const kopf=document.createElement('div');
+      kopf.className='battle-sheet-head';
+      kopf.textContent=titel;
+      koerper.append(kopf,kopieOhneId(quelle));
+    }
+    if(!etwas){
+      const leer=document.createElement('div');
+      leer.className='battle-sheet-leer';
+      leer.textContent='Gerade gibt es nichts zu berichten.';
+      koerper.append(leer);
+    }
+  }
+
+  function fuelleLog(koerper){
+    // #log haelt die Eintraege bereits neueste zuerst (addLog prepended).
+    const zeilen=[...($lab('log')?.children||[])].map(k=>k.textContent).filter(t=>t&&t.trim());
+    if(!zeilen.length){
+      const leer=document.createElement('div');
+      leer.className='battle-sheet-leer';
+      leer.textContent='Noch kein Eintrag in dieser Partie.';
+      koerper.append(leer);
+      return;
+    }
+    const liste=document.createElement('ol');
+    liste.className='battle-log-list';
+    for(const text of zeilen){
+      const zeile=document.createElement('li');
+      zeile.textContent=text;
+      liste.append(zeile);
+    }
+    koerper.append(liste);
+  }
+
+  function oeffneBlatt(art){
+    const blatt=blattUeberlagerung();
+    const koerper=blatt.querySelector('#battleSheetBody');
+    koerper.replaceChildren();
+    blatt.querySelector('#battleSheetKicker').textContent=art==='log'?'Verlauf':'Im Zug';
+    blatt.querySelector('#battleSheetTitle').textContent=art==='log'?'Kampflog':'Infos';
+    blatt.classList.toggle('battle-sheet-log',art==='log');
+    if(art==='log') fuelleLog(koerper); else fuelleInfos(koerper);
+    blatt.classList.remove('hidden');
   }
 
   const menuTutorial=$lab('menuTutorialBtn');
@@ -1418,6 +1551,10 @@
     btn.addEventListener('click',()=>{
       document.body.classList.remove('test-lab-active');
       document.getElementById('testLabWorkbench')?.remove();
+      // Die Kampf-Infos sind vorerst nur ein Versuch in der Testumgebung:
+      // ausserhalb bleibt der Kampf unveraendert.
+      ['combatLogBtn','battleInfoBtn','battleSheetOverlay'].forEach(id=>document.getElementById(id)?.remove());
+      document.querySelector('#game .battle-info-row')?.remove();
       hotDemoLevel=0;fireParticles=[];activeLabFx=[];activeKillFx=[];labHpSnapshot=[];lastLabAttack={source:null,target:null,style:null,at:0};
     });
   });

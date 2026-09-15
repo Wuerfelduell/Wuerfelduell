@@ -22,9 +22,9 @@ welche Fallen schon Zeit gekostet haben.
 
 | | |
 |---|---|
-| Version | **28.12.24** |
+| Version | **28.12.25** |
 | Branch | `main` |
-| Letzte Schritte | CSS-Stapel auf 10 Dateien zusammengelegt · Changelog englisch vervollständigt · Hauptmenü, Statistik, Profile, Achievements, Spielvorbereitung und Trophy Shop überarbeitet · Fähigkeits- und Shopflächen auf proportional gekachelte Bildrahmen umgestellt · alle Bild-URLs auf einen gemeinsamen Cache-Schlüssel · Trophy-Shop-Reste bereinigt und Aufklapppfeile angeglichen · Duo- und Trio-Boss-Rush mit Pfadwahl, gespeicherten Runs und 32 Perks einschließlich temporärer Ability-Mastery · Boss-XP-Umtausch 300:100 · Zweitfund gedeckelt · Trio-Rush 15 Stufen, ab 10 ultraschwer · Boss-Rush-HUD auf die Weltregel reduziert · Zweitfund-Kopien ablehnbar und weitergebbar · Ultra-Stufen treffen härter statt länger zu dauern · Heilung gedeckelt, Maximum wächst je Stufe · Regelleiste als Kachelgitter, wächst mit dem Text · gespeicherte Runs überleben Balanceänderungen · Meldeschichten über den Kampf-Overlays geordnet · großer Spezialwürfel dreht sich als echter 3D-Würfel wie der normale und füllt seinen Rahmen |
+| Letzte Schritte | CSS-Stapel auf 10 Dateien zusammengelegt · Changelog englisch vervollständigt · Hauptmenü, Statistik, Profile, Achievements, Spielvorbereitung und Trophy Shop überarbeitet · Fähigkeits- und Shopflächen auf proportional gekachelte Bildrahmen umgestellt · alle Bild-URLs auf einen gemeinsamen Cache-Schlüssel · Trophy-Shop-Reste bereinigt und Aufklapppfeile angeglichen · Duo- und Trio-Boss-Rush mit Pfadwahl, gespeicherten Runs und 32 Perks einschließlich temporärer Ability-Mastery · Boss-XP-Umtausch 300:100 · Zweitfund gedeckelt · Trio-Rush 15 Stufen, ab 10 ultraschwer · Boss-Rush-HUD auf die Weltregel reduziert · Zweitfund-Kopien ablehnbar und weitergebbar · Ultra-Stufen treffen härter statt länger zu dauern · Heilung gedeckelt, Maximum wächst je Stufe · Regelleiste als Kachelgitter, wächst mit dem Text · gespeicherte Runs überleben Balanceänderungen · Meldeschichten über den Kampf-Overlays geordnet · großer Spezialwürfel dreht sich als echter 3D-Würfel wie der normale und füllt seinen Rahmen · Kampflog und Infos-Blatt als Platzversuch in der Testumgebung |
 
 **Die Arbeitsteilung hat sich geändert.** Bis V28.11.28 liefen zwei
 Sitzungen parallel: Codex hat umgesetzt, diese Sitzung geprüft. Ab jetzt
@@ -510,6 +510,29 @@ wissen muss, nicht mehr die volle Beweisführung.
    Wenn es soweit ist: erst ein Entwurf, was serverseitig liegen muss und
    was im Browser bleibt — kein Auftrag über ein paar Stunden. Ebenfalls
    offen und dann fällig: die Zuordnung von `Profiles` zu `auth.users`.
+
+4. **Platzmanagement im Kampf — Versuch läuft, nur in der Testumgebung.**
+   Seit V28.12.25 stehen dort drei Dinge anders: die FX-Werkbank startet
+   eingeklappt, ein **Kampflog**-Knopf neben dem Hauptmenü öffnet den
+   Verlauf (`#log` ist weiter dauerhaft unsichtbar, `addLog` schreibt
+   hinein), und ein kleiner **Infos**-Knopf über den Würfeln zeigt
+   Fähigkeitszeilen und Aufgabenfortschritt. Die beiden geben damit ihren
+   Platz im Zug frei: der Wurfknopf rückt rund 55 px nach oben.
+
+   **Alles nur in der Testumgebung** — `body.test-lab-active`. Der normale
+   Kampf ist unverändert, und zwar absichtlich so gebaut, dass er es auch
+   bleibt, wenn der Versuch schiefgeht: die Blätter zeigen **Kopien**,
+   `#abilityState` und `#campaignTaskProgress` hängen weiter an ihrem
+   Platz und werden nur per CSS ausgeblendet. Kein Umzug, keine
+   Aufräumpflicht.
+
+   Der Code steht in `js/21-test-lab.js` unter „Platzmanagement im Kampf",
+   das CSS am Ende von `37-abschluss.css`, gemessen von
+   `scripts/qa/kampf-platz.mjs` (20 Zusicherungen). Wandert das Ganze in
+   den normalen Kampf, gehören Knöpfe und Blatt nach `index.html` und
+   `js/12-battle-ui.js`; die Einträge in `ID_ICONS`
+   (`js/36-emoji-sprite-pass.js`) stehen schon bereit und bringen dann ihr
+   Symbol mit.
 
 ---
 

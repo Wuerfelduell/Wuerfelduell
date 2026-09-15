@@ -117,7 +117,13 @@
     bloodRushMasteryBtn:"abilities/23-blood-rush.svg",
     bloodHigherBtn:"abilities/11-blutpreis.svg",
     nextRoundPrepBtn:"gameplay/dice.svg",
-    onlineMainMenuBtn:"navigation/back.svg"
+    onlineMainMenuBtn:"navigation/back.svg",
+    // Beide erscheinen vorerst nur in der Testumgebung, und dort laesst der
+    // Pass die Kampfflaechen bewusst in Ruhe. Die Eintraege stehen trotzdem
+    // schon hier, damit sie ihr Symbol mitbringen, sobald die Knoepfe in
+    // den normalen Kampf wandern.
+    combatLogBtn:"menu/changelog.svg",
+    battleInfoBtn:"navigation/info.svg"
   });
 
   const TEST_SELECTOR=[
