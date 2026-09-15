@@ -414,6 +414,7 @@ window.WD_LANG_PACKS.en = {
     "🎯 Angriffsziel wählen":"🎯 Choose attack target",
     "Würfeln":"Roll",
     "Ausgewählte einlocken":"Lock selected",
+    "Lock":"Lock",
     "Locken & weiterwürfeln":"Lock & reroll",
     "🔄 Einen 1er neu würfeln":"🔄 Reroll one 1",
     "⚡ Alle Nicht-Treffer neu würfeln":"⚡ Reroll all non-hits",

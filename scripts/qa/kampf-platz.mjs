@@ -63,6 +63,15 @@ async function normalesSpiel(p){
   await p.selectOption('#botChoice1','easy');
   await p.waitForTimeout(200);
   await p.click('#rollAbilities');await p.waitForTimeout(900);
+  // Manche ausgewuerfelten Faehigkeiten lassen waehlen; ohne Wahl bleibt
+  // "Spiel starten" gesperrt. Das ist Zufall - deshalb immer nachsehen.
+  await p.evaluate(()=>{
+    document.querySelectorAll('.ability-choice:not(.hidden)').forEach(sel=>{
+      const wahl=[...sel.options].find(o=>o.value&&!o.disabled);
+      if(wahl){sel.value=wahl.value;sel.dispatchEvent(new Event('change',{bubbles:true}));}
+    });
+  });
+  await p.waitForTimeout(200);
   await p.click('#startGame');await p.waitForTimeout(900);
   // Der Bot kann den ersten Zug haben. Gemessen wird der Zug des Spielers,
   // also warten, bis die Knopfleiste ihm gehoert.
@@ -84,6 +93,7 @@ try{
     faehigkeiten:window.__k('#abilityState'),
     aufgaben:window.__k('#campaignTaskProgress'),
     wuerfel:window.__k('#dice'),
+    summe:window.__k('#sum'),
     wurfknopf:window.__k('#primaryBtn')
   }));
 
@@ -97,12 +107,19 @@ try{
   pruefe('Kampflog steht neben dem Hauptmenue',!!gleicheZeile,true);
   pruefe('Matchbar bleibt einzeilig',stand.matchbar.h<=Math.max(stand.hauptmenue.h+12,56),true);
 
-  const mitte=k=>k.x+k.b/2;
-  const infoOk=stand.infoKnopf&&stand.wuerfel
-    &&stand.infoKnopf.y+stand.infoKnopf.h<=stand.wuerfel.y
-    &&Math.abs(mitte(stand.infoKnopf)-mitte(stand.wuerfel))<=6;
-  pruefe('Infos-Knopf steht mittig ueber den Wuerfeln',!!infoOk,true);
-  pruefe('Infos-Knopf ist klein',!!stand.infoKnopf&&stand.infoKnopf.h<=36&&stand.infoKnopf.b<=stand.wuerfel.b*0.5,true);
+  // Der Hauptmenue-Knopf gehoert nach rechts aussen - das ist die Stelle,
+  // an der er ueberall sonst im Spiel steht.
+  pruefe('Hauptmenue steht rechts vom Kampflog',stand.hauptmenue.x>stand.kampflog.x,true);
+
+  // Infos sitzt in der Zugkopfzeile neben der Augenzahl, nicht mehr in
+  // einer eigenen Reihe ueber den Wuerfeln.
+  const infoOk=stand.infoKnopf&&stand.summe&&stand.wuerfel
+    &&Math.abs((stand.infoKnopf.y+stand.infoKnopf.h/2)-(stand.summe.y+stand.summe.h/2))<=12
+    &&stand.infoKnopf.x+stand.infoKnopf.b<=stand.summe.x
+    &&stand.infoKnopf.y+stand.infoKnopf.h<=stand.wuerfel.y;
+  pruefe('Infos-Knopf steht in der Kopfzeile neben der Augenzahl',!!infoOk,true);
+  pruefe('Infos-Knopf ist klein',!!stand.infoKnopf&&stand.infoKnopf.h<=34&&stand.infoKnopf.b<=stand.wuerfel.b*0.5,true);
+  pruefe('Keine eigene Knopfreihe mehr ueber den Wuerfeln',stand.infoReihe===null,true);
   pruefe('Faehigkeitszeilen belegen im Zug keinen Platz',stand.faehigkeiten.h===0&&stand.faehigkeiten.anzeige==='none',true);
   pruefe('Aufgabenfortschritt belegt im Zug keinen Platz',stand.aufgaben.h===0,true);
 
@@ -134,6 +151,42 @@ try{
   pruefe('Kein Knopftext bricht um',reihe.knoepfe.every(k=>k.textzeilen<=1&&!k.ueberlauf),true);
   if(reihe.zeilen!==1||!reihe.knoepfe.every(k=>k.textzeilen<=1&&!k.ueberlauf))
     console.log(`      Knopfleiste: ${JSON.stringify(reihe)}`);
+
+  // Kein Kampfknopf ohne gemalten Rahmen, und die Zugkarte haelt ihre
+  // Hoehe - auch waehrend des Wurfs, wenn ueberhaupt kein Knopf dasteht.
+  const phasen=await p.evaluate(()=>{
+    const leiste=document.getElementById('primaryBtn').parentElement;
+    const karte=document.querySelector('#game .turn-card');
+    const aus=[];
+    const notiz=name=>aus.push({name,
+      karte:Math.round(karte.getBoundingClientRect().height),
+      knoepfe:[...leiste.children]
+        .filter(b=>!b.classList.contains('hidden')&&getComputedStyle(b).display!=='none')
+        .map(b=>({id:b.id,text:b.textContent.trim(),
+          rahmen:/frames\//.test(getComputedStyle(b).backgroundImage)}))});
+    const alterZustand={phase,isAnimating,attackFace,attackTarget,neue:currentAttackRollNewHits};
+    notiz('Zug');
+    isAnimating=true;updateButtons();notiz('waehrend des Wurfs');
+    isAnimating=false;
+    phase='attack_ready';attackFace=5;attackTarget=1;updateButtons();notiz('Angriff bereit');
+    phase='attack_after_roll';currentAttackRollNewHits=1;updateButtons();notiz('nach dem Angriffswurf');
+    phase='turn_done';updateButtons();notiz('Zug beendet');
+    phase='base_select';dice.forEach(d=>{d.selected=true;});updateButtons();notiz('Basiswahl');
+    Object.assign(window,{});
+    phase=alterZustand.phase;isAnimating=alterZustand.isAnimating;
+    attackFace=alterZustand.attackFace;attackTarget=alterZustand.attackTarget;
+    currentAttackRollNewHits=alterZustand.neue;updateButtons();
+    return aus;
+  });
+  const ohneRahmen=phasen.flatMap(z=>z.knoepfe.filter(k=>!k.rahmen).map(k=>`${z.name}:${k.text}`));
+  pruefe('Kein Kampfknopf ohne Rahmen',ohneRahmen.length===0,true);
+  if(ohneRahmen.length)console.log(`      ohne Rahmen: ${ohneRahmen.join(', ')}`);
+  const hoehen=phasen.map(z=>z.karte);
+  const huepft=Math.max(...hoehen)-Math.min(...hoehen);
+  pruefe('Zugkarte haelt ihre Hoehe (auch waehrend des Wurfs)',huepft<=2,true);
+  if(huepft>2)console.log(`      Kartenhoehen: ${JSON.stringify(phasen.map(z=>[z.name,z.karte]))}`);
+  const lock=phasen.find(z=>z.name==='Basiswahl')?.knoepfe.find(k=>k.id==='lockBtn');
+  pruefe('Einlock-Knopf heisst "Lock"',lock?.text==='Lock',true);
 
   // 5. Kampflog: Reihenfolge, keine Sprites, frisch gelesen.
   await p.evaluate(()=>{addLog('Erste Aktion');addLog('Zweite Aktion');addLog('Dritte Aktion');});
@@ -180,13 +233,16 @@ try{
   pruefe('Keine doppelten ids',blatt.doppelt.every(n=>n===1),true);
   await p.click('#battleSheetCloseBtn');await p.waitForTimeout(200);
 
-  // 3b. Kein Inhalt, kein Knopf.
+  // 3b. Kein Inhalt, kein Knopf - aber die Kopfzeile bleibt stehen.
   const ohne=await p.evaluate(()=>{
     abilityState.innerHTML='';campaignTaskProgress.innerHTML='';
     refreshBattleInfoButton();
-    return window.__k('#game .battle-info-row');
+    return {knopf:window.__k('#battleInfoBtn'),kopf:window.__k('#game .turn-head'),
+      summe:window.__k('#sum')};
   });
-  pruefe('Infos-Knopf verschwindet, wenn es nichts zu zeigen gibt',ohne.h===0||ohne.anzeige==='none',true);
+  pruefe('Infos-Knopf verschwindet, wenn es nichts zu zeigen gibt',
+    !ohne.knopf||ohne.knopf.h===0||ohne.knopf.anzeige==='none',true);
+  pruefe('Die Augenzahl bleibt dabei stehen',ohne.summe.h>0&&ohne.kopf.h>0,true);
   await p.close();
 
   // 7b. Englisch: derselbe Knopf heisst "Roll".
@@ -224,7 +280,7 @@ try{
   await l.close();
 }catch(e){absturz=e;}
 
-const ERWARTET=22;
+const ERWARTET=26;
 let fehler=ergebnisse.length<ERWARTET?1:0;
 if(fehler)console.log(`ACHTUNG: nur ${ergebnisse.length} von ${ERWARTET} Zusicherungen erreicht.`);
 const breite=Math.max(1,...ergebnisse.map(r=>r[0].length));

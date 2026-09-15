@@ -12707,17 +12707,16 @@ html[data-v28-rework="2"] :is(.special-big-die,.gambling-die):disabled{
   display:none;
 }
 
-/* Der Infos-Knopf steht ueber den Wuerfeln, mittig und klein. Er traegt
-   .game-menu-btn, damit er aus derselben Familie kommt wie der
-   Hauptmenue-Knopf; hier nur schmaler. */
-.battle-info-row{
-  display:flex;
-  justify-content:center;
-  margin:0 0 6px;
-}
+/* Der Infos-Knopf sitzt in der Zugkopfzeile, direkt neben der Augenzahl.
+   Er traegt .game-menu-btn, damit er aus derselben Familie kommt wie der
+   Hauptmenue-Knopf; hier nur kleiner. align-self, weil die Kopfzeile auf
+   der Schriftgrundlinie ausgerichtet ist - ein Knopf haengt darin sonst
+   schief. */
 html[data-v28-rework="2"] body.playing .game-menu-btn.battle-info-btn{
-  min-height:32px;
-  padding:4px 26px;
+  flex:0 0 auto;
+  align-self:center;
+  min-height:30px;
+  padding:3px 16px;
   font-size:12px;
   letter-spacing:.02em;
 }
@@ -12769,3 +12768,29 @@ html[data-v28-rework="2"] body.playing #game .matchbar-actions>.game-menu-btn{
   line-height:1.35;
 }
 .battle-log-list li{padding-left:2px}
+
+
+/* ===== Die Zugkarte darf nicht huepfen =====
+   Waehrend des Wurfs blendet updateButtons ALLE Knoepfe aus; die Leiste
+   fiel dabei von 59 auf 2 Pixel und der gemalte Rahmen um die Wuerfel
+   wurde sichtbar kleiner (Karte 243 -> 186). Auch zwischen den Phasen
+   sprang er, weil der Wurfknopf 57 und die uebrigen Knoepfe 45 Pixel hoch
+   sind. Die Leiste haelt jetzt die Hoehe einer vollen Knopfzeile frei -
+   ob dort gerade ein Knopf steht oder keiner. */
+body.playing #game .controls{
+  min-height:59px;
+  align-content:center;
+}
+
+/* Rahmen fuer die neutralen Kampfknoepfe. button.secondary bekam bisher
+   nur einen flachen Verlauf (13-v28-grundlage:94) - im Kampf standen
+   "Angriff beenden", "Angriff fortsetzen" und "Naechster Zug" damit als
+   einzige ohne gemalten Rahmen da. Dieselbe Navy-Leiste wie beim
+   Wurfknopf, nur die Kampfleiste, nichts sonst. */
+html[data-v28-rework="2"] body.playing #game .controls>button.secondary{
+  border:0;
+  background:var(--dd-frame-button-navy) center/100% 100% no-repeat;
+  color:#fff2cc;
+  box-shadow:none;
+  text-shadow:0 1px 3px rgba(2,17,41,.70);
+}

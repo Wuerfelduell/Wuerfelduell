@@ -22,9 +22,9 @@ welche Fallen schon Zeit gekostet haben.
 
 | | |
 |---|---|
-| Version | **28.12.26** |
+| Version | **28.12.27** |
 | Branch | `main` |
-| Letzte Schritte | CSS-Stapel auf 10 Dateien zusammengelegt · Changelog englisch vervollständigt · Hauptmenü, Statistik, Profile, Achievements, Spielvorbereitung und Trophy Shop überarbeitet · Fähigkeits- und Shopflächen auf proportional gekachelte Bildrahmen umgestellt · alle Bild-URLs auf einen gemeinsamen Cache-Schlüssel · Trophy-Shop-Reste bereinigt und Aufklapppfeile angeglichen · Duo- und Trio-Boss-Rush mit Pfadwahl, gespeicherten Runs und 32 Perks einschließlich temporärer Ability-Mastery · Boss-XP-Umtausch 300:100 · Zweitfund gedeckelt · Trio-Rush 15 Stufen, ab 10 ultraschwer · Boss-Rush-HUD auf die Weltregel reduziert · Zweitfund-Kopien ablehnbar und weitergebbar · Ultra-Stufen treffen härter statt länger zu dauern · Heilung gedeckelt, Maximum wächst je Stufe · Regelleiste als Kachelgitter, wächst mit dem Text · gespeicherte Runs überleben Balanceänderungen · Meldeschichten über den Kampf-Overlays geordnet · großer Spezialwürfel dreht sich als echter 3D-Würfel wie der normale und füllt seinen Rahmen · Kampflog und Infos-Blatt im Kampf, Wurfknopf gekürzt |
+| Letzte Schritte | CSS-Stapel auf 10 Dateien zusammengelegt · Changelog englisch vervollständigt · Hauptmenü, Statistik, Profile, Achievements, Spielvorbereitung und Trophy Shop überarbeitet · Fähigkeits- und Shopflächen auf proportional gekachelte Bildrahmen umgestellt · alle Bild-URLs auf einen gemeinsamen Cache-Schlüssel · Trophy-Shop-Reste bereinigt und Aufklapppfeile angeglichen · Duo- und Trio-Boss-Rush mit Pfadwahl, gespeicherten Runs und 32 Perks einschließlich temporärer Ability-Mastery · Boss-XP-Umtausch 300:100 · Zweitfund gedeckelt · Trio-Rush 15 Stufen, ab 10 ultraschwer · Boss-Rush-HUD auf die Weltregel reduziert · Zweitfund-Kopien ablehnbar und weitergebbar · Ultra-Stufen treffen härter statt länger zu dauern · Heilung gedeckelt, Maximum wächst je Stufe · Regelleiste als Kachelgitter, wächst mit dem Text · gespeicherte Runs überleben Balanceänderungen · Meldeschichten über den Kampf-Overlays geordnet · großer Spezialwürfel dreht sich als echter 3D-Würfel wie der normale und füllt seinen Rahmen · Kampflog und Infos-Blatt im Kampf, Knopfleiste gekürzt und beruhigt |
 
 **Die Arbeitsteilung hat sich geändert.** Bis V28.11.28 liefen zwei
 Sitzungen parallel: Codex hat umgesetzt, diese Sitzung geprüft. Ab jetzt
@@ -549,6 +549,29 @@ wissen muss, nicht mehr die volle Beweisführung.
    `index.html`, Verdrahtung in `js/15-app.js`, CSS am Ende von
    `37-abschluss.css`. Gemessen von `scripts/qa/kampf-platz.mjs`
    (24 Zusicherungen, deutsch und englisch).
+
+   **Nachtrag V28.12.27:** „Infos" sitzt jetzt in der Zugkopfzeile neben
+   der Augenzahl statt in einer eigenen Reihe über den Würfeln, der
+   Hauptmenü-Knopf steht wieder rechts außen, und der Einlock-Knopf heißt
+   nur noch „Lock" (188 px → 129 px): der Basiszug braucht damit **zwei**
+   Knopfzeilen statt vier.
+
+   Dazu zwei Dinge, die vorher niemandem als Fehler aufgefallen waren,
+   weil man sie nur in Bewegung sieht:
+
+   - **Die Zugkarte hüpfte.** `updateButtons` blendet während des Wurfs
+     *alle* Knöpfe aus; die Leiste fiel von 59 auf 2 Pixel und der gemalte
+     Rahmen um die Würfel wurde sichtbar kleiner (Karte 214 → 157).
+     `.controls` hält jetzt die Höhe einer vollen Knopfzeile frei, ob dort
+     gerade ein Knopf steht oder keiner.
+   - **`button.secondary` hatte nie einen Rahmen.** Die Regel in
+     `13-v28-grundlage.css:94` gibt ihm nur einen flachen Verlauf — im
+     Kampf standen „Angriff fortsetzen", „Angriff beenden" und „Nächster
+     Zug" damit als einzige ohne gemalten Rahmen da, während jeder Knopf
+     mit `.gold`, `.purple`, `.blood` oder `battleAction()` einen hat. Wer
+     einen neuen Kampfknopf einführt, prüft das mit
+     `scripts/qa/kampf-platz.mjs`: der misst in sechs Phasen, ob jeder
+     sichtbare Knopf ein Rahmenbild trägt.
 
    **Offen bleibt die Frage, was noch ins Blatt gehört** — Statuszeile und
    Angriffszielkasten sind die nächsten Kandidaten.

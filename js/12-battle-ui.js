@@ -175,10 +175,11 @@
   // Der Infos-Knopf steht nur da, wenn es etwas zu zeigen gibt - im Boss
   // Rush zum Beispiel sind die Faehigkeitszeilen bewusst leer.
   function refreshBattleInfoButton(){
-    const row=battleInfoBtn?.parentElement;
-    if(!row) return;
+    if(!battleInfoBtn) return;
+    // Der Knopf selbst wird versteckt, nicht sein Elternteil: er steht in
+    // der Zugkopfzeile neben der Augenzahl, und die muss stehen bleiben.
     const something=battleSheetHasContent(abilityState)||battleSheetHasContent(campaignTaskProgress);
-    row.classList.toggle("hidden",!something);
+    battleInfoBtn.classList.toggle("hidden",!something);
   }
   function maxHpForPlayer(playerOrIndex){
     const p=typeof playerOrIndex==="number"?players[playerOrIndex]:playerOrIndex;
