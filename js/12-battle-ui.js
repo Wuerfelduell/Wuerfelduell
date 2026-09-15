@@ -417,8 +417,32 @@
       el.setAttribute("aria-label",value==null?"Würfel bereit":`Würfel ${value}`);
       return;
     }
-    if(!artKey){renderSpecialPipDie(el,value);return;}
-    applyArtCube(el,designKey,value);
+    // Derselbe 3D-Weg wie beim normalen Wuerfel, fuer JEDES Design. Bis
+    // V28.12.22 lief Classic hier ueber eine flache Pip-Flaeche und die
+    // Artwork-Designs ueber einen Kubus, der waehrend des Wurfs unsichtbar
+    // war - gemeldet als "2D statt der sauberen 3D-Animation".
+    render3DDieNode(el,value,designKey);
+    sizeSpecialCube(el);
+  }
+
+  // render3DDieNode misst die RAHMENBOX. Der grosse Spezialwuerfel traegt
+  // seit dem Rahmenumbau border-width:40px, seine Innenbox ist also nur rund
+  // halb so breit - mit der Rahmenbox als Grundlage wird der Kubus doppelt
+  // so tief wie breit, die Flaechen fuellen den ganzen Knopf und der Wurf
+  // sieht aus wie eine weisse Flaeche. Gemessen wird deshalb clientWidth.
+  //
+  // SPRITE_SCALE ist derselbe Faktor, mit dem .theme-art-die>.die-art-sprite
+  // im Stylesheet vergroessert wird. Der Kubus uebernimmt ihn, sonst springt
+  // die Wuerfelgroesse beim Uebergang Sprite -> Wurf -> Sprite.
+  const SPRITE_SCALE=1.24;
+  function sizeSpecialCube(el){
+    const innen=el.clientWidth;
+    if(innen<=0)return;
+    const seite=innen*SPRITE_SCALE;
+    el.style.setProperty("--die-half",`${seite/2}px`);
+    el.style.setProperty("--die-cube-inset",`${(innen-seite)/2}px`);
+    el.style.setProperty("--die-pip-size",`${Math.max(8,Math.min(26,seite*.17))}px`);
+    el.style.setProperty("--die-question-size",`${Math.max(34,Math.min(92,seite*.62))}px`);
   }
 
   function render3DDieNode(el,value,designKey="classic"){

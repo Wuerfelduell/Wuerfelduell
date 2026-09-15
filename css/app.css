@@ -12602,23 +12602,58 @@ html[data-v28-rework="2"] body.playing #game .controls>#primaryBtn{
 }
 
 
-/* ===== Grosser Spezialwuerfel: Flaeche auch waehrend des Wurfs =====
-   .theme-art-die.rolling blendet die Sprite aus, weil beim NORMALEN Wuerfel
-   an ihrer Stelle der 3D-Wuerfel rotiert. Beim grossen Spezialwuerfel gibt
-   es diesen Ersatz nicht sichtbar - dort blieb waehrend des Wurfs nur der
-   leere Rahmen stehen. Die Sprite bleibt hier deshalb stehen; die Flaechen
-   wechseln ueber tickSpecialDie (js/13-battle-actions.js), das ist die
-   Animation. */
-:is(.special-big-die,.gambling-die).theme-art-die:not(.d4).rolling>.die-art-sprite{
-  display:block;
-}
-/* Der rotierende 3D-Wuerfel ist beim grossen Spezialwuerfel der falsche
-   Ersatz: seine Flaechen stehen weit ueber den Rahmen hinaus, und neben der
-   wechselnden Sprite braucht es ihn gar nicht. Der Flaechenwechsel IST die
-   Animation. */
+/* ===== Grosser Spezialwuerfel: dieselbe 3D-Drehung wie der normale Wuerfel
+   Waehrend des Wurfs dreht sich der Kubus - in JEDEM Design. Die Regel in
+   16-v28-phasen galt nur fuer .theme-art-die, Classic hatte deshalb gar
+   keine und lief ueber eine flache Pip-Flaeche; gemeldet als "2D statt der
+   sauberen 3D-Animation".
+   Die flache Sprite tritt waehrend des Wurfs zurueck, sonst klebt sie vor
+   dem Kubus.
+   infinite statt both: der Wurf dauert 560ms, eine einzelne Drehung 420ms.
+   Mit "both" stand der Wuerfel die letzten 140ms still.
+   Auch hier die zweite Zeile wegen der Gewichtung von 16-v28-phasen. */
+:is(.special-big-die,.gambling-die):not(.d4).rolling>.die-cube,
 :is(.special-big-die,.gambling-die).theme-art-die:not(.d4).rolling>.die-cube{
+  opacity:1;
+  display:block;
+  animation:die3dSpin .42s linear infinite;
+  transform-origin:50% 50%;
+  backface-visibility:hidden;
+}
+:is(.special-big-die,.gambling-die):not(.d4).rolling>.die-art-sprite{
   display:none;
 }
-:is(.special-big-die,.gambling-die).theme-art-die:not(.d4).rolling{
-  overflow:hidden;
+/* Nicht abschneiden. Der Kubus ist so gross wie die Innenbox; beim Taumeln
+   steht seine Diagonale darueber hinaus. Mit overflow:hidden schnitt genau
+   dort eine harte Kante mitten durch die Wuerfelflaeche. Der Rahmen ist
+   40px breit und weitgehend leer, der Ueberstand bleibt also innerhalb des
+   Knopfes - genau wie beim normalen Wuerfel, der ebenfalls frei taumelt. */
+:is(.special-big-die,.gambling-die):not(.d4).rolling{
+  overflow:visible;
+}
+/* Der Kubus ist so gross wie die Sprite im Ruhezustand (Faktor 1.24 in
+   16-v28-phasen). Die Kantenlaenge kommt aus der Kubusbox, deshalb wird sie
+   ueber negative inset-Werte aufgezogen; js/12-battle-ui.js rechnet sie aus
+   der Innenbox aus.
+   Die zweite Zeile ist kein Versehen: 16-v28-phasen setzt inset:0 mit
+   .theme-art-die im Selektor. Ohne die gleiche Gewichtung bliebe die
+   Kubusbox dort bei der Innenbox, waehrend --die-half schon groesser ist -
+   der Wuerfel faellt dann in sechs einzelne Plaettchen auseinander. */
+:is(.special-big-die,.gambling-die):not(.d4)>.die-cube,
+:is(.special-big-die,.gambling-die).theme-art-die:not(.d4)>.die-cube{
+  inset:var(--die-cube-inset,0);
+}
+
+/* Classic und die Farbdesigns brachten ihre Wuerfelflaeche bisher als
+   Hintergrund des Knopfes mit - eine weisse Flaeche ueber der ganzen
+   Innenbox, vor der der 3D-Kubus als zweiter, kleinerer Wuerfel stand.
+   Wie bei .theme-art-die traegt jetzt allein der Kubus die Flaeche.
+   Die Testumgebung bleibt aussen vor: dort zeigt der Spezialwuerfel eine
+   Textziffer, die ohne Farbe und Schriftgroesse unsichtbar waere. */
+body:not(.test-lab-active) :is(.special-big-die,.gambling-die):not(.d4):not(.theme-art-die){
+  perspective:980px;
+  background:transparent;
+  color:transparent;
+  font-size:0;
+  box-shadow:none;
 }

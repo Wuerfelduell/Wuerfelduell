@@ -22,9 +22,9 @@ welche Fallen schon Zeit gekostet haben.
 
 | | |
 |---|---|
-| Version | **28.12.22** |
+| Version | **28.12.23** |
 | Branch | `main` |
-| Letzte Schritte | CSS-Stapel auf 10 Dateien zusammengelegt · Changelog englisch vervollständigt · Hauptmenü, Statistik, Profile, Achievements, Spielvorbereitung und Trophy Shop überarbeitet · Fähigkeits- und Shopflächen auf proportional gekachelte Bildrahmen umgestellt · alle Bild-URLs auf einen gemeinsamen Cache-Schlüssel · Trophy-Shop-Reste bereinigt und Aufklapppfeile angeglichen · Duo- und Trio-Boss-Rush mit Pfadwahl, gespeicherten Runs und 32 Perks einschließlich temporärer Ability-Mastery · Boss-XP-Umtausch 300:100 · Zweitfund gedeckelt · Trio-Rush 15 Stufen, ab 10 ultraschwer · Boss-Rush-HUD auf die Weltregel reduziert · Zweitfund-Kopien ablehnbar und weitergebbar · Ultra-Stufen treffen härter statt länger zu dauern · Heilung gedeckelt, Maximum wächst je Stufe · Regelleiste als Kachelgitter, wächst mit dem Text · gespeicherte Runs überleben Balanceänderungen · Meldeschichten über den Kampf-Overlays geordnet |
+| Letzte Schritte | CSS-Stapel auf 10 Dateien zusammengelegt · Changelog englisch vervollständigt · Hauptmenü, Statistik, Profile, Achievements, Spielvorbereitung und Trophy Shop überarbeitet · Fähigkeits- und Shopflächen auf proportional gekachelte Bildrahmen umgestellt · alle Bild-URLs auf einen gemeinsamen Cache-Schlüssel · Trophy-Shop-Reste bereinigt und Aufklapppfeile angeglichen · Duo- und Trio-Boss-Rush mit Pfadwahl, gespeicherten Runs und 32 Perks einschließlich temporärer Ability-Mastery · Boss-XP-Umtausch 300:100 · Zweitfund gedeckelt · Trio-Rush 15 Stufen, ab 10 ultraschwer · Boss-Rush-HUD auf die Weltregel reduziert · Zweitfund-Kopien ablehnbar und weitergebbar · Ultra-Stufen treffen härter statt länger zu dauern · Heilung gedeckelt, Maximum wächst je Stufe · Regelleiste als Kachelgitter, wächst mit dem Text · gespeicherte Runs überleben Balanceänderungen · Meldeschichten über den Kampf-Overlays geordnet · großer Spezialwürfel dreht sich als echter 3D-Würfel wie der normale |
 
 **Die Arbeitsteilung hat sich geändert.** Bis V28.11.28 liefen zwei
 Sitzungen parallel: Codex hat umgesetzt, diese Sitzung geprüft. Ab jetzt
@@ -571,6 +571,26 @@ Testumgebung; der Sprite-Pass nimmt diese Entwicklerfläche über
   Rahmenbox. Das Artwork-Sprite landete deshalb bei 88 px statt 168.
   Wer an diesen Würfeln etwas misst, misst `clientWidth`, nicht
   `getBoundingClientRect()`.
+
+  **Nachtrag V28.12.23:** genau daran hing auch die Meldung „der Würfel ist
+  immer weiß". `render3DDieNode` setzt `--die-half` aus der **Rahmenbox**
+  (168 px) — der 3D-Körper wurde damit doppelt so groß wie sein Platz und
+  füllte den ganzen Knopf als weiße Fläche. `sizeSpecialCube`
+  (`js/12-battle-ui.js`) rechnet ihn jetzt aus der Innenbox, mal 1.24 —
+  demselben Faktor, mit dem `16-v28-phasen.css` das Ruhe-Sprite vergrößert,
+  damit der Würfel beim Übergang Sprite → Wurf → Sprite nicht springt.
+  Die Kantenlänge kommt dabei aus der **Kubusbox**: `--die-half` allein zu
+  vergrößern zieht die sechs Flächen auseinander, der Würfel zerfällt in
+  Plättchen. Beides wächst zusammen, über `--die-cube-inset`.
+
+- **Gleiche Gewichtung schlägt gute Absicht.** Die Regeln für den
+  Artwork-Würfel in `16-v28-phasen.css` tragen `.theme-art-die` im Selektor
+  und wiegen damit eine Klasse schwerer als eine sonst gleiche Regel ohne.
+  Eine spätere Datei gewinnt **nicht** automatisch — bei V28.12.23 blieb der
+  Artwork-Würfel deshalb bei `inset:0` und bei `animation:…both`, während
+  Classic der neuen Regel folgte: derselbe Würfel, zwei Verhaltensweisen.
+  Wer eine solche Regel ablöst, schreibt den Selektor **beide Male** hin,
+  einmal allgemein und einmal mit `.theme-art-die`.
 
 - **Die Emojis im Markup sind die QUELLE, kein Schmutz.**
   `js/36-emoji-sprite-pass.js` ersetzt sie im DOM durch Sprites — für
