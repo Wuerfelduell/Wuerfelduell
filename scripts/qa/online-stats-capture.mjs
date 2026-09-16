@@ -48,4 +48,21 @@ assert.equal(report.players.filter(p=>p.won).length,2);
 const rookiePlayers=[ps[0],{ability:0,botLevel:"easy"}];
 const rookie=c.begin({source:"local",mode_id:"campaign_solo",game_version:"28.12.53",round_number:1,players:rookiePlayers});
 assert.equal(c.finish(rookie,rookiePlayers,[0],()=>0).players[1].abilities.length,0);
-console.log("Erfassung geprüft: Gastprofile, Offline-Neustart, Endbildschirm-Duplikat, Kontowechsel, Online ohne Zweitupload, Hauptkonto-Pflicht und Teamsieg.");
+// Echter Spieladapter: fehlende Globale dürfen niemals den aufrufenden Kampf abbrechen.
+const warnings=[],statusNode={textContent:"",setAttribute(){},addEventListener(){}};
+Object.assign(scope,{localStorage:storage,navigator:{onLine:false},document:{getElementById:()=>statusNode},
+  console:{warn:(...args)=>warnings.push(args)},setTimeout:()=>1,clearTimeout(){},
+  gameContext:{mode:"local-classic",statsRound:{stale:true}},tutorialMode:false,campaignMode:false,
+  trioCampaignMode:false,duoCampaignMode:false,localModeId:"classic",roundNumber:1,GAME_VERSION:"28.12.58"});
+Object.assign(scope.window,{crypto:webcrypto,addEventListener(){}});
+vm.runInContext(fs.readFileSync(new URL("js/online-stats/05-game.js",root),"utf8"),scope);
+assert.doesNotThrow(()=>assert.equal(api.game.begin(),null));
+assert.equal(scope.gameContext.statsRound,null);assert.equal(warnings.length,1);
+assert.ok(statusNode.textContent.includes("Statistik konnte nicht gespeichert"));
+scope.players=ps;assert.ok(api.game.begin());
+delete scope.roundNumber;
+assert.doesNotThrow(()=>assert.equal(api.game.finish([0]),null));
+assert.equal(scope.gameContext.statsRound,null);assert.equal(warnings.length,2);
+delete scope.gameContext;
+assert.doesNotThrow(()=>assert.equal(api.game.begin(),null));
+console.log("Erfassung geprüft: Gastprofile, Offline, Duplikate, Kontowechsel, Teamsieg und fehlertoleranter Spieladapter.");

@@ -60,7 +60,11 @@ Der Snapshot enthält Rundenschlüssel und Anfangsfähigkeiten auch für Reloads
 Der Datenbank-Trigger archiviert das Ergebnis in derselben Transaktion wie
 den finalen State. Raumlöschung und Revanche entfernen die Statistik nicht.
 Gäste senden keine zweite Meldung. Ereignis-ID sowie Raum/Match/Runde sind
-eindeutig. Widersprüchliche Wiederholungen werden abgewiesen.
+eindeutig. Widersprüchliche Statistikmeldungen werden abgewiesen, der Spielzustand
+wird trotzdem gespeichert. Der Trigger fängt Statistikfehler ab und protokolliert
+Raum, Match, Rundennummer aus dem Spielzustand (sonst null), SQLSTATE, Fehlermeldung
+und Zeitpunkt in der privaten Tabelle capture_errors. Schlägt auch deren Insert
+fehl, bleibt ein PostgreSQL-Logeintrag; der Kampfabschluss bleibt erhalten.
 
 Host, Match, Modus, Version, Rundennummer, Gewinner und Teilnehmerzahl werden
 geprüft. Ältere Clients ohne Meldung und Hosts mit anonymer Auth bleiben
@@ -73,8 +77,9 @@ Migrationen:
 - 20260916135541_online_stats_foundation.sql
 - 20260916141907_online_stats_capture.sql
 - 20260916143946_online_stats_unarmed_bots.sql
+- 20260916160029_online_stats_capture_fail_open.sql
 
-Alle drei Migrationen wurden am 16.09.2026 live eingespielt und geprüft.
+Alle vier Migrationen wurden am 16.09.2026 live eingespielt und geprüft. Die vierte wurde zusätzlich über die echte Match-Publish-RPC mit ungültigem und widersprüchlichem Report geprüft; sämtliche Testdaten wurden zurückgerollt.
 
 Private Tabellen dd_stats_private.reports und ability_uses besitzen RLS und
 keine Client-Rechte. dd_submit_stats_report(uuid,jsonb) ist nur angemeldet

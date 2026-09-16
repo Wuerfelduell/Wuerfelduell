@@ -16,9 +16,15 @@
     });
     return collector;
   }
-  function safely(fn){
+  function safely(fn,resetRound=false){
     try{return fn();}
-    catch(error){console.warn("Statistik-Erfassung",error);status("Statistik konnte nicht gespeichert werden. Bitte Speicherplatz prüfen und erneut versuchen.",true);return null;}
+    catch(error){
+      if(resetRound){try{if(typeof gameContext!=="undefined"&&gameContext)gameContext.statsRound=null;}catch(_){}}
+      // Auch eine defekte Diagnoseanzeige darf den Kampf nicht abbrechen.
+      try{console.warn("Statistik-Erfassung",error);}catch(_){}
+      try{status("Statistik konnte nicht gespeichert werden. Bitte Speicherplatz prüfen und erneut versuchen.",true);}catch(_){}
+      return null;
+    }
   }
   async function flush(){
     if(timer){clearTimeout(timer);timer=null;}
@@ -44,24 +50,29 @@
       else status("Für globale Fähigkeitsstatistik bitte mit einem Hauptkonto anmelden.");
     },
     begin(){
+      return safely(()=>{
       const mode=String(gameContext?.mode||"");
       const excluded=tutorialMode||mode==="test-lab"||mode==="menu"||mode==="setup";
-      if(excluded){gameContext.statsRound=null;return;}
+      if(excluded){gameContext.statsRound=null;return null;}
       const online=mode.startsWith("online-");
       const modeId=campaignMode?(mode.includes("boss-rush")?(trioCampaignMode?"boss_rush_trio":"boss_rush_duo"):(trioCampaignMode?"campaign_trio":duoCampaignMode?"campaign_duo":"campaign_solo")):localModeId;
-      gameContext.statsRound=safely(()=>get().begin({
+      gameContext.statsRound=get().begin({
         source:online?"online":"local",mode_id:modeId,game_version:GAME_VERSION,
         round_number:Math.max(1,Number(roundNumber)||1),players,
         room_id:online?gameContext.statsRoomId:null,match_id:online?gameContext.statsMatchId:null
-      }));
+      });
+      return gameContext.statsRound;
+      },true);
     },
     finish(winners){
+      return safely(()=>{
       if(tutorialMode||gameContext?.mode==="test-lab")return null;
       if(gameContext?.statsRound&&!gameContext.statsRound.report)gameContext.statsRound.round_number=Math.max(1,Number(roundNumber)||1);
-      const report=safely(()=>get().finish(gameContext?.statsRound,players,winners,
-        (id,index)=>Math.max(0,Math.min(2,Number(window.WDMastery?.abilityLevelForPlayer?.(id,index))||0))));
+      const report=get().finish(gameContext?.statsRound,players,winners,
+        (id,index)=>Math.max(0,Math.min(2,Number(window.WDMastery?.abilityLevelForPlayer?.(id,index))||0)));
       if(report?.source==="local")schedule();
       return report;
+      },true);
     },
     retry(){
       // Ein synchron fehlgeschlagener Journal-Schreibvorgang kann erneut versucht werden.

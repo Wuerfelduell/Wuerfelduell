@@ -104,6 +104,7 @@ await check("Öffentlich nur Fähigkeitszahlen, keine Einzelmeldungen",async()=>
 await db.exec("reset role");
 const captureFile=fs.readdirSync(new URL("supabase/migrations/",root)).find(p=>p.endsWith("_online_stats_capture.sql"));
 await db.exec(fs.readFileSync(new URL("supabase/migrations/"+captureFile,root),"utf8"));
+await db.exec(fs.readFileSync(new URL("supabase/migrations/20260916160029_online_stats_capture_fail_open.sql",root),"utf8"));
 await db.query("insert into public.dd_battle_rooms values ($1,$2,'match-b','classic','28.12.50',2)",[online.room_id,owner]);
 await db.query("update public.dd_battle_states set match_id='match-b',state='{}' where room_id=$1",[online.room_id]);
 const finalReport={...online,event_id:"eeeeeeee-eeee-4eee-8eee-eeeeeeeeeeee",match_id:"match-b"};
@@ -114,10 +115,40 @@ await check("Finaler State und Statistik werden atomar gespeichert",async()=>{
   await db.query("update public.dd_battle_states set state=$1 where room_id=$2",[JSON.stringify(finalState),online.room_id]);
   assert.equal(Number((await db.query("select count(*) as n from dd_stats_private.reports where event_id=$1",[finalReport.event_id])).rows[0].n),1);
 });
-await check("Ungültige Schlussmeldung rollt den State zurück",async()=>{
-  const bad={...finalState,battle:{roundNumber:1,roundWinnerIndex:1}};
-  await assert.rejects(db.query("update public.dd_battle_states set state=$1 where room_id=$2",[JSON.stringify(bad),online.room_id]),/DD_STATS_INVALID_FINAL_STATE/);
-  assert.equal((await db.query("select state from public.dd_battle_states where room_id=$1",[online.room_id])).rows[0].state.battle.roundWinnerIndex,0);
+await check("Abweichender Report blockiert erneute Veröffentlichung nicht",async()=>{
+  const changed=structuredClone(finalState);changed.statsReport.players[0].abilities[0].level=2;
+  await db.query("update public.dd_battle_states set state=$1 where room_id=$2",[JSON.stringify(changed),online.room_id]);
+  assert.deepEqual((await db.query("select state from public.dd_battle_states where room_id=$1",[online.room_id])).rows[0].state,changed);
+  assert.equal(Number((await db.query("select count(*) as n from dd_stats_private.reports where event_id=$1",[finalReport.event_id])).rows[0].n),1);
+  const errors=(await db.query("select * from dd_stats_private.capture_errors where match_id='match-b'")).rows;
+  assert.equal(errors.length,1);assert.equal(errors[0].sqlerrm,"DD_STATS_REPORT_CONFLICT");assert.equal(errors[0].sqlstate,"P0001");
+});
+await check("Ungültige Rundennummer speichert State und genau einen Diagnoseeintrag",async()=>{
+  const room="55555555-5555-4555-8555-555555555555";
+  await db.query("insert into public.dd_battle_rooms values ($1,$2,'match-invalid','classic','28.12.50',2)",[room,owner]);
+  const bad=structuredClone(finalState);
+  Object.assign(bad.statsReport,{event_id:"66666666-6666-4666-8666-666666666666",room_id:room,match_id:"match-invalid",round_number:2});
+  await db.query("insert into public.dd_battle_states values ($1,'match-invalid',$2)",[room,JSON.stringify(bad)]);
+  assert.deepEqual((await db.query("select state from public.dd_battle_states where room_id=$1",[room])).rows[0].state,bad);
+  assert.equal(Number((await db.query("select count(*) as n from dd_stats_private.reports where room_id=$1",[room])).rows[0].n),0);
+  const errors=(await db.query("select * from dd_stats_private.capture_errors where room_id=$1",[room])).rows;
+  assert.equal(errors.length,1);assert.equal(errors[0].round_number,1);
+  assert.equal(errors[0].sqlerrm,"DD_STATS_INVALID_FINAL_STATE");assert.ok(errors[0].created_at);
+});
+await check("Diagnosetabelle ist für beide Client-Rollen gesperrt",async()=>{
+  for(const role of ["anon","authenticated"]){
+    await db.exec("set role "+role);
+    await assert.rejects(db.query("select * from dd_stats_private.capture_errors"),/permission denied/);
+    await assert.rejects(db.query("insert into dd_stats_private.capture_errors(sqlstate,sqlerrm) values ('P0001','test')"),/permission denied/);
+  }
+  await db.exec("reset role");
+});
+await check("Auch ein Ausfall der Diagnosetabelle blockiert den State nicht",async()=>{
+  await db.exec("alter table dd_stats_private.capture_errors add constraint test_log_failure check(false) not valid");
+  const bad=structuredClone(finalState);bad.statsReport.round_number=9;
+  await db.query("update public.dd_battle_states set state=$1 where room_id=$2",[JSON.stringify(bad),online.room_id]);
+  assert.deepEqual((await db.query("select state from public.dd_battle_states where room_id=$1",[online.room_id])).rows[0].state,bad);
+  await db.exec("alter table dd_stats_private.capture_errors drop constraint test_log_failure");
 });
 await check("Raum löschen nach finalem State erhält die Statistik",async()=>{
   await db.query("delete from public.dd_battle_rooms where id=$1",[online.room_id]);
