@@ -138,6 +138,9 @@
       const tiles=ys.slice(0,-1).flatMap((y,j)=>xs.slice(0,-1).map((x,i)=>`<svg viewBox="${x} ${y} ${xs[i+1]-x} ${ys[j+1]-y}" preserveAspectRatio="none" focusable="false"><image href="assets/ui/v28/png/${file}?v=${ASSET_REV}" width="${width}" height="${height}"/></svg>`)).join("");
       return `<span class="prestige-button-artwork" data-artwork="${kind}" aria-hidden="true">${tiles}</span>`;
     };
+    // Die Shop-Reiter (js/47-shop.js) bauen ihre Kaufknoepfe mit demselben
+    // Kachelgitter, statt es ein zweites Mal zu schreiben.
+    window.WDButtonArtwork=buttonArtwork;
     const section=(key,label,content,bodyClass)=>{
       const open=expanded.has(key),bodyId=`prestige-section-${key}`;
       return `<button type="button" class="prestige-section-toggle" data-shop-section="${key}" aria-expanded="${open}" aria-controls="${bodyId}">${buttonArtwork("navy")}<span>${tFn(label)}</span><span class="prestige-section-chevron" aria-hidden="true"></span></button><div id="${bodyId}" class="${bodyClass}"${open?"":" hidden"}>${content}</div>`;
@@ -204,12 +207,14 @@
     [...expandedProfileIds].forEach(id=>{if(!existingIds.has(id)) expandedProfileIds.delete(id);});
 
     profileList.innerHTML=saveData.profiles.map((p,profileIndex)=>{
-      // testOnly bleibt aussen vor: diese Designs gibt es nur in der
-      // Testumgebung, hier waeren sie ein Schloss ohne Schluessel.
-      const featuredDice=Object.entries(DICE_DESIGNS).filter(([,d])=>d.previewAsset&&!d.testOnly).map(([key,d])=>{
+      // testOnly ohne rarity bleibt aussen vor: diese Designs gibt es nur in
+      // der Testumgebung, hier waeren sie ein Schloss ohne Schluessel. Mit
+      // rarity haben sie einen: die Kisten im Shop.
+      const seltenheitNamen=window.WDShop?.SELTENHEIT_NAMEN||{};
+      const featuredDice=Object.entries(DICE_DESIGNS).filter(([,d])=>d.previewAsset&&(!d.testOnly||d.rarity)).map(([key,d])=>{
         const unlockedNow=p.unlockedDice.includes(key),selected=p.selectedDice===key;
         const stateAsset=unlockedNow?"assets/ui/v28/png/components/completed-check-medallion.webp":"assets/ui/v28/png/components/locked-padlock-overlay.webp";
-        const stateLabel=selected?"Ausgewählt":unlockedNow?"Freigeschaltet":d.unlockText||"Gesperrt";
+        const stateLabel=selected?"Ausgewählt":unlockedNow?"Freigeschaltet":d.unlockText||(d.rarity?`Aus Kisten · ${seltenheitNamen[d.rarity]||d.rarity}`:"Gesperrt");
         return `<button type="button" class="dice-design-card${unlockedNow?" unlocked":" locked"}${selected?" selected":""}" data-dice-design="${escapeHtml(key)}"${unlockedNow?"":" disabled"} aria-label="${escapeHtml(`${d.name}: ${stateLabel}`)}"><span class="dice-design-preview"><img class="dice-design-beauty" src="${escapeHtml(d.previewAsset)}?v=${ASSET_REV}" alt="" loading="lazy"><img class="dice-design-state" src="${stateAsset}?v=${ASSET_REV}" alt="" aria-hidden="true"></span><span class="dice-design-name">${escapeHtml(d.name)}</span><span class="dice-design-meta">${escapeHtml(stateLabel)}</span></button>`;
       }).join("");
       const unlocked=Object.entries(DICE_DESIGNS).filter(([,d])=>!d.previewAsset&&!d.testOnly).map(([key,d])=>{
@@ -495,6 +500,10 @@
       const rs=roundStats[i]||{};
       const s=profile.stats;
       s.rounds++;
+      // Duellmarken: Sieg 40, Niederlage 15 (js/46-shop-daten.js). Nicht im
+      // Tutorial und nicht in der Testumgebung - beides ist kein Duell.
+      const imLabor=typeof gameContext!=="undefined"&&gameContext?.mode==="test-lab";
+      if(!tutorialMode&&!imLabor) window.WDShop?.verdiene?.(profile,i===winnerIndex?"duell_sieg":"duell_niederlage");
       s.damageDealt+=rs.damage||0;
       s.damageTaken+=rs.damageTaken||0;
       s.selfDamage+=rs.selfDamage||0;

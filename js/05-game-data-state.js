@@ -33,6 +33,11 @@
     {id:3,name:"Links",angle:90}
   ];
 
+  // rarity: Seltenheit fuer den Kistenpool (js/46-shop-daten.js). Nur
+  // Designs mit rarity kommen aus Kisten; alles andere hat seinen eigenen
+  // Weg (Start, Kampagnenboss, Achievement, Trophy-Shop). Super Rare, Epic
+  // und Legendary sind leer, bis neues Artwork kommt - die Ziehung faellt
+  // dann eine Stufe tiefer.
   const DICE_DESIGNS = {
     classic:{name:"Classic",className:"theme-classic"},
     classic_v2:{name:"ClassicV2",className:"theme-classic-v2 theme-art-die",artKey:"ivory-royal",previewAsset:"assets/ui/v28/png/dice-designs/ivory-royal/ivory-royal-beauty.webp",unlockText:"Von Anfang an"},
@@ -44,28 +49,28 @@
     // Wenn sie freigeschaltet werden sollen, fällt testOnly weg und sie
     // brauchen einen Eintrag in DICE_UNLOCK_ACHIEVEMENT, im Trophy Shop
     // oder als Kampagnenbelohnung - plus einen unlockText.
-    walnut_lodge:{name:"Walnut Lodge",className:"theme-walnut-lodge theme-art-die",artKey:"walnut-lodge",previewAsset:"assets/ui/v28/png/dice-designs/walnut-lodge/walnut-lodge-beauty.webp",testOnly:true},
-    tide_pearl:{name:"Tide Pearl",className:"theme-tide-pearl theme-art-die",artKey:"tide-pearl",previewAsset:"assets/ui/v28/png/dice-designs/tide-pearl/tide-pearl-beauty.webp",testOnly:true},
-    azure_storm:{name:"Azure Storm",className:"theme-azure-storm theme-art-die",artKey:"azure-storm",previewAsset:"assets/ui/v28/png/dice-designs/azure-storm/azure-storm-beauty.webp",testOnly:true},
-    nebula_veil:{name:"Nebula Veil",className:"theme-nebula-veil theme-art-die",artKey:"nebula-veil",previewAsset:"assets/ui/v28/png/dice-designs/nebula-veil/nebula-veil-beauty.webp",testOnly:true},
-    solar_relic:{name:"Solar Relic",className:"theme-solar-relic theme-art-die",artKey:"solar-relic",previewAsset:"assets/ui/v28/png/dice-designs/solar-relic/solar-relic-beauty.webp",testOnly:true},
-    frostporcelain:{name:"Frost Porcelain",className:"theme-frostporcelain theme-art-die",artKey:"frostporcelain",previewAsset:"assets/ui/v28/png/dice-designs/frostporcelain/frostporcelain-beauty.webp",testOnly:true},
-    ashwood:{name:"Ashwood",className:"theme-ashwood theme-art-die",artKey:"ashwood",previewAsset:"assets/ui/v28/png/dice-designs/ashwood/ashwood-beauty.webp",testOnly:true},
-    coppertrail:{name:"Coppertrail",className:"theme-coppertrail theme-art-die",artKey:"coppertrail",previewAsset:"assets/ui/v28/png/dice-designs/coppertrail/coppertrail-beauty.webp",testOnly:true},
-    midnightenamel:{name:"Midnight Enamel",className:"theme-midnightenamel theme-art-die",artKey:"midnightenamel",previewAsset:"assets/ui/v28/png/dice-designs/midnightenamel/midnightenamel-beauty.webp",testOnly:true},
-    ironkeep:{name:"Ironkeep",className:"theme-ironkeep theme-art-die",artKey:"ironkeep",previewAsset:"assets/ui/v28/png/dice-designs/ironkeep/ironkeep-beauty.webp",testOnly:true},
-    oakbound:{name:"Oakbound",className:"theme-oakbound theme-art-die",artKey:"oakbound",previewAsset:"assets/ui/v28/png/dice-designs/oakbound/oakbound-beauty.webp",testOnly:true},
-    mossstone:{name:"Mossstone",className:"theme-mossstone theme-art-die",artKey:"mossstone",previewAsset:"assets/ui/v28/png/dice-designs/mossstone/mossstone-beauty.webp",testOnly:true},
-    slatewatch:{name:"Slatewatch",className:"theme-slatewatch theme-art-die",artKey:"slatewatch",previewAsset:"assets/ui/v28/png/dice-designs/slatewatch/slatewatch-beauty.webp",testOnly:true},
-    sandcarver:{name:"Sandcarver",className:"theme-sandcarver theme-art-die",artKey:"sandcarver",previewAsset:"assets/ui/v28/png/dice-designs/sandcarver/sandcarver-beauty.webp",testOnly:true},
-    redclay:{name:"Redclay",className:"theme-redclay theme-art-die",artKey:"redclay",previewAsset:"assets/ui/v28/png/dice-designs/redclay/redclay-beauty.webp",testOnly:true},
-    seidenhof:{name:"Seidenhof",className:"theme-seidenhof theme-art-die",artKey:"seidenhof",previewAsset:"assets/ui/v28/png/dice-designs/seidenhof/seidenhof-beauty.webp",testOnly:true},
-    korsar:{name:"Korsar",className:"theme-korsar theme-art-die",artKey:"korsar",previewAsset:"assets/ui/v28/png/dice-designs/korsar/korsar-beauty.webp",testOnly:true},
-    drachenpanzer:{name:"Drachenpanzer",className:"theme-drachenpanzer theme-art-die",artKey:"drachenpanzer",previewAsset:"assets/ui/v28/png/dice-designs/drachenpanzer/drachenpanzer-beauty.webp",testOnly:true},
-    goldbruch:{name:"Goldbruch",className:"theme-goldbruch theme-art-die",artKey:"goldbruch",previewAsset:"assets/ui/v28/png/dice-designs/goldbruch/goldbruch-beauty.webp",testOnly:true},
-    uhrwerk:{name:"Uhrwerk",className:"theme-uhrwerk theme-art-die",artKey:"uhrwerk",previewAsset:"assets/ui/v28/png/dice-designs/uhrwerk/uhrwerk-beauty.webp",testOnly:true},
-    duenenrelikt:{name:"Dünenrelikt",className:"theme-duenenrelikt theme-art-die",artKey:"duenenrelikt",previewAsset:"assets/ui/v28/png/dice-designs/duenenrelikt/duenenrelikt-beauty.webp",testOnly:true},
-    dornenhain:{name:"Dornenhain",className:"theme-dornenhain theme-art-die",artKey:"dornenhain",previewAsset:"assets/ui/v28/png/dice-designs/dornenhain/dornenhain-beauty.webp",testOnly:true},
+    walnut_lodge:{name:"Walnut Lodge",className:"theme-walnut-lodge theme-art-die",artKey:"walnut-lodge",previewAsset:"assets/ui/v28/png/dice-designs/walnut-lodge/walnut-lodge-beauty.webp",testOnly:true,rarity:"common"},
+    tide_pearl:{name:"Tide Pearl",className:"theme-tide-pearl theme-art-die",artKey:"tide-pearl",previewAsset:"assets/ui/v28/png/dice-designs/tide-pearl/tide-pearl-beauty.webp",testOnly:true,rarity:"common"},
+    azure_storm:{name:"Azure Storm",className:"theme-azure-storm theme-art-die",artKey:"azure-storm",previewAsset:"assets/ui/v28/png/dice-designs/azure-storm/azure-storm-beauty.webp",testOnly:true,rarity:"common"},
+    nebula_veil:{name:"Nebula Veil",className:"theme-nebula-veil theme-art-die",artKey:"nebula-veil",previewAsset:"assets/ui/v28/png/dice-designs/nebula-veil/nebula-veil-beauty.webp",testOnly:true,rarity:"common"},
+    solar_relic:{name:"Solar Relic",className:"theme-solar-relic theme-art-die",artKey:"solar-relic",previewAsset:"assets/ui/v28/png/dice-designs/solar-relic/solar-relic-beauty.webp",testOnly:true,rarity:"common"},
+    frostporcelain:{name:"Frost Porcelain",className:"theme-frostporcelain theme-art-die",artKey:"frostporcelain",previewAsset:"assets/ui/v28/png/dice-designs/frostporcelain/frostporcelain-beauty.webp",testOnly:true,rarity:"common"},
+    ashwood:{name:"Ashwood",className:"theme-ashwood theme-art-die",artKey:"ashwood",previewAsset:"assets/ui/v28/png/dice-designs/ashwood/ashwood-beauty.webp",testOnly:true,rarity:"common"},
+    coppertrail:{name:"Coppertrail",className:"theme-coppertrail theme-art-die",artKey:"coppertrail",previewAsset:"assets/ui/v28/png/dice-designs/coppertrail/coppertrail-beauty.webp",testOnly:true,rarity:"common"},
+    midnightenamel:{name:"Midnight Enamel",className:"theme-midnightenamel theme-art-die",artKey:"midnightenamel",previewAsset:"assets/ui/v28/png/dice-designs/midnightenamel/midnightenamel-beauty.webp",testOnly:true,rarity:"common"},
+    ironkeep:{name:"Ironkeep",className:"theme-ironkeep theme-art-die",artKey:"ironkeep",previewAsset:"assets/ui/v28/png/dice-designs/ironkeep/ironkeep-beauty.webp",testOnly:true,rarity:"common"},
+    oakbound:{name:"Oakbound",className:"theme-oakbound theme-art-die",artKey:"oakbound",previewAsset:"assets/ui/v28/png/dice-designs/oakbound/oakbound-beauty.webp",testOnly:true,rarity:"common"},
+    mossstone:{name:"Mossstone",className:"theme-mossstone theme-art-die",artKey:"mossstone",previewAsset:"assets/ui/v28/png/dice-designs/mossstone/mossstone-beauty.webp",testOnly:true,rarity:"common"},
+    slatewatch:{name:"Slatewatch",className:"theme-slatewatch theme-art-die",artKey:"slatewatch",previewAsset:"assets/ui/v28/png/dice-designs/slatewatch/slatewatch-beauty.webp",testOnly:true,rarity:"common"},
+    sandcarver:{name:"Sandcarver",className:"theme-sandcarver theme-art-die",artKey:"sandcarver",previewAsset:"assets/ui/v28/png/dice-designs/sandcarver/sandcarver-beauty.webp",testOnly:true,rarity:"common"},
+    redclay:{name:"Redclay",className:"theme-redclay theme-art-die",artKey:"redclay",previewAsset:"assets/ui/v28/png/dice-designs/redclay/redclay-beauty.webp",testOnly:true,rarity:"common"},
+    seidenhof:{name:"Seidenhof",className:"theme-seidenhof theme-art-die",artKey:"seidenhof",previewAsset:"assets/ui/v28/png/dice-designs/seidenhof/seidenhof-beauty.webp",testOnly:true,rarity:"rare"},
+    korsar:{name:"Korsar",className:"theme-korsar theme-art-die",artKey:"korsar",previewAsset:"assets/ui/v28/png/dice-designs/korsar/korsar-beauty.webp",testOnly:true,rarity:"rare"},
+    drachenpanzer:{name:"Drachenpanzer",className:"theme-drachenpanzer theme-art-die",artKey:"drachenpanzer",previewAsset:"assets/ui/v28/png/dice-designs/drachenpanzer/drachenpanzer-beauty.webp",testOnly:true,rarity:"rare"},
+    goldbruch:{name:"Goldbruch",className:"theme-goldbruch theme-art-die",artKey:"goldbruch",previewAsset:"assets/ui/v28/png/dice-designs/goldbruch/goldbruch-beauty.webp",testOnly:true,rarity:"rare"},
+    uhrwerk:{name:"Uhrwerk",className:"theme-uhrwerk theme-art-die",artKey:"uhrwerk",previewAsset:"assets/ui/v28/png/dice-designs/uhrwerk/uhrwerk-beauty.webp",testOnly:true,rarity:"rare"},
+    duenenrelikt:{name:"Dünenrelikt",className:"theme-duenenrelikt theme-art-die",artKey:"duenenrelikt",previewAsset:"assets/ui/v28/png/dice-designs/duenenrelikt/duenenrelikt-beauty.webp",testOnly:true,rarity:"rare"},
+    dornenhain:{name:"Dornenhain",className:"theme-dornenhain theme-art-die",artKey:"dornenhain",previewAsset:"assets/ui/v28/png/dice-designs/dornenhain/dornenhain-beauty.webp",testOnly:true,rarity:"rare"},
     obsidian:{name:"Obsidian",className:"theme-obsidian"},
     gold:{name:"Gold",className:"theme-gold"},
     blood:{name:"Blood",className:"theme-blood"},

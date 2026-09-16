@@ -16,7 +16,7 @@ Repo: `Wuerfelduell/Wuerfelduell`. Direkte Commits auf `main` sind erlaubt.
 
 ## Aufbau
 
-- `js/00-*.js` … `js/45-*.js` — in dieser Reihenfolge in `index.html`
+- `js/00-*.js` … `js/47-*.js` — in dieser Reihenfolge in `index.html`
   eingebunden, jede Datei eine IIFE. Keine Module, kein Import.
 - `src/styles/legacy/*.css` — **11 Quelldateien**, das sind die zu
   bearbeitenden. `css/app.css` ist erzeugt und wird nie von Hand editiert.
@@ -117,7 +117,7 @@ Repo: `Wuerfelduell/Wuerfelduell`. Direkte Commits auf `main` sind erlaubt.
 ## Arbeitsweise
 
 - Kauflogik, Preise, Besitzstände, Spielregeln und Speicherformat
-  (`wuerfelduell_save_v1`, `schemaVersion` 9) bleiben unverändert, außer
+  (`wuerfelduell_save_v1`, `schemaVersion` 10) bleiben unverändert, außer
   die Aufgabe sagt ausdrücklich etwas anderes.
 - Änderungen bleiben auf den beauftragten Bildschirm beschränkt. Als
   Vorlage genannte andere Ansichten werden nicht angefasst.

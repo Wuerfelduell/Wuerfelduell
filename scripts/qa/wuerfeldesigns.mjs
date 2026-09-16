@@ -17,8 +17,10 @@
  *      meldet die Zusicherung 8 Prozentpunkte Abweichung und faellt.
  *   3. Im Kampf traegt der grosse Wuerfel die Flaeche des Designs.
  *   4. Die Testumgebung kann sie auswaehlen.
- *   5. Im Profil taucht KEINES davon auf: es gibt noch keinen Weg, sie
- *      freizuschalten, ein Schloss ohne Schluessel waere eine Luege.
+ *   5. Im Profil stehen sie GESPERRT mit dem Hinweis "Aus Kisten": seit
+ *      dem Shop (V28.12.50) gibt es den Schluessel, die Kisten. Vorher
+ *      durfte keines erscheinen - ein Schloss ohne Schluessel waere eine
+ *      Luege gewesen.
  */
 import fs from 'node:fs';import path from 'node:path';import {createServer} from 'node:http';
 const {chromium}=await import(process.env.WD_PLAYWRIGHT||'/opt/node22/lib/node_modules/playwright/index.mjs');
@@ -206,12 +208,15 @@ try{
   await p.evaluate(()=>{createProfile('Prueferin');saveGameData();});
   await p.click('#menuProfilesBtn');await p.waitForTimeout(500);
   const imProfil=await p.evaluate(neu=>{
-    const karten=[...document.querySelectorAll('[data-dice-design]')].map(k=>k.dataset.diceDesign);
-    return {gefunden:neu.filter(k=>karten.includes(k)),karten:karten.length};
+    const karten=[...document.querySelectorAll('[data-dice-design]')];
+    const eigene=karten.filter(k=>neu.includes(k.dataset.diceDesign));
+    return {gefunden:eigene.length,karten:karten.length,
+      gesperrt:eigene.filter(k=>k.classList.contains('locked')&&k.disabled).length,
+      hinweis:eigene.filter(k=>/Aus Kisten|From chests/.test(k.getAttribute('aria-label')||'')).length};
   },NEU);
   // Die Liste muss ueberhaupt gerendert sein, sonst prueft das nichts.
-  pruefe('kein neues Design im Profil',imProfil.karten>0&&imProfil.gefunden.length===0,true);
-  if(imProfil.gefunden.length||!imProfil.karten)console.log(`      im Profil: ${JSON.stringify(imProfil)}`);
+  pruefe('neue Designs im Profil gesperrt mit Kistenhinweis',imProfil.karten>0&&imProfil.gefunden===NEU.length&&imProfil.gesperrt===NEU.length&&imProfil.hinweis===NEU.length,true);
+  if(imProfil.gefunden!==NEU.length||imProfil.gesperrt!==NEU.length)console.log(`      im Profil: ${JSON.stringify(imProfil)}`);
 
   // 4. Die Testumgebung kennt sie.
   await p.goto(`http://127.0.0.1:${server.address().port}/index.html`);

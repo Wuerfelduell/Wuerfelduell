@@ -29,6 +29,7 @@
     "🔒":"gameplay/locked.svg",
     "🔐":"gameplay/locked.svg",
     "🎁":"gameplay/reward-gift.svg",
+    "💰":"gameplay/xp-star.svg",
     "⭐":"gameplay/xp-star.svg",
     "✨":"gameplay/attack.svg",
     "🌐":"menu/online.svg",

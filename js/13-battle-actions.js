@@ -1927,7 +1927,8 @@
       const loserName=lastPlaceIndex!=null ? players[lastPlaceIndex].name : "–";
       winnerText.innerHTML=`🏆 ${escapeHtml(winner.name)} gewinnt Runde ${roundNumber}!`;
       roundResultText.innerHTML=`Siegstand: <strong>${winner.wins}</strong> für ${escapeHtml(winner.name)}.<br>`+
-        `<span class="last-place-note">${escapeHtml(loserName)}</span> wurde Letzter, startet Runde ${roundNumber+1} und darf die nächste Fähigkeit frei wählen.`;
+        `<span class="last-place-note">${escapeHtml(loserName)}</span> wurde Letzter, startet Runde ${roundNumber+1} und darf die nächste Fähigkeit frei wählen.`+
+        (window.WDShop?.gutschriftText?.(escapeHtml)||"");
 
       roundStandings.innerHTML=players.map((p,i)=>{
         const flags=[

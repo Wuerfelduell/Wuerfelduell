@@ -1,16 +1,17 @@
-/* Kistentest: die Kistenoeffnung im Stil von Clash Royale, nur zum Ansehen.
+/* Kiste: die Kistenoeffnung im Stil von Clash Royale.
    ------------------------------------------------------------------
-   Aus dem Gespraech: "im Hauptmenue einen Kistentest-Button einfuegen, der
-   nur die Animation zeigt aber keine Rewards gibt". Wann es Kisten im
-   Spiel gibt, ist noch nicht entschieden - deshalb fasst diese Datei
-   keinen Spielstand an. Die drei Karten zeigen zufaellige Wuerfeldesigns
-   aus DICE_DESIGNS, schalten aber nichts frei.
+   Zwei Betriebsarten, eine Animation:
+   - Shop (js/47-shop.js): eine gekaufte Kiste mit genau EINEM gezogenen
+     Wuerfeldesign. Das Ergebnis steht schon fest, wird aber erst beim
+     Umdrehen der Karte sichtbar; Glow und Karte tragen die Farbe der
+     gezogenen Seltenheit. Duplikate zeigen die Rueckgabe in Duellmarken.
+   - Kistentest (Trainingsfenster): nur zum Ansehen, drei zufaellige
+     Wuerfeldesigns, Stufen umschaltbar, schaltet nichts frei.
 
-   Die Bilder kommen nach docs/KISTEN-BRIEF.md unter
-   assets/ui/v28/png/chests/<stufe>/. Solange eine Datei fehlt, zeigt die
-   Ebene ihren Messrahmen (CSS, data-fehlt) und die Flaeche listet die
-   fehlenden Dateien auf. So ist der Knopf zugleich die Abnahme fuer die
-   Lieferung: erst wenn die Liste leer ist, ist der Satz vollstaendig.
+   Die Bilder liegen nach docs/KISTEN-BRIEF.md unter
+   assets/ui/v28/png/chests/<stufe>/. Fehlt eine Datei, zeigt die Ebene
+   ihren Messrahmen (CSS, data-fehlt) und die Flaeche listet die fehlenden
+   Dateien auf.
 
    Ablauf (data-phase am Overlay):
      aus > ankunft > warten > [Tipp] > wackeln > aufspringen > enthuellung > fertig
@@ -22,17 +23,16 @@
   const STUFEN_NAMEN={common:"Gewöhnlich",rare:"Selten",epic:"Episch",legendary:"Legendär"};
   const STUFEN_FARBEN={common:"#e8d9b0",rare:"#4a8ff0",epic:"#b06cff",legendary:"#ffd45a"};
   const WURZEL="assets/ui/v28/png/chests/";
-  const KARTEN=3;
+  const TEST_KARTEN=3;
   const tr=value=>window.t?window.t(String(value)):String(value);
   const rev=()=>typeof ASSET_REV!=="undefined"?ASSET_REV:"0";
   const bild=pfad=>`${WURZEL}${pfad}?v=${rev()}`;
   const stufenBild=(stufe,teil)=>bild(`${stufe}/chest-${stufe}-${teil}.webp`);
   const reduziert=()=>!!window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
 
-  const knopf=document.getElementById("menuKistenTestBtn");
-  if(!knopf) return;
-
   let overlay=null,fx=null,stufe="common",lauf=0;
+  // Der laufende Auftrag: Betriebsart, Karten, Rueckruf beim Schliessen.
+  let auftrag={modus:"test",karten:null,titel:"",beimSchliessen:null};
   const fehlend=new Set();
 
   function el(tag,klasse,text){const n=document.createElement(tag);if(klasse)n.className=klasse;if(text!=null)n.textContent=text;return n;}
@@ -72,7 +72,7 @@
 
   function baue(){
     overlay=el("div","kisten-overlay hidden");overlay.id="kistenTestOverlay";
-    overlay.dataset.phase="aus";overlay.dataset.stufe=stufe;
+    overlay.dataset.phase="aus";overlay.dataset.stufe=stufe;overlay.dataset.modus=auftrag.modus;
     overlay.setAttribute("role","dialog");overlay.setAttribute("aria-modal","true");
 
     const kopf=el("div","kisten-kopf");
@@ -113,14 +113,33 @@
     overlay.appendChild(buehne);
 
     overlay.appendChild(el("div","kisten-karten"));
+    overlay.appendChild(el("div","kisten-ergebnis"));
 
     const fuss=el("div","kisten-fuss");
     const nochmal=el("button","kisten-nochmal",tr("Nochmal"));nochmal.type="button";
     nochmal.onclick=starte;
     fuss.appendChild(nochmal);
+    const weiter=el("button","kisten-weiter",tr("Weiter"));weiter.type="button";
+    weiter.onclick=schliesse;
+    fuss.appendChild(weiter);
     overlay.appendChild(fuss);
     document.body.appendChild(overlay);
     ladeStufe();
+  }
+
+  // Kopfzeile und Knoepfe je Betriebsart.
+  function beschrifte(){
+    const test=auftrag.modus==="test";
+    overlay.dataset.modus=auftrag.modus;
+    overlay.querySelector(".kisten-kicker").textContent=test?tr("Kistentest"):(auftrag.titel||tr("Kiste"));
+    overlay.querySelector(".kisten-untertitel").textContent=test
+      ?tr("Nur die Animation. Es wird nichts freigeschaltet und nichts gespeichert.")
+      :tr("Aus dieser Kiste kommt genau ein Würfeldesign.");
+    overlay.querySelector(".kisten-stufen").classList.toggle("hidden",!test);
+    overlay.querySelector(".kisten-schliessen").classList.toggle("hidden",!test);
+    overlay.querySelector(".kisten-nochmal").classList.toggle("hidden",!test);
+    overlay.querySelector(".kisten-weiter").classList.toggle("hidden",test);
+    overlay.querySelector(".kisten-karten").classList.toggle("einzeln",!test);
   }
 
   function waehleStufe(s){
@@ -136,19 +155,22 @@
     setzeBild(overlay.querySelector(".kisten-kiste .kisten-schatten"),bild("shared/chest-shadow.webp"));
   }
 
-  // Drei zufaellige Wuerfeldesigns mit Vorschaubild - nur zum Zeigen.
-  function zufallsDesigns(){
+  // Drei zufaellige Wuerfeldesigns mit Vorschaubild - nur fuer den Test.
+  function zufallsKarten(){
     const alle=typeof DICE_DESIGNS==="object"&&DICE_DESIGNS?Object.entries(DICE_DESIGNS).filter(([,d])=>d&&d.previewAsset):[];
     for(let i=alle.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[alle[i],alle[j]]=[alle[j],alle[i]];}
-    return alle.slice(0,KARTEN).map(([key,d])=>({key,name:d.name||key,bild:`${d.previewAsset}?v=${rev()}`}));
+    return alle.slice(0,TEST_KARTEN).map(([key,d])=>({key,name:d.name||key,bild:`${d.previewAsset}?v=${rev()}`,seltenheit:d.rarity||null}));
   }
   function baueKarten(){
     const reihe=overlay.querySelector(".kisten-karten");
     reihe.innerHTML="";
-    return zufallsDesigns().map((design,i)=>{
+    const karten=Array.isArray(auftrag.karten)&&auftrag.karten.length?auftrag.karten:zufallsKarten();
+    const n=karten.length;
+    return karten.map((k,i)=>{
       const karte=el("div","kisten-karte");
-      karte.style.setProperty("--kisten-karte-dx",`${(i-(KARTEN-1)/2)*-90}%`);
-      karte.style.setProperty("--kisten-karte-drehung",`${(i-(KARTEN-1)/2)*18}deg`);
+      if(k.seltenheit) karte.dataset.seltenheit=k.seltenheit;
+      karte.style.setProperty("--kisten-karte-dx",`${(i-(n-1)/2)*-90}%`);
+      karte.style.setProperty("--kisten-karte-drehung",`${(i-(n-1)/2)*18}deg`);
       const innen=el("div","kisten-karte-innen");
       const rueck=el("div","kisten-karte-rueck");
       const rueckEbene=ebene("kisten-karte-rueck-bild","card-back");setzeBild(rueckEbene,bild("shared/chest-card-back.webp"));
@@ -156,14 +178,32 @@
       const vorn=el("div","kisten-karte-vorn");
       const vornEbene=ebene("kisten-karte-vorn-bild","card-front");setzeBild(vornEbene,bild(`${stufe}/chest-card-front-${stufe}.webp`));
       vorn.appendChild(vornEbene);
-      const designBild=el("img","kisten-karte-design");designBild.src=design.bild;designBild.alt="";designBild.draggable=false;
+      const designBild=el("img","kisten-karte-design");designBild.src=k.bild;designBild.alt="";designBild.draggable=false;
       vorn.appendChild(designBild);
-      vorn.appendChild(el("div","kisten-karte-name",design.name));
+      vorn.appendChild(el("div","kisten-karte-name",k.name));
       innen.appendChild(rueck);innen.appendChild(vorn);
       karte.appendChild(innen);
       reihe.appendChild(karte);
       return karte;
     });
+  }
+
+  // Ergebniszeile unter der Karte (nur Shop): Seltenheit, neu oder doppelt.
+  function zeigeErgebnis(){
+    const box=overlay.querySelector(".kisten-ergebnis");
+    box.innerHTML="";
+    if(auftrag.modus==="test"||!auftrag.karten?.length) return;
+    const k=auftrag.karten[0];
+    const namen=window.WDShop?.SELTENHEIT_NAMEN||{};
+    const zeile=el("div","kisten-ergebnis-zeile");
+    if(k.seltenheit){const s=el("span","kisten-ergebnis-seltenheit",namen[k.seltenheit]||k.seltenheit);s.dataset.seltenheit=k.seltenheit;zeile.appendChild(s);}
+    if(k.duplikat){
+      zeile.appendChild(el("span","kisten-ergebnis-doppelt",`${tr("Doppelt")} · +${k.rueckgabe||0} ${tr("Duellmarken")}`));
+    }else{
+      zeile.appendChild(el("span","kisten-ergebnis-neu",tr("Neu!")));
+    }
+    box.appendChild(zeile);
+    if(k.rueckfall) box.appendChild(el("div","kisten-ergebnis-hinweis",tr("In der gewürfelten Seltenheit gibt es noch keine Würfel – die Ziehung ist eine Stufe tiefer gefallen.")));
   }
 
   /* ---------- Partikel auf der Canvas: Staub, Blitz, Funken ---------- */
@@ -196,10 +236,14 @@
     }
     fxStart();
   }
+  // Funkenfarbe: im Shop die gezogene Seltenheit, im Test die Kistenstufe.
+  function funkenFarbe(){
+    const s=auftrag.modus!=="test"&&auftrag.karten?.[0]?.seltenheit;
+    return (s&&window.WDShop?.SELTENHEIT_FARBEN?.[s])||STUFEN_FARBEN[stufe]||"#ffd45a";
+  }
   function funken(){
     const p=kistenPunkt(.5,.44);
-    const farbe=STUFEN_FARBEN[stufe]||"#ffd45a";
-    const rgb=farbe.match(/[0-9a-f]{2}/gi).map(h=>parseInt(h,16)).join(",");
+    const rgb=funkenFarbe().match(/[0-9a-f]{2}/gi).map(h=>parseInt(h,16)).join(",");
     for(let i=0;i<70;i++){
       const winkel=-Math.PI/2+(Math.random()-.5)*1.6,kraft=(.6+Math.random())*p.s*.012;
       teilchen.push({x:p.x+(Math.random()-.5)*p.s*.3,y:p.y,vx:Math.cos(winkel)*kraft,vy:Math.sin(winkel)*kraft,
@@ -267,6 +311,8 @@
     const meinLauf=++lauf;
     overlay.style.setProperty("--kt",String(tempo()));
     overlay.querySelector(".kisten-karten").innerHTML="";
+    overlay.querySelector(".kisten-ergebnis").innerHTML="";
+    delete overlay.dataset.ergebnis;
     teilchen.length=0;blitz=0;
     // Deckel-Keyframes muessen neu anlaufen: Phase erst auf "aus", dann
     // im naechsten Frame auf "ankunft", sonst bleibt der Deckel offen.
@@ -283,6 +329,9 @@
     phase("wackeln");
     spaeter(1400,()=>{
       phase("aufspringen");
+      // Ab hier traegt die Flaeche die Farbe der gezogenen Seltenheit.
+      const s=auftrag.modus!=="test"&&auftrag.karten?.[0]?.seltenheit;
+      if(s) overlay.dataset.ergebnis=s;
       spaeter(110,funken,meinLauf);
       spaeter(650,()=>enthuelle(meinLauf),meinLauf);
     },meinLauf);
@@ -294,29 +343,49 @@
     karten.forEach((karte,i)=>{
       spaeter(i*abstand,()=>{karte.classList.add("fliegt");},meinLauf);
       spaeter(i*abstand+flug,()=>{karte.classList.remove("fliegt");karte.classList.add("gelandet");},meinLauf);
-      spaeter(i*abstand+flug+140,()=>{karte.classList.add("gedreht");},meinLauf);
+      spaeter(i*abstand+flug+140,()=>{karte.classList.add("gedreht");if(i===karten.length-1)zeigeErgebnis();},meinLauf);
     });
     spaeter((karten.length-1)*abstand+flug+140+drehung+100,()=>phase("fertig"),meinLauf);
     if(!karten.length)spaeter(300,()=>phase("fertig"),meinLauf);
   }
 
-  function oeffneFlaeche(){
+  /* ---------- Einstieg ---------- */
+  function oeffneFlaeche(optionen={}){
     if(!overlay)baue();
+    auftrag={
+      modus:optionen.modus==="shop"?"shop":"test",
+      karten:Array.isArray(optionen.karten)?optionen.karten:null,
+      titel:optionen.titel||"",
+      beimSchliessen:typeof optionen.beimSchliessen==="function"?optionen.beimSchliessen:null
+    };
+    if(STUFEN.includes(optionen.stufe)) waehleStufe(optionen.stufe);
+    beschrifte();
     ladeFunken();
     overlay.classList.remove("hidden");
     zeigeFehlend();
     starte();
   }
   function schliesse(){
+    if(!overlay||overlay.classList.contains("hidden")) return;
     lauf++;
     overlay.classList.add("hidden");
     phase("aus");
     overlay.querySelector(".kisten-karten").innerHTML="";
+    overlay.querySelector(".kisten-ergebnis").innerHTML="";
+    delete overlay.dataset.ergebnis;
     teilchen.length=0;blitz=0;
+    const cb=auftrag.beimSchliessen;auftrag.beimSchliessen=null;
+    if(cb) cb();
   }
+  // Im Shop schliesst Escape nicht: das Ergebnis soll gesehen werden.
+  document.addEventListener("keydown",e=>{if(e.key==="Escape"&&overlay&&!overlay.classList.contains("hidden")&&auftrag.modus==="test")schliesse();});
 
-  knopf.addEventListener("click",oeffneFlaeche);
-  document.addEventListener("keydown",e=>{if(e.key==="Escape"&&overlay&&!overlay.classList.contains("hidden"))schliesse();});
+  const testKnopf=document.getElementById("menuKistenTestBtn");
+  if(testKnopf) testKnopf.addEventListener("click",()=>{
+    document.getElementById("tutorialHubModal")?.classList.add("hidden");
+    oeffneFlaeche({modus:"test"});
+  });
 
-  window.WDKistentest=Object.freeze({open:oeffneFlaeche,close:schliesse,stufen:[...STUFEN]});
+  window.WDKiste=Object.freeze({oeffne:oeffneFlaeche,schliesse,stufen:[...STUFEN]});
+  window.WDKistentest=Object.freeze({open:()=>oeffneFlaeche({modus:"test"}),close:schliesse,stufen:[...STUFEN]});
 })();

@@ -13181,7 +13181,7 @@ body.test-lab-active #dice[data-lab-dice-fx="kante"] .die:nth-child(6){--wd-kant
 }
 
 /* ===== 38-kisten.css ===== */
-/* ===== Kistentest: Knopf im Hauptmenue und Kistenbuehne =====
+/* ===== Kiste: Kistenbuehne (Shop und Kistentest im Trainingsfenster) =====
    Die Kistenoeffnung nach dem Kisten-Brief (docs/KISTEN-BRIEF.md):
    Koerper, Licht und Deckel sind getrennte Ebenen, der Deckel wird per
    rotateX um sein Scharnier nach hinten gekippt. Die Geometrie hier ist
@@ -13192,25 +13192,6 @@ body.test-lab-active #dice[data-lab-dice-fx="kante"] .die:nth-child(6){--wd-kant
    Kein Bild-URL in dieser Datei: alle Pfade setzt js/45-kistentest.js
    mit ASSET_REV. --kt ist das Tempo (1 = normal); bei reduzierter
    Bewegung setzt das Skript es herunter, die Dauern rechnen damit. */
-
-/* Der Knopf traegt den vorhandenen Navy-Knopfrahmen, so gedehnt wie er
-   auch im Fähigkeitswähler und im Trophy Shop sitzt. Das Label steht in
-   der Reihe mit Icon und Plakette, nicht wie bei den grossen Knoepfen
-   absolut in der Mitte. */
-html[data-v28-rework="2"] #mainMenu .menu-actions button.menu-kistentest,
-#mainMenu .menu-actions button.menu-kistentest{
-  grid-column:1/-1;position:relative;display:flex;align-items:center;justify-content:center;gap:8px;text-align:center;
-  min-height:56px;padding:10px 24px;border:0;border-radius:0;box-shadow:none;
-  background:var(--dd-frame-button-navy) center/100% 100% no-repeat;color:#fff3d6;
-  font-family:Georgia,"Times New Roman",serif;font-size:clamp(15px,4.2vw,19px);font-weight:700;letter-spacing:.02em;
-  text-shadow:0 1px 3px rgba(0,0,0,.46)}
-html[data-v28-rework="2"] #mainMenu .menu-actions button.menu-kistentest .menu-primary-label{
-  position:static;transform:none;white-space:nowrap}
-#mainMenu .menu-actions button.menu-kistentest .menu-icon{
-  flex:0 0 auto;width:clamp(26px,7vw,34px);height:clamp(26px,7vw,34px);font-size:0;filter:none;line-height:1}
-#mainMenu .menu-actions button.menu-kistentest .menu-kistentest-badge{
-  padding:2px 8px;border-radius:999px;border:1px solid rgba(255,230,160,.55);
-  font-size:.58em;letter-spacing:.12em;text-transform:uppercase;opacity:.9}
 
 .kisten-overlay{
   --kt:1;
@@ -13391,3 +13372,98 @@ html[data-v28-rework="2"] #mainMenu .menu-actions button.menu-kistentest .menu-p
   .kisten-overlay[data-phase="warten"] .kisten-kiste,.kisten-overlay[data-phase="warten"] .kisten-hinweis{animation:none}
   .kisten-overlay[data-phase] .kisten-strahlen{animation:kistenAufblenden calc(var(--kt)*400ms) ease-out both}
 }
+
+/* ===== Shop: Reiter Kisten und Waehrung (js/47-shop.js) =====
+   Der Trophy-Shop bleibt, wie er ist, und wird zum Reiter. Kistenkarten
+   nutzen dieselben .prestige-item-Klassen wie die Kosmetik, damit sie den
+   gemalten Rahmen aus 16-v28-phasen.css erben. Kein neues Rahmenbild. */
+/* Kopf: Profilwahl in der ersten Zeile, darunter drei Guthaben nebeneinander.
+   Die Navy-Boxen haben 31px Seitenpolster aus dem Rahmenbild; mit drei
+   Boxen in einer Zeile bleibt dafuer kein Platz, deshalb schmaler und
+   Beschriftung ueber der Zahl. */
+#prestigeShopScreen .prestige-shop-head{grid-template-columns:repeat(3,minmax(0,1fr));align-items:stretch}
+#prestigeShopScreen .prestige-shop-head label{grid-column:1/-1}
+html[data-v28-rework="2"] #prestigeShopScreen .prestige-wallet{min-width:0;padding:8px 10px;min-height:58px;flex-direction:column;justify-content:center;gap:2px;text-align:center}
+#prestigeShopScreen .prestige-wallet span{font-size:clamp(8px,2.4vw,10px);letter-spacing:.06em;white-space:nowrap}
+#prestigeShopScreen .prestige-wallet strong{font-size:clamp(15px,4.4vw,19px);line-height:1}
+.shop-wallet[data-waehrung="marken"] strong{color:#f6d679}
+.shop-wallet[data-waehrung="kerne"] strong{color:#8fc4ff}
+.shop-tabs{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin:0 0 12px}
+.shop-tab-btn{
+  display:flex;align-items:center;justify-content:center;gap:8px;min-height:46px;padding:8px 10px;border-radius:0;
+  border:1px solid rgba(215,173,82,.5);background:linear-gradient(160deg,#12375f,#082643);color:#e9e2cf;
+  font-family:Georgia,"Times New Roman",serif;font-size:clamp(12px,3.4vw,15px);font-weight:700}
+.shop-tab-btn .dd-ui-icon,.shop-tab-btn img{width:20px;height:20px}
+.shop-tab-btn.aktiv{background:linear-gradient(160deg,#5a3d1c,#3a2410);border-color:#f0cf7a;color:#fff3d6;box-shadow:0 0 0 1px rgba(240,207,122,.35) inset}
+.shop-tab-panel.hidden{display:none}
+.shop-kisten-kopf{display:grid;gap:8px;margin-bottom:10px}
+.shop-schutz{display:flex;align-items:flex-start;gap:8px;padding:8px 10px;border:1px solid rgba(215,173,82,.4);background:rgba(8,38,67,.55);color:#e9e2cf;font-size:13px;line-height:1.4}
+.shop-schutz img,.shop-schutz .dd-ui-icon{flex:0 0 auto;width:20px;height:20px;margin-top:1px}
+.shop-hinweis{padding:8px 10px;border:1px dashed rgba(255,190,90,.7);background:rgba(90,40,10,.35);color:#ffd9a0;font-size:13px}
+.shop-kisten-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+/* Nie mehr als zwei Spalten: die gemalten Kartenrahmen brauchen Breite,
+   sonst brechen Namen und die Chancentabelle. */
+@media(max-width:400px){.shop-kisten-grid{grid-template-columns:1fr}}
+html[data-v28-rework="2"] #prestigeShopScreen .shop-kiste,
+html[data-v28-rework="2"] #prestigeShopScreen .shop-paket{display:flex;flex-direction:column;align-items:center;text-align:center;gap:6px}
+.shop-kiste-bild{display:block;width:min(70%,160px);aspect-ratio:1/1;object-fit:contain;filter:drop-shadow(0 6px 8px rgba(0,0,0,.45))}
+.shop-paket-bild{display:grid;place-items:center;width:min(60%,120px);aspect-ratio:1/1}
+.shop-paket-bild img,.shop-paket-bild .dd-ui-icon{width:64px;height:64px}
+.shop-chancen-toggle{
+  min-height:34px;padding:4px 12px;border-radius:0;border:1px solid rgba(215,173,82,.5);background:transparent;color:#f0cf7a;
+  font-family:Georgia,"Times New Roman",serif;font-size:12px;font-weight:700;letter-spacing:.04em}
+.shop-chancen{width:100%}
+.shop-chancen-tabelle{width:100%;border-collapse:collapse;font-size:12px;color:#e9e2cf}
+.shop-chancen-tabelle th,.shop-chancen-tabelle td{padding:4px 4px;border-bottom:1px solid rgba(215,173,82,.22);text-align:left;font-weight:600;white-space:nowrap}
+.shop-chancen-tabelle td{text-align:right}
+.shop-chancen-tabelle td.shop-chance-pool{color:#a9b4c4;font-weight:400;font-size:11px}
+.shop-chancen-tabelle tr.leer th,.shop-chancen-tabelle tr.leer td{opacity:.62}
+.shop-chance-schutz{color:#b06cff;font-style:normal;font-size:11px}
+.shop-seltenheit-punkt{display:inline-block;width:9px;height:9px;margin-right:6px;border-radius:50%;background:var(--sf,#b8b8b8);box-shadow:0 0 5px var(--sf,#b8b8b8)}
+.shop-chancen-hinweis{margin-top:6px;font-size:11px;color:#a9b4c4;line-height:1.35;white-space:normal}
+.shop-kiste-kauf{display:grid;gap:6px;width:100%;margin-top:auto}
+html[data-v28-rework="2"] #prestigeShopScreen .shop-kiste-kauf .prestige-item-action{width:100%}
+html[data-v28-rework="2"] #prestigeShopScreen .shop-echtgeld{opacity:.62;cursor:default}
+.shop-waehrung-info{margin-bottom:10px;padding:10px 12px;border:1px solid rgba(215,173,82,.4);background:rgba(8,38,67,.55);color:#e9e2cf;font-size:13px;line-height:1.45}
+.shop-waehrung-info p{margin:0 0 8px}
+.shop-einnahmen{width:100%;border-collapse:collapse;font-size:12px}
+.shop-einnahmen th{text-align:left;font-weight:600;padding:3px 0;border-bottom:1px solid rgba(215,173,82,.22)}
+.shop-einnahmen td{text-align:right;color:#f6d679;font-weight:700;padding:3px 0;border-bottom:1px solid rgba(215,173,82,.22)}
+
+/* Kiste im Shopmodus: eine grosse Karte, Ergebniszeile darunter, die
+   Flaeche traegt ab dem Aufspringen die Farbe der gezogenen Seltenheit. */
+.kisten-overlay[data-ergebnis="common"]{--kisten-farbe:#b8b8b8}
+.kisten-overlay[data-ergebnis="rare"]{--kisten-farbe:#4a8ff0}
+.kisten-overlay[data-ergebnis="super_rare"]{--kisten-farbe:#2fd3a6}
+.kisten-overlay[data-ergebnis="epic"]{--kisten-farbe:#b06cff}
+.kisten-overlay[data-ergebnis="legendary"]{--kisten-farbe:#ffd45a}
+.kisten-karten.einzeln .kisten-karte{width:clamp(120px,40vw,200px)}
+.kisten-karten.einzeln{min-height:clamp(165px,55vw,275px)}
+.kisten-karte[data-seltenheit="common"]{--kisten-farbe:#b8b8b8}
+.kisten-karte[data-seltenheit="rare"]{--kisten-farbe:#4a8ff0}
+.kisten-karte[data-seltenheit="super_rare"]{--kisten-farbe:#2fd3a6}
+.kisten-karte[data-seltenheit="epic"]{--kisten-farbe:#b06cff}
+.kisten-karte[data-seltenheit="legendary"]{--kisten-farbe:#ffd45a}
+.kisten-karte.gedreht[data-seltenheit="epic"],.kisten-karte.gedreht[data-seltenheit="legendary"]{filter:drop-shadow(0 0 16px var(--kisten-farbe)) drop-shadow(0 0 4px var(--kisten-farbe))}
+.kisten-ergebnis{min-height:0;display:grid;gap:4px;justify-items:center;text-align:center}
+.kisten-ergebnis-zeile{display:flex;flex-wrap:wrap;justify-content:center;gap:8px;font-size:14px;font-weight:700}
+.kisten-ergebnis-seltenheit{padding:3px 10px;border:1px solid var(--kisten-farbe);color:var(--kisten-farbe);letter-spacing:.06em;text-transform:uppercase;font-size:12px}
+.kisten-ergebnis-neu{color:#ffe9b8}
+.kisten-ergebnis-doppelt{color:#f6d679}
+.kisten-ergebnis-hinweis{max-width:420px;font-size:11px;color:#c7d0dd;line-height:1.35}
+.kisten-weiter{
+  min-height:38px;padding:6px 22px;border-radius:0;border:1px solid rgba(215,173,82,.78);
+  background:linear-gradient(180deg,#fffdf6,#f2e8d4);color:#1b2433;font-family:inherit;font-size:14px;font-weight:700}
+.kisten-overlay[data-modus="shop"] .kisten-buehne{width:min(82vw,36vh,380px)}
+@media(max-height:640px){.kisten-overlay[data-modus="shop"] .kisten-buehne{width:min(82vw,30vh,380px)}.kisten-karten.einzeln .kisten-karte{width:clamp(96px,32vw,150px)}.kisten-karten.einzeln{min-height:clamp(132px,44vw,206px)}}
+.shop-chancen-toggle{display:inline-flex;align-items:center;justify-content:center;gap:6px}
+.shop-chancen-toggle img,.shop-chancen-toggle .dd-ui-icon{width:16px;height:16px}
+/* Die Knopfbilder (.prestige-button-artwork) liegen absolut auf dem Knopf.
+   Im Trophy-Shop sind die Knoepfe direkte Kinder der Karte und ueber
+   37-abschluss.css positioniert; die Kaufknoepfe hier sitzen in einer
+   eigenen Zeile und brauchen den Bezug selbst - sonst malt sich das
+   Knopfbild als Band quer ueber den Bildschirm. */
+html[data-v28-rework="2"] #prestigeShopScreen .shop-kaufen,
+html[data-v28-rework="2"] #prestigeShopScreen .shop-echtgeld{position:relative;overflow:hidden;isolation:isolate}
+html[data-v28-rework="2"] #prestigeShopScreen .shop-kaufen>.prestige-button-artwork,
+html[data-v28-rework="2"] #prestigeShopScreen .shop-echtgeld>.prestige-button-artwork{position:absolute;inset:0;z-index:-1}
