@@ -5,6 +5,9 @@
   if (!pack) return;
 
   Object.assign(pack.exact, {
+    "Der Nachglow des Kantenläufers wird jetzt gefahren statt gemalt: er besteht aus einzelnen Punkten auf derselben Bahn wie der Kopf": "The edge runner's afterglow is now travelled rather than painted: it is made of single dots on the same track as the head",
+    "Damit laufen Kopf und Schweif überall gleich schnell – vorher war der Streifen an den Ecken bis zu 1,5-mal so schnell wie der Punkt": "Head and trail therefore move at the same speed everywhere; previously the streak ran up to 1.5 times faster than the dot at the corners",
+    "Das gilt auf jeder Fensterbreite, ohne abgestimmte Werte: die alte Lösung stimmte nur auf einer Breite": "This holds at every window width with no tuned values: the old solution was only correct at one width",
     "Beim Kantenläufer lief der Punkt auf den Geraden dem Schweif davon und ließ eine kleine Lücke – jetzt hängen beide über die ganze Runde zusammen": "On the edge runner the dot outran its trail along the straights and left a small gap; the two now stay joined for the whole lap",
     "Der Punkt läuft außerdem genau auf der Mitte des Nachglows statt ein Stück daneben": "The dot also travels along the centre of the afterglow instead of slightly beside it",
     "Der Kantenläufer hat jetzt einen echten kleinen Kreis als Punkt, mit einem weichen Hof um ihn herum": "The edge runner now has a real small circle as its dot, with a soft halo around it",

@@ -3160,164 +3160,130 @@ body.test-lab-active #dice[data-lab-dice-fx="puls"] .die:not(.rolling)::after{
 /* --- Kantenlaeufer: ein kleiner violetter Punkt faehrt die Wuerfelkante
    ab und zieht einen weichen Nachglow hinter sich her.
 
-   ERSTER ANSATZ, verworfen: eine Kapsel per offset-path an der Kante
-   entlangschieben. Aus dem Spieltest: "immer wenn er um die Ecke faehrt,
-   steht der Schweif kurz ueber den Wuerfel hinaus". Das ist nicht zu
-   beheben - offset-path verschiebt und dreht einen Kasten, es BIEGT ihn
-   nicht. Ein gerader Schweif von knapp halber Wuerfelbreite ragt an einer
-   90-Grad-Ecke zwangslaeufig heraus.
+   Der Schweif wird nicht GEMALT, sondern GEFAHREN. Er besteht aus
+   einzelnen Punkten, die auf DERSELBEN Bahn laufen wie der Kopf und nur
+   spaeter gestartet sind. Dadurch haengen Kopf und Schweif von selbst
+   zusammen - bei jeder Wuerfelbreite, ohne eine einzige ausgemessene
+   Zahl.
 
-   JETZIGER ANSATZ: der Schweif wird auf die Umrandung GEMALT statt an ihr
-   entlanggeschoben. Ein Kegelverlauf liefert Punkt und Nachglow in einem;
-   eine Maske schneidet daraus einen Ring in der Form des Wuerfels. Damit
-   folgt der Schweif der Rundung exakt und kann gar nicht mehr ueberstehen.
+   Der Weg hierher, damit ihn niemand nochmal geht:
 
-   Zwei Eigenheiten, die dazugehoeren:
-   - Der Kegelverlauf dreht um den MITTELPUNKT, nicht entlang der Kante.
-     Der Punkt ist an den Ecken deshalb etwas schneller als in der Mitte
-     einer Kante. Auf einem fast quadratischen Wuerfel faellt das nicht auf
-     und wirkt eher lebendig.
-   - Damit sich der Winkel weich animieren laesst, muss die Variable per
-     @property als <angle> angemeldet sein; sonst springt sie. Wo @property
-     fehlt, steht der Punkt still - ein Schoenheitsfehler in einem Effekt,
-     den es nur in der Testumgebung gibt. */
-@property --wd-kante-winkel{
-  syntax:"<angle>";
-  inherits:false;
-  initial-value:0deg;
-}
-body.test-lab-active #dice[data-lab-dice-fx="kante"] .die:not(.rolling)::after{
-  box-sizing:border-box;
-  /* Ringdicke in Prozent, damit sie bei 56 px im Kampf und beim grossen
-     Spezialwuerfel gleich aussieht. */
-  padding:4.5%;
-  /* Der Schweif ist die Laenge dieses Verlaufs. 60 Grad sind ein Sechstel
-     des Rings - laenger wird daraus ein leuchtender Rahmen statt eines
-     Punktes mit Nachglow. Wer ihn laenger will, zieht die erste Stufe
-     nach vorn, nicht die Deckkraft hoch. */
-  background:conic-gradient(from var(--wd-kante-winkel),
-    rgba(168,74,255,0) 0deg,
-    rgba(168,74,255,0) 298deg,
-    rgba(172,80,255,.12) 320deg,
-    rgba(184,102,255,.36) 341deg,
-    rgba(206,146,255,.70) 352deg,
-    rgba(234,206,255,.96) 358deg,
-    #fff 360deg);
-  -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);
-  mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);
-  -webkit-mask-composite:xor;
-  mask-composite:exclude;
-  filter:drop-shadow(0 0 3px rgba(168,74,255,.9));
-  animation:wuerfelKante 4.6s linear infinite;
-}
-/* Die -38 Grad sind ausgemessen, nicht geschaetzt. Ring und Punkt werden
-   verschieden parametrisiert - der Ring nach Winkel um den Mittelpunkt,
-   der Punkt nach Strecke auf der Kante. Das ergibt einen KONSTANTEN
-   Versatz. Eine feste Verschiebung reicht NICHT - aus dem Spieltest:
-   "bei der Geraden wirkt es, als waere er etwas schneller als der
-   Schweif". Genau so ist es: der Winkel laeuft auf einer Geraden
-   ungleichmaessig, die Strecke gleichmaessig.
+   1. Eine Kapsel per offset-path an der Kante entlangschieben. Aus dem
+      Spieltest: "immer wenn er um die Ecke faehrt, steht der Schweif kurz
+      ueber den Wuerfel hinaus". offset-path verschiebt und dreht einen
+      Kasten, es BIEGT ihn nicht.
+   2. Den Schweif als Kegelverlauf (conic-gradient) auf einen Ring in
+      Wuerfelform malen. Die Ecken stimmten damit, aber ein Kegelverlauf
+      misst in WINKELN um die Wuerfelmitte, waehrend die Fahrt des Punktes
+      in STRECKENLAENGE auf der Kante misst. Auf einem Rechteck sind das
+      zwei verschiedene Fahrplaene: "bei der Geraden wirkt es, als waere er
+      etwas schneller als der Schweif".
+   3. Den Winkel ueber eine ausgemessene Kurve laufen lassen, damit der
+      KOPF passt. Genau das ist die Falle: eine Winkelkurve kann immer nur
+      EINEN Punkt des Verlaufs richtig stellen. Nachgemessen lief der Kopf
+      danach konstant 4,25 px je Schritt, das Schweifende aber zwischen
+      3,43 und 5,26 px - 1,53-fach schwankend, viermal pro Runde. Aus dem
+      Spieltest: "jetzt ist der Streifen schneller".
 
-   Die Stuetzstellen unten sind deshalb AUSGEMESSEN, nicht gerechnet: ein
-   unsichtbares Messelement mit demselben offset-path wurde in 40 Schritten
-   ueber die Runde geschoben und je Schritt sein Winkel zur Wuerfelmitte
-   bestimmt. Der Kegelverlauf faehrt jetzt genau diese Kurve ab, und die
-   Runde schliesst auf 360,0 Grad.
+   Dazu kam ein zweiter Haken: der Wuerfel ist je nach Fensterbreite 43 bis
+   86 px breit, sein Eckradius steht aber fest bei 14 px. Die Form ist also
+   bei keiner zwei Breiten dieselbe, und eine fest eingetragene Winkelkurve
+   driftet ueber die Breiten um bis zu 3,3 px - dieselbe Groessenordnung,
+   die sie beheben sollte.
 
-   Die Korrektur gilt fuer die FORM des Kampfwuerfels. border-radius steht
-   bei 17px fest, die Rundung ist als Anteil der Breite also nicht bei
-   jeder Fensterbreite gleich - auf sehr schmalen Telefonen bleibt ein
-   kleiner Rest. */
-@keyframes wuerfelKante{
-  0%{--wd-kante-winkel:-28.2deg}
-  5%{--wd-kante-winkel:-9.3deg}
-  10%{--wd-kante-winkel:11.8deg}
-  15%{--wd-kante-winkel:30.0deg}
-  20%{--wd-kante-winkel:46.0deg}
-  25%{--wd-kante-winkel:61.8deg}
-  30%{--wd-kante-winkel:80.7deg}
-  35%{--wd-kante-winkel:101.8deg}
-  40%{--wd-kante-winkel:120.0deg}
-  45%{--wd-kante-winkel:136.0deg}
-  50%{--wd-kante-winkel:151.8deg}
-  55%{--wd-kante-winkel:170.7deg}
-  60%{--wd-kante-winkel:191.8deg}
-  65%{--wd-kante-winkel:210.0deg}
-  70%{--wd-kante-winkel:226.0deg}
-  75%{--wd-kante-winkel:241.8deg}
-  80%{--wd-kante-winkel:260.7deg}
-  85%{--wd-kante-winkel:281.8deg}
-  90%{--wd-kante-winkel:300.0deg}
-  95%{--wd-kante-winkel:316.0deg}
-  100%{--wd-kante-winkel:331.8deg}
-}
-/* Der Punkt selbst ist ein eigenes Element: ein echter kleiner Kreis mit
-   Hof, der auf der Kante mitlaeuft. Er darf per offset-path fahren - rund
-   und klein steht er an keiner Ecke ueber, das war nur das Problem des
-   langen geraden Schweifs.
-
-   Der Ring und der Kreis werden VERSCHIEDEN parametrisiert: der
-   Kegelverlauf nach Winkel um den Mittelpunkt, der Kreis nach Strecke auf
-   der Kante. Ausgeglichen wird das in den Stuetzstellen von
-   @keyframes wuerfelKante, nicht hier. Gleiche Rundenzeit ist Pflicht. */
+   Beide Haken fallen weg, sobald Kopf und Schweif dieselbe Bahn fahren.
+   Wer den Schweif wieder als Verlauf malen will, faengt sich beides zurueck. */
 @supports (offset-path:border-box){
-  body.test-lab-active #dice[data-lab-dice-fx="kante"] .die:not(.rolling)::before{
-    content:"";
+  /* Kopf und alle Schweifglieder teilen sich diese Bahn. Was hier steht,
+     muss fuer beide gelten - sonst laufen sie wieder auseinander. */
+  body.test-lab-active #dice[data-lab-dice-fx="kante"] .die:not(.rolling)>i.die-kante{
+    display:block;
     position:absolute;
-    z-index:4;
     top:0;
     left:0;
-    width:12%;
     aspect-ratio:1;
     border-radius:50%;
+    pointer-events:none;
+    offset-path:border-box;
+    /* auto statt 0deg: nur mit gedrehtem Element zeigt der Anker quer zur
+       Fahrtrichtung nach innen. Ein Kreis sieht gedreht gleich aus. */
+    offset-rotate:auto;
+    /* 4 px nach innen holt die Bahn von der Aussenkante auf die Fassung
+       des Wuerfels. Fest in px, weil die Fassung mit 3 px ebenfalls fest
+       steht und nicht mit der Wuerfelbreite mitwaechst. */
+    offset-anchor:50% calc(50% - 4px);
+    animation:wuerfelKantePunkt var(--wd-kante-takt,4.6s) linear infinite;
+  }
+  /* Groesse, Deckkraft und Rueckstand haengen alle am selben Index
+     --wd-kante-glied: 0 ist der Kopf, 16 das letzte Schweifglied. Wer den
+     Schweif laenger will, dreht an den 56 ms oder an KANTEN_GLIEDER in
+     js/12-battle-ui.js. Die 56 ms sind der Abstand ZWISCHEN den Gliedern:
+     enger gesetzt wird der Schweif glatter, aber teurer.
+
+     Die volle Taktlaenge wird abgezogen, statt einfach zu verzoegern: eine
+     positive Verzoegerung liesse jedes Glied beim Einschalten erst an der
+     Startlinie stehen. Negativ eingestellt laufen alle sofort mit. */
+  body.test-lab-active #dice[data-lab-dice-fx="kante"] .die:not(.rolling)>i.die-kante{
+    z-index:3;
+    /* Die Glieder stehen gut 2 px auseinander. Damit daraus ein Streifen
+       und keine Perlenkette wird, muss der HELLE KERN breiter sein als der
+       Abstand - nicht nur das Element. Die Breite bleibt darum fast
+       konstant, verjuengt wird fast nur ueber die Deckkraft. */
+    width:calc(11% - var(--wd-kante-glied,0) * .13%);
+    background:radial-gradient(circle,
+      rgba(234,204,255,.92) 0 46%,
+      rgba(192,118,255,.58) 72%,
+      rgba(168,74,255,0) 100%);
+    opacity:calc((18 - var(--wd-kante-glied,0)) / 24);
+    animation-delay:calc(var(--wd-kante-versatz,0ms) - var(--wd-kante-takt,4.6s)
+      + var(--wd-kante-glied,0) * 56ms);
+  }
+  /* Der Kopf ist dasselbe Element, nur heller: ein echter kleiner Kreis mit
+     zwei Hoefen, einem engen hellen und einem weiten weichen. Er ist bewusst
+     KEIN ::before - ein Pseudo-Element hat keine Bounding-Box, und dann kann
+     keine Pruefung nachmessen, ob Kopf und Schweif zusammenbleiben. Genau das
+     war hier dreimal die Frage. */
+  body.test-lab-active #dice[data-lab-dice-fx="kante"] .die:not(.rolling)>i.die-kante-kopf{
+    z-index:4;
+    width:12%;
+    opacity:1;
     background:radial-gradient(circle,
       #fff 0 20%,
       rgba(238,212,255,.95) 40%,
       rgba(190,112,255,.55) 66%,
       rgba(168,74,255,0) 100%);
-    /* Zwei Hoefe: ein enger heller und ein weiter weicher. Der weite
-       schliesst zugleich die letzte kleine Luecke zur Schweifspitze. */
     filter:drop-shadow(0 0 4px rgba(198,126,255,.95)) drop-shadow(0 0 9px rgba(168,74,255,.55));
-    pointer-events:none;
-    offset-path:border-box;
-    /* auto statt 0deg: nur mit gedrehtem Element zeigt der Anker quer zur
-       Fahrtrichtung. Der Kreis selbst sieht gedreht gleich aus.
-       31 % zieht ihn von der Aussenkante auf die MITTE des Rings: der
-       liegt wegen padding:4.5% rund 1,3 px weiter innen, und das ist genau
-       der seitliche Versatz, den man sonst zwischen Kreis und Schweif
-       sieht. Nachgemessen: Abstand zur Wuerfelmitte 27,3 px bei 28,5 px
-       halber Breite. */
-    offset-rotate:auto;
-    offset-anchor:50% 31%;
-    animation:wuerfelKantePunkt 4.6s linear infinite;
   }
   @keyframes wuerfelKantePunkt{
     from{offset-distance:0%}
     to{offset-distance:100%}
   }
 }
+/* Ohne den Effekt haengen die Glieder unsichtbar im Wuerfel. Sie werden in
+   renderDice nur angelegt, wenn der Kantenlaeufer laeuft, koennen aber von
+   einem spaeteren Render stehenbleiben. */
+#dice .die>i.die-kante{display:none}
 
 /* Der Versatz je Wuerfel macht aus fuenf gleichzeitigen Effekten eine
    Welle. nth-child reicht: die Wuerfel stehen in Spielreihenfolge im DOM.
 
    NUR fuer die wandernden Effekte. Bei atmenden Effekten macht derselbe
    Versatz aus dem Atmen ein Durchblitzen der Reihe - genau der "Tick" aus
-   dem Spieltest. Die atmen deshalb gleichzeitig. */
-body.test-lab-active #dice[data-lab-dice-fx^="schimmer"] .die:nth-child(2):not(.rolling)::after,
-body.test-lab-active #dice[data-lab-dice-fx="kante"] .die:nth-child(2):not(.rolling)::after,
-body.test-lab-active #dice[data-lab-dice-fx="kante"] .die:nth-child(2):not(.rolling)::before{animation-delay:110ms}
-body.test-lab-active #dice[data-lab-dice-fx^="schimmer"] .die:nth-child(3):not(.rolling)::after,
-body.test-lab-active #dice[data-lab-dice-fx="kante"] .die:nth-child(3):not(.rolling)::after,
-body.test-lab-active #dice[data-lab-dice-fx="kante"] .die:nth-child(3):not(.rolling)::before{animation-delay:220ms}
-body.test-lab-active #dice[data-lab-dice-fx^="schimmer"] .die:nth-child(4):not(.rolling)::after,
-body.test-lab-active #dice[data-lab-dice-fx="kante"] .die:nth-child(4):not(.rolling)::after,
-body.test-lab-active #dice[data-lab-dice-fx="kante"] .die:nth-child(4):not(.rolling)::before{animation-delay:330ms}
-body.test-lab-active #dice[data-lab-dice-fx^="schimmer"] .die:nth-child(5):not(.rolling)::after,
-body.test-lab-active #dice[data-lab-dice-fx="kante"] .die:nth-child(5):not(.rolling)::after,
-body.test-lab-active #dice[data-lab-dice-fx="kante"] .die:nth-child(5):not(.rolling)::before{animation-delay:440ms}
-body.test-lab-active #dice[data-lab-dice-fx^="schimmer"] .die:nth-child(6):not(.rolling)::after,
-body.test-lab-active #dice[data-lab-dice-fx="kante"] .die:nth-child(6):not(.rolling)::after,
-body.test-lab-active #dice[data-lab-dice-fx="kante"] .die:nth-child(6):not(.rolling)::before{animation-delay:550ms}
+   dem Spieltest. Die atmen deshalb gleichzeitig.
+
+   Der Kantenlaeufer bekommt seinen Versatz als Variable statt als fertige
+   Verzoegerung: Kopf und Schweifglieder muessen denselben Versatz mit
+   ihrem eigenen Rueckstand verrechnen. */
+body.test-lab-active #dice[data-lab-dice-fx^="schimmer"] .die:nth-child(2):not(.rolling)::after{animation-delay:110ms}
+body.test-lab-active #dice[data-lab-dice-fx^="schimmer"] .die:nth-child(3):not(.rolling)::after{animation-delay:220ms}
+body.test-lab-active #dice[data-lab-dice-fx^="schimmer"] .die:nth-child(4):not(.rolling)::after{animation-delay:330ms}
+body.test-lab-active #dice[data-lab-dice-fx^="schimmer"] .die:nth-child(5):not(.rolling)::after{animation-delay:440ms}
+body.test-lab-active #dice[data-lab-dice-fx^="schimmer"] .die:nth-child(6):not(.rolling)::after{animation-delay:550ms}
+body.test-lab-active #dice[data-lab-dice-fx="kante"] .die:nth-child(2){--wd-kante-versatz:110ms}
+body.test-lab-active #dice[data-lab-dice-fx="kante"] .die:nth-child(3){--wd-kante-versatz:220ms}
+body.test-lab-active #dice[data-lab-dice-fx="kante"] .die:nth-child(4){--wd-kante-versatz:330ms}
+body.test-lab-active #dice[data-lab-dice-fx="kante"] .die:nth-child(5){--wd-kante-versatz:440ms}
+body.test-lab-active #dice[data-lab-dice-fx="kante"] .die:nth-child(6){--wd-kante-versatz:550ms}
 @media(prefers-reduced-motion:reduce){
   body.test-lab-active #dice .die:not(.rolling)::after{animation:none;opacity:0}
 }

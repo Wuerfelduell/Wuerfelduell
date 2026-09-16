@@ -148,6 +148,9 @@
     diceFxCtl.select.addEventListener('change',()=>{
       wuerfelEffekt=diceFxCtl.select.value;
       applyWorkbench();
+      // Der Kantenläufer braucht eigene Knoten im Würfel; die legt renderDice
+      // an, sobald das Attribut steht. Die anderen Effekte kommen ohne aus.
+      renderDice?.();
     });
 
     const fxCtl=makeSelect('✨ Attack-FX','testLabFxSelect');

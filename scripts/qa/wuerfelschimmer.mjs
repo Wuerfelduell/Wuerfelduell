@@ -134,7 +134,12 @@ try{
       await new Promise(r=>setTimeout(r,60));
       const d=document.querySelector('#dice .die');
       const cs=getComputedStyle(d,'::after');
-      gemessen[w]={name:cs.animationName,inhalt:cs.content};
+      // Der Kantenlaeufer laeuft nicht auf ::after, sondern auf eigenen
+      // Knoten im Wuerfel. Wer nur ::after misst, haelt ihn faelschlich
+      // fuer einen Regler ohne Wirkung.
+      const glied=d.querySelector(':scope > i.die-kante');
+      gemessen[w]={name:cs.animationName!=='none'?cs.animationName
+        :(glied?getComputedStyle(glied).animationName:'none'),inhalt:cs.content};
     }
     sel.value='schimmer-gold';sel.dispatchEvent(new Event('change',{bubbles:true}));
     await new Promise(r=>setTimeout(r,60));
@@ -195,32 +200,79 @@ try{
   pruefe('Atmende Effekte gehen nie ganz aus',nieAus,true);
   console.log(`      Atem: ${JSON.stringify(boden)}`);
 
-  // Der Kantenlaeufer besteht aus ZWEI Ebenen: ::after traegt Ring und
-  // Schweif, ::before den runden Punkt. Beide muessen dieselbe Rundenzeit
-  // haben - laufen sie auseinander, loest sich der Punkt von seinem
-  // Schweif. Und der Punkt gehoert nur zu diesem einen Effekt.
+  // Der Kantenlaeufer ist ein Kometenschweif aus einzelnen Punkten auf
+  // EINER Bahn. Genau daran haengt der Effekt, und genau das ging dreimal
+  // schief, solange der Schweif ein gemalter Kegelverlauf war: ein Verlauf
+  // misst in Winkeln um die Wuerfelmitte, die Fahrt misst in Streckenlaenge
+  // auf der Kante. Die Pruefung unten misst deshalb nicht Stilwerte,
+  // sondern LAGE - ueber eine ganze Runde, im Lauf, ohne Pausieren.
   const laeufer=await p.evaluate(async()=>{
     const sel=document.getElementById('testLabDiceFxSelect');
-    const lies=()=>{
-      const d=document.querySelector('#dice .die');
-      const v=getComputedStyle(d,'::before'),n=getComputedStyle(d,'::after');
-      return {punktInhalt:v.content,punktDauer:v.animationDuration,punktRadius:v.borderRadius,
-        ringDauer:n.animationDuration};
-    };
     sel.value='kante';sel.dispatchEvent(new Event('change',{bubbles:true}));
-    await new Promise(r=>setTimeout(r,80));
-    const kante=lies();
+    await new Promise(r=>setTimeout(r,200));
+    const d=document.querySelector('#dice .die');
+    const g=[...d.querySelectorAll(':scope > i.die-kante')];
+    if(g.length<2) return {glieder:g.length};
+    const wf=d.getBoundingClientRect();
+    // getComputedStyle liefert ein LEBENDES Objekt. Die Werte muessen
+    // abgeschrieben werden, solange der Effekt noch laeuft - nach dem
+    // Umschalten unten sind die Knoten weg und alles liest 0.
+    const kopfRadius=getComputedStyle(g[0]).borderRadius;
+    const kopfDauer=getComputedStyle(g[0]).animationDuration;
+    const gliedDauer=getComputedStyle(g[g.length-1]).animationDuration;
+    const proben=await new Promise(fertig=>{
+      const aus=[],start=performance.now();
+      (function frame(){
+        aus.push(g.map(e=>{const b=e.getBoundingClientRect();
+          return [b.x+b.width/2-wf.x, b.y+b.height/2-wf.y];}));
+        if(performance.now()-start<4700) requestAnimationFrame(frame); else fertig(aus);
+      })();
+    });
     sel.value='schimmer-gold';sel.dispatchEvent(new Event('change',{bubbles:true}));
-    await new Promise(r=>setTimeout(r,80));
-    const schimmer=lies();
-    return {kante,schimmer};
+    await new Promise(r=>setTimeout(r,120));
+    const ohne=document.querySelectorAll('#dice .die > i.die-kante').length;
+    return {glieder:g.length,breite:wf.width,proben,ohne,kopfRadius,kopfDauer,gliedDauer};
   });
-  pruefe('Kantenlaeufer hat einen runden Punkt',
-    laeufer.kante.punktInhalt!=='none'&&/50%|999/.test(laeufer.kante.punktRadius),true);
-  pruefe('Punkt und Ring haben dieselbe Rundenzeit',
-    laeufer.kante.punktDauer===laeufer.kante.ringDauer&&parseFloat(laeufer.kante.ringDauer)>0,true);
-  if(laeufer.kante.punktDauer!==laeufer.kante.ringDauer)console.log(`      Laeufer: ${JSON.stringify(laeufer.kante)}`);
-  pruefe('Kein Punkt bei den uebrigen Effekten',laeufer.schimmer.punktInhalt==='none',true);
+
+  pruefe('Kantenlaeufer hat Kopf und Schweif auf einer Bahn',laeufer.glieder>=8,true);
+  if(laeufer.glieder<8)console.log(`      Glieder: ${laeufer.glieder}`);
+
+  if(laeufer.proben){
+    const weg=(a,b)=>Math.hypot(a[0]-b[0],a[1]-b[1]);
+    // Schrittweite je Bild, fuer Kopf und fuer das letzte Schweifglied.
+    // Sprungwerte beim Rundenschluss werden verworfen.
+    const tempo=i=>{const v=[];
+      for(let k=1;k<laeufer.proben.length;k++){
+        const s=weg(laeufer.proben[k-1][i],laeufer.proben[k][i]);
+        if(s<laeufer.breite/2) v.push(s);}
+      return v.sort((a,b)=>a-b);};
+    const mittel=v=>v.reduce((a,b)=>a+b,0)/v.length;
+    const tk=tempo(0),tl=tempo(laeufer.glieder-1);
+    // DIE Kernpruefung: Kopf und Schweifende muessen im Mittel gleich
+    // schnell sein. Beim Kegelverlauf lagen hier 1,53-fach dazwischen -
+    // aus dem Spieltest: "jetzt ist der Streifen schneller".
+    const verhaeltnis=mittel(tk)/mittel(tl);
+    pruefe('Kopf und Schweifende laufen gleich schnell',
+      verhaeltnis>0.97&&verhaeltnis<1.03,true);
+    console.log(`      Tempo: Kopf ${mittel(tk).toFixed(2)} px/Bild, Schweifende ${mittel(tl).toFixed(2)} px/Bild (${verhaeltnis.toFixed(3)}-fach)`);
+
+    // Der Schweif darf sich nicht vom Kopf loesen und nicht ueber die
+    // Wuerfelkante hinausstehen - beides waren Spieltestbefunde.
+    let maxAbstand=0,raus=0;
+    for(const z of laeufer.proben){
+      for(let j=0;j<z.length-1;j++) maxAbstand=Math.max(maxAbstand,weg(z[j],z[j+1]));
+      for(const e of z) raus=Math.max(raus,-e[0],-e[1],e[0]-laeufer.breite,e[1]-laeufer.breite);
+    }
+    pruefe('Schweif haengt am Kopf (keine Luecke)',maxAbstand<=laeufer.breite*0.12,true);
+    console.log(`      groesste Luecke: ${maxAbstand.toFixed(2)} px bei ${laeufer.breite.toFixed(1)} px Wuerfel`);
+    pruefe('Nichts steht ueber die Wuerfelkante hinaus',raus<=0.5,true);
+    if(raus>0.5)console.log(`      Ueberstand: ${raus.toFixed(2)} px`);
+  }
+
+  pruefe('Kopf ist rund und laeuft im selben Takt wie der Schweif',
+    /50%|999/.test(laeufer.kopfRadius||'')&&laeufer.kopfDauer===laeufer.gliedDauer
+    &&parseFloat(laeufer.kopfDauer||'0')>0,true);
+  pruefe('Kein Kantenlaeufer bei den uebrigen Effekten',laeufer.ohne===0,true);
 
   // 4. Waehrend des Wurfs aus.
   const imWurf=await p.evaluate(async()=>{

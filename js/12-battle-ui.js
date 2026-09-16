@@ -655,6 +655,32 @@
   }
   function totalAttackDamage(){ return attackDamage; }
 
+  // Der Kantenläufer zieht seinen Nachglow nicht als gemalten Verlauf hinter
+  // sich her, sondern als eine Reihe einzelner Punkte, die auf derselben
+  // offset-path-Bahn laufen wie der Kopf und nur später starten. Nur so
+  // bleiben Kopf und Schweif zusammen; die Begründung steht ausführlich in
+  // src/styles/legacy/37-abschluss.css beim Effekt.
+  // Die Glieder hängen direkt im .die, nicht in einem Wrapper: offset-path
+  // mit border-box bezieht sich auf den umgebenden Block, ein Wrapper würde
+  // die Bahn auf seine eigene (eckige) Form umstellen.
+  // Glied 0 ist der Kopf, 1..KANTEN_GLIEDER der Schweif dahinter.
+  const KANTEN_GLIEDER=16;
+  function ensureKantenlaeufer(el,aktiv){
+    const da=el.querySelectorAll(":scope > i.die-kante");
+    if(!aktiv){ da.forEach(n=>n.remove()); return; }
+    if(da.length===KANTEN_GLIEDER+1) return;
+    da.forEach(n=>n.remove());
+    const frag=document.createDocumentFragment();
+    for(let i=0;i<=KANTEN_GLIEDER;i++){
+      const glied=document.createElement("i");
+      glied.className=i===0?"die-kante die-kante-kopf":"die-kante";
+      glied.setAttribute("aria-hidden","true");
+      glied.style.setProperty("--wd-kante-glied",String(i));
+      frag.appendChild(glied);
+    }
+    el.appendChild(frag);
+  }
+
   function renderDice(){
     // Die fünf Würfel bleiben als dieselben DOM-Nodes bestehen. Früher wurden sie
     // während der Animation alle 55 ms neu erzeugt, was auf Mobile Layout-Jitter
@@ -679,6 +705,7 @@
       // Vorgezogene Ergebnisse weder als Augen, Beschriftung noch im flachen
       // Kompatibilitaetsmodus verraten. Der Spin behaelt die bisherige Anzeige.
       render3DDieNode(el,d.rolling?(Number(el.dataset.value)||null):d.value,designKey);
+      ensureKantenlaeufer(el,diceEl.dataset.labDiceFx==="kante");
       el.onclick=null;
 
       if(phase==="base_select"&&!d.locked&&!isAnimating&&!isBotPlayer(current)){
