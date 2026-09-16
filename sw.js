@@ -20,7 +20,7 @@
    sollen; beim Aktivieren werden dann alle uebrigen DiceDuel-Caches
    geloescht. */
 
-const CACHE_VERSION = "28.12.42";
+const CACHE_VERSION = "28.12.43";
 const CACHE_NAME = `diceduel-${CACHE_VERSION}`;
 
 self.addEventListener("install", event => {

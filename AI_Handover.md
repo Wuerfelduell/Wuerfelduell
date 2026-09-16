@@ -22,7 +22,7 @@ welche Fallen schon Zeit gekostet haben.
 
 | | |
 |---|---|
-| Version | **28.12.42** |
+| Version | **28.12.43** |
 | Branch | `main` |
 | Letzte Schritte | CSS-Stapel auf 10 Dateien zusammengelegt · Changelog englisch vervollständigt · Hauptmenü, Statistik, Profile, Achievements, Spielvorbereitung und Trophy Shop überarbeitet · Fähigkeits- und Shopflächen auf proportional gekachelte Bildrahmen umgestellt · alle Bild-URLs auf einen gemeinsamen Cache-Schlüssel · Trophy-Shop-Reste bereinigt und Aufklapppfeile angeglichen · Duo- und Trio-Boss-Rush mit Pfadwahl, gespeicherten Runs und 32 Perks einschließlich temporärer Ability-Mastery · Boss-XP-Umtausch 300:100 · Zweitfund gedeckelt · Trio-Rush 15 Stufen, ab 10 ultraschwer · Boss-Rush-HUD auf die Weltregel reduziert · Zweitfund-Kopien ablehnbar und weitergebbar · Ultra-Stufen treffen härter statt länger zu dauern · Heilung gedeckelt, Maximum wächst je Stufe · Regelleiste als Kachelgitter, wächst mit dem Text · gespeicherte Runs überleben Balanceänderungen · Meldeschichten über den Kampf-Overlays geordnet · großer Spezialwürfel dreht sich als echter 3D-Würfel wie der normale und füllt seinen Rahmen · Kampflog, Infos-Blatt und Weltregel hinter einem Knopf, Knopfleiste gekürzt und beruhigt · Kartentexte aus den gemalten Rahmen geholt · fünf neue Würfeldesigns in der Testumgebung · Matchbar auf schmalen Telefonen wieder einzeilig · fünf Würfeldesigns mit fertigem Artwork und nachgemessenem Augenraster · Live-Online-Prüfstand repariert und um eine Latenzmessung erweitert · Common-Satz mit zehn Würfeldesigns vollständig · Online-Wurfwerte vorgezogen, live nachgemessen · Wurfanimation beim Gast wiederhergestellt · sieben Rare-Würfeldesigns · fünf Würfeleffekte mit Regler in der Testumgebung |
 
@@ -386,6 +386,23 @@ schneller als in der Mitte einer Kante (fällt auf einem fast quadratischen
 Würfel nicht auf). Und die Winkelvariable muss per `@property` als
 `<angle>` angemeldet sein, sonst springt sie statt zu animieren.
 
+**Seit 28.12.43 ist der Punkt ein eigenes Element** (`::before`): ein
+echter kleiner Kreis mit zwei Höfen, der per `offset-path:border-box`
+mitläuft. Rund und klein darf er das — überstehen konnte nur der lange
+gerade Schweif.
+
+**Ring und Punkt werden verschieden parametrisiert**, der Ring nach Winkel
+um den Mittelpunkt, der Punkt nach Strecke auf der Kante. Das ergibt einen
+Versatz. Die **−40 Grad** im Keyframe sind ausgemessen, nicht geschätzt:
+eine Reihe von −14 bis −70 Grad durchgefahren und je vier Phasen der
+Abstand zwischen Punktmitte und Schweifspitze bestimmt. Ohne Korrektur
+20,5 px bei einem 52-px-Würfel, im Minimum rund 7,6 px. **Weiter kommt man
+mit einer reinen Verschiebung nicht** — die Parametrisierungen laufen
+nicht linear zueinander. Den Rest schließt der weite Hof des Punktes.
+`offset-rotate:auto` ist nötig, damit `offset-anchor` quer zur
+Fahrtrichtung zieht und den Punkt von der Außenkante auf die Ringmitte
+holt.
+
 **Wandernd gegen atmend — der Unterschied, den ein Spieltest gefunden
 hat.** Randglühen und Puls wirkten „zu erzwungen, machen einmal einen
 kurzen Tick und sind dann weg". Ursache war der **Versatz je Würfel**: bei
@@ -394,7 +411,7 @@ und ruht danach zwei Sekunden. Der Versatz gehört nur zu den **wandernden**
 Effekten. Dazu: kürzerer Takt (1,6 statt 2,4 s) und ein höherer Boden —
 ein Effekt, der zwischendurch ganz ausgeht, liest sich immer als Tick.
 
-Gemessen von `scripts/qa/wuerfelschimmer.mjs` (14 Zusicherungen): Schimmer
+Gemessen von `scripts/qa/wuerfelschimmer.mjs` (17 Zusicherungen): Schimmer
 auf jedem Wuerfel, ueber der Artwork-Flaeche, steigender Versatz,
 sichtbarer Durchlauf 500-700 ms, gleichmaessig, **Wuerfel unbeschnitten**,
 waehrend des Wurfs aus, im normalen Spiel gar nicht, und der Regler

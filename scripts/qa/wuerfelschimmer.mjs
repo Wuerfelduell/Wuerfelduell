@@ -195,6 +195,33 @@ try{
   pruefe('Atmende Effekte gehen nie ganz aus',nieAus,true);
   console.log(`      Atem: ${JSON.stringify(boden)}`);
 
+  // Der Kantenlaeufer besteht aus ZWEI Ebenen: ::after traegt Ring und
+  // Schweif, ::before den runden Punkt. Beide muessen dieselbe Rundenzeit
+  // haben - laufen sie auseinander, loest sich der Punkt von seinem
+  // Schweif. Und der Punkt gehoert nur zu diesem einen Effekt.
+  const laeufer=await p.evaluate(async()=>{
+    const sel=document.getElementById('testLabDiceFxSelect');
+    const lies=()=>{
+      const d=document.querySelector('#dice .die');
+      const v=getComputedStyle(d,'::before'),n=getComputedStyle(d,'::after');
+      return {punktInhalt:v.content,punktDauer:v.animationDuration,punktRadius:v.borderRadius,
+        ringDauer:n.animationDuration};
+    };
+    sel.value='kante';sel.dispatchEvent(new Event('change',{bubbles:true}));
+    await new Promise(r=>setTimeout(r,80));
+    const kante=lies();
+    sel.value='schimmer-gold';sel.dispatchEvent(new Event('change',{bubbles:true}));
+    await new Promise(r=>setTimeout(r,80));
+    const schimmer=lies();
+    return {kante,schimmer};
+  });
+  pruefe('Kantenlaeufer hat einen runden Punkt',
+    laeufer.kante.punktInhalt!=='none'&&/50%|999/.test(laeufer.kante.punktRadius),true);
+  pruefe('Punkt und Ring haben dieselbe Rundenzeit',
+    laeufer.kante.punktDauer===laeufer.kante.ringDauer&&parseFloat(laeufer.kante.ringDauer)>0,true);
+  if(laeufer.kante.punktDauer!==laeufer.kante.ringDauer)console.log(`      Laeufer: ${JSON.stringify(laeufer.kante)}`);
+  pruefe('Kein Punkt bei den uebrigen Effekten',laeufer.schimmer.punktInhalt==='none',true);
+
   // 4. Waehrend des Wurfs aus.
   const imWurf=await p.evaluate(async()=>{
     document.querySelector('#primaryBtn')?.click();
@@ -232,7 +259,7 @@ try{
   await n.close();
 }catch(e){absturz=e;}
 
-const ERWARTET=14;
+const ERWARTET=17;
 let fehler=ergebnisse.length<ERWARTET?1:0;
 if(fehler)console.log(`ACHTUNG: nur ${ergebnisse.length} von ${ERWARTET} Zusicherungen erreicht.`);
 const breite=Math.max(1,...ergebnisse.map(r=>r[0].length));

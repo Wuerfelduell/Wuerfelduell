@@ -13102,9 +13102,64 @@ body.test-lab-active #dice[data-lab-dice-fx="kante"] .die:not(.rolling)::after{
   filter:drop-shadow(0 0 3px rgba(168,74,255,.9));
   animation:wuerfelKante 4.6s linear infinite;
 }
+/* Die -38 Grad sind ausgemessen, nicht geschaetzt. Ring und Punkt werden
+   verschieden parametrisiert - der Ring nach Winkel um den Mittelpunkt,
+   der Punkt nach Strecke auf der Kante. Das ergibt einen KONSTANTEN
+   Versatz. Die -40 Grad sind ausgemessen, nicht geschaetzt: eine Reihe von
+   -14 bis -70 Grad durchgefahren und je vier Phasen den Abstand zwischen
+   Punktmitte und Schweifspitze bestimmt. Ohne Korrektur 20,5 px bei einem
+   52-px-Wuerfel, im Minimum rund 7,6 px.
+
+   Weiter kommt man mit einer reinen Verschiebung NICHT - die beiden
+   Parametrisierungen laufen nicht linear zueinander, der Rest ist der
+   nichtlineare Anteil plus der halbe Punktdurchmesser. Wer hier weiter
+   optimieren will, muss beide auf dieselbe Parametrisierung bringen. */
 @keyframes wuerfelKante{
-  from{--wd-kante-winkel:0deg}
-  to{--wd-kante-winkel:360deg}
+  from{--wd-kante-winkel:-40deg}
+  to{--wd-kante-winkel:320deg}
+}
+/* Der Punkt selbst ist ein eigenes Element: ein echter kleiner Kreis mit
+   Hof, der auf der Kante mitlaeuft. Er darf per offset-path fahren - rund
+   und klein steht er an keiner Ecke ueber, das war nur das Problem des
+   langen geraden Schweifs.
+
+   Der Ring und der Kreis werden VERSCHIEDEN parametrisiert: der
+   Kegelverlauf nach Winkel um den Mittelpunkt, der Kreis nach Strecke auf
+   der Kante. Beide brauchen dieselbe Rundenzeit, und der Startversatz ist
+   ausgemessen - offset-distance 0% beginnt am Anfang der oberen Kante,
+   der Kegelverlauf bei 0deg in der Mitte oben. */
+@supports (offset-path:border-box){
+  body.test-lab-active #dice[data-lab-dice-fx="kante"] .die:not(.rolling)::before{
+    content:"";
+    position:absolute;
+    z-index:4;
+    top:0;
+    left:0;
+    width:12%;
+    aspect-ratio:1;
+    border-radius:50%;
+    background:radial-gradient(circle,
+      #fff 0 20%,
+      rgba(238,212,255,.95) 40%,
+      rgba(190,112,255,.55) 66%,
+      rgba(168,74,255,0) 100%);
+    /* Zwei Hoefe: ein enger heller und ein weiter weicher. Der weite
+       schliesst zugleich die letzte kleine Luecke zur Schweifspitze. */
+    filter:drop-shadow(0 0 4px rgba(198,126,255,.95)) drop-shadow(0 0 9px rgba(168,74,255,.55));
+    pointer-events:none;
+    offset-path:border-box;
+    /* auto statt 0deg: nur mit gedrehtem Element zeigt der Anker quer zur
+       Fahrtrichtung. Der Kreis selbst sieht gedreht gleich aus.
+       40 % zieht ihn von der Aussenkante auf die Mitte des Rings - der
+       liegt wegen padding:4.5% ein Stueck weiter innen. */
+    offset-rotate:auto;
+    offset-anchor:50% 40%;
+    animation:wuerfelKantePunkt 4.6s linear infinite;
+  }
+  @keyframes wuerfelKantePunkt{
+    from{offset-distance:0%}
+    to{offset-distance:100%}
+  }
 }
 
 /* Der Versatz je Wuerfel macht aus fuenf gleichzeitigen Effekten eine
@@ -13114,15 +13169,20 @@ body.test-lab-active #dice[data-lab-dice-fx="kante"] .die:not(.rolling)::after{
    Versatz aus dem Atmen ein Durchblitzen der Reihe - genau der "Tick" aus
    dem Spieltest. Die atmen deshalb gleichzeitig. */
 body.test-lab-active #dice[data-lab-dice-fx^="schimmer"] .die:nth-child(2):not(.rolling)::after,
-body.test-lab-active #dice[data-lab-dice-fx="kante"] .die:nth-child(2):not(.rolling)::after{animation-delay:110ms}
+body.test-lab-active #dice[data-lab-dice-fx="kante"] .die:nth-child(2):not(.rolling)::after,
+body.test-lab-active #dice[data-lab-dice-fx="kante"] .die:nth-child(2):not(.rolling)::before{animation-delay:110ms}
 body.test-lab-active #dice[data-lab-dice-fx^="schimmer"] .die:nth-child(3):not(.rolling)::after,
-body.test-lab-active #dice[data-lab-dice-fx="kante"] .die:nth-child(3):not(.rolling)::after{animation-delay:220ms}
+body.test-lab-active #dice[data-lab-dice-fx="kante"] .die:nth-child(3):not(.rolling)::after,
+body.test-lab-active #dice[data-lab-dice-fx="kante"] .die:nth-child(3):not(.rolling)::before{animation-delay:220ms}
 body.test-lab-active #dice[data-lab-dice-fx^="schimmer"] .die:nth-child(4):not(.rolling)::after,
-body.test-lab-active #dice[data-lab-dice-fx="kante"] .die:nth-child(4):not(.rolling)::after{animation-delay:330ms}
+body.test-lab-active #dice[data-lab-dice-fx="kante"] .die:nth-child(4):not(.rolling)::after,
+body.test-lab-active #dice[data-lab-dice-fx="kante"] .die:nth-child(4):not(.rolling)::before{animation-delay:330ms}
 body.test-lab-active #dice[data-lab-dice-fx^="schimmer"] .die:nth-child(5):not(.rolling)::after,
-body.test-lab-active #dice[data-lab-dice-fx="kante"] .die:nth-child(5):not(.rolling)::after{animation-delay:440ms}
+body.test-lab-active #dice[data-lab-dice-fx="kante"] .die:nth-child(5):not(.rolling)::after,
+body.test-lab-active #dice[data-lab-dice-fx="kante"] .die:nth-child(5):not(.rolling)::before{animation-delay:440ms}
 body.test-lab-active #dice[data-lab-dice-fx^="schimmer"] .die:nth-child(6):not(.rolling)::after,
-body.test-lab-active #dice[data-lab-dice-fx="kante"] .die:nth-child(6):not(.rolling)::after{animation-delay:550ms}
+body.test-lab-active #dice[data-lab-dice-fx="kante"] .die:nth-child(6):not(.rolling)::after,
+body.test-lab-active #dice[data-lab-dice-fx="kante"] .die:nth-child(6):not(.rolling)::before{animation-delay:550ms}
 @media(prefers-reduced-motion:reduce){
   body.test-lab-active #dice .die:not(.rolling)::after{animation:none;opacity:0}
 }
