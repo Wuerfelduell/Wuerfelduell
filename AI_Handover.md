@@ -22,9 +22,9 @@ welche Fallen schon Zeit gekostet haben.
 
 | | |
 |---|---|
-| Version | **28.12.37** |
+| Version | **28.12.38** |
 | Branch | `main` |
-| Letzte Schritte | CSS-Stapel auf 10 Dateien zusammengelegt · Changelog englisch vervollständigt · Hauptmenü, Statistik, Profile, Achievements, Spielvorbereitung und Trophy Shop überarbeitet · Fähigkeits- und Shopflächen auf proportional gekachelte Bildrahmen umgestellt · alle Bild-URLs auf einen gemeinsamen Cache-Schlüssel · Trophy-Shop-Reste bereinigt und Aufklapppfeile angeglichen · Duo- und Trio-Boss-Rush mit Pfadwahl, gespeicherten Runs und 32 Perks einschließlich temporärer Ability-Mastery · Boss-XP-Umtausch 300:100 · Zweitfund gedeckelt · Trio-Rush 15 Stufen, ab 10 ultraschwer · Boss-Rush-HUD auf die Weltregel reduziert · Zweitfund-Kopien ablehnbar und weitergebbar · Ultra-Stufen treffen härter statt länger zu dauern · Heilung gedeckelt, Maximum wächst je Stufe · Regelleiste als Kachelgitter, wächst mit dem Text · gespeicherte Runs überleben Balanceänderungen · Meldeschichten über den Kampf-Overlays geordnet · großer Spezialwürfel dreht sich als echter 3D-Würfel wie der normale und füllt seinen Rahmen · Kampflog, Infos-Blatt und Weltregel hinter einem Knopf, Knopfleiste gekürzt und beruhigt · Kartentexte aus den gemalten Rahmen geholt · fünf neue Würfeldesigns in der Testumgebung · Matchbar auf schmalen Telefonen wieder einzeilig · fünf Würfeldesigns mit fertigem Artwork und nachgemessenem Augenraster · Live-Online-Prüfstand repariert und um eine Latenzmessung erweitert · Common-Satz mit zehn Würfeldesigns vollständig · Online-Wurfwerte vorgezogen, live nachgemessen · Wurfanimation beim Gast wiederhergestellt · vier Rare-Würfeldesigns |
+| Letzte Schritte | CSS-Stapel auf 10 Dateien zusammengelegt · Changelog englisch vervollständigt · Hauptmenü, Statistik, Profile, Achievements, Spielvorbereitung und Trophy Shop überarbeitet · Fähigkeits- und Shopflächen auf proportional gekachelte Bildrahmen umgestellt · alle Bild-URLs auf einen gemeinsamen Cache-Schlüssel · Trophy-Shop-Reste bereinigt und Aufklapppfeile angeglichen · Duo- und Trio-Boss-Rush mit Pfadwahl, gespeicherten Runs und 32 Perks einschließlich temporärer Ability-Mastery · Boss-XP-Umtausch 300:100 · Zweitfund gedeckelt · Trio-Rush 15 Stufen, ab 10 ultraschwer · Boss-Rush-HUD auf die Weltregel reduziert · Zweitfund-Kopien ablehnbar und weitergebbar · Ultra-Stufen treffen härter statt länger zu dauern · Heilung gedeckelt, Maximum wächst je Stufe · Regelleiste als Kachelgitter, wächst mit dem Text · gespeicherte Runs überleben Balanceänderungen · Meldeschichten über den Kampf-Overlays geordnet · großer Spezialwürfel dreht sich als echter 3D-Würfel wie der normale und füllt seinen Rahmen · Kampflog, Infos-Blatt und Weltregel hinter einem Knopf, Knopfleiste gekürzt und beruhigt · Kartentexte aus den gemalten Rahmen geholt · fünf neue Würfeldesigns in der Testumgebung · Matchbar auf schmalen Telefonen wieder einzeilig · fünf Würfeldesigns mit fertigem Artwork und nachgemessenem Augenraster · Live-Online-Prüfstand repariert und um eine Latenzmessung erweitert · Common-Satz mit zehn Würfeldesigns vollständig · Online-Wurfwerte vorgezogen, live nachgemessen · Wurfanimation beim Gast wiederhergestellt · sieben Rare-Würfeldesigns |
 
 **Die Arbeitsteilung hat sich geändert.** Bis V28.11.28 liefen zwei
 Sitzungen parallel: Codex hat umgesetzt, diese Sitzung geprüft. Ab jetzt
@@ -262,6 +262,8 @@ Augendurchmesser 9,7–12,3 %. Sie kommen als **WebP 1024 × 1024,
 verlustfrei, mit echtem 8-Bit-Alpha**; das Spiel-Repo rechnet daraus wie
 bisher 512 × 512 bei Qualität 88 (rund 48 kB je Fläche).
 
+**V28.12.38: Uhrwerk, Dünenrelikt, Dornenhain** — damit 22 Artwork-Designs.
+
 **Die Augengröße ist das, was bei Rare-Designs schiefgehen kann.** Ein
 erstes Rare-Paket (Uhrwerk) hatte Augen von 5,0–7,7 % statt 10–13 % —
 halb so groß und untereinander ungleich. Bei 56 px hebt sich dort das
@@ -272,6 +274,19 @@ stärkste Bildpunktpaar in einem Fenster von ±3 px gegen die Fläche
 zwischen den Augenspalten. **Ein einzelner Bildpunkt genügt nicht** — bei
 leicht verschobenen Augen misst man sonst die Lücke und bekommt 12 statt
 109 heraus.
+
+Uhrwerk ist trotzdem eingebaut („für die jetzigen ists egal"). Damit die
+Regel dadurch nicht aufweicht, prüft `wuerfeldesigns.mjs` die Größe als
+**eigene Zusicherung** (Median über alle gefundenen Augen, mindestens 9 %)
+und führt Uhrwerk in einer sichtbaren `AUSNAHMEN`-Liste mit Begründung.
+Zwei Fallen dabei, beide erlebt: Wer die Fleckengrenze senkt, damit auch
+kleine Augen gefunden werden, erwischt bei anderen Designs nur Teile eines
+Auges — deshalb **Median statt Minimum oder Mittel**. Und Uhrwerks
+Schwerpunkte wandern aus demselben Grund um bis zu 2,2 Prozentpunkte, es
+steht deshalb auch beim Raster in der Ausnahmeliste.
+
+Die Werte im Bestand: 9,8 % (Drachenpanzer) bis 12,8 % (Tide Pearl),
+Uhrwerk 7,1 %.
 
 **V28.12.34 schließt den Common-Satz ab:** Slatewatch, Sandcarver und Redclay.
 Der Satz „Common" umfasst damit **zehn** Designs, alle in einer Bauart.

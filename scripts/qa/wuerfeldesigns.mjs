@@ -151,25 +151,56 @@ try{
           }
         }
         // Glanzlichter und Kanten sind klein; ein Auge misst rund 13% der
-        // Kante, also gut 500 Bildpunkte bei N=256.
-        if(n>=250)flecken.push({x:100*(sx/n+.5)/N,y:100*(sy/n+.5)/N,
+        // Kante, also gut 500 Bildpunkte bei N=256. Die Grenze liegt tiefer,
+        // damit auch zu kleine Augen noch GEFUNDEN werden - ob sie gross
+        // genug sind, entscheidet die eigene Zusicherung darunter.
+        if(n>=120)flecken.push({x:100*(sx/n+.5)/N,y:100*(sy/n+.5)/N,
           durchmesser:100*2*Math.sqrt(n/Math.PI)/N});
       }
       const nah=w=>SOLL.reduce((a,s)=>Math.abs(s-w)<Math.abs(a-w)?s:a,SOLL[0]);
       const abweichung=Math.max(0,...flecken.flatMap(f=>[Math.abs(f.x-nah(f.x)),Math.abs(f.y-nah(f.y))]));
+      // Median statt Mittel oder Minimum: ein Auge, das die Streuungssuche
+      // nur zur Haelfte erwischt, zieht den Mittelwert nach unten und macht
+      // aus einem guten Design ein schlechtes. Der Median steht dagegen fest.
+      const dm=flecken.map(f=>f.durchmesser).sort((a,b)=>a-b);
+      const median=dm.length?dm[Math.floor(dm.length/2)]:0;
       aus[schluessel]={punkte:flecken.length,
         abweichung:Math.round(abweichung*10)/10,
-        durchmesser:Math.round(10*flecken.reduce((a,f)=>a+f.durchmesser,0)/Math.max(1,flecken.length))/10};
+        durchmesser:Math.round(10*median)/10,
+        spanne:`${Math.round(10*dm[0])/10}-${Math.round(10*dm[dm.length-1])/10}`};
     }
     return aus;
   },NEU);
+  const AUSNAHMEN={
+    // Rare-Paket 1: Augen von rund 8% statt 13%, untereinander ungleich.
+    // Bewusst uebernommen ("fuer die jetzigen ists egal"), kuenftige Pakete
+    // liefern einheitliche Groessen. Steht hier, damit die Abweichung
+    // sichtbar bleibt statt die Grenze fuer alle aufzuweichen.
+    uhrwerk:'Rare-Paket 1, bewusst uebernommen'
+  };
   // Sieben genutzte Rasterpunkte: Mitte, vier Ecken, zwei Seitenmitten.
   const falschesRaster=Object.entries(raster)
+    .filter(([d])=>!AUSNAHMEN[d])
     .filter(([,r])=>r.punkte!==7||r.abweichung>2)
     .map(([d,r])=>`${d} ${JSON.stringify(r)}`);
   pruefe('Augen sitzen auf dem Raster 31/50/67',falschesRaster.length===0,true);
   if(falschesRaster.length)console.log(`      Raster: ${falschesRaster.join(' | ')}`);
   else console.log(`      Raster: ${Object.entries(raster).map(([d,r])=>`${d} ±${r.abweichung}pp Ø${r.durchmesser}%`).join(', ')}`);
+
+  // Die Groesse ist eine eigene Frage. Der Brief nennt 13% der Kante; diese
+  // Messung liest ueber die Streuung der Flaechen und faellt deshalb
+  // systematisch niedriger aus - die eingebauten Designs liegen bei 9,7 bis
+  // 12,8%. Unter 9% wird der Wuerfel bei 56 px unleserlich, und die Augen
+  // eines Designs muessen untereinander gleich gross sein.
+  const zuKlein=Object.entries(raster)
+    .filter(([d])=>!AUSNAHMEN[d])
+    .filter(([,r])=>r.durchmesser<9)
+    .map(([d,r])=>`${d} ${r.durchmesser}% (Spanne ${r.spanne})`);
+  pruefe('Augen gross genug fuer 56 px',zuKlein.length===0,true);
+  if(zuKlein.length)console.log(`      Groesse: ${zuKlein.join(' | ')}`);
+  else console.log(`      Groesse: ${Object.entries(raster).map(([d,r])=>`${d} ${r.durchmesser}%`).join(', ')}`);
+  for(const [d,grund] of Object.entries(AUSNAHMEN))
+    if(raster[d])console.log(`      Ausnahme: ${d} ${raster[d].durchmesser}% (Spanne ${raster[d].spanne}) - ${grund}`);
 
   // 5. Im Profil taucht keines auf.
   await p.evaluate(()=>{createProfile('Prueferin');saveGameData();});
@@ -218,7 +249,7 @@ try{
   await p.close();
 }catch(e){absturz=e;}
 
-const ERWARTET=7;
+const ERWARTET=8;
 let fehler=ergebnisse.length<ERWARTET?1:0;
 if(fehler)console.log(`ACHTUNG: nur ${ergebnisse.length} von ${ERWARTET} Zusicherungen erreicht.`);
 const breite=Math.max(1,...ergebnisse.map(r=>r[0].length));

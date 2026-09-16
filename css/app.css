@@ -12915,6 +12915,19 @@ html[data-v28-rework="2"] body.playing #game .controls>button.secondary{
 .special-big-die.d4.theme-drachenpanzer{background:linear-gradient(145deg,#41603f,#1a2619);color:#f2dcb0;border-color:#6d6663}
 .special-big-die.d4.theme-goldbruch{background:linear-gradient(145deg,#f4f1ea,#cfc6b4);color:#440957;border-color:#b7862f}
 
+/* ===== Rare-Paket 1 =====
+   Uhrwerk traegt als einziges Design Augen von nur rund 8 % statt 13 % -
+   bei 56 px hebt sich das schwaechste mit 109 statt 138-226 von der
+   Flaeche ab. Bewusst so eingebaut; die Glut nimmt deshalb das kraeftige
+   Messing der Fassung und nicht den Bernstein des Auges. */
+.die.theme-uhrwerk{--dice-accent:#d9982e;--dice-glow:rgba(217,152,46,.88)}
+.die.theme-duenenrelikt{--dice-accent:#2b52c8;--dice-glow:rgba(43,82,200,.86)}
+.die.theme-dornenhain{--dice-accent:#8fcfa0;--dice-glow:rgba(143,207,160,.84)}
+
+.special-big-die.d4.theme-uhrwerk{background:linear-gradient(145deg,#6b625d,#2c2825);color:#f0c98a;border-color:#c69b50}
+.special-big-die.d4.theme-duenenrelikt{background:linear-gradient(145deg,#f3d6ab,#c39a63);color:#062ba6;border-color:#8a6f3e}
+.special-big-die.d4.theme-dornenhain{background:linear-gradient(145deg,#6b4030,#2a1810);color:#9ed5ab;border-color:#4a3418}
+
 
 /* ===== Die Matchbar auf schmalen Telefonen =====
    Seit dort zwei Knoepfe stehen, passt die Leiste nicht mehr ueberall in

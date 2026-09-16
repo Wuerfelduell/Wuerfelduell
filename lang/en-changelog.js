@@ -5,6 +5,8 @@
   if (!pack) return;
 
   Object.assign(pack.exact, {
+    "Drei weitere Rare-Würfel sind eingebaut: Uhrwerk, Dünenrelikt und Dornenhain": "Three more rare dice are in: Uhrwerk, Duenenrelikt and Dornenhain",
+    "Damit stehen 22 Artwork-Designs in der Testumgebung zur Auswahl": "That makes 22 artwork designs available in the test lab",
     "Die ersten vier Rare-Würfel sind eingebaut: Seidenhof, Korsar, Drachenpanzer und Goldbruch": "The first four rare dice are in: Seidenhof, Korsar, Drachenpanzer and Goldbruch",
     "Wie die zehn Common-Designs vorerst nur in der Testumgebung wählbar": "Like the ten common designs, they can only be picked in the test lab for now",
     "Beim Wurf des Hosts sah der Gast das Ergebnis ohne Würfelanimation: der Zwischenstand traf schon nach rund 30 Millisekunden ein und wurde sofort aufgedeckt": "On a host roll the guest saw the result with no dice animation: the intermediate state arrived after about 30 milliseconds and was revealed at once",
