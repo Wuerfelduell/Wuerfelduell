@@ -5,6 +5,9 @@
   if (!pack) return;
 
   Object.assign(pack.exact, {
+    "Die Kisten sind jetzt gemalt: Holz mit Maserung, geschmiedete Beschläge, Edelsteine mit Glanz – im selben Stil wie die Würfeldesigns": "The chests are now painted: grained wood, forged fittings, gems with sparkle, in the same style as the dice designs",
+    "Alle 35 Kistenbilder sind ausgetauscht, die Bildrevision ist deshalb angehoben": "All 35 chest images have been replaced, so the image revision has been raised",
+    "Die Namen auf den Karten stehen jetzt in dunkler Tinte auf den hellen Bändern und in heller auf dem blauen – vorher waren sie auf drei von vier Stufen kaum lesbar": "The names on the cards are now in dark ink on the light bands and in light ink on the blue one; before, they were barely legible on three of the four tiers",
     "Die Kistenbilder sind eingebaut: vier Kisten mit Deckel, Innenseite, Licht und Strahlen, dazu Schatten, Funken, Kartenrückseite und vier Kartenvorderseiten": "The chest images are in: four chests with lid, inner side, light and rays, plus shadow, sparkle, card back and four card fronts",
     "Die Kiste fällt erst herein, wenn ihre Bilder dekodiert sind – beim allerersten Lauf stand sie sonst einen Moment ohne Unterteil da": "The chest only drops in once its images are decoded; on the very first run it otherwise stood without its lower half for a moment",
     "Die Funken beim Aufspringen sind jetzt der gelieferte Funke statt einer gezeichneten Raute": "The sparks on opening are now the delivered sparkle instead of a drawn diamond",

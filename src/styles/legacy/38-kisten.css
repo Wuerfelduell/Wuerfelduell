@@ -38,7 +38,10 @@ html[data-v28-rework="2"] #mainMenu .menu-actions button.menu-kistentest .menu-p
   background:radial-gradient(ellipse at 50% 42%,#1c2c4e,#060e1c 68%);
   color:#f7ecd0;font-family:Georgia,"Times New Roman",serif;overflow:hidden;
   -webkit-user-select:none;user-select:none;touch-action:manipulation}
-.kisten-overlay[data-stufe="rare"]{--kisten-farbe:#4a8ff0}
+/* Namensband der Karten: bei common, epic und legendary ist es elfenbein,
+   bei rare navy. Die Tinte folgt der Stufe, sonst steht weiss auf hell. */
+.kisten-overlay{--kisten-karte-tinte:#1b2433;--kisten-karte-tinte-schatten:rgba(255,255,255,.55)}
+.kisten-overlay[data-stufe="rare"]{--kisten-farbe:#4a8ff0;--kisten-karte-tinte:#fff3d6;--kisten-karte-tinte-schatten:rgba(0,0,0,.6)}
 .kisten-overlay[data-stufe="epic"]{--kisten-farbe:#b06cff}
 .kisten-overlay[data-stufe="legendary"]{--kisten-farbe:#ffd45a}
 
@@ -166,7 +169,7 @@ html[data-v28-rework="2"] #mainMenu .menu-actions button.menu-kistentest .menu-p
 .kisten-karte-design{position:absolute;left:12.5%;top:9.1%;width:75%;height:54.5%;object-fit:contain;filter:drop-shadow(0 4px 6px rgba(0,0,0,.45))}
 .kisten-karte-name{
   position:absolute;left:8%;right:8%;top:73.9%;height:17%;display:grid;place-items:center;text-align:center;
-  font-size:clamp(8px,2.4vw,12px);font-weight:700;line-height:1.1;color:#fff3d6;text-shadow:0 1px 3px rgba(0,0,0,.6)}
+  font-size:clamp(8px,2.4vw,12px);font-weight:700;line-height:1.1;color:var(--kisten-karte-tinte);text-shadow:0 1px 2px var(--kisten-karte-tinte-schatten)}
 .kisten-karte.gedreht{filter:drop-shadow(0 0 10px var(--kisten-farbe))}
 .kisten-fuss{display:flex;gap:8px;min-height:38px;opacity:0;pointer-events:none;transition:opacity calc(var(--kt)*300ms)}
 .kisten-overlay[data-phase="fertig"] .kisten-fuss{opacity:1;pointer-events:auto}
