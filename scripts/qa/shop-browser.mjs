@@ -87,7 +87,7 @@ try{
   });
   pruefe('Chancen der Common-Kiste sichtbar',chancen.offen,true);
   pruefe('Common-Kiste: 75 / 20 / 4 / 0,9 / 0,1',chancen.common.map(z=>z.wert).join('/'),'75/20/4/0,9/0,1');
-  pruefe('Leerer Pool (nur Super Rare) ist markiert',chancen.common.filter(z=>z.leer).map(z=>z.s).join(','),'super_rare');
+  pruefe('Kein Pool mehr leer: keine Zeile markiert',chancen.common.filter(z=>z.leer).map(z=>z.s).join(','),'');
   pruefe('Legendary nirgends ueber 5 %',chancen.legendary.length===4&&chancen.legendary.every(v=>v<=5),true);
 
   // 4. Ohne Guthaben kein Kauf.

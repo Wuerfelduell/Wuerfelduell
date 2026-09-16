@@ -3045,6 +3045,17 @@ html[data-v28-rework="2"] body.playing #game .controls>button.secondary{
 .special-big-die.d4.theme-phoenixkern{background:linear-gradient(145deg,#8a2a0a,#2e0d05);color:#ffd9a8;border-color:#e0a050}
 .special-big-die.d4.theme-weltenwurzel{background:linear-gradient(145deg,#2c3a22,#0f160c);color:#c8f0c0;border-color:#8a9a4a}
 .special-big-die.d4.theme-ereignishorizont{background:linear-gradient(145deg,#141a3a,#05060f);color:#dfe8ff;border-color:#b8c4d8}
+/* Super-Rare-Lieferung (16.09.). */
+.die.theme-gezeitenkompass{--dice-accent:#3fd6c8;--dice-glow:rgba(63,214,200,.88)}
+.die.theme-runenschmiede{--dice-accent:#e08a3c;--dice-glow:rgba(224,138,60,.86)}
+.die.theme-frostsiegel{--dice-accent:#b9d8ff;--dice-glow:rgba(185,216,255,.9)}
+.die.theme-nachtfalter{--dice-accent:#c08cff;--dice-glow:rgba(192,140,255,.86)}
+.die.theme-bernsteinarchiv{--dice-accent:#f2b84a;--dice-glow:rgba(242,184,74,.88)}
+.special-big-die.d4.theme-gezeitenkompass{background:linear-gradient(145deg,#155a66,#072a30);color:#c8fff8;border-color:#a9b4b8}
+.special-big-die.d4.theme-runenschmiede{background:linear-gradient(145deg,#4a3a34,#1c1512);color:#ffd9b0;border-color:#b06a3a}
+.special-big-die.d4.theme-frostsiegel{background:linear-gradient(145deg,#dfe9f6,#9fb6d0);color:#2a1a4a;border-color:#8c96a8}
+.special-big-die.d4.theme-nachtfalter{background:linear-gradient(145deg,#3a2240,#160c1c);color:#f2e6ff;border-color:#c08a5a}
+.special-big-die.d4.theme-bernsteinarchiv{background:linear-gradient(145deg,#c98a2a,#5a3a10);color:#fff1cc;border-color:#7a8a6a}
 
 
 /* ===== Die Matchbar auf schmalen Telefonen =====

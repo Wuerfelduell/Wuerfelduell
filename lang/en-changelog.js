@@ -5,6 +5,8 @@
   if (!pack) return;
 
   Object.assign(pack.exact, {
+    "Fünf Super-Rare-Würfel im Kistenpool: Gezeitenkompass, Runenschmiede, Frostsiegel, Nachtfalter und Bernsteinarchiv": "Five Super Rare dice in the chest pool: Gezeitenkompass, Runenschmiede, Frostsiegel, Nachtfalter and Bernsteinarchiv",
+    "Damit sind alle fünf Seltenheitsstufen besetzt – kein Wurf fällt mehr auf eine tiefere Stufe zurück": "All five rarity tiers are now filled; no roll drops to a lower tier any more",
     "Vier neue Würfeldesigns im Kistenpool: Dämmerkathedrale, Phönixkern und Weltenwurzel als Epic, Ereignishorizont als Legendary": "Four new dice designs in the chest pool: Dämmerkathedrale, Phönixkern and Weltenwurzel as Epic, Ereignishorizont as Legendary",
     "Damit liegen im Pool 11 Common, 8 Rare, 4 Epic und 3 Legendary – nur Super Rare ist noch leer": "The pool now holds 11 Common, 8 Rare, 4 Epic and 3 Legendary; only Super Rare is still empty",
     "Die ersten fünf Artwork-Würfel tragen jetzt ihre Seltenheit: Walnut Lodge Common, Tide Pearl Rare, Azure Storm Epic, Nebula Veil und Solar Relic Legendary": "The first five artwork dice now carry their rarity: Walnut Lodge Common, Tide Pearl Rare, Azure Storm Epic, Nebula Veil and Solar Relic Legendary",

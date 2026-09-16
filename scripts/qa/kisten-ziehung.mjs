@@ -20,8 +20,8 @@
  *   6. Kauf: Preis wird abgebucht, ohne Guthaben passiert nichts, falsche
  *      Waehrung wird abgelehnt (Common nur Marken, Legendary nur Kerne).
  *   7. Gutschriften: die Betraege aus der Tabelle landen im Guthaben.
- *   8. Der echte Datenstand: 11 Common, 8 Rare, 4 Epic, 3 Legendary in
- *      DICE_DESIGNS (Super Rare noch leer), kein
+ *   8. Der echte Datenstand: 11 Common, 8 Rare, 5 Super Rare, 4 Epic,
+ *      3 Legendary in DICE_DESIGNS, kein
  *      Design mit eigenem Unlock traegt eine rarity.
  */
 import {readFileSync} from "node:fs";
@@ -160,7 +160,7 @@ for(const stufe of S.STUFEN){
   pruefe("Datenstand: Azure Storm ist Epic",/^\s+azure_storm:\{.*rarity:"epic"/m.test(m),true);
   pruefe("Datenstand: vier Epic (Azure Storm, Daemmerkathedrale, Phoenixkern, Weltenwurzel)",anzahl("epic"),4);
   pruefe("Datenstand: drei Legendary (Nebula Veil, Solar Relic, Ereignishorizont)",anzahl("legendary")===3&&/ereignishorizont:\{.*rarity:"legendary"/.test(m)&&/nebula_veil:\{.*rarity:"legendary"/.test(m)&&/solar_relic:\{.*rarity:"legendary"/.test(m),true);
-  pruefe("Datenstand: Super Rare noch leer",anzahl("super_rare"),0);
+  pruefe("Datenstand: fuenf Super Rare",anzahl("super_rare"),5);
   const eigenerWeg=zeilen.filter(z=>/unlockText:/.test(z.rest)||["classic","classic_v2","sapphire_crown","amethyst_rift"].includes(z.key));
   pruefe("Datenstand: Designs mit eigenem Unlock tragen keine rarity",eigenerWeg.every(z=>!/rarity:/.test(z.rest)),true);
   const css=zeilen.filter(z=>!/previewAsset/.test(z.rest));
