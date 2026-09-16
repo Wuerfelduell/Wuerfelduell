@@ -5,6 +5,7 @@
   if (!pack) return;
 
   Object.assign(pack.exact, {
+    "Grundlage für globale Fähigkeitsstatistiken vorbereitet; die automatische Erfassung ist noch nicht aktiviert": "Foundation for global ability statistics prepared; automatic collection is not enabled yet",
     "Online: Verlässt der Host den Kampf, kommt der Gast jetzt ins Online-Menü zurück – vorher blieb er mit gesperrtem Würfel in der alten Kampfansicht hängen": "Online: When the host leaves the battle, the guest now returns to the online menu; before, they were stuck in the old battle view with a locked die",
     "Online: Eine verspätete Raumantwort nach dem Abmelden wird verworfen und kann beim Raumwechsel den neuen Raum nicht mehr überschreiben": "Online: A late room response after unsubscribing is discarded and can no longer overwrite the new room when switching rooms",
     "Cloud-Save: Der erste Upload meldet jetzt einen Konflikt, wenn ein anderes Gerät inzwischen einen Spielstand angelegt hat, statt ihn still zu überschreiben": "Cloud save: The first upload now reports a conflict if another device has created a save in the meantime, instead of silently overwriting it",

@@ -22,8 +22,8 @@ welche Fallen schon Zeit gekostet haben.
 
 | | |
 |---|---|
-| Version | **28.12.49** |
-| Branch | `main` |
+| Version | **28.12.50** |
+| Branch | `codex/online-stats-basis` |
 | Letzte Schritte | CSS-Stapel auf 10 Dateien zusammengelegt · Changelog englisch vervollständigt · Hauptmenü, Statistik, Profile, Achievements, Spielvorbereitung und Trophy Shop überarbeitet · Fähigkeits- und Shopflächen auf proportional gekachelte Bildrahmen umgestellt · alle Bild-URLs auf einen gemeinsamen Cache-Schlüssel · Trophy-Shop-Reste bereinigt und Aufklapppfeile angeglichen · Duo- und Trio-Boss-Rush mit Pfadwahl, gespeicherten Runs und 32 Perks einschließlich temporärer Ability-Mastery · Boss-XP-Umtausch 300:100 · Zweitfund gedeckelt · Trio-Rush 15 Stufen, ab 10 ultraschwer · Boss-Rush-HUD auf die Weltregel reduziert · Zweitfund-Kopien ablehnbar und weitergebbar · Ultra-Stufen treffen härter statt länger zu dauern · Heilung gedeckelt, Maximum wächst je Stufe · Regelleiste als Kachelgitter, wächst mit dem Text · gespeicherte Runs überleben Balanceänderungen · Meldeschichten über den Kampf-Overlays geordnet · großer Spezialwürfel dreht sich als echter 3D-Würfel wie der normale und füllt seinen Rahmen · Kampflog, Infos-Blatt und Weltregel hinter einem Knopf, Knopfleiste gekürzt und beruhigt · Kartentexte aus den gemalten Rahmen geholt · fünf neue Würfeldesigns in der Testumgebung · Matchbar auf schmalen Telefonen wieder einzeilig · fünf Würfeldesigns mit fertigem Artwork und nachgemessenem Augenraster · Live-Online-Prüfstand repariert und um eine Latenzmessung erweitert · Common-Satz mit zehn Würfeldesigns vollständig · Online-Wurfwerte vorgezogen, live nachgemessen · Wurfanimation beim Gast wiederhergestellt · sieben Rare-Würfeldesigns · fünf Würfeleffekte mit Regler in der Testumgebung · Kistentest im Hauptmenü: Kistenöffnung im Stil von Clash Royale ohne Belohnung · Kistenbilder nach `docs/KISTEN-BRIEF.md` eingebaut, zweite Lieferung gemalt im Würfelstil (35 WebP, Bildrevision 28.12.48) · Spieltest 16.09.: Gast kommt nach Host-Ausstieg ins Online-Menü zurück, späte Raumantworten werden verworfen, Erstupload mit Revision 0, dd_touch_room auch für authenticated gesperrt (Migration am 16.09. im Supabase-Projekt eingespielt und geprüft: anon und authenticated ohne Recht, postgres berechtigt), Auth-Listener abbrechbar |
 
 **Die Arbeitsteilung hat sich geändert.** Bis V28.11.28 liefen zwei
@@ -638,6 +638,15 @@ mit `overflow:hidden!important` faellt die Zusicherung zur Beschneidung.
 ---
 
 ## Offen
+
+**Globale Fähigkeitsstatistik – Grundlage vorbereitet:** eigener Ordner
+`js/online-stats/` mit Datenvertrag, IndexedDB-Warteschlange und quittiertem
+Versand. Migration `20260916135541_online_stats_foundation.sql` und isolierte
+JS-/PostgreSQL-Tests vorhanden. Noch nicht ins Spiel eingebunden oder live
+migriert. Hauptkonto-Zuordnung und Spieladapter folgen, einschließlich
+atomarem Online-Abschluss vor Raumlöschung/Revanche. Danach globale Ansicht
+und separater Altbestand-Import. Details und Grenzen stehen in
+`js/online-stats/README.md`.
 
 Zwei Punkte. Alles andere aus dem Codex-Durchgang vom 14.09. ist
 abgearbeitet und steht unten als Chronik — dort nur noch das, was man

@@ -1,1 +1,3 @@
 .qa/
+node_modules/
+supabase/.temp/
