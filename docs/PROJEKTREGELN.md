@@ -18,6 +18,7 @@ Repo: `Wuerfelduell/Wuerfelduell`. Direkte Commits auf `main` sind erlaubt.
 
 - `js/00-*.js` … `js/47-*.js` — in dieser Reihenfolge in `index.html`
   eingebunden, jede Datei eine IIFE. Keine Module, kein Import.
+- `js/online-stats/` — fünf eigene IIFE-Dateien, geladen nach `js/47`.
 - `src/styles/legacy/*.css` — **11 Quelldateien**, das sind die zu
   bearbeitenden. `css/app.css` ist erzeugt und wird nie von Hand editiert.
 - `lang/de.js`, `lang/en.js`, `lang/en-campaign.js`, `lang/en-changelog.js`
@@ -37,6 +38,8 @@ Repo: `Wuerfelduell/Wuerfelduell`. Direkte Commits auf `main` sind erlaubt.
    das Paar, bleibt die Zeile im Englischen deutsch.
 4. `npm run check` muss grün sein — prüft Bündelstand, Versionsmarker,
    Endgame-Daten und Supabase-Struktur.
+   Seit V28.12.56 laufen auch die Statistik-Prüfstände mit. Dafür einmalig
+   `npm ci` ausführen (Testpakete `@electric-sql/pglite` und `fake-indexeddb`).
 5. `AI_Handover.md` prüfen: Tabelle unter „Stand" nachziehen, alles
    andere nur bei echter Änderung.
 
