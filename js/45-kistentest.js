@@ -204,10 +204,21 @@
       s.appendChild(plakette);s.appendChild(el("span",null,namen[k.seltenheit]||k.seltenheit));
       zeile.appendChild(s);
     }
+    // Band aus dem Shop-Satz (Paket E): Gold fuer Neu, Navy fuer Doppelt.
+    // Der Text liegt im glatten Mittelfeld des Bandes (x 12,5 bis 87,5 %).
+    const band=(art,text)=>{
+      const wrap=el("span",`kisten-band kisten-band-${art}`);
+      const bild=el("img","kisten-band-bild");bild.alt="";bild.draggable=false;
+      bild.src=`assets/ui/v28/png/shop/ribbons/ribbon-${art}.webp?v=${rev()}`;
+      wrap.appendChild(bild);wrap.appendChild(el("span","kisten-band-text",text));
+      return wrap;
+    };
     if(k.duplikat){
-      zeile.appendChild(el("span","kisten-ergebnis-doppelt",`${tr("Doppelt")} · +${k.rueckgabe||0} ${tr("Duellmarken")}`));
+      zeile.appendChild(band("navy",`${tr("Doppelt")} · +${k.rueckgabe||0} ${tr("Duellmarken")}`));
+      zeile.classList.add("kisten-ergebnis-doppelt");
     }else{
-      zeile.appendChild(el("span","kisten-ergebnis-neu",tr("Neu!")));
+      zeile.appendChild(band("gold",tr("Neu!")));
+      zeile.classList.add("kisten-ergebnis-neu");
     }
     box.appendChild(zeile);
     if(k.rueckfall) box.appendChild(el("div","kisten-ergebnis-hinweis",tr("In der gewürfelten Seltenheit gibt es noch keine Würfel – die Ziehung ist eine Stufe tiefer gefallen.")));

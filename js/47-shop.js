@@ -23,8 +23,9 @@
   const artwork=(kind,expand)=>typeof window.WDButtonArtwork==="function"?window.WDButtonArtwork(kind,expand):"";
   const rev=()=>typeof ASSET_REV!=="undefined"?ASSET_REV:"0";
   const KISTENBILD=stufe=>`assets/ui/v28/png/chests/${stufe}/chest-${stufe}-closed.webp?v=${rev()}`;
-  // Shop-Bilder aus Asset-Auftrag V3, Pakete A bis C: Waehrungen, Pakete,
-  // Seltenheitsplaketten. Reiter, Baender und Hintergrund folgen.
+  // Shop-Bilder aus Asset-Auftrag V3, Pakete A bis E: Waehrungen, Pakete,
+  // Seltenheitsplaketten, Reiter-Embleme, Baender und Preisschild. Der
+  // Hintergrund des Kistenmenues (Paket F) steht noch aus.
   const SHOPBILD=pfad=>`assets/ui/v28/png/shop/${pfad}?v=${rev()}`;
   const WAEHRUNG_ICON={marken:"currency/duellmarke-icon.webp",kerne:"currency/wuerfelkern-icon.webp"};
   const PLAKETTE=seltenheit=>SHOPBILD(`rarity/rarity-${String(seltenheit).replace("_","-")}.webp`);
@@ -59,9 +60,9 @@
       `<div class="prestige-wallet shop-wallet" data-waehrung="marken"><span>${tr("Duellmarken")}</span><strong id="shopWalletMarken">${bildTag(SHOPBILD(WAEHRUNG_ICON.marken),"shop-wallet-icon")}<b>0</b></strong></div>`+
       `<div class="prestige-wallet shop-wallet" data-waehrung="kerne"><span>${tr("Würfelkerne")}</span><strong id="shopWalletKerne">${bildTag(SHOPBILD(WAEHRUNG_ICON.kerne),"shop-wallet-icon")}<b>0</b></strong></div>`);
     const tabs=document.createElement("div");tabs.className="shop-tabs";tabs.setAttribute("role","tablist");
-    [["chests","Kisten","gameplay/reward-gift.svg"],["trophies","Trophäen","gameplay/trophy.svg"],["currency","Währung","gameplay/xp-star.svg"]].forEach(([key,label,pfad])=>{
+    [["chests","Kisten","tabs/tab-kisten.webp"],["trophies","Trophäen","tabs/tab-trophaeen.webp"],["currency","Währung","tabs/tab-waehrung.webp"]].forEach(([key,label,pfad])=>{
       const b=document.createElement("button");b.type="button";b.className="shop-tab-btn";b.dataset.shopTab=key;b.setAttribute("role","tab");
-      b.innerHTML=`${icon(pfad)}<span>${tr(label)}</span>`;
+      b.innerHTML=`${bildTag(SHOPBILD(pfad),"shop-tab-emblem")}<span>${tr(label)}</span>`;
       b.onclick=()=>{tab=key;hinweis="";render();};
       tabs.appendChild(b);
     });
@@ -140,8 +141,8 @@
         <div class="prestige-item-kicker">${tr("Würfelkerne")}</div>
         <div class="shop-paket-bild">${bildTag(SHOPBILD(`packs/${paket.id}.webp`),"shop-paket-img")}</div>
         <div class="prestige-item-name">${tr(paket.name)}</div>
-        <div class="prestige-item-desc">${paket.menge} ${tr("Würfelkerne")}</div>
-        <button type="button" class="prestige-item-action shop-echtgeld" data-echtgeld="${paket.id}" aria-disabled="true">${artwork("navy")}${icon("gameplay/locked.svg")}<span>${tr("Bald verfügbar")}</span></button>
+        <div class="shop-preisschild" aria-label="${esc(`${paket.menge} ${tr("Würfelkerne")}`)}">${bildTag(SHOPBILD("ribbons/price-plate.webp"),"shop-preisschild-bild")}${bildTag(SHOPBILD(WAEHRUNG_ICON.kerne),"shop-preisschild-icon")}<span class="shop-preisschild-text">${paket.menge}</span></div>
+        <div class="shop-kiste-kauf"><button type="button" class="prestige-item-action shop-echtgeld" data-echtgeld="${paket.id}" aria-disabled="true">${artwork("navy")}${icon("gameplay/locked.svg")}<span>${tr("Bald verfügbar")}</span></button></div>
       </div>`).join("");
     box.innerHTML=`<div class="shop-waehrung-info">
         <p class="shop-waehrung-zeile">${bildTag(SHOPBILD("currency/duellmarke-beauty.webp"),"shop-waehrung-beauty")}<span><strong>${tr("Duellmarken")}</strong> · ${tr("verdienst du in jedem Duell und in der Kampagne. Sie kaufen Common-, Rare- und Epic-Kisten.")}</span></p>

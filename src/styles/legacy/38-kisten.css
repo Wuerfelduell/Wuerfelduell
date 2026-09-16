@@ -221,11 +221,13 @@ html[data-v28-rework="2"] #prestigeShopScreen .prestige-wallet{min-width:0;paddi
 /* Nie mehr als zwei Spalten: die gemalten Kartenrahmen brauchen Breite,
    sonst brechen Namen und die Chancentabelle. */
 @media(max-width:400px){.shop-kisten-grid{grid-template-columns:1fr}}
+/* Unten mehr Polster: der gemalte Rahmen traegt dort ein Ornamentband,
+   auf dem die Kaufzeile sonst sitzt. */
 html[data-v28-rework="2"] #prestigeShopScreen .shop-kiste,
-html[data-v28-rework="2"] #prestigeShopScreen .shop-paket{display:flex;flex-direction:column;align-items:center;text-align:center;gap:6px}
+html[data-v28-rework="2"] #prestigeShopScreen .shop-paket{display:flex;flex-direction:column;align-items:center;text-align:center;gap:6px;padding-bottom:46px}
 .shop-kiste-bild{display:block;width:min(70%,160px);aspect-ratio:1/1;object-fit:contain;filter:drop-shadow(0 6px 8px rgba(0,0,0,.45))}
 .shop-paket-bild{display:grid;place-items:center;width:min(60%,120px);aspect-ratio:1/1}
-.shop-paket-bild img,.shop-paket-bild .dd-ui-icon{width:64px;height:64px}
+.shop-paket-bild img,.shop-paket-bild .dd-ui-icon{width:100%;height:100%}
 .shop-chancen-toggle{
   min-height:34px;padding:4px 12px;border-radius:0;border:1px solid rgba(215,173,82,.5);background:transparent;color:#f0cf7a;
   font-family:Georgia,"Times New Roman",serif;font-size:12px;font-weight:700;letter-spacing:.04em}
@@ -240,7 +242,9 @@ html[data-v28-rework="2"] #prestigeShopScreen .shop-paket{display:flex;flex-dire
 .shop-chancen-hinweis{margin-top:6px;font-size:11px;color:#a9b4c4;line-height:1.35;white-space:normal}
 .shop-kiste-kauf{display:grid;gap:6px;width:100%;margin-top:auto}
 html[data-v28-rework="2"] #prestigeShopScreen .shop-kiste-kauf .prestige-item-action{width:100%}
-html[data-v28-rework="2"] #prestigeShopScreen .shop-echtgeld{opacity:.62;cursor:default}
+/* Ohne Wirkung, aber im Knopfbild: der Verlaufshintergrund der Basisklasse
+   wuerde das Navy-Knopfbild (z-index -1) verdecken. */
+html[data-v28-rework="2"] #prestigeShopScreen .shop-echtgeld{display:flex;align-items:center;justify-content:center;gap:6px;min-height:50px;padding:10px 38px;background:none;border:0;color:#fff3d6;cursor:default}
 .shop-waehrung-info{margin-bottom:10px;padding:10px 12px;border:1px solid rgba(215,173,82,.4);background:rgba(8,38,67,.55);color:#e9e2cf;font-size:13px;line-height:1.45}
 .shop-waehrung-info p{margin:0 0 8px}
 .shop-einnahmen{width:100%;border-collapse:collapse;font-size:12px}
@@ -298,3 +302,18 @@ html[data-v28-rework="2"] #prestigeShopScreen .shop-kaufen{display:inline-flex;a
 .shop-waehrung-beauty{flex:0 0 auto;width:64px;height:64px;object-fit:contain}
 .kisten-ergebnis-seltenheit{display:inline-flex;align-items:center;gap:6px}
 .kisten-ergebnis-plakette{width:22px;height:22px}
+
+/* Pakete D und E: Reiter-Embleme, Preisschild, Baender. */
+.shop-tab-emblem{width:28px;height:28px;flex:0 0 auto}
+.shop-preisschild{position:relative;display:block;width:min(88%,220px);aspect-ratio:512/144;margin:2px auto 0}
+.shop-preisschild-bild{position:absolute;inset:0;width:100%;height:100%}
+.shop-preisschild-icon{position:absolute;left:5.5%;top:14%;width:17.5%;height:72%;object-fit:contain}
+.shop-preisschild-text{position:absolute;left:27%;right:9%;top:0;bottom:0;display:flex;align-items:center;justify-content:center;
+  color:#fff3d6;font-weight:700;font-size:clamp(14px,4.4vw,20px);letter-spacing:.04em;text-shadow:0 1px 3px rgba(0,0,0,.6)}
+.kisten-ergebnis-zeile{flex-direction:column;align-items:center;gap:6px}
+.kisten-band{position:relative;display:block;width:min(70vw,260px);aspect-ratio:768/192}
+.kisten-band-bild{position:absolute;inset:0;width:100%;height:100%}
+.kisten-band-text{position:absolute;left:12.5%;right:12.5%;top:0;bottom:0;display:flex;align-items:center;justify-content:center;
+  font-size:clamp(12px,3.6vw,16px);font-weight:700;letter-spacing:.04em;white-space:nowrap}
+.kisten-band-gold .kisten-band-text{color:#3a2408;text-shadow:0 1px 0 rgba(255,255,255,.45)}
+.kisten-band-navy .kisten-band-text{color:#fff3d6;text-shadow:0 1px 3px rgba(0,0,0,.6)}
