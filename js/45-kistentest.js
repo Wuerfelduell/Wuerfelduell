@@ -168,6 +168,10 @@
 
   /* ---------- Partikel auf der Canvas: Staub, Blitz, Funken ---------- */
   const teilchen=[];let blitz=0,fxLaeuft=false,fxLetzte=0;
+  // Der Funke aus dem Satz (chest-sparkle.webp). Solange er nicht geladen
+  // ist, zeichnet die Canvas eine Raute in derselben Groesse.
+  const funkenBild=new Image();funkenBild.decoding="async";
+  function ladeFunken(){if(!funkenBild.getAttribute("src"))funkenBild.src=bild("shared/chest-sparkle.webp");}
   function fxMass(){
     const dpr=Math.min(2,window.devicePixelRatio||1);
     const r=fx.getBoundingClientRect();
@@ -232,7 +236,8 @@
       ctx.fillStyle=`rgb(${t.farbe})`;
       if(t.art==="funke"){
         ctx.save();ctx.translate(t.x,t.y);ctx.rotate(t.dreh);
-        ctx.beginPath();ctx.moveTo(0,-t.r*2.2);ctx.lineTo(t.r*.6,0);ctx.lineTo(0,t.r*2.2);ctx.lineTo(-t.r*.6,0);ctx.closePath();ctx.fill();
+        if(funkenBild.complete&&funkenBild.naturalWidth){const g=t.r*4.4;ctx.drawImage(funkenBild,-g/2,-g/2,g,g);}
+        else{ctx.beginPath();ctx.moveTo(0,-t.r*2.2);ctx.lineTo(t.r*.6,0);ctx.lineTo(0,t.r*2.2);ctx.lineTo(-t.r*.6,0);ctx.closePath();ctx.fill();}
         ctx.restore();
       }else{
         ctx.beginPath();ctx.arc(t.x,t.y,t.r,0,Math.PI*2);ctx.fill();
@@ -248,6 +253,16 @@
   function phase(name){overlay.dataset.phase=name;}
   function spaeter(ms,fn,meinLauf){setTimeout(()=>{if(lauf===meinLauf&&overlay&&!overlay.classList.contains("hidden"))fn();},Math.round(ms*tempo()));}
 
+  // Erst wenn die Bilder der Kiste dekodiert sind, faellt sie herein. Beim
+  // allerersten Lauf kam der Koerper sonst erst nach dem Deckel ins Bild -
+  // die Kiste stand einen Moment ohne Unterteil da. Fehlende Dateien halten
+  // nichts auf: decode() lehnt ab, und nach spaetestens 2,5 s geht es los.
+  function bilderBereit(){
+    const imgs=[...overlay.querySelectorAll(".kisten-kiste img")].filter(i=>i.getAttribute("src"));
+    const alle=Promise.all(imgs.map(i=>i.decode().catch(()=>{})));
+    return Promise.race([alle,new Promise(r=>setTimeout(r,2500))]);
+  }
+
   function starte(){
     const meinLauf=++lauf;
     overlay.style.setProperty("--kt",String(tempo()));
@@ -256,11 +271,12 @@
     // Deckel-Keyframes muessen neu anlaufen: Phase erst auf "aus", dann
     // im naechsten Frame auf "ankunft", sonst bleibt der Deckel offen.
     phase("aus");
-    requestAnimationFrame(()=>{if(lauf!==meinLauf)return;
+    bilderBereit().then(()=>requestAnimationFrame(()=>{
+      if(lauf!==meinLauf||overlay.classList.contains("hidden"))return;
       phase("ankunft");
       spaeter(500,staub,meinLauf);
       spaeter(900,()=>phase("warten"),meinLauf);
-    });
+    }));
   }
   function oeffne(){
     const meinLauf=lauf;
@@ -286,6 +302,7 @@
 
   function oeffneFlaeche(){
     if(!overlay)baue();
+    ladeFunken();
     overlay.classList.remove("hidden");
     zeigeFehlend();
     starte();

@@ -5,6 +5,9 @@
   if (!pack) return;
 
   Object.assign(pack.exact, {
+    "Die Kistenbilder sind eingebaut: vier Kisten mit Deckel, Innenseite, Licht und Strahlen, dazu Schatten, Funken, Kartenrückseite und vier Kartenvorderseiten": "The chest images are in: four chests with lid, inner side, light and rays, plus shadow, sparkle, card back and four card fronts",
+    "Die Kiste fällt erst herein, wenn ihre Bilder dekodiert sind – beim allerersten Lauf stand sie sonst einen Moment ohne Unterteil da": "The chest only drops in once its images are decoded; on the very first run it otherwise stood without its lower half for a moment",
+    "Die Funken beim Aufspringen sind jetzt der gelieferte Funke statt einer gezeichneten Raute": "The sparks on opening are now the delivered sparkle instead of a drawn diamond",
     "Neuer Knopf „Kistentest“ im Hauptmenü: er zeigt die Kistenöffnung im Stil von Clash Royale, schaltet aber nichts frei und speichert nichts": "New Chest test button in the main menu: it shows the chest opening in the style of Clash Royale, but unlocks nothing and saves nothing",
     "Die Kiste fällt herein, wartet auf den Tipp, wackelt, springt auf und legt drei Karten mit zufälligen Würfeldesigns vor sich ab": "The chest drops in, waits for the tap, shakes, springs open and lays out three cards with random dice designs in front of it",
     "Vier Stufen zum Umschalten: Gewöhnlich, Selten, Episch, Legendär": "Four tiers to switch between: Common, Rare, Epic, Legendary",

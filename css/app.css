@@ -13279,7 +13279,11 @@ html[data-v28-rework="2"] #mainMenu .menu-actions button.menu-kistentest .menu-p
   transition:opacity calc(var(--kt)*300ms) ease-out,transform calc(var(--kt)*300ms) ease-out}
 .kisten-strahlen{inset:-50%;z-index:1;opacity:0;transform:rotate(0deg);will-change:transform,opacity}
 .kisten-raum{position:absolute;inset:0;z-index:2;transform-style:preserve-3d}
-.kisten-body{z-index:1}
+/* Im 3D-Kontext gilt kein z-index, die Tiefe entscheidet. Der Koerper liegt
+   einen Pixel hinter der Deckelebene: geschlossen zeichnet der Deckel
+   eindeutig davor, offen kippt er weit dahinter und der Koerper verdeckt
+   ihn, wo beide sich ueberlappen. */
+.kisten-body{z-index:1;transform:translateZ(-1px)}
 .kisten-licht{z-index:2;opacity:0;transform:scale(.7);mix-blend-mode:screen;
   transition:opacity calc(var(--kt)*700ms) ease-in,transform calc(var(--kt)*700ms) ease-in}
 .kisten-deckel{
@@ -13308,7 +13312,7 @@ html[data-v28-rework="2"] #mainMenu .menu-actions button.menu-kistentest .menu-p
   opacity:.9;animation:kistenStrahlen calc(var(--kt)*14000ms) linear infinite,kistenAufblenden calc(var(--kt)*1200ms) ease-out both}
 .kisten-overlay[data-phase="aufspringen"] .kisten-licht,
 .kisten-overlay[data-phase="enthuellung"] .kisten-licht,
-.kisten-overlay[data-phase="fertig"] .kisten-licht{opacity:1;transform:scale(1.12)}
+.kisten-overlay[data-phase="fertig"] .kisten-licht{opacity:.85;transform:scale(1.08)}
 .kisten-overlay[data-phase="aufspringen"] .kisten-deckel,
 .kisten-overlay[data-phase="enthuellung"] .kisten-deckel,
 .kisten-overlay[data-phase="fertig"] .kisten-deckel{
