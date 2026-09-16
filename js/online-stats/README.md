@@ -1,149 +1,96 @@
-# Globale Fähigkeitsstatistik – Grundlage
+# Globale Fähigkeitsstatistik
 
-## Stand
+## Stand und Aufbau
 
-Dieses Verzeichnis enthält die separat testbare Grundlage. Die Dateien sind
-**noch nicht in index.html eingebunden**. Es gibt noch keine automatische
-Erfassung, Hauptkonto-Auswahl, globale Ansicht oder Übernahme alter Summen.
-Die Migration ist vorbereitet; das Einspielen gehört zur späteren Aktivierung.
-Bestehende Profilstatistiken und das Save-Schema bleiben unverändert.
+Neue abgeschlossene Kämpfe werden erfasst. Die fünf Dateien sind in index.html
+in dieser Reihenfolge eingebunden:
 
-## Dateien und Ladereihenfolge
+1. 01-contract.js: Datenvertrag, Normalisierung und Eingabeprüfung.
+2. 02-outbox.js: transaktionale IndexedDB-Warteschlange und Quittungen.
+3. 03-sync.js: kontogebundener Versand über Supabase-RPC.
+4. 04-collector.js: Rundenschlüssel, Fähigkeiten und synchrones Offline-Journal.
+5. 05-game.js: Spielereignisse, Hauptkonto und Wiederholungsversuche.
 
-1. 01-contract.js: kanonische, validierte Meldung ohne Personendaten.
-2. 02-outbox.js: IndexedDB-Warteschlange, fest an das Hauptkonto gebunden.
-3. 03-sync.js: quittierter Versand und Supabase-RPC-Adapter.
-
-Die IIFEs stellen ausschließlich window.WDOnlineStats bereit. Beim Laden
-werden weder eine Datenbank geöffnet noch Auth-Aufrufe oder Timer gestartet.
-Keine neuen Laufzeitpakete im Browser; die npm-Pakete dienen nur den Tests.
+Keine neuen Browser-Laufzeitpakete. Bestehende Profilstatistik und Cloud-Save
+bleiben getrennt. Globale Ansicht und einmaliger Import alter Summen sind offen.
 
 ## Zählregel
 
-Ein Einsatz ist eine Fähigkeit eines Teilnehmers in einem abgeschlossenen
-Kampf. Gastprofile zählen als menschliche Teilnehmer unter dem Hauptkonto.
-Bots sind markiert und separat auswertbar. Genau ein Teilnehmer gewinnt;
-alle seine erfassten Fähigkeiten erhalten einen Sieg. Reine Bot-Kämpfe und
-abgebrochene Kämpfe sind nicht zugelassen.
+Ein Einsatz ist eine am Kampfende ausgerüstete Fähigkeit eines Teilnehmers,
+kein einzelner Tastendruck. Frühere, ausgewechselte Fähigkeiten zählen nicht.
+Pro Teilnehmer zählt jede Fähigkeit höchstens einmal. Alle Fähigkeiten des
+Siegers erhalten einen Sieg. In Kampagne und Boss Rush zählt das gesamte
+siegreiche Team, einschließlich bereits ausgeschiedener Teammitglieder.
+Tutorial, Testumgebung, abgebrochene Kämpfe und reine Bot-Runden zählen nicht.
 
-Die Meldung speichert Sitznummern, keine Namen oder dauerhaften Profil-IDs.
-Eine Fähigkeit kommt je Teilnehmer höchstens einmal vor. Level 0/1/2 und
-Herkunft start, later oder unknown werden getrennt ausgewertet.
-Welche zugeteilten bzw. ausgetauschten Fähigkeiten tatsächlich zu melden sind,
-muss der folgende Spieladapter konsistent erfassen; aus Endstands-HTML darf
-das nicht geraten werden. Die Kennzahlen belegen Zusammenhänge, keine
-isolierte kausale Stärke einer Fähigkeit.
+Gespeichert werden Fähigkeit, Level 0/1/2, Herkunft start/later, menschlicher
+oder Bot-Teilnehmer, lokale/Online-Quelle, Modus, Version, Teilnehmerzahl und
+Bot-Beteiligung. Die globale RPC liefert Einsätze, Siege und Siegquote, keine
+Namen, Konto-, Profil-, Raum- oder Ereigniskennungen. Quoten in der späteren
+Anzeige aus summierten Siegen/Einsätzen berechnen. Kleine Stichproben sichtbar
+kennzeichnen; verschiedene Balanceversionen nicht unbesehen zusammenwerfen.
 
-Dimensionen: lokal/online, Modus, Spielversion, Teilnehmerzahl,
-Bot-Beteiligung, menschlicher/Bot-Einsatz, Fähigkeit, Level und Herkunft.
-Das Ergebnis liefert Einsätze, Siege und Siegquote. Die spätere Anzeige muss
-Quoten aus summierten Siegen/Einsätzen berechnen, nicht Prozentwerte mitteln.
-Kleine Stichproben kennzeichnen; keine Rangfolge allein aus einem einzelnen
-Sieg ableiten. Spielversionen erst nach einer Balance-Zuordnung bündeln.
+## Hauptkonto und Offline
 
-## Hauptkonto und Offline-Verhalten
+Das angemeldete dauerhafte Supabase-Konto ist automatisch das Hauptkonto.
+Lokale Profile sind Teilnehmer darunter; sie werden nicht verschmolzen.
+Die Zuordnung wird beim Rundenstart festgehalten. Ohne Hauptkonto begonnene
+lokale Runden werden keinem später angemeldeten Konto zugeschlagen.
+Offline gilt die zuletzt bestätigte Zuordnung. Abmelden entfernt sie für
+neue Runden, aber löscht keine ausstehenden Beiträge des bisherigen Kontos.
 
-Das Hauptkonto ist eine dauerhafte Supabase-Auth-Identität. Ein lokales
-Spielerprofil ist kein Auth-Konto und kann nicht dazu umbenannt werden.
-Mehrere lokale Profile werden dadurch nicht miteinander verschmolzen.
+Am lokalen Kampfende schreibt der Collector synchron ein eigenes
+localStorage-Journal pro Ereignis. Danach übernimmt IndexedDB die Meldung.
+Nur eine passende Anmeldung darf sie übertragen. Wiederverbindung, Anmeldung,
+Kampfende und der Knopf im Account-Bereich lösen den Versand aus. Bei Fehlern
+folgen Wiederholungen mit 5 bis 60 Sekunden Abstand. Speicherung und Versand
+zeigen Fehler im Account-Bereich an; der laufende Kampf wird nicht abgebrochen.
 
-Vor Kampfbeginn braucht der folgende Adapter eine feste Hauptkonto-ID und eine
-stabile Kampfkennung. Ohne diese Zuordnung darf er keine Meldung automatisch
-dem später zufällig angemeldeten Konto zuschlagen. Offline kann das zuvor
-bestätigte Hauptkonto verwendet werden; übertragen wird erst wieder mit
-passender angemeldeter Identität. Gast-Auth-Identitäten sind keine Hauptkonten.
+IndexedDB begrenzt ausstehende Meldungen auf 5000; das Journal bleibt bei
+Überlauf erhalten. Quittungen und serverseitige Eindeutigkeit verhindern
+Doppelzählung. Website-Daten löschen kann ungesendete Beiträge verlieren.
+Der Browser-Speicher ist kein Backup. Lokale Quittungen werden noch nicht
+aufgeräumt. Ein ungültiger Eintrag stoppt den Versand dieses Kontos; eine
+weitergehende Diagnose-/Reparaturansicht bleibt offen.
 
-Die Warteschlange speichert mit IndexedDB-Transaktionen pro Ereignis.
-Einträge sind vom Cloud-Save getrennt, damit ein alter Save keine Zähler
-zurücksetzt. Bestätigungen bleiben als lokale Kennung mit Vergleichsinhalt
-erhalten, damit wiederholte Endbildschirme keinen neuen Versand erzeugen.
-Auch die Datenbank erzwingt Eindeutigkeit. Die Warteschlange begrenzt ausstehende
-Meldungen auf 5000 und meldet Überlauf, statt ältere Einträge zu löschen.
-Speicherfehler müssen vom späteren Adapter sichtbar behandelt werden.
+## Online-Abschluss
 
-IndexedDB ist kein Backup: Löschen der Website-Daten oder Speicherbereinigung
-kann noch nicht übertragene Meldungen entfernen. Bestätigte Meldungen bleiben
-serverseitig erhalten. Lokale Quittungen werden derzeit nicht automatisch
-entfernt; eine spätere Aufbewahrungsregel darf die Serversperre nicht entfernen.
+Der Host übermittelt alle Teilnehmer zusammen im finalen Spielzustand.
+Der Snapshot enthält Rundenschlüssel und Anfangsfähigkeiten auch für Reloads.
+Der Datenbank-Trigger archiviert das Ergebnis in derselben Transaktion wie
+den finalen State. Raumlöschung und Revanche entfernen die Statistik nicht.
+Gäste senden keine zweite Meldung. Ereignis-ID sowie Raum/Match/Runde sind
+eindeutig. Widersprüchliche Wiederholungen werden abgewiesen.
 
-## Online-Duplikate und Raumende
-
-Nur der Host meldet alle Teilnehmer gemeinsam. Zusätzlich zur Ereignis-ID
-sichert die Datenbank (room_id, match_id, round_number) global eindeutig ab.
-Zwei unterschiedliche Ereignis-IDs für dieselbe Online-Runde zählen deshalb
-nicht doppelt. Der Server prüft Host, aktuelles Match, Modus und Version.
-
-**Die erste Meldung muss vor Raumlöschung bzw. Revanche akzeptiert werden.**
-Bereits gespeicherte Meldungen können danach erneut quittiert werden.
-Der folgende Spieladapter muss den Abschluss deshalb mit dem Raum-Lebenszyklus
-verbinden (idealerweise atomar mit dem finalen State). Ein bloßer Aufruf nach
-Verlassen wäre unzuverlässig. Bis dieser Anschluss besteht, bleibt die
-automatische Erfassung deaktiviert. Der Gast sendet keine zweite Meldung.
-
-Ein bereits erledigter Kampf muss beim Reload dieselbe Kennung behalten.
-Eine zufällige neue ID bei jedem Rendern würde die lokale Duplikatsperre
-wirkungslos machen. Neue Runden bekommen eigene Kennungen.
-
-## Schnittstellen
-
-- normalizeReport(report): prüft und normalisiert die Meldung.
-- createOutbox(): öffnet die separate IndexedDB.
-- outbox.enqueue(mainAccountId, report): reiht dauerhaft ein.
-- createSync({outbox, getSession, send}): erstellt den Synchronisierer.
-- createSupabaseSender(client): erstellt send für den Supabase-Client.
-- sync.flush(): versucht die ausstehenden Meldungen des angemeldeten Kontos.
-
-Der vollständige Datenvertrag und ausführbare Beispiele stehen in
-scripts/qa/online-stats.mjs. Eine Meldung enthält schema_version=1,
-event_id (UUID), source (local/online), game_version, mode_id, round_number,
-room_id/match_id (lokal null), und players. Pro Teilnehmer: seat, is_bot,
-won und abilities mit id (1–25), level (0–2), acquired (start/later/unknown).
-
-Der Normalisierer sortiert Sitze/Fähigkeiten und entfernt unbekannte Felder.
-Der Server lehnt unbekannte Felder ab. Meldungen sind nach Bestätigung
-unveränderlich; gleiche Kennung mit anderem Inhalt ist ein Konflikt.
-
-flush arbeitet ohne Hintergrundtimer, mit höchstens einem Lauf pro Instanz.
-Netzfehler, falsche Quittung und Serverfehler behalten die Meldung und liefern
-retry mit Fehler zurück. Ein dauerhaft ungültiger Eintrag stoppt den Lauf;
-die spätere Oberfläche muss eine Reparatur-/Diagnosemöglichkeit anbieten.
-Kontowechsel stoppt vor der nächsten Meldung. Der RPC prüft das Konto zusätzlich,
-falls die Session zwischen lokaler Prüfung und Versand wechselt.
+Host, Match, Modus, Version, Rundennummer, Gewinner und Teilnehmerzahl werden
+geprüft. Ältere Clients ohne Meldung und Hosts mit anonymer Auth bleiben
+spielbar, tragen aber nicht bei. Bereits laufende Runden alter Versionen
+werden nicht rückwirkend ergänzt.
 
 ## Supabase
 
-Migration: supabase/migrations/20260916135541_online_stats_foundation.sql.
+Migrationen:
+- 20260916135541_online_stats_foundation.sql
+- 20260916141907_online_stats_capture.sql
 
-- dd_stats_private.reports: unveränderliche Meldungen, kontogebunden.
-- dd_stats_private.ability_uses: Einsätze pro Fähigkeit/Teilnehmer.
-- dd_submit_stats_report(uuid,jsonb): prüft Hauptkonto und Eingaben,
-  schreibt Meldung und Einsätze in einer Transaktion.
-- dd_global_ability_stats(): öffentliche Aggregate ohne Konto-,
-  Profil-, Raum- oder Ereigniskennungen.
+Private Tabellen dd_stats_private.reports und ability_uses besitzen RLS und
+keine Client-Rechte. dd_submit_stats_report(uuid,jsonb) ist nur angemeldet
+aufrufbar, dd_global_ability_stats() öffentlich. SECURITY DEFINER ist für diese
+beiden APIs beabsichtigt, mit leerem search_path und qualifizierten Tabellen.
+Der private Trigger ist nicht durch Clients aufrufbar.
 
-Die privaten Tabellen haben RLS und keine Client-Rechte. Beide öffentlichen
-Funktionen sind absichtlich SECURITY DEFINER, mit leerem search_path,
-voll qualifizierten Tabellen und gezielt vergebenem EXECUTE-Recht.
-Ein entsprechender Advisor-Hinweis ist für genau diese APIs erwartet.
-Das Löschen eines Auth-Kontos entfernt derzeit auch dessen Beiträge per
-Fremdschlüssel; die Aggregate werden daraus neu berechnet.
+Maximal 10000 neue Meldungen pro Konto in 24 Stunden; parallele Uploads werden
+pro Konto serialisiert. Konto-Löschung entfernt dessen Beiträge per FK.
+Offline-Ergebnisse und vom Host berechnete Online-Ergebnisse sind keine
+unabhängig verifizierten Spielnachweise. Keine Belohnungen daraus ableiten.
 
-Der Server kann Offline-Ergebnisse nicht unabhängig nachspielen. Auch die
-Online-Regeln rechnet weiterhin der Host. Die Prüfung schützt vor normalen
-Doppelmeldungen und fremden Konto-Zuordnungen, nicht vor erfundenen Ergebnissen
-eines manipulierten Clients oder abgesprochenen Spielen. Es gibt noch kein
-Rate-Limit und keine automatische Missbrauchserkennung; vor öffentlicher
-Aktivierung ergänzen. Keine Belohnungen oder Wettbewerbsränge daran hängen.
+## Prüfung
 
-## Tests und nächste Schritte
+npm ci --ignore-scripts
+npm run check
 
-npm ci --ignore-scripts && npm run check:online-stats
-
-Die Tests verwenden Fake-IndexedDB sowie isoliertes PostgreSQL in PGlite.
-Sie erzeugen keine echten Konten, Räume oder Statistiken. Sie prüfen nicht
-Supabase Auth/PostgREST, echte Netzwerkparallelität oder Browser-Speicherquoten.
-
-Nächster Abschnitt: Hauptkonto-Zuordnung, persistente Rundenschlüssel und
-Spielereignis-Adapter einschließlich Online-Abschluss; danach Migration
-einspielen und mit zwei Geräten testen. Anschließend globale Ansicht,
-Altbestand separat und einmalig importieren, Betriebsgrenzen ergänzen.
+Tests für Vertrag, Speicher, Wiederholung, Kontowechsel, Offline-Nachlieferung,
+Gastprofile, Team-Siege, SQL-Rechte und atomaren Online-Abschluss laufen mit
+Fake-IndexedDB und isoliertem PostgreSQL/PGlite. Browser-Ansicht separat prüfen.
+Ein kompletter Spieltest mit zwei real angemeldeten Geräten bleibt sinnvoll;
+die isolierten Tests ersetzen weder Auth-Netzwerk noch Browser-Speicherquoten.

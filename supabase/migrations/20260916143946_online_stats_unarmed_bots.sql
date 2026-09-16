@@ -1,43 +1,4 @@
--- Ergebnisarchiv für Fähigkeitsstatistiken. Noch nicht im Spiel aktiviert.
--- Absichtlich getrennt von Profil-Saves und kurzlebigen Online-Räumen.
-create schema if not exists dd_stats_private;
-revoke all on schema dd_stats_private from public, anon, authenticated;
-
-create table dd_stats_private.reports (
-  event_id uuid primary key,
-  account_id uuid not null references auth.users(id) on delete cascade,
-  source text not null check (source in ('local','online')),
-  room_id uuid,
-  match_id text,
-  round_number integer not null check (round_number>0),
-  mode_id text not null,
-  game_version text not null,
-  player_count smallint not null check (player_count between 2 and 8),
-  has_bots boolean not null,
-  report jsonb not null,
-  received_at timestamptz not null default now(),
-  check ((source='local' and room_id is null and match_id is null)
-      or (source='online' and room_id is not null and match_id is not null))
-);
-create unique index stats_online_round_once
-  on dd_stats_private.reports(room_id,match_id,round_number) where source='online';
-create index stats_reports_account on dd_stats_private.reports(account_id);
-create index stats_reports_account_time on dd_stats_private.reports(account_id,received_at);
-
-create table dd_stats_private.ability_uses (
-  event_id uuid not null references dd_stats_private.reports(event_id) on delete cascade,
-  seat smallint not null,
-  ability_id smallint not null check (ability_id between 1 and 25),
-  ability_level smallint not null check (ability_level between 0 and 2),
-  acquired text not null check (acquired in ('start','later','unknown')),
-  is_bot boolean not null,
-  won boolean not null,
-  primary key(event_id,seat,ability_id)
-);
-alter table dd_stats_private.reports enable row level security;
-alter table dd_stats_private.ability_uses enable row level security;
-revoke all on all tables in schema dd_stats_private from public, anon, authenticated;
-
+-- First Blood: Bots ohne Fähigkeit erzeugen keinen Fähigkeitseinsatz.
 create or replace function public.dd_submit_stats_report(p_account_id uuid,p_report jsonb)
 returns jsonb language plpgsql security definer set search_path=''
 as $$
@@ -107,7 +68,7 @@ begin
     end if;
     v_seat:=(v_player->>'seat')::integer;
     if v_seat>=v_count or v_seat=any(v_seats)
-       or jsonb_array_length(v_player->'abilities') not between 1 and 25 then
+       or jsonb_array_length(v_player->'abilities') not between (case when v_source='local' and (v_player->>'is_bot')::boolean then 0 else 1 end) and 25 then
       raise exception 'DD_STATS_INVALID_REPORT';
     end if;
     v_seats:=array_append(v_seats,v_seat);v_ids:='{}';
@@ -183,24 +144,3 @@ $$;
 revoke all on function public.dd_submit_stats_report(uuid,jsonb) from public,anon,authenticated;
 grant execute on function public.dd_submit_stats_report(uuid,jsonb) to authenticated;
 
--- Absichtlich öffentliche Aggregate; keine Kennungen, Namen oder Einzelspiele.
--- Ein Einsatz = eine Fähigkeit pro Teilnehmer und abgeschlossenem Kampf.
-create or replace function public.dd_global_ability_stats()
-returns table(source text,mode_id text,game_version text,player_count smallint,
-  has_bots boolean,is_bot boolean,ability_id smallint,ability_level smallint,
-  acquired text,uses bigint,wins bigint,win_rate numeric)
-language sql stable security definer set search_path=''
-as $$
-  select r.source,r.mode_id,r.game_version,r.player_count,r.has_bots,a.is_bot,
-    a.ability_id,a.ability_level,a.acquired,count(*),
-    count(*) filter(where a.won),
-    round(100.0*(count(*) filter(where a.won))/count(*),2)
-  from dd_stats_private.reports r
-  join dd_stats_private.ability_uses a using(event_id)
-  group by r.source,r.mode_id,r.game_version,r.player_count,r.has_bots,
-    a.is_bot,a.ability_id,a.ability_level,a.acquired
-  order by r.source,r.mode_id,r.game_version,r.player_count,r.has_bots,
-    a.is_bot,a.ability_id,a.ability_level,a.acquired;
-$$;
-revoke all on function public.dd_global_ability_stats() from public,anon,authenticated;
-grant execute on function public.dd_global_ability_stats() to anon,authenticated;

@@ -12,7 +12,7 @@
     if(!input||input.schema_version!==1||!uuid.test(input.event_id||"")) fail();
     if(!["local","online"].includes(input.source)) fail();
     if(typeof input.game_version!=="string"||!/^\d{1,4}\.\d{1,4}\.\d{1,4}$/.test(input.game_version)) fail();
-    if(typeof input.mode_id!=="string"||! /^[a-zA-Z0-9_-]{1,40}$/.test(input.mode_id)) fail();
+    if(!["classic","endurance50","overload75","mayhem","campaign_solo","campaign_duo","campaign_trio","boss_rush_duo","boss_rush_trio"].includes(input.mode_id)) fail();
     if(!integer(input.round_number,1,1000000)) fail();
     if(!Array.isArray(input.players)||!integer(input.players.length,2,8)) fail();
     if(input.source==="online"&&(!uuid.test(input.room_id||"")||typeof input.match_id!=="string"||! /^[a-zA-Z0-9_-]{1,100}$/.test(input.match_id))) fail();
@@ -22,7 +22,8 @@
       if(!player||!integer(player.seat,0,input.players.length-1)||seats.has(player.seat)) fail();
       seats.add(player.seat);
       if(typeof player.is_bot!=="boolean"||typeof player.won!=="boolean") fail();
-      if(!Array.isArray(player.abilities)||!integer(player.abilities.length,1,25)) fail();
+      const minimum=input.source==="local"&&player.is_bot?0:1;
+      if(!Array.isArray(player.abilities)||!integer(player.abilities.length,minimum,25)) fail();
       const ids=new Set();
       const abilities=player.abilities.map(ability=>{
         if(!ability||!integer(ability.id,1,25)||ids.has(ability.id)||!integer(ability.level,0,2)) fail();
@@ -32,7 +33,9 @@
       }).sort((a,b)=>a.id-b.id);
       return {seat:player.seat,is_bot:player.is_bot,won:player.won,abilities};
     }).sort((a,b)=>a.seat-b.seat);
-    if(players.filter(p=>p.won).length!==1||players.every(p=>p.is_bot)) fail();
+    const winners=players.filter(p=>p.won).length;
+    const team=input.source==="local"&&["campaign_solo","campaign_duo","campaign_trio","boss_rush_duo","boss_rush_trio"].includes(input.mode_id);
+    if((team?(winners<1||winners>=players.length):winners!==1)||players.every(p=>p.is_bot)) fail();
     if(input.source==="online"&&players.some(p=>p.is_bot)) fail();
     return {
       schema_version:1,event_id:input.event_id.toLowerCase(),source:input.source,

@@ -46,7 +46,9 @@
     if(hint)hint.textContent=backend.kind==="supabase"?"Cloud-Saves werden mit Revisionsprüfung gespeichert. Local Save bleibt Offline-Fallback.":"Supabase ist vorbereitet, aber ohne Projekt-URL und Publishable Key bleibt dieses lokale Test-Backend aktiv.";
   }
   async function refresh(){
-    const session=await backend.getSession();el("cloudLoggedOut")?.classList.toggle("hidden",!!session);el("cloudLoggedIn")?.classList.toggle("hidden",!session);updateBackendUi();
+    const session=await backend.getSession();
+    if(backend.kind==="supabase")window.WDOnlineStats?.game?.setMainAccount?.(session);
+    el("cloudLoggedOut")?.classList.toggle("hidden",!!session);el("cloudLoggedIn")?.classList.toggle("hidden",!session);updateBackendUi();
     if(!session)return;
     el("cloudAccountIdentity").textContent=`${session.name} · ${session.email||"Online identity"}`;
     const local=snapshot(),remote=await backend.pullSave(session.uid);

@@ -5,6 +5,8 @@
   if (!pack) return;
 
   Object.assign(pack.exact, {
+    "Neue abgeschlossene Kämpfe tragen zur globalen Fähigkeitsstatistik bei: lokale Gastprofile zählen unter dem angemeldeten Hauptkonto mit": "New completed battles contribute to global ability statistics: local guest profiles count under the signed-in main account",
+    "Offline-Ergebnisse werden nachgereicht; Online-Ergebnisse werden gemeinsam mit dem Kampfabschluss gespeichert": "Offline results are uploaded later; online results are saved together with the battle's completion",
     "Grundlage für globale Fähigkeitsstatistiken vorbereitet; die automatische Erfassung ist noch nicht aktiviert": "Foundation for global ability statistics prepared; automatic collection is not enabled yet",
     "Gemalte Währungsbilder: Duellmarke und Würfelkern stehen im Guthaben, auf den Kaufknöpfen und im Reiter Währung": "Painted currency images: the Duel Token and the Dice Core appear in the balance, on the buy buttons and in the Currency tab",
     "Die Kern-Pakete im Reiter Währung zeigen ihre gemalten Bilder, von der Handvoll bis zur Truhe": "The core packs in the Currency tab show their painted images, from the handful to the chest",

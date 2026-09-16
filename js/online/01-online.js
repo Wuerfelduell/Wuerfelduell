@@ -800,7 +800,7 @@ function enterStartedMatch(room){
   localProfileId=profile?.id||null;
   currentHostUid=String(room?.meta?.hostUid||"");
   currentIsHost=currentHostUid===String(uid||"");
-  const started=bridge?.startMatch?.(match,uid,localProfileId,currentIsHost);
+  const started=bridge?.startMatch?.({...match,statsRoomId:currentRoomId},uid,localProfileId,currentIsHost);
   if(!started){setNotice("Online-Match konnte lokal nicht initialisiert werden.","error");return;}
   enteredMatchId=matchId;
   currentMatchId=matchId;
