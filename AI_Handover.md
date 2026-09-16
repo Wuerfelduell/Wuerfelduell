@@ -955,9 +955,21 @@ Kampagnenkartenregel. Entschieden ist nur die Teilfrage: geliehene
 Mastery aus den Rush-Perks schaltet nichts Dauerhaftes frei
 (`docs/PROJEKTREGELN.md`).
 
-**Kleinigkeiten** — die Liste ist leer. Drei Emojis stehen noch in der
-Testumgebung; der Sprite-Pass nimmt diese Entwicklerfläche über
-`TEST_SELECTOR` bewusst aus.
+**Kleinigkeiten — für später:**
+
+- [ ] **Sieben Funktionen ohne gefundene Aufrufer prüfen und gegebenenfalls
+  entfernen.** Beim Spieltest vom 16.09. wurden im Repository keine Aufrufer
+  gefunden. Auf Nutzerwunsch vorerst stehen lassen; kein aktueller
+  Reparaturauftrag. Vor dem späteren Entfernen den dann aktuellen Stand
+  auf direkte und dynamische Aufrufe sowie externe Debug-Nutzung prüfen,
+  danach passende Tests ausführen und in einem eigenen Commit aufräumen.
+  - `js/04-save.js`: `isHumanProfilePlayer`
+  - `js/06-campaign.js`: `duoCampaignHpBonusThreshold`, `trioCampaignHpBonusThreshold`
+  - `js/10-bots.js`: `botLevelLabel`, `botPopCount`
+  - `js/12-battle-ui.js`: `currentAbility`, `renderSpecialPipDie`
+
+Drei Emojis stehen noch in der Testumgebung; der Sprite-Pass nimmt diese
+Entwicklerfläche über `TEST_SELECTOR` bewusst aus.
 
 ## Fallen in diesem Repo
 
