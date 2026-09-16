@@ -5,6 +5,7 @@
   if (!pack) return;
 
   Object.assign(pack.exact, {
+    "Super Rare hat seine eigene Kartenvorderseite: türkis mit Silberbeschlag und elfenbeinernem Namensband – bisher trug die Stufe die Rare-Karte": "Super Rare has its own card front: turquoise with silver fittings and an ivory name band; until now the tier used the Rare card",
     "Der Knopf „Testguthaben buchen“ im Trainingsfenster ist entfernt – Duellmarken gibt es nur noch aus Duellen und der Kampagne": "The “Credit test balance” button in the training window is gone; Duel Tokens now come only from duels and the campaign",
     "Das Online-Icon im Hauptmenü sitzt drei Pixel höher und damit optisch auf einer Höhe mit Schwertern, Burg und Buch": "The Online icon in the main menu sits three pixels higher, visually level with the swords, the castle and the book",
     "Die vier Kern-Pakete im Reiter Währung haben ihre Mengen: 35, 200, 500 und 1500 Würfelkerne": "The four core packs in the Currency tab have their amounts: 35, 200, 500 and 1500 Dice Cores",

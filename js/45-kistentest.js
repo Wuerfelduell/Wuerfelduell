@@ -27,9 +27,9 @@
   const STUFEN_FARBEN={common:"#e8d9b0",rare:"#4a8ff0",epic:"#b06cff",legendary:"#ffd45a"};
   const WURZEL="assets/ui/v28/png/chests/";
   // Kartenvorderseite nach der Seltenheit des GEZOGENEN Wuerfels, nicht
-  // nach der Kiste (Vorgabe 16.09.). Fuer Super Rare gibt es noch keine
-  // eigene Vorderseite; bis sie geliefert ist, traegt sie die Rare-Karte.
-  const KARTEN_FRONT={common:"common",rare:"rare",super_rare:"rare",epic:"epic",legendary:"legendary"};
+  // nach der Kiste (Vorgabe 16.09.). Super Rare hat seit V28.12.64 eine
+  // eigene Vorderseite (tuerkis mit Silberbeschlag, elfenbeinernes Band).
+  const KARTEN_FRONT={common:"common",rare:"rare",super_rare:"super-rare",epic:"epic",legendary:"legendary"};
   const TEST_KARTEN=1;
   const tr=value=>window.t?window.t(String(value)):String(value);
   const rev=()=>typeof ASSET_REV!=="undefined"?ASSET_REV:"0";

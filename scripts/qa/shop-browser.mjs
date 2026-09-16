@@ -155,7 +155,7 @@ try{
   pruefe('Karte traegt die Seltenheit des Designs',ergebnis.seltenheit===ergebnis.poolRarity&&ergebnis.ergebnisFarbe===ergebnis.poolRarity,true);
   pruefe('Ergebniszeile sagt Neu oder Doppelt',/Neu!|Doppelt/.test(ergebnis.ergebnisText),true);
   // Der Kartenrahmen folgt dem Wuerfel, nicht der Kiste (Common-Kiste gekauft).
-  const frontSoll={common:'common',rare:'rare',super_rare:'rare',epic:'epic',legendary:'legendary'}[ergebnis.poolRarity];
+  const frontSoll={common:'common',rare:'rare',super_rare:'super-rare',epic:'epic',legendary:'legendary'}[ergebnis.poolRarity];
   pruefe('Seltenheit steht auf der Karte unter dem Wuerfel',ergebnis.seltenheitAufKarte.toLowerCase()===String(WD_NAMEN[ergebnis.poolRarity]||'').toLowerCase(),true);
   pruefe('Glow der Karte sichtbar',ergebnis.glow>0.5,true);
   pruefe('Kartenrahmen folgt der Wuerfelseltenheit',ergebnis.front.includes(`/${frontSoll}/chest-card-front-${frontSoll}.webp`),true);
