@@ -5,6 +5,8 @@
   if (!pack) return;
 
   Object.assign(pack.exact, {
+    "In der Testumgebung läuft ein gelber Lichtschimmer über die Würfel, von links nach rechts und um einen Moment versetzt, sodass er als Welle durch die Reihe wandert": "In the test lab a yellow shine runs across the dice, left to right and slightly offset, so it travels through the row as a wave",
+    "Ein Versuch zum Ansehen – im normalen Spiel ändert sich nichts": "Something to look at; nothing changes in the normal game",
     "Drei weitere Rare-Würfel sind eingebaut: Uhrwerk, Dünenrelikt und Dornenhain": "Three more rare dice are in: Uhrwerk, Duenenrelikt and Dornenhain",
     "Damit stehen 22 Artwork-Designs in der Testumgebung zur Auswahl": "That makes 22 artwork designs available in the test lab",
     "Die ersten vier Rare-Würfel sind eingebaut: Seidenhof, Korsar, Drachenpanzer und Goldbruch": "The first four rare dice are in: Seidenhof, Korsar, Drachenpanzer and Goldbruch",

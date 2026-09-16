@@ -14,7 +14,7 @@
   let localModeId="classic";
   function localModeRules(){return LOCAL_MODES[localModeId]||LOCAL_MODES.classic;}
 
-  const GAME_VERSION="28.12.38";
+  const GAME_VERSION="28.12.39";
   // Gemeinsamer Bild-Cache-Schluessel; identisch mit den Bild-URLs in HTML und CSS.
   const ASSET_REV="28.12.32";
   const SAVE_KEY="wuerfelduell_save_v1"; // absichtlich stabil: Updates lesen denselben Browser-Save

@@ -22,9 +22,9 @@ welche Fallen schon Zeit gekostet haben.
 
 | | |
 |---|---|
-| Version | **28.12.38** |
+| Version | **28.12.39** |
 | Branch | `main` |
-| Letzte Schritte | CSS-Stapel auf 10 Dateien zusammengelegt · Changelog englisch vervollständigt · Hauptmenü, Statistik, Profile, Achievements, Spielvorbereitung und Trophy Shop überarbeitet · Fähigkeits- und Shopflächen auf proportional gekachelte Bildrahmen umgestellt · alle Bild-URLs auf einen gemeinsamen Cache-Schlüssel · Trophy-Shop-Reste bereinigt und Aufklapppfeile angeglichen · Duo- und Trio-Boss-Rush mit Pfadwahl, gespeicherten Runs und 32 Perks einschließlich temporärer Ability-Mastery · Boss-XP-Umtausch 300:100 · Zweitfund gedeckelt · Trio-Rush 15 Stufen, ab 10 ultraschwer · Boss-Rush-HUD auf die Weltregel reduziert · Zweitfund-Kopien ablehnbar und weitergebbar · Ultra-Stufen treffen härter statt länger zu dauern · Heilung gedeckelt, Maximum wächst je Stufe · Regelleiste als Kachelgitter, wächst mit dem Text · gespeicherte Runs überleben Balanceänderungen · Meldeschichten über den Kampf-Overlays geordnet · großer Spezialwürfel dreht sich als echter 3D-Würfel wie der normale und füllt seinen Rahmen · Kampflog, Infos-Blatt und Weltregel hinter einem Knopf, Knopfleiste gekürzt und beruhigt · Kartentexte aus den gemalten Rahmen geholt · fünf neue Würfeldesigns in der Testumgebung · Matchbar auf schmalen Telefonen wieder einzeilig · fünf Würfeldesigns mit fertigem Artwork und nachgemessenem Augenraster · Live-Online-Prüfstand repariert und um eine Latenzmessung erweitert · Common-Satz mit zehn Würfeldesigns vollständig · Online-Wurfwerte vorgezogen, live nachgemessen · Wurfanimation beim Gast wiederhergestellt · sieben Rare-Würfeldesigns |
+| Letzte Schritte | CSS-Stapel auf 10 Dateien zusammengelegt · Changelog englisch vervollständigt · Hauptmenü, Statistik, Profile, Achievements, Spielvorbereitung und Trophy Shop überarbeitet · Fähigkeits- und Shopflächen auf proportional gekachelte Bildrahmen umgestellt · alle Bild-URLs auf einen gemeinsamen Cache-Schlüssel · Trophy-Shop-Reste bereinigt und Aufklapppfeile angeglichen · Duo- und Trio-Boss-Rush mit Pfadwahl, gespeicherten Runs und 32 Perks einschließlich temporärer Ability-Mastery · Boss-XP-Umtausch 300:100 · Zweitfund gedeckelt · Trio-Rush 15 Stufen, ab 10 ultraschwer · Boss-Rush-HUD auf die Weltregel reduziert · Zweitfund-Kopien ablehnbar und weitergebbar · Ultra-Stufen treffen härter statt länger zu dauern · Heilung gedeckelt, Maximum wächst je Stufe · Regelleiste als Kachelgitter, wächst mit dem Text · gespeicherte Runs überleben Balanceänderungen · Meldeschichten über den Kampf-Overlays geordnet · großer Spezialwürfel dreht sich als echter 3D-Würfel wie der normale und füllt seinen Rahmen · Kampflog, Infos-Blatt und Weltregel hinter einem Knopf, Knopfleiste gekürzt und beruhigt · Kartentexte aus den gemalten Rahmen geholt · fünf neue Würfeldesigns in der Testumgebung · Matchbar auf schmalen Telefonen wieder einzeilig · fünf Würfeldesigns mit fertigem Artwork und nachgemessenem Augenraster · Live-Online-Prüfstand repariert und um eine Latenzmessung erweitert · Common-Satz mit zehn Würfeldesigns vollständig · Online-Wurfwerte vorgezogen, live nachgemessen · Wurfanimation beim Gast wiederhergestellt · sieben Rare-Würfeldesigns · Lichtschimmer über den Würfeln in der Testumgebung |
 
 **Die Arbeitsteilung hat sich geändert.** Bis V28.11.28 liefen zwei
 Sitzungen parallel: Codex hat umgesetzt, diese Sitzung geprüft. Ab jetzt
@@ -322,6 +322,36 @@ kein Wissen über die Farben des jeweiligen Designs und funktioniert
 deshalb auch bei Sätzen, die noch niemand gesehen hat. Gegenprobe
 gefahren: mit einem Sollraster von 25/50/75 meldet die Zusicherung
 8 Prozentpunkte Abweichung und fällt.
+
+### Lichtschimmer ueber den Wuerfeln seit 28.12.39
+
+Ein gelber Streifen laeuft von links nach rechts ueber jeden Wuerfel,
+je Wuerfel um 110 ms versetzt, sodass er als Welle durch die Reihe geht.
+**Nur in der Testumgebung** (`body.test-lab-active`), rein in CSS am Ende
+von `37-abschluss.css` — der Block laesst sich am Stueck wieder entfernen.
+
+**Die Falle, in die ich zuerst gelaufen bin:** der naheliegende Weg ist ein
+breiter Streifen, der per `transform` durch den Wuerfel wandert und vom
+Wuerfel beschnitten wird. Das geht nicht. Die Wuerfel stehen im Spiel
+bewusst auf `overflow:visible`
+(`body.playing #game .dice .die` in 13-v28-grundlage.css), weil die
+Artwork-Flaeche mit `scale(1.24)` **ueber den Rand hinaus** gezeichnet
+wird. Wer sie beschneidet, macht jedes Artwork-Design sichtbar kleiner.
+Der Schimmer ist deshalb ein **Hintergrundverlauf** in der `::after`-Ebene:
+ein Hintergrund verlaesst seine Box nie, ganz ohne `overflow`.
+
+**Zwei Werte, die zusammengehoeren.** Bei `background-size:300%` ist immer
+nur ein Drittel des Verlaufs im Bild; der helle Streifen steht darin
+waehrend `fenster/(1-fenster)` der Positionsfahrt, bei 300 % also genau der
+Haelfte. Fuer 600 ms sichtbaren Durchlauf muss die Fahrt 1200 ms dauern —
+43 % von 2,8 s. Und `linear` statt `ease-in-out`: mit Beschleunigung huscht
+der Streifen in der Mitte durch und wirkt wie ein Blitz.
+
+Gemessen von `scripts/qa/wuerfelschimmer.mjs` (8 Zusicherungen): Schimmer
+auf jedem Wuerfel, ueber der Artwork-Flaeche, steigender Versatz,
+sichtbarer Durchlauf 500-700 ms, gleichmaessig, **Wuerfel unbeschnitten**,
+waehrend des Wurfs aus, im normalen Spiel gar nicht. Gegenprobe gefahren:
+mit `overflow:hidden!important` faellt die Zusicherung zur Beschneidung.
 
 ### Weltassets seit 28.11.4
 

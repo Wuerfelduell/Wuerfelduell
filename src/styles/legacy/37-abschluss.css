@@ -3057,3 +3057,65 @@ html[data-v28-rework="2"] body.playing #game .controls>button.secondary{
     display:none;
   }
 }
+
+
+/* ===== Lichtschimmer ueber die Wuerfel - nur Testumgebung =====
+   Versuch aus dem Spiel: "ein gelber Glow, der von links nach rechts ueber
+   jeden Wuerfel einzeln drueberfaehrt", 500-700 ms. Rein in CSS: kein
+   Renderpfad im Spielcode, dadurch mit diesem Block wieder ausbaubar.
+
+   ACHTUNG, hier steckt eine Falle. Der naheliegende Weg - ein breiter
+   Streifen, der per transform durch den Wuerfel wandert und vom Wuerfel
+   beschnitten wird - funktioniert NICHT. Die Wuerfel stehen im Spiel
+   bewusst auf overflow:visible (13-v28-grundlage.css), weil die
+   Artwork-Flaeche mit scale(1.24) ueber den Rand hinaus gezeichnet wird.
+   Wer sie auf hidden stellt, macht jedes Artwork-Design sichtbar kleiner.
+
+   Deshalb laeuft der Schimmer als Hintergrundverlauf INNERHALB der Ebene:
+   ein Hintergrund verlaesst seine Box nie, ganz ohne overflow. Bewegt wird
+   background-position; die Ebene selbst bleibt stehen.
+
+   z-index 3 - die Artwork-Flaeche liegt auf 2, der Schimmer also darueber.
+   Waehrend des Wurfs bleibt er aus, dort dreht sich der 3D-Kubus. */
+body.test-lab-active #dice .die:not(.rolling)::after{
+  content:"";
+  position:absolute;
+  z-index:3;
+  inset:0;
+  pointer-events:none;
+  border-radius:inherit;
+  background:linear-gradient(100deg,
+    transparent 36%,
+    rgba(255,226,120,.16) 43%,
+    rgba(255,242,178,.70) 50%,
+    rgba(255,226,120,.16) 57%,
+    transparent 64%);
+  background-size:300% 100%;
+  background-repeat:no-repeat;
+  animation:wuerfelSchimmer 2.8s linear infinite;
+}
+/* Von 100% nach 0% wandert das sichtbare Fenster nach links durch den
+   Verlauf - der helle Streifen laeuft dadurch von links nach rechts.
+
+   Zwei Werte, die zusammengehoeren: bei background-size 300% ist immer nur
+   ein Drittel des Verlaufs zu sehen, der helle Streifen steht also nur
+   waehrend der mittleren HAELFTE der Positionsfahrt im Bild. Fuer rund
+   600 ms sichtbaren Durchlauf muss die Fahrt deshalb doppelt so lang
+   dauern: 43 % von 2,8 s sind 1204 ms, sichtbar davon 602 ms. Und linear statt ease-in-out -
+   mit Beschleunigung huscht der Streifen in der Mitte durch und wirkt wie
+   ein Blitz statt wie ein Lichtreflex. */
+@keyframes wuerfelSchimmer{
+  0%{background-position:100% 0}
+  43%{background-position:0% 0}
+  100%{background-position:0% 0}
+}
+/* Der Versatz je Wuerfel macht aus fuenf gleichzeitigen Schimmern eine
+   Welle. nth-child reicht: die Wuerfel stehen in Spielreihenfolge im DOM. */
+body.test-lab-active #dice .die:nth-child(2):not(.rolling)::after{animation-delay:110ms}
+body.test-lab-active #dice .die:nth-child(3):not(.rolling)::after{animation-delay:220ms}
+body.test-lab-active #dice .die:nth-child(4):not(.rolling)::after{animation-delay:330ms}
+body.test-lab-active #dice .die:nth-child(5):not(.rolling)::after{animation-delay:440ms}
+body.test-lab-active #dice .die:nth-child(6):not(.rolling)::after{animation-delay:550ms}
+@media(prefers-reduced-motion:reduce){
+  body.test-lab-active #dice .die:not(.rolling)::after{animation:none;opacity:0}
+}
