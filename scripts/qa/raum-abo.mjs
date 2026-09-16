@@ -72,5 +72,20 @@ pruefe("Aktionszeile ohne Akteursangabe loest aus (kein stiller Verlust)",
   pruefe("Ereignis waehrend eines Abrufs wird nachgeholt", zaehler() - vorher, 2);
 }
 
+// Abmelden waehrend eines laufenden Abrufs: die Antwort darf den Empfaenger
+// nicht mehr erreichen. Sonst ueberschreibt beim Raumwechsel der alte Raum
+// den neuen (Befund 2 des Spieltests vom 16.09.).
+{
+  const { backend, handler } = laden(GAST);
+  let empfangen = 0, fehler = 0;
+  const stop = await backend.subscribeRoom("r", () => { empfangen++; }, s => { if (s === "ERROR") fehler++; });
+  feuern(handler, "dd_battle_states", { eventType: "UPDATE", new: {} });
+  await warten(50 + 20);                              // Debounce vorbei, Abruf laeuft
+  await stop();
+  await warten(NETZ * 2 + 100);
+  pruefe("Abmelden waehrend eines Abrufs: kein Schnappschuss mehr", empfangen, 0);
+  pruefe("Abmelden waehrend eines Abrufs: kein spaeter Fehler", fehler, 0);
+}
+
 console.log(faelle.every(Boolean) ? "\nAlle Zusicherungen gruen." : "\nFEHLGESCHLAGEN.");
 process.exit(faelle.every(Boolean) ? 0 : 1);

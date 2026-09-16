@@ -5,6 +5,11 @@
   if (!pack) return;
 
   Object.assign(pack.exact, {
+    "Online: Verlässt der Host den Kampf, kommt der Gast jetzt ins Online-Menü zurück – vorher blieb er mit gesperrtem Würfel in der alten Kampfansicht hängen": "Online: When the host leaves the battle, the guest now returns to the online menu; before, they were stuck in the old battle view with a locked die",
+    "Online: Eine verspätete Raumantwort nach dem Abmelden wird verworfen und kann beim Raumwechsel den neuen Raum nicht mehr überschreiben": "Online: A late room response after unsubscribing is discarded and can no longer overwrite the new room when switching rooms",
+    "Cloud-Save: Der erste Upload meldet jetzt einen Konflikt, wenn ein anderes Gerät inzwischen einen Spielstand angelegt hat, statt ihn still zu überschreiben": "Cloud save: The first upload now reports a conflict if another device has created a save in the meantime, instead of silently overwriting it",
+    "Backend: Die interne Funktion zum Verlängern der Raum-Ablaufzeit ist für angemeldete Nutzer nicht mehr aufrufbar (neue Migration)": "Backend: The internal function for extending a room's expiry can no longer be called by signed-in users (new migration)",
+    "Account: Ein Auth-Listener, der vor dem Start des Clients abgeräumt wird, bleibt nicht mehr als Leiche zurück": "Account: An auth listener that is cleaned up before the client starts no longer lingers as a stray listener",
     "Die Kisten sind jetzt gemalt: Holz mit Maserung, geschmiedete Beschläge, Edelsteine mit Glanz – im selben Stil wie die Würfeldesigns": "The chests are now painted: grained wood, forged fittings, gems with sparkle, in the same style as the dice designs",
     "Alle 35 Kistenbilder sind ausgetauscht, die Bildrevision ist deshalb angehoben": "All 35 chest images have been replaced, so the image revision has been raised",
     "Die Namen auf den Karten stehen jetzt in dunkler Tinte auf den hellen Bändern und in heller auf dem blauen – vorher waren sie auf drei von vier Stufen kaum lesbar": "The names on the cards are now in dark ink on the light bands and in light ink on the blue one; before, they were barely legible on three of the four tiers",

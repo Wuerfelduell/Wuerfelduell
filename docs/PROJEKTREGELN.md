@@ -16,9 +16,9 @@ Repo: `Wuerfelduell/Wuerfelduell`. Direkte Commits auf `main` sind erlaubt.
 
 ## Aufbau
 
-- `js/00-*.js` … `js/43-*.js` — in dieser Reihenfolge in `index.html`
+- `js/00-*.js` … `js/45-*.js` — in dieser Reihenfolge in `index.html`
   eingebunden, jede Datei eine IIFE. Keine Module, kein Import.
-- `src/styles/legacy/*.css` — **10 Quelldateien**, das sind die zu
+- `src/styles/legacy/*.css` — **11 Quelldateien**, das sind die zu
   bearbeitenden. `css/app.css` ist erzeugt und wird nie von Hand editiert.
 - `lang/de.js`, `lang/en.js`, `lang/en-campaign.js`, `lang/en-changelog.js`
 - `assets/ui/v28/png/…` (webp) und `…/svg/…`
@@ -27,7 +27,7 @@ Repo: `Wuerfelduell/Wuerfelduell`. Direkte Commits auf `main` sind erlaubt.
 
 ## Vor jedem Push — ohne Ausnahme
 
-1. `npm run build:styles` — erzeugt `css/app.css` aus den 10 Quellen
+1. `npm run build:styles` — erzeugt `css/app.css` aus den 11 Quellen
 2. `node scripts/bump-version.mjs <major.minor.patch>` — setzt die
    Versionsmarker in `index.html`, `js/01-config.js`, `package.json`,
    `sw.js`, `version.json`. **Den Changelog fasst das Skript nicht an.**
@@ -117,7 +117,7 @@ Repo: `Wuerfelduell/Wuerfelduell`. Direkte Commits auf `main` sind erlaubt.
 ## Arbeitsweise
 
 - Kauflogik, Preise, Besitzstände, Spielregeln und Speicherformat
-  (`wuerfelduell_save_v1`, `schemaVersion` 8) bleiben unverändert, außer
+  (`wuerfelduell_save_v1`, `schemaVersion` 9) bleiben unverändert, außer
   die Aufgabe sagt ausdrücklich etwas anderes.
 - Änderungen bleiben auf den beauftragten Bildschirm beschränkt. Als
   Vorlage genannte andere Ansichten werden nicht angefasst.

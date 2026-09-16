@@ -61,6 +61,10 @@ let disconnectOp=null;
 // Lobby und Match benutzen ab jetzt getrennte Listener. Damit zieht ein Würfelwurf
 // nicht mehr jedes Mal die komplette Lobby + Match-Struktur über Firebase.
 let roomUnsubscribe=null;
+// Zaehlt jede Raum-Subscription. Rueckrufe einer abgeloesten Subscription
+// (verspaetete Antwort, spaeter Fehler) tragen die alte Nummer und werden
+// verworfen, statt den neuen Raum zurueckzusetzen.
+let roomSubscriptionGeneration=0;
 let metaUnsubscribe=null;
 let stateUnsubscribe=null;
 let playersUnsubscribe=null;
@@ -171,6 +175,24 @@ function showOnlineHome(){
   onlineLobbyState.textContent="";
   refreshProfiles();
 }
+/* Der Raum ist weg (Host hat verlassen, Raum abgelaufen, Mitgliedschaft
+   verloren). resetRoomState() und showOnlineHome() allein reichen dann
+   nicht: sie stoppen das Match und schalten die Unteransichten des
+   Online-Menues um, lassen aber die Kampfansicht stehen - der Gast hing
+   mit gesperrtem Wuerfel im Kampf, bis er selbst verliess. Der Weg
+   zurueck ist derselbe wie in transitionBackToLobbyView(), nur bis ins
+   Online-Menue statt in die Lobby. */
+function leaveClosedRoom(message){
+  resetRoomState();
+  winnerBox?.classList.add("hidden");
+  game?.classList.add("hidden");
+  document.body.classList.remove("playing","bot-acting","online-roll-window","online-remote-roll-preview","online-dice-snap");
+  mainMenu?.classList.add("hidden");
+  onlineScreen?.classList.remove("hidden");
+  showOnlineHome();
+  setBusy(false);
+  setNotice(message||"Die Lobby wurde geschlossen.","warn");
+}
 async function resumeSupabaseSession(){
   if(!isSupabaseOnline||resumeAttempted||currentRoomCode||!getSupabaseBackend()) return;
   resumeAttempted=true;
@@ -241,7 +263,12 @@ async function enterRoom(code,isHost,{roomId=null,snapshot=null}={}){
   if(isSupabaseOnline){
     if(!getSupabaseBackend()||!currentRoomId) throw new Error("SUPABASE_BATTLE_BACKEND_MISSING");
     if(snapshot) handleSupabaseSnapshot(snapshot);
-    roomUnsubscribe=await supabaseBackend.subscribeRoom(currentRoomId,handleSupabaseSnapshot,(status,error)=>{
+    const generation=++roomSubscriptionGeneration;
+    roomUnsubscribe=await supabaseBackend.subscribeRoom(currentRoomId,snap=>{
+      if(generation!==roomSubscriptionGeneration) return;
+      handleSupabaseSnapshot(snap);
+    },(status,error)=>{
+      if(generation!==roomSubscriptionGeneration) return;
       if(status==="SUBSCRIBED"){
         transportConnected=true;
         setConnection("Supabase Live verbunden","online");
@@ -253,9 +280,7 @@ async function enterRoom(code,isHost,{roomId=null,snapshot=null}={}){
         if(error){
           console.error("Supabase room subscription",error);
           if(/DD_NOT_ROOM_MEMBER|DD_ROOM_NOT_FOUND/i.test(String(error?.message||""))){
-            resetRoomState();
-            showOnlineHome();
-            setNotice("Die Lobby wurde geschlossen.","warn");
+            leaveClosedRoom("Die Lobby wurde geschlossen.");
           }
         }
       }
@@ -283,13 +308,12 @@ async function enterRoom(code,isHost,{roomId=null,snapshot=null}={}){
 function handleSupabaseSnapshot(snapshot){
   if(!isSupabaseOnline) return;
   if(!snapshot){
-    if(currentRoomCode){
-      resetRoomState();
-      showOnlineHome();
-      setNotice("Die Lobby wurde geschlossen.","warn");
-    }
+    if(currentRoomCode) leaveClosedRoom("Die Lobby wurde geschlossen.");
     return;
   }
+  // Ein Schnappschuss eines anderen Raums (verspaetete Antwort nach einem
+  // Raumwechsel) darf den aktuellen Zustand nicht ueberschreiben.
+  if(currentRoomId&&snapshot.id&&String(snapshot.id)!==String(currentRoomId)) return;
   currentRoom=snapshot;
   currentRoomId=String(snapshot.id||currentRoomId||"");
   currentRoomCode=String(snapshot.code||currentRoomCode||"");

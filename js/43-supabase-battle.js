@@ -207,8 +207,13 @@
       try{
         do{
           refreshAgain=false;
-          try{onSnapshot?.(await getSnapshot(id));}
-          catch(error){onStatus?.("ERROR",error);}
+          /* closed wird auch NACH dem Abruf geprueft: wer sich waehrend
+             des laufenden Abrufs abmeldet, bekommt die Antwort sonst
+             trotzdem noch - und bei einem Raumwechsel ueberschreibt der
+             alte Raum den neuen. Ein spaeter Fehler darf ebenso wenig
+             einen neuen Raum zuruecksetzen. */
+          try{const snapshot=await getSnapshot(id);if(closed) return;onSnapshot?.(snapshot);}
+          catch(error){if(!closed) onStatus?.("ERROR",error);}
         }while(refreshAgain&&!closed);
       }finally{inFlight=false;}
     };

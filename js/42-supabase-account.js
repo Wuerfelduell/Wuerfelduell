@@ -91,11 +91,17 @@
     },
     async getSession(){return sessionShape(await root.getSession());},
     onAuthStateChange(callback){
-      let subscription=null;
+      // Der Client kommt asynchron. Wird der Listener abgeraeumt, bevor der
+      // Client da ist, darf die verspaetete Registrierung nicht stehen
+      // bleiben - sonst laeuft nach einem Backendwechsel ein Listener ohne
+      // Abmeldung weiter.
+      let subscription=null,cancelled=false;
       root.getClient().then(client=>{
-        subscription=client.auth.onAuthStateChange((_event,session)=>callback?.(sessionShape(session))).data?.subscription||null;
+        const sub=client.auth.onAuthStateChange((_event,session)=>{if(!cancelled) callback?.(sessionShape(session));}).data?.subscription||null;
+        if(cancelled) sub?.unsubscribe?.();
+        else subscription=sub;
       }).catch(error=>console.warn("Supabase auth listener",error));
-      return ()=>subscription?.unsubscribe?.();
+      return ()=>{cancelled=true;subscription?.unsubscribe?.();subscription=null;};
     },
     async pushSave(_uid,payload,{expectedRevision=null}={}){
       const client=await root.getClient();

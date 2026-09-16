@@ -58,7 +58,10 @@
     clearMessage();const session=await backend.getSession();if(!session)return;const local=snapshot(),remote=await backend.pullSave(session.uid);
     if(remote&&Number(remote.lastModified)>Number(local.lastModified)&&!confirm("The cloud save is newer than your local save. Overwrite it anyway?"))return;
     try{
-      const stored=await backend.pushSave(session.uid,local,{expectedRevision:remote?.revision??null});
+      // Kein Cloud-Save gefunden heisst Revision 0, nicht "egal": mit null
+      // ueberspringt dd_put_account_save die Pruefung, und ein Save, den ein
+      // zweites Geraet inzwischen angelegt hat, wuerde still ueberschrieben.
+      const stored=await backend.pushSave(session.uid,local,{expectedRevision:remote?.revision??0});
       if(saveData?.cloudMeta&&stored?.revision)saveData.cloudMeta.cloudRevision=stored.revision;
       message("Local save securely uploaded to cloud storage.","good");await refresh();
     }catch(error){
