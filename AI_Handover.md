@@ -22,7 +22,7 @@ welche Fallen schon Zeit gekostet haben.
 
 | | |
 |---|---|
-| Version | **28.12.43** |
+| Version | **28.12.44** |
 | Branch | `main` |
 | Letzte Schritte | CSS-Stapel auf 10 Dateien zusammengelegt · Changelog englisch vervollständigt · Hauptmenü, Statistik, Profile, Achievements, Spielvorbereitung und Trophy Shop überarbeitet · Fähigkeits- und Shopflächen auf proportional gekachelte Bildrahmen umgestellt · alle Bild-URLs auf einen gemeinsamen Cache-Schlüssel · Trophy-Shop-Reste bereinigt und Aufklapppfeile angeglichen · Duo- und Trio-Boss-Rush mit Pfadwahl, gespeicherten Runs und 32 Perks einschließlich temporärer Ability-Mastery · Boss-XP-Umtausch 300:100 · Zweitfund gedeckelt · Trio-Rush 15 Stufen, ab 10 ultraschwer · Boss-Rush-HUD auf die Weltregel reduziert · Zweitfund-Kopien ablehnbar und weitergebbar · Ultra-Stufen treffen härter statt länger zu dauern · Heilung gedeckelt, Maximum wächst je Stufe · Regelleiste als Kachelgitter, wächst mit dem Text · gespeicherte Runs überleben Balanceänderungen · Meldeschichten über den Kampf-Overlays geordnet · großer Spezialwürfel dreht sich als echter 3D-Würfel wie der normale und füllt seinen Rahmen · Kampflog, Infos-Blatt und Weltregel hinter einem Knopf, Knopfleiste gekürzt und beruhigt · Kartentexte aus den gemalten Rahmen geholt · fünf neue Würfeldesigns in der Testumgebung · Matchbar auf schmalen Telefonen wieder einzeilig · fünf Würfeldesigns mit fertigem Artwork und nachgemessenem Augenraster · Live-Online-Prüfstand repariert und um eine Latenzmessung erweitert · Common-Satz mit zehn Würfeldesigns vollständig · Online-Wurfwerte vorgezogen, live nachgemessen · Wurfanimation beim Gast wiederhergestellt · sieben Rare-Würfeldesigns · fünf Würfeleffekte mit Regler in der Testumgebung |
 
@@ -392,16 +392,26 @@ mitläuft. Rund und klein darf er das — überstehen konnte nur der lange
 gerade Schweif.
 
 **Ring und Punkt werden verschieden parametrisiert**, der Ring nach Winkel
-um den Mittelpunkt, der Punkt nach Strecke auf der Kante. Das ergibt einen
-Versatz. Die **−40 Grad** im Keyframe sind ausgemessen, nicht geschätzt:
-eine Reihe von −14 bis −70 Grad durchgefahren und je vier Phasen der
-Abstand zwischen Punktmitte und Schweifspitze bestimmt. Ohne Korrektur
-20,5 px bei einem 52-px-Würfel, im Minimum rund 7,6 px. **Weiter kommt man
-mit einer reinen Verschiebung nicht** — die Parametrisierungen laufen
-nicht linear zueinander. Den Rest schließt der weite Hof des Punktes.
+um den Mittelpunkt, der Punkt nach Strecke auf der Kante. Eine **feste**
+Verschiebung reicht dafür nicht — aus dem Spieltest: „bei der Geraden
+wirkt es, als wäre er etwas schneller als der Schweif". Genau so ist es:
+auf einer Geraden läuft der Winkel ungleichmäßig, die Strecke gleichmäßig.
+
+`@keyframes wuerfelKante` fährt deshalb seit 28.12.44 eine **ausgemessene
+Kurve** mit 21 Stützstellen ab. Gemessen wurde nicht am Bild, sondern am
+Layout: ein unsichtbares Messelement mit demselben `offset-path` wurde in
+40 Schritten über die Runde geschoben und je Schritt sein Winkel zur
+Würfelmitte bestimmt (`scripts/qa/`-Machart, das Skript liegt nicht im
+Repo). Die Runde schließt auf exakt 360,0 Grad.
+
+Die Kurve gilt für die **Form** des Kampfwürfels. `border-radius` steht bei
+17 px fest, die Rundung ist als Anteil der Breite also nicht bei jeder
+Fensterbreite gleich; auf sehr schmalen Telefonen bleibt ein kleiner Rest.
+
 `offset-rotate:auto` ist nötig, damit `offset-anchor` quer zur
-Fahrtrichtung zieht und den Punkt von der Außenkante auf die Ringmitte
-holt.
+Fahrtrichtung zieht. **31 %** holt den Punkt von der Außenkante auf die
+Mitte des Rings — der liegt wegen `padding:4.5%` rund 1,3 px weiter innen,
+und das war der seitliche Versatz, den man zwischen Kreis und Schweif sah.
 
 **Wandernd gegen atmend — der Unterschied, den ein Spieltest gefunden
 hat.** Randglühen und Puls wirkten „zu erzwungen, machen einmal einen

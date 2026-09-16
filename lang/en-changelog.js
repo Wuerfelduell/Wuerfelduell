@@ -5,6 +5,8 @@
   if (!pack) return;
 
   Object.assign(pack.exact, {
+    "Beim Kantenläufer lief der Punkt auf den Geraden dem Schweif davon und ließ eine kleine Lücke – jetzt hängen beide über die ganze Runde zusammen": "On the edge runner the dot outran its trail along the straights and left a small gap; the two now stay joined for the whole lap",
+    "Der Punkt läuft außerdem genau auf der Mitte des Nachglows statt ein Stück daneben": "The dot also travels along the centre of the afterglow instead of slightly beside it",
     "Der Kantenläufer hat jetzt einen echten kleinen Kreis als Punkt, mit einem weichen Hof um ihn herum": "The edge runner now has a real small circle as its dot, with a soft halo around it",
     "Der Punkt läuft auf der Ringmitte mit und sitzt an der Spitze seines Nachglows": "The dot travels along the middle of the ring and sits at the tip of its afterglow",
     "Der Kantenläufer folgt jetzt auch in den Ecken der Umrandung – sein Schweif stand dort bisher über den Würfel hinaus": "The edge runner now follows the outline through the corners too; its trail used to stick out past the die there",
