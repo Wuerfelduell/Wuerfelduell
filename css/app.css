@@ -12951,31 +12951,42 @@ html[data-v28-rework="2"] body.playing #game .controls>button.secondary{
 }
 
 
-/* ===== Lichtschimmer ueber die Wuerfel - nur Testumgebung =====
-   Versuch aus dem Spiel: "ein gelber Glow, der von links nach rechts ueber
-   jeden Wuerfel einzeln drueberfaehrt", 500-700 ms. Rein in CSS: kein
-   Renderpfad im Spielcode, dadurch mit diesem Block wieder ausbaubar.
+/* ===== Wuerfeleffekte - nur Testumgebung =====
+   Vier Effekte zum Vergleichen, gesteuert vom Regler "Wuerfeleffekt" in
+   der Werkbank (js/21-test-lab.js setzt #dice[data-lab-dice-fx]). Sie
+   sollen spaeter an die Seltenheit eines Designs gehaengt werden; bis
+   dahin sind sie frei waehlbar, damit man Effekt gegen Design ansehen kann.
 
-   ACHTUNG, hier steckt eine Falle. Der naheliegende Weg - ein breiter
-   Streifen, der per transform durch den Wuerfel wandert und vom Wuerfel
-   beschnitten wird - funktioniert NICHT. Die Wuerfel stehen im Spiel
-   bewusst auf overflow:visible (13-v28-grundlage.css), weil die
-   Artwork-Flaeche mit scale(1.24) ueber den Rand hinaus gezeichnet wird.
-   Wer sie auf hidden stellt, macht jedes Artwork-Design sichtbar kleiner.
+   ACHTUNG, hier steckt eine Falle. Der naheliegende Weg fuer einen
+   wandernden Streifen - ein breites Element, das per transform durch den
+   Wuerfel faehrt und vom Wuerfel beschnitten wird - funktioniert NICHT.
+   Die Wuerfel stehen im Spiel bewusst auf overflow:visible
+   (13-v28-grundlage.css), weil die Artwork-Flaeche mit scale(1.24) ueber
+   den Rand hinaus gezeichnet wird. Wer sie auf hidden stellt, macht jedes
+   Artwork-Design sichtbar kleiner. Der Schimmer ist deshalb ein
+   Hintergrundverlauf: ein Hintergrund verlaesst seine Box nie.
 
-   Deshalb laeuft der Schimmer als Hintergrundverlauf INNERHALB der Ebene:
-   ein Hintergrund verlaesst seine Box nie, ganz ohne overflow. Bewegt wird
-   background-position; die Ebene selbst bleibt stehen.
-
-   z-index 3 - die Artwork-Flaeche liegt auf 2, der Schimmer also darueber.
-   Waehrend des Wurfs bleibt er aus, dort dreht sich der 3D-Kubus. */
-body.test-lab-active #dice .die:not(.rolling)::after{
+   Alle Effekte liegen auf z-index 3 - die Artwork-Flaeche liegt auf 2,
+   die Augen also darunter. Waehrend des Wurfs sind sie aus, dort dreht
+   sich der 3D-Kubus. */
+body.test-lab-active #dice[data-lab-dice-fx]:not([data-lab-dice-fx="keiner"]) .die:not(.rolling)::after{
   content:"";
   position:absolute;
   z-index:3;
   inset:0;
   pointer-events:none;
   border-radius:inherit;
+}
+
+/* --- Schimmer: ein Lichtstreifen laeuft von links nach rechts ---
+   Zwei Werte, die zusammengehoeren: bei background-size 300% ist immer nur
+   ein Drittel des Verlaufs im Bild, der helle Streifen steht darin waehrend
+   fenster/(1-fenster) der Positionsfahrt - bei 300% also genau der Haelfte.
+   Fuer rund 600 ms sichtbaren Durchlauf muss die Fahrt doppelt so lang
+   dauern: 43 % von 2,8 s sind 1204 ms, sichtbar davon 602 ms. Und linear
+   statt ease-in-out - mit Beschleunigung huscht der Streifen in der Mitte
+   durch und wirkt wie ein Blitz statt wie ein Lichtreflex. */
+body.test-lab-active #dice[data-lab-dice-fx^="schimmer"] .die:not(.rolling)::after{
   background:linear-gradient(100deg,
     transparent 36%,
     rgba(255,226,120,.16) 43%,
@@ -12986,22 +12997,52 @@ body.test-lab-active #dice .die:not(.rolling)::after{
   background-repeat:no-repeat;
   animation:wuerfelSchimmer 2.8s linear infinite;
 }
-/* Von 100% nach 0% wandert das sichtbare Fenster nach links durch den
-   Verlauf - der helle Streifen laeuft dadurch von links nach rechts.
+/* Dieselbe Bewegung in der Leitfarbe des Designs. Auf dunklen Flaechen
+   traegt sie weiter als das Gold, auf hellen weniger - genau das soll man
+   vergleichen koennen.
 
-   Zwei Werte, die zusammengehoeren: bei background-size 300% ist immer nur
-   ein Drittel des Verlaufs zu sehen, der helle Streifen steht also nur
-   waehrend der mittleren HAELFTE der Positionsfahrt im Bild. Fuer rund
-   600 ms sichtbaren Durchlauf muss die Fahrt deshalb doppelt so lang
-   dauern: 43 % von 2,8 s sind 1204 ms, sichtbar davon 602 ms. Und linear statt ease-in-out -
-   mit Beschleunigung huscht der Streifen in der Mitte durch und wirkt wie
-   ein Blitz statt wie ein Lichtreflex. */
+   Die Deckkraft muss dabei der goldenen Fassung entsprechen, sonst
+   vergleicht man Farbe UND Staerke auf einmal. Deshalb die verschachtelte
+   Mischung: innen die Leitfarbe mit Weiss aufgehellt, aussen auf dieselben
+   .70 Deckkraft gebracht wie rgba(255,242,178,.70). Ein einfaches
+   color-mix mit #fff bleibt deckend und war sichtbar zu stark. */
+body.test-lab-active #dice[data-lab-dice-fx="schimmer-akzent"] .die:not(.rolling)::after{
+  background-image:linear-gradient(100deg,
+    transparent 36%,
+    color-mix(in srgb,var(--dice-accent) 16%,transparent) 43%,
+    color-mix(in srgb,color-mix(in srgb,var(--dice-accent) 68%,#fff 32%) 70%,transparent) 50%,
+    color-mix(in srgb,var(--dice-accent) 16%,transparent) 57%,
+    transparent 64%);
+}
 @keyframes wuerfelSchimmer{
   0%{background-position:100% 0}
   43%{background-position:0% 0}
   100%{background-position:0% 0}
 }
-/* Der Versatz je Wuerfel macht aus fuenf gleichzeitigen Schimmern eine
+
+/* --- Randgluehen: die Kante atmet in der Designfarbe --- */
+body.test-lab-active #dice[data-lab-dice-fx="rand"] .die:not(.rolling)::after{
+  box-shadow:inset 0 0 14px 3px var(--dice-glow);
+  animation:wuerfelRand 2.4s ease-in-out infinite;
+}
+@keyframes wuerfelRand{
+  0%,100%{opacity:.22}
+  50%{opacity:1}
+}
+
+/* --- Puls: die ganze Flaeche wird kurz heller. screen statt normal,
+   damit die Augen darunter nicht zugedeckt, sondern mitgehoben werden. --- */
+body.test-lab-active #dice[data-lab-dice-fx="puls"] .die:not(.rolling)::after{
+  background:radial-gradient(circle at 50% 42%,var(--dice-glow),transparent 72%);
+  mix-blend-mode:screen;
+  animation:wuerfelPuls 2.6s ease-in-out infinite;
+}
+@keyframes wuerfelPuls{
+  0%,100%{opacity:.10}
+  50%{opacity:.58}
+}
+
+/* Der Versatz je Wuerfel macht aus fuenf gleichzeitigen Effekten eine
    Welle. nth-child reicht: die Wuerfel stehen in Spielreihenfolge im DOM. */
 body.test-lab-active #dice .die:nth-child(2):not(.rolling)::after{animation-delay:110ms}
 body.test-lab-active #dice .die:nth-child(3):not(.rolling)::after{animation-delay:220ms}

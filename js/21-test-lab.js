@@ -60,6 +60,20 @@
     o.value=String(value);o.textContent=String(label);select.appendChild(o);
   }
 
+  /* Wuerfeleffekte: NUR die Testumgebung kennt sie. Die Auswahl steht
+     absichtlich neben der Wuerfelauswahl und nicht hinter einem eigenen
+     Reiter - verglichen wird Effekt GEGEN Design, und dafuer muessen beide
+     Regler nebeneinander liegen. Umgesetzt sind sie rein in CSS
+     (37-abschluss.css); hier steht nur, welcher gerade an ist. */
+  const WUERFEL_EFFEKTE={
+    keiner:'Keiner',
+    'schimmer-gold':'Schimmer · Gold',
+    'schimmer-akzent':'Schimmer · Designfarbe',
+    rand:'Randglühen',
+    puls:'Puls'
+  };
+  let wuerfelEffekt='schimmer-gold';
+
   function makeSelect(labelText,id){
     const wrap=document.createElement('label');
     wrap.className='test-lab-bench-control';
@@ -93,6 +107,7 @@
     }
     const dice=$lab('dice');
     if(dice){
+      dice.dataset.labDiceFx=wuerfelEffekt;
       const actual=Number(players?.[current]?.hotDiceStreak)||0;
       const level=hotDemoLevel||actual;
       dice.dataset.labHotLevel=String(level);
@@ -124,6 +139,14 @@
     diceCtl.select.addEventListener('change',()=>{
       players[0].diceDesign=diceCtl.select.value;
       renderAll?.();requestAnimationFrame(applyWorkbench);
+    });
+
+    const diceFxCtl=makeSelect('🔆 Würfeleffekt','testLabDiceFxSelect');
+    Object.entries(WUERFEL_EFFEKTE).forEach(([k,n])=>addOption(diceFxCtl.select,k,n));
+    diceFxCtl.select.value=wuerfelEffekt;
+    diceFxCtl.select.addEventListener('change',()=>{
+      wuerfelEffekt=diceFxCtl.select.value;
+      applyWorkbench();
     });
 
     const fxCtl=makeSelect('✨ Attack-FX','testLabFxSelect');
@@ -200,7 +223,7 @@
 
     preview.append(fxBtn,killBtn,hotBtn,masteryBtn);
 
-    body.append(diceCtl.wrap,fxCtl.wrap,frameCtl.wrap,bannerCtl.wrap,hotCtl.wrap,preview);
+    body.append(diceCtl.wrap,diceFxCtl.wrap,fxCtl.wrap,frameCtl.wrap,bannerCtl.wrap,hotCtl.wrap,preview);
 
     const toggle=bench.querySelector('#testLabBenchToggle');
     const zeigeStand=()=>{

@@ -5,6 +5,8 @@
   if (!pack) return;
 
   Object.assign(pack.exact, {
+    "Die Werkbank der Testumgebung hat einen Regler für Würfeleffekte: Schimmer in Gold, Schimmer in der Designfarbe, Randglühen und Puls": "The test lab workbench has a dice effect selector: shine in gold, shine in the design colour, rim glow and pulse",
+    "Damit lässt sich jeder Effekt gegen jedes Würfeldesign ansehen – im normalen Spiel ändert sich weiterhin nichts": "That makes every effect comparable against every dice design; nothing changes in the normal game",
     "In der Testumgebung läuft ein gelber Lichtschimmer über die Würfel, von links nach rechts und um einen Moment versetzt, sodass er als Welle durch die Reihe wandert": "In the test lab a yellow shine runs across the dice, left to right and slightly offset, so it travels through the row as a wave",
     "Ein Versuch zum Ansehen – im normalen Spiel ändert sich nichts": "Something to look at; nothing changes in the normal game",
     "Drei weitere Rare-Würfel sind eingebaut: Uhrwerk, Dünenrelikt und Dornenhain": "Three more rare dice are in: Uhrwerk, Duenenrelikt and Dornenhain",

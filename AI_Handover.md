@@ -22,9 +22,9 @@ welche Fallen schon Zeit gekostet haben.
 
 | | |
 |---|---|
-| Version | **28.12.39** |
+| Version | **28.12.40** |
 | Branch | `main` |
-| Letzte Schritte | CSS-Stapel auf 10 Dateien zusammengelegt · Changelog englisch vervollständigt · Hauptmenü, Statistik, Profile, Achievements, Spielvorbereitung und Trophy Shop überarbeitet · Fähigkeits- und Shopflächen auf proportional gekachelte Bildrahmen umgestellt · alle Bild-URLs auf einen gemeinsamen Cache-Schlüssel · Trophy-Shop-Reste bereinigt und Aufklapppfeile angeglichen · Duo- und Trio-Boss-Rush mit Pfadwahl, gespeicherten Runs und 32 Perks einschließlich temporärer Ability-Mastery · Boss-XP-Umtausch 300:100 · Zweitfund gedeckelt · Trio-Rush 15 Stufen, ab 10 ultraschwer · Boss-Rush-HUD auf die Weltregel reduziert · Zweitfund-Kopien ablehnbar und weitergebbar · Ultra-Stufen treffen härter statt länger zu dauern · Heilung gedeckelt, Maximum wächst je Stufe · Regelleiste als Kachelgitter, wächst mit dem Text · gespeicherte Runs überleben Balanceänderungen · Meldeschichten über den Kampf-Overlays geordnet · großer Spezialwürfel dreht sich als echter 3D-Würfel wie der normale und füllt seinen Rahmen · Kampflog, Infos-Blatt und Weltregel hinter einem Knopf, Knopfleiste gekürzt und beruhigt · Kartentexte aus den gemalten Rahmen geholt · fünf neue Würfeldesigns in der Testumgebung · Matchbar auf schmalen Telefonen wieder einzeilig · fünf Würfeldesigns mit fertigem Artwork und nachgemessenem Augenraster · Live-Online-Prüfstand repariert und um eine Latenzmessung erweitert · Common-Satz mit zehn Würfeldesigns vollständig · Online-Wurfwerte vorgezogen, live nachgemessen · Wurfanimation beim Gast wiederhergestellt · sieben Rare-Würfeldesigns · Lichtschimmer über den Würfeln in der Testumgebung |
+| Letzte Schritte | CSS-Stapel auf 10 Dateien zusammengelegt · Changelog englisch vervollständigt · Hauptmenü, Statistik, Profile, Achievements, Spielvorbereitung und Trophy Shop überarbeitet · Fähigkeits- und Shopflächen auf proportional gekachelte Bildrahmen umgestellt · alle Bild-URLs auf einen gemeinsamen Cache-Schlüssel · Trophy-Shop-Reste bereinigt und Aufklapppfeile angeglichen · Duo- und Trio-Boss-Rush mit Pfadwahl, gespeicherten Runs und 32 Perks einschließlich temporärer Ability-Mastery · Boss-XP-Umtausch 300:100 · Zweitfund gedeckelt · Trio-Rush 15 Stufen, ab 10 ultraschwer · Boss-Rush-HUD auf die Weltregel reduziert · Zweitfund-Kopien ablehnbar und weitergebbar · Ultra-Stufen treffen härter statt länger zu dauern · Heilung gedeckelt, Maximum wächst je Stufe · Regelleiste als Kachelgitter, wächst mit dem Text · gespeicherte Runs überleben Balanceänderungen · Meldeschichten über den Kampf-Overlays geordnet · großer Spezialwürfel dreht sich als echter 3D-Würfel wie der normale und füllt seinen Rahmen · Kampflog, Infos-Blatt und Weltregel hinter einem Knopf, Knopfleiste gekürzt und beruhigt · Kartentexte aus den gemalten Rahmen geholt · fünf neue Würfeldesigns in der Testumgebung · Matchbar auf schmalen Telefonen wieder einzeilig · fünf Würfeldesigns mit fertigem Artwork und nachgemessenem Augenraster · Live-Online-Prüfstand repariert und um eine Latenzmessung erweitert · Common-Satz mit zehn Würfeldesigns vollständig · Online-Wurfwerte vorgezogen, live nachgemessen · Wurfanimation beim Gast wiederhergestellt · sieben Rare-Würfeldesigns · vier Würfeleffekte mit Regler in der Testumgebung |
 
 **Die Arbeitsteilung hat sich geändert.** Bis V28.11.28 liefen zwei
 Sitzungen parallel: Codex hat umgesetzt, diese Sitzung geprüft. Ab jetzt
@@ -323,7 +323,7 @@ deshalb auch bei Sätzen, die noch niemand gesehen hat. Gegenprobe
 gefahren: mit einem Sollraster von 25/50/75 meldet die Zusicherung
 8 Prozentpunkte Abweichung und fällt.
 
-### Lichtschimmer ueber den Wuerfeln seit 28.12.39
+### Wuerfeleffekte in der Testumgebung seit 28.12.39
 
 Ein gelber Streifen laeuft von links nach rechts ueber jeden Wuerfel,
 je Wuerfel um 110 ms versetzt, sodass er als Welle durch die Reihe geht.
@@ -347,10 +347,30 @@ Haelfte. Fuer 600 ms sichtbaren Durchlauf muss die Fahrt 1200 ms dauern —
 43 % von 2,8 s. Und `linear` statt `ease-in-out`: mit Beschleunigung huscht
 der Streifen in der Mitte durch und wirkt wie ein Blitz.
 
-Gemessen von `scripts/qa/wuerfelschimmer.mjs` (8 Zusicherungen): Schimmer
+**Seit 28.12.40 sind es vier Effekte zum Vergleichen**, umgeschaltet vom
+Regler „Würfeleffekt" in der Werkbank (`js/21-test-lab.js` setzt
+`#dice[data-lab-dice-fx]`): Schimmer in Gold, Schimmer in der Designfarbe
+(`--dice-accent`), Randglühen und Puls. Sie sollen später an die
+**Seltenheit** eines Designs gehängt werden — bis dahin frei wählbar,
+damit man Effekt gegen Design ansehen kann.
+
+Der Regler steht bewusst **neben** der Würfelauswahl und nicht hinter
+einem eigenen Reiter: verglichen wird Effekt gegen Design, dafür müssen
+beide Regler nebeneinander liegen.
+
+**Eine Falle bei der Designfarbe:** ein einfaches
+`color-mix(var(--dice-accent), #fff)` bleibt **deckend**. Der Schimmer war
+dadurch sichtbar kräftiger als die goldene Fassung mit ihren `.70`
+Deckkraft, und man verglich Farbe und Stärke auf einmal. Richtig ist die
+verschachtelte Mischung: innen mit Weiß aufhellen, außen auf dieselben
+`.70` bringen.
+
+Gemessen von `scripts/qa/wuerfelschimmer.mjs` (11 Zusicherungen): Schimmer
 auf jedem Wuerfel, ueber der Artwork-Flaeche, steigender Versatz,
 sichtbarer Durchlauf 500-700 ms, gleichmaessig, **Wuerfel unbeschnitten**,
-waehrend des Wurfs aus, im normalen Spiel gar nicht. Gegenprobe gefahren:
+waehrend des Wurfs aus, im normalen Spiel gar nicht, und der Regler
+schaltet wirklich um (gemessen am Animationsnamen des Wuerfels, nicht am
+Wert im Auswahlfeld - ein Regler ohne Wirkung waere sonst gruen). Gegenprobe gefahren:
 mit `overflow:hidden!important` faellt die Zusicherung zur Beschneidung.
 
 ### Weltassets seit 28.11.4

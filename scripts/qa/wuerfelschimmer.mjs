@@ -1,7 +1,9 @@
-/* Lichtschimmer ueber die Wuerfel.
+/* Wuerfeleffekte in der Testumgebung.
  *
  * Aus dem Spiel: "ein gelber Glow, der von links nach rechts ueber jeden
  * Wuerfel einzeln drueberfaehrt", 500-700 ms, nur in der Testumgebung.
+ * Dazu: "neuen cosmetic tab rein nur in der test, dann sehe ich mir an, zu
+ * welchen Wuerfeln wir welchen Effekt pinnen".
  *
  * Geprueft wird:
  *   1. In der Testumgebung traegt jeder Wuerfel den Schimmer, ueber der
@@ -14,6 +16,8 @@
  *      mittleren HAELFTE der Positionsfahrt darin.
  *   4. Waehrend des Wurfs ist er aus - dort dreht sich der 3D-Kubus.
  *   5. Im normalen Spiel gibt es ihn nicht.
+ *   5b. Der Regler in der Werkbank kennt alle Effekte, und jeder schaltet
+ *      wirklich um - "keiner" laesst nichts stehen.
  *   6. Die Wuerfel behalten overflow:visible. Das ist die Falle an dieser
  *      Aufgabe: die Artwork-Flaeche wird mit scale(1.24) ueber den Rand
  *      hinaus gezeichnet. Wer den Wuerfel beschneidet, um einen wandernden
@@ -117,6 +121,33 @@ try{
     labor.overflow.every(o=>o==='visible'),true);
   if(!labor.overflow.every(o=>o==='visible'))console.log(`      overflow: ${JSON.stringify(labor.overflow)}`);
 
+  // 5b. Der Regler schaltet wirklich um. Geprueft wird der Animationsname
+  // am Wuerfel, nicht der Wert im Auswahlfeld: ein Regler, der nichts
+  // bewirkt, waere sonst gruen.
+  const regler=await p.evaluate(async()=>{
+    const sel=document.getElementById('testLabDiceFxSelect');
+    if(!sel) return {fehlt:true};
+    const werte=[...sel.options].map(o=>o.value);
+    const gemessen={};
+    for(const w of werte){
+      sel.value=w;sel.dispatchEvent(new Event('change',{bubbles:true}));
+      await new Promise(r=>setTimeout(r,60));
+      const d=document.querySelector('#dice .die');
+      const cs=getComputedStyle(d,'::after');
+      gemessen[w]={name:cs.animationName,inhalt:cs.content};
+    }
+    sel.value='schimmer-gold';sel.dispatchEvent(new Event('change',{bubbles:true}));
+    await new Promise(r=>setTimeout(r,60));
+    return {werte,gemessen};
+  });
+  pruefe('Werkbank bietet den Effektregler',!regler.fehlt&&regler.werte.length>=4,true);
+  const namen=Object.entries(regler.gemessen||{}).filter(([k])=>k!=='keiner').map(([,v])=>v.name);
+  const alleWirken=namen.length>=3&&namen.every(n=>n&&n!=='none')&&new Set(namen).size>=2;
+  pruefe('Jeder Effekt schaltet wirklich um',alleWirken,true);
+  if(!alleWirken)console.log(`      Regler: ${JSON.stringify(regler.gemessen)}`);
+  pruefe('"Keiner" laesst nichts stehen',regler.gemessen?.keiner?.inhalt==='none',true);
+  if(regler.gemessen?.keiner?.inhalt!=='none')console.log(`      keiner: ${JSON.stringify(regler.gemessen?.keiner)}`);
+
   // 4. Waehrend des Wurfs aus.
   const imWurf=await p.evaluate(async()=>{
     document.querySelector('#primaryBtn')?.click();
@@ -154,7 +185,7 @@ try{
   await n.close();
 }catch(e){absturz=e;}
 
-const ERWARTET=8;
+const ERWARTET=11;
 let fehler=ergebnisse.length<ERWARTET?1:0;
 if(fehler)console.log(`ACHTUNG: nur ${ergebnisse.length} von ${ERWARTET} Zusicherungen erreicht.`);
 const breite=Math.max(1,...ergebnisse.map(r=>r[0].length));
