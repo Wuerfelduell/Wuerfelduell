@@ -196,7 +196,14 @@
     const k=auftrag.karten[0];
     const namen=window.WDShop?.SELTENHEIT_NAMEN||{};
     const zeile=el("div","kisten-ergebnis-zeile");
-    if(k.seltenheit){const s=el("span","kisten-ergebnis-seltenheit",namen[k.seltenheit]||k.seltenheit);s.dataset.seltenheit=k.seltenheit;zeile.appendChild(s);}
+    if(k.seltenheit){
+      const s=el("span","kisten-ergebnis-seltenheit");s.dataset.seltenheit=k.seltenheit;
+      // Seltenheitsplakette aus dem Shop-Satz (Asset-Auftrag V3, Paket C).
+      const plakette=el("img","kisten-ergebnis-plakette");plakette.alt="";plakette.draggable=false;
+      plakette.src=`assets/ui/v28/png/shop/rarity/rarity-${String(k.seltenheit).replace("_","-")}.webp?v=${rev()}`;
+      s.appendChild(plakette);s.appendChild(el("span",null,namen[k.seltenheit]||k.seltenheit));
+      zeile.appendChild(s);
+    }
     if(k.duplikat){
       zeile.appendChild(el("span","kisten-ergebnis-doppelt",`${tr("Doppelt")} · +${k.rueckgabe||0} ${tr("Duellmarken")}`));
     }else{

@@ -5,6 +5,9 @@
   if (!pack) return;
 
   Object.assign(pack.exact, {
+    "Gemalte Währungsbilder: Duellmarke und Würfelkern stehen im Guthaben, auf den Kaufknöpfen und im Reiter Währung": "Painted currency images: the Duel Token and the Dice Core appear in the balance, on the buy buttons and in the Currency tab",
+    "Die Kern-Pakete im Reiter Währung zeigen ihre gemalten Bilder, von der Handvoll bis zur Truhe": "The core packs in the Currency tab show their painted images, from the handful to the chest",
+    "Fünf Seltenheitsplaketten kennzeichnen die Kistenkarten, die Chancentabelle und das Ergebnis der Kistenöffnung": "Five rarity badges mark the chest cards, the odds table and the result of the chest opening",
     "Der Trophy Shop heißt jetzt Shop und hat drei Reiter: Kisten, Trophäen und Währung": "The Trophy Shop is now called Shop and has three tabs: Chests, Trophies and Currency",
     "Neue Währung Duellmarken: 40 für ein gewonnenes Duell, 15 für ein verlorenes, 80 für einen erstmals geschafften Encounter, 20 für eine Wiederholung, 250 für den ersten Sieg über einen Weltboss – das Guthaben liegt im Profil und wandert mit dem Cloud-Save": "New currency Duel Tokens: 40 for a duel won, 15 for one lost, 80 for an encounter cleared for the first time, 20 for a repeat, 250 for the first win over a world boss; the balance lives in the profile and travels with the cloud save",
     "Vier Kisten im Shop: Common 250 Marken, Rare 600 Marken oder 30 Kerne, Epic 1500 Marken oder 75 Kerne, Legendary 180 Kerne – aus jeder Kiste kommt genau ein Würfeldesign": "Four chests in the shop: Common 250 tokens, Rare 600 tokens or 30 cores, Epic 1500 tokens or 75 cores, Legendary 180 cores; exactly one dice design comes out of each chest",

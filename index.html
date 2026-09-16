@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="de" class="wd-booting">
 <head>
-  <meta name="wd-build" content="28.12.50" />
+  <meta name="wd-build" content="28.12.51" />
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <meta name="theme-color" content="#e8f2f6" />
@@ -11,7 +11,7 @@
   <link rel="manifest" href="manifest.json" />
   <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png?v=28.12.48" />
   <link rel="apple-touch-icon" sizes="192x192" href="icon-192.png?v=28.12.48" />
-  <title>DiceDuel · V28.12.50</title>
+  <title>DiceDuel · V28.12.51</title>
   <link rel="preload" as="image" href="assets/ui/v28/bg-main-palace.webp?v=28.12.48">
   <style>
     html.wd-booting,body.wd-booting{overflow:hidden!important;overscroll-behavior:none}
@@ -26,7 +26,7 @@
     #wdBootGate.is-done{opacity:0;pointer-events:none;transition:opacity .35s ease}
     body.wd-booting>#wdBootGate~*{pointer-events:none!important}
   </style>
-  <link rel="stylesheet" href="css/app.css?v=28.12.50" />
+  <link rel="stylesheet" href="css/app.css?v=28.12.51" />
 </head>
 <body class="wd-booting">
 <div id="wdBootGate" role="progressbar" aria-busy="true" aria-label="DiceDuel wird geladen">
@@ -244,7 +244,7 @@
       <button id="menuRulesBtn"><span class="menu-icon" data-v28-icon-ready="1"><img class="v28-menu-icon" src="assets/ui/v28/svg/menu/rules.svg?v=28.12.48" alt="" aria-hidden="true"></span> Regeln</button>
       <button id="menuChangelogBtn"><span class="menu-icon" data-v28-icon-ready="1"><img class="v28-menu-icon" src="assets/ui/v28/svg/menu/changelog.svg?v=28.12.48" alt="" aria-hidden="true"></span> Changelog</button>
     </div>
-    <div class="version-footer">DICEDUEL · VERSION 28.12.50</div>
+    <div class="version-footer">DICEDUEL · VERSION 28.12.51</div>
   </section>
 
 
@@ -511,6 +511,7 @@
     <div class="screen-topbar"><button class="menuBackBtn">←</button><h2 class="screen-title">Changelog</h2></div>
     <div class="screen-subtitle">Die großen Versionssprünge, ohne jeden Mini-Hotfix.</div>
     <div class="screen-scroll-body">
+    <div class="changelog-entry"><div class="changelog-version">V28.12.51</div><ul><li>Gemalte Währungsbilder: Duellmarke und Würfelkern stehen im Guthaben, auf den Kaufknöpfen und im Reiter Währung</li><li>Die Kern-Pakete im Reiter Währung zeigen ihre gemalten Bilder, von der Handvoll bis zur Truhe</li><li>Fünf Seltenheitsplaketten kennzeichnen die Kistenkarten, die Chancentabelle und das Ergebnis der Kistenöffnung</li></ul></div>
     <div class="changelog-entry"><div class="changelog-version">V28.12.50</div><ul><li>Der Trophy Shop heißt jetzt Shop und hat drei Reiter: Kisten, Trophäen und Währung</li><li>Neue Währung Duellmarken: 40 für ein gewonnenes Duell, 15 für ein verlorenes, 80 für einen erstmals geschafften Encounter, 20 für eine Wiederholung, 250 für den ersten Sieg über einen Weltboss – das Guthaben liegt im Profil und wandert mit dem Cloud-Save</li><li>Vier Kisten im Shop: Common 250 Marken, Rare 600 Marken oder 30 Kerne, Epic 1500 Marken oder 75 Kerne, Legendary 180 Kerne – aus jeder Kiste kommt genau ein Würfeldesign</li><li>Die Dropchancen jeder Kiste stehen vor dem Kauf in der Karte; Legendary bleibt auch bei der besten Kiste bei 5 %, leere Stufen sind markiert und der Wurf rutscht dann eine Stufe tiefer</li><li>Doppelte Würfel geben Duellmarken zurück: 60, 150, 400, 800 oder 2000 je nach Seltenheit</li><li>Schutz: nach zehn Öffnungen ohne Epic steigt die Epic-Chance je weitere Öffnung um zwei Prozentpunkte, höchstens um zehn – Legendary bleibt fix, der Zähler steht sichtbar im Shop</li><li>Würfelkerne sind als Premium-Währung angelegt, aber noch nicht sammelbar; die Kern-Pakete im Reiter Währung sind eine Vorschau ohne Kauf</li><li>Die 22 Artwork-Würfel aus der Testumgebung sind jetzt der Kistenpool (15 Common, 7 Rare) und stehen gesperrt im Profil, bis eine Kiste sie bringt</li><li>Kistentest und ein Knopf für Testguthaben liegen jetzt im Trainingsfenster hinter dem Tutorial-Knopf statt im Hauptmenü</li></ul></div>
     <div class="changelog-entry"><div class="changelog-version">V28.12.49</div><ul><li>Online: Verlässt der Host den Kampf, kommt der Gast jetzt ins Online-Menü zurück – vorher blieb er mit gesperrtem Würfel in der alten Kampfansicht hängen</li><li>Online: Eine verspätete Raumantwort nach dem Abmelden wird verworfen und kann beim Raumwechsel den neuen Raum nicht mehr überschreiben</li><li>Cloud-Save: Der erste Upload meldet jetzt einen Konflikt, wenn ein anderes Gerät inzwischen einen Spielstand angelegt hat, statt ihn still zu überschreiben</li><li>Backend: Die interne Funktion zum Verlängern der Raum-Ablaufzeit ist für angemeldete Nutzer nicht mehr aufrufbar (neue Migration)</li><li>Account: Ein Auth-Listener, der vor dem Start des Clients abgeräumt wird, bleibt nicht mehr als Leiche zurück</li></ul></div>
     <div class="changelog-entry"><div class="changelog-version">V28.12.48</div><ul><li>Die Kisten sind jetzt gemalt: Holz mit Maserung, geschmiedete Beschläge, Edelsteine mit Glanz – im selben Stil wie die Würfeldesigns</li><li>Alle 35 Kistenbilder sind ausgetauscht, die Bildrevision ist deshalb angehoben</li><li>Die Namen auf den Karten stehen jetzt in dunkler Tinte auf den hellen Bändern und in heller auf dem blauen – vorher waren sie auf drei von vier Stufen kaum lesbar</li></ul></div>
@@ -897,62 +898,62 @@
      vorher zuletzt (Module sind implizit deferred), und mit defer auf den
      klassischen Scripts wuerde ein haengender CDN-Fetch sonst alles danach
      blockieren. -->
-<script defer src="lang/de.js?v=28.12.50"></script>
-<script defer src="lang/en.js?v=28.12.50"></script>
-<script defer src="lang/en-campaign.js?v=28.12.50"></script>
-<script defer src="lang/en-changelog.js?v=28.12.50"></script>
-<script defer src="js/00-i18n.js?v=28.12.50"></script>
-<script defer src="js/01-config.js?v=28.12.50"></script>
-<script defer src="js/backend-config.js?v=28.12.50"></script>
-<script defer src="js/40-backend-config.js?v=28.12.50"></script>
-<script defer src="js/41-supabase-core.js?v=28.12.50"></script>
-<script defer src="js/02-campaign-solo-data.js?v=28.12.50"></script>
-<script defer src="js/03-campaign-duo-data.js?v=28.12.50"></script>
-<script defer src="js/03b-campaign-trio-data.js?v=28.12.50"></script>
-<script defer src="js/03c-campaign-endgame-data.js?v=28.12.50"></script>
-<script defer src="js/03d-endgame-mechanics.js?v=28.12.50"></script>
-<script defer src="js/04-save.js?v=28.12.50"></script>
-<script defer src="js/05-game-data-state.js?v=28.12.50"></script>
-<script defer src="js/06-campaign.js?v=28.12.50"></script>
-<script defer src="js/07-tutorial.js?v=28.12.50"></script>
-<script defer src="js/08-profiles-stats.js?v=28.12.50"></script>
-<script defer src="js/09-battle-stats.js?v=28.12.50"></script>
-<script defer src="js/10-bots.js?v=28.12.50"></script>
-<script defer src="js/11-setup.js?v=28.12.50"></script>
-<script defer src="js/12-battle-ui.js?v=28.12.50"></script>
-<script defer src="js/13-battle-actions.js?v=28.12.50"></script>
-<script defer src="js/14-round-flow.js?v=28.12.50"></script>
-<script defer src="js/15-app.js?v=28.12.50"></script>
-<script defer src="js/16-audio.js?v=28.12.50"></script>
-<script defer src="js/18-attack-fx.js?v=28.12.50"></script>
-<script defer src="js/17-online-bridge.js?v=28.12.50"></script>
-<script defer src="js/19-build-integrity.js?v=28.12.50"></script>
-<script defer src="js/20-v276.js?v=28.12.50"></script>
-<script defer src="js/21-test-lab.js?v=28.12.50"></script>
-<script defer src="js/23-mastery.js?v=28.12.50"></script>
-<script defer src="js/24-ability-mastery-lab.js?v=28.12.50"></script>
-<script defer src="js/25-cloud-account.js?v=28.12.50"></script>
-<script defer src="js/42-supabase-account.js?v=28.12.50"></script>
-<script defer src="js/43-supabase-battle.js?v=28.12.50"></script>
-<script defer src="js/26-v28-ui.js?v=28.12.50"></script>
-<script defer src="js/27-v28-asset-polish.js?v=28.12.50"></script>
-<script defer src="js/28-v28-ui-rework.js?v=28.12.50"></script>
-<script defer src="js/29-v28-ui-phase1.js?v=28.12.50"></script>
-<script defer src="js/30-v28-ui-phase2.js?v=28.12.50"></script>
-<script defer src="js/31-v28-ui-phase4.js?v=28.12.50"></script>
-<script defer src="js/32-v28-ui-phase5.js?v=28.12.50"></script>
-<script defer src="js/33-v28-ui-phase6.js?v=28.12.50"></script>
-<script defer src="js/34-v28-ui-phase8.js?v=28.12.50"></script>
-<script defer src="js/36-emoji-sprite-pass.js?v=28.12.50"></script>
-<script defer src="js/37-duo-boss-rush.js?v=28.12.50"></script>
-<script defer src="js/39-campaign-world-themes.js?v=28.12.50"></script>
-<script defer src="js/44-trio-boss-rush.js?v=28.12.50"></script>
-<script defer src="js/45-kistentest.js?v=28.12.50"></script>
-<script defer src="js/46-shop-daten.js?v=28.12.50"></script>
-<script defer src="js/47-shop.js?v=28.12.50"></script>
-<script defer src="js/35-boot-gate.js?v=28.12.50"></script>
-<script defer src="js/38-sw-register.js?v=28.12.50"></script>
+<script defer src="lang/de.js?v=28.12.51"></script>
+<script defer src="lang/en.js?v=28.12.51"></script>
+<script defer src="lang/en-campaign.js?v=28.12.51"></script>
+<script defer src="lang/en-changelog.js?v=28.12.51"></script>
+<script defer src="js/00-i18n.js?v=28.12.51"></script>
+<script defer src="js/01-config.js?v=28.12.51"></script>
+<script defer src="js/backend-config.js?v=28.12.51"></script>
+<script defer src="js/40-backend-config.js?v=28.12.51"></script>
+<script defer src="js/41-supabase-core.js?v=28.12.51"></script>
+<script defer src="js/02-campaign-solo-data.js?v=28.12.51"></script>
+<script defer src="js/03-campaign-duo-data.js?v=28.12.51"></script>
+<script defer src="js/03b-campaign-trio-data.js?v=28.12.51"></script>
+<script defer src="js/03c-campaign-endgame-data.js?v=28.12.51"></script>
+<script defer src="js/03d-endgame-mechanics.js?v=28.12.51"></script>
+<script defer src="js/04-save.js?v=28.12.51"></script>
+<script defer src="js/05-game-data-state.js?v=28.12.51"></script>
+<script defer src="js/06-campaign.js?v=28.12.51"></script>
+<script defer src="js/07-tutorial.js?v=28.12.51"></script>
+<script defer src="js/08-profiles-stats.js?v=28.12.51"></script>
+<script defer src="js/09-battle-stats.js?v=28.12.51"></script>
+<script defer src="js/10-bots.js?v=28.12.51"></script>
+<script defer src="js/11-setup.js?v=28.12.51"></script>
+<script defer src="js/12-battle-ui.js?v=28.12.51"></script>
+<script defer src="js/13-battle-actions.js?v=28.12.51"></script>
+<script defer src="js/14-round-flow.js?v=28.12.51"></script>
+<script defer src="js/15-app.js?v=28.12.51"></script>
+<script defer src="js/16-audio.js?v=28.12.51"></script>
+<script defer src="js/18-attack-fx.js?v=28.12.51"></script>
+<script defer src="js/17-online-bridge.js?v=28.12.51"></script>
+<script defer src="js/19-build-integrity.js?v=28.12.51"></script>
+<script defer src="js/20-v276.js?v=28.12.51"></script>
+<script defer src="js/21-test-lab.js?v=28.12.51"></script>
+<script defer src="js/23-mastery.js?v=28.12.51"></script>
+<script defer src="js/24-ability-mastery-lab.js?v=28.12.51"></script>
+<script defer src="js/25-cloud-account.js?v=28.12.51"></script>
+<script defer src="js/42-supabase-account.js?v=28.12.51"></script>
+<script defer src="js/43-supabase-battle.js?v=28.12.51"></script>
+<script defer src="js/26-v28-ui.js?v=28.12.51"></script>
+<script defer src="js/27-v28-asset-polish.js?v=28.12.51"></script>
+<script defer src="js/28-v28-ui-rework.js?v=28.12.51"></script>
+<script defer src="js/29-v28-ui-phase1.js?v=28.12.51"></script>
+<script defer src="js/30-v28-ui-phase2.js?v=28.12.51"></script>
+<script defer src="js/31-v28-ui-phase4.js?v=28.12.51"></script>
+<script defer src="js/32-v28-ui-phase5.js?v=28.12.51"></script>
+<script defer src="js/33-v28-ui-phase6.js?v=28.12.51"></script>
+<script defer src="js/34-v28-ui-phase8.js?v=28.12.51"></script>
+<script defer src="js/36-emoji-sprite-pass.js?v=28.12.51"></script>
+<script defer src="js/37-duo-boss-rush.js?v=28.12.51"></script>
+<script defer src="js/39-campaign-world-themes.js?v=28.12.51"></script>
+<script defer src="js/44-trio-boss-rush.js?v=28.12.51"></script>
+<script defer src="js/45-kistentest.js?v=28.12.51"></script>
+<script defer src="js/46-shop-daten.js?v=28.12.51"></script>
+<script defer src="js/47-shop.js?v=28.12.51"></script>
+<script defer src="js/35-boot-gate.js?v=28.12.51"></script>
+<script defer src="js/38-sw-register.js?v=28.12.51"></script>
 <!-- Modul zuletzt: der konfigurierbare Online-Transport laedt extern. -->
-<script type="module" src="js/online/01-online.js?v=28.12.50"></script>
+<script type="module" src="js/online/01-online.js?v=28.12.51"></script>
 </body>
 </html>

@@ -284,3 +284,17 @@ html[data-v28-rework="2"] #prestigeShopScreen .shop-kaufen,
 html[data-v28-rework="2"] #prestigeShopScreen .shop-echtgeld{position:relative;overflow:hidden;isolation:isolate}
 html[data-v28-rework="2"] #prestigeShopScreen .shop-kaufen>.prestige-button-artwork,
 html[data-v28-rework="2"] #prestigeShopScreen .shop-echtgeld>.prestige-button-artwork{position:absolute;inset:0;z-index:-1}
+
+/* Shop-Bilder aus Asset-Auftrag V3 (Pakete A bis C). */
+#prestigeShopScreen .prestige-wallet strong{display:inline-flex;align-items:center;justify-content:center;gap:5px}
+.shop-wallet-icon{width:22px;height:22px;flex:0 0 auto}
+.shop-waehrung-icon{width:22px;height:22px;flex:0 0 auto;margin-right:4px}
+html[data-v28-rework="2"] #prestigeShopScreen .shop-kaufen{display:inline-flex;align-items:center;justify-content:center}
+.shop-seltenheit-plakette{width:18px;height:18px;vertical-align:middle;margin-right:6px}
+.shop-kicker-plakette{width:16px;height:16px;vertical-align:middle;margin-right:5px}
+.shop-paket-img{display:block;width:100%;height:100%;object-fit:contain;filter:drop-shadow(0 6px 8px rgba(0,0,0,.45))}
+.shop-paket-bild{width:min(72%,170px)}
+.shop-waehrung-zeile{display:flex;align-items:center;gap:10px}
+.shop-waehrung-beauty{flex:0 0 auto;width:64px;height:64px;object-fit:contain}
+.kisten-ergebnis-seltenheit{display:inline-flex;align-items:center;gap:6px}
+.kisten-ergebnis-plakette{width:22px;height:22px}

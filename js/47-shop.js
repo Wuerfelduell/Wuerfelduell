@@ -23,6 +23,12 @@
   const artwork=(kind,expand)=>typeof window.WDButtonArtwork==="function"?window.WDButtonArtwork(kind,expand):"";
   const rev=()=>typeof ASSET_REV!=="undefined"?ASSET_REV:"0";
   const KISTENBILD=stufe=>`assets/ui/v28/png/chests/${stufe}/chest-${stufe}-closed.webp?v=${rev()}`;
+  // Shop-Bilder aus Asset-Auftrag V3, Pakete A bis C: Waehrungen, Pakete,
+  // Seltenheitsplaketten. Reiter, Baender und Hintergrund folgen.
+  const SHOPBILD=pfad=>`assets/ui/v28/png/shop/${pfad}?v=${rev()}`;
+  const WAEHRUNG_ICON={marken:"currency/duellmarke-icon.webp",kerne:"currency/wuerfelkern-icon.webp"};
+  const PLAKETTE=seltenheit=>SHOPBILD(`rarity/rarity-${String(seltenheit).replace("_","-")}.webp`);
+  const bildTag=(src,klasse)=>`<img class="${klasse}" src="${src}" alt="" draggable="false" aria-hidden="true">`;
   const PAKETE=[
     {id:"kerne-1",name:"Eine Handvoll Kerne",menge:80},
     {id:"kerne-2",name:"Beutel voller Kerne",menge:250},
@@ -50,8 +56,8 @@
     const list=document.getElementById("prestigeShopList");
     if(!head||!equipped||!list) return;
     head.insertAdjacentHTML("beforeend",
-      `<div class="prestige-wallet shop-wallet" data-waehrung="marken"><span>${tr("Duellmarken")}</span><strong id="shopWalletMarken">0</strong></div>`+
-      `<div class="prestige-wallet shop-wallet" data-waehrung="kerne"><span>${tr("Würfelkerne")}</span><strong id="shopWalletKerne">0</strong></div>`);
+      `<div class="prestige-wallet shop-wallet" data-waehrung="marken"><span>${tr("Duellmarken")}</span><strong id="shopWalletMarken">${bildTag(SHOPBILD(WAEHRUNG_ICON.marken),"shop-wallet-icon")}<b>0</b></strong></div>`+
+      `<div class="prestige-wallet shop-wallet" data-waehrung="kerne"><span>${tr("Würfelkerne")}</span><strong id="shopWalletKerne">${bildTag(SHOPBILD(WAEHRUNG_ICON.kerne),"shop-wallet-icon")}<b>0</b></strong></div>`);
     const tabs=document.createElement("div");tabs.className="shop-tabs";tabs.setAttribute("role","tablist");
     [["chests","Kisten","gameplay/reward-gift.svg"],["trophies","Trophäen","gameplay/trophy.svg"],["currency","Währung","gameplay/xp-star.svg"]].forEach(([key,label,pfad])=>{
       const b=document.createElement("button");b.type="button";b.className="shop-tab-btn";b.dataset.shopTab=key;b.setAttribute("role","tab");
@@ -74,8 +80,8 @@
     const p=profil();
     const w=S.wallet(p);
     const marken=document.getElementById("shopWalletMarken"),kerne=document.getElementById("shopWalletKerne");
-    if(marken) marken.textContent=String(w.marken);
-    if(kerne) kerne.textContent=String(w.kerne);
+    if(marken) marken.querySelector("b").textContent=String(w.marken);
+    if(kerne) kerne.querySelector("b").textContent=String(w.kerne);
     screen.querySelectorAll(".shop-tab-btn").forEach(b=>{const aktiv=b.dataset.shopTab===tab;b.classList.toggle("aktiv",aktiv);b.setAttribute("aria-selected",aktiv?"true":"false");});
     screen.querySelector("#shopTabTrophies").classList.toggle("hidden",tab!=="trophies");
     screen.querySelector("#shopTabChests").classList.toggle("hidden",tab!=="chests");
@@ -90,7 +96,7 @@
     const zeilen=S.SELTENHEITEN.map(s=>{
       const leer=!S.pool(s).length;
       const schutz=s==="epic"&&c.schutzBonus>0?` <em class="shop-chance-schutz">(+${c.schutzBonus} ${tr("Schutz")})</em>`:"";
-      return `<tr data-seltenheit="${s}"${leer?' class="leer"':""}><th><span class="shop-seltenheit-punkt" style="--sf:${S.SELTENHEIT_FARBEN[s]}"></span>${esc(S.SELTENHEIT_NAMEN[s])}</th><td>${String(c[s]).replace(".",",")} %${schutz}</td><td class="shop-chance-pool">${leer?tr("noch keine Würfel"):`${S.pool(s).length} ${tr("Würfel")}`}</td></tr>`;
+      return `<tr data-seltenheit="${s}"${leer?' class="leer"':""}><th>${bildTag(PLAKETTE(s),"shop-seltenheit-plakette")}${esc(S.SELTENHEIT_NAMEN[s])}</th><td>${String(c[s]).replace(".",",")} %${schutz}</td><td class="shop-chance-pool">${leer?tr("noch keine Würfel"):`${S.pool(s).length} ${tr("Würfel")}`}</td></tr>`;
     }).join("");
     const leere=S.SELTENHEITEN.filter(s=>!S.pool(s).length);
     const rueckfall=leere.length?`<div class="shop-chancen-hinweis">${tr("Fällt der Wurf auf eine Stufe ohne Würfel, rutscht er eine Stufe tiefer.")}</div>`:"";
@@ -108,19 +114,19 @@
     const karten=S.STUFEN.map(stufe=>{
       const kiste=S.KISTEN[stufe];
       const offen=chancenOffen.has(stufe);
-      const knopf=(waehrung,preis,label,pfad)=>{
+      const knopf=(waehrung,preis,label)=>{
         if(preis==null) return "";
         const reicht=w[waehrung]>=preis;
-        return `<button type="button" class="prestige-item-action prestige-item-buy gold shop-kaufen" data-kaufe="${stufe}:${waehrung}" ${reicht?"":"disabled"} aria-label="${esc(`${tr(kiste.name)}: ${preis} ${tr(label)}`)}">${artwork("gold")}${icon(pfad)}<span>${preis} · ${tr(label)}</span></button>`;
+        return `<button type="button" class="prestige-item-action prestige-item-buy gold shop-kaufen" data-kaufe="${stufe}:${waehrung}" ${reicht?"":"disabled"} aria-label="${esc(`${tr(kiste.name)}: ${preis} ${tr(label)}`)}">${artwork("gold")}${bildTag(SHOPBILD(WAEHRUNG_ICON[waehrung]),"shop-waehrung-icon")}<span>${preis} · ${tr(label)}</span></button>`;
       };
       return `<div class="prestige-item shop-kiste" data-stufe="${stufe}">
-        <div class="prestige-item-kicker">${tr("Kiste")} · ${tr(S.SELTENHEIT_NAMEN[stufe])}</div>
+        <div class="prestige-item-kicker">${bildTag(PLAKETTE(stufe),"shop-kicker-plakette")}${tr("Kiste")} · ${tr(S.SELTENHEIT_NAMEN[stufe])}</div>
         <img class="shop-kiste-bild" src="${KISTENBILD(stufe)}" alt="" loading="lazy" draggable="false">
         <div class="prestige-item-name">${tr(kiste.name)}</div>
         <div class="prestige-item-desc">${tr("Geöffnet")}: ${k.geoeffnet[stufe]||0}</div>
         <button type="button" class="shop-chancen-toggle" data-chancen="${stufe}" aria-expanded="${offen}">${icon("navigation/info.svg")}<span>${offen?tr("Chancen verbergen"):tr("Chancen anzeigen")}</span></button>
         <div class="shop-chancen"${offen?"":" hidden"}>${chancenTabelle(stufe,p)}</div>
-        <div class="shop-kiste-kauf">${knopf("marken",kiste.marken,"Duellmarken","gameplay/xp-star.svg")}${knopf("kerne",kiste.kerne,"Würfelkerne","gameplay/dice.svg")}</div>
+        <div class="shop-kiste-kauf">${knopf("marken",kiste.marken,"Duellmarken")}${knopf("kerne",kiste.kerne,"Würfelkerne")}</div>
       </div>`;
     }).join("");
     box.innerHTML=`<div class="shop-kisten-kopf"><div class="shop-schutz">${icon("gameplay/shield.svg")}<span>${schutzText}</span></div>${hinweis?`<div class="shop-hinweis" role="status">${esc(hinweis)}</div>`:""}</div><div class="shop-kisten-grid">${karten}</div>`;
@@ -132,14 +138,14 @@
     const box=screen.querySelector("#shopTabCurrency");
     const pakete=PAKETE.map(paket=>`<div class="prestige-item shop-paket" data-paket="${paket.id}">
         <div class="prestige-item-kicker">${tr("Würfelkerne")}</div>
-        <div class="shop-paket-bild">${icon("gameplay/dice.svg")}</div>
+        <div class="shop-paket-bild">${bildTag(SHOPBILD(`packs/${paket.id}.webp`),"shop-paket-img")}</div>
         <div class="prestige-item-name">${tr(paket.name)}</div>
         <div class="prestige-item-desc">${paket.menge} ${tr("Würfelkerne")}</div>
         <button type="button" class="prestige-item-action shop-echtgeld" data-echtgeld="${paket.id}" aria-disabled="true">${artwork("navy")}${icon("gameplay/locked.svg")}<span>${tr("Bald verfügbar")}</span></button>
       </div>`).join("");
     box.innerHTML=`<div class="shop-waehrung-info">
-        <p><strong>${tr("Duellmarken")}</strong> · ${tr("verdienst du in jedem Duell und in der Kampagne. Sie kaufen Common-, Rare- und Epic-Kisten.")}</p>
-        <p><strong>${tr("Würfelkerne")}</strong> · ${tr("sind die Premium-Währung für Rare-, Epic- und Legendary-Kisten. Sie sind noch nicht sammelbar; der Kauf ist in Vorbereitung.")}</p>
+        <p class="shop-waehrung-zeile">${bildTag(SHOPBILD("currency/duellmarke-beauty.webp"),"shop-waehrung-beauty")}<span><strong>${tr("Duellmarken")}</strong> · ${tr("verdienst du in jedem Duell und in der Kampagne. Sie kaufen Common-, Rare- und Epic-Kisten.")}</span></p>
+        <p class="shop-waehrung-zeile">${bildTag(SHOPBILD("currency/wuerfelkern-beauty.webp"),"shop-waehrung-beauty")}<span><strong>${tr("Würfelkerne")}</strong> · ${tr("sind die Premium-Währung für Rare-, Epic- und Legendary-Kisten. Sie sind noch nicht sammelbar; der Kauf ist in Vorbereitung.")}</span></p>
         <table class="shop-einnahmen"><tbody>${Object.entries(S.EINNAHMEN).map(([k,v])=>`<tr><th>${tr(S.EINNAHME_NAMEN[k])}</th><td>+${v}</td></tr>`).join("")}</tbody></table>
       </div><div class="shop-kisten-grid shop-pakete">${pakete}</div>`;
     // Bewusst ohne Wirkung: es gibt keine Zahlungsanbindung.
