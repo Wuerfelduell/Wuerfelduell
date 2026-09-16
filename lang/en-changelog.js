@@ -5,6 +5,8 @@
   if (!pack) return;
 
   Object.assign(pack.exact, {
+    "Das Online-Icon im Hauptmenü sitzt drei Pixel höher und damit optisch auf einer Höhe mit Schwertern, Burg und Buch": "The Online icon in the main menu sits three pixels higher, visually level with the swords, the castle and the book",
+    "Die vier Kern-Pakete im Reiter Währung haben ihre Mengen: 35, 200, 500 und 1500 Würfelkerne": "The four core packs in the Currency tab have their amounts: 35, 200, 500 and 1500 Dice Cores",
     "Die gezogene Karte zeigt die Seltenheit als Plakette mit Namen unter dem Würfel; Rahmen und Aufleuchten folgen weiterhin der tatsächlichen Seltenheit des Würfels": "The drawn card shows the rarity as a badge with its name below the die; frame and glow still follow the die's actual rarity",
     "Der Würfel sitzt mittig im Bildfenster der Karte, und jede Karte leuchtet beim Aufdecken in ihrer Seltenheitsfarbe auf": "The die sits centred in the card's picture window, and every card glows in its rarity colour when revealed",
     "Die Kaufknöpfe im Kistenmenü sind ein einziger Goldknopf: das Knopfbild deckt den Knopf ohne Versatz und der Text bleibt einzeilig – unter 720 px stehen nur Symbol und Preis": "The buy buttons in the chest menu are a single gold button: the artwork covers the button without offset and the text stays on one line; below 720 px only the symbol and the price are shown",

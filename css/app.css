@@ -11940,6 +11940,11 @@ html[data-v28-rework="2"] #mainMenu #menuCampaignBtn .menu-icon img,
 html[data-v28-rework="2"] #mainMenu #menuTutorialBtn .menu-icon img{
   transform:translateY(-2px);
 }
+/* Der Globus fuellt seine Zeichenflaeche bis 116 von 128 Einheiten und
+   liegt damit optisch tiefer als Schwerter, Burg und Buch. */
+html[data-v28-rework="2"] #mainMenu #menuOnlineBtn .menu-icon img{
+  transform:translateY(-3px);
+}
 html[data-v28-rework="2"] #mainMenu .menu-actions button.menu-profile,
 html[data-v28-rework="2"] #mainMenu .menu-actions button.menu-account,
 html[data-v28-rework="2"] #mainMenu .menu-actions button.menu-achievements,

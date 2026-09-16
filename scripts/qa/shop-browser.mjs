@@ -175,6 +175,8 @@ try{
   await p.click('#prestigeShopScreen .shop-tab-btn[data-shop-tab="currency"]');await p.waitForTimeout(200);
   const pakete=await p.evaluate(()=>document.querySelectorAll('#shopTabCurrency [data-echtgeld]').length);
   pruefe('Vier Kern-Pakete als Vorschau',pakete,4);
+  const mengen=await p.evaluate(()=>[...document.querySelectorAll('#shopTabCurrency .shop-preisschild-text')].map(e=>e.textContent.trim()).join('/'));
+  pruefe('Paketmengen 35 / 200 / 500 / 1500 Kerne',mengen,'35/200/500/1500');
   // aria-disabled gilt Playwright als "nicht aktiv"; der Nutzer kann trotzdem
   // tippen, also wird der Tipp erzwungen und das Ergebnis gemessen.
   await p.click('#shopTabCurrency [data-echtgeld="kerne-4"]',{force:true});await p.waitForTimeout(200);
@@ -205,7 +207,7 @@ try{
   await e.close();
 }catch(e){absturz=e;}
 
-const ERWARTET=38;
+const ERWARTET=39;
 let fehler=ergebnisse.length<ERWARTET?1:0;
 if(fehler)console.log(`ACHTUNG: nur ${ergebnisse.length} von ${ERWARTET} Zusicherungen erreicht.`);
 const breite=Math.max(1,...ergebnisse.map(r=>r[0].length));

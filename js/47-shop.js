@@ -31,9 +31,9 @@
   const PLAKETTE=seltenheit=>SHOPBILD(`rarity/rarity-${String(seltenheit).replace("_","-")}.webp`);
   const bildTag=(src,klasse)=>`<img class="${klasse}" src="${src}" alt="" draggable="false" aria-hidden="true">`;
   const PAKETE=[
-    {id:"kerne-1",name:"Eine Handvoll Kerne",menge:80},
-    {id:"kerne-2",name:"Beutel voller Kerne",menge:250},
-    {id:"kerne-3",name:"Schatulle voller Kerne",menge:600},
+    {id:"kerne-1",name:"Eine Handvoll Kerne",menge:35},
+    {id:"kerne-2",name:"Beutel voller Kerne",menge:200},
+    {id:"kerne-3",name:"Schatulle voller Kerne",menge:500},
     {id:"kerne-4",name:"Truhe voller Kerne",menge:1500}
   ];
 
