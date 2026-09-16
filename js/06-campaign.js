@@ -1423,6 +1423,10 @@
     if(!campaignMode) return false;
     const heroAlive=players.some(p=>p.campaignTeam==="hero" && p.hp>0);
     const enemyAlive=players.some(p=>p.campaignTeam==="enemy" && p.hp>0);
+    if(!roundWinnerHandled&&(!heroAlive||!enemyAlive)){
+      const winningTeam=!heroAlive?"enemy":"hero";
+      window.WDOnlineStats?.game?.finish?.(players.map((p,i)=>p.campaignTeam===winningTeam?i:null).filter(i=>i!=null));
+    }
     if(trioCampaignMode){
       if(!heroAlive) return finishTrioCampaignEncounter(false);
       if(!enemyAlive) return finishTrioCampaignEncounter(true);

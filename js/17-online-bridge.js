@@ -406,6 +406,7 @@
   function exportOnlineState(actionId="",actionType=""){
     return {
       schema:6,
+      statsReport:cloneJson(gameContext?.statsRound?.report,null),
       seq:onlineSession.lastStateSeq+1,
       actionId:String(actionId||""),
       actionType:String(actionType||""),
@@ -419,6 +420,7 @@
         return copy;
       }),
       battle:{
+        statsRound:cloneJson(gameContext?.statsRound,null),
         attackFace,attackTarget,attackHits,attackDamage,firstAttackRoll,currentAttackRollNewHits,
         baseRerollUsed,loadedDiceUsed,lastBaseRollIndices:[...lastBaseRollIndices],attackPowerUsed,precisionUses,momentumBonus,
         bloodPriceNeighbors:[...bloodPriceNeighbors],bloodRushActiveThisAttack,doubleTapApplied,
@@ -480,6 +482,7 @@
     roundWinnerIndex=b.roundWinnerIndex==null?null:Number(b.roundWinnerIndex);
     nextRoundAbilityRolls=cloneJson(b.nextRoundAbilityRolls,[])||[];
     roundStats=cloneJson(b.roundStats,[])||[];
+    gameContext.statsRound=cloneJson(b.statsRound,null);
     turnDamageThisTurn=cloneJson(b.turnDamageThisTurn,[])||[];
     secondAbilityDraftBusy=!!b.secondAbilityDraftBusy;
     secondAbilityDraftIndex=b.secondAbilityDraftIndex==null?null:Number(b.secondAbilityDraftIndex);
@@ -848,6 +851,8 @@
     campaignEncounterId=null;campaignProfileId=null;campaignMetrics=freshCampaignMetrics();
     encounterRuntime={ruleIds:[],phaseRuleIds:[],phaseTriggered:false,firstStrikeUsed:new Set(),armorUsed:new Set(),turnStarts:{}};
     gameContext={mode:`online-${localModeId}`,returnScreen:"menu",profileId:localProfileId||null,encounterId:null,roomCode:String(match.roomCode||"")};
+    gameContext.statsRoomId=match.statsRoomId||null;
+    gameContext.statsMatchId=match.id||null;
 
     resetTutorialUi();
     nextRoundPrepBtn.classList.add("hidden");

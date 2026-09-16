@@ -19,6 +19,7 @@
       loadedSixToFive:0
     }));
     turnDamageThisTurn=players.map(()=>0);
+    window.WDOnlineStats?.game?.begin?.();
   }
 
   function recordD6(index,value){

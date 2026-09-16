@@ -5,6 +5,9 @@
   if (!pack) return;
 
   Object.assign(pack.exact, {
+    "Neue abgeschlossene Kämpfe tragen zur globalen Fähigkeitsstatistik bei: lokale Gastprofile zählen unter dem angemeldeten Hauptkonto mit": "New completed battles contribute to global ability statistics: local guest profiles count under the signed-in main account",
+    "Offline-Ergebnisse werden nachgereicht; Online-Ergebnisse werden gemeinsam mit dem Kampfabschluss gespeichert": "Offline results are uploaded later; online results are saved together with the battle's completion",
+    "Grundlage für globale Fähigkeitsstatistiken vorbereitet; die automatische Erfassung ist noch nicht aktiviert": "Foundation for global ability statistics prepared; automatic collection is not enabled yet",
     "Die Shop-Reiter tragen gemalte Embleme: Truhe, Pokal und Währung": "The shop tabs carry painted emblems: chest, trophy and currency",
     "Das Ergebnis der Kistenöffnung steht auf einem Band: Gold für „Neu!“, Navy für „Doppelt“ mit der Rückgabe": "The chest-opening result sits on a ribbon: gold for New!, navy for Duplicate with the refund",
     "Die Kern-Pakete zeigen ihre Menge auf einem gemalten Preisschild mit Kern-Symbol": "The core packs show their amount on a painted price plate with the core symbol",

@@ -493,6 +493,7 @@
   }
 
   function commitRoundToStorage(winnerIndex){
+    window.WDOnlineStats?.game?.finish?.([winnerIndex]);
     saveData.global.completedRounds=(saveData.global.completedRounds||0)+1;
     players.forEach((p,i)=>{
       const profile=profileForPlayer(i);

@@ -1,16 +1,21 @@
 {
   "name": "wuerfelduell",
   "private": true,
-  "version": "28.12.55",
+  "version": "28.12.56",
   "type": "module",
   "scripts": {
     "build": "npm run build:styles",
     "build:styles": "node scripts/build-styles.mjs",
-    "check": "node scripts/build-styles.mjs --check && node scripts/verify-build.mjs && node scripts/validate-endgame.mjs && node scripts/validate-supabase.mjs",
+    "check": "node scripts/build-styles.mjs --check && node scripts/verify-build.mjs && node scripts/validate-endgame.mjs && node scripts/validate-supabase.mjs && npm run check:online-stats",
     "check:endgame": "node scripts/validate-endgame.mjs",
-    "check:supabase": "node scripts/validate-supabase.mjs"
+    "check:supabase": "node scripts/validate-supabase.mjs",
+    "check:online-stats": "node scripts/qa/online-stats.mjs && node scripts/qa/online-stats-capture.mjs && node scripts/qa/online-stats-db.mjs"
   },
   "engines": {
     "node": ">=20"
+  },
+  "devDependencies": {
+    "@electric-sql/pglite": "0.5.8",
+    "fake-indexeddb": "6.2.5"
   }
 }
