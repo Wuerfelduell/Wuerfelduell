@@ -1,0 +1,203 @@
+/* ===== Kistentest: Knopf im Hauptmenue und Kistenbuehne =====
+   Die Kistenoeffnung nach dem Kisten-Brief (docs/KISTEN-BRIEF.md):
+   Koerper, Licht und Deckel sind getrennte Ebenen, der Deckel wird per
+   rotateX um sein Scharnier nach hinten gekippt. Die Geometrie hier ist
+   die des Briefs in Prozent der 512er-Leinwand - Scharnier bei y=205,
+   Naht bei y=240. Solange die Bilddateien fehlen, zeigt jede Ebene ihren
+   Messrahmen an genau der Stelle, an der das Bild einmal liegen wird.
+
+   Kein Bild-URL in dieser Datei: alle Pfade setzt js/45-kistentest.js
+   mit ASSET_REV. --kt ist das Tempo (1 = normal); bei reduzierter
+   Bewegung setzt das Skript es herunter, die Dauern rechnen damit. */
+
+/* Der Knopf traegt den vorhandenen Navy-Knopfrahmen, so gedehnt wie er
+   auch im Fähigkeitswähler und im Trophy Shop sitzt. Das Label steht in
+   der Reihe mit Icon und Plakette, nicht wie bei den grossen Knoepfen
+   absolut in der Mitte. */
+html[data-v28-rework="2"] #mainMenu .menu-actions button.menu-kistentest,
+#mainMenu .menu-actions button.menu-kistentest{
+  grid-column:1/-1;position:relative;display:flex;align-items:center;justify-content:center;gap:8px;text-align:center;
+  min-height:56px;padding:10px 24px;border:0;border-radius:0;box-shadow:none;
+  background:var(--dd-frame-button-navy) center/100% 100% no-repeat;color:#fff3d6;
+  font-family:Georgia,"Times New Roman",serif;font-size:clamp(15px,4.2vw,19px);font-weight:700;letter-spacing:.02em;
+  text-shadow:0 1px 3px rgba(0,0,0,.46)}
+html[data-v28-rework="2"] #mainMenu .menu-actions button.menu-kistentest .menu-primary-label{
+  position:static;transform:none;white-space:nowrap}
+#mainMenu .menu-actions button.menu-kistentest .menu-icon{
+  flex:0 0 auto;width:clamp(26px,7vw,34px);height:clamp(26px,7vw,34px);font-size:0;filter:none;line-height:1}
+#mainMenu .menu-actions button.menu-kistentest .menu-kistentest-badge{
+  padding:2px 8px;border-radius:999px;border:1px solid rgba(255,230,160,.55);
+  font-size:.58em;letter-spacing:.12em;text-transform:uppercase;opacity:.9}
+
+.kisten-overlay{
+  --kt:1;
+  --kisten-farbe:#e8d9b0;
+  position:fixed;inset:0;z-index:12060;display:flex;flex-direction:column;align-items:center;
+  padding:max(10px,env(safe-area-inset-top)) 16px max(12px,env(safe-area-inset-bottom));gap:8px;
+  /* Deckend: das Hauptmenue darunter ist hell und schimmert sonst durch. */
+  background:radial-gradient(ellipse at 50% 42%,#1c2c4e,#060e1c 68%);
+  color:#f7ecd0;font-family:Georgia,"Times New Roman",serif;overflow:hidden;
+  -webkit-user-select:none;user-select:none;touch-action:manipulation}
+.kisten-overlay[data-stufe="rare"]{--kisten-farbe:#4a8ff0}
+.kisten-overlay[data-stufe="epic"]{--kisten-farbe:#b06cff}
+.kisten-overlay[data-stufe="legendary"]{--kisten-farbe:#ffd45a}
+
+.kisten-kopf{width:100%;max-width:520px;display:flex;flex-wrap:wrap;align-items:center;gap:8px}
+.kisten-kicker{flex:1 1 auto;font-size:11px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:#f0cf7a}
+.kisten-untertitel{width:100%;order:3;font-size:12px;color:#c7d0dd;line-height:1.35}
+.kisten-stufen{width:100%;order:4;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px}
+.kisten-stufen button{
+  min-height:38px;padding:6px 4px;border-radius:0;border:1px solid rgba(215,173,82,.5);
+  background:linear-gradient(160deg,#12375f,#082643);color:#e9e2cf;font-family:inherit;font-size:clamp(11px,3.1vw,13px);font-weight:700}
+.kisten-stufen button.aktiv{background:linear-gradient(160deg,#5a3d1c,#3a2410);border-color:#f0cf7a;color:#fff3d6;box-shadow:0 0 0 1px rgba(240,207,122,.35) inset}
+.kisten-schliessen,.kisten-nochmal{
+  min-height:38px;padding:6px 16px;border-radius:0;border:1px solid rgba(215,173,82,.78);
+  background:linear-gradient(180deg,#fffdf6,#f2e8d4);color:#1b2433;font-family:inherit;font-size:14px;font-weight:700}
+.kisten-fehlend{
+  flex:0 0 auto;width:100%;max-width:520px;max-height:13vh;overflow:auto;padding:6px 10px;box-sizing:border-box;
+  border:1px dashed rgba(255,190,90,.7);background:rgba(90,40,10,.35);
+  font-size:12px;line-height:1.35;color:#ffd9a0}
+.kisten-fehlend ul{margin:3px 0 0;padding-left:18px;font-family:ui-monospace,Menlo,monospace;font-size:11px}
+
+/* Buehne: quadratisch, die Kiste fuellt sie. Ein Klick irgendwo auf der
+   Buehne oeffnet die Kiste - wie das Tippen in Clash Royale. */
+.kisten-buehne{
+  position:relative;flex:0 0 auto;width:min(82vw,38vh,400px);aspect-ratio:1/1;margin-top:4px;
+  display:grid;place-items:center;cursor:pointer;perspective:1100px}
+.kisten-fx{position:absolute;inset:-40% -30%;width:160%;height:180%;pointer-events:none;z-index:6}
+.kisten-kiste{position:absolute;inset:0;transform-origin:50% 88%;z-index:2}
+.kisten-ebene{position:absolute;inset:0;pointer-events:none}
+.kisten-ebene img{position:absolute;inset:0;width:100%;height:100%;display:block;-webkit-user-drag:none}
+.kisten-ebene[data-fehlt] img{display:none}
+
+/* Messrahmen, solange ein Bild fehlt: die Geometrie aus dem Brief. */
+.kisten-ebene[data-fehlt]::before{
+  content:"";position:absolute;border:2px dashed rgba(255,220,150,.75);box-sizing:border-box;background:rgba(40,30,60,.55)}
+.kisten-ebene[data-fehlt]::after{
+  content:attr(data-teil);position:absolute;left:50%;transform:translateX(-50%);
+  font:700 10px/1.2 ui-monospace,Menlo,monospace;letter-spacing:.08em;color:#ffe6b0;text-transform:uppercase;white-space:nowrap}
+.kisten-body[data-fehlt]::before{left:10.9%;right:10.9%;top:39.1%;bottom:11.7%;border-radius:4% 4% 6% 6%;background:rgba(30,22,40,.85)}
+.kisten-body[data-fehlt]::after{top:41%}
+.kisten-lid[data-fehlt]::before{left:10.9%;right:10.9%;top:18%;bottom:50.8%;border-radius:22% 22% 3% 3%/40% 40% 3% 3%;background:rgba(70,50,90,.9)}
+.kisten-lid[data-fehlt]::after{top:24%}
+.kisten-lid-inner[data-fehlt]::before{left:10.9%;right:10.9%;top:18%;bottom:50.8%;border-radius:22% 22% 3% 3%/40% 40% 3% 3%;background:rgba(40,20,30,.95);border-color:rgba(255,140,140,.75)}
+.kisten-lid-inner[data-fehlt]::after{top:24%;color:#ffc0c0}
+.kisten-licht[data-fehlt]::before{left:14.8%;right:14.8%;top:9.7%;bottom:20.1%;border-radius:50%;background:radial-gradient(circle,var(--kisten-farbe) 0%,transparent 62%);border-style:dotted;opacity:.9}
+.kisten-licht[data-fehlt]::after{top:0}
+.kisten-strahlen[data-fehlt]::before{inset:2%;border-radius:50%;background:transparent;border-style:dotted;border-color:var(--kisten-farbe);opacity:.55}
+.kisten-strahlen[data-fehlt]::after{top:3%;color:var(--kisten-farbe)}
+.kisten-schatten[data-fehlt]::before{left:12%;right:12%;top:22%;bottom:22%;border-radius:50%;background:rgba(0,0,0,.45);border-color:rgba(255,255,255,.3)}
+.kisten-schatten[data-fehlt]::after{top:38%}
+
+/* Ebenen von hinten nach vorn: Schatten, Strahlen, Raum (Koerper, Licht,
+   Deckel). Der Raum ist der 3D-Kontext; darin liegt der Deckel bei z=0
+   und kippt nach hinten weg. */
+.kisten-schatten{top:auto;bottom:-6%;height:20%;left:0;right:0;z-index:0;opacity:0;transform:scale(.4);
+  transition:opacity calc(var(--kt)*300ms) ease-out,transform calc(var(--kt)*300ms) ease-out}
+.kisten-strahlen{inset:-50%;z-index:1;opacity:0;transform:rotate(0deg);will-change:transform,opacity}
+.kisten-raum{position:absolute;inset:0;z-index:2;transform-style:preserve-3d}
+.kisten-body{z-index:1}
+.kisten-licht{z-index:2;opacity:0;transform:scale(.7);mix-blend-mode:screen;
+  transition:opacity calc(var(--kt)*700ms) ease-in,transform calc(var(--kt)*700ms) ease-in}
+.kisten-deckel{
+  position:absolute;inset:0;z-index:3;transform-style:preserve-3d;
+  /* Scharnier: hintere Oberkante des Koerpers, y = 205 von 512. */
+  transform-origin:50% 40%;transform:rotateX(0deg)}
+.kisten-lid,.kisten-lid-inner{backface-visibility:hidden;-webkit-backface-visibility:hidden}
+/* Die Unterseite ist in derselben Lage gemalt wie der Deckel (Schlosskante
+   unten). Um das Scharnier gespiegelt, liegt sie genau hinter ihm und
+   erscheint, sobald der Deckel ueber 90 Grad offen ist. */
+.kisten-lid-inner{transform:rotateX(180deg);transform-origin:50% 40%}
+
+/* Phasen. Der Zustand steht am Overlay in data-phase, damit ein Pruefstand
+   die Reihenfolge mitlesen kann. */
+.kisten-overlay[data-phase="aus"] .kisten-kiste{opacity:0}
+.kisten-overlay[data-phase="ankunft"] .kisten-kiste{animation:kistenFall calc(var(--kt)*900ms) cubic-bezier(.3,.9,.4,1.15) both}
+.kisten-overlay[data-phase="ankunft"] .kisten-schatten{transition-delay:calc(var(--kt)*450ms)}
+.kisten-overlay:not([data-phase="aus"]):not([data-phase="ankunft"]) .kisten-schatten{opacity:.9;transform:scale(1)}
+.kisten-overlay[data-phase="warten"] .kisten-kiste{animation:kistenAtmen calc(var(--kt)*2600ms) ease-in-out infinite}
+.kisten-overlay[data-phase="wackeln"] .kisten-kiste{animation:kistenWackeln calc(var(--kt)*1400ms) ease-in-out both}
+.kisten-overlay[data-phase="wackeln"] .kisten-licht{opacity:.85;transform:scale(1)}
+.kisten-overlay[data-phase="wackeln"] .kisten-strahlen,
+.kisten-overlay[data-phase="aufspringen"] .kisten-strahlen,
+.kisten-overlay[data-phase="enthuellung"] .kisten-strahlen,
+.kisten-overlay[data-phase="fertig"] .kisten-strahlen{
+  opacity:.9;animation:kistenStrahlen calc(var(--kt)*14000ms) linear infinite,kistenAufblenden calc(var(--kt)*1200ms) ease-out both}
+.kisten-overlay[data-phase="aufspringen"] .kisten-licht,
+.kisten-overlay[data-phase="enthuellung"] .kisten-licht,
+.kisten-overlay[data-phase="fertig"] .kisten-licht{opacity:1;transform:scale(1.12)}
+.kisten-overlay[data-phase="aufspringen"] .kisten-deckel,
+.kisten-overlay[data-phase="enthuellung"] .kisten-deckel,
+.kisten-overlay[data-phase="fertig"] .kisten-deckel{
+  animation:kistenDeckelAuf calc(var(--kt)*620ms) cubic-bezier(.2,1.4,.5,1) both}
+.kisten-overlay[data-phase="aufspringen"] .kisten-kiste{animation:kistenHopser calc(var(--kt)*520ms) ease-out both}
+.kisten-overlay[data-phase="enthuellung"] .kisten-kiste,
+.kisten-overlay[data-phase="fertig"] .kisten-kiste{transform:scale(.86) translateY(3%);transition:transform calc(var(--kt)*500ms) ease-in-out}
+
+.kisten-hinweis{
+  position:absolute;left:50%;bottom:-13%;transform:translateX(-50%);z-index:7;pointer-events:none;
+  padding:6px 14px;border:1px solid rgba(240,207,122,.55);background:rgba(8,20,38,.72);
+  font-size:13px;font-weight:700;letter-spacing:.06em;color:#ffe9b8;white-space:nowrap;opacity:0;
+  transition:opacity calc(var(--kt)*300ms)}
+.kisten-overlay[data-phase="warten"] .kisten-hinweis{opacity:1;animation:kistenHinweis calc(var(--kt)*1600ms) ease-in-out infinite}
+
+/* Karten: fliegen aus der Oeffnung, landen in der Reihe, drehen sich um. */
+.kisten-karten{
+  position:relative;width:min(92vw,520px);flex:0 0 auto;min-height:clamp(108px,36vw,182px);display:flex;justify-content:center;align-items:flex-start;gap:10px;
+  padding-top:14px;perspective:1100px}
+.kisten-karte{
+  position:relative;width:clamp(78px,26vw,132px);aspect-ratio:512/704;opacity:0;
+  transform:translate(0,-60%) scale(.15);transform-style:preserve-3d}
+.kisten-karte.fliegt{animation:kistenKarteFlug calc(var(--kt)*520ms) cubic-bezier(.25,.8,.35,1.05) both}
+.kisten-karte.gelandet{opacity:1;transform:none}
+.kisten-karte-innen{position:absolute;inset:0;transform-style:preserve-3d;transition:transform calc(var(--kt)*640ms) cubic-bezier(.4,.1,.3,1)}
+.kisten-karte.gedreht .kisten-karte-innen{transform:rotateY(180deg)}
+.kisten-karte-rueck,.kisten-karte-vorn{position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden}
+.kisten-karte-vorn{transform:rotateY(180deg)}
+.kisten-karte-rueck .kisten-ebene,.kisten-karte-vorn .kisten-ebene{inset:0}
+.kisten-karte .kisten-ebene[data-fehlt]::before{inset:0;border-radius:7.8%/5.7%;background:linear-gradient(160deg,#12375f,#082643)}
+.kisten-karte-vorn .kisten-ebene[data-fehlt]::before{background:linear-gradient(160deg,#3a2a12,#1b1208)}
+.kisten-karte .kisten-ebene[data-fehlt]::after{top:3%;font-size:8px}
+/* Bildfeld x 64..448 / y 64..448 der 512x704-Karte, Namensband y 520..640. */
+.kisten-karte-design{position:absolute;left:12.5%;top:9.1%;width:75%;height:54.5%;object-fit:contain;filter:drop-shadow(0 4px 6px rgba(0,0,0,.45))}
+.kisten-karte-name{
+  position:absolute;left:8%;right:8%;top:73.9%;height:17%;display:grid;place-items:center;text-align:center;
+  font-size:clamp(8px,2.4vw,12px);font-weight:700;line-height:1.1;color:#fff3d6;text-shadow:0 1px 3px rgba(0,0,0,.6)}
+.kisten-karte.gedreht{filter:drop-shadow(0 0 10px var(--kisten-farbe))}
+.kisten-fuss{display:flex;gap:8px;min-height:38px;opacity:0;pointer-events:none;transition:opacity calc(var(--kt)*300ms)}
+.kisten-overlay[data-phase="fertig"] .kisten-fuss{opacity:1;pointer-events:auto}
+
+@keyframes kistenFall{
+  0%{opacity:0;transform:translateY(-70%) scale(.9)}
+  55%{opacity:1;transform:translateY(0) scale(1.02,.96)}
+  72%{transform:translateY(-6%) scale(.98,1.03)}
+  86%{transform:translateY(0) scale(1.01,.99)}
+  100%{opacity:1;transform:translateY(0) scale(1)}}
+@keyframes kistenAtmen{0%,100%{transform:translateY(0)}50%{transform:translateY(-2%)}}
+@keyframes kistenWackeln{
+  0%{transform:rotate(0)}
+  10%{transform:rotate(-2deg)}20%{transform:rotate(2deg)}
+  30%{transform:rotate(-3deg)}40%{transform:rotate(3deg)}
+  50%{transform:rotate(-4deg) scale(1.01)}60%{transform:rotate(4deg) scale(1.01)}
+  70%{transform:rotate(-5deg) scale(1.02)}80%{transform:rotate(5deg) scale(1.02)}
+  90%{transform:rotate(-3deg) scale(1.03)}100%{transform:rotate(0) scale(1.03)}}
+@keyframes kistenHopser{0%{transform:scale(1.03)}30%{transform:translateY(-5%) scale(1.06,.97)}100%{transform:none}}
+@keyframes kistenDeckelAuf{0%{transform:rotateX(0)}100%{transform:rotateX(-112deg)}}
+@keyframes kistenStrahlen{to{transform:rotate(360deg)}}
+@keyframes kistenAufblenden{from{opacity:0}to{opacity:.9}}
+@keyframes kistenHinweis{0%,100%{transform:translateX(-50%) translateY(0)}50%{transform:translateX(-50%) translateY(-4px)}}
+@keyframes kistenKarteFlug{
+  0%{opacity:0;transform:translate(var(--kisten-karte-dx,0),-60%) scale(.15) rotate(var(--kisten-karte-drehung,0deg))}
+  35%{opacity:1}
+  100%{opacity:1;transform:none}}
+
+@media(max-height:640px){
+  .kisten-buehne{width:min(82vw,32vh,400px)}
+  .kisten-fehlend{max-height:10vh}
+  .kisten-karte{width:clamp(64px,22vw,110px)}
+  .kisten-karten{min-height:clamp(88px,30vw,152px);padding-top:10px}
+}
+@media(prefers-reduced-motion:reduce){
+  .kisten-overlay[data-phase="warten"] .kisten-kiste,.kisten-overlay[data-phase="warten"] .kisten-hinweis{animation:none}
+  .kisten-overlay[data-phase] .kisten-strahlen{animation:kistenAufblenden calc(var(--kt)*400ms) ease-out both}
+}

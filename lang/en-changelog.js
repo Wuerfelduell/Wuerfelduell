@@ -5,6 +5,10 @@
   if (!pack) return;
 
   Object.assign(pack.exact, {
+    "Neuer Knopf „Kistentest“ im Hauptmenü: er zeigt die Kistenöffnung im Stil von Clash Royale, schaltet aber nichts frei und speichert nichts": "New Chest test button in the main menu: it shows the chest opening in the style of Clash Royale, but unlocks nothing and saves nothing",
+    "Die Kiste fällt herein, wartet auf den Tipp, wackelt, springt auf und legt drei Karten mit zufälligen Würfeldesigns vor sich ab": "The chest drops in, waits for the tap, shakes, springs open and lays out three cards with random dice designs in front of it",
+    "Vier Stufen zum Umschalten: Gewöhnlich, Selten, Episch, Legendär": "Four tiers to switch between: Common, Rare, Epic, Legendary",
+    "Die Kistenbilder fehlen noch – bis sie da sind, laufen Messrahmen mit der Geometrie aus dem Kisten-Brief, und die Fläche listet die fehlenden Dateien auf": "The chest images are still missing; until they arrive, measuring frames with the geometry from the chest brief stand in, and the screen lists the missing files",
     "Der Nachglow des Kantenläufers wird jetzt gefahren statt gemalt: er besteht aus einzelnen Punkten auf derselben Bahn wie der Kopf": "The edge runner's afterglow is now travelled rather than painted: it is made of single dots on the same track as the head",
     "Damit laufen Kopf und Schweif überall gleich schnell – vorher war der Streifen an den Ecken bis zu 1,5-mal so schnell wie der Punkt": "Head and trail therefore move at the same speed everywhere; previously the streak ran up to 1.5 times faster than the dot at the corners",
     "Das gilt auf jeder Fensterbreite, ohne abgestimmte Werte: die alte Lösung stimmte nur auf einer Breite": "This holds at every window width with no tuned values: the old solution was only correct at one width",

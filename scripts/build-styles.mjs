@@ -18,7 +18,8 @@ export const styleOrder = [
   "29-v28-korrekturen.css",
   "32-nachtraege.css",
   "36-v28-hierarchie.css",
-  "37-abschluss.css"
+  "37-abschluss.css",
+  "38-kisten.css"
 ];
 
 async function createBundle() {
