@@ -128,12 +128,16 @@ try{
     const key=Object.entries(DICE_DESIGNS).find(([,d])=>d.previewAsset&&src.startsWith(d.previewAsset))?.[0]||null;
     return {anzahl:karten.length,gedreht:!!k?.classList.contains('gedreht'),seltenheit:k?.dataset.seltenheit,key,poolRarity:key?DICE_DESIGNS[key].rarity:null,
       ergebnisText:ov.querySelector('.kisten-ergebnis')?.textContent.trim()||'',ergebnisFarbe:ov.dataset.ergebnis,
+      front:k?.querySelector('.kisten-karte-vorn-bild img')?.getAttribute('src')||'',
       weiter:!ov.querySelector('.kisten-weiter').classList.contains('hidden'),nochmal:ov.querySelector('.kisten-nochmal').classList.contains('hidden')};
   });
   pruefe('Genau eine Karte, umgedreht',ergebnis.anzahl===1&&ergebnis.gedreht,true);
   pruefe('Design stammt aus dem Kistenpool (traegt eine rarity)',['common','rare','super_rare','epic','legendary'].includes(ergebnis.poolRarity),true);
   pruefe('Karte traegt die Seltenheit des Designs',ergebnis.seltenheit===ergebnis.poolRarity&&ergebnis.ergebnisFarbe===ergebnis.poolRarity,true);
   pruefe('Ergebniszeile sagt Neu oder Doppelt',/Neu!|Doppelt/.test(ergebnis.ergebnisText),true);
+  // Der Kartenrahmen folgt dem Wuerfel, nicht der Kiste (Common-Kiste gekauft).
+  const frontSoll={common:'common',rare:'rare',super_rare:'rare',epic:'epic',legendary:'legendary'}[ergebnis.poolRarity];
+  pruefe('Kartenrahmen folgt der Wuerfelseltenheit',ergebnis.front.includes(`/${frontSoll}/chest-card-front-${frontSoll}.webp`),true);
   pruefe('Shopmodus: Weiter statt Nochmal',ergebnis.weiter&&ergebnis.nochmal,true);
   console.log(`      gezogen: ${ergebnis.key} (${ergebnis.seltenheit}) · ${ergebnis.ergebnisText}`);
   const nachher=await save(p);const prof=nachher.profiles[0];
@@ -183,7 +187,7 @@ try{
   await e.close();
 }catch(e){absturz=e;}
 
-const ERWARTET=31;
+const ERWARTET=32;
 let fehler=ergebnisse.length<ERWARTET?1:0;
 if(fehler)console.log(`ACHTUNG: nur ${ergebnisse.length} von ${ERWARTET} Zusicherungen erreicht.`);
 const breite=Math.max(1,...ergebnisse.map(r=>r[0].length));

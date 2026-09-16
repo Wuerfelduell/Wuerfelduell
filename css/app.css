@@ -13432,8 +13432,8 @@ html[data-v28-rework="2"] #prestigeShopScreen .prestige-wallet{min-width:0;paddi
 @media(max-width:400px){.shop-kisten-grid{grid-template-columns:1fr}}
 /* Unten mehr Polster: der gemalte Rahmen traegt dort ein Ornamentband,
    auf dem die Kaufzeile sonst sitzt. */
-/* Kisten- und Paketkarten: der ruhige Navy-Kachelrahmen (navy-tile.webp)
-   als border-image, Slice und Breite auf beiden Achsen im gleichen
+/* Kisten- und Paketkarten: der ruhige Navy-Kachelrahmen (Variable
+   --dd-frame-navy-tile) als border-image, Slice und Breite auf beiden Achsen im gleichen
    Verhaeltnis, damit die Ecken nicht verzerren. Kein .prestige-item mehr:
    dessen Kosmetikrahmen wurde auf Kistenbreite zu stark gedehnt. */
 #prestigeShopScreen .shop-kiste,
@@ -13478,6 +13478,11 @@ html[data-v28-rework="2"] #prestigeShopScreen .shop-echtgeld{display:flex;align-
 .kisten-overlay[data-ergebnis="legendary"]{--kisten-farbe:#ffd45a}
 .kisten-karten.einzeln .kisten-karte{width:clamp(120px,40vw,200px)}
 .kisten-karten.einzeln{min-height:clamp(165px,55vw,275px)}
+/* Tinte des Namensbands folgt der Kartenvorderseite, also der Seltenheit
+   des Wuerfels: Rare (und Super Rare auf der Rare-Karte) navy, sonst
+   elfenbein. Die Karte schlaegt damit die Kistenstufe des Overlays. */
+.kisten-karte[data-seltenheit]{--kisten-karte-tinte:#1b2433;--kisten-karte-tinte-schatten:rgba(255,255,255,.55)}
+.kisten-karte[data-seltenheit="rare"],.kisten-karte[data-seltenheit="super_rare"]{--kisten-karte-tinte:#fff3d6;--kisten-karte-tinte-schatten:rgba(0,0,0,.6)}
 .kisten-karte[data-seltenheit="common"]{--kisten-farbe:#b8b8b8}
 .kisten-karte[data-seltenheit="rare"]{--kisten-farbe:#4a8ff0}
 .kisten-karte[data-seltenheit="super_rare"]{--kisten-farbe:#2fd3a6}

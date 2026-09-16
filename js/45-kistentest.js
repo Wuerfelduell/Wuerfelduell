@@ -26,6 +26,10 @@
   const STUFEN_NAMEN={common:"Gewöhnlich",rare:"Selten",epic:"Episch",legendary:"Legendär"};
   const STUFEN_FARBEN={common:"#e8d9b0",rare:"#4a8ff0",epic:"#b06cff",legendary:"#ffd45a"};
   const WURZEL="assets/ui/v28/png/chests/";
+  // Kartenvorderseite nach der Seltenheit des GEZOGENEN Wuerfels, nicht
+  // nach der Kiste (Vorgabe 16.09.). Fuer Super Rare gibt es noch keine
+  // eigene Vorderseite; bis sie geliefert ist, traegt sie die Rare-Karte.
+  const KARTEN_FRONT={common:"common",rare:"rare",super_rare:"rare",epic:"epic",legendary:"legendary"};
   const TEST_KARTEN=1;
   const tr=value=>window.t?window.t(String(value)):String(value);
   const rev=()=>typeof ASSET_REV!=="undefined"?ASSET_REV:"0";
@@ -179,7 +183,8 @@
       const rueckEbene=ebene("kisten-karte-rueck-bild","card-back");setzeBild(rueckEbene,bild("shared/chest-card-back.webp"));
       rueck.appendChild(rueckEbene);
       const vorn=el("div","kisten-karte-vorn");
-      const vornEbene=ebene("kisten-karte-vorn-bild","card-front");setzeBild(vornEbene,bild(`${stufe}/chest-card-front-${stufe}.webp`));
+      const front=KARTEN_FRONT[k.seltenheit]||stufe;
+      const vornEbene=ebene("kisten-karte-vorn-bild","card-front");setzeBild(vornEbene,bild(`${front}/chest-card-front-${front}.webp`));
       vorn.appendChild(vornEbene);
       const designBild=el("img","kisten-karte-design");designBild.src=k.bild;designBild.alt="";designBild.draggable=false;
       vorn.appendChild(designBild);

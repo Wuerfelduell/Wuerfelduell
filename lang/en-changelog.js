@@ -5,6 +5,7 @@
   if (!pack) return;
 
   Object.assign(pack.exact, {
+    "Der Rahmen der gezogenen Würfelkarte richtet sich nach der Seltenheit des Würfels, nicht mehr nach der Kiste – Super Rare trägt vorerst die Rare-Karte": "The frame of the drawn dice card now follows the die's rarity instead of the chest; Super Rare uses the Rare card for now",
     "Aus jeder Kiste kommt genau ein Würfel, auch im Kistentest": "Exactly one die comes out of every chest, in the chest test as well",
     "Die Kiste bleibt nach dem Öffnen in voller Größe stehen, statt für die Karten zu schrumpfen": "The chest stays at full size after opening instead of shrinking to make room for the cards",
     "Die Kistenkarten im Shop tragen einen ruhigeren Navy-Rahmen – der verzierte Kosmetikrahmen wurde auf Kistenbreite zu stark gedehnt": "The chest cards in the shop carry a calmer navy frame; the ornate cosmetics frame was stretched too far at chest width",
