@@ -5,6 +5,12 @@
   if (!pack) return;
 
   Object.assign(pack.exact, {
+    "Die gezogene Karte zeigt die Seltenheit als Plakette mit Namen unter dem Würfel; Rahmen und Aufleuchten folgen weiterhin der tatsächlichen Seltenheit des Würfels": "The drawn card shows the rarity as a badge with its name below the die; frame and glow still follow the die's actual rarity",
+    "Der Würfel sitzt mittig im Bildfenster der Karte, und jede Karte leuchtet beim Aufdecken in ihrer Seltenheitsfarbe auf": "The die sits centred in the card's picture window, and every card glows in its rarity colour when revealed",
+    "Die Kaufknöpfe im Kistenmenü sind ein einziger Goldknopf: das Knopfbild deckt den Knopf ohne Versatz und der Text bleibt einzeilig – unter 720 px stehen nur Symbol und Preis": "The buy buttons in the chest menu are a single gold button: the artwork covers the button without offset and the text stays on one line; below 720 px only the symbol and the price are shown",
+    "Bei geöffnetem Info-Knopf sind die Kaufknöpfe dieser Kiste ausgeblendet": "While the info button is open, that chest's buy buttons are hidden",
+    "„Bald verfügbar“ im Reiter Währung ist derselbe Goldknopf mit Schloss statt eines fremden Rahmens": "“Coming soon” in the Currency tab is the same gold button with a lock instead of a foreign frame",
+    "Die Kistenkarten stehen unter 640 px einspaltig, und der Kicker bleibt frei vom Info-Knopf": "The chest cards stack in a single column below 640 px, and the kicker stays clear of the info button",
     "Statistikfehler blockieren weder Rundenstart noch Online-Matchende; fehlgeschlagene Online-Erfassungen werden privat protokolliert": "Statistics errors no longer block round starts or online match endings; failed online captures are logged privately",
     "Der Rahmen der gezogenen Würfelkarte richtet sich nach der Seltenheit des Würfels, nicht mehr nach der Kiste – Super Rare trägt vorerst die Rare-Karte": "The frame of the drawn dice card now follows the die's rarity instead of the chest; Super Rare uses the Rare card for now",
     "Aus jeder Kiste kommt genau ein Würfel, auch im Kistentest": "Exactly one die comes out of every chest, in the chest test as well",

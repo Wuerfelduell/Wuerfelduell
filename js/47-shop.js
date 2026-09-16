@@ -118,7 +118,7 @@
       const knopf=(waehrung,preis,label)=>{
         if(preis==null) return "";
         const reicht=w[waehrung]>=preis;
-        return `<button type="button" class="prestige-item-action prestige-item-buy gold shop-kaufen" data-kaufe="${stufe}:${waehrung}" ${reicht?"":"disabled"} aria-label="${esc(`${tr(kiste.name)}: ${preis} ${tr(label)}`)}">${artwork("gold")}${bildTag(SHOPBILD(WAEHRUNG_ICON[waehrung]),"shop-waehrung-icon")}<span>${preis} · ${tr(label)}</span></button>`;
+        return `<button type="button" class="prestige-item-action prestige-item-buy shop-kaufen" data-kaufe="${stufe}:${waehrung}" ${reicht?"":"disabled"} aria-label="${esc(`${tr(kiste.name)}: ${preis} ${tr(label)}`)}">${artwork("gold")}${bildTag(SHOPBILD(WAEHRUNG_ICON[waehrung]),"shop-waehrung-icon")}<span>${preis}<span class="shop-kauf-label"> · ${tr(label)}</span></span></button>`;
       };
       // Ruhiger Navy-Rahmen statt der stark verzierten Kosmetikkarte: die
       // wurde auf Kistenbreite zu stark gedehnt. Chancen liegen hinter dem
@@ -130,7 +130,7 @@
         <div class="prestige-item-name">${tr(kiste.name)}</div>
         <div class="prestige-item-desc">${tr("Geöffnet")}: ${k.geoeffnet[stufe]||0}</div>
         <div class="shop-chancen"${offen?"":" hidden"}>${chancenTabelle(stufe,p)}</div>
-        <div class="shop-kiste-kauf">${knopf("marken",kiste.marken,"Duellmarken")}${knopf("kerne",kiste.kerne,"Würfelkerne")}</div>
+        ${offen?"":`<div class="shop-kiste-kauf">${knopf("marken",kiste.marken,"Duellmarken")}${knopf("kerne",kiste.kerne,"Würfelkerne")}</div>`}
       </div>`;
     }).join("");
     box.innerHTML=`<div class="shop-kisten-kopf"><div class="shop-schutz">${icon("gameplay/shield.svg")}<span>${schutzText}</span></div>${hinweis?`<div class="shop-hinweis" role="status">${esc(hinweis)}</div>`:""}</div><div class="shop-kisten-grid">${karten}</div>`;
@@ -145,7 +145,7 @@
         <div class="shop-paket-bild">${bildTag(SHOPBILD(`packs/${paket.id}.webp`),"shop-paket-img")}</div>
         <div class="prestige-item-name">${tr(paket.name)}</div>
         <div class="shop-preisschild" aria-label="${esc(`${paket.menge} ${tr("Würfelkerne")}`)}">${bildTag(SHOPBILD("ribbons/price-plate.webp"),"shop-preisschild-bild")}${bildTag(SHOPBILD(WAEHRUNG_ICON.kerne),"shop-preisschild-icon")}<span class="shop-preisschild-text">${paket.menge}</span></div>
-        <div class="shop-kiste-kauf"><button type="button" class="prestige-item-action shop-echtgeld" data-echtgeld="${paket.id}" aria-disabled="true">${artwork("navy")}${icon("gameplay/locked.svg")}<span>${tr("Bald verfügbar")}</span></button></div>
+        <div class="shop-kiste-kauf"><button type="button" class="prestige-item-action prestige-item-buy shop-kaufen shop-echtgeld" data-echtgeld="${paket.id}" aria-disabled="true">${artwork("gold")}${icon("gameplay/locked.svg")}<span>${tr("Bald verfügbar")}</span></button></div>
       </div>`).join("");
     box.innerHTML=`<div class="shop-waehrung-info">
         <p class="shop-waehrung-zeile">${bildTag(SHOPBILD("currency/duellmarke-beauty.webp"),"shop-waehrung-beauty")}<span><strong>${tr("Duellmarken")}</strong> · ${tr("verdienst du in jedem Duell und in der Kampagne. Sie kaufen Common-, Rare- und Epic-Kisten.")}</span></p>

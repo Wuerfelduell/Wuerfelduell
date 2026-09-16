@@ -152,11 +152,20 @@
 .kisten-karte-vorn .kisten-ebene[data-fehlt]::before{background:linear-gradient(160deg,#3a2a12,#1b1208)}
 .kisten-karte .kisten-ebene[data-fehlt]::after{top:3%;font-size:8px}
 /* Bildfeld x 64..448 / y 64..448 der 512x704-Karte, Namensband y 520..640. */
-.kisten-karte-design{position:absolute;left:12.5%;top:9.1%;width:75%;height:54.5%;object-fit:contain;filter:drop-shadow(0 4px 6px rgba(0,0,0,.45))}
+/* Wuerfel etwas tiefer als das Bildfeld des Briefs (y 64..448), damit er
+   im gemalten Rahmen mittig sitzt; darunter die Seltenheit, dann das
+   Namensband. */
+.kisten-karte-design{position:absolute;left:12.5%;top:13.5%;width:75%;height:50%;object-fit:contain;filter:drop-shadow(0 4px 6px rgba(0,0,0,.45))}
+.kisten-karte-seltenheit{position:absolute;left:10%;right:10%;top:64.5%;height:8.5%;display:flex;align-items:center;justify-content:center;gap:5px;
+  font-size:clamp(8px,2.3vw,11px);font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--kisten-farbe);text-shadow:0 1px 2px rgba(0,0,0,.6);white-space:nowrap}
+.kisten-karte-seltenheit-plakette{width:1.5em;height:1.5em}
+.kisten-karte-glow{position:absolute;inset:2%;border-radius:8%;box-shadow:0 0 22px 8px var(--kisten-farbe);opacity:0;transition:opacity calc(var(--kt)*500ms) ease-out;pointer-events:none}
+.kisten-karte.gedreht .kisten-karte-glow{opacity:.85}
+.kisten-karte.gedreht[data-seltenheit="epic"] .kisten-karte-glow,.kisten-karte.gedreht[data-seltenheit="legendary"] .kisten-karte-glow{box-shadow:0 0 32px 12px var(--kisten-farbe);opacity:1}
 .kisten-karte-name{
   position:absolute;left:8%;right:8%;top:73.9%;height:17%;display:grid;place-items:center;text-align:center;
   font-size:clamp(8px,2.4vw,12px);font-weight:700;line-height:1.1;color:var(--kisten-karte-tinte);text-shadow:0 1px 2px var(--kisten-karte-tinte-schatten)}
-.kisten-karte.gedreht{filter:drop-shadow(0 0 10px var(--kisten-farbe))}
+
 .kisten-fuss{display:flex;gap:8px;min-height:38px;opacity:0;pointer-events:none;transition:opacity calc(var(--kt)*300ms)}
 .kisten-overlay[data-phase="fertig"] .kisten-fuss{opacity:1;pointer-events:auto}
 
@@ -224,8 +233,9 @@ html[data-v28-rework="2"] #prestigeShopScreen .prestige-wallet{min-width:0;paddi
 .shop-hinweis{padding:8px 10px;border:1px dashed rgba(255,190,90,.7);background:rgba(90,40,10,.35);color:#ffd9a0;font-size:13px}
 .shop-kisten-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
 /* Nie mehr als zwei Spalten: die gemalten Kartenrahmen brauchen Breite,
-   sonst brechen Namen und die Chancentabelle. */
-@media(max-width:400px){.shop-kisten-grid{grid-template-columns:1fr}}
+   sonst brechen Namen und die Chancentabelle. Unter 560px reicht es auch
+   fuer zwei nicht: bis 560px lief der Kicker in den Info-Knopf. */
+@media(max-width:639px){.shop-kisten-grid{grid-template-columns:1fr}}
 /* Unten mehr Polster: der gemalte Rahmen traegt dort ein Ornamentband,
    auf dem die Kaufzeile sonst sitzt. */
 /* Kisten- und Paketkarten: der ruhige Navy-Kachelrahmen (Variable
@@ -237,6 +247,10 @@ html[data-v28-rework="2"] #prestigeShopScreen .prestige-wallet{min-width:0;paddi
   position:relative;box-sizing:border-box;display:flex;flex-direction:column;align-items:center;text-align:center;gap:6px;
   padding:22px 18px 20px;border-style:solid;border-color:transparent;border-width:18px;
   border-image:var(--dd-frame-navy-tile) 150 fill / 18px stretch;border-radius:0;color:#f7edda;background:none}
+/* Der Info-Knopf reicht bis 36px in die Karte; Kicker erst darunter, und
+   seitlich so viel Polster, dass ein langer Kicker vor dem Knopf umbricht. */
+#prestigeShopScreen .shop-kiste{padding-top:34px}
+#prestigeShopScreen .shop-kiste .prestige-item-kicker{padding:0 24px;line-height:1.3}
 #prestigeShopScreen .shop-info-knopf{
   position:absolute;top:6px;right:6px;z-index:2;width:30px;height:30px;padding:0;border-radius:50%;
   border:1px solid rgba(240,207,122,.8);background:linear-gradient(160deg,#5a3d1c,#3a2410);color:#fff3d6;
@@ -256,9 +270,6 @@ html[data-v28-rework="2"] #prestigeShopScreen .prestige-wallet{min-width:0;paddi
 .shop-chancen-hinweis{margin-top:6px;font-size:11px;color:#a9b4c4;line-height:1.35;white-space:normal}
 .shop-kiste-kauf{display:grid;gap:6px;width:100%;margin-top:auto}
 #prestigeShopScreen .shop-kiste-kauf .prestige-item-action{width:100%}
-/* Ohne Wirkung, aber im Knopfbild: der Verlaufshintergrund der Basisklasse
-   wuerde das Navy-Knopfbild (z-index -1) verdecken. */
-html[data-v28-rework="2"] #prestigeShopScreen .shop-echtgeld{display:flex;align-items:center;justify-content:center;gap:6px;min-height:50px;padding:10px 38px;background:none;border:0;color:#fff3d6;cursor:default}
 .shop-waehrung-info{margin-bottom:10px;padding:10px 12px;border:1px solid rgba(215,173,82,.4);background:rgba(8,38,67,.55);color:#e9e2cf;font-size:13px;line-height:1.45}
 .shop-waehrung-info p{margin:0 0 8px}
 .shop-einnahmen{width:100%;border-collapse:collapse;font-size:12px}
@@ -284,7 +295,7 @@ html[data-v28-rework="2"] #prestigeShopScreen .shop-echtgeld{display:flex;align-
 .kisten-karte[data-seltenheit="super_rare"]{--kisten-farbe:#2fd3a6}
 .kisten-karte[data-seltenheit="epic"]{--kisten-farbe:#b06cff}
 .kisten-karte[data-seltenheit="legendary"]{--kisten-farbe:#ffd45a}
-.kisten-karte.gedreht[data-seltenheit="epic"],.kisten-karte.gedreht[data-seltenheit="legendary"]{filter:drop-shadow(0 0 16px var(--kisten-farbe)) drop-shadow(0 0 4px var(--kisten-farbe))}
+
 .kisten-ergebnis{min-height:0;display:grid;gap:4px;justify-items:center;text-align:center}
 .kisten-ergebnis-zeile{display:flex;flex-wrap:wrap;justify-content:center;gap:8px;font-size:14px;font-weight:700}
 .kisten-ergebnis-seltenheit{padding:3px 10px;border:1px solid var(--kisten-farbe);color:var(--kisten-farbe);letter-spacing:.06em;text-transform:uppercase;font-size:12px}
@@ -301,16 +312,24 @@ html[data-v28-rework="2"] #prestigeShopScreen .shop-echtgeld{display:flex;align-
    37-abschluss.css positioniert; die Kaufknoepfe hier sitzen in einer
    eigenen Zeile und brauchen den Bezug selbst - sonst malt sich das
    Knopfbild als Band quer ueber den Bildschirm. */
-html[data-v28-rework="2"] #prestigeShopScreen .shop-kaufen,
-html[data-v28-rework="2"] #prestigeShopScreen .shop-echtgeld{position:relative;overflow:hidden;isolation:isolate}
-html[data-v28-rework="2"] #prestigeShopScreen .shop-kaufen>.prestige-button-artwork,
-html[data-v28-rework="2"] #prestigeShopScreen .shop-echtgeld>.prestige-button-artwork{position:absolute;inset:0;z-index:-1}
+html[data-v28-rework="2"] #prestigeShopScreen .shop-kaufen{position:relative;overflow:hidden;isolation:isolate;
+  display:inline-flex;align-items:center;justify-content:center;gap:6px;height:56.32px;min-height:0;padding:0 24px;
+  border:0;border-radius:0;background:none;color:#2c1904;font-size:14px;white-space:nowrap;overflow-wrap:normal;
+  text-shadow:0 1px 0 rgba(255,255,255,.55);box-shadow:none}
+html[data-v28-rework="2"] #prestigeShopScreen .shop-kaufen:disabled{opacity:.55;filter:none}
+html[data-v28-rework="2"] #prestigeShopScreen .shop-echtgeld{opacity:.72;cursor:default}
+/* Der Knopf ist genau so hoch wie das Knopfbild (Kachelhoehe 56.32px bei
+   21.12px Ornamentspalten). Das Trophaeen-Shop-Bild sitzt vertikal
+   zentriert ueber transform; hier fuellt es den Knopf ohne Versatz. */
+html[data-v28-rework="2"] #prestigeShopScreen .shop-kaufen>.prestige-button-artwork{position:absolute;inset:0;height:auto;transform:none;z-index:-1}
+/* Unter 720px sind die Kaufknoepfe (ein- wie zweispaltig) zu schmal fuer
+   das Waehrungswort; das Muenz- bzw. Kernsymbol traegt die Information. */
+@media(max-width:719px){#prestigeShopScreen .shop-kauf-label{display:none}}
 
 /* Shop-Bilder aus Asset-Auftrag V3 (Pakete A bis C). */
 #prestigeShopScreen .prestige-wallet strong{display:inline-flex;align-items:center;justify-content:center;gap:5px}
 .shop-wallet-icon{width:22px;height:22px;flex:0 0 auto}
 .shop-waehrung-icon{width:22px;height:22px;flex:0 0 auto;margin-right:4px}
-html[data-v28-rework="2"] #prestigeShopScreen .shop-kaufen{display:inline-flex;align-items:center;justify-content:center}
 .shop-seltenheit-plakette{width:18px;height:18px;vertical-align:middle;margin-right:6px}
 .shop-kicker-plakette{width:16px;height:16px;vertical-align:middle;margin-right:5px}
 .shop-paket-img{display:block;width:100%;height:100%;object-fit:contain;filter:drop-shadow(0 6px 8px rgba(0,0,0,.45))}

@@ -50,6 +50,7 @@ async function seite(opts={}){
   return p;
 }
 const save=p=>p.evaluate(()=>JSON.parse(localStorage.getItem('wuerfelduell_save_v1')||'{}'));
+const WD_NAMEN={common:'Common',rare:'Rare',super_rare:'Super Rare',epic:'Epic',legendary:'Legendary'};
 
 try{
   const p=await seite();
@@ -89,6 +90,12 @@ try{
   pruefe('Common-Kiste: 75 / 20 / 4 / 0,9 / 0,1',chancen.common.map(z=>z.wert).join('/'),'75/20/4/0,9/0,1');
   pruefe('Kein Pool mehr leer: keine Zeile markiert',chancen.common.filter(z=>z.leer).map(z=>z.s).join(','),'');
   pruefe('Legendary nirgends ueber 5 %',chancen.legendary.length===4&&chancen.legendary.every(v=>v<=5),true);
+  // Bei offenem Info verschwinden die Kaufknoepfe dieser Kiste, beim Schliessen kommen sie wieder.
+  const offenKauf=await p.evaluate(()=>document.querySelectorAll('#shopTabChests .shop-kiste[data-stufe="common"] [data-kaufe]').length);
+  await p.click('#shopTabChests .shop-kiste[data-stufe="common"] [data-chancen]');await p.waitForTimeout(150);
+  const zuKauf=await p.evaluate(()=>({kauf:document.querySelectorAll('#shopTabChests .shop-kiste[data-stufe="common"] [data-kaufe]').length,chancen:document.querySelector('#shopTabChests .shop-kiste[data-stufe="common"] .shop-chancen').hidden}));
+  pruefe('Offenes Info blendet die Kaufknoepfe aus',offenKauf,0);
+  pruefe('Geschlossenes Info zeigt die Kaufknoepfe wieder',zuKauf.kauf===1&&zuKauf.chancen===true,true);
 
   // 4. Ohne Guthaben kein Kauf.
   const knoepfe=await p.evaluate(()=>{
@@ -108,6 +115,13 @@ try{
     aktiv:[...document.querySelectorAll('#shopTabChests [data-kaufe]')].filter(b=>!b.disabled).map(b=>b.dataset.kaufe)}));
   pruefe('Testguthaben: 2000 Marken, 200 Kerne',`${guthaben.marken}/${guthaben.kerne}`,'2000/200');
   pruefe('Mit Guthaben sind alle sechs Kaufknoepfe aktiv',guthaben.aktiv.length,6);
+  // Ein Knopf, ein Bild: das Knopfbild fuellt den Knopf ohne Versatz, der
+  // Text bleibt einzeilig (vorher: Bild 28px zu hoch, Text zweizeilig).
+  const knopfMass=await p.evaluate(()=>[...document.querySelectorAll('#shopTabChests .shop-kaufen')].map(b=>{
+    const r=b.getBoundingClientRect(),a=b.querySelector('.prestige-button-artwork').getBoundingClientRect(),s=b.querySelector('span:last-child').getBoundingClientRect();
+    return {versatz:Math.round(a.top-r.top),hoehe:Math.round(a.height-r.height),zeilen:Math.round(s.height/16)};}));
+  pruefe('Kaufknopf: Bild deckt den Knopf ohne Versatz',knopfMass.every(m=>m.versatz===0&&m.hoehe===0),true);
+  pruefe('Kaufknopf: Text einzeilig',knopfMass.every(m=>m.zeilen===1),true);
 
   // 6. Kauf der Common-Kiste.
   const vorher=await save(p);
@@ -129,6 +143,8 @@ try{
     return {anzahl:karten.length,gedreht:!!k?.classList.contains('gedreht'),seltenheit:k?.dataset.seltenheit,key,poolRarity:key?DICE_DESIGNS[key].rarity:null,
       ergebnisText:ov.querySelector('.kisten-ergebnis')?.textContent.trim()||'',ergebnisFarbe:ov.dataset.ergebnis,
       front:k?.querySelector('.kisten-karte-vorn-bild img')?.getAttribute('src')||'',
+      seltenheitAufKarte:k?.querySelector('.kisten-karte-seltenheit')?.textContent.trim()||'',
+      glow:k?parseFloat(getComputedStyle(k.querySelector('.kisten-karte-glow')).opacity):0,
       weiter:!ov.querySelector('.kisten-weiter').classList.contains('hidden'),nochmal:ov.querySelector('.kisten-nochmal').classList.contains('hidden')};
   });
   pruefe('Genau eine Karte, umgedreht',ergebnis.anzahl===1&&ergebnis.gedreht,true);
@@ -137,6 +153,8 @@ try{
   pruefe('Ergebniszeile sagt Neu oder Doppelt',/Neu!|Doppelt/.test(ergebnis.ergebnisText),true);
   // Der Kartenrahmen folgt dem Wuerfel, nicht der Kiste (Common-Kiste gekauft).
   const frontSoll={common:'common',rare:'rare',super_rare:'rare',epic:'epic',legendary:'legendary'}[ergebnis.poolRarity];
+  pruefe('Seltenheit steht auf der Karte unter dem Wuerfel',ergebnis.seltenheitAufKarte.toLowerCase()===String(WD_NAMEN[ergebnis.poolRarity]||'').toLowerCase(),true);
+  pruefe('Glow der Karte sichtbar',ergebnis.glow>0.5,true);
   pruefe('Kartenrahmen folgt der Wuerfelseltenheit',ergebnis.front.includes(`/${frontSoll}/chest-card-front-${frontSoll}.webp`),true);
   pruefe('Shopmodus: Weiter statt Nochmal',ergebnis.weiter&&ergebnis.nochmal,true);
   console.log(`      gezogen: ${ergebnis.key} (${ergebnis.seltenheit}) · ${ergebnis.ergebnisText}`);
@@ -187,7 +205,7 @@ try{
   await e.close();
 }catch(e){absturz=e;}
 
-const ERWARTET=32;
+const ERWARTET=38;
 let fehler=ergebnisse.length<ERWARTET?1:0;
 if(fehler)console.log(`ACHTUNG: nur ${ergebnisse.length} von ${ERWARTET} Zusicherungen erreicht.`);
 const breite=Math.max(1,...ergebnisse.map(r=>r[0].length));

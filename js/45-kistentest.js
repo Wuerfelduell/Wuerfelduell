@@ -178,6 +178,9 @@
       if(k.seltenheit) karte.dataset.seltenheit=k.seltenheit;
       karte.style.setProperty("--kisten-karte-dx",`${(i-(n-1)/2)*-90}%`);
       karte.style.setProperty("--kisten-karte-drehung",`${(i-(n-1)/2)*18}deg`);
+      // Glow als eigenes Element hinter der Karte: ein filter auf der
+      // 3D-Karte flacht sie ab und verschluckte den Schein teilweise.
+      karte.appendChild(el("span","kisten-karte-glow"));
       const innen=el("div","kisten-karte-innen");
       const rueck=el("div","kisten-karte-rueck");
       const rueckEbene=ebene("kisten-karte-rueck-bild","card-back");setzeBild(rueckEbene,bild("shared/chest-card-back.webp"));
@@ -188,6 +191,16 @@
       vorn.appendChild(vornEbene);
       const designBild=el("img","kisten-karte-design");designBild.src=k.bild;designBild.alt="";designBild.draggable=false;
       vorn.appendChild(designBild);
+      // Seltenheit direkt unter dem Wuerfel, im freien Feld ueber dem
+      // Namensband (y 448 bis 520 der 512x704-Karte).
+      if(k.seltenheit){
+        const namen=window.WDShop?.SELTENHEIT_NAMEN||{};
+        const sel=el("div","kisten-karte-seltenheit");sel.dataset.seltenheit=k.seltenheit;
+        const plakette=el("img","kisten-karte-seltenheit-plakette");plakette.alt="";plakette.draggable=false;
+        plakette.src=`assets/ui/v28/png/shop/rarity/rarity-${String(k.seltenheit).replace("_","-")}.webp?v=${rev()}`;
+        sel.appendChild(plakette);sel.appendChild(el("span",null,namen[k.seltenheit]||k.seltenheit));
+        vorn.appendChild(sel);
+      }
       vorn.appendChild(el("div","kisten-karte-name",k.name));
       innen.appendChild(rueck);innen.appendChild(vorn);
       karte.appendChild(innen);
@@ -202,16 +215,7 @@
     box.innerHTML="";
     if(auftrag.modus==="test"||!auftrag.karten?.length) return;
     const k=auftrag.karten[0];
-    const namen=window.WDShop?.SELTENHEIT_NAMEN||{};
     const zeile=el("div","kisten-ergebnis-zeile");
-    if(k.seltenheit){
-      const s=el("span","kisten-ergebnis-seltenheit");s.dataset.seltenheit=k.seltenheit;
-      // Seltenheitsplakette aus dem Shop-Satz (Asset-Auftrag V3, Paket C).
-      const plakette=el("img","kisten-ergebnis-plakette");plakette.alt="";plakette.draggable=false;
-      plakette.src=`assets/ui/v28/png/shop/rarity/rarity-${String(k.seltenheit).replace("_","-")}.webp?v=${rev()}`;
-      s.appendChild(plakette);s.appendChild(el("span",null,namen[k.seltenheit]||k.seltenheit));
-      zeile.appendChild(s);
-    }
     // Band aus dem Shop-Satz (Paket E): Gold fuer Neu, Navy fuer Doppelt.
     // Der Text liegt im glatten Mittelfeld des Bandes (x 12,5 bis 87,5 %).
     const band=(art,text)=>{
