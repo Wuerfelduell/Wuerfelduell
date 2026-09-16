@@ -20,7 +20,7 @@
  *   6. Kauf: Preis wird abgebucht, ohne Guthaben passiert nichts, falsche
  *      Waehrung wird abgelehnt (Common nur Marken, Legendary nur Kerne).
  *   7. Gutschriften: die Betraege aus der Tabelle landen im Guthaben.
- *   8. Der echte Datenstand: 11 Common, 8 Rare, 1 Epic, 2 Legendary in
+ *   8. Der echte Datenstand: 11 Common, 8 Rare, 4 Epic, 3 Legendary in
  *      DICE_DESIGNS (Super Rare noch leer), kein
  *      Design mit eigenem Unlock traegt eine rarity.
  */
@@ -158,7 +158,8 @@ for(const stufe of S.STUFEN){
   pruefe("Datenstand: 11 Common im Pool",anzahl("common"),11);
   pruefe("Datenstand: 8 Rare im Pool",anzahl("rare"),8);
   pruefe("Datenstand: Azure Storm ist Epic",/^\s+azure_storm:\{.*rarity:"epic"/m.test(m),true);
-  pruefe("Datenstand: Nebula Veil und Solar Relic sind Legendary",anzahl("legendary")===2&&/nebula_veil:\{.*rarity:"legendary"/.test(m)&&/solar_relic:\{.*rarity:"legendary"/.test(m),true);
+  pruefe("Datenstand: vier Epic (Azure Storm, Daemmerkathedrale, Phoenixkern, Weltenwurzel)",anzahl("epic"),4);
+  pruefe("Datenstand: drei Legendary (Nebula Veil, Solar Relic, Ereignishorizont)",anzahl("legendary")===3&&/ereignishorizont:\{.*rarity:"legendary"/.test(m)&&/nebula_veil:\{.*rarity:"legendary"/.test(m)&&/solar_relic:\{.*rarity:"legendary"/.test(m),true);
   pruefe("Datenstand: Super Rare noch leer",anzahl("super_rare"),0);
   const eigenerWeg=zeilen.filter(z=>/unlockText:/.test(z.rest)||["classic","classic_v2","sapphire_crown","amethyst_rift"].includes(z.key));
   pruefe("Datenstand: Designs mit eigenem Unlock tragen keine rarity",eigenerWeg.every(z=>!/rarity:/.test(z.rest)),true);
@@ -166,7 +167,7 @@ for(const stufe of S.STUFEN){
   pruefe("Datenstand: CSS-Designs tragen keine rarity",css.every(z=>!/rarity:/.test(z.rest)),true);
 }
 
-const ERWARTET=47;
+const ERWARTET=48;
 let fehler=ergebnisse.length<ERWARTET?1:0;
 if(fehler)console.log(`ACHTUNG: nur ${ergebnisse.length} von ${ERWARTET} Zusicherungen erreicht.`);
 const breite=Math.max(1,...ergebnisse.map(r=>r[0].length));

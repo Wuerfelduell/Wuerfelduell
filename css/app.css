@@ -12927,6 +12927,16 @@ html[data-v28-rework="2"] body.playing #game .controls>button.secondary{
 .special-big-die.d4.theme-uhrwerk{background:linear-gradient(145deg,#6b625d,#2c2825);color:#f0c98a;border-color:#c69b50}
 .special-big-die.d4.theme-duenenrelikt{background:linear-gradient(145deg,#f3d6ab,#c39a63);color:#062ba6;border-color:#8a6f3e}
 .special-big-die.d4.theme-dornenhain{background:linear-gradient(145deg,#6b4030,#2a1810);color:#9ed5ab;border-color:#4a3418}
+/* Epic- und Legendary-Lieferung (16.09.): Akzent und Glow je Design, dazu
+   der grosse D4 in den Farben des Artworks. */
+.die.theme-daemmerkathedrale{--dice-accent:#b56cf0;--dice-glow:rgba(181,108,240,.88)}
+.die.theme-phoenixkern{--dice-accent:#ff7a2a;--dice-glow:rgba(255,122,42,.9)}
+.die.theme-weltenwurzel{--dice-accent:#5fe07a;--dice-glow:rgba(95,224,122,.86)}
+.die.theme-ereignishorizont{--dice-accent:#8fb8ff;--dice-glow:rgba(143,184,255,.9)}
+.special-big-die.d4.theme-daemmerkathedrale{background:linear-gradient(145deg,#3a1a4e,#140a1e);color:#e6d3ff;border-color:#9c8aa8}
+.special-big-die.d4.theme-phoenixkern{background:linear-gradient(145deg,#8a2a0a,#2e0d05);color:#ffd9a8;border-color:#e0a050}
+.special-big-die.d4.theme-weltenwurzel{background:linear-gradient(145deg,#2c3a22,#0f160c);color:#c8f0c0;border-color:#8a9a4a}
+.special-big-die.d4.theme-ereignishorizont{background:linear-gradient(145deg,#141a3a,#05060f);color:#dfe8ff;border-color:#b8c4d8}
 
 
 /* ===== Die Matchbar auf schmalen Telefonen =====
