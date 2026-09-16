@@ -106,8 +106,6 @@ window.WD_LANG_PACKS.en = {
     "Legendär":"Legendary",
     "Fehlende Bilddateien":"Missing image files",
     "Bis sie da sind, laufen Messrahmen mit der Geometrie aus dem Kisten-Brief.":"Until they arrive, measuring frames with the geometry from the chest brief stand in.",
-    "Testguthaben buchen":"Credit test balance",
-    "Gebucht":"Credited",
     "Aus dieser Kiste kommt genau ein Würfeldesign.":"Exactly one dice design comes out of this chest.",
     "Kiste":"Chest",
     "Kisten":"Chests",

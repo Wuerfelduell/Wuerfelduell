@@ -5,6 +5,7 @@
   if (!pack) return;
 
   Object.assign(pack.exact, {
+    "Der Knopf „Testguthaben buchen“ im Trainingsfenster ist entfernt – Duellmarken gibt es nur noch aus Duellen und der Kampagne": "The “Credit test balance” button in the training window is gone; Duel Tokens now come only from duels and the campaign",
     "Das Online-Icon im Hauptmenü sitzt drei Pixel höher und damit optisch auf einer Höhe mit Schwertern, Burg und Buch": "The Online icon in the main menu sits three pixels higher, visually level with the swords, the castle and the book",
     "Die vier Kern-Pakete im Reiter Währung haben ihre Mengen: 35, 200, 500 und 1500 Würfelkerne": "The four core packs in the Currency tab have their amounts: 35, 200, 500 and 1500 Dice Cores",
     "Die gezogene Karte zeigt die Seltenheit als Plakette mit Namen unter dem Würfel; Rahmen und Aufleuchten folgen weiterhin der tatsächlichen Seltenheit des Würfels": "The drawn card shows the rarity as a badge with its name below the die; frame and glow still follow the die's actual rarity",

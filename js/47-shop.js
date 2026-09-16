@@ -185,17 +185,5 @@
     if(ev.target.closest?.("[data-shop-buy],[data-shop-equip],[data-reset-cosmetic]")&&!screen.classList.contains("hidden")) queueMicrotask(render);
   });
 
-  // Testguthaben (Trainingsfenster): bucht aufs im Shop gewaehlte Profil,
-  // sonst aufs erste. Nur zum Ansehen der Kisten ohne Spielzeit.
-  const testGuthaben=document.getElementById("testGuthabenBtn");
-  if(testGuthaben) testGuthaben.addEventListener("click",()=>{
-    const p=profil()||(typeof saveData!=="undefined"?saveData?.profiles?.[0]:null);
-    const ziel=document.querySelector("#tutorialHubModal .utility-text");
-    if(!p){if(ziel)ziel.textContent=tr("Erstelle zuerst ein Profil.");return;}
-    const w=S.buche(p,{marken:2000,kerne:200});
-    if(ziel) ziel.textContent=`${tr("Gebucht")}: +2000 ${tr("Duellmarken")}, +200 ${tr("Würfelkerne")} · ${p.name}: ${w.marken} / ${w.kerne}`;
-    if(!screen.classList.contains("hidden")) render();
-  });
-
   window.WDShopUi=Object.freeze({render,zeige:key=>{if(["chests","trophies","currency"].includes(key)){tab=key;render();}}});
 })();

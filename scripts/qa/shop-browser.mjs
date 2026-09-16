@@ -15,7 +15,7 @@
  *      Tabelle; leere Pools sind markiert; Legendary nirgends ueber 5 %.
  *   4. Ohne Guthaben ist kein Kaufknopf aktiv. Common nur fuer Marken,
  *      Legendary nur fuer Kerne.
- *   5. Testguthaben (Trainingsfenster) bucht +2000 / +200.
+ *   5. Guthaben ueber WDShop.buche, kein Testguthaben-Knopf mehr.
  *   6. Kauf: Preis wird abgebucht, die Kiste oeffnet im Shopmodus, das
  *      Ergebnis ist waehrend "warten" NICHT im DOM, danach genau eine
  *      Karte mit Seltenheit und Design aus dem Pool; Neu oder Doppelt mit
@@ -105,15 +105,18 @@ try{
   pruefe('Ohne Guthaben ist kein Kaufknopf aktiv',knoepfe.aktiv,0);
   pruefe('Common nur Marken, Legendary nur Kerne',knoepfe.keys.join(','),'common:marken,rare:marken,rare:kerne,epic:marken,epic:kerne,legendary:kerne');
 
-  // 5. Testguthaben.
+  // 5. Guthaben ueber die Datenschicht buchen (der Testguthaben-Knopf im
+  // Trainingsfenster ist seit V28.12.63 weg); der Shop zeigt es nach dem
+  // erneuten Oeffnen.
   await p.click('#prestigeShopBackBtn');await p.waitForTimeout(150);
-  await p.click('#menuTutorialBtn');await p.waitForTimeout(200);
-  await p.click('#testGuthabenBtn');await p.waitForTimeout(150);
-  await p.click('#tutorialHubCancelBtn');await p.waitForTimeout(100);
+  const gebucht=await p.evaluate(()=>{const p=saveData.profiles[0];const w=WDShop.buche(p,{marken:2000,kerne:200});saveGameData();return `${w.marken}/${w.kerne}`;});
+  pruefe('Datenschicht bucht 2000 Marken, 200 Kerne',gebucht,'2000/200');
+  const kein=await p.evaluate(()=>document.getElementById('testGuthabenBtn'));
+  pruefe('Kein Testguthaben-Knopf mehr im Trainingsfenster',kein,null);
   await p.click('#menuPrestigeShopBtn');await p.waitForTimeout(300);
   const guthaben=await p.evaluate(()=>({marken:document.getElementById('shopWalletMarken')?.textContent,kerne:document.getElementById('shopWalletKerne')?.textContent,
     aktiv:[...document.querySelectorAll('#shopTabChests [data-kaufe]')].filter(b=>!b.disabled).map(b=>b.dataset.kaufe)}));
-  pruefe('Testguthaben: 2000 Marken, 200 Kerne',`${guthaben.marken}/${guthaben.kerne}`,'2000/200');
+  pruefe('Shop zeigt 2000 Marken, 200 Kerne',`${guthaben.marken}/${guthaben.kerne}`,'2000/200');
   pruefe('Mit Guthaben sind alle sechs Kaufknoepfe aktiv',guthaben.aktiv.length,6);
   // Ein Knopf, ein Bild: das Knopfbild fuellt den Knopf ohne Versatz, der
   // Text bleibt einzeilig (vorher: Bild 28px zu hoch, Text zweizeilig).
@@ -207,7 +210,7 @@ try{
   await e.close();
 }catch(e){absturz=e;}
 
-const ERWARTET=39;
+const ERWARTET=40;
 let fehler=ergebnisse.length<ERWARTET?1:0;
 if(fehler)console.log(`ACHTUNG: nur ${ergebnisse.length} von ${ERWARTET} Zusicherungen erreicht.`);
 const breite=Math.max(1,...ergebnisse.map(r=>r[0].length));
