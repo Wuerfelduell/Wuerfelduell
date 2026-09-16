@@ -5,6 +5,8 @@
   if (!pack) return;
 
   Object.assign(pack.exact, {
+    "Online-Hauptwürfe senden die gezogenen Augen bereits im Zwischenstand; der Gast sieht sein Wurfergebnis rund eine halbe Sekunde früher und bleibt bis zur Bestätigung für weitere Aktionen gesperrt": "Online main rolls send their rolled values in the intermediate state; the guest sees its roll about half a second earlier and stays blocked from further actions until confirmation",
+    "Beim Host bleiben Augen und Summe während der Wurfanimation verborgen; Twelve heilt weiterhin erst beim Aufdecken": "On the host, rolled values and their sum stay hidden during the roll animation; Twelve still heals only when the dice are revealed",
     "Der Common-Satz ist vollständig: Slatewatch, Sandcarver und Redclay schließen ihn ab – zehn Designs in einer Bauart": "The common set is complete: Slatewatch, Sandcarver and Redclay round it off, ten designs of one build",
     "Auswählbar sind sie weiterhin nur in der Testumgebung": "They can still only be picked in the test lab",
     "Sieben weitere Würfeldesigns sind eingebaut: Frost Porcelain, Ashwood, Coppertrail, Midnight Enamel, Ironkeep, Oakbound und Mossstone": "Seven more dice designs are in: Frost Porcelain, Ashwood, Coppertrail, Midnight Enamel, Ironkeep, Oakbound and Mossstone",

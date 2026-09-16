@@ -149,6 +149,12 @@ const browserOptionen = process.env.WD_CHROMIUM ? { executablePath: process.env.
 const browsers = [];
 const messungen = [];
 const technischeFehler = [];
+// Ab dem Verlassen des Raums sind HTTP-Fehler beim Gast erwartbar: sein
+// Realtime-Abo kann noch einen Schnappschuss nachziehen, waehrend die
+// Mitgliedschaft schon geloescht ist - dd_get_battle_snapshot antwortet
+// dann mit DD_NOT_ROOM_MEMBER. Das ist die Bereinigung des Pruefstands,
+// kein Befund ueber das Spiel. Gemessen wurde zu dem Zeitpunkt laengst.
+let raeumtAuf = false;
 const berichten = () => {
   const mittel = feld => messungen.length ? Math.round(messungen.reduce((s, m) => s + m[feld], 0) / messungen.length) : null;
   const bericht = { label: process.env.WD_LABEL || "Messung", aktionen: messungen, mittelSichtbarMs: mittel("sichtbarMs"), mittelBestaetigtMs: mittel("bestaetigtMs"), technischeFehler, bestanden: !fehler };
@@ -163,7 +169,7 @@ async function seite(name, profilname) {
   await p.addInitScript(wsErsatz);
   p.on("pageerror", e => { technischeFehler.push(`${name}: ${e.message}`); fehler = 1; });
   p.on("response", r => {
-    if (r.status() >= 400) { technischeFehler.push(`${name}: HTTP ${r.status()} ${new URL(r.url()).pathname}`); fehler = 1; }
+    if (r.status() >= 400 && !raeumtAuf) { technischeFehler.push(`${name}: HTTP ${r.status()} ${new URL(r.url()).pathname}`); fehler = 1; }
   });
   // Nur im Pruefstand: Beobachtung der privaten Bridge und reproduzierbare
   // Ausgangslage. Aktionen, Engine, RPCs und Realtime bleiben der echte App-Code.
@@ -189,7 +195,9 @@ async function seite(name, profilname) {
   await p.waitForSelector("#mainMenu:not(.hidden)", { timeout: 15000 });
   await p.waitForTimeout(800);
   await p.click("#menuOnlineBtn");
-  await p.waitForTimeout(6000);
+  // Der Verbindungsaufbau liegt ausserhalb der Latenzmessung. Auf den
+  // wirklichen Zustand warten, statt langsame Anmeldung als Fehler zu werten.
+  await p.waitForFunction(() => document.querySelector("#onlineStatusDot")?.dataset.state === "online", null, { timeout: 45000 });
   return p;
 }
 
@@ -215,31 +223,40 @@ try {
 
   console.log("\n== Lobby ==");
   await host.click("#onlineCreateBtn");
-  await host.waitForTimeout(6000);
+  await host.waitForFunction(() => /^[A-Z0-9]{6}$/.test(document.querySelector("#onlineRoomCode")?.textContent || ""), null, { timeout: 45000 });
   const raum = await lage(host);
   pruefe(/^[A-Z0-9]{6}$/.test(raum.code), `der Host bekommt einen Raumcode (${raum.code})`);
   if (!/^[A-Z0-9]{6}$/.test(raum.code)) throw new Error("kein Raum");
 
   await gast.fill("#onlineJoinCode", raum.code);
   await gast.click("#onlineJoinBtn");
-  await gast.waitForTimeout(6000);
+  await gast.waitForFunction(() => document.querySelectorAll(".online-player").length === 2, null, { timeout: 45000 });
+  await host.waitForFunction(() => document.querySelectorAll(".online-player").length === 2, null, { timeout: 45000 });
   pruefe((await lage(gast)).spieler === 2, "der Gast tritt bei und sieht beide Spieler");
   pruefe((await lage(host)).spieler === 2, "der Host sieht den Gast, ohne neu zu laden");
 
   console.log("\n== Bereit und Start ==");
   await gast.click("#onlineReadyBtn");
-  await gast.waitForTimeout(2500);
+  await host.waitForFunction(() => document.querySelectorAll(".online-player.ready").length === 1, null, { timeout: 45000 });
   pruefe((await lage(host)).bereit === 1, "die Bereitmeldung des Gastes erreicht den Host");
   await host.click("#onlineReadyBtn");
-  await host.waitForTimeout(9000);
+  for (const p of [host, gast]) await p.waitForFunction(() =>
+    !document.querySelector("#game")?.classList.contains("hidden") &&
+    document.querySelector("#onlineScreen")?.classList.contains("hidden"), null, { timeout: 45000 });
   pruefe((await lage(host)).imSpiel, "der Host landet im Match");
   pruefe((await lage(gast)).imSpiel, "der Gast landet im Match");
 
   console.log("\n== Ein Zug ==");
   const vorher = await lage(host);
   const dran = vorher.knopfGesperrt ? { s: gast, n: "Gast" } : { s: host, n: "Host" };
+  const vorWurfSeq = await gast.evaluate(() => window.__wdQaBridge.session().lastStateSeq);
   await dran.s.click("#primaryBtn", { timeout: 10000 });
-  await dran.s.waitForTimeout(7000);
+  // Auch der erste Kontrollwurf gehoert noch zum Aufbau. Erst vergleichen,
+  // wenn beide Seiten den abgeschlossenen Zustand wirklich erhalten haben.
+  for (const p of [host, gast]) await p.waitForFunction(seq =>
+    window.__wdQaBridge.session().lastStateSeq > seq &&
+    !window.__wdQaBridge.session().actionPending && !isAnimating && phase === "base_select",
+    vorWurfSeq, { timeout: 45000 });
   const nachHost = await lage(host), nachGast = await lage(gast);
   pruefe(nachHost.summe !== "" && nachHost.summe !== "0", `der Wurf des ${dran.n} steht beim Host (Summe ${nachHost.summe})`);
   pruefe(nachGast.summe === nachHost.summe, `beide Seiten zeigen dieselbe Summe (${nachGast.summe})`);
@@ -260,7 +277,18 @@ try {
     renderAll();
     return window.__wdQaPublish(window.__wdQaBridge.snapshot()).seq;
   }, gastUid);
-  await gast.waitForFunction(seq => window.__wdQaBridge.session().lastStateSeq >= seq, fixtureSeq);
+  try {
+    await gast.waitForFunction(seq => window.__wdQaBridge.session().lastStateSeq >= seq, fixtureSeq);
+  } catch (err) {
+    // Nur Diagnosefelder ausgeben, niemals Identitaeten oder Zugangsdaten.
+    for (const [name, p] of [["host", host], ["gast", gast]]) console.log("Messaufbau", name, await p.evaluate(() => ({
+      seq: window.__wdQaBridge.session().lastStateSeq,
+      pending: window.__wdQaBridge.session().actionPending,
+      phase, status: document.querySelector("#onlineStatus")?.textContent,
+      hinweis: document.querySelector("#onlineNotice")?.textContent
+    })), "erwartete Sequenz", fixtureSeq);
+    throw err;
+  }
 
   async function messen(name, selector, vorherAuswahl = false) {
     if (vorherAuswahl) {
@@ -297,7 +325,18 @@ try {
       }, { capture: true, once: true });
     }, { name, selector });
     await gast.click(selector);
-    await gast.waitForFunction(() => window.__wdQaMessung.fertig, null, { timeout: 15000 });
+    try {
+      await gast.waitForFunction(() => window.__wdQaMessung.fertig, null, { timeout: 15000 });
+    } catch (err) {
+      for (const [seite, p] of [["host", host], ["gast", gast]]) console.log("Aktionsabbruch", name, seite, await p.evaluate(() => ({
+        seq: window.__wdQaBridge.session().lastStateSeq,
+        pending: window.__wdQaBridge.session().actionPending,
+        phase, status: document.querySelector("#status")?.textContent,
+        hinweis: document.querySelector("#onlineNotice")?.textContent,
+        gesichert: dice.map(d => !!d.locked)
+      })));
+      throw err;
+    }
     const m = await gast.evaluate(() => { const { name, sichtbarMs, bestaetigtMs, vorschauMs } = window.__wdQaMessung; return { name, sichtbarMs: Math.round(sichtbarMs), bestaetigtMs: Math.round(bestaetigtMs), vorschauMs: vorschauMs == null ? null : Math.round(vorschauMs) }; });
     messungen.push(m);
     console.log(`  ${name}: sichtbar ${m.sichtbarMs} ms, bestaetigt ${m.bestaetigtMs} ms`);
@@ -315,6 +354,7 @@ try {
   pruefe(messungen.length >= 5, "mindestens fuenf Gastaktionen gemessen");
   // Der Lobbybutton ist im Match unsichtbar, sein bestehender Handler bleibt
   // fuer die Testbereinigung nutzbar (keine zusaetzlichen RPCs).
+  raeumtAuf = true;
   await gast.evaluate(() => document.querySelector("#onlineLeaveBtn").click());
   await warte(1000);
   await host.evaluate(() => document.querySelector("#onlineLeaveBtn").click());

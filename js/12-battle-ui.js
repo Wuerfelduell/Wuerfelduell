@@ -676,14 +676,16 @@
       const designKey=players[current]?.diceDesign||"classic";
       cls+=" "+(DICE_DESIGNS[designKey]?.className||"theme-classic");
       el.className=cls;
-      render3DDieNode(el,d.value,designKey);
+      // Vorgezogene Ergebnisse weder als Augen, Beschriftung noch im flachen
+      // Kompatibilitaetsmodus verraten. Der Spin behaelt die bisherige Anzeige.
+      render3DDieNode(el,d.rolling?(Number(el.dataset.value)||null):d.value,designKey);
       el.onclick=null;
 
       if(phase==="base_select"&&!d.locked&&!isAnimating&&!isBotPlayer(current)){
         el.onclick=()=>{ d.selected=!d.selected; renderDice(); updateButtons(); };
       }
     });
-    sumEl.textContent=phase.startsWith("attack")
+    if(!dice.some(d=>d.rolling)) sumEl.textContent=phase.startsWith("attack")
       ? `${attackHits} Treffer / ${totalAttackDamage()} Schaden`
       : currentSum();
   }
