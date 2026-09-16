@@ -149,6 +149,12 @@ const browserOptionen = process.env.WD_CHROMIUM ? { executablePath: process.env.
 const browsers = [];
 const messungen = [];
 const technischeFehler = [];
+// Ab dem Verlassen des Raums sind HTTP-Fehler beim Gast erwartbar: sein
+// Realtime-Abo kann noch einen Schnappschuss nachziehen, waehrend die
+// Mitgliedschaft schon geloescht ist - dd_get_battle_snapshot antwortet
+// dann mit DD_NOT_ROOM_MEMBER. Das ist die Bereinigung des Pruefstands,
+// kein Befund ueber das Spiel. Gemessen wurde zu dem Zeitpunkt laengst.
+let raeumtAuf = false;
 const berichten = () => {
   const mittel = feld => messungen.length ? Math.round(messungen.reduce((s, m) => s + m[feld], 0) / messungen.length) : null;
   const bericht = { label: process.env.WD_LABEL || "Messung", aktionen: messungen, mittelSichtbarMs: mittel("sichtbarMs"), mittelBestaetigtMs: mittel("bestaetigtMs"), technischeFehler, bestanden: !fehler };
@@ -163,7 +169,7 @@ async function seite(name, profilname) {
   await p.addInitScript(wsErsatz);
   p.on("pageerror", e => { technischeFehler.push(`${name}: ${e.message}`); fehler = 1; });
   p.on("response", r => {
-    if (r.status() >= 400) { technischeFehler.push(`${name}: HTTP ${r.status()} ${new URL(r.url()).pathname}`); fehler = 1; }
+    if (r.status() >= 400 && !raeumtAuf) { technischeFehler.push(`${name}: HTTP ${r.status()} ${new URL(r.url()).pathname}`); fehler = 1; }
   });
   // Nur im Pruefstand: Beobachtung der privaten Bridge und reproduzierbare
   // Ausgangslage. Aktionen, Engine, RPCs und Realtime bleiben der echte App-Code.
@@ -348,6 +354,7 @@ try {
   pruefe(messungen.length >= 5, "mindestens fuenf Gastaktionen gemessen");
   // Der Lobbybutton ist im Match unsichtbar, sein bestehender Handler bleibt
   // fuer die Testbereinigung nutzbar (keine zusaetzlichen RPCs).
+  raeumtAuf = true;
   await gast.evaluate(() => document.querySelector("#onlineLeaveBtn").click());
   await warte(1000);
   await host.evaluate(() => document.querySelector("#onlineLeaveBtn").click());
