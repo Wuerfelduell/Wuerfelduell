@@ -48,6 +48,27 @@ assert.equal(report.players.filter(p=>p.won).length,2);
 const rookiePlayers=[ps[0],{ability:0,botLevel:"easy"}];
 const rookie=c.begin({source:"local",mode_id:"campaign_solo",game_version:"28.12.53",round_number:1,players:rookiePlayers});
 assert.equal(c.finish(rookie,rookiePlayers,[0],()=>0).players[1].abilities.length,0);
+// Collector bereinigt höchstens 500 Quittungen samt Journal vor dem Einreihen.
+let now=1000000000;
+const cleanupBox=await api.createOutbox({indexedDB,name:"journal-cleanup",now:()=>now});
+const cleanupValues=new Map(),cleanupStorage={get length(){return cleanupValues.size;},key:i=>[...cleanupValues.keys()][i],getItem:k=>cleanupValues.get(k)||null,setItem:(k,v)=>cleanupValues.set(k,v),removeItem:k=>cleanupValues.delete(k)};
+let cleanupSent=0;
+const cleaner=api.createCollector({storage:cleanupStorage,crypto:webcrypto,getSession:async()=>({uid}),openOutbox:async()=>cleanupBox,send:async r=>{cleanupSent++;return {event_id:r.event_id,status:"accepted"};}});
+for(let i=0;i<502;i++){
+  const r={...result,event_id:webcrypto.randomUUID()};await cleanupBox.enqueue(uid,r);await cleanupBox.acknowledge(uid,r.event_id);
+  cleanupStorage.setItem('diceduel_stats_pending_v1:'+uid+':'+r.event_id,JSON.stringify({owner:uid,report:r}));
+}
+now+=7*86400000+1;await cleaner.flush();assert.equal(cleanupSent,0);assert.equal(cleaner.journalCount(uid),0);
+assert.equal((await cleanupBox.pruneAcknowledged()).length,2);cleanupBox.close();
+// Abgewiesene Journal-Einträge kehren auch nach Neuöffnen nicht zurück.
+const rejectionBox=await api.createOutbox({indexedDB,name:"journal-rejection"});
+let rejectCalls=0;
+const rejectionOptions={...options,storage:cleanupStorage,openOutbox:async()=>rejectionBox,send:async r=>{rejectCalls++;throw Error('DD_STATS_INVALID_REPORT');}};
+const rejecting=api.createCollector(rejectionOptions);rejecting.setMainAccount(uid);
+const rejectedContext=rejecting.begin({source:'local',mode_id:'classic',game_version:'28.12.61',round_number:1,players:ps});
+rejecting.finish(rejectedContext,ps,[0],()=>0);await rejecting.flush();assert.equal(rejectCalls,1);assert.equal(await rejecting.rejectedCount(),1);
+assert.equal(rejecting.journalCount(uid),0);await api.createCollector(rejectionOptions).flush();assert.equal(rejectCalls,1);
+await rejecting.discardRejected();assert.equal(await rejecting.rejectedCount(),0);rejectionBox.close();
 // Echter Spieladapter: fehlende Globale dürfen niemals den aufrufenden Kampf abbrechen.
 const warnings=[],statusNode={textContent:"",setAttribute(){},addEventListener(){}};
 Object.assign(scope,{localStorage:storage,navigator:{onLine:false},document:{getElementById:()=>statusNode},

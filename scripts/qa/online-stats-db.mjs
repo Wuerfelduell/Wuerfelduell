@@ -105,6 +105,8 @@ await db.exec("reset role");
 const captureFile=fs.readdirSync(new URL("supabase/migrations/",root)).find(p=>p.endsWith("_online_stats_capture.sql"));
 await db.exec(fs.readFileSync(new URL("supabase/migrations/"+captureFile,root),"utf8"));
 await db.exec(fs.readFileSync(new URL("supabase/migrations/20260916160029_online_stats_capture_fail_open.sql",root),"utf8"));
+const retention=fs.readdirSync(new URL("supabase/migrations/",root)).find(p=>p.endsWith("_online_stats_retention.sql"));
+if(retention)await db.exec(fs.readFileSync(new URL("supabase/migrations/"+retention,root),"utf8"));
 await db.query("insert into public.dd_battle_rooms values ($1,$2,'match-b','classic','28.12.50',2)",[online.room_id,owner]);
 await db.query("update public.dd_battle_states set match_id='match-b',state='{}' where room_id=$1",[online.room_id]);
 const finalReport={...online,event_id:"eeeeeeee-eeee-4eee-8eee-eeeeeeeeeeee",match_id:"match-b"};
@@ -149,6 +151,29 @@ await check("Auch ein Ausfall der Diagnosetabelle blockiert den State nicht",asy
   await db.query("update public.dd_battle_states set state=$1 where room_id=$2",[JSON.stringify(bad),online.room_id]);
   assert.deepEqual((await db.query("select state from public.dd_battle_states where room_id=$1",[online.room_id])).rows[0].state,bad);
   await db.exec("alter table dd_stats_private.capture_errors drop constraint test_log_failure");
+});
+await check("Fehleraufbewahrung: jüngste 20 pro Match und höchstens 30 Tage",async()=>{
+  await db.exec("delete from dd_stats_private.capture_errors");
+  await db.query(`insert into dd_stats_private.capture_errors(room_id,match_id,sqlstate,sqlerrm,created_at)
+    values ($1,'old','P0001','31 days',now()-interval '31 days'),($1,'old','P0001','29 days',now()-interval '29 days')`,[online.room_id]);
+  const bad=structuredClone(finalState);bad.statsReport.round_number=7;
+  for(let i=0;i<25;i++)await db.query("update public.dd_battle_states set state=$1 where room_id=$2",[JSON.stringify(bad),online.room_id]);
+  assert.equal((await db.query("select * from dd_stats_private.capture_errors where match_id='match-b'")).rows.length,20);
+  assert.deepEqual((await db.query("select sqlerrm from dd_stats_private.capture_errors where match_id='old'")).rows.map(r=>r.sqlerrm),["29 days"]);
+});
+await check("Fehlschlagendes Aufräumen blockiert den Spielzustand nicht",async()=>{
+  await db.exec(`create function dd_stats_private.test_delete_failure() returns trigger language plpgsql as $$begin raise exception 'cleanup failed'; end;$$;
+    create trigger test_delete_failure before delete on dd_stats_private.capture_errors for each row execute function dd_stats_private.test_delete_failure()`);
+  const bad=structuredClone(finalState);bad.statsReport.round_number=8;
+  await db.query("update public.dd_battle_states set state=$1 where room_id=$2",[JSON.stringify(bad),online.room_id]);
+  assert.deepEqual((await db.query("select state from public.dd_battle_states where room_id=$1",[online.room_id])).rows[0].state,bad);
+  await db.exec("drop trigger test_delete_failure on dd_stats_private.capture_errors;drop function dd_stats_private.test_delete_failure()");
+});
+await check("Öffentliche Kampfzahl zählt Reports statt Fähigkeitseinsätze",async()=>{
+  const n=Number((await db.query("select count(*) as n from dd_stats_private.reports")).rows[0].n);
+  await db.exec("set role anon");
+  assert.equal(Number((await db.query("select public.dd_global_stats_count() as n")).rows[0].n),n);
+  await db.exec("reset role");
 });
 await check("Raum löschen nach finalem State erhält die Statistik",async()=>{
   await db.query("delete from public.dd_battle_rooms where id=$1",[online.room_id]);

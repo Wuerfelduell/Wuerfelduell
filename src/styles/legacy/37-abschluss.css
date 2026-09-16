@@ -3313,3 +3313,39 @@ body.test-lab-active #dice[data-lab-dice-fx="kante"] .die:nth-child(6){--wd-kant
 @media(prefers-reduced-motion:reduce){
   body.test-lab-active #dice .die:not(.rolling)::after{animation:none;opacity:0}
 }
+/* Globale Statistik nutzt den vorhandenen schlanken Tabellenrahmen. */
+html[data-v28-rework="2"] #statsScreen #globalStatsSection[hidden]{display:none!important;}
+html[data-v28-rework="2"] #statsScreen #globalStatsList{
+  border:solid transparent;
+  border-width:12px 14px;
+  border-image-source:var(--wd-card);
+  border-image-slice:72 120 72 120;
+  border-image-width:12px 14px;
+  border-image-repeat:stretch;
+  background:var(--wd-hell) padding-box;
+  color:#172d46;
+  padding:4px 2px 6px;
+  min-width:0;
+}
+html[data-v28-rework="2"] #statsScreen .global-stat-grid{
+  display:grid;grid-template-columns:minmax(0,1fr) 44px 36px 48px;
+  gap:3px;align-items:center;padding:9px 0;
+  font-size:12px;font-variant-numeric:tabular-nums;
+}
+html[data-v28-rework="2"] #statsScreen .global-stat-grid>span:not(:first-child){text-align:right;}
+html[data-v28-rework="2"] #statsScreen .global-stat-header{font-weight:800;font-size:11px;}
+html[data-v28-rework="2"] #statsScreen .global-stat-name{font-weight:700;overflow-wrap:anywhere;}
+html[data-v28-rework="2"] #statsScreen #globalStatsList details{border-bottom:1px solid rgba(165,121,38,.19);}
+html[data-v28-rework="2"] #statsScreen #globalStatsList summary{cursor:pointer;list-style:none;}
+html[data-v28-rework="2"] #statsScreen #globalStatsList summary::-webkit-details-marker{display:none;}
+html[data-v28-rework="2"] #statsScreen .global-stat-name::before{content:'▸ ';}
+html[data-v28-rework="2"] #statsScreen details[open] .global-stat-name::before{content:'▾ ';}
+html[data-v28-rework="2"] #statsScreen .global-stat-sample{grid-column:1/-1;color:#685226;font-size:11px;}
+html[data-v28-rework="2"] #statsScreen .global-stat-levels{padding-left:6px;background:rgba(165,121,38,.07);}
+html[data-v28-rework="2"] #statsScreen .global-stats-filters{display:flex;flex-wrap:wrap;align-items:end;gap:10px;margin:12px 0;}
+html[data-v28-rework="2"] #statsScreen .global-stats-filters label{display:flex;align-items:center;flex-wrap:wrap;gap:5px;min-width:0;font-size:13px;}
+html[data-v28-rework="2"] #statsScreen .global-stats-filters select{width:auto;max-width:100%;min-width:0;font-size:13px;}
+html[data-v28-rework="2"] #statsScreen .global-stats-filters input{width:18px;height:18px;margin:0;}
+html[data-v28-rework="2"] #statsScreen #globalStatsMeta{display:flex;flex-wrap:wrap;gap:6px 14px;}
+html[data-v28-rework="2"] #statsScreen #globalStatsSection{min-width:0;}
+html[data-v28-rework="2"] #statsScreen #globalStatsState:empty{display:none;}

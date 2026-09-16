@@ -16,6 +16,14 @@
     });
     return collector;
   }
+  async function refreshRejected(){
+    const session=await window.WDSupabaseAccountBackend?.getSession?.();
+    const count=session?.uid?await get().rejectedCount():0;
+    if((await window.WDSupabaseAccountBackend?.getSession?.())?.uid!==session?.uid)return;
+    const box=document.getElementById("onlineStatsRejected"),number=document.getElementById("onlineStatsRejectedCount");
+    if(box)box.hidden=count===0;
+    if(number)number.textContent=String(count);
+  }
   function safely(fn,resetRound=false){
     try{return fn();}
     catch(error){
@@ -28,9 +36,10 @@
   }
   async function flush(){
     if(timer){clearTimeout(timer);timer=null;}
-    if(navigator.onLine===false){status("Fähigkeitsstatistik wartet auf eine Internetverbindung.");return;}
+    if(navigator.onLine===false){status("Fähigkeitsstatistik wartet auf eine Internetverbindung.");try{await refreshRejected();}catch(_){}return;}
     try{
       const result=await get().flush();
+      await refreshRejected();
       if(result.status==="retry") throw result.error;
       delay=5000;
       if(result.status==="signed_out")status("Für globale Fähigkeitsstatistik bitte mit einem Hauptkonto anmelden.");
@@ -46,6 +55,7 @@
   api.game=Object.freeze({
     setMainAccount(session){
       safely(()=>get().setMainAccount(session?.uid||null));
+      const rejected=document.getElementById("onlineStatsRejected");if(rejected)rejected.hidden=true;
       if(session)schedule();
       else status("Für globale Fähigkeitsstatistik bitte mit einem Hauptkonto anmelden.");
     },
@@ -85,6 +95,9 @@
   window.addEventListener("online",schedule);
   window.addEventListener("offline",()=>{if(timer)clearTimeout(timer);timer=null;});
   document.getElementById("onlineStatsRetry")?.addEventListener("click",()=>api.game.retry());
+  document.getElementById("onlineStatsDiscard")?.addEventListener("click",async()=>{
+    try{await get().discardRejected();await refreshRejected();}catch(_){status("Abgewiesene Meldungen konnten nicht verworfen werden.",true);}
+  });
   // Bereits angemeldete Konten werden durch Account.refresh zugeordnet.
   // Vor dessen erster erfolgreicher Antwort bleibt eine Offline-Zuordnung erhalten.
   schedule();

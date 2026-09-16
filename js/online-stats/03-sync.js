@@ -3,9 +3,10 @@
   const api=window.WDOnlineStats;
   // Keine Timer/Anmeldung beim Laden. Der spätere Spieladapter entscheidet,
   // wann er flush nach Kampfende, Wiederverbindung und Anmeldung aufruft.
-  api.createSync=function({outbox,getSession,send}){
+  api.createSync=function({outbox,getSession,send,prune=true,onSettled=()=>{}}){
     let running=null;
     async function run(){
+      if(prune)await outbox.pruneAcknowledged();
       const initial=await getSession();
       if(!initial?.uid) return {status:"signed_out",sent:0};
       const owner=initial.uid;
@@ -18,7 +19,13 @@
             throw new Error("DD_STATS_ACK_MISMATCH");
           }
           await outbox.acknowledge(owner,row.event_id);sent++;
-        }catch(error){return {status:"retry",sent,error};}
+          await onSettled(owner,row.event_id);
+        }catch(error){
+          const code=String(error?.message||error).match(/^DD_STATS_(INVALID_REPORT|OWNER_CONFLICT|REPORT_CONFLICT)$/)?.[0];
+          if(!code)return {status:"retry",sent,error};
+          await outbox.reject(owner,row.event_id,code);
+          await onSettled(owner,row.event_id);
+        }
       }
       return {status:"complete",sent};
     }

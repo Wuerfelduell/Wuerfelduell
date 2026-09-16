@@ -118,6 +118,7 @@
     game.classList.add("hidden");
     hideFrontScreens();
     screen.classList.remove("hidden");
+    if(screen===statsScreen)window.WDOnlineStats?.view?.open();
     window.scrollTo?.(0,0);
     const contained =
       screen===abilitiesScreen ||

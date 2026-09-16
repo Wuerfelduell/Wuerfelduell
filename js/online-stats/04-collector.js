@@ -22,6 +22,15 @@
       },
       mainAccount(){return storage.getItem(MAIN);},
       journalCount(owner){return entries(owner).length;},
+      async rejectedCount(){
+        const session=await getSession();return session?.uid?(await box()).rejectedCount(session.uid):0;
+      },
+      async discardRejected(){
+        const session=await getSession();if(!session?.uid)return;
+        const outbox=await box();
+        if((await getSession())?.uid!==session.uid)return;
+        for(const row of await outbox.discardRejected(session.uid))storage.removeItem(PREFIX+row.owner+":"+row.event_id);
+      },
       begin(input){
         if(!["local","online"].includes(input.source)) return null;
         return {...input,players:undefined,event_id:crypto.randomUUID(),
@@ -51,23 +60,23 @@
       flush(){
         if(running) return running;
         running=(async()=>{
+          const outbox=await box();
+          // Journal zuerst entfernen, bevor eine abgelaufene Quittung fehlt.
+          await outbox.pruneAcknowledged(row=>storage.removeItem(PREFIX+row.owner+":"+row.event_id));
           const session=await getSession();
           if(!session?.uid) return {status:"signed_out",sent:0};
-          const owner=session.uid,outbox=await box();
+          const owner=session.uid;
           let enqueueError=null;
           for(const row of entries(owner)){
             try{
               const state=await outbox.enqueue(owner,row.report);
-              if(state==="acknowledged") storage.removeItem(row.key);
+              if(state==="acknowledged"||state==="rejected") storage.removeItem(row.key);
             }catch(error){enqueueError=error;break;}
           }
-          const sync=api.createSync({outbox,getSession,send:async(report,account)=>{
-            const result=await send(report,account);
-            if(result?.event_id===report.event_id&&["accepted","duplicate"].includes(result.status)){
-              storage.removeItem(PREFIX+account+":"+report.event_id);
-            }
-            return result;
-          }});
+          const sync=api.createSync({outbox,getSession,send,
+            onSettled:(account,event)=>storage.removeItem(PREFIX+account+":"+event),
+            // Bereits vor dem Einreihen bereinigt; insgesamt höchstens 500.
+            prune:false});
           const result=await sync.flush();
           if(enqueueError&&result.status==="complete")throw enqueueError;
           return result;

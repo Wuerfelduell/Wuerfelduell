@@ -2,7 +2,7 @@
 
 ## Stand und Aufbau
 
-Neue abgeschlossene Kämpfe werden erfasst. Die fünf Dateien sind in index.html
+Neue abgeschlossene Kämpfe werden erfasst. Die sechs Dateien sind in index.html
 in dieser Reihenfolge eingebunden:
 
 1. 01-contract.js: Datenvertrag, Normalisierung und Eingabeprüfung.
@@ -10,9 +10,26 @@ in dieser Reihenfolge eingebunden:
 3. 03-sync.js: kontogebundener Versand über Supabase-RPC.
 4. 04-collector.js: Rundenschlüssel, Fähigkeiten und synchrones Offline-Journal.
 5. 05-game.js: Spielereignisse, Hauptkonto und Wiederholungsversuche.
+6. 06-view.js: öffentliche Ansicht mit Filtern, Level-Aufteilung und Speicher-Cache.
 
 Keine neuen Browser-Laufzeitpakete. Bestehende Profilstatistik und Cloud-Save
-bleiben getrennt. Globale Ansicht und einmaliger Import alter Summen sind offen.
+bleiben getrennt. Alte lokale Summen werden nicht importiert: Level und Herkunft
+fehlen, die Zahlen sind nicht verifiziert.
+
+## Globale Ansicht
+
+Unter der lokalen Profilstatistik, nur bei aktivem Supabase-Backend, auch ohne
+Anmeldung. Erst das Öffnen lädt dd_global_ability_stats() und dd_global_stats_count().
+Die Antworten bleiben zehn Minuten im Speicher; Aktualisieren lädt erneut.
+Die Kampfzahl zählt alle archivierten Reports unabhängig von den Ansichtsfiltern,
+nicht die mehrfachen Fähigkeitseinsätze. Ladezeit und Fehlerzustände sind sichtbar.
+
+Standard: menschliche Teilnehmer und dieselbe major.minor-Balanceversion wie
+GAME_VERSION. Filter erlauben alle Versionen, Bots, lokale/Online-Quelle sowie
+Duell, Kampagne und Boss Rush. Einsätze und Siege werden je Fähigkeit summiert;
+Siegquoten werden aus diesen Summen berechnet. Unter 30 Einsätzen steht „kleine
+Stichprobe“; bei Winrate-Sortierung stehen diese Zeilen zuletzt. Aufklappen zeigt
+Level 0/1/2. Fähigkeitsnamen bleiben in beiden Sprachen englisch.
 
 ## Zählregel
 
@@ -49,9 +66,14 @@ zeigen Fehler im Account-Bereich an; der laufende Kampf wird nicht abgebrochen.
 IndexedDB begrenzt ausstehende Meldungen auf 5000; das Journal bleibt bei
 Überlauf erhalten. Quittungen und serverseitige Eindeutigkeit verhindern
 Doppelzählung. Website-Daten löschen kann ungesendete Beiträge verlieren.
-Der Browser-Speicher ist kein Backup. Lokale Quittungen werden noch nicht
-aufgeräumt. Ein ungültiger Eintrag stoppt den Versand dieses Kontos; eine
-weitergehende Diagnose-/Reparaturansicht bleibt offen.
+Der Browser-Speicher ist kein Backup. Beim Sync-Start werden höchstens 500
+Quittungen älter als sieben Tage samt zugehörigem Journal entfernt. Alte
+Quittungen ohne Zeitstempel erhalten einmalig den aktuellen Fristbeginn.
+Server-Einträge mit DD_STATS_INVALID_REPORT, DD_STATS_OWNER_CONFLICT oder
+DD_STATS_REPORT_CONFLICT werden als rejected gespeichert und übersprungen;
+Netzwerk- und RATE_LIMIT-Fehler bleiben zur Wiederholung stehen. Der Account
+zeigt nur die Anzahl abgewiesener Meldungen und „Abgewiesene verwerfen“.
+Verwerfen löscht ausschließlich abgewiesene Einträge des angemeldeten Kontos.
 
 ## Online-Abschluss
 
@@ -65,6 +87,11 @@ wird trotzdem gespeichert. Der Trigger fängt Statistikfehler ab und protokollie
 Raum, Match, Rundennummer aus dem Spielzustand (sonst null), SQLSTATE, Fehlermeldung
 und Zeitpunkt in der privaten Tabelle capture_errors. Schlägt auch deren Insert
 fehl, bleibt ein PostgreSQL-Logeintrag; der Kampfabschluss bleibt erhalten.
+Nach jedem Fehler-Insert werden Einträge älter als 30 Tage entfernt und je
+Raum/Match die jüngsten 20 behalten (Zeitpunkt, dann ID als Gleichstandsregel).
+Die Bereinigung läuft in derselben inneren Fehlerbehandlung: schlägt sie fehl,
+werden Insert und Bereinigung zurückgerollt, der Spielzustand bleibt gespeichert.
+Ohne neue Erfassungsfehler findet keine zeitgesteuerte Bereinigung statt.
 
 Host, Match, Modus, Version, Rundennummer, Gewinner und Teilnehmerzahl werden
 geprüft. Ältere Clients ohne Meldung und Hosts mit anonymer Auth bleiben
@@ -78,13 +105,14 @@ Migrationen:
 - 20260916141907_online_stats_capture.sql
 - 20260916143946_online_stats_unarmed_bots.sql
 - 20260916160029_online_stats_capture_fail_open.sql
+- 20260916164750_online_stats_retention.sql
 
-Alle vier Migrationen wurden am 16.09.2026 live eingespielt und geprüft. Die vierte wurde zusätzlich über die echte Match-Publish-RPC mit ungültigem und widersprüchlichem Report geprüft; sämtliche Testdaten wurden zurückgerollt.
+Alle fünf Migrationen wurden am 16.09.2026 live eingespielt und geprüft. Die vierte wurde über die echte Match-Publish-RPC geprüft. Für die fünfte wurden 25 Fehler, die 31-/29-Tage-Grenze, ein absichtlich fehlschlagender DELETE und öffentliche Zählrechte live geprüft; sämtliche Testdaten und Testfunktionen wurden zurückgerollt. Die vier vorherigen Migrationen bleiben unverändert.
 
 Private Tabellen dd_stats_private.reports und ability_uses besitzen RLS und
 keine Client-Rechte. dd_submit_stats_report(uuid,jsonb) ist nur angemeldet
-aufrufbar, dd_global_ability_stats() öffentlich. SECURITY DEFINER ist für diese
-beiden APIs beabsichtigt, mit leerem search_path und qualifizierten Tabellen.
+aufrufbar, dd_global_ability_stats() und dd_global_stats_count() öffentlich.
+SECURITY DEFINER ist für diese APIs beabsichtigt, mit leerem search_path und qualifizierten Tabellen.
 Der private Trigger ist nicht durch Clients aufrufbar.
 
 Maximal 10000 neue Meldungen pro Konto in 24 Stunden; parallele Uploads werden
@@ -94,13 +122,18 @@ unabhängig verifizierten Spielnachweise. Keine Belohnungen daraus ableiten.
 
 ## Prüfung
 
-npm ci --ignore-scripts
+npm ci
+npx playwright install chromium
 npm run check
 
 Tests für Vertrag, Speicher, Wiederholung, Kontowechsel, Offline-Nachlieferung,
 Gastprofile, Team-Siege, SQL-Rechte und atomaren Online-Abschluss laufen mit
-Fake-IndexedDB und isoliertem PostgreSQL/PGlite. Browser-Ansicht separat prüfen.
-Ein kompletter Spieltest mit zwei real angemeldeten Geräten bleibt sinnvoll;
+Fake-IndexedDB und isoliertem PostgreSQL/PGlite. online-stats-view.mjs läuft
+ebenfalls in npm run check: feste RPC-Antworten, Filter, Quoten, Cache und
+Zustände; 320/360/390/412/1280 px jeweils DE/EN, ohne JS-Fehler, 404, Überlauf
+oder Leerlaufmutationen. Chromium: /opt/pw-browsers/chromium, falls vorhanden,
+sonst Playwright-Installation; WD_CHROMIUM kann den Pfad überschreiben.
+Offen bleibt der Spieltest durch den Nutzer mit zwei real angemeldeten Geräten;
 die isolierten Tests ersetzen weder Auth-Netzwerk noch Browser-Speicherquoten.
 First Blood: Gegner ohne Fähigkeit erzeugen keine Fähigkeitszeile, der Heldeneinsatz zählt.
 

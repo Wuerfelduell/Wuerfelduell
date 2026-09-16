@@ -5,6 +5,8 @@
   if (!pack) return;
 
   Object.assign(pack.exact, {
+    "Globale Fähigkeitsstatistik mit Filtern, gewichteten Siegquoten und Level-Aufteilung für alle sichtbar":"Global ability statistics with filters, weighted win rates and level breakdowns are visible to everyone",
+    "Abgewiesene Statistikmeldungen blockieren keine weiteren Beiträge; Quittungen und Fehlerprotokolle werden begrenzt aufbewahrt":"Rejected statistics reports no longer block further contributions; receipts and error logs have limited retention",
     "Super Rare hat seine eigene Kartenvorderseite: türkis mit Silberbeschlag und elfenbeinernem Namensband – bisher trug die Stufe die Rare-Karte": "Super Rare has its own card front: turquoise with silver fittings and an ivory name band; until now the tier used the Rare card",
     "Der Knopf „Testguthaben buchen“ im Trainingsfenster ist entfernt – Duellmarken gibt es nur noch aus Duellen und der Kampagne": "The “Credit test balance” button in the training window is gone; Duel Tokens now come only from duels and the campaign",
     "Das Online-Icon im Hauptmenü sitzt drei Pixel höher und damit optisch auf einer Höhe mit Schwertern, Burg und Buch": "The Online icon in the main menu sits three pixels higher, visually level with the swords, the castle and the book",
