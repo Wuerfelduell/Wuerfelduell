@@ -1,0 +1,730 @@
+[
+  {
+    "stage": "common",
+    "file": "chest-card-front-common.webp",
+    "width": 512,
+    "height": 704,
+    "alpha": true,
+    "corner_alpha_max": 0,
+    "bbox": [
+      15,
+      15,
+      496,
+      688
+    ],
+    "bbox_center_x": 255.5,
+    "halo_max_px": null,
+    "vp8x": true,
+    "alph_chunk": true,
+    "status": "PASS",
+    "notes": []
+  },
+  {
+    "stage": "common",
+    "file": "chest-common-body.webp",
+    "width": 512,
+    "height": 512,
+    "alpha": true,
+    "corner_alpha_max": 0,
+    "bbox": [
+      55,
+      199,
+      456,
+      452
+    ],
+    "bbox_center_x": 255.5,
+    "halo_max_px": 3.0,
+    "vp8x": true,
+    "alph_chunk": true,
+    "status": "PASS",
+    "notes": []
+  },
+  {
+    "stage": "common",
+    "file": "chest-common-closed.webp",
+    "width": 512,
+    "height": 512,
+    "alpha": true,
+    "corner_alpha_max": 0,
+    "bbox": [
+      55,
+      91,
+      456,
+      452
+    ],
+    "bbox_center_x": 255.5,
+    "halo_max_px": 3.0,
+    "vp8x": true,
+    "alph_chunk": true,
+    "status": "PASS",
+    "notes": [],
+    "composite_mean_abs_rgb": 0.00805064,
+    "closed_bbox_delta_common": [
+      0,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "stage": "common",
+    "file": "chest-common-lid-inner.webp",
+    "width": 512,
+    "height": 512,
+    "alpha": true,
+    "corner_alpha_max": 0,
+    "bbox": [
+      55,
+      91,
+      456,
+      252
+    ],
+    "bbox_center_x": 255.5,
+    "halo_max_px": 2.0,
+    "vp8x": true,
+    "alph_chunk": true,
+    "status": "PASS",
+    "notes": []
+  },
+  {
+    "stage": "common",
+    "file": "chest-common-lid.webp",
+    "width": 512,
+    "height": 512,
+    "alpha": true,
+    "corner_alpha_max": 0,
+    "bbox": [
+      55,
+      91,
+      456,
+      252
+    ],
+    "bbox_center_x": 255.5,
+    "halo_max_px": 2.0,
+    "vp8x": true,
+    "alph_chunk": true,
+    "status": "PASS",
+    "notes": []
+  },
+  {
+    "stage": "common",
+    "file": "chest-common-light.webp",
+    "width": 512,
+    "height": 512,
+    "alpha": true,
+    "corner_alpha_max": 0,
+    "bbox": [
+      29,
+      3,
+      482,
+      456
+    ],
+    "bbox_center_x": 255.5,
+    "halo_max_px": null,
+    "vp8x": true,
+    "alph_chunk": true,
+    "status": "PASS",
+    "notes": []
+  },
+  {
+    "stage": "common",
+    "file": "chest-common-open.webp",
+    "width": 512,
+    "height": 512,
+    "alpha": true,
+    "corner_alpha_max": 0,
+    "bbox": [
+      41,
+      24,
+      470,
+      457
+    ],
+    "bbox_center_x": 255.5,
+    "halo_max_px": null,
+    "vp8x": true,
+    "alph_chunk": true,
+    "status": "PASS",
+    "notes": []
+  },
+  {
+    "stage": "common",
+    "file": "chest-common-rays.webp",
+    "width": 1024,
+    "height": 1024,
+    "alpha": true,
+    "corner_alpha_max": 0,
+    "bbox": [
+      90,
+      95,
+      930,
+      927
+    ],
+    "bbox_center_x": 510.0,
+    "halo_max_px": null,
+    "vp8x": true,
+    "alph_chunk": true,
+    "status": "PASS",
+    "notes": []
+  },
+  {
+    "stage": "rare",
+    "file": "chest-card-front-rare.webp",
+    "width": 512,
+    "height": 704,
+    "alpha": true,
+    "corner_alpha_max": 0,
+    "bbox": [
+      15,
+      15,
+      496,
+      688
+    ],
+    "bbox_center_x": 255.5,
+    "halo_max_px": null,
+    "vp8x": true,
+    "alph_chunk": true,
+    "status": "PASS",
+    "notes": []
+  },
+  {
+    "stage": "rare",
+    "file": "chest-rare-body.webp",
+    "width": 512,
+    "height": 512,
+    "alpha": true,
+    "corner_alpha_max": 0,
+    "bbox": [
+      55,
+      199,
+      456,
+      452
+    ],
+    "bbox_center_x": 255.5,
+    "halo_max_px": 3.0,
+    "vp8x": true,
+    "alph_chunk": true,
+    "status": "PASS",
+    "notes": []
+  },
+  {
+    "stage": "rare",
+    "file": "chest-rare-closed.webp",
+    "width": 512,
+    "height": 512,
+    "alpha": true,
+    "corner_alpha_max": 0,
+    "bbox": [
+      55,
+      91,
+      456,
+      452
+    ],
+    "bbox_center_x": 255.5,
+    "halo_max_px": 3.0,
+    "vp8x": true,
+    "alph_chunk": true,
+    "status": "PASS",
+    "notes": [],
+    "composite_mean_abs_rgb": 0.00761961,
+    "closed_bbox_delta_common": [
+      0,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "stage": "rare",
+    "file": "chest-rare-lid-inner.webp",
+    "width": 512,
+    "height": 512,
+    "alpha": true,
+    "corner_alpha_max": 0,
+    "bbox": [
+      55,
+      91,
+      456,
+      252
+    ],
+    "bbox_center_x": 255.5,
+    "halo_max_px": 2.0,
+    "vp8x": true,
+    "alph_chunk": true,
+    "status": "PASS",
+    "notes": []
+  },
+  {
+    "stage": "rare",
+    "file": "chest-rare-lid.webp",
+    "width": 512,
+    "height": 512,
+    "alpha": true,
+    "corner_alpha_max": 0,
+    "bbox": [
+      55,
+      91,
+      456,
+      252
+    ],
+    "bbox_center_x": 255.5,
+    "halo_max_px": 2.0,
+    "vp8x": true,
+    "alph_chunk": true,
+    "status": "PASS",
+    "notes": []
+  },
+  {
+    "stage": "rare",
+    "file": "chest-rare-light.webp",
+    "width": 512,
+    "height": 512,
+    "alpha": true,
+    "corner_alpha_max": 0,
+    "bbox": [
+      29,
+      3,
+      482,
+      456
+    ],
+    "bbox_center_x": 255.5,
+    "halo_max_px": null,
+    "vp8x": true,
+    "alph_chunk": true,
+    "status": "PASS",
+    "notes": []
+  },
+  {
+    "stage": "rare",
+    "file": "chest-rare-open.webp",
+    "width": 512,
+    "height": 512,
+    "alpha": true,
+    "corner_alpha_max": 0,
+    "bbox": [
+      36,
+      24,
+      475,
+      457
+    ],
+    "bbox_center_x": 255.5,
+    "halo_max_px": null,
+    "vp8x": true,
+    "alph_chunk": true,
+    "status": "PASS",
+    "notes": []
+  },
+  {
+    "stage": "rare",
+    "file": "chest-rare-rays.webp",
+    "width": 1024,
+    "height": 1024,
+    "alpha": true,
+    "corner_alpha_max": 0,
+    "bbox": [
+      90,
+      95,
+      930,
+      927
+    ],
+    "bbox_center_x": 510.0,
+    "halo_max_px": null,
+    "vp8x": true,
+    "alph_chunk": true,
+    "status": "PASS",
+    "notes": []
+  },
+  {
+    "stage": "epic",
+    "file": "chest-card-front-epic.webp",
+    "width": 512,
+    "height": 704,
+    "alpha": true,
+    "corner_alpha_max": 0,
+    "bbox": [
+      15,
+      15,
+      496,
+      688
+    ],
+    "bbox_center_x": 255.5,
+    "halo_max_px": null,
+    "vp8x": true,
+    "alph_chunk": true,
+    "status": "PASS",
+    "notes": []
+  },
+  {
+    "stage": "epic",
+    "file": "chest-epic-body.webp",
+    "width": 512,
+    "height": 512,
+    "alpha": true,
+    "corner_alpha_max": 0,
+    "bbox": [
+      55,
+      199,
+      456,
+      452
+    ],
+    "bbox_center_x": 255.5,
+    "halo_max_px": 3.0,
+    "vp8x": true,
+    "alph_chunk": true,
+    "status": "PASS",
+    "notes": []
+  },
+  {
+    "stage": "epic",
+    "file": "chest-epic-closed.webp",
+    "width": 512,
+    "height": 512,
+    "alpha": true,
+    "corner_alpha_max": 0,
+    "bbox": [
+      55,
+      91,
+      456,
+      452
+    ],
+    "bbox_center_x": 255.5,
+    "halo_max_px": 3.0,
+    "vp8x": true,
+    "alph_chunk": true,
+    "status": "PASS",
+    "notes": [],
+    "composite_mean_abs_rgb": 0.00828664,
+    "closed_bbox_delta_common": [
+      0,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "stage": "epic",
+    "file": "chest-epic-lid-inner.webp",
+    "width": 512,
+    "height": 512,
+    "alpha": true,
+    "corner_alpha_max": 0,
+    "bbox": [
+      55,
+      91,
+      456,
+      252
+    ],
+    "bbox_center_x": 255.5,
+    "halo_max_px": 2.0,
+    "vp8x": true,
+    "alph_chunk": true,
+    "status": "PASS",
+    "notes": []
+  },
+  {
+    "stage": "epic",
+    "file": "chest-epic-lid.webp",
+    "width": 512,
+    "height": 512,
+    "alpha": true,
+    "corner_alpha_max": 0,
+    "bbox": [
+      55,
+      91,
+      456,
+      252
+    ],
+    "bbox_center_x": 255.5,
+    "halo_max_px": 2.0,
+    "vp8x": true,
+    "alph_chunk": true,
+    "status": "PASS",
+    "notes": []
+  },
+  {
+    "stage": "epic",
+    "file": "chest-epic-light.webp",
+    "width": 512,
+    "height": 512,
+    "alpha": true,
+    "corner_alpha_max": 0,
+    "bbox": [
+      29,
+      3,
+      482,
+      456
+    ],
+    "bbox_center_x": 255.5,
+    "halo_max_px": null,
+    "vp8x": true,
+    "alph_chunk": true,
+    "status": "PASS",
+    "notes": []
+  },
+  {
+    "stage": "epic",
+    "file": "chest-epic-open.webp",
+    "width": 512,
+    "height": 512,
+    "alpha": true,
+    "corner_alpha_max": 0,
+    "bbox": [
+      35,
+      24,
+      476,
+      457
+    ],
+    "bbox_center_x": 255.5,
+    "halo_max_px": null,
+    "vp8x": true,
+    "alph_chunk": true,
+    "status": "PASS",
+    "notes": []
+  },
+  {
+    "stage": "epic",
+    "file": "chest-epic-rays.webp",
+    "width": 1024,
+    "height": 1024,
+    "alpha": true,
+    "corner_alpha_max": 0,
+    "bbox": [
+      90,
+      95,
+      930,
+      927
+    ],
+    "bbox_center_x": 510.0,
+    "halo_max_px": null,
+    "vp8x": true,
+    "alph_chunk": true,
+    "status": "PASS",
+    "notes": []
+  },
+  {
+    "stage": "legendary",
+    "file": "chest-card-front-legendary.webp",
+    "width": 512,
+    "height": 704,
+    "alpha": true,
+    "corner_alpha_max": 0,
+    "bbox": [
+      15,
+      15,
+      496,
+      688
+    ],
+    "bbox_center_x": 255.5,
+    "halo_max_px": null,
+    "vp8x": true,
+    "alph_chunk": true,
+    "status": "PASS",
+    "notes": []
+  },
+  {
+    "stage": "legendary",
+    "file": "chest-legendary-body.webp",
+    "width": 512,
+    "height": 512,
+    "alpha": true,
+    "corner_alpha_max": 0,
+    "bbox": [
+      55,
+      199,
+      456,
+      452
+    ],
+    "bbox_center_x": 255.5,
+    "halo_max_px": 3.0,
+    "vp8x": true,
+    "alph_chunk": true,
+    "status": "PASS",
+    "notes": []
+  },
+  {
+    "stage": "legendary",
+    "file": "chest-legendary-closed.webp",
+    "width": 512,
+    "height": 512,
+    "alpha": true,
+    "corner_alpha_max": 0,
+    "bbox": [
+      55,
+      91,
+      456,
+      452
+    ],
+    "bbox_center_x": 255.5,
+    "halo_max_px": 3.0,
+    "vp8x": true,
+    "alph_chunk": true,
+    "status": "PASS",
+    "notes": [],
+    "composite_mean_abs_rgb": 0.00896756,
+    "closed_bbox_delta_common": [
+      0,
+      0,
+      0,
+      0
+    ]
+  },
+  {
+    "stage": "legendary",
+    "file": "chest-legendary-lid-inner.webp",
+    "width": 512,
+    "height": 512,
+    "alpha": true,
+    "corner_alpha_max": 0,
+    "bbox": [
+      55,
+      91,
+      456,
+      252
+    ],
+    "bbox_center_x": 255.5,
+    "halo_max_px": 2.0,
+    "vp8x": true,
+    "alph_chunk": true,
+    "status": "PASS",
+    "notes": []
+  },
+  {
+    "stage": "legendary",
+    "file": "chest-legendary-lid.webp",
+    "width": 512,
+    "height": 512,
+    "alpha": true,
+    "corner_alpha_max": 0,
+    "bbox": [
+      55,
+      91,
+      456,
+      252
+    ],
+    "bbox_center_x": 255.5,
+    "halo_max_px": 2.0,
+    "vp8x": true,
+    "alph_chunk": true,
+    "status": "PASS",
+    "notes": []
+  },
+  {
+    "stage": "legendary",
+    "file": "chest-legendary-light.webp",
+    "width": 512,
+    "height": 512,
+    "alpha": true,
+    "corner_alpha_max": 0,
+    "bbox": [
+      29,
+      3,
+      482,
+      456
+    ],
+    "bbox_center_x": 255.5,
+    "halo_max_px": null,
+    "vp8x": true,
+    "alph_chunk": true,
+    "status": "PASS",
+    "notes": []
+  },
+  {
+    "stage": "legendary",
+    "file": "chest-legendary-open.webp",
+    "width": 512,
+    "height": 512,
+    "alpha": true,
+    "corner_alpha_max": 0,
+    "bbox": [
+      43,
+      24,
+      467,
+      457
+    ],
+    "bbox_center_x": 255.0,
+    "halo_max_px": null,
+    "vp8x": true,
+    "alph_chunk": true,
+    "status": "PASS",
+    "notes": []
+  },
+  {
+    "stage": "legendary",
+    "file": "chest-legendary-rays.webp",
+    "width": 1024,
+    "height": 1024,
+    "alpha": true,
+    "corner_alpha_max": 0,
+    "bbox": [
+      90,
+      95,
+      930,
+      927
+    ],
+    "bbox_center_x": 510.0,
+    "halo_max_px": null,
+    "vp8x": true,
+    "alph_chunk": true,
+    "status": "PASS",
+    "notes": []
+  },
+  {
+    "stage": "shared",
+    "file": "chest-card-back.webp",
+    "width": 512,
+    "height": 704,
+    "alpha": true,
+    "corner_alpha_max": 0,
+    "bbox": [
+      15,
+      15,
+      496,
+      688
+    ],
+    "bbox_center_x": null,
+    "halo_max_px": null,
+    "vp8x": true,
+    "alph_chunk": true,
+    "status": "PASS",
+    "notes": []
+  },
+  {
+    "stage": "shared",
+    "file": "chest-shadow.webp",
+    "width": 512,
+    "height": 256,
+    "alpha": true,
+    "corner_alpha_max": 0,
+    "bbox": [
+      71,
+      73,
+      440,
+      182
+    ],
+    "bbox_center_x": null,
+    "halo_max_px": null,
+    "vp8x": true,
+    "alph_chunk": true,
+    "status": "PASS",
+    "notes": []
+  },
+  {
+    "stage": "shared",
+    "file": "chest-sparkle.webp",
+    "width": 128,
+    "height": 128,
+    "alpha": true,
+    "corner_alpha_max": 0,
+    "bbox": [
+      10,
+      10,
+      118,
+      118
+    ],
+    "bbox_center_x": null,
+    "halo_max_px": null,
+    "vp8x": true,
+    "alph_chunk": true,
+    "status": "PASS",
+    "notes": []
+  }
+]
