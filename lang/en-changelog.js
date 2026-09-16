@@ -5,6 +5,8 @@
   if (!pack) return;
 
   Object.assign(pack.exact, {
+    "Der Kantenläufer folgt jetzt auch in den Ecken der Umrandung – sein Schweif stand dort bisher über den Würfel hinaus": "The edge runner now follows the outline through the corners too; its trail used to stick out past the die there",
+    "Und er fährt langsamer: eine Runde dauert 4,6 statt 2,8 Sekunden": "And it travels more slowly: one lap takes 4.6 seconds instead of 2.8",
     "Neuer Würfeleffekt „Kantenläufer“: ein kleiner violetter Punkt fährt die Würfelkante ab und zieht einen weichen Nachglow hinter sich her": "New dice effect Edge Runner: a small violet dot travels along the die edge, trailing a soft afterglow",
     "Randglühen und Puls atmen jetzt ruhiger und gleichzeitig statt einmal kurz durch die Reihe zu blitzen": "Rim glow and pulse now breathe more calmly and in unison, instead of flashing through the row once",
     "Die Werkbank der Testumgebung hat einen Regler für Würfeleffekte: Schimmer in Gold, Schimmer in der Designfarbe, Randglühen und Puls": "The test lab workbench has a dice effect selector: shine in gold, shine in the design colour, rim glow and pulse",

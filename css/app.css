@@ -13052,54 +13052,59 @@ body.test-lab-active #dice[data-lab-dice-fx="puls"] .die:not(.rolling)::after{
 /* --- Kantenlaeufer: ein kleiner violetter Punkt faehrt die Wuerfelkante
    ab und zieht einen weichen Nachglow hinter sich her.
 
-   offset-path:border-box laesst ihn der ECHTEN Kante folgen, samt
-   Eckenrundung und in jeder Groesse - anders als ein von Hand gesetzter
-   Pfad, der bei 56 px im Kampf und 145 px beim Spezialwuerfel je einen
-   eigenen Wert braeuchte.
+   ERSTER ANSATZ, verworfen: eine Kapsel per offset-path an der Kante
+   entlangschieben. Aus dem Spieltest: "immer wenn er um die Ecke faehrt,
+   steht der Schweif kurz ueber den Wuerfel hinaus". Das ist nicht zu
+   beheben - offset-path verschiebt und dreht einen Kasten, es BIEGT ihn
+   nicht. Ein gerader Schweif von knapp halber Wuerfelbreite ragt an einer
+   90-Grad-Ecke zwangslaeufig heraus.
 
-   Der Schweif ist kein zweites Element, sondern die Form selbst: eine
-   liegende Kapsel mit Verlauf von durchsichtig nach hell. offset-rotate
-   dreht sie in die Fahrtrichtung, offset-anchor setzt das HELLE Ende auf
-   den Pfad - sonst liefe der halbe Schweif voraus.
+   JETZIGER ANSATZ: der Schweif wird auf die Umrandung GEMALT statt an ihr
+   entlanggeschoben. Ein Kegelverlauf liefert Punkt und Nachglow in einem;
+   eine Maske schneidet daraus einen Ring in der Form des Wuerfels. Damit
+   folgt der Schweif der Rundung exakt und kann gar nicht mehr ueberstehen.
 
-   inset muss hier zurueckgenommen werden: die Grundregel setzt inset:0,
-   das wuerde die Kapsel ueber den ganzen Wuerfel spannen. */
-@supports (offset-path:border-box){
-  body.test-lab-active #dice[data-lab-dice-fx="kante"] .die:not(.rolling)::after{
-    inset:auto;
-    top:0;
-    left:0;
-    /* Klein UND mit langem Schweif: die Kapsel ist lang, aber hell ist nur
-       ihr letztes Zehntel. Wer den Punkt groesser will, verschiebt die
-       hellen Stufen nach vorn, nicht die Breite. */
-    width:48%;
-    height:9%;
-    border-radius:999px;
-    background:linear-gradient(90deg,
-      rgba(168,74,255,0) 0%,
-      rgba(168,74,255,.16) 52%,
-      rgba(180,96,255,.38) 80%,
-      rgba(206,146,255,.72) 92%,
-      rgba(235,208,255,1) 98%,
-      #fff 100%);
-    offset-path:border-box;
-    offset-rotate:auto;
-    offset-anchor:96% 50%;
-    filter:blur(.8px) drop-shadow(0 0 4px rgba(168,74,255,.95));
-    animation:wuerfelKante 2.8s linear infinite;
-  }
-  @keyframes wuerfelKante{
-    from{offset-distance:0%}
-    to{offset-distance:100%}
-  }
+   Zwei Eigenheiten, die dazugehoeren:
+   - Der Kegelverlauf dreht um den MITTELPUNKT, nicht entlang der Kante.
+     Der Punkt ist an den Ecken deshalb etwas schneller als in der Mitte
+     einer Kante. Auf einem fast quadratischen Wuerfel faellt das nicht auf
+     und wirkt eher lebendig.
+   - Damit sich der Winkel weich animieren laesst, muss die Variable per
+     @property als <angle> angemeldet sein; sonst springt sie. Wo @property
+     fehlt, steht der Punkt still - ein Schoenheitsfehler in einem Effekt,
+     den es nur in der Testumgebung gibt. */
+@property --wd-kante-winkel{
+  syntax:"<angle>";
+  inherits:false;
+  initial-value:0deg;
 }
-/* Wo offset-path noch fehlt, bleibt wenigstens die Farbe: ein violettes
-   Randgluehen statt eines stehenden Punktes. */
-@supports not (offset-path:border-box){
-  body.test-lab-active #dice[data-lab-dice-fx="kante"] .die:not(.rolling)::after{
-    box-shadow:inset 0 0 14px 3px rgba(168,74,255,.85);
-    animation:wuerfelRand 2.4s ease-in-out infinite;
-  }
+body.test-lab-active #dice[data-lab-dice-fx="kante"] .die:not(.rolling)::after{
+  box-sizing:border-box;
+  /* Ringdicke in Prozent, damit sie bei 56 px im Kampf und beim grossen
+     Spezialwuerfel gleich aussieht. */
+  padding:4.5%;
+  /* Der Schweif ist die Laenge dieses Verlaufs. 60 Grad sind ein Sechstel
+     des Rings - laenger wird daraus ein leuchtender Rahmen statt eines
+     Punktes mit Nachglow. Wer ihn laenger will, zieht die erste Stufe
+     nach vorn, nicht die Deckkraft hoch. */
+  background:conic-gradient(from var(--wd-kante-winkel),
+    rgba(168,74,255,0) 0deg,
+    rgba(168,74,255,0) 298deg,
+    rgba(172,80,255,.12) 320deg,
+    rgba(184,102,255,.36) 341deg,
+    rgba(206,146,255,.70) 352deg,
+    rgba(234,206,255,.96) 358deg,
+    #fff 360deg);
+  -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);
+  mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);
+  -webkit-mask-composite:xor;
+  mask-composite:exclude;
+  filter:drop-shadow(0 0 3px rgba(168,74,255,.9));
+  animation:wuerfelKante 4.6s linear infinite;
+}
+@keyframes wuerfelKante{
+  from{--wd-kante-winkel:0deg}
+  to{--wd-kante-winkel:360deg}
 }
 
 /* Der Versatz je Wuerfel macht aus fuenf gleichzeitigen Effekten eine

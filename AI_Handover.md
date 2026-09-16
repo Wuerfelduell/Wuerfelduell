@@ -22,7 +22,7 @@ welche Fallen schon Zeit gekostet haben.
 
 | | |
 |---|---|
-| Version | **28.12.41** |
+| Version | **28.12.42** |
 | Branch | `main` |
 | Letzte Schritte | CSS-Stapel auf 10 Dateien zusammengelegt · Changelog englisch vervollständigt · Hauptmenü, Statistik, Profile, Achievements, Spielvorbereitung und Trophy Shop überarbeitet · Fähigkeits- und Shopflächen auf proportional gekachelte Bildrahmen umgestellt · alle Bild-URLs auf einen gemeinsamen Cache-Schlüssel · Trophy-Shop-Reste bereinigt und Aufklapppfeile angeglichen · Duo- und Trio-Boss-Rush mit Pfadwahl, gespeicherten Runs und 32 Perks einschließlich temporärer Ability-Mastery · Boss-XP-Umtausch 300:100 · Zweitfund gedeckelt · Trio-Rush 15 Stufen, ab 10 ultraschwer · Boss-Rush-HUD auf die Weltregel reduziert · Zweitfund-Kopien ablehnbar und weitergebbar · Ultra-Stufen treffen härter statt länger zu dauern · Heilung gedeckelt, Maximum wächst je Stufe · Regelleiste als Kachelgitter, wächst mit dem Text · gespeicherte Runs überleben Balanceänderungen · Meldeschichten über den Kampf-Overlays geordnet · großer Spezialwürfel dreht sich als echter 3D-Würfel wie der normale und füllt seinen Rahmen · Kampflog, Infos-Blatt und Weltregel hinter einem Knopf, Knopfleiste gekürzt und beruhigt · Kartentexte aus den gemalten Rahmen geholt · fünf neue Würfeldesigns in der Testumgebung · Matchbar auf schmalen Telefonen wieder einzeilig · fünf Würfeldesigns mit fertigem Artwork und nachgemessenem Augenraster · Live-Online-Prüfstand repariert und um eine Latenzmessung erweitert · Common-Satz mit zehn Würfeldesigns vollständig · Online-Wurfwerte vorgezogen, live nachgemessen · Wurfanimation beim Gast wiederhergestellt · sieben Rare-Würfeldesigns · fünf Würfeleffekte mit Regler in der Testumgebung |
 
@@ -365,15 +365,26 @@ Deckkraft, und man verglich Farbe und Stärke auf einmal. Richtig ist die
 verschachtelte Mischung: innen mit Weiß aufhellen, außen auf dieselben
 `.70` bringen.
 
-**Seit 28.12.41 der Kantenläufer**: ein kleiner violetter Punkt fährt die
-Würfelkante ab und zieht einen Nachglow hinter sich her. Gebaut mit
-`offset-path:border-box` — der Punkt folgt damit der **echten** Kante samt
-Rundung und in jeder Größe; ein von Hand gesetzter Pfad bräuchte für
-56 px im Kampf und 145 px beim Spezialwürfel je einen eigenen Wert. Der
-Schweif ist kein zweites Element, sondern die Form selbst: eine liegende
-Kapsel mit Verlauf, `offset-rotate:auto` dreht sie in die Fahrtrichtung,
-`offset-anchor` setzt das **helle** Ende auf den Pfad. Ohne `inset:auto`
-spannt die Grundregel die Kapsel über den ganzen Würfel.
+**Der Kantenläufer**: ein kleiner violetter Punkt fährt die Würfelkante ab
+und zieht einen Nachglow hinter sich her.
+
+**Der erste Ansatz mit `offset-path` ist gescheitert, und zwar
+grundsätzlich.** Eine Kapsel wurde per `offset-path:border-box` an der
+Kante entlanggeschoben — aus dem Spieltest: „immer wenn er um die Ecke
+fährt, steht der Schweif kurz über den Würfel hinaus". Das ist nicht zu
+beheben: `offset-path` verschiebt und dreht einen Kasten, es **biegt** ihn
+nicht. Ein gerader Schweif von knapp halber Würfelbreite ragt an einer
+90-Grad-Ecke zwangsläufig heraus.
+
+**Seit 28.12.42 wird der Schweif auf die Umrandung GEMALT** statt an ihr
+entlanggeschoben: ein Kegelverlauf liefert Punkt und Nachglow in einem,
+eine Maske (`mask-composite:exclude`) schneidet daraus einen Ring in der
+Form des Würfels. Damit folgt der Schweif der Rundung exakt und kann gar
+nicht mehr überstehen. Zwei Eigenheiten gehören dazu: der Kegelverlauf
+dreht um den **Mittelpunkt**, der Punkt ist an den Ecken deshalb etwas
+schneller als in der Mitte einer Kante (fällt auf einem fast quadratischen
+Würfel nicht auf). Und die Winkelvariable muss per `@property` als
+`<angle>` angemeldet sein, sonst springt sie statt zu animieren.
 
 **Wandernd gegen atmend — der Unterschied, den ein Spieltest gefunden
 hat.** Randglühen und Puls wirkten „zu erzwungen, machen einmal einen
