@@ -36,8 +36,10 @@
   // rarity: Seltenheit fuer den Kistenpool (js/46-shop-daten.js). Nur
   // Designs mit rarity kommen aus Kisten; alles andere hat seinen eigenen
   // Weg (Start, Kampagnenboss, Achievement, Trophy-Shop). Super Rare, Epic
-  // und Legendary sind leer, bis neues Artwork kommt - die Ziehung faellt
-  // dann eine Stufe tiefer.
+  // ist leer, bis neues Artwork kommt - die Ziehung faellt dann eine Stufe
+  // tiefer. Die ersten fuenf Artwork-Designs (V28.12.30) sind je eine
+  // Stufe: Walnut Lodge Common, Tide Pearl Rare, Azure Storm Epic,
+  // Nebula Veil und Solar Relic Legendary (Vorgabe vom 16.09.).
   const DICE_DESIGNS = {
     classic:{name:"Classic",className:"theme-classic"},
     classic_v2:{name:"ClassicV2",className:"theme-classic-v2 theme-art-die",artKey:"ivory-royal",previewAsset:"assets/ui/v28/png/dice-designs/ivory-royal/ivory-royal-beauty.webp",unlockText:"Von Anfang an"},
@@ -50,10 +52,10 @@
     // brauchen einen Eintrag in DICE_UNLOCK_ACHIEVEMENT, im Trophy Shop
     // oder als Kampagnenbelohnung - plus einen unlockText.
     walnut_lodge:{name:"Walnut Lodge",className:"theme-walnut-lodge theme-art-die",artKey:"walnut-lodge",previewAsset:"assets/ui/v28/png/dice-designs/walnut-lodge/walnut-lodge-beauty.webp",testOnly:true,rarity:"common"},
-    tide_pearl:{name:"Tide Pearl",className:"theme-tide-pearl theme-art-die",artKey:"tide-pearl",previewAsset:"assets/ui/v28/png/dice-designs/tide-pearl/tide-pearl-beauty.webp",testOnly:true,rarity:"common"},
-    azure_storm:{name:"Azure Storm",className:"theme-azure-storm theme-art-die",artKey:"azure-storm",previewAsset:"assets/ui/v28/png/dice-designs/azure-storm/azure-storm-beauty.webp",testOnly:true,rarity:"common"},
-    nebula_veil:{name:"Nebula Veil",className:"theme-nebula-veil theme-art-die",artKey:"nebula-veil",previewAsset:"assets/ui/v28/png/dice-designs/nebula-veil/nebula-veil-beauty.webp",testOnly:true,rarity:"common"},
-    solar_relic:{name:"Solar Relic",className:"theme-solar-relic theme-art-die",artKey:"solar-relic",previewAsset:"assets/ui/v28/png/dice-designs/solar-relic/solar-relic-beauty.webp",testOnly:true,rarity:"common"},
+    tide_pearl:{name:"Tide Pearl",className:"theme-tide-pearl theme-art-die",artKey:"tide-pearl",previewAsset:"assets/ui/v28/png/dice-designs/tide-pearl/tide-pearl-beauty.webp",testOnly:true,rarity:"rare"},
+    azure_storm:{name:"Azure Storm",className:"theme-azure-storm theme-art-die",artKey:"azure-storm",previewAsset:"assets/ui/v28/png/dice-designs/azure-storm/azure-storm-beauty.webp",testOnly:true,rarity:"epic"},
+    nebula_veil:{name:"Nebula Veil",className:"theme-nebula-veil theme-art-die",artKey:"nebula-veil",previewAsset:"assets/ui/v28/png/dice-designs/nebula-veil/nebula-veil-beauty.webp",testOnly:true,rarity:"legendary"},
+    solar_relic:{name:"Solar Relic",className:"theme-solar-relic theme-art-die",artKey:"solar-relic",previewAsset:"assets/ui/v28/png/dice-designs/solar-relic/solar-relic-beauty.webp",testOnly:true,rarity:"legendary"},
     frostporcelain:{name:"Frost Porcelain",className:"theme-frostporcelain theme-art-die",artKey:"frostporcelain",previewAsset:"assets/ui/v28/png/dice-designs/frostporcelain/frostporcelain-beauty.webp",testOnly:true,rarity:"common"},
     ashwood:{name:"Ashwood",className:"theme-ashwood theme-art-die",artKey:"ashwood",previewAsset:"assets/ui/v28/png/dice-designs/ashwood/ashwood-beauty.webp",testOnly:true,rarity:"common"},
     coppertrail:{name:"Coppertrail",className:"theme-coppertrail theme-art-die",artKey:"coppertrail",previewAsset:"assets/ui/v28/png/dice-designs/coppertrail/coppertrail-beauty.webp",testOnly:true,rarity:"common"},

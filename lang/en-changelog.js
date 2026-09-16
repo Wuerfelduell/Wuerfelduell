@@ -5,6 +5,8 @@
   if (!pack) return;
 
   Object.assign(pack.exact, {
+    "Die ersten fünf Artwork-Würfel tragen jetzt ihre Seltenheit: Walnut Lodge Common, Tide Pearl Rare, Azure Storm Epic, Nebula Veil und Solar Relic Legendary": "The first five artwork dice now carry their rarity: Walnut Lodge Common, Tide Pearl Rare, Azure Storm Epic, Nebula Veil and Solar Relic Legendary",
+    "Damit ziehen die Kisten aus Epic und Legendary; nur Super Rare ist noch leer und fällt auf Rare zurück": "Chests now draw from Epic and Legendary; only Super Rare is still empty and falls back to Rare",
     "Gemalte Währungsbilder: Duellmarke und Würfelkern stehen im Guthaben, auf den Kaufknöpfen und im Reiter Währung": "Painted currency images: the Duel Token and the Dice Core appear in the balance, on the buy buttons and in the Currency tab",
     "Die Kern-Pakete im Reiter Währung zeigen ihre gemalten Bilder, von der Handvoll bis zur Truhe": "The core packs in the Currency tab show their painted images, from the handful to the chest",
     "Fünf Seltenheitsplaketten kennzeichnen die Kistenkarten, die Chancentabelle und das Ergebnis der Kistenöffnung": "Five rarity badges mark the chest cards, the odds table and the result of the chest opening",
