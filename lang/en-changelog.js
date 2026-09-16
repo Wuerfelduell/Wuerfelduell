@@ -5,6 +5,9 @@
   if (!pack) return;
 
   Object.assign(pack.exact, {
+    "Die Shop-Reiter tragen gemalte Embleme: Truhe, Pokal und Währung": "The shop tabs carry painted emblems: chest, trophy and currency",
+    "Das Ergebnis der Kistenöffnung steht auf einem Band: Gold für „Neu!“, Navy für „Doppelt“ mit der Rückgabe": "The chest-opening result sits on a ribbon: gold for New!, navy for Duplicate with the refund",
+    "Die Kern-Pakete zeigen ihre Menge auf einem gemalten Preisschild mit Kern-Symbol": "The core packs show their amount on a painted price plate with the core symbol",
     "Fünf Super-Rare-Würfel im Kistenpool: Gezeitenkompass, Runenschmiede, Frostsiegel, Nachtfalter und Bernsteinarchiv": "Five Super Rare dice in the chest pool: Gezeitenkompass, Runenschmiede, Frostsiegel, Nachtfalter and Bernsteinarchiv",
     "Damit sind alle fünf Seltenheitsstufen besetzt – kein Wurf fällt mehr auf eine tiefere Stufe zurück": "All five rarity tiers are now filled; no roll drops to a lower tier any more",
     "Vier neue Würfeldesigns im Kistenpool: Dämmerkathedrale, Phönixkern und Weltenwurzel als Epic, Ereignishorizont als Legendary": "Four new dice designs in the chest pool: Dämmerkathedrale, Phönixkern and Weltenwurzel as Epic, Ereignishorizont as Legendary",
