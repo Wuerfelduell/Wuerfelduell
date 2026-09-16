@@ -12901,6 +12901,20 @@ html[data-v28-rework="2"] body.playing #game .controls>button.secondary{
 .special-big-die.d4.theme-sandcarver{background:linear-gradient(145deg,#f0c18a,#c08840);color:#201a15;border-color:#a16f24}
 .special-big-die.d4.theme-redclay{background:linear-gradient(145deg,#d1603c,#6e2614);color:#ebe0c3;border-color:#5b4023}
 
+/* ===== Rare-Paket 2 =====
+   Vier Designs mit deutlich mehr Farbe als der Common-Satz. Die Glut nimmt
+   je Design die Leitfarbe - bei Korsar den roten Edelstein statt des
+   Goldseils, sonst waere er von Midnight Enamel nicht zu unterscheiden. */
+.die.theme-seidenhof{--dice-accent:#c8302f;--dice-glow:rgba(200,48,47,.86)}
+.die.theme-korsar{--dice-accent:#e8483a;--dice-glow:rgba(232,72,58,.86)}
+.die.theme-drachenpanzer{--dice-accent:#e8951a;--dice-glow:rgba(232,149,26,.88)}
+.die.theme-goldbruch{--dice-accent:#d0a23a;--dice-glow:rgba(208,162,58,.88)}
+
+.special-big-die.d4.theme-seidenhof{background:linear-gradient(145deg,#c01414,#5e0303);color:#eae6dd;border-color:#cfc7b8}
+.special-big-die.d4.theme-korsar{background:linear-gradient(145deg,#2c4478,#101a33);color:#f7e6c8;border-color:#b98a34}
+.special-big-die.d4.theme-drachenpanzer{background:linear-gradient(145deg,#41603f,#1a2619);color:#f2dcb0;border-color:#6d6663}
+.special-big-die.d4.theme-goldbruch{background:linear-gradient(145deg,#f4f1ea,#cfc6b4);color:#440957;border-color:#b7862f}
+
 
 /* ===== Die Matchbar auf schmalen Telefonen =====
    Seit dort zwei Knoepfe stehen, passt die Leiste nicht mehr ueberall in

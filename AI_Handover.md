@@ -22,9 +22,9 @@ welche Fallen schon Zeit gekostet haben.
 
 | | |
 |---|---|
-| Version | **28.12.36** |
+| Version | **28.12.37** |
 | Branch | `main` |
-| Letzte Schritte | CSS-Stapel auf 10 Dateien zusammengelegt · Changelog englisch vervollständigt · Hauptmenü, Statistik, Profile, Achievements, Spielvorbereitung und Trophy Shop überarbeitet · Fähigkeits- und Shopflächen auf proportional gekachelte Bildrahmen umgestellt · alle Bild-URLs auf einen gemeinsamen Cache-Schlüssel · Trophy-Shop-Reste bereinigt und Aufklapppfeile angeglichen · Duo- und Trio-Boss-Rush mit Pfadwahl, gespeicherten Runs und 32 Perks einschließlich temporärer Ability-Mastery · Boss-XP-Umtausch 300:100 · Zweitfund gedeckelt · Trio-Rush 15 Stufen, ab 10 ultraschwer · Boss-Rush-HUD auf die Weltregel reduziert · Zweitfund-Kopien ablehnbar und weitergebbar · Ultra-Stufen treffen härter statt länger zu dauern · Heilung gedeckelt, Maximum wächst je Stufe · Regelleiste als Kachelgitter, wächst mit dem Text · gespeicherte Runs überleben Balanceänderungen · Meldeschichten über den Kampf-Overlays geordnet · großer Spezialwürfel dreht sich als echter 3D-Würfel wie der normale und füllt seinen Rahmen · Kampflog, Infos-Blatt und Weltregel hinter einem Knopf, Knopfleiste gekürzt und beruhigt · Kartentexte aus den gemalten Rahmen geholt · fünf neue Würfeldesigns in der Testumgebung · Matchbar auf schmalen Telefonen wieder einzeilig · fünf Würfeldesigns mit fertigem Artwork und nachgemessenem Augenraster · Live-Online-Prüfstand repariert und um eine Latenzmessung erweitert · Common-Satz mit zehn Würfeldesigns vollständig · Online-Wurfwerte vorgezogen, live nachgemessen · Wurfanimation beim Gast wiederhergestellt |
+| Letzte Schritte | CSS-Stapel auf 10 Dateien zusammengelegt · Changelog englisch vervollständigt · Hauptmenü, Statistik, Profile, Achievements, Spielvorbereitung und Trophy Shop überarbeitet · Fähigkeits- und Shopflächen auf proportional gekachelte Bildrahmen umgestellt · alle Bild-URLs auf einen gemeinsamen Cache-Schlüssel · Trophy-Shop-Reste bereinigt und Aufklapppfeile angeglichen · Duo- und Trio-Boss-Rush mit Pfadwahl, gespeicherten Runs und 32 Perks einschließlich temporärer Ability-Mastery · Boss-XP-Umtausch 300:100 · Zweitfund gedeckelt · Trio-Rush 15 Stufen, ab 10 ultraschwer · Boss-Rush-HUD auf die Weltregel reduziert · Zweitfund-Kopien ablehnbar und weitergebbar · Ultra-Stufen treffen härter statt länger zu dauern · Heilung gedeckelt, Maximum wächst je Stufe · Regelleiste als Kachelgitter, wächst mit dem Text · gespeicherte Runs überleben Balanceänderungen · Meldeschichten über den Kampf-Overlays geordnet · großer Spezialwürfel dreht sich als echter 3D-Würfel wie der normale und füllt seinen Rahmen · Kampflog, Infos-Blatt und Weltregel hinter einem Knopf, Knopfleiste gekürzt und beruhigt · Kartentexte aus den gemalten Rahmen geholt · fünf neue Würfeldesigns in der Testumgebung · Matchbar auf schmalen Telefonen wieder einzeilig · fünf Würfeldesigns mit fertigem Artwork und nachgemessenem Augenraster · Live-Online-Prüfstand repariert und um eine Latenzmessung erweitert · Common-Satz mit zehn Würfeldesigns vollständig · Online-Wurfwerte vorgezogen, live nachgemessen · Wurfanimation beim Gast wiederhergestellt · vier Rare-Würfeldesigns |
 
 **Die Arbeitsteilung hat sich geändert.** Bis V28.11.28 liefen zwei
 Sitzungen parallel: Codex hat umgesetzt, diese Sitzung geprüft. Ab jetzt
@@ -256,7 +256,24 @@ auf 1024 px — umgerechnet exakt die 8,8 %/91,2 %, 31/50/67 % und 13 % aus
 `docs/WUERFELDESIGN-BRIEF.md`. Der Brief wird also gelesen und befolgt;
 Nacharbeit fällt seither keine mehr an.
 
-**V28.12.34 schließt den Satz ab:** Slatewatch, Sandcarver und Redclay.
+**V28.12.37: die ersten vier Rare-Würfel** — Seidenhof, Korsar,
+Drachenpanzer, Goldbruch. Feld exakt, Raster ±0,3 bis ±1,1 Prozentpunkte,
+Augendurchmesser 9,7–12,3 %. Sie kommen als **WebP 1024 × 1024,
+verlustfrei, mit echtem 8-Bit-Alpha**; das Spiel-Repo rechnet daraus wie
+bisher 512 × 512 bei Qualität 88 (rund 48 kB je Fläche).
+
+**Die Augengröße ist das, was bei Rare-Designs schiefgehen kann.** Ein
+erstes Rare-Paket (Uhrwerk) hatte Augen von 5,0–7,7 % statt 10–13 % —
+halb so groß und untereinander ungleich. Bei 56 px hebt sich dort das
+schwächste Auge nur mit einem Helligkeitsabstand von **109** von der
+Fläche ab; der Common-Satz liegt bei 159–219, das Rare-Paket 2 bei
+138–226. Gemessen wird das so: Fläche 6 auf 56 px skalieren, je Auge das
+stärkste Bildpunktpaar in einem Fenster von ±3 px gegen die Fläche
+zwischen den Augenspalten. **Ein einzelner Bildpunkt genügt nicht** — bei
+leicht verschobenen Augen misst man sonst die Lücke und bekommt 12 statt
+109 heraus.
+
+**V28.12.34 schließt den Common-Satz ab:** Slatewatch, Sandcarver und Redclay.
 Der Satz „Common" umfasst damit **zehn** Designs, alle in einer Bauart.
 Sandcarver ist das einzige mit **dunklen Augen auf heller Fläche** — es
 liest sich bei 56 px am weitesten und ist der Kandidat, wenn ein Design

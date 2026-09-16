@@ -5,6 +5,8 @@
   if (!pack) return;
 
   Object.assign(pack.exact, {
+    "Die ersten vier Rare-Würfel sind eingebaut: Seidenhof, Korsar, Drachenpanzer und Goldbruch": "The first four rare dice are in: Seidenhof, Korsar, Drachenpanzer and Goldbruch",
+    "Wie die zehn Common-Designs vorerst nur in der Testumgebung wählbar": "Like the ten common designs, they can only be picked in the test lab for now",
     "Beim Wurf des Hosts sah der Gast das Ergebnis ohne Würfelanimation: der Zwischenstand traf schon nach rund 30 Millisekunden ein und wurde sofort aufgedeckt": "On a host roll the guest saw the result with no dice animation: the intermediate state arrived after about 30 milliseconds and was revealed at once",
     "Der Gast dreht jetzt immer die volle Wurfdauer, deckt danach auf – und beim eigenen Wurf, wo die Vorschau ohnehin schon länger lief, weiterhin sofort": "The guest now always spins for the full roll duration before revealing, and still reveals at once on its own roll, where the preview has been running longer anyway",
     "Online-Hauptwürfe senden die gezogenen Augen bereits im Zwischenstand; der Gast sieht sein Wurfergebnis rund eine halbe Sekunde früher und bleibt bis zur Bestätigung für weitere Aktionen gesperrt": "Online main rolls send their rolled values in the intermediate state; the guest sees its roll about half a second earlier and stays blocked from further actions until confirmation",

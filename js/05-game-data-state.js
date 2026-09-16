@@ -39,8 +39,7 @@
     sapphire_crown:{name:"Sapphire Crown",className:"theme-sapphire-crown theme-art-die",artKey:"sapphire-crown",previewAsset:"assets/ui/v28/png/dice-designs/sapphire-crown/sapphire-crown-beauty.webp",unlockText:"Solo · Welt 3 Boss"},
     amethyst_rift:{name:"Amethyst Rift",className:"theme-amethyst-rift theme-art-die",artKey:"amethyst-rift",previewAsset:"assets/ui/v28/png/dice-designs/amethyst-rift/amethyst-rift-beauty.webp",unlockText:"Solo · Welt 4 Boss"},
     // Artwork-Würfel ohne Freischaltweg, vorerst NUR in der Testumgebung.
-    // testOnly
-    // hält sie aus der Profilliste heraus: dort stünden sie sonst als
+    // testOnly hält sie aus der Profilliste heraus: dort stünden sie sonst als
     // gesperrte Karten, obwohl es noch keinen Weg gibt, sie zu bekommen.
     // Wenn sie freigeschaltet werden sollen, fällt testOnly weg und sie
     // brauchen einen Eintrag in DICE_UNLOCK_ACHIEVEMENT, im Trophy Shop
@@ -60,6 +59,10 @@
     slatewatch:{name:"Slatewatch",className:"theme-slatewatch theme-art-die",artKey:"slatewatch",previewAsset:"assets/ui/v28/png/dice-designs/slatewatch/slatewatch-beauty.webp",testOnly:true},
     sandcarver:{name:"Sandcarver",className:"theme-sandcarver theme-art-die",artKey:"sandcarver",previewAsset:"assets/ui/v28/png/dice-designs/sandcarver/sandcarver-beauty.webp",testOnly:true},
     redclay:{name:"Redclay",className:"theme-redclay theme-art-die",artKey:"redclay",previewAsset:"assets/ui/v28/png/dice-designs/redclay/redclay-beauty.webp",testOnly:true},
+    seidenhof:{name:"Seidenhof",className:"theme-seidenhof theme-art-die",artKey:"seidenhof",previewAsset:"assets/ui/v28/png/dice-designs/seidenhof/seidenhof-beauty.webp",testOnly:true},
+    korsar:{name:"Korsar",className:"theme-korsar theme-art-die",artKey:"korsar",previewAsset:"assets/ui/v28/png/dice-designs/korsar/korsar-beauty.webp",testOnly:true},
+    drachenpanzer:{name:"Drachenpanzer",className:"theme-drachenpanzer theme-art-die",artKey:"drachenpanzer",previewAsset:"assets/ui/v28/png/dice-designs/drachenpanzer/drachenpanzer-beauty.webp",testOnly:true},
+    goldbruch:{name:"Goldbruch",className:"theme-goldbruch theme-art-die",artKey:"goldbruch",previewAsset:"assets/ui/v28/png/dice-designs/goldbruch/goldbruch-beauty.webp",testOnly:true},
     obsidian:{name:"Obsidian",className:"theme-obsidian"},
     gold:{name:"Gold",className:"theme-gold"},
     blood:{name:"Blood",className:"theme-blood"},
