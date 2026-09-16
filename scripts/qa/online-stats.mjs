@@ -107,5 +107,37 @@ await check("Volle Warteschlange verwirft keine alten Einträge",async()=>{
   await assert.rejects(small.enqueue(account,report()),/FULL/);
   assert.equal((await small.pending(account)).length,1);small.close();
 });
+await check("Quittungen: sieben Tage, maximal 500, ausstehende bleiben",async()=>{
+  let now=1000000000;
+  const b=await api.createOutbox({indexedDB,name:"retention",now:()=>now});
+  for(let i=0;i<502;i++){const r=report();await b.enqueue(account,r);await b.acknowledge(account,r.event_id);}
+  const pending=report();await b.enqueue(account,pending);
+  now+=7*86400000;assert.equal((await b.pruneAcknowledged()).length,0);
+  now++;assert.equal((await b.pruneAcknowledged()).length,500);
+  assert.equal((await b.pruneAcknowledged()).length,2);
+  assert.equal((await b.pending(account)).length,1);b.close();
+});
+await check("Abgewiesene werden übersprungen; Verwerfen bleibt kontogebunden",async()=>{
+  const b=await api.createOutbox({indexedDB,name:"rejected"});
+  const bad=report();await b.enqueue(account,bad);
+  for(const code of ["DD_STATS_INVALID_REPORT","DD_STATS_OWNER_CONFLICT","DD_STATS_REPORT_CONFLICT"]){
+    const good=report();await b.enqueue(account,good);
+    const sync=api.createSync({outbox:b,getSession:async()=>({uid:account}),send:async r=>{
+      if(r.event_id===bad.event_id)throw {message:code};return {event_id:r.event_id,status:"accepted"};
+    }});
+    assert.equal((await sync.flush()).status,"complete");
+    assert.equal((await b.pending(account)).length,0);
+    assert.equal(await b.rejectedCount(account),1);
+    await b.discardRejected(account);await b.enqueue(account,bad);
+  }
+  await b.reject(account,bad.event_id,"DD_STATS_INVALID_REPORT");
+  const foreign=report();await b.enqueue(other,foreign);await b.reject(other,foreign.event_id,"DD_STATS_REPORT_CONFLICT");
+  const pending=report();await b.enqueue(account,pending);
+  await b.discardRejected(account);
+  assert.equal(await b.rejectedCount(account),0);assert.equal(await b.rejectedCount(other),1);
+  assert.equal((await b.pending(account)).length,1);
+  const retry=api.createSync({outbox:b,getSession:async()=>({uid:account}),send:async()=>{throw Error("DD_STATS_RATE_LIMIT");}});
+  assert.equal((await retry.flush()).status,"retry");assert.equal((await b.pending(account)).length,1);b.close();
+});
 box.close();
 console.log(count+" Online-Statistik-Prüfgruppen bestanden.");

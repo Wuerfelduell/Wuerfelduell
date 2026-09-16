@@ -3,7 +3,7 @@
   const api=window.WDOnlineStats;
   // IndexedDB-Transaktionen serialisieren auch Schreibzugriffe anderer Tabs.
   // Einträge werden niemals bei Netzfehlern, Abmeldung oder Platzmangel gelöscht.
-  api.createOutbox=async function({indexedDB=window.indexedDB,name="diceduel_online_stats_v1",maxPending=5000}={}){
+  api.createOutbox=async function({indexedDB=window.indexedDB,name="diceduel_online_stats_v1",maxPending=5000,now=Date.now}={}){
     if(!indexedDB) throw new Error("DD_STATS_STORAGE_UNAVAILABLE");
     const db=await new Promise((resolve,reject)=>{
       const request=indexedDB.open(name,1);
@@ -69,8 +69,57 @@
             if(!request.result){done(false);return;}
             const row=request.result;
             if(row.owner!==owner) return abort(new Error("DD_STATS_OWNER_CONFLICT"));
-            row.status="acknowledged";row.report=null;
+            row.status="acknowledged";row.report=null;row.acknowledgedAt=now();
             store.put(row);done(true);
+          };
+        });
+      },
+      async pruneAcknowledged(beforeRemove=()=>{}){
+        return transaction("readwrite",(store,done,abort)=>{
+          const removed=[],cutoff=now()-7*86400000;
+          const request=store.index("status").openCursor("acknowledged");
+          request.onsuccess=()=>{
+            const cursor=request.result;
+            if(!cursor||removed.length>=500){done(removed);return;}
+            const row=cursor.value;
+            // Quittungen älterer Builds bekommen einmalig einen Fristbeginn.
+            if(!Number.isFinite(row.acknowledgedAt)){row.acknowledgedAt=now();cursor.update(row);}
+            else if(row.acknowledgedAt<cutoff){
+              const receipt={owner:row.owner,event_id:row.event_id};
+              try{beforeRemove(receipt);}catch(error){abort(error);return;}
+              removed.push(receipt);cursor.delete();
+            }
+            cursor.continue();
+          };
+        });
+      },
+      async reject(owner,eventId,code){
+        owner=ownerId(owner);
+        return transaction("readwrite",(store,done,abort)=>{
+          const request=store.get(eventId);
+          request.onsuccess=()=>{
+            const row=request.result;if(!row){done(false);return;}
+            if(row.owner!==owner)return abort(new Error("DD_STATS_OWNER_CONFLICT"));
+            if(row.status!=="pending"){done(false);return;}
+            row.status="rejected";row.rejection=code;store.put(row);done(true);
+          };
+        });
+      },
+      async rejectedCount(owner){
+        owner=ownerId(owner);
+        return transaction("readonly",(store,done)=>{
+          const request=store.index("owner").getAll(owner);
+          request.onsuccess=()=>done(request.result.filter(r=>r.status==="rejected").length);
+        });
+      },
+      async discardRejected(owner){
+        owner=ownerId(owner);
+        return transaction("readwrite",(store,done)=>{
+          const removed=[],request=store.index("owner").openCursor(owner);
+          request.onsuccess=()=>{
+            const cursor=request.result;if(!cursor){done(removed);return;}
+            if(cursor.value.status==="rejected"){removed.push({owner,event_id:cursor.value.event_id});cursor.delete();}
+            cursor.continue();
           };
         });
       },

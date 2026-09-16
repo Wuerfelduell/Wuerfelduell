@@ -18,7 +18,7 @@ Repo: `Wuerfelduell/Wuerfelduell`. Direkte Commits auf `main` sind erlaubt.
 
 - `js/00-*.js` … `js/47-*.js` — in dieser Reihenfolge in `index.html`
   eingebunden, jede Datei eine IIFE. Keine Module, kein Import.
-- `js/online-stats/` — fünf eigene IIFE-Dateien, geladen nach `js/47`.
+- `js/online-stats/` — sechs eigene IIFE-Dateien, geladen nach `js/47`.
 - `src/styles/legacy/*.css` — **11 Quelldateien**, das sind die zu
   bearbeitenden. `css/app.css` ist erzeugt und wird nie von Hand editiert.
 - `lang/de.js`, `lang/en.js`, `lang/en-campaign.js`, `lang/en-changelog.js`
@@ -40,6 +40,10 @@ Repo: `Wuerfelduell/Wuerfelduell`. Direkte Commits auf `main` sind erlaubt.
    Endgame-Daten und Supabase-Struktur.
    Seit V28.12.56 laufen auch die Statistik-Prüfstände mit. Dafür einmalig
    `npm ci` ausführen (Testpakete `@electric-sql/pglite` und `fake-indexeddb`).
+   Die globale Ansicht wird zusätzlich mit Playwright geprüft: einmalig
+   `npx playwright install chromium` (Linux ggf. `--with-deps`). Der Prüfstand
+   nutzt `/opt/pw-browsers/chromium`, falls vorhanden, sonst den installierten
+   Playwright-Chromium; `WD_CHROMIUM` erlaubt einen expliziten Browserpfad.
 5. `AI_Handover.md` prüfen: Tabelle unter „Stand" nachziehen, alles
    andere nur bei echter Änderung.
 
