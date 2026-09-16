@@ -1,7 +1,7 @@
 (function(){
   "use strict";
 
-  let onlineSession={active:false,uid:"",roomCode:"",isHost:false,lastStateSeq:0,actionPending:false,pendingActionId:"",pendingActionType:"",previewActionId:"",previewType:"",transportConnected:true,pendingTimer:null,lastHostActionType:"",lastHostActionAt:0,lastCombatFxId:"",playedCombatFxIds:new Set(),localRoundCommitted:false};
+  let onlineSession={active:false,uid:"",roomCode:"",isHost:false,lastStateSeq:0,actionPending:false,pendingActionId:"",pendingActionType:"",previewActionId:"",previewType:"",transportConnected:true,pendingTimer:null,lastHostActionType:"",lastHostActionAt:0,lastCombatFxId:"",playedCombatFxIds:new Set(),localRoundCommitted:false,previewStart:0,revealTimer:null};
   let onlineInputHooksInstalled=false;
 
   const ONLINE_ACTION_BUTTONS=[
@@ -81,6 +81,8 @@
 
   function clearPendingAction(){
     if(onlineSession.pendingTimer){clearTimeout(onlineSession.pendingTimer);onlineSession.pendingTimer=null;}
+    if(onlineSession.revealTimer){clearTimeout(onlineSession.revealTimer);onlineSession.revealTimer=null;}
+    onlineSession.previewStart=0;
     onlineSession.actionPending=false;
     onlineSession.pendingActionId="";
     onlineSession.pendingActionType="";
@@ -150,6 +152,9 @@
   function beginActionPreview(type,actionId=""){
     if(onlineSession.isHost) return;
     const actionType=String(type||"");
+    // Wann die Vorschau begann, entscheidet spaeter, ob der Gast ein
+    // vorgezogenes Ergebnis sofort zeigen darf oder erst nachdrehen muss.
+    if(isOnlineRollVisual(actionType)) onlineSession.previewStart=(globalThis.performance?.now?.()??Date.now());
     beginOnlineRollWindow(actionType,{remote:true});
     if(MAIN_ROLL_ACTIONS.has(actionType)) previewMainRoll(actionType);
     else if(SPECIAL_ROLL_ACTIONS.has(actionType)) previewSpecialRoll(actionType);
@@ -598,8 +603,17 @@
     const earlyRoll=!settled&&MAIN_ROLL_ACTIONS.has(actionType)&&
       Array.isArray(state.dice)&&state.dice.some(d=>d?.rolling)&&
       state.dice.filter(d=>d?.rolling).every(d=>Number.isInteger(d.value)&&d.value>=1&&d.value<=6);
-    const settlingRoll=(settled||earlyRoll)&&isOnlineRollVisual(actionType);
+    // Frueher heisst frueher als der Endstand - nicht ohne Animation. Wuerfelt
+    // der Host, erreicht sein Zwischenstand den Gast schon nach rund 30 ms;
+    // sofort aufzudecken liesse die Wuerfel dort gar nicht erst drehen. Beim
+    // eigenen Wurf lief die Vorschau dagegen den ganzen Netzweg lang, die
+    // Wurfdauer ist laengst um und das Ergebnis darf sofort stehen.
+    const jetzt=(globalThis.performance?.now?.()??Date.now());
+    const restMs=earlyRoll?Math.max(0,ROLL_ANIM_MS-(jetzt-(onlineSession.previewStart||0))):0;
+    const deckeAuf=earlyRoll&&restMs<=0;
+    const settlingRoll=(settled||deckeAuf)&&isOnlineRollVisual(actionType);
     if(settlingRoll) prepareOnlineRollCommit();
+    if(settled&&onlineSession.revealTimer){clearTimeout(onlineSession.revealTimer);onlineSession.revealTimer=null;}
 
     const turnUid=String(state.currentPlayerUid||"");
     const turnIndex=players.findIndex(p=>String(p?.onlineUid||"")===turnUid);
@@ -608,7 +622,18 @@
     syncLocalOnlineAchievements();
     applyBattleSnapshot(state.battle||{});
     if(Array.isArray(state.dice)) dice=cloneJson(state.dice,[])||[];
-    if(earlyRoll) dice.forEach(d=>{d.rolling=false;});
+    if(deckeAuf) dice.forEach(d=>{d.rolling=false;});
+    if(earlyRoll&&!deckeAuf){
+      // Augen stehen fest, gezeigt werden sie erst am Ende des Wurfs.
+      if(onlineSession.revealTimer) clearTimeout(onlineSession.revealTimer);
+      onlineSession.revealTimer=setTimeout(()=>{
+        onlineSession.revealTimer=null;
+        prepareOnlineRollCommit();
+        dice.forEach(d=>{if(d)d.rolling=false;});
+        renderDice();
+        finishOnlineRollWindow();
+      },restMs);
+    }
     phase=String(state.phase||phase||"idle");
 
     renderAll();
@@ -810,7 +835,7 @@
 
   function startOnlineMatch(match,localUid,localProfileId,isHost=false){
     const matchPlayers=Array.isArray(match?.players)?match.players:[];
-    onlineSession={active:true,uid:String(localUid||""),roomCode:String(match?.roomCode||""),isHost:!!isHost,lastStateSeq:Number(match?.state?.seq)||0,actionPending:false,pendingActionId:"",pendingActionType:"",previewActionId:"",previewType:"",transportConnected:true,pendingTimer:null,lastHostActionType:"",lastHostActionAt:0,lastCombatFxId:"",playedCombatFxIds:new Set(),localRoundCommitted:false};
+    onlineSession={active:true,uid:String(localUid||""),roomCode:String(match?.roomCode||""),isHost:!!isHost,lastStateSeq:Number(match?.state?.seq)||0,actionPending:false,pendingActionId:"",pendingActionType:"",previewActionId:"",previewType:"",transportConnected:true,pendingTimer:null,lastHostActionType:"",lastHostActionAt:0,lastCombatFxId:"",playedCombatFxIds:new Set(),localRoundCommitted:false,previewStart:0,revealTimer:null};
     installOnlineInputHooks();
     if(matchPlayers.length<2 || matchPlayers.length>4 || !localUid) return false;
     if(!matchPlayers.some(p=>String(p?.uid||"")===String(localUid))) return false;

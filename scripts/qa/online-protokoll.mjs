@@ -135,9 +135,26 @@ try {
   assert.equal(snapshots.length, 1, "Zwischenstand vor dem Ende des Wurfs");
   assert.equal(snapshots[0].settled, false);
   assert(snapshots[0].dice.every(d => Number.isInteger(d.value)), "Zwischenstand enthaelt echte Augen");
-  assert.deepEqual(await gast.evaluate(() => [...document.querySelectorAll("#dice .die")].map(d => Number(d.dataset.value))), snapshots[0].dice.map(d => d.value), "Gast zeigt die autoritativen Augen vor der Bestaetigung");
-  const pending = await gast.evaluate(() => ({ pending: window.__qa.session().actionPending, timer: !!window.__qa.session().pendingTimer, rolling: !!document.querySelector("#dice .rolling") }));
-  assert.deepEqual(pending, { pending: true, timer: true, rolling: false }, "Augen festgeschrieben, Pending und Abbruchtimer bleiben aktiv");
+  // Hier kommt der Zwischenstand ohne Netzweg an, die Vorschau lief also erst
+  // 100 ms. Der Gast muss die Wurfdauer zu Ende drehen - sonst sieht er beim
+  // Wurf des Hosts gar keine Animation, und genau das war der Befund aus dem
+  // Spieltest. Gezeigt werden die echten Augen trotzdem VOR der Bestaetigung.
+  assert(await gast.evaluate(() => !!document.querySelector("#dice .rolling")), "Gast dreht die Wurfdauer zu Ende");
+  // Den Moment des Aufdeckens abpassen und im selben Bild festhalten, ob die
+  // Aktion da noch aussteht.
+  const fruehesBild = await gast.evaluate(erwartet => new Promise(resolve => {
+    const bild = () => {
+      const augen = [...document.querySelectorAll("#dice .die")].map(d => Number(d.dataset.value));
+      if (augen.join() === erwartet.join())
+        return resolve({ augen, pending: window.__qa.session().actionPending, timer: !!window.__qa.session().pendingTimer, rolling: !!document.querySelector("#dice .rolling") });
+      requestAnimationFrame(bild);
+    };
+    bild();
+  }), snapshots[0].dice.map(d => d.value));
+  assert.deepEqual(fruehesBild.augen, snapshots[0].dice.map(d => d.value), "Gast zeigt die autoritativen Augen");
+  assert.deepEqual({ pending: fruehesBild.pending, timer: fruehesBild.timer, rolling: fruehesBild.rolling },
+    { pending: true, timer: true, rolling: false },
+    "Augen vor der Bestaetigung aufgedeckt, Pending und Abbruchtimer bleiben aktiv");
   await gast.evaluate(() => document.querySelector("#primaryBtn").dispatchEvent(new MouseEvent("click", { bubbles: true })));
   assert.equal(sent, 1, "Keine zweite Gastaktion waehrend des Zwischenstands");
   await waitFinal();

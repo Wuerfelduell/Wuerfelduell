@@ -5,6 +5,8 @@
   if (!pack) return;
 
   Object.assign(pack.exact, {
+    "Beim Wurf des Hosts sah der Gast das Ergebnis ohne Würfelanimation: der Zwischenstand traf schon nach rund 30 Millisekunden ein und wurde sofort aufgedeckt": "On a host roll the guest saw the result with no dice animation: the intermediate state arrived after about 30 milliseconds and was revealed at once",
+    "Der Gast dreht jetzt immer die volle Wurfdauer, deckt danach auf – und beim eigenen Wurf, wo die Vorschau ohnehin schon länger lief, weiterhin sofort": "The guest now always spins for the full roll duration before revealing, and still reveals at once on its own roll, where the preview has been running longer anyway",
     "Online-Hauptwürfe senden die gezogenen Augen bereits im Zwischenstand; der Gast sieht sein Wurfergebnis rund eine halbe Sekunde früher und bleibt bis zur Bestätigung für weitere Aktionen gesperrt": "Online main rolls send their rolled values in the intermediate state; the guest sees its roll about half a second earlier and stays blocked from further actions until confirmation",
     "Beim Host bleiben Augen und Summe während der Wurfanimation verborgen; Twelve heilt weiterhin erst beim Aufdecken": "On the host, rolled values and their sum stay hidden during the roll animation; Twelve still heals only when the dice are revealed",
     "Der Common-Satz ist vollständig: Slatewatch, Sandcarver und Redclay schließen ihn ab – zehn Designs in einer Bauart": "The common set is complete: Slatewatch, Sandcarver and Redclay round it off, ten designs of one build",

@@ -22,9 +22,9 @@ welche Fallen schon Zeit gekostet haben.
 
 | | |
 |---|---|
-| Version | **28.12.35** |
+| Version | **28.12.36** |
 | Branch | `main` |
-| Letzte Schritte | CSS-Stapel auf 10 Dateien zusammengelegt · Changelog englisch vervollständigt · Hauptmenü, Statistik, Profile, Achievements, Spielvorbereitung und Trophy Shop überarbeitet · Fähigkeits- und Shopflächen auf proportional gekachelte Bildrahmen umgestellt · alle Bild-URLs auf einen gemeinsamen Cache-Schlüssel · Trophy-Shop-Reste bereinigt und Aufklapppfeile angeglichen · Duo- und Trio-Boss-Rush mit Pfadwahl, gespeicherten Runs und 32 Perks einschließlich temporärer Ability-Mastery · Boss-XP-Umtausch 300:100 · Zweitfund gedeckelt · Trio-Rush 15 Stufen, ab 10 ultraschwer · Boss-Rush-HUD auf die Weltregel reduziert · Zweitfund-Kopien ablehnbar und weitergebbar · Ultra-Stufen treffen härter statt länger zu dauern · Heilung gedeckelt, Maximum wächst je Stufe · Regelleiste als Kachelgitter, wächst mit dem Text · gespeicherte Runs überleben Balanceänderungen · Meldeschichten über den Kampf-Overlays geordnet · großer Spezialwürfel dreht sich als echter 3D-Würfel wie der normale und füllt seinen Rahmen · Kampflog, Infos-Blatt und Weltregel hinter einem Knopf, Knopfleiste gekürzt und beruhigt · Kartentexte aus den gemalten Rahmen geholt · fünf neue Würfeldesigns in der Testumgebung · Matchbar auf schmalen Telefonen wieder einzeilig · fünf Würfeldesigns mit fertigem Artwork und nachgemessenem Augenraster · Live-Online-Prüfstand repariert und um eine Latenzmessung erweitert · Common-Satz mit zehn Würfeldesigns vollständig · Online-Wurfwerte vorgezogen, live nachgemessen |
+| Letzte Schritte | CSS-Stapel auf 10 Dateien zusammengelegt · Changelog englisch vervollständigt · Hauptmenü, Statistik, Profile, Achievements, Spielvorbereitung und Trophy Shop überarbeitet · Fähigkeits- und Shopflächen auf proportional gekachelte Bildrahmen umgestellt · alle Bild-URLs auf einen gemeinsamen Cache-Schlüssel · Trophy-Shop-Reste bereinigt und Aufklapppfeile angeglichen · Duo- und Trio-Boss-Rush mit Pfadwahl, gespeicherten Runs und 32 Perks einschließlich temporärer Ability-Mastery · Boss-XP-Umtausch 300:100 · Zweitfund gedeckelt · Trio-Rush 15 Stufen, ab 10 ultraschwer · Boss-Rush-HUD auf die Weltregel reduziert · Zweitfund-Kopien ablehnbar und weitergebbar · Ultra-Stufen treffen härter statt länger zu dauern · Heilung gedeckelt, Maximum wächst je Stufe · Regelleiste als Kachelgitter, wächst mit dem Text · gespeicherte Runs überleben Balanceänderungen · Meldeschichten über den Kampf-Overlays geordnet · großer Spezialwürfel dreht sich als echter 3D-Würfel wie der normale und füllt seinen Rahmen · Kampflog, Infos-Blatt und Weltregel hinter einem Knopf, Knopfleiste gekürzt und beruhigt · Kartentexte aus den gemalten Rahmen geholt · fünf neue Würfeldesigns in der Testumgebung · Matchbar auf schmalen Telefonen wieder einzeilig · fünf Würfeldesigns mit fertigem Artwork und nachgemessenem Augenraster · Live-Online-Prüfstand repariert und um eine Latenzmessung erweitert · Common-Satz mit zehn Würfeldesigns vollständig · Online-Wurfwerte vorgezogen, live nachgemessen · Wurfanimation beim Gast wiederhergestellt |
 
 **Die Arbeitsteilung hat sich geändert.** Bis V28.11.28 liefen zwei
 Sitzungen parallel: Codex hat umgesetzt, diese Sitzung geprüft. Ab jetzt
@@ -548,6 +548,30 @@ wissen muss, nicht mehr die volle Beweisführung.
    Dass Codex' eigene Live-Läufe scheiterten, lag an seiner Umgebung: ein
    einzelner Auth-Aufruf brauchte dort 12.926 ms. `docs/ONLINE-GAST-LATENZ.md`
    und `.json` halten diese Läufe als Diagnose fest.
+
+   **Nachtrag V28.12.36: der erste Spieltest fand den Haken.** „Der Gast
+   sieht keine Animation, wenn der Host rollt." Der Grund ist das
+   Gegenstück zum Gewinn: beim **eigenen** Wurf wartet der Gast den ganzen
+   Netzweg, seine Vorschau läuft rund eine Sekunde, und das Ergebnis darf
+   zu Recht sofort stehen. Beim Wurf des **Hosts** trifft derselbe
+   Zwischenstand aber schon nach rund **30 ms** ein — sofort aufzudecken
+   ließ die Würfel dort gar nicht erst drehen.
+
+   `applyStateNow` deckt vorgezogene Augen deshalb nicht mehr sofort auf,
+   sondern erst, wenn die Vorschau so lange lief wie ein Wurf
+   (`ROLL_ANIM_MS`, 430 bzw. 250 ms schnell). Dafür merkt sich
+   `beginActionPreview` in `onlineSession.previewStart`, wann die Vorschau
+   begann; die Restdauer läuft als `onlineSession.revealTimer`, den der
+   Endstand und `clearPendingAction` abräumen. Ist die Wurfdauer beim
+   Eintreffen schon um — der Normalfall beim eigenen Wurf — wird wie
+   bisher sofort aufgedeckt.
+
+   **Der Gewinn bleibt dadurch unangetastet:** live gemessen 1174 ms
+   mittel sichtbar gegen 1180/1178 ms vor dieser Korrektur. Der Aufschub
+   trifft nur den Fall, in dem der Gast ohnehin nichts zu warten hatte.
+   `wurf-vorab.mjs` prüft alle drei Fälle (lange Vorschau, frische
+   Vorschau, halb abgelaufen) und fiel vorher an genau der neuen
+   Zusicherung.
 
    **Und der Rest ist nicht die Animation.** „Rest sichern" hat gar keine
    Animation und kostet trotzdem 1051–1290 ms. Die Wartezeit ist zum
