@@ -5,6 +5,7 @@
   if (!pack) return;
 
   Object.assign(pack.exact, {
+    "Die Kistenöffnung spielt jetzt in einer gemalten Navy-Halle mit Podest statt vor einem Farbverlauf": "The chest opening now takes place in a painted navy hall with a pedestal instead of in front of a gradient",
     "Neue abgeschlossene Kämpfe tragen zur globalen Fähigkeitsstatistik bei: lokale Gastprofile zählen unter dem angemeldeten Hauptkonto mit": "New completed battles contribute to global ability statistics: local guest profiles count under the signed-in main account",
     "Offline-Ergebnisse werden nachgereicht; Online-Ergebnisse werden gemeinsam mit dem Kampfabschluss gespeichert": "Offline results are uploaded later; online results are saved together with the battle's completion",
     "Grundlage für globale Fähigkeitsstatistiken vorbereitet; die automatische Erfassung ist noch nicht aktiviert": "Foundation for global ability statistics prepared; automatic collection is not enabled yet",

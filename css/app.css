@@ -13210,8 +13210,9 @@ body.test-lab-active #dice[data-lab-dice-fx="kante"] .die:nth-child(6){--wd-kant
    Naht bei y=240. Solange die Bilddateien fehlen, zeigt jede Ebene ihren
    Messrahmen an genau der Stelle, an der das Bild einmal liegen wird.
 
-   Kein Bild-URL in dieser Datei: alle Pfade setzt js/45-kistentest.js
-   mit ASSET_REV. --kt ist das Tempo (1 = normal); bei reduzierter
+   Einzige Bild-URL in dieser Datei ist der Hintergrund (mit ASSET_REV
+   als Literal, wie in jeder CSS-Quelle); alle Kistenpfade setzt
+   js/45-kistentest.js mit ASSET_REV. --kt ist das Tempo (1 = normal); bei reduzierter
    Bewegung setzt das Skript es herunter, die Dauern rechnen damit. */
 
 .kisten-overlay{
@@ -13219,8 +13220,10 @@ body.test-lab-active #dice[data-lab-dice-fx="kante"] .die:nth-child(6){--wd-kant
   --kisten-farbe:#e8d9b0;
   position:fixed;inset:0;z-index:12060;display:flex;flex-direction:column;align-items:center;
   padding:max(10px,env(safe-area-inset-top)) 16px max(12px,env(safe-area-inset-bottom));gap:8px;
-  /* Deckend: das Hauptmenue darunter ist hell und schimmert sonst durch. */
-  background:radial-gradient(ellipse at 50% 42%,#1c2c4e,#060e1c 68%);
+  /* Gemalter Hintergrund des Kistenmenues (Asset-Auftrag V3, Paket F):
+     Navy-Halle mit Podest, ruhig genug, dass Kiste und Licht tragen.
+     Deckend, das helle Hauptmenue darunter schimmert sonst durch. */
+  background:#060e1c url("../assets/ui/v28/png/backgrounds/chest-menu.webp?v=28.12.48") center/cover no-repeat;
   color:#f7ecd0;font-family:Georgia,"Times New Roman",serif;overflow:hidden;
   -webkit-user-select:none;user-select:none;touch-action:manipulation}
 /* Namensband der Karten: bei common, epic und legendary ist es elfenbein,
