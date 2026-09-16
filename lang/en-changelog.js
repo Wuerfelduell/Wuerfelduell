@@ -5,7 +5,7 @@
   if (!pack) return;
 
   Object.assign(pack.exact, {
-    "Neuer Würfeleffekt „Kantenläufer": ein kleiner violetter Punkt fährt die Würfelkante ab und zieht einen weichen Nachglow hinter sich her": "New dice effect Edge Runner: a small violet dot travels along the die edge, trailing a soft afterglow",
+    "Neuer Würfeleffekt „Kantenläufer“: ein kleiner violetter Punkt fährt die Würfelkante ab und zieht einen weichen Nachglow hinter sich her": "New dice effect Edge Runner: a small violet dot travels along the die edge, trailing a soft afterglow",
     "Randglühen und Puls atmen jetzt ruhiger und gleichzeitig statt einmal kurz durch die Reihe zu blitzen": "Rim glow and pulse now breathe more calmly and in unison, instead of flashing through the row once",
     "Die Werkbank der Testumgebung hat einen Regler für Würfeleffekte: Schimmer in Gold, Schimmer in der Designfarbe, Randglühen und Puls": "The test lab workbench has a dice effect selector: shine in gold, shine in the design colour, rim glow and pulse",
     "Damit lässt sich jeder Effekt gegen jedes Würfeldesign ansehen – im normalen Spiel ändert sich weiterhin nichts": "That makes every effect comparable against every dice design; nothing changes in the normal game",

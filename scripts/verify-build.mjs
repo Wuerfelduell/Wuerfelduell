@@ -213,9 +213,19 @@ for (const file of jsFiles) {
   if (result.status !== 0) errors.push(`JavaScript syntax error in js/${file}: ${result.stderr.trim()}`);
 }
 
+// Das Sprachpaket wurde bisher NICHT geprueft. Ein Changelog-Eintrag mit
+// einem geraden Anfuehrungszeichen im deutschen Text - "Neuer Effekt
+// „Kantenlaeufer" ..." - beendet den JS-String vorzeitig und nimmt das
+// komplette englische Paket mit. npm run check lief dabei gruen durch.
+const langFiles = (await readdir(path.join(root, "lang"))).filter((f) => f.endsWith(".js")).sort();
+for (const file of langFiles) {
+  const result = spawnSync(process.execPath, ["--check", path.join(root, "lang", file)], { encoding: "utf8" });
+  if (result.status !== 0) errors.push(`JavaScript syntax error in lang/${file}: ${result.stderr.trim()}`);
+}
+
 if (errors.length) {
   console.error(errors.map((error) => `- ${error}`).join("\n"));
   process.exitCode = 1;
 } else {
-  console.log(`Build verified: version ${version}, ${localRefs.length} HTML references, ${jsFiles.length} JavaScript files.`);
+  console.log(`Build verified: version ${version}, ${localRefs.length} HTML references, ${jsFiles.length} JavaScript files, ${langFiles.length} Sprachdateien.`);
 }
