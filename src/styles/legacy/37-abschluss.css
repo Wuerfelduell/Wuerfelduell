@@ -3128,35 +3128,104 @@ body.test-lab-active #dice[data-lab-dice-fx="schimmer-akzent"] .die:not(.rolling
   100%{background-position:0% 0}
 }
 
-/* --- Randgluehen: die Kante atmet in der Designfarbe --- */
+/* --- Randgluehen: die Kante atmet in der Designfarbe ---
+   Aus dem Spieltest: "sieht zu erzwungen aus, macht einmal einen kurzen
+   Tick und ist dann wieder weg". Drei Ursachen, alle drei behoben:
+   der Takt war mit 2.4 s zu lang, die Spanne .22 bis 1 zu weit (der Effekt
+   war die meiste Zeit fast aus und dann kurz voll da), und der Versatz je
+   Wuerfel weiter unten liess die ganze Reihe innerhalb von 440 ms
+   durchblitzen und danach zwei Sekunden ruhen. Atmende Effekte bekommen
+   deshalb KEINEN Versatz - der gehoert nur zu den wandernden. */
 body.test-lab-active #dice[data-lab-dice-fx="rand"] .die:not(.rolling)::after{
   box-shadow:inset 0 0 14px 3px var(--dice-glow);
-  animation:wuerfelRand 2.4s ease-in-out infinite;
+  animation:wuerfelRand 1.6s ease-in-out infinite;
 }
 @keyframes wuerfelRand{
-  0%,100%{opacity:.22}
+  0%,100%{opacity:.45}
   50%{opacity:1}
 }
 
-/* --- Puls: die ganze Flaeche wird kurz heller. screen statt normal,
-   damit die Augen darunter nicht zugedeckt, sondern mitgehoben werden. --- */
+/* --- Puls: die ganze Flaeche wird heller. screen statt normal, damit die
+   Augen darunter nicht zugedeckt, sondern mitgehoben werden. --- */
 body.test-lab-active #dice[data-lab-dice-fx="puls"] .die:not(.rolling)::after{
   background:radial-gradient(circle at 50% 42%,var(--dice-glow),transparent 72%);
   mix-blend-mode:screen;
-  animation:wuerfelPuls 2.6s ease-in-out infinite;
+  animation:wuerfelPuls 1.8s ease-in-out infinite;
 }
 @keyframes wuerfelPuls{
-  0%,100%{opacity:.10}
-  50%{opacity:.58}
+  0%,100%{opacity:.16}
+  50%{opacity:.46}
+}
+
+/* --- Kantenlaeufer: ein kleiner violetter Punkt faehrt die Wuerfelkante
+   ab und zieht einen weichen Nachglow hinter sich her.
+
+   offset-path:border-box laesst ihn der ECHTEN Kante folgen, samt
+   Eckenrundung und in jeder Groesse - anders als ein von Hand gesetzter
+   Pfad, der bei 56 px im Kampf und 145 px beim Spezialwuerfel je einen
+   eigenen Wert braeuchte.
+
+   Der Schweif ist kein zweites Element, sondern die Form selbst: eine
+   liegende Kapsel mit Verlauf von durchsichtig nach hell. offset-rotate
+   dreht sie in die Fahrtrichtung, offset-anchor setzt das HELLE Ende auf
+   den Pfad - sonst liefe der halbe Schweif voraus.
+
+   inset muss hier zurueckgenommen werden: die Grundregel setzt inset:0,
+   das wuerde die Kapsel ueber den ganzen Wuerfel spannen. */
+@supports (offset-path:border-box){
+  body.test-lab-active #dice[data-lab-dice-fx="kante"] .die:not(.rolling)::after{
+    inset:auto;
+    top:0;
+    left:0;
+    /* Klein UND mit langem Schweif: die Kapsel ist lang, aber hell ist nur
+       ihr letztes Zehntel. Wer den Punkt groesser will, verschiebt die
+       hellen Stufen nach vorn, nicht die Breite. */
+    width:48%;
+    height:9%;
+    border-radius:999px;
+    background:linear-gradient(90deg,
+      rgba(168,74,255,0) 0%,
+      rgba(168,74,255,.16) 52%,
+      rgba(180,96,255,.38) 80%,
+      rgba(206,146,255,.72) 92%,
+      rgba(235,208,255,1) 98%,
+      #fff 100%);
+    offset-path:border-box;
+    offset-rotate:auto;
+    offset-anchor:96% 50%;
+    filter:blur(.8px) drop-shadow(0 0 4px rgba(168,74,255,.95));
+    animation:wuerfelKante 2.8s linear infinite;
+  }
+  @keyframes wuerfelKante{
+    from{offset-distance:0%}
+    to{offset-distance:100%}
+  }
+}
+/* Wo offset-path noch fehlt, bleibt wenigstens die Farbe: ein violettes
+   Randgluehen statt eines stehenden Punktes. */
+@supports not (offset-path:border-box){
+  body.test-lab-active #dice[data-lab-dice-fx="kante"] .die:not(.rolling)::after{
+    box-shadow:inset 0 0 14px 3px rgba(168,74,255,.85);
+    animation:wuerfelRand 2.4s ease-in-out infinite;
+  }
 }
 
 /* Der Versatz je Wuerfel macht aus fuenf gleichzeitigen Effekten eine
-   Welle. nth-child reicht: die Wuerfel stehen in Spielreihenfolge im DOM. */
-body.test-lab-active #dice .die:nth-child(2):not(.rolling)::after{animation-delay:110ms}
-body.test-lab-active #dice .die:nth-child(3):not(.rolling)::after{animation-delay:220ms}
-body.test-lab-active #dice .die:nth-child(4):not(.rolling)::after{animation-delay:330ms}
-body.test-lab-active #dice .die:nth-child(5):not(.rolling)::after{animation-delay:440ms}
-body.test-lab-active #dice .die:nth-child(6):not(.rolling)::after{animation-delay:550ms}
+   Welle. nth-child reicht: die Wuerfel stehen in Spielreihenfolge im DOM.
+
+   NUR fuer die wandernden Effekte. Bei atmenden Effekten macht derselbe
+   Versatz aus dem Atmen ein Durchblitzen der Reihe - genau der "Tick" aus
+   dem Spieltest. Die atmen deshalb gleichzeitig. */
+body.test-lab-active #dice[data-lab-dice-fx^="schimmer"] .die:nth-child(2):not(.rolling)::after,
+body.test-lab-active #dice[data-lab-dice-fx="kante"] .die:nth-child(2):not(.rolling)::after{animation-delay:110ms}
+body.test-lab-active #dice[data-lab-dice-fx^="schimmer"] .die:nth-child(3):not(.rolling)::after,
+body.test-lab-active #dice[data-lab-dice-fx="kante"] .die:nth-child(3):not(.rolling)::after{animation-delay:220ms}
+body.test-lab-active #dice[data-lab-dice-fx^="schimmer"] .die:nth-child(4):not(.rolling)::after,
+body.test-lab-active #dice[data-lab-dice-fx="kante"] .die:nth-child(4):not(.rolling)::after{animation-delay:330ms}
+body.test-lab-active #dice[data-lab-dice-fx^="schimmer"] .die:nth-child(5):not(.rolling)::after,
+body.test-lab-active #dice[data-lab-dice-fx="kante"] .die:nth-child(5):not(.rolling)::after{animation-delay:440ms}
+body.test-lab-active #dice[data-lab-dice-fx^="schimmer"] .die:nth-child(6):not(.rolling)::after,
+body.test-lab-active #dice[data-lab-dice-fx="kante"] .die:nth-child(6):not(.rolling)::after{animation-delay:550ms}
 @media(prefers-reduced-motion:reduce){
   body.test-lab-active #dice .die:not(.rolling)::after{animation:none;opacity:0}
 }

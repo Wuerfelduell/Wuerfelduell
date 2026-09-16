@@ -22,9 +22,9 @@ welche Fallen schon Zeit gekostet haben.
 
 | | |
 |---|---|
-| Version | **28.12.40** |
+| Version | **28.12.41** |
 | Branch | `main` |
-| Letzte Schritte | CSS-Stapel auf 10 Dateien zusammengelegt · Changelog englisch vervollständigt · Hauptmenü, Statistik, Profile, Achievements, Spielvorbereitung und Trophy Shop überarbeitet · Fähigkeits- und Shopflächen auf proportional gekachelte Bildrahmen umgestellt · alle Bild-URLs auf einen gemeinsamen Cache-Schlüssel · Trophy-Shop-Reste bereinigt und Aufklapppfeile angeglichen · Duo- und Trio-Boss-Rush mit Pfadwahl, gespeicherten Runs und 32 Perks einschließlich temporärer Ability-Mastery · Boss-XP-Umtausch 300:100 · Zweitfund gedeckelt · Trio-Rush 15 Stufen, ab 10 ultraschwer · Boss-Rush-HUD auf die Weltregel reduziert · Zweitfund-Kopien ablehnbar und weitergebbar · Ultra-Stufen treffen härter statt länger zu dauern · Heilung gedeckelt, Maximum wächst je Stufe · Regelleiste als Kachelgitter, wächst mit dem Text · gespeicherte Runs überleben Balanceänderungen · Meldeschichten über den Kampf-Overlays geordnet · großer Spezialwürfel dreht sich als echter 3D-Würfel wie der normale und füllt seinen Rahmen · Kampflog, Infos-Blatt und Weltregel hinter einem Knopf, Knopfleiste gekürzt und beruhigt · Kartentexte aus den gemalten Rahmen geholt · fünf neue Würfeldesigns in der Testumgebung · Matchbar auf schmalen Telefonen wieder einzeilig · fünf Würfeldesigns mit fertigem Artwork und nachgemessenem Augenraster · Live-Online-Prüfstand repariert und um eine Latenzmessung erweitert · Common-Satz mit zehn Würfeldesigns vollständig · Online-Wurfwerte vorgezogen, live nachgemessen · Wurfanimation beim Gast wiederhergestellt · sieben Rare-Würfeldesigns · vier Würfeleffekte mit Regler in der Testumgebung |
+| Letzte Schritte | CSS-Stapel auf 10 Dateien zusammengelegt · Changelog englisch vervollständigt · Hauptmenü, Statistik, Profile, Achievements, Spielvorbereitung und Trophy Shop überarbeitet · Fähigkeits- und Shopflächen auf proportional gekachelte Bildrahmen umgestellt · alle Bild-URLs auf einen gemeinsamen Cache-Schlüssel · Trophy-Shop-Reste bereinigt und Aufklapppfeile angeglichen · Duo- und Trio-Boss-Rush mit Pfadwahl, gespeicherten Runs und 32 Perks einschließlich temporärer Ability-Mastery · Boss-XP-Umtausch 300:100 · Zweitfund gedeckelt · Trio-Rush 15 Stufen, ab 10 ultraschwer · Boss-Rush-HUD auf die Weltregel reduziert · Zweitfund-Kopien ablehnbar und weitergebbar · Ultra-Stufen treffen härter statt länger zu dauern · Heilung gedeckelt, Maximum wächst je Stufe · Regelleiste als Kachelgitter, wächst mit dem Text · gespeicherte Runs überleben Balanceänderungen · Meldeschichten über den Kampf-Overlays geordnet · großer Spezialwürfel dreht sich als echter 3D-Würfel wie der normale und füllt seinen Rahmen · Kampflog, Infos-Blatt und Weltregel hinter einem Knopf, Knopfleiste gekürzt und beruhigt · Kartentexte aus den gemalten Rahmen geholt · fünf neue Würfeldesigns in der Testumgebung · Matchbar auf schmalen Telefonen wieder einzeilig · fünf Würfeldesigns mit fertigem Artwork und nachgemessenem Augenraster · Live-Online-Prüfstand repariert und um eine Latenzmessung erweitert · Common-Satz mit zehn Würfeldesigns vollständig · Online-Wurfwerte vorgezogen, live nachgemessen · Wurfanimation beim Gast wiederhergestellt · sieben Rare-Würfeldesigns · fünf Würfeleffekte mit Regler in der Testumgebung |
 
 **Die Arbeitsteilung hat sich geändert.** Bis V28.11.28 liefen zwei
 Sitzungen parallel: Codex hat umgesetzt, diese Sitzung geprüft. Ab jetzt
@@ -365,7 +365,25 @@ Deckkraft, und man verglich Farbe und Stärke auf einmal. Richtig ist die
 verschachtelte Mischung: innen mit Weiß aufhellen, außen auf dieselben
 `.70` bringen.
 
-Gemessen von `scripts/qa/wuerfelschimmer.mjs` (11 Zusicherungen): Schimmer
+**Seit 28.12.41 der Kantenläufer**: ein kleiner violetter Punkt fährt die
+Würfelkante ab und zieht einen Nachglow hinter sich her. Gebaut mit
+`offset-path:border-box` — der Punkt folgt damit der **echten** Kante samt
+Rundung und in jeder Größe; ein von Hand gesetzter Pfad bräuchte für
+56 px im Kampf und 145 px beim Spezialwürfel je einen eigenen Wert. Der
+Schweif ist kein zweites Element, sondern die Form selbst: eine liegende
+Kapsel mit Verlauf, `offset-rotate:auto` dreht sie in die Fahrtrichtung,
+`offset-anchor` setzt das **helle** Ende auf den Pfad. Ohne `inset:auto`
+spannt die Grundregel die Kapsel über den ganzen Würfel.
+
+**Wandernd gegen atmend — der Unterschied, den ein Spieltest gefunden
+hat.** Randglühen und Puls wirkten „zu erzwungen, machen einmal einen
+kurzen Tick und sind dann weg". Ursache war der **Versatz je Würfel**: bei
+einem atmenden Effekt blitzt die Reihe dadurch innerhalb von 440 ms durch
+und ruht danach zwei Sekunden. Der Versatz gehört nur zu den **wandernden**
+Effekten. Dazu: kürzerer Takt (1,6 statt 2,4 s) und ein höherer Boden —
+ein Effekt, der zwischendurch ganz ausgeht, liest sich immer als Tick.
+
+Gemessen von `scripts/qa/wuerfelschimmer.mjs` (14 Zusicherungen): Schimmer
 auf jedem Wuerfel, ueber der Artwork-Flaeche, steigender Versatz,
 sichtbarer Durchlauf 500-700 ms, gleichmaessig, **Wuerfel unbeschnitten**,
 waehrend des Wurfs aus, im normalen Spiel gar nicht, und der Regler

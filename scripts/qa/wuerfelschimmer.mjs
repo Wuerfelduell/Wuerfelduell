@@ -148,6 +148,53 @@ try{
   pruefe('"Keiner" laesst nichts stehen',regler.gemessen?.keiner?.inhalt==='none',true);
   if(regler.gemessen?.keiner?.inhalt!=='none')console.log(`      keiner: ${JSON.stringify(regler.gemessen?.keiner)}`);
 
+  // Aus dem Spieltest: "Randgluehen und Puls sehen zu erzwungen aus, die
+  // machen einmal einen kurzen Tick und sind dann wieder weg." Ursache war
+  // der Versatz je Wuerfel: bei einem ATMENDEN Effekt blitzt die Reihe
+  // dadurch innerhalb einer halben Sekunde durch und ruht dann. Wandernde
+  // Effekte brauchen den Versatz, atmende duerfen ihn nicht haben.
+  const versatz=await p.evaluate(async()=>{
+    const sel=document.getElementById('testLabDiceFxSelect');
+    const messe=async w=>{
+      sel.value=w;sel.dispatchEvent(new Event('change',{bubbles:true}));
+      await new Promise(r=>setTimeout(r,60));
+      return [...document.querySelectorAll('#dice .die')]
+        .map(d=>Math.round(parseFloat(getComputedStyle(d,'::after').animationDelay)*1000));
+    };
+    const aus={wandernd:await messe('schimmer-gold'),atmend:await messe('rand'),puls:await messe('puls')};
+    sel.value='schimmer-gold';sel.dispatchEvent(new Event('change',{bubbles:true}));
+    await new Promise(r=>setTimeout(r,60));
+    return aus;
+  });
+  pruefe('Wandernde Effekte laufen versetzt',versatz.wandernd.some((v,i)=>i>0&&v>0),true);
+  const atmenGleich=versatz.atmend.every(v=>v===0)&&versatz.puls.every(v=>v===0);
+  pruefe('Atmende Effekte atmen gleichzeitig',atmenGleich,true);
+  if(!atmenGleich)console.log(`      Versatz: ${JSON.stringify(versatz)}`);
+
+  // Und sie duerfen nie ganz ausgehen, sonst wirkt das Atmen wie ein Tick.
+  const boden=await p.evaluate(async()=>{
+    const sel=document.getElementById('testLabDiceFxSelect');
+    const tiefste={};
+    for(const w of ['rand','puls']){
+      sel.value=w;sel.dispatchEvent(new Event('change',{bubbles:true}));
+      await new Promise(r=>setTimeout(r,60));
+      for(const blatt of document.styleSheets){
+        let regeln;try{regeln=[...blatt.cssRules];}catch{continue;}
+        for(const r of regeln){
+          if(r.type!==CSSRule.KEYFRAMES_RULE)continue;
+          if(!/wuerfel(Rand|Puls)/.test(r.name))continue;
+          const werte=[...r.cssRules].map(k=>parseFloat(k.style.opacity)).filter(x=>!Number.isNaN(x));
+          tiefste[r.name]={boden:Math.min(...werte),spitze:Math.max(...werte)};
+        }
+      }
+    }
+    sel.value='schimmer-gold';sel.dispatchEvent(new Event('change',{bubbles:true}));
+    return tiefste;
+  });
+  const nieAus=Object.values(boden).length>=2&&Object.values(boden).every(b=>b.boden>=0.15&&b.spitze-b.boden<=0.6);
+  pruefe('Atmende Effekte gehen nie ganz aus',nieAus,true);
+  console.log(`      Atem: ${JSON.stringify(boden)}`);
+
   // 4. Waehrend des Wurfs aus.
   const imWurf=await p.evaluate(async()=>{
     document.querySelector('#primaryBtn')?.click();
@@ -185,7 +232,7 @@ try{
   await n.close();
 }catch(e){absturz=e;}
 
-const ERWARTET=11;
+const ERWARTET=14;
 let fehler=ergebnisse.length<ERWARTET?1:0;
 if(fehler)console.log(`ACHTUNG: nur ${ergebnisse.length} von ${ERWARTET} Zusicherungen erreicht.`);
 const breite=Math.max(1,...ergebnisse.map(r=>r[0].length));

@@ -70,7 +70,8 @@
     'schimmer-gold':'Schimmer · Gold',
     'schimmer-akzent':'Schimmer · Designfarbe',
     rand:'Randglühen',
-    puls:'Puls'
+    puls:'Puls',
+    kante:'Kantenläufer'
   };
   let wuerfelEffekt='schimmer-gold';
 
