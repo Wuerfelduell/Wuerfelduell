@@ -5,6 +5,10 @@
   if (!pack) return;
 
   Object.assign(pack.exact, {
+    "Aus jeder Kiste kommt genau ein Würfel, auch im Kistentest": "Exactly one die comes out of every chest, in the chest test as well",
+    "Die Kiste bleibt nach dem Öffnen in voller Größe stehen, statt für die Karten zu schrumpfen": "The chest stays at full size after opening instead of shrinking to make room for the cards",
+    "Die Kistenkarten im Shop tragen einen ruhigeren Navy-Rahmen – der verzierte Kosmetikrahmen wurde auf Kistenbreite zu stark gedehnt": "The chest cards in the shop carry a calmer navy frame; the ornate cosmetics frame was stretched too far at chest width",
+    "Die Dropchancen liegen hinter einem kleinen Info-Knopf rechts oben an jeder Kiste": "The drop odds sit behind a small info button at the top right of each chest",
     "Die Kistenöffnung spielt jetzt in einer gemalten Navy-Halle mit Podest statt vor einem Farbverlauf": "The chest opening now takes place in a painted navy hall with a pedestal instead of in front of a gradient",
     "Neue abgeschlossene Kämpfe tragen zur globalen Fähigkeitsstatistik bei: lokale Gastprofile zählen unter dem angemeldeten Hauptkonto mit": "New completed battles contribute to global ability statistics: local guest profiles count under the signed-in main account",
     "Offline-Ergebnisse werden nachgereicht; Online-Ergebnisse werden gemeinsam mit dem Kampfabschluss gespeichert": "Offline results are uploaded later; online results are saved together with the battle's completion",

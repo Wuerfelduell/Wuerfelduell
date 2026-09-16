@@ -12,7 +12,7 @@
  *   2. Ein Tipp oeffnet eine Flaeche ueber dem Menue, die den ganzen
  *      Bildschirm deckt.
  *   3. Die Kiste kommt an, wartet auf den Tipp, wackelt, springt auf und
- *      zeigt danach drei Karten - alle Phasen in dieser Reihenfolge, und die
+ *      zeigt danach genau eine Karte - alle Phasen in dieser Reihenfolge, und die
  *      ganze Strecke endet in unter zehn Sekunden.
  *   4. Der Deckel wird wirklich gedreht (3D-Transform), nicht ausgetauscht.
  *   5. Auf jeder Karte liegt das Vorschaubild eines Wuerfeldesigns.
@@ -110,12 +110,14 @@ try{
   pruefe('Ganze Strecke unter zehn Sekunden',lauf.dauer<10000,true);
   console.log(`      gesehen: ${lauf.gesehen.join(' > ')} (${lauf.dauer} ms)`);
 
-  // 4. Deckel gedreht, 5. Karten mit Wuerfeldesign.
+  // 4. Deckel gedreht, 5. Karte mit Wuerfeldesign, 5b. Kiste nicht geschrumpft.
   const offen=await p.evaluate(()=>{
     const deckel=document.querySelector('#kistenTestOverlay .kisten-deckel');
     const t=deckel?getComputedStyle(deckel).transform:'none';
+    const kiste=document.querySelector('#kistenTestOverlay .kisten-kiste');
+    const kt=kiste?getComputedStyle(kiste).transform:'none';
     const karten=[...document.querySelectorAll('#kistenTestOverlay .kisten-karte')];
-    return {transform:t,karten:karten.length,
+    return {transform:t,kisteTransform:kt,karten:karten.length,
       gedreht:karten.filter(k=>k.classList.contains('gedreht')).length,
       designs:karten.map(k=>k.querySelector('.kisten-karte-design')?.getAttribute('src')||''),
       namen:karten.map(k=>k.querySelector('.kisten-karte-name')?.textContent.trim()||'')};
@@ -126,8 +128,9 @@ try{
   const werte=m?m[1].split(',').map(Number):null;
   pruefe('Deckel ist per 3D-Transform gedreht',!!werte&&Math.abs(werte[10]-1)>0.2,true);
   console.log(`      Deckel-Transform: ${offen.transform.slice(0,60)}`);
-  pruefe('Drei Karten liegen aufgedeckt vor der Kiste',offen.karten===3&&offen.gedreht===3,true);
-  pruefe('Jede Karte zeigt ein Wuerfeldesign-Vorschaubild',offen.designs.length===3&&offen.designs.every(s=>/dice-designs\/.+-beauty\.webp\?v=/.test(s)),true);
+  pruefe('Kiste bleibt nach dem Oeffnen in voller Groesse',offen.kisteTransform==='none'||/^matrix\(1, 0, 0, 1, 0, 0\)$/.test(offen.kisteTransform),true);
+  pruefe('Genau eine Karte liegt aufgedeckt vor der Kiste',offen.karten===1&&offen.gedreht===1,true);
+  pruefe('Die Karte zeigt ein Wuerfeldesign-Vorschaubild',offen.designs.length===1&&offen.designs.every(s=>/dice-designs\/.+-beauty\.webp\?v=/.test(s)),true);
   pruefe('Jede Karte traegt den Namen des Designs',offen.namen.every(n=>n.length>0),true);
   console.log(`      Karten: ${offen.namen.join(', ')}`);
 
@@ -211,7 +214,7 @@ try{
   await r.close();
 }catch(e){absturz=e;}
 
-const ERWARTET=25;
+const ERWARTET=26;
 let fehler=ergebnisse.length<ERWARTET?1:0;
 if(fehler)console.log(`ACHTUNG: nur ${ergebnisse.length} von ${ERWARTET} Zusicherungen erreicht.`);
 const breite=Math.max(1,...ergebnisse.map(r=>r[0].length));

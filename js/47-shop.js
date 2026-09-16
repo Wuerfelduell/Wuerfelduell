@@ -120,12 +120,15 @@
         const reicht=w[waehrung]>=preis;
         return `<button type="button" class="prestige-item-action prestige-item-buy gold shop-kaufen" data-kaufe="${stufe}:${waehrung}" ${reicht?"":"disabled"} aria-label="${esc(`${tr(kiste.name)}: ${preis} ${tr(label)}`)}">${artwork("gold")}${bildTag(SHOPBILD(WAEHRUNG_ICON[waehrung]),"shop-waehrung-icon")}<span>${preis} · ${tr(label)}</span></button>`;
       };
-      return `<div class="prestige-item shop-kiste" data-stufe="${stufe}">
+      // Ruhiger Navy-Rahmen statt der stark verzierten Kosmetikkarte: die
+      // wurde auf Kistenbreite zu stark gedehnt. Chancen liegen hinter dem
+      // kleinen Info-Knopf rechts oben.
+      return `<div class="shop-kiste" data-stufe="${stufe}">
+        <button type="button" class="shop-info-knopf" data-chancen="${stufe}" aria-expanded="${offen}" aria-label="${esc(offen?tr("Chancen verbergen"):tr("Chancen anzeigen"))}" title="${esc(tr("Chancen"))}">i</button>
         <div class="prestige-item-kicker">${bildTag(PLAKETTE(stufe),"shop-kicker-plakette")}${tr("Kiste")} · ${tr(S.SELTENHEIT_NAMEN[stufe])}</div>
         <img class="shop-kiste-bild" src="${KISTENBILD(stufe)}" alt="" loading="lazy" draggable="false">
         <div class="prestige-item-name">${tr(kiste.name)}</div>
         <div class="prestige-item-desc">${tr("Geöffnet")}: ${k.geoeffnet[stufe]||0}</div>
-        <button type="button" class="shop-chancen-toggle" data-chancen="${stufe}" aria-expanded="${offen}">${icon("navigation/info.svg")}<span>${offen?tr("Chancen verbergen"):tr("Chancen anzeigen")}</span></button>
         <div class="shop-chancen"${offen?"":" hidden"}>${chancenTabelle(stufe,p)}</div>
         <div class="shop-kiste-kauf">${knopf("marken",kiste.marken,"Duellmarken")}${knopf("kerne",kiste.kerne,"Würfelkerne")}</div>
       </div>`;
@@ -137,7 +140,7 @@
 
   function renderWaehrung(p){
     const box=screen.querySelector("#shopTabCurrency");
-    const pakete=PAKETE.map(paket=>`<div class="prestige-item shop-paket" data-paket="${paket.id}">
+    const pakete=PAKETE.map(paket=>`<div class="shop-paket" data-paket="${paket.id}">
         <div class="prestige-item-kicker">${tr("Würfelkerne")}</div>
         <div class="shop-paket-bild">${bildTag(SHOPBILD(`packs/${paket.id}.webp`),"shop-paket-img")}</div>
         <div class="prestige-item-name">${tr(paket.name)}</div>

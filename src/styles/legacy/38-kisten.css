@@ -122,8 +122,10 @@
 .kisten-overlay[data-phase="fertig"] .kisten-deckel{
   animation:kistenDeckelAuf calc(var(--kt)*620ms) cubic-bezier(.2,1.4,.5,1) both}
 .kisten-overlay[data-phase="aufspringen"] .kisten-kiste{animation:kistenHopser calc(var(--kt)*520ms) ease-out both}
+/* Die Kiste bleibt nach dem Oeffnen in voller Groesse stehen (Vorgabe
+   16.09.); die eine Karte findet darunter Platz. */
 .kisten-overlay[data-phase="enthuellung"] .kisten-kiste,
-.kisten-overlay[data-phase="fertig"] .kisten-kiste{transform:scale(.86) translateY(3%);transition:transform calc(var(--kt)*500ms) ease-in-out}
+.kisten-overlay[data-phase="fertig"] .kisten-kiste{transform:none}
 
 .kisten-hinweis{
   position:absolute;left:50%;bottom:-13%;transform:translateX(-50%);z-index:7;pointer-events:none;
@@ -226,14 +228,23 @@ html[data-v28-rework="2"] #prestigeShopScreen .prestige-wallet{min-width:0;paddi
 @media(max-width:400px){.shop-kisten-grid{grid-template-columns:1fr}}
 /* Unten mehr Polster: der gemalte Rahmen traegt dort ein Ornamentband,
    auf dem die Kaufzeile sonst sitzt. */
-html[data-v28-rework="2"] #prestigeShopScreen .shop-kiste,
-html[data-v28-rework="2"] #prestigeShopScreen .shop-paket{display:flex;flex-direction:column;align-items:center;text-align:center;gap:6px;padding-bottom:46px}
+/* Kisten- und Paketkarten: der ruhige Navy-Kachelrahmen (navy-tile.webp)
+   als border-image, Slice und Breite auf beiden Achsen im gleichen
+   Verhaeltnis, damit die Ecken nicht verzerren. Kein .prestige-item mehr:
+   dessen Kosmetikrahmen wurde auf Kistenbreite zu stark gedehnt. */
+#prestigeShopScreen .shop-kiste,
+#prestigeShopScreen .shop-paket{
+  position:relative;box-sizing:border-box;display:flex;flex-direction:column;align-items:center;text-align:center;gap:6px;
+  padding:22px 18px 20px;border-style:solid;border-color:transparent;border-width:18px;
+  border-image:var(--dd-frame-navy-tile) 150 fill / 18px stretch;border-radius:0;color:#f7edda;background:none}
+#prestigeShopScreen .shop-info-knopf{
+  position:absolute;top:6px;right:6px;z-index:2;width:30px;height:30px;padding:0;border-radius:50%;
+  border:1px solid rgba(240,207,122,.8);background:linear-gradient(160deg,#5a3d1c,#3a2410);color:#fff3d6;
+  font:700 15px/1 Georgia,"Times New Roman",serif;font-style:italic;box-shadow:0 1px 4px rgba(0,0,0,.45)}
+#prestigeShopScreen .shop-info-knopf[aria-expanded="true"]{background:linear-gradient(160deg,#f6d679,#c98a26);color:#2a1a08}
 .shop-kiste-bild{display:block;width:min(70%,160px);aspect-ratio:1/1;object-fit:contain;filter:drop-shadow(0 6px 8px rgba(0,0,0,.45))}
 .shop-paket-bild{display:grid;place-items:center;width:min(60%,120px);aspect-ratio:1/1}
 .shop-paket-bild img,.shop-paket-bild .dd-ui-icon{width:100%;height:100%}
-.shop-chancen-toggle{
-  min-height:34px;padding:4px 12px;border-radius:0;border:1px solid rgba(215,173,82,.5);background:transparent;color:#f0cf7a;
-  font-family:Georgia,"Times New Roman",serif;font-size:12px;font-weight:700;letter-spacing:.04em}
 .shop-chancen{width:100%}
 .shop-chancen-tabelle{width:100%;border-collapse:collapse;font-size:12px;color:#e9e2cf}
 .shop-chancen-tabelle th,.shop-chancen-tabelle td{padding:4px 4px;border-bottom:1px solid rgba(215,173,82,.22);text-align:left;font-weight:600;white-space:nowrap}
@@ -244,7 +255,7 @@ html[data-v28-rework="2"] #prestigeShopScreen .shop-paket{display:flex;flex-dire
 .shop-seltenheit-punkt{display:inline-block;width:9px;height:9px;margin-right:6px;border-radius:50%;background:var(--sf,#b8b8b8);box-shadow:0 0 5px var(--sf,#b8b8b8)}
 .shop-chancen-hinweis{margin-top:6px;font-size:11px;color:#a9b4c4;line-height:1.35;white-space:normal}
 .shop-kiste-kauf{display:grid;gap:6px;width:100%;margin-top:auto}
-html[data-v28-rework="2"] #prestigeShopScreen .shop-kiste-kauf .prestige-item-action{width:100%}
+#prestigeShopScreen .shop-kiste-kauf .prestige-item-action{width:100%}
 /* Ohne Wirkung, aber im Knopfbild: der Verlaufshintergrund der Basisklasse
    wuerde das Navy-Knopfbild (z-index -1) verdecken. */
 html[data-v28-rework="2"] #prestigeShopScreen .shop-echtgeld{display:flex;align-items:center;justify-content:center;gap:6px;min-height:50px;padding:10px 38px;background:none;border:0;color:#fff3d6;cursor:default}
@@ -280,8 +291,6 @@ html[data-v28-rework="2"] #prestigeShopScreen .shop-echtgeld{display:flex;align-
   background:linear-gradient(180deg,#fffdf6,#f2e8d4);color:#1b2433;font-family:inherit;font-size:14px;font-weight:700}
 .kisten-overlay[data-modus="shop"] .kisten-buehne{width:min(82vw,36vh,380px)}
 @media(max-height:640px){.kisten-overlay[data-modus="shop"] .kisten-buehne{width:min(82vw,30vh,380px)}.kisten-karten.einzeln .kisten-karte{width:clamp(96px,32vw,150px)}.kisten-karten.einzeln{min-height:clamp(132px,44vw,206px)}}
-.shop-chancen-toggle{display:inline-flex;align-items:center;justify-content:center;gap:6px}
-.shop-chancen-toggle img,.shop-chancen-toggle .dd-ui-icon{width:16px;height:16px}
 /* Die Knopfbilder (.prestige-button-artwork) liegen absolut auf dem Knopf.
    Im Trophy-Shop sind die Knoepfe direkte Kinder der Karte und ueber
    37-abschluss.css positioniert; die Kaufknoepfe hier sitzen in einer

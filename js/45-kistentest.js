@@ -5,8 +5,11 @@
      Wuerfeldesign. Das Ergebnis steht schon fest, wird aber erst beim
      Umdrehen der Karte sichtbar; Glow und Karte tragen die Farbe der
      gezogenen Seltenheit. Duplikate zeigen die Rueckgabe in Duellmarken.
-   - Kistentest (Trainingsfenster): nur zum Ansehen, drei zufaellige
-     Wuerfeldesigns, Stufen umschaltbar, schaltet nichts frei.
+   - Kistentest (Trainingsfenster): nur zum Ansehen, ein zufaelliges
+     Wuerfeldesign, Stufen umschaltbar, schaltet nichts frei.
+
+   Aus jeder Kiste kommt genau EIN Wuerfel (Vorgabe 16.09.), und die Kiste
+   bleibt nach dem Oeffnen in voller Groesse stehen.
 
    Die Bilder liegen nach docs/KISTEN-BRIEF.md unter
    assets/ui/v28/png/chests/<stufe>/. Fehlt eine Datei, zeigt die Ebene
@@ -23,7 +26,7 @@
   const STUFEN_NAMEN={common:"Gewöhnlich",rare:"Selten",epic:"Episch",legendary:"Legendär"};
   const STUFEN_FARBEN={common:"#e8d9b0",rare:"#4a8ff0",epic:"#b06cff",legendary:"#ffd45a"};
   const WURZEL="assets/ui/v28/png/chests/";
-  const TEST_KARTEN=3;
+  const TEST_KARTEN=1;
   const tr=value=>window.t?window.t(String(value)):String(value);
   const rev=()=>typeof ASSET_REV!=="undefined"?ASSET_REV:"0";
   const bild=pfad=>`${WURZEL}${pfad}?v=${rev()}`;
@@ -139,7 +142,7 @@
     overlay.querySelector(".kisten-schliessen").classList.toggle("hidden",!test);
     overlay.querySelector(".kisten-nochmal").classList.toggle("hidden",!test);
     overlay.querySelector(".kisten-weiter").classList.toggle("hidden",test);
-    overlay.querySelector(".kisten-karten").classList.toggle("einzeln",!test);
+    overlay.querySelector(".kisten-karten").classList.add("einzeln");
   }
 
   function waehleStufe(s){

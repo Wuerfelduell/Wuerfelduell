@@ -120,6 +120,7 @@ window.WD_LANG_PACKS.en = {
     "Epic-Kiste":"Epic Chest",
     "Legendary-Kiste":"Legendary Chest",
     "Geöffnet":"Opened",
+    "Chancen":"Odds",
     "Chancen anzeigen":"Show odds",
     "Chancen verbergen":"Hide odds",
     "noch keine Würfel":"no dice yet",
