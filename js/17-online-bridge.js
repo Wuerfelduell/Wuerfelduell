@@ -578,7 +578,9 @@
     winnerBox.classList.toggle("hidden",!winner.open);
     if(winner.open){
       winnerText.innerHTML=sanitizeUiHtml(winner.winnerHtml||"");
-      roundResultText.innerHTML=sanitizeUiHtml(winner.resultHtml||"");
+      // Der Gast haengt seine eigene Marken-Gutschrift an: der Text vom Host
+      // kennt nur die Profile des Hosts.
+      roundResultText.innerHTML=sanitizeUiHtml(winner.resultHtml||"")+(onlineSession.gutschriftHtml||"");
       roundStandings.innerHTML=sanitizeUiHtml(winner.standingsHtml||"");
       roundStatsBox.innerHTML=sanitizeUiHtml(winner.statsHtml||"");
       nextRoundBox.classList.add("hidden");
@@ -651,6 +653,8 @@
       // schreibt deshalb auch der Gast seine eigenen Stats/Achievements lokal weg.
       try{commitRoundToStorage(roundWinnerIndex);checkRoundWinnerAchievements(roundWinnerIndex);}catch(err){console.warn("Online local round commit",err);}
       onlineSession.localRoundCommitted=true;
+      onlineSession.gutschriftHtml=window.WDShop?.gutschriftText?.(escapeHtml)||"";
+      if(onlineSession.gutschriftHtml) roundResultText.innerHTML+=onlineSession.gutschriftHtml;
     }
     if(settlingRoll) finishOnlineRollWindow();
 

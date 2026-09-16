@@ -13,8 +13,7 @@
     menuStatsBtn:"menu/statistics.svg",
     menuSettingsBtn:"menu/settings.svg",
     menuRulesBtn:"menu/rules.svg",
-    menuChangelogBtn:"menu/changelog.svg",
-    menuKistenTestBtn:"gameplay/reward-gift.svg"
+    menuChangelogBtn:"menu/changelog.svg"
   };
 
   const titleIcons = {

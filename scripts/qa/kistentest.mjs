@@ -6,8 +6,9 @@
  * Messrahmen, die genau die Geometrie des Briefs zeigen.
  *
  * Geprueft wird - gegen die Anforderung, nicht gegen die Umsetzung:
- *   1. Der Knopf steht im Hauptmenue und ist bei 320, 390 und 1280 px
- *      sichtbar und breit genug zum Tippen.
+ *   1. Der Knopf steht im Trainingsfenster (Tutorial-Knopf im Hauptmenue)
+ *      und ist bei 320, 390 und 1280 px sichtbar und hoch genug zum Tippen.
+ *      Seit dem Shop (V28.12.50) ist er kein Hauptmenue-Knopf mehr.
  *   2. Ein Tipp oeffnet eine Flaeche ueber dem Menue, die den ganzen
  *      Bildschirm deckt.
  *   3. Die Kiste kommt an, wartet auf den Tipp, wackelt, springt auf und
@@ -44,6 +45,11 @@ const ergebnisse=[];const pruefe=(n,i,s)=>ergebnisse.push([n,i,s]);
 let absturz=null;
 const vierhundertvier=[];
 
+// Der Kistentest liegt im Trainingsfenster hinter dem Tutorial-Knopf.
+async function kistentestOeffnen(p){
+  await p.click('#menuTutorialBtn');await p.waitForTimeout(200);
+  await p.click('#menuKistenTestBtn');
+}
 async function seite(opts={}){
   const p=await browser.newPage({locale:opts.locale||'de-DE',viewport:{width:opts.breite||390,height:opts.hoehe||844},serviceWorkers:'block',reducedMotion:opts.reduziert?'reduce':'no-preference'});
   p.on('pageerror',e=>errors.push(e.message));
@@ -76,9 +82,10 @@ try{
   // 1. Knopf im Hauptmenue, drei Breiten.
   for(const breite of [320,390,1280]){
     const p=await seite({breite,hoehe:breite===1280?900:844});
+    await p.click('#menuTutorialBtn');await p.waitForTimeout(200);
     const k=await p.evaluate(()=>{const b=document.getElementById('menuKistenTestBtn');if(!b)return null;const r=b.getBoundingClientRect();
-      return {imMenue:!!b.closest('#mainMenu .menu-actions'),sichtbar:r.width>0&&r.height>0&&getComputedStyle(b).visibility==='visible',hoehe:r.height,breite:r.width,text:b.textContent.trim()};});
-    pruefe(`Knopf im Hauptmenue sichtbar bei ${breite}px`,!!k&&k.imMenue&&k.sichtbar,true);
+      return {imHub:!!b.closest('#tutorialHubModal'),sichtbar:r.width>0&&r.height>0&&getComputedStyle(b).visibility==='visible',hoehe:r.height,breite:r.width,text:b.textContent.trim()};});
+    pruefe(`Knopf im Trainingsfenster sichtbar bei ${breite}px`,!!k&&k.imHub&&k.sichtbar,true);
     pruefe(`Knopf mindestens 44px hoch bei ${breite}px`,!!k&&k.hoehe>=44,true);
     if(k)console.log(`      ${breite}px: ${Math.round(k.breite)}x${Math.round(k.hoehe)} "${k.text}"`);
     await p.close();
@@ -88,7 +95,7 @@ try{
   const p=await seite();
   const vorher=await p.evaluate(()=>({save:localStorage.getItem('wuerfelduell_save_v1'),
     dice:JSON.stringify((JSON.parse(localStorage.getItem('wuerfelduell_save_v1')||'{}').profiles||[]).map(x=>x.unlockedDice))}));
-  await p.click('#menuKistenTestBtn');await p.waitForTimeout(150);
+  await kistentestOeffnen(p);await p.waitForTimeout(150);
   const flaeche=await p.evaluate(()=>{const ov=document.getElementById('kistenTestOverlay');if(!ov)return null;const r=ov.getBoundingClientRect();const cs=getComputedStyle(ov);
     return {offen:!ov.classList.contains('hidden'),deckt:r.left<=0&&r.top<=0&&r.right>=innerWidth&&r.bottom>=innerHeight,fixed:cs.position==='fixed',z:Number(cs.zIndex),
       ueberMenue:(parseInt(cs.zIndex,10)||0)>(parseInt(getComputedStyle(document.getElementById('mainMenu')).zIndex,10)||0)};});
@@ -176,8 +183,8 @@ try{
   pruefe('Schliessen fuehrt ins Hauptmenue zurueck',zu.zu&&zu.menue,true);
   pruefe('Nach dem Schliessen 0 DOM-Mutationen pro Sekunde',zu.mut,0);
 
-  // 13. Nirgends sonst.
-  const sonst=await p.evaluate(()=>document.querySelectorAll('#menuKistenTestBtn').length);
+  // 13. Nirgends sonst - und nicht mehr im Hauptmenue.
+  const sonst=await p.evaluate(()=>document.querySelectorAll('#menuKistenTestBtn').length+(document.querySelector('#mainMenu #menuKistenTestBtn')?100:0));
   pruefe('Genau ein Kistentest-Knopf im Dokument',sonst,1);
   await p.close();
 
@@ -186,7 +193,8 @@ try{
   const e=await seite({locale:'en-US'});
   // Die Beschriftung, nicht den ganzen Knopf: die "Test"-Plakette ist ein
   // eigenes Element daneben.
-  const en=await e.evaluate(()=>document.querySelector('#menuKistenTestBtn .menu-primary-label')?.textContent.trim()||'');
+  await e.click('#menuTutorialBtn');await e.waitForTimeout(200);
+  const en=await e.evaluate(()=>(document.getElementById('menuKistenTestBtn')?.textContent||'').replace(/^[^A-Za-z]+/,'').trim());
   await e.click('#menuKistenTestBtn');await e.waitForTimeout(150);
   const enStufen=await e.evaluate(()=>[...document.querySelectorAll('#kistenTestOverlay .kisten-stufen button')].map(b=>b.textContent.trim()));
   pruefe('Englisch: Knopf heisst "Chest test"',en,'Chest test');
@@ -196,7 +204,7 @@ try{
 
   // 12. Reduzierte Bewegung.
   const r=await seite({reduziert:true});
-  await r.click('#menuKistenTestBtn');await r.waitForTimeout(100);
+  await kistentestOeffnen(r);await r.waitForTimeout(100);
   const ruhig=await strecke(r,{limitMs:6000});
   pruefe('Reduzierte Bewegung: Strecke erreicht "fertig"',ruhig.gesehen.includes('fertig'),true);
   console.log(`      reduziert: ${ruhig.gesehen.join(' > ')} (${ruhig.dauer} ms)`);

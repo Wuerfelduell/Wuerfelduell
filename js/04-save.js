@@ -222,6 +222,12 @@
       version=8;
     }
 
+    // V8 -> V9: bestehender Stand ohne eigenen Umbauschritt.
+    // V9 -> V10: Guthaben (wallet) und Kistenzaehler (kisten) je Profil.
+    // Beide Felder ergaenzt normalizeProfile mit Nullwerten; hier gibt es
+    // nichts umzurechnen, ein alter Save hat schlicht noch nichts verdient.
+    if(version<10) version=10;
+
     migrated.schemaVersion=Math.max(version,SAVE_SCHEMA_VERSION);
     migrated.campaignVersion=Number(migrated.campaignVersion)||CAMPAIGN_VERSION;
     migrated.lastGameVersion=GAME_VERSION;
@@ -253,6 +259,18 @@
     if(allDiceSet.every(k=>p.unlockedDice.includes(k)) && !p.achievements.chromatic_menace) p.achievements.chromatic_menace=Date.now();
     const allAchievementFx=Object.keys(ATTACK_FX_UNLOCK_ACHIEVEMENT);
     if(allAchievementFx.every(k=>p.unlockedAttackFx.includes(k)) && !p.achievements.special_effects_department) p.achievements.special_effects_department=Date.now();
+    // Schema 10: Guthaben und Kistenzaehler. Ganze Zahlen, nie negativ; ein
+    // alter Save bekommt Nullen, kein Geschenk.
+    const rawWallet=(p.wallet&&typeof p.wallet==="object")?p.wallet:{};
+    const betrag=v=>Math.max(0,Math.floor(Number(v)||0));
+    p.wallet={marken:betrag(rawWallet.marken),kerne:betrag(rawWallet.kerne)};
+    const rawKisten=(p.kisten&&typeof p.kisten==="object")?p.kisten:{};
+    const rawGeoeffnet=(rawKisten.geoeffnet&&typeof rawKisten.geoeffnet==="object")?rawKisten.geoeffnet:{};
+    p.kisten={
+      geoeffnet:Object.fromEntries(["common","rare","epic","legendary"].map(k=>[k,betrag(rawGeoeffnet[k])])),
+      ohneEpic:betrag(rawKisten.ohneEpic),
+      letzte:(rawKisten.letzte&&typeof rawKisten.letzte==="object")?rawKisten.letzte:null
+    };
     p.selectedDice=p.unlockedDice.includes(p.selectedDice)?p.selectedDice:"classic";
     p.selectedAttackFx=p.unlockedAttackFx.includes(p.selectedAttackFx)?p.selectedAttackFx:"classic";
     const rawCosmetics=(p.prestigeCosmetics&&typeof p.prestigeCosmetics==="object")?p.prestigeCosmetics:{};
