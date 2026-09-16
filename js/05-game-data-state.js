@@ -36,8 +36,10 @@
   // rarity: Seltenheit fuer den Kistenpool (js/46-shop-daten.js). Nur
   // Designs mit rarity kommen aus Kisten; alles andere hat seinen eigenen
   // Weg (Start, Kampagnenboss, Achievement, Trophy-Shop). Super Rare, Epic
-  // und Legendary sind leer, bis neues Artwork kommt - die Ziehung faellt
-  // dann eine Stufe tiefer.
+  // ist leer, bis neues Artwork kommt - die Ziehung faellt dann eine Stufe
+  // tiefer. Die ersten fuenf Artwork-Designs (V28.12.30) sind je eine
+  // Stufe: Walnut Lodge Common, Tide Pearl Rare, Azure Storm Epic,
+  // Nebula Veil und Solar Relic Legendary (Vorgabe vom 16.09.).
   const DICE_DESIGNS = {
     classic:{name:"Classic",className:"theme-classic"},
     classic_v2:{name:"ClassicV2",className:"theme-classic-v2 theme-art-die",artKey:"ivory-royal",previewAsset:"assets/ui/v28/png/dice-designs/ivory-royal/ivory-royal-beauty.webp",unlockText:"Von Anfang an"},
@@ -50,10 +52,10 @@
     // brauchen einen Eintrag in DICE_UNLOCK_ACHIEVEMENT, im Trophy Shop
     // oder als Kampagnenbelohnung - plus einen unlockText.
     walnut_lodge:{name:"Walnut Lodge",className:"theme-walnut-lodge theme-art-die",artKey:"walnut-lodge",previewAsset:"assets/ui/v28/png/dice-designs/walnut-lodge/walnut-lodge-beauty.webp",testOnly:true,rarity:"common"},
-    tide_pearl:{name:"Tide Pearl",className:"theme-tide-pearl theme-art-die",artKey:"tide-pearl",previewAsset:"assets/ui/v28/png/dice-designs/tide-pearl/tide-pearl-beauty.webp",testOnly:true,rarity:"common"},
-    azure_storm:{name:"Azure Storm",className:"theme-azure-storm theme-art-die",artKey:"azure-storm",previewAsset:"assets/ui/v28/png/dice-designs/azure-storm/azure-storm-beauty.webp",testOnly:true,rarity:"common"},
-    nebula_veil:{name:"Nebula Veil",className:"theme-nebula-veil theme-art-die",artKey:"nebula-veil",previewAsset:"assets/ui/v28/png/dice-designs/nebula-veil/nebula-veil-beauty.webp",testOnly:true,rarity:"common"},
-    solar_relic:{name:"Solar Relic",className:"theme-solar-relic theme-art-die",artKey:"solar-relic",previewAsset:"assets/ui/v28/png/dice-designs/solar-relic/solar-relic-beauty.webp",testOnly:true,rarity:"common"},
+    tide_pearl:{name:"Tide Pearl",className:"theme-tide-pearl theme-art-die",artKey:"tide-pearl",previewAsset:"assets/ui/v28/png/dice-designs/tide-pearl/tide-pearl-beauty.webp",testOnly:true,rarity:"rare"},
+    azure_storm:{name:"Azure Storm",className:"theme-azure-storm theme-art-die",artKey:"azure-storm",previewAsset:"assets/ui/v28/png/dice-designs/azure-storm/azure-storm-beauty.webp",testOnly:true,rarity:"epic"},
+    nebula_veil:{name:"Nebula Veil",className:"theme-nebula-veil theme-art-die",artKey:"nebula-veil",previewAsset:"assets/ui/v28/png/dice-designs/nebula-veil/nebula-veil-beauty.webp",testOnly:true,rarity:"legendary"},
+    solar_relic:{name:"Solar Relic",className:"theme-solar-relic theme-art-die",artKey:"solar-relic",previewAsset:"assets/ui/v28/png/dice-designs/solar-relic/solar-relic-beauty.webp",testOnly:true,rarity:"legendary"},
     frostporcelain:{name:"Frost Porcelain",className:"theme-frostporcelain theme-art-die",artKey:"frostporcelain",previewAsset:"assets/ui/v28/png/dice-designs/frostporcelain/frostporcelain-beauty.webp",testOnly:true,rarity:"common"},
     ashwood:{name:"Ashwood",className:"theme-ashwood theme-art-die",artKey:"ashwood",previewAsset:"assets/ui/v28/png/dice-designs/ashwood/ashwood-beauty.webp",testOnly:true,rarity:"common"},
     coppertrail:{name:"Coppertrail",className:"theme-coppertrail theme-art-die",artKey:"coppertrail",previewAsset:"assets/ui/v28/png/dice-designs/coppertrail/coppertrail-beauty.webp",testOnly:true,rarity:"common"},
@@ -71,6 +73,15 @@
     uhrwerk:{name:"Uhrwerk",className:"theme-uhrwerk theme-art-die",artKey:"uhrwerk",previewAsset:"assets/ui/v28/png/dice-designs/uhrwerk/uhrwerk-beauty.webp",testOnly:true,rarity:"rare"},
     duenenrelikt:{name:"Dünenrelikt",className:"theme-duenenrelikt theme-art-die",artKey:"duenenrelikt",previewAsset:"assets/ui/v28/png/dice-designs/duenenrelikt/duenenrelikt-beauty.webp",testOnly:true,rarity:"rare"},
     dornenhain:{name:"Dornenhain",className:"theme-dornenhain theme-art-die",artKey:"dornenhain",previewAsset:"assets/ui/v28/png/dice-designs/dornenhain/dornenhain-beauty.webp",testOnly:true,rarity:"rare"},
+    daemmerkathedrale:{name:"Dämmerkathedrale",className:"theme-daemmerkathedrale theme-art-die",artKey:"daemmerkathedrale",previewAsset:"assets/ui/v28/png/dice-designs/daemmerkathedrale/daemmerkathedrale-beauty.webp",testOnly:true,rarity:"epic"},
+    phoenixkern:{name:"Phönixkern",className:"theme-phoenixkern theme-art-die",artKey:"phoenixkern",previewAsset:"assets/ui/v28/png/dice-designs/phoenixkern/phoenixkern-beauty.webp",testOnly:true,rarity:"epic"},
+    weltenwurzel:{name:"Weltenwurzel",className:"theme-weltenwurzel theme-art-die",artKey:"weltenwurzel",previewAsset:"assets/ui/v28/png/dice-designs/weltenwurzel/weltenwurzel-beauty.webp",testOnly:true,rarity:"epic"},
+    ereignishorizont:{name:"Ereignishorizont",className:"theme-ereignishorizont theme-art-die",artKey:"ereignishorizont",previewAsset:"assets/ui/v28/png/dice-designs/ereignishorizont/ereignishorizont-beauty.webp",testOnly:true,rarity:"legendary"},
+    gezeitenkompass:{name:"Gezeitenkompass",className:"theme-gezeitenkompass theme-art-die",artKey:"gezeitenkompass",previewAsset:"assets/ui/v28/png/dice-designs/gezeitenkompass/gezeitenkompass-beauty.webp",testOnly:true,rarity:"super_rare"},
+    runenschmiede:{name:"Runenschmiede",className:"theme-runenschmiede theme-art-die",artKey:"runenschmiede",previewAsset:"assets/ui/v28/png/dice-designs/runenschmiede/runenschmiede-beauty.webp",testOnly:true,rarity:"super_rare"},
+    frostsiegel:{name:"Frostsiegel",className:"theme-frostsiegel theme-art-die",artKey:"frostsiegel",previewAsset:"assets/ui/v28/png/dice-designs/frostsiegel/frostsiegel-beauty.webp",testOnly:true,rarity:"super_rare"},
+    nachtfalter:{name:"Nachtfalter",className:"theme-nachtfalter theme-art-die",artKey:"nachtfalter",previewAsset:"assets/ui/v28/png/dice-designs/nachtfalter/nachtfalter-beauty.webp",testOnly:true,rarity:"super_rare"},
+    bernsteinarchiv:{name:"Bernsteinarchiv",className:"theme-bernsteinarchiv theme-art-die",artKey:"bernsteinarchiv",previewAsset:"assets/ui/v28/png/dice-designs/bernsteinarchiv/bernsteinarchiv-beauty.webp",testOnly:true,rarity:"super_rare"},
     obsidian:{name:"Obsidian",className:"theme-obsidian"},
     gold:{name:"Gold",className:"theme-gold"},
     blood:{name:"Blood",className:"theme-blood"},

@@ -72,6 +72,9 @@ werden nicht rückwirkend ergänzt.
 Migrationen:
 - 20260916135541_online_stats_foundation.sql
 - 20260916141907_online_stats_capture.sql
+- 20260916143946_online_stats_unarmed_bots.sql
+
+Alle drei Migrationen wurden am 16.09.2026 live eingespielt und geprüft.
 
 Private Tabellen dd_stats_private.reports und ability_uses besitzen RLS und
 keine Client-Rechte. dd_submit_stats_report(uuid,jsonb) ist nur angemeldet
@@ -94,3 +97,8 @@ Gastprofile, Team-Siege, SQL-Rechte und atomaren Online-Abschluss laufen mit
 Fake-IndexedDB und isoliertem PostgreSQL/PGlite. Browser-Ansicht separat prüfen.
 Ein kompletter Spieltest mit zwei real angemeldeten Geräten bleibt sinnvoll;
 die isolierten Tests ersetzen weder Auth-Netzwerk noch Browser-Speicherquoten.
+First Blood: Gegner ohne Fähigkeit erzeugen keine Fähigkeitszeile, der Heldeneinsatz zählt.
+
+Advisor: Private Tabellen haben absichtlich keine Client-Policies (deny all).
+Die öffentliche Aggregat-RPC ist absichtlich SECURITY DEFINER:
+https://supabase.com/docs/guides/database/database-linter?lint=0028_anon_security_definer_function_executable

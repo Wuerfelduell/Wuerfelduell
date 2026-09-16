@@ -87,7 +87,7 @@ try{
   });
   pruefe('Chancen der Common-Kiste sichtbar',chancen.offen,true);
   pruefe('Common-Kiste: 75 / 20 / 4 / 0,9 / 0,1',chancen.common.map(z=>z.wert).join('/'),'75/20/4/0,9/0,1');
-  pruefe('Leere Pools (Super Rare, Epic, Legendary) sind markiert',chancen.common.filter(z=>z.leer).map(z=>z.s).join(','),'super_rare,epic,legendary');
+  pruefe('Kein Pool mehr leer: keine Zeile markiert',chancen.common.filter(z=>z.leer).map(z=>z.s).join(','),'');
   pruefe('Legendary nirgends ueber 5 %',chancen.legendary.length===4&&chancen.legendary.every(v=>v<=5),true);
 
   // 4. Ohne Guthaben kein Kauf.
@@ -131,7 +131,7 @@ try{
       weiter:!ov.querySelector('.kisten-weiter').classList.contains('hidden'),nochmal:ov.querySelector('.kisten-nochmal').classList.contains('hidden')};
   });
   pruefe('Genau eine Karte, umgedreht',ergebnis.anzahl===1&&ergebnis.gedreht,true);
-  pruefe('Design stammt aus dem Kistenpool (Common oder Rare)',['common','rare'].includes(ergebnis.poolRarity),true);
+  pruefe('Design stammt aus dem Kistenpool (traegt eine rarity)',['common','rare','super_rare','epic','legendary'].includes(ergebnis.poolRarity),true);
   pruefe('Karte traegt die Seltenheit des Designs',ergebnis.seltenheit===ergebnis.poolRarity&&ergebnis.ergebnisFarbe===ergebnis.poolRarity,true);
   pruefe('Ergebniszeile sagt Neu oder Doppelt',/Neu!|Doppelt/.test(ergebnis.ergebnisText),true);
   pruefe('Shopmodus: Weiter statt Nochmal',ergebnis.weiter&&ergebnis.nochmal,true);
