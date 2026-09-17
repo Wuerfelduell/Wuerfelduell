@@ -60,11 +60,9 @@
       `<div class="prestige-wallet shop-wallet" data-waehrung="marken"><span>${tr("Duellmarken")}</span><strong id="shopWalletMarken">${bildTag(SHOPBILD(WAEHRUNG_ICON.marken),"shop-wallet-icon")}<b>0</b></strong></div>`+
       `<div class="prestige-wallet shop-wallet" data-waehrung="kerne"><span>${tr("Würfelkerne")}</span><strong id="shopWalletKerne">${bildTag(SHOPBILD(WAEHRUNG_ICON.kerne),"shop-wallet-icon")}<b>0</b></strong></div>`);
     const tabs=document.createElement("div");tabs.className="shop-tabs";tabs.setAttribute("role","tablist");
-    // Daily: bis zur Lieferung eines eigenen Reiter-Emblems (tabs/tab-daily.webp)
-    // traegt der Reiter das vorhandene Angriffs-Icon.
-    [["chests","Kisten","tabs/tab-kisten.webp"],["trophies","Trophäen","tabs/tab-trophaeen.webp"],["currency","Währung","tabs/tab-waehrung.webp"],["daily","Daily",null]].forEach(([key,label,pfad])=>{
+    [["chests","Kisten","tabs/tab-kisten.webp"],["trophies","Trophäen","tabs/tab-trophaeen.webp"],["currency","Währung","tabs/tab-waehrung.webp"],["daily","Daily","tabs/tab-daily.webp"]].forEach(([key,label,pfad])=>{
       const b=document.createElement("button");b.type="button";b.className="shop-tab-btn";b.dataset.shopTab=key;b.setAttribute("role","tab");
-      b.innerHTML=`${pfad?bildTag(SHOPBILD(pfad),"shop-tab-emblem"):icon("gameplay/attack.svg")}<span>${tr(label)}</span>`;
+      b.innerHTML=`${bildTag(SHOPBILD(pfad),"shop-tab-emblem")}<span>${tr(label)}</span>`;
       b.onclick=()=>{tab=key;hinweis="";render();};
       tabs.appendChild(b);
     });
