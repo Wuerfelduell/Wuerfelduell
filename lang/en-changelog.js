@@ -5,6 +5,7 @@
   if (!pack) return;
 
   Object.assign(pack.exact, {
+    "Zwei weitere Angriffseffekte in der Testumgebung: „Blitzeinschlag“ mit Gewitterladung, Zielmarkierung und verzweigtem Hauptblitz, „Katzenangriff“ mit magischer Kampfkatze, Pfotenspur und drei Krallenhieben – beide mit Kill-Effekt, noch nicht im Shop": "Two more attack effects in the test lab: “Blitzeinschlag” with a storm charge, target marker and branching main bolt, “Katzenangriff” with a magical battle cat, paw trail and three claw slashes; both with a kill effect, not in the shop yet",
     "Zwei weitere Angriffseffekte in der Testumgebung: „Invasion“ mit violett-cyanem Portal und fünf Invasoren in Formation, „Missile Attack“ mit roter Zielerfassung und drei Raketen mit Rauchspur – beide mit Kill-Effekt, noch nicht im Shop": "Two more attack effects in the test lab: “Invasion” with a violet-cyan portal and five invaders in formation, “Missile Attack” with red target lock and three missiles with smoke trails; both with a kill effect, not in the shop yet",
     "Die gemeinsame Duell-Engine bildet jetzt die vollständige Basisphase als unveränderlichen Reducer mit stabilen Ereignissen ab": "The shared duel engine now represents the complete base phase as an immutable reducer with stable events",
     "Würfeln, Locken, Basisfähigkeiten, Eigenschaden, Last Stand und Insurance sind mit festem Zufall reproduzierbar geprüft": "Rolling, locking, base abilities, self-damage, Last Stand and Insurance are reproducibly tested with fixed randomness",
