@@ -1576,7 +1576,7 @@ html.legacy-flat-dice .attack-fx-beam{box-shadow:0 0 9px rgba(120,205,255,.75)}
 .attack-fx-impact.fx-crown{border-color:#ffe379;box-shadow:0 0 12px #fff0a4,0 0 38px rgba(255,177,27,.95)}
 
 /* Source glow follows the equipped effect roughly, without touching card frames. */
-.player.attack-source-flash.fx-flame{animation-name:wdAttackSourceFlame}.player.attack-source-flash.fx-venom{animation-name:wdAttackSourceVenom}.player.attack-source-flash.fx-blood{animation-name:wdAttackSourceBlood}.player.attack-source-flash.fx-void,.player.attack-source-flash.fx-rift{animation-name:wdAttackSourceVoid}.player.attack-source-flash.fx-crown,.player.attack-source-flash.fx-jackpot{animation-name:wdAttackSourceGold}
+.player.attack-source-flash.fx-flame{animation-name:wdAttackSourceFlame}.player.attack-source-flash.fx-venom{animation-name:wdAttackSourceVenom}.player.attack-source-flash.fx-blood{animation-name:wdAttackSourceBlood}.player.attack-source-flash.fx-void,.player.attack-source-flash.fx-rift,.player.attack-source-flash.fx-soulbreak{animation-name:wdAttackSourceVoid}.player.attack-source-flash.fx-crown,.player.attack-source-flash.fx-jackpot{animation-name:wdAttackSourceGold}
 @keyframes wdAttackSourceFlame{0%{box-shadow:0 0 0 rgba(255,86,30,0)}35%{box-shadow:0 0 31px rgba(255,86,30,.95)}100%{box-shadow:0 0 0 rgba(255,86,30,0)}}
 @keyframes wdAttackSourceVenom{0%{box-shadow:0 0 0 rgba(71,255,87,0)}35%{box-shadow:0 0 31px rgba(71,255,87,.9)}100%{box-shadow:0 0 0 rgba(71,255,87,0)}}
 @keyframes wdAttackSourceBlood{0%{box-shadow:0 0 0 rgba(222,23,56,0)}35%{box-shadow:0 0 31px rgba(222,23,56,.92)}100%{box-shadow:0 0 0 rgba(222,23,56,0)}}

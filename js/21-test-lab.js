@@ -393,7 +393,8 @@
       confetti:['#ffffff','#ff78d7'],
       frost:['#e8ffff','#65cffa'],
       rift:['#d5a5ff','#42d9ff'],
-      crown:['#fff1a8','#ffc43d']
+      crown:['#fff1a8','#ffc43d'],
+      soulbreak:['#8ed8ff','#a96cff']
     }[style]||['#ffffff','#77bfff'];
   }
 
@@ -405,7 +406,7 @@
     const fx={
       id:`labfx-${Date.now()}-${Math.random()}`,
       style,from,to,start:performance.now(),
-      duration:style==='lightning'?430:style==='blood'?480:style==='crown'?850:700,
+      duration:style==='lightning'?430:style==='blood'?480:style==='crown'?850:style==='soulbreak'?1200:700,
       seed:Math.random()*999
     };
     activeLabFx.push(fx);
@@ -425,7 +426,7 @@
         const from=cardCenter(event?.source),to=cardCenter(event?.target);
         if(!from||!to) return false;
         const style=String(event?.style||players?.[Number(event?.source)]?.attackFx||'classic');
-        activeLabFx.push({id:event?.id||`labplay-${Date.now()}`,style,from,to,start:performance.now(),duration:700,seed:Math.random()*999});
+        activeLabFx.push({id:event?.id||`labplay-${Date.now()}`,style,from,to,start:performance.now(),duration:style==='soulbreak'?1200:700,seed:Math.random()*999});
         return true;
       },
       getLastPlayedId:()=>coreAttackFx.getLastPlayedId?.(),
@@ -839,6 +840,105 @@
   }
 
 
+  /* Seelenbruch (Lieferung 17.09., Drop-in-Paket): Wuerfelseele im
+     Goldkaefig, Spiralflug, Runen-Implosion. Nur in der Testumgebung, der
+     Kern-Renderer (js/18) kennt den Stil bewusst noch nicht. */
+  function soulbreakCubePoints(cx,cy,size,rx,ry,rz){
+    const points=[];
+    const crx=Math.cos(rx),srx=Math.sin(rx),cry=Math.cos(ry),sry=Math.sin(ry),crz=Math.cos(rz),srz=Math.sin(rz);
+    for(let i=0;i<8;i++){
+      let x=((i&1)?1:-1)*size,y=((i&2)?1:-1)*size,z=((i&4)?1:-1)*size;
+      const y1=y*crx-z*srx,z1=y*srx+z*crx;y=y1;z=z1;
+      const x1=x*cry+z*sry,z2=-x*sry+z*cry;x=x1;z=z2;
+      const x2=x*crz-y*srz,y2=x*srz+y*crz;x=x2;y=y2;
+      const perspective=1+z/Math.max(1,size*8);
+      points.push({x:cx+x*perspective,y:cy+y*perspective});
+    }
+    return points;
+  }
+
+  function drawSoulbreakCube(x,y,size,rotation,alpha=1,collapse=1){
+    const points=soulbreakCubePoints(x,y,size*collapse,.68+rotation*.3,rotation*.76,rotation*.48);
+    const edges=[[0,1],[0,2],[0,4],[1,3],[1,5],[2,3],[2,6],[3,7],[4,5],[4,6],[5,7],[6,7]];
+    fxCtx.save();fxCtx.globalCompositeOperation='lighter';fxCtx.lineCap='round';
+    edges.forEach(([a,b])=>{
+      fxCtx.strokeStyle='#8a5818';fxCtx.lineWidth=5;fxCtx.globalAlpha=alpha*.18;
+      fxCtx.beginPath();fxCtx.moveTo(points[a].x,points[a].y);fxCtx.lineTo(points[b].x,points[b].y);fxCtx.stroke();
+      fxCtx.strokeStyle='#ffd978';fxCtx.lineWidth=1.45;fxCtx.globalAlpha=alpha;
+      fxCtx.beginPath();fxCtx.moveTo(points[a].x,points[a].y);fxCtx.lineTo(points[b].x,points[b].y);fxCtx.stroke();
+    });
+    points.forEach(p=>glowCircle(fxCtx,p.x,p.y,5,'#ffe8a8',alpha*.34));
+    fxCtx.restore();
+  }
+
+  function drawSoulbreakSigil(x,y,r,alpha,rotation){
+    if(alpha<=0) return;
+    fxCtx.save();fxCtx.translate(x,y);fxCtx.rotate(rotation);fxCtx.strokeStyle='#e7b94e';fxCtx.lineWidth=1.35;fxCtx.globalAlpha=alpha;
+    fxCtx.beginPath();fxCtx.arc(0,0,r,0,Math.PI*2);fxCtx.stroke();
+    fxCtx.beginPath();fxCtx.arc(0,0,r*.72,0,Math.PI*2);fxCtx.stroke();
+    for(let i=0;i<8;i++){
+      const a=i*Math.PI/4;
+      fxCtx.beginPath();fxCtx.moveTo(Math.cos(a)*r*.82,Math.sin(a)*r*.82);fxCtx.lineTo(Math.cos(a)*r*1.08,Math.sin(a)*r*1.08);fxCtx.stroke();
+      fxCtx.save();fxCtx.translate(Math.cos(a)*r*1.18,Math.sin(a)*r*1.18);fxCtx.rotate(a);
+      fxCtx.beginPath();fxCtx.moveTo(-2.5,0);fxCtx.lineTo(0,-4);fxCtx.lineTo(2.5,0);fxCtx.lineTo(0,4);fxCtx.closePath();fxCtx.stroke();fxCtx.restore();
+    }
+    fxCtx.restore();
+  }
+
+  function drawSoulbreakCore(x,y,r,time,alpha=1){
+    fxCtx.save();fxCtx.globalCompositeOperation='lighter';
+    glowCircle(fxCtx,x,y,r*2.25,'#4a8ff0',alpha*.46);
+    glowCircle(fxCtx,x,y,r*1.42,'#a96cff',alpha*.6);
+    for(let i=0;i<6;i++){
+      const a=i*Math.PI/3+time*.007;
+      const px=x+Math.cos(a)*r*.3,py=y+Math.sin(a)*r*.3;
+      fxCtx.fillStyle=i%2?'#6caeff':'#b06cff';fxCtx.globalAlpha=alpha*.34;
+      fxCtx.beginPath();fxCtx.moveTo(x,y+r*.1);
+      fxCtx.quadraticCurveTo(px,py,px+Math.cos(a)*r*.42,py-r*(.74+(i%3)*.12));
+      fxCtx.quadraticCurveTo(px-r*.1,py-r*.18,x,y+r*.1);fxCtx.fill();
+    }
+    glowCircle(fxCtx,x,y,r*.58,'#ffffff',alpha*.92);
+    fxCtx.restore();
+  }
+
+  function soulbreakPoint(fx,p){
+    const e=easeOutCubic(Math.max(0,Math.min(1,p)));
+    return {
+      x:lerp(fx.from.x,fx.to.x,e),
+      y:lerp(fx.from.y,fx.to.y,e)-Math.sin(e*Math.PI)*Math.min(78,Math.hypot(fx.to.x-fx.from.x,fx.to.y-fx.from.y)*.18)
+    };
+  }
+
+  function drawSoulbreak(fx,t){
+    const distance=Math.hypot(fx.to.x-fx.from.x,fx.to.y-fx.from.y);
+    const base=Math.max(18,Math.min(31,distance*.065));
+    if(t<.2){
+      const e=easeInOut(t/.2);
+      drawSoulbreakSigil(fx.from.x,fx.from.y,base*(1.05+e*.55),e*.72,-t*8);
+      drawSoulbreakCore(fx.from.x,fx.from.y,base*.72,fx.start+t*900,e);
+      drawSoulbreakCube(fx.from.x,fx.from.y,base,e*3.5,e);
+      return;
+    }
+    if(t<.76){
+      const p=(t-.2)/.56;
+      const pos=soulbreakPoint(fx,p);
+      const dx=fx.to.x-fx.from.x,dy=fx.to.y-fx.from.y,len=Math.max(1,Math.hypot(dx,dy)),nx=-dy/len,ny=dx/len;
+      for(let i=1;i<=18;i++){
+        const q=p-i*.026;
+        if(q<=0) continue;
+        const trail=soulbreakPoint(fx,q),wave=Math.sin(i*.72+t*30)*base*.3*(i/18),fade=(1-i/19)*Math.min(1,p*8);
+        glowCircle(fxCtx,trail.x+nx*wave,trail.y+ny*wave,Math.max(2,base*.26-i*.18),i%2?'#4a8ff0':'#a96cff',fade*.28);
+      }
+      const collapse=p>.86?1-easeInOut((p-.86)/.14)*.76:1;
+      drawSoulbreakCore(pos.x,pos.y,base*.72,fx.start+t*900,1);
+      drawSoulbreakCube(pos.x,pos.y,base,t*12+fx.seed,1,collapse);
+    }
+    if(t>.61){
+      const e=Math.min(1,(t-.61)/.15);
+      drawSoulbreakSigil(fx.to.x,fx.to.y,base*(.8+e*.65),e*.58,t*5);
+    }
+  }
+
   function impactRing(x,y,color,e,maxR=52,width=2.4,alpha=.75){
     if(e<=0||e>=1) return;
     fxCtx.save();
@@ -966,6 +1066,14 @@
         impactSparks(x,y,c1,e,8,44);
         break;
 
+      case 'soulbreak':
+        e=Math.max(0,(t-.7)/.3);
+        impactFlash(x,y,c1,e,82,.52);
+        impactRing(x,y,c2,e,92,3.2,.82);
+        impactRing(x,y,'#ffd978',Math.min(1,e*1.16),66,1.8,.68);
+        impactSparks(x,y,c1,e,18,92);
+        drawSoulbreakSigil(x,y,30+e*64,(1-e)*.78,-t*7);
+        break;
       case 'crown':
         e=Math.max(0,(t-.52)/.48);
         impactFlash(x,y,c1,e,72,.5);
@@ -997,6 +1105,7 @@
       case 'frost':drawFrost(fx,t);break;
       case 'rift':drawRiftTear(fx,t);break;
       case 'crown':drawCrownfall(fx,t);break;
+      case 'soulbreak':drawSoulbreak(fx,t);break;
       default:drawArcShot(fx,t);break;
     }
     drawImpactForStyle(fx,t);
@@ -1068,6 +1177,8 @@
         tone(1480,0,.16,'sine',.026,840);tone(2100,.02,.12,'triangle',.018,1100);noiseBurst(.08,.1,.022,1800);break;
       case 'rift':
         tone(155,0,.34,'sine',.032,50);tone(580,.04,.3,'triangle',.018,120);break;
+      case 'soulbreak':
+        tone(210,0,.26,'sine',.032,74);tone(640,.08,.22,'triangle',.022,180);tone(1280,.22,.16,'sine',.018,520);noiseBurst(.24,.12,.016,1400);break;
       case 'crown':
         tone(392,0,.14,'triangle',.026);tone(587,.06,.18,'triangle',.03);tone(784,.13,.22,'sine',.024);noiseBurst(.17,.08,.012,1100);break;
       default:
@@ -1088,7 +1199,7 @@
       start:performance.now(),
       duration:{
         lightning:820,flame:1050,venom:1050,blood:820,jackpot:1150,
-        void:1200,confetti:1150,frost:1000,rift:1100,crown:1250
+        void:1200,confetti:1150,frost:1000,rift:1100,crown:1250,soulbreak:1350
       }[style]||900,
       seed:Math.random()*999,
       preview
@@ -1259,6 +1370,19 @@
     impactFlash(fx.x,fx.y,c2,e,72,.34);impactRing(fx.x,fx.y,c1,e,106,3,.65);impactSparks(fx.x,fx.y,c1,e,13,82);
   }
 
+  function killSoulbreak(fx,t){
+    const [c1,c2]=labFxColor('soulbreak');
+    const gather=Math.min(1,t/.42),collapse=t<.42?1:Math.max(.12,1-easeInOut((t-.42)/.2)*.88);
+    drawSoulbreakSigil(fx.x,fx.y,38+gather*34,Math.max(0,1-t*.82),-t*6);
+    drawSoulbreakCore(fx.x,fx.y,20+gather*11,fx.start+t*1000,Math.max(0,1-t*.72));
+    drawSoulbreakCube(fx.x,fx.y,48,t*10+fx.seed,Math.max(0,1-t*.76),collapse);
+    const e=Math.max(0,(t-.46)/.54);
+    impactFlash(fx.x,fx.y,c1,e,112,.58);
+    impactRing(fx.x,fx.y,c2,e,132,3.6,.84);
+    impactRing(fx.x,fx.y,'#ffd978',Math.min(1,e*1.14),94,2,.72);
+    impactSparks(fx.x,fx.y,c1,e,24,122);
+  }
+
   function killCrown(fx,t){
     const [c1,c2]=labFxColor('crown');
     const fall=easeOutCubic(Math.min(1,t/.56));
@@ -1284,6 +1408,7 @@
       case 'frost':killFrost(fx,t);break;
       case 'rift':killRift(fx,t);break;
       case 'crown':killCrown(fx,t);break;
+      case 'soulbreak':killSoulbreak(fx,t);break;
       default:killArc(fx,t);break;
     }
     return true;

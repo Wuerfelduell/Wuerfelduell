@@ -5,6 +5,7 @@
   if (!pack) return;
 
   Object.assign(pack.exact, {
+    "Neuer Angriffseffekt „Seelenbruch“ zum Ausprobieren in der Testumgebung: Würfelseele im Goldkäfig, Spiralflug und Runen-Implosion, mit eigenem Kill-Effekt – noch nicht im Shop": "New attack effect “Seelenbruch” to try out in the test lab: a dice soul in a golden cage, spiral flight and rune implosion, with its own kill effect; not in the shop yet",
     "Vorbereitung für eine gemeinsame Kampf-Engine: Zufallsadapter und flüchtiges Host-Aktionsprotokoll, ohne Änderung der Spielregeln": "Preparation for a shared battle engine: random number adapter and an in-memory host action log, without changing the game rules",
     "Ein neuer Prüfstand spielt einen Bot-Kampf zweimal mit denselben Zufallsziehungen nach; die Serverumstellung bleibt bis zur Freigabe des Entwurfs offen": "A new test replays a bot battle twice with the same random draws; the server transition remains pending until the design is approved",
     "Die Währungserklärung im Shop steht im selben Navy-Rahmen wie die Kisten- und Paketkarten, mit Luft zum oberen Ornament": "The currency explanation in the shop sits in the same navy frame as the chest and pack cards, with room below the top ornament",

@@ -14,7 +14,7 @@
   let localModeId="classic";
   function localModeRules(){return LOCAL_MODES[localModeId]||LOCAL_MODES.classic;}
 
-  const GAME_VERSION="28.13.2";
+  const GAME_VERSION="28.13.3";
   // Gemeinsamer Bild-Cache-Schluessel; identisch mit den Bild-URLs in HTML und CSS.
   const ASSET_REV="28.12.48";
   const SAVE_KEY="wuerfelduell_save_v1"; // absichtlich stabil: Updates lesen denselben Browser-Save
@@ -95,7 +95,9 @@
     confetti:{name:"Confetti Cannon",desc:"Völlig unnötig. Völlig korrekt. Konfetti."},
     frost:{name:"Frost Lance",desc:"Eislanze mit Splittern am Einschlag."},
     rift:{name:"Rift Tear",desc:"Prestige-Riss mit violett-cyanem Nachglühen."},
-    crown:{name:"Crownfall",desc:"Goldener Endgame-Effekt. Reiner Flex."}
+    crown:{name:"Crownfall",desc:"Goldener Endgame-Effekt. Reiner Flex."},
+    // labor: nur in der Testumgebung waehlbar, weder Shop noch Profil noch Kern-Renderer.
+    soulbreak:{name:"Seelenbruch",desc:"Eine Würfelseele im Goldkäfig, die am Ziel in einer Runenwelle implodiert.",labor:true}
   };
   const ATTACK_FX_UNLOCK_ACHIEVEMENT={
     lightning:"momentum_mori",flame:"critical_hit",venom:"backstab",blood:"vampiric_touch",
