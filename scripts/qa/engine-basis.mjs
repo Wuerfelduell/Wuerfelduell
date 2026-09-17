@@ -148,6 +148,14 @@ function act(state,type,extra={},rng){return reduce(state,{type,seat:0,...extra}
 }
 
 {
+  const state=prepared([1,1,1,1,1],[14,3],{modeId:'mayhem',hp:4});
+  const result=act(state,A.LOCK_SELECTED);
+  equal(result.state.players[0].hp,6,'Last Stand faengt toedlichen Basisschaden in Mayhem bei sechs HP ab');
+  check(result.events.some(event=>event.type==='LastStandTriggered'&&event.hp===6),
+    'Mayhem-Last-Stand meldet die sechs verbleibenden HP');
+}
+
+{
   let state=prepared([4,4,4,4,4],[19]);
   state=act(state,A.LOCK_SELECTED).state;
   equal(state.turn.phase,'insurance','Insurance blockiert die automatische Schadensfolge');
@@ -248,7 +256,10 @@ function act(state,type,extra={},rng){return reduce(state,{type,seat:0,...extra}
   state.turn.phase='base_select';state.turn.decision={kind:'select_base',seat:3};
   state.dice.forEach(die=>{die.value=5;die.selected=true;});
   const result=reduce(state,{type:A.LOCK_SELECTED,seat:3});
-  equal(result.state.attack.targetSeat,1,'Die Zielwahl folgt bei zwei bis sechs Spielern der lebenden Zugreihenfolge');
+  equal([result.state.turn.phase,result.state.attack.targetSeat],['attack_target',null],
+    'Mehr als zwei lebende Spieler blockieren an der Zielwahl');
+  equal(result.events.find(event=>event.type==='AttackTargetRequired')?.targetSeats,[1,4,0,2],
+    'Die Zielwahl folgt der lebenden Zugreihenfolge');
   check(validateState(result.state).valid,'Sechs-Spieler-Basiszustand besteht validateState');
 }
 

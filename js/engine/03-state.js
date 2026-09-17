@@ -15,11 +15,12 @@
   const ability=choice(...definitions.REAL_ABILITY_IDS);
   const phases=choice('idle','base_select','base_ready','gamble_attack','gamble_retry_offer',
     'gamble_retry','perfect25','perfect25_d4','insurance','attack_ready','attack_after_roll',
-    'attack_continue','high_stakes','counterattack','turn_done','resolving','finished','round_preparation');
+    'attack_target','attack_continue','high_stakes','counterattack','draft_pending','turn_done',
+    'resolving','finished','round_preparation');
   const decisionSchema=record({
     kind:choice('roll_base','select_base','roll_attack','resolve_attack','gambling','gambling_retry_offer',
       'gambling_retry','perfect25','perfect25_d4','insurance','high_stakes','counterattack',
-      'choose_ability','end_turn','prepare_round','choose_start_abilities','start_round'),
+      'choose_attack_target','choose_ability','end_turn','prepare_round','choose_start_abilities','start_round'),
     seat
   });
   const rngSchema=record({algorithm:choice('external','mulberry32'),seed:nullable(integer(0,0xffffffff)),
@@ -257,11 +258,14 @@
     const phaseDecisions={idle:'roll_base',base_select:'select_base',base_ready:'roll_base',
       gamble_attack:'gambling',gamble_retry_offer:'gambling_retry_offer',gamble_retry:'gambling_retry',
       perfect25:'perfect25',perfect25_d4:'perfect25_d4',insurance:'insurance',attack_ready:'roll_attack',
-      attack_after_roll:'resolve_attack',attack_continue:'roll_attack',high_stakes:'high_stakes',
-      counterattack:'counterattack',turn_done:'end_turn'};
+      attack_target:'choose_attack_target',attack_after_roll:'resolve_attack',attack_continue:'roll_attack',
+      high_stakes:'high_stakes',counterattack:'counterattack',draft_pending:'choose_ability',turn_done:'end_turn'};
     if(state.turn.decision){
       let expectedKind=phaseDecisions[state.turn.phase],expectedSeat=state.turn.currentSeat;
       if(state.draft.active){expectedKind='choose_ability';expectedSeat=state.draft.active.seat;}
+      else if(state.turn.phase==='draft_pending' && state.draft.queue.length){
+        expectedKind='choose_ability';expectedSeat=state.draft.queue[0].seat;
+      }
       else if(state.turn.phase==='counterattack') expectedSeat=state.counter.context?.defenderSeat;
       if(state.turn.phase==='round_preparation'){
         if(!['prepare_round','choose_start_abilities','start_round'].includes(state.turn.decision.kind))
@@ -279,6 +283,9 @@
     if(['attack_ready','attack_after_roll','attack_continue','high_stakes'].includes(state.turn.phase) &&
       (state.attack.face===null || state.attack.targetSeat===null || state.attack.baseTotal===null))
       addError(errors,'state.attack','Angriffsphase benötigt Zielzahl, Ziel und Basissumme');
+    if(state.turn.phase==='attack_target' &&
+      (state.attack.face===null || state.attack.targetSeat!==null || state.attack.baseTotal===null))
+      addError(errors,'state.attack','Zielwahl benötigt Zielzahl und Basissumme, aber noch kein Ziel');
     if(['gamble_attack','gamble_retry_offer','gamble_retry'].includes(state.turn.phase) && state.special.gambling.baseTotal===null)
       addError(errors,'state.special.gambling.baseTotal','Gambling-Entscheidung benötigt eine Basissumme');
     if(['perfect25','perfect25_d4'].includes(state.turn.phase) && state.special.perfect25.baseTotal===null)
@@ -316,6 +323,10 @@
       if(own(draft,'choices') && draft.choices.some(id=>!definitions.CHOOSABLE_ABILITY_IDS.includes(id) || player?.abilities.includes(id)))
         addError(errors,path+'.choices','Draft darf nur wählbare, noch nicht vorhandene Fähigkeiten anbieten');
     });
+    if(state.turn.phase==='draft_pending' && !state.draft.queue.length)
+      addError(errors,'state.draft.queue','Blockierter Draft benötigt einen Warteschlangeneintrag');
+    if(state.turn.phase!=='draft_pending' && state.draft.active===null && state.draft.continuation!==null)
+      addError(errors,'state.draft.continuation','Fortsetzung ohne blockierten Draft ist nicht erlaubt');
     state.round.eliminationOrder.forEach((value,i)=>{
       checkSeat(value,'state.round.eliminationOrder['+i+']');
       if(state.players.find(player=>player.seat===value)?.hp>0) addError(errors,'state.round.eliminationOrder['+i+']','Lebender Spieler darf nicht ausgeschieden sein');

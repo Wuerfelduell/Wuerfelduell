@@ -13,7 +13,14 @@
     USE_LOADED_DICE:'use_loaded_dice',
     USE_SNAKE_EYES:'use_snake_eyes',
     ROLL_INSURANCE:'roll_insurance',
-    USE_BLOOD_PRICE:'use_blood_price'
+    USE_BLOOD_PRICE:'use_blood_price',
+    CHOOSE_ATTACK_TARGET:'choose_attack_target',
+    ROLL_ATTACK:'roll_attack',
+    RESOLVE_ATTACK:'resolve_attack',
+    USE_ATTACK_POWER:'use_attack_power',
+    CONTINUE_DOUBLE_TAP:'continue_double_tap',
+    USE_BLOOD_RUSH_SELF_HARM:'use_blood_rush_self_harm',
+    ROLL_COUNTERATTACK:'roll_counterattack'
   });
 
   function clone(value){return JSON.parse(JSON.stringify(value));}
@@ -39,6 +46,17 @@
     return indices;
   }
   function baseTotal(state){return state.dice.reduce((sum,die)=>sum+(die.value||0),0);}
+  function aliveSeats(state){return state.players.filter(entry=>entry.hp>0).map(entry=>entry.seat);}
+  function uniqueUnderdog(state,seat=state.turn.currentSeat){
+    const active=player(state,seat);
+    if(!active || active.hp<=0) return false;
+    if(mastery(state,1) && active.effects.underdogTurnActive) return true;
+    const alive=state.players.filter(entry=>entry.hp>0);
+    if(alive.length<2) return false;
+    return mastery(state,1)
+      ? alive.every(entry=>entry.seat===seat || active.hp<=entry.hp)
+      : alive.every(entry=>entry.seat===seat || active.hp<entry.hp);
+  }
   function snakeEyesGroup(state){
     const byFace=new Map();
     for(const index of state.base.lastRollIndices){
@@ -97,6 +115,6 @@
   }
 
   engine.actions=ACTIONS;
-  engine.baseRules=Object.freeze({clone,player,hasAbility,mastery,nextAliveSeat,selectedIndices,
-    unlockedIndices,baseTotal,snakeEyesGroup,luckCandidate,makeRandom,rollDie});
+  engine.baseRules=Object.freeze({clone,player,hasAbility,mastery,nextAliveSeat,aliveSeats,uniqueUnderdog,
+    selectedIndices,unlockedIndices,baseTotal,snakeEyesGroup,luckCandidate,makeRandom,rollDie});
 })(globalThis);

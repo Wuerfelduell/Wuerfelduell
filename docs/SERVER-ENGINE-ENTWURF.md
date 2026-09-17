@@ -1,8 +1,8 @@
-# Gemeinsame Duell-Engine – Phase 2, Schritt 2
+# Gemeinsame Duell-Engine – Phase 2, Schritt 3
 
-Stand: V28.14.3, Ausgangspunkt `42626c2` (V28.14.2), 17.09.2026.
-Der Phase-1-Entwurf ist freigegeben. Geliefert ist **Schritt 2 von 6:
-Basisphase**. Das Spiel liest die gemeinsamen Definitionen; Kampfentscheidungen
+Stand: V28.14.6, Ausgangspunkt `eb21d96` (V28.14.5), 17.09.2026.
+Der Phase-1-Entwurf ist freigegeben. Geliefert sind **Schritt 2 von 6:
+Basisphase** und **Schritt 3 von 6: Angriffsphase**. Das Spiel liest die gemeinsamen Definitionen; Kampfentscheidungen
 laufen weiterhin im bisherigen Browsercode. Es gibt noch keinen Browseradapter
 und keinen neuen Online-Payload.
 Kein Deployment und keine Migration.
@@ -23,7 +23,7 @@ Release auf `main`; anschließend Bericht und **Warten auf „Weiter“**:
 |---|---|---|
 | 1 | Gemeinsame Definitionen und serialisierbarer Zustand | V28.14.0 |
 | 2 | Basisphase, nur Engine und Node-Tests | V28.14.3 |
-| 3 | Angriff, nur Engine und Node-Tests | offen |
+| 3 | Angriff, nur Engine und Node-Tests | V28.14.6 |
 | 4 | Spezialwürfel, Drafts und Rundenwechsel, nur Engine und Node-Tests | offen; Regelfrage unten |
 | 5 | Produktiver Browseradapter und Bot-Paritätsprüfstand | offen; erst nach grüner Parität veröffentlichen |
 | 6 | Deno-Parität und Online-Schatten | offen; kein Deployment |
@@ -121,7 +121,7 @@ Instanztrennung und Entscheidungsinhabern bei Draft und Konter.
 mit Node und prüft 40 Kampfansichten (vier Modi, DE/EN, 320/360/390/412/1280 px).
 Dies ist ausdrücklich noch keine Reducer-Matchparität.
 
-## Reducer und Ereignisse – Schritt 2
+## Reducer und Ereignisse – Schritte 2 und 3
 
 `js/engine/04-rules.js` und `js/engine/05-reduce.js` liefern den bestätigten
 Schnitt für Schritte 2–4:
@@ -134,15 +134,25 @@ Der Eingang bleibt unverändert. Ungültige Aktionen liefern den unveränderten
 Zustand, leere Ereignisse sowie `{rejected: true, reason}` ohne RNG-Verbrauch.
 Automatische Folgen laufen bis zur nächsten echten Spielerentscheidung. Die
 Basisphase umfasst Würfeln, Auswahl und Locken, Glückswurf, Loaded Dice,
-Snake Eyes, Blutpreis, Insurance, Eigenschaden und Last Stand. Gambling Man
-und Perfect 25 werden als blockierende Entscheidungen an Schritt 4 übergeben;
-Angriffe beginnen erst in Schritt 3. Ereignisse besitzen monotone stabile IDs
-und reine JSON-Nutzlasten, darunter `DiceRolled`, `DiceLocked`,
-`DamageApplied`, `Healed`, `LastStandTriggered`, `DecisionRequired` und
-`TurnStarted`; Texte, HTML, Timer und UI-Rückrufe bleiben im Adapter.
-`scripts/qa/engine-basis.mjs` prüft die Basisregeln mit festem Zufall,
-Ablehnungen ohne Ziehung, RNG-Grenzen und die JSON-Rundreise. Botlogik bleibt
-ein Aktionsproduzent außerhalb des Reducers.
+Snake Eyes, Blutpreis, Insurance, Eigenschaden und Last Stand. Die Angriffsphase
+ergänzt Zielwahl, Angriffswürfe samt Nachbarn, Zweite Chance, Attack Power,
+Double Tap, Momentum, Rache, Underdog, Blood Rush, Lifesteal, Ricochet,
+Toxic Bomb, Snake Bite, Blood Credit, Ausscheiden und Counterattack. Last Stand
+bleibt mit Mastery auf 6 HP, sonst auf 1 HP. Mehrspielerangriffe blockieren an
+der Zielwahl; Counterattack ist ein eigener Angriff des Verteidigers. Nach der
+letzten Angriffsfolge steht der Zustand auf `turn_done`.
+
+Gambling Man, Perfect 25, High Stakes und fällige Fähigkeitsdrafts werden als
+blockierende Entscheidungen an Schritt 4 übergeben. Der Draftzustand speichert
+dabei Warteschlange und Fortsetzung (`finish_attack` oder `start_counter`), ohne
+Optionen vorzuziehen. Ereignisse besitzen monotone stabile IDs und reine
+JSON-Nutzlasten, darunter `DiceRolled`, `AttackRolled`, `HitsResolved`,
+`DamageApplied`, `Healed`, `RicochetApplied`, `CounterattackStarted`,
+`PlayerEliminated`, `DecisionRequired`, `TurnEnded` und `TurnStarted`; Texte,
+HTML, Timer und UI-Rückrufe bleiben im Adapter. `scripts/qa/engine-basis.mjs`
+und `scripts/qa/engine-angriff.mjs` prüfen die Regeln mit festem Zufall,
+Ablehnungen ohne Ziehung, JSON-Rundreisen sowie Classic und Mayhem mit zwei und
+vier Spielern. Botlogik bleibt ein Aktionsproduzent außerhalb des Reducers.
 
 ## Nachgewiesene Regelunklarheit vor Schritt 4
 
