@@ -5,6 +5,9 @@
   if (!pack) return;
 
   Object.assign(pack.exact, {
+    "Die Währungserklärung im Shop steht im selben Navy-Rahmen wie die Kisten- und Paketkarten, mit Luft zum oberen Ornament": "The currency explanation in the shop sits in the same navy frame as the chest and pack cards, with room below the top ornament",
+    "Private Online-Tische geben keine Duellmarken mehr – sonst ließe sich mit Haupt- und Gastprofil am selben Tisch farmen": "Private online tables no longer give Duel Tokens; otherwise a main and a guest profile at the same table could farm them",
+    "Für das kommende zufällige Online-Match gegen Fremde sind die Sätze festgelegt: 60 Duellmarken für einen Sieg, 20 für eine Niederlage – gebucht wird erst, wenn es den Modus gibt": "The rates for the upcoming random online match against strangers are set: 60 Duel Tokens for a win, 20 for a loss; they are credited only once that mode exists",
     "Meilenstein: Shop mit Duellmarken, vier Kisten und 31 Artwork-Würfeln, die Kistenöffnung mit gemalten Kisten und Karten je Seltenheit, und die globale Fähigkeitsstatistik sind vollständig": "Milestone: the shop with Duel Tokens, four chests and 31 artwork dice, the chest opening with painted chests and cards per rarity, and the global ability statistics are complete",
     "Die Online-Statistik ist mit zwei angemeldeten Geräten im Spiel bestätigt: sobald ein Konto angemeldet ist, zählt jeder abgeschlossene Kampf": "The online statistics are confirmed in play with two signed-in devices: once an account is signed in, every finished battle counts",
     "Die globale Winrate steht in ganzen Prozent wie in der lokalen Tabelle": "The global win rate is shown in whole percent, like the local table",

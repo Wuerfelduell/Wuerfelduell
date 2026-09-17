@@ -270,8 +270,15 @@ html[data-v28-rework="2"] #prestigeShopScreen .prestige-wallet{min-width:0;paddi
 .shop-chancen-hinweis{margin-top:6px;font-size:11px;color:#a9b4c4;line-height:1.35;white-space:normal}
 .shop-kiste-kauf{display:grid;gap:6px;width:100%;margin-top:auto}
 #prestigeShopScreen .shop-kiste-kauf .prestige-item-action{width:100%}
-.shop-waehrung-info{margin-bottom:10px;padding:10px 12px;border:1px solid rgba(215,173,82,.4);background:rgba(8,38,67,.55);color:#e9e2cf;font-size:13px;line-height:1.45}
-.shop-waehrung-info p{margin:0 0 8px}
+/* Waehrungserklaerung im selben Navy-Kachelrahmen wie die Kisten- und
+   Paketkarten (vorher eine halbtransparente Flaeche mit duenner Linie).
+   Oben mehr Polster: der Rahmen traegt dort sein Ornament, und der erste
+   Absatz sass direkt an der Kante. */
+#prestigeShopScreen .shop-waehrung-info{
+  box-sizing:border-box;margin-bottom:10px;padding:30px 20px 22px;border-style:solid;border-color:transparent;border-width:18px;
+  border-image:var(--dd-frame-navy-tile) 150 fill / 18px stretch;border-radius:0;background:none;color:#e9e2cf;font-size:13px;line-height:1.45}
+.shop-waehrung-info p{margin:0 0 10px}
+.shop-einnahme-bald{font-style:normal;font-size:10px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#f0cf7a;opacity:.8;margin-left:4px}
 .shop-einnahmen{width:100%;border-collapse:collapse;font-size:12px}
 .shop-einnahmen th{text-align:left;font-weight:600;padding:3px 0;border-bottom:1px solid rgba(215,173,82,.22)}
 .shop-einnahmen td{text-align:right;color:#f6d679;font-weight:700;padding:3px 0;border-bottom:1px solid rgba(215,173,82,.22)}

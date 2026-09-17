@@ -148,9 +148,9 @@
         <div class="shop-kiste-kauf"><button type="button" class="prestige-item-action prestige-item-buy shop-kaufen shop-echtgeld" data-echtgeld="${paket.id}" aria-disabled="true">${artwork("gold")}${icon("gameplay/locked.svg")}<span>${tr("Bald verfügbar")}</span></button></div>
       </div>`).join("");
     box.innerHTML=`<div class="shop-waehrung-info">
-        <p class="shop-waehrung-zeile">${bildTag(SHOPBILD("currency/duellmarke-beauty.webp"),"shop-waehrung-beauty")}<span><strong>${tr("Duellmarken")}</strong> · ${tr("verdienst du in jedem Duell und in der Kampagne. Sie kaufen Common-, Rare- und Epic-Kisten.")}</span></p>
+        <p class="shop-waehrung-zeile">${bildTag(SHOPBILD("currency/duellmarke-beauty.webp"),"shop-waehrung-beauty")}<span><strong>${tr("Duellmarken")}</strong> · ${tr("verdienst du in jedem lokalen Duell und in der Kampagne, später auch im zufälligen Online-Match gegen Fremde. Private Online-Tische geben keine Marken. Sie kaufen Common-, Rare- und Epic-Kisten.")}</span></p>
         <p class="shop-waehrung-zeile">${bildTag(SHOPBILD("currency/wuerfelkern-beauty.webp"),"shop-waehrung-beauty")}<span><strong>${tr("Würfelkerne")}</strong> · ${tr("sind die Premium-Währung für Rare-, Epic- und Legendary-Kisten. Sie sind noch nicht sammelbar; der Kauf ist in Vorbereitung.")}</span></p>
-        <table class="shop-einnahmen"><tbody>${Object.entries(S.EINNAHMEN).map(([k,v])=>`<tr><th>${tr(S.EINNAHME_NAMEN[k])}</th><td>+${v}</td></tr>`).join("")}</tbody></table>
+        <table class="shop-einnahmen"><tbody>${Object.entries(S.EINNAHMEN).map(([k,v])=>`<tr data-einnahme="${k}"><th>${tr(S.EINNAHME_NAMEN[k])}${(S.EINNAHME_BALD||[]).includes(k)?` <em class="shop-einnahme-bald">${tr("bald")}</em>`:""}</th><td>+${v}</td></tr>`).join("")}</tbody></table>
       </div><div class="shop-kisten-grid shop-pakete">${pakete}</div>`;
     // Bewusst ohne Wirkung: es gibt keine Zahlungsanbindung.
     box.querySelectorAll("[data-echtgeld]").forEach(b=>b.onclick=e=>{e.preventDefault();});

@@ -180,6 +180,21 @@ try{
   pruefe('Vier Kern-Pakete als Vorschau',pakete,4);
   const mengen=await p.evaluate(()=>[...document.querySelectorAll('#shopTabCurrency .shop-preisschild-text')].map(e=>e.textContent.trim()).join('/'));
   pruefe('Paketmengen 35 / 200 / 500 / 1500 Kerne',mengen,'35/200/500/1500');
+  // Online (17.09.): private Tische geben 0 Marken (Farmschutz), das
+  // zufaellige Match ist als "bald" angekuendigt; beides steht in der Tabelle.
+  const einnahmen=await p.evaluate(()=>{const z=k=>document.querySelector(`#shopTabCurrency tr[data-einnahme="${k}"]`);
+    return {privat:z('online_privat')?.querySelector('td')?.textContent.trim(),bald:!!z('online_zufall_sieg')?.querySelector('.shop-einnahme-bald'),zufall:z('online_zufall_sieg')?.querySelector('td')?.textContent.trim()+'/'+z('online_zufall_niederlage')?.querySelector('td')?.textContent.trim()};});
+  pruefe('Einnahmen: privates Online-Match +0',einnahmen.privat,'+0');
+  pruefe('Einnahmen: zufaelliges Online-Match +60/+20 als "bald"',einnahmen.bald&&einnahmen.zufall==='+60/+20',true);
+  const tisch=await p.evaluate(()=>{
+    const profil=saveData.profiles[0],vorher=WDShop.wallet(profil).marken;
+    players=[{profileId:profil.id,ability:1},{profileId:null,ability:2}];roundStats=[{},{}];tutorialMode=false;
+    gameContext={mode:'online-classic',returnScreen:'menu',profileId:profil.id};commitRoundToStorage(0);
+    const online=WDShop.wallet(profil).marken-vorher;
+    gameContext={mode:'local',returnScreen:'menu',profileId:profil.id};commitRoundToStorage(0);
+    const lokal=WDShop.wallet(profil).marken-vorher-online;WDShop.gutschriftText();
+    return `${online}/${lokal}`;});
+  pruefe('Rundenabschluss: privater Online-Tisch 0 Marken, lokales Duell +40',tisch,'0/40');
   // aria-disabled gilt Playwright als "nicht aktiv"; der Nutzer kann trotzdem
   // tippen, also wird der Tipp erzwungen und das Ergebnis gemessen.
   await p.click('#shopTabCurrency [data-echtgeld="kerne-4"]',{force:true});await p.waitForTimeout(200);
@@ -210,7 +225,7 @@ try{
   await e.close();
 }catch(e){absturz=e;}
 
-const ERWARTET=40;
+const ERWARTET=43;
 let fehler=ergebnisse.length<ERWARTET?1:0;
 if(fehler)console.log(`ACHTUNG: nur ${ergebnisse.length} von ${ERWARTET} Zusicherungen erreicht.`);
 const breite=Math.max(1,...ergebnisse.map(r=>r[0].length));

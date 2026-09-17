@@ -46,20 +46,32 @@
 
   const RUECKGABE=Object.freeze({common:60,rare:150,super_rare:400,epic:800,legendary:2000});
 
+  // Online (17.09.): private Tische geben 0 Marken, sonst liesse sich ueber
+  // Haupt- und Gastprofil am selben Tisch farmen. Marken gibt es online erst
+  // mit dem zufaelligen Match gegen Fremde; die Saetze stehen hier schon,
+  // gebucht werden sie erst, wenn es diesen Modus gibt.
   const EINNAHMEN=Object.freeze({
     duell_sieg:40,
     duell_niederlage:15,
     encounter_erst:80,
     encounter_wieder:20,
-    weltboss_erst:250
+    weltboss_erst:250,
+    online_zufall_sieg:60,
+    online_zufall_niederlage:20,
+    online_privat:0
   });
   const EINNAHME_NAMEN=Object.freeze({
     duell_sieg:"Duell gewonnen",
     duell_niederlage:"Duell verloren",
     encounter_erst:"Encounter erstmals geschafft",
     encounter_wieder:"Encounter wiederholt",
-    weltboss_erst:"Weltboss erstmals besiegt"
+    weltboss_erst:"Weltboss erstmals besiegt",
+    online_zufall_sieg:"Zufälliges Online-Match gewonnen",
+    online_zufall_niederlage:"Zufälliges Online-Match verloren",
+    online_privat:"Privates Online-Match"
   });
+  // Ereignisse, die es noch nicht gibt: in der Tabelle als "bald" markiert.
+  const EINNAHME_BALD=Object.freeze(["online_zufall_sieg","online_zufall_niederlage"]);
 
   const SCHUTZ=Object.freeze({ab:10,schritt:2,max:10});
 
@@ -216,7 +228,7 @@
   }
 
   window.WDShop=Object.freeze({
-    STUFEN,SELTENHEITEN,SELTENHEIT_NAMEN,SELTENHEIT_FARBEN,KISTEN,CHANCEN,RUECKGABE,EINNAHMEN,EINNAHME_NAMEN,SCHUTZ,
+    STUFEN,SELTENHEITEN,SELTENHEIT_NAMEN,SELTENHEIT_FARBEN,KISTEN,CHANCEN,RUECKGABE,EINNAHMEN,EINNAHME_NAMEN,EINNAHME_BALD,SCHUTZ,
     wallet,kisten,seltenheitVon,pool,schutzBonus,chancen,ziehe,kaufe,verdiene,gutschriftenAbholen,gutschriftText,buche
   });
 })();

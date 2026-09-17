@@ -502,9 +502,13 @@
       const s=profile.stats;
       s.rounds++;
       // Duellmarken: Sieg 40, Niederlage 15 (js/46-shop-daten.js). Nicht im
-      // Tutorial und nicht in der Testumgebung - beides ist kein Duell.
-      const imLabor=typeof gameContext!=="undefined"&&gameContext?.mode==="test-lab";
-      if(!tutorialMode&&!imLabor) window.WDShop?.verdiene?.(profile,i===winnerIndex?"duell_sieg":"duell_niederlage");
+      // Tutorial und nicht in der Testumgebung - beides ist kein Duell. Auch
+      // nicht am privaten Online-Tisch (17.09.): dort saessen Haupt- und
+      // Gastprofil desselben Spielers, das waere Farmen. Online-Marken gibt
+      // es erst mit dem zufaelligen Match gegen Fremde.
+      const modus=typeof gameContext!=="undefined"?String(gameContext?.mode||""):"";
+      const imLabor=modus==="test-lab",amOnlineTisch=modus.startsWith("online-");
+      if(!tutorialMode&&!imLabor&&!amOnlineTisch) window.WDShop?.verdiene?.(profile,i===winnerIndex?"duell_sieg":"duell_niederlage");
       s.damageDealt+=rs.damage||0;
       s.damageTaken+=rs.damageTaken||0;
       s.selfDamage+=rs.selfDamage||0;

@@ -146,6 +146,8 @@ for(const stufe of S.STUFEN){
   pruefe("Gutschriften: unbekanntes Ereignis bucht nichts",S.verdiene(p,"unsinn"),0);
   const text=S.gutschriftText();
   pruefe("Gutschriften: Text nennt jede Buchung und leert danach",text.split("Duellmarken").length-1===5&&S.gutschriftText()==="",true);
+  pruefe("Gutschriften: privates Online-Match bucht 0 und hinterlaesst keinen Text",S.verdiene(p,"online_privat")===0&&!S.gutschriftText().includes("Online"),true);
+  pruefe("Gutschriften: zufaelliges Online-Match 60/20 definiert, aber als bald markiert",S.EINNAHMEN.online_zufall_sieg===60&&S.EINNAHMEN.online_zufall_niederlage===20&&S.EINNAHME_BALD.includes("online_zufall_sieg")&&S.EINNAHME_BALD.includes("online_zufall_niederlage"),true);
 }
 
 // 8. Echter Datenstand.
@@ -167,7 +169,7 @@ for(const stufe of S.STUFEN){
   pruefe("Datenstand: CSS-Designs tragen keine rarity",css.every(z=>!/rarity:/.test(z.rest)),true);
 }
 
-const ERWARTET=48;
+const ERWARTET=50;
 let fehler=ergebnisse.length<ERWARTET?1:0;
 if(fehler)console.log(`ACHTUNG: nur ${ergebnisse.length} von ${ERWARTET} Zusicherungen erreicht.`);
 const breite=Math.max(1,...ergebnisse.map(r=>r[0].length));
