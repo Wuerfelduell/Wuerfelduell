@@ -5,6 +5,8 @@
   if (!pack) return;
 
   Object.assign(pack.exact, {
+    "Blitzeinschlag und Katzenangriff sind wieder in der Testumgebung – ein Zusammenführen von V28.14.6 hatte V28.14.5 überschrieben": "Blitzeinschlag and Katzenangriff are back in the test lab; a merge of V28.14.6 had overwritten V28.14.5",
+    "Zwei weitere Angriffseffekte in der Testumgebung: „Blitzeinschlag“ mit Gewitterladung, Zielmarkierung und verzweigtem Hauptblitz, „Katzenangriff“ mit magischer Kampfkatze, Pfotenspur und drei Krallenhieben – beide mit Kill-Effekt, noch nicht im Shop": "Two more attack effects in the test lab: “Blitzeinschlag” with a storm charge, target marker and branching main bolt, “Katzenangriff” with a magical battle cat, paw trail and three claw slashes; both with a kill effect, not in the shop yet",
     "Die gemeinsame Duell-Engine bildet jetzt auch die vollständige Angriffsphase als unveränderlichen Reducer mit stabilen Ereignissen ab": "The shared duel engine now also represents the complete attack phase as an immutable reducer with stable events",
     "Zielwahl, Angriffsfähigkeiten, Schaden, Ausscheiden und Counterattack sind mit festem Zufall für Classic und Mayhem geprüft": "Target selection, attack abilities, damage, eliminations and Counterattack are tested with fixed randomness for Classic and Mayhem",
     "Der bestehende Browserkampf bleibt unverändert; High Stakes, Fähigkeitsdrafts und Rundenwechsel folgen in Schritt 4": "The existing browser battle remains unchanged; High Stakes, ability drafts and round transitions will follow in step 4",
