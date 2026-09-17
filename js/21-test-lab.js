@@ -394,7 +394,9 @@
       frost:['#e8ffff','#65cffa'],
       rift:['#d5a5ff','#42d9ff'],
       crown:['#fff1a8','#ffc43d'],
-      soulbreak:['#8ed8ff','#a96cff']
+      soulbreak:['#8ed8ff','#a96cff'],
+      solarsplash:['#fff4a8','#ff9d24'],
+      trigonbomb:['#75ffe1','#2fd3a6']
     }[style]||['#ffffff','#77bfff'];
   }
 
@@ -406,7 +408,7 @@
     const fx={
       id:`labfx-${Date.now()}-${Math.random()}`,
       style,from,to,start:performance.now(),
-      duration:style==='lightning'?430:style==='blood'?480:style==='crown'?850:style==='soulbreak'?1200:700,
+      duration:style==='lightning'?430:style==='blood'?480:style==='crown'?850:style==='soulbreak'?1200:style==='solarsplash'?1250:style==='trigonbomb'?1300:700,
       seed:Math.random()*999
     };
     activeLabFx.push(fx);
@@ -426,7 +428,7 @@
         const from=cardCenter(event?.source),to=cardCenter(event?.target);
         if(!from||!to) return false;
         const style=String(event?.style||players?.[Number(event?.source)]?.attackFx||'classic');
-        activeLabFx.push({id:event?.id||`labplay-${Date.now()}`,style,from,to,start:performance.now(),duration:style==='soulbreak'?1200:700,seed:Math.random()*999});
+        activeLabFx.push({id:event?.id||`labplay-${Date.now()}`,style,from,to,start:performance.now(),duration:style==='soulbreak'?1200:style==='solarsplash'?1250:style==='trigonbomb'?1300:700,seed:Math.random()*999});
         return true;
       },
       getLastPlayedId:()=>coreAttackFx.getLastPlayedId?.(),
@@ -939,6 +941,100 @@
     }
   }
 
+  /* Solarsplash und Trigonbomb (Lieferung 17.09., zweites Drop-in-Paket):
+     Sonnenkern mit Korona, Prismensplitter mit Dreieckswelle. Wie
+     Seelenbruch nur in der Testumgebung. */
+  function drawSolarCore(x,y,r,time,alpha=1){
+    fxCtx.save();fxCtx.globalCompositeOperation='lighter';
+    glowCircle(fxCtx,x,y,r*3,'#ff9d24',alpha*.42);
+    glowCircle(fxCtx,x,y,r*1.65,'#ffd84d',alpha*.72);
+    glowCircle(fxCtx,x,y,r*.72,'#fff8c2',alpha*.96);
+    fxCtx.translate(x,y);fxCtx.rotate(time*.0018);
+    for(let i=0;i<12;i++){
+      const a=i*Math.PI/6,len=r*(1.25+(i%3)*.14);
+      fxCtx.strokeStyle=i%2?'#ffbd38':'#fff1a0';fxCtx.globalAlpha=alpha*(.5+(i%4)*.09);fxCtx.lineWidth=1.2+(i%3)*.45;
+      fxCtx.beginPath();fxCtx.moveTo(Math.cos(a)*r*.7,Math.sin(a)*r*.7);
+      fxCtx.quadraticCurveTo(Math.cos(a+.14)*len*.9,Math.sin(a+.14)*len*.9,Math.cos(a)*len,Math.sin(a)*len);fxCtx.stroke();
+    }
+    fxCtx.restore();
+  }
+
+  function solarPoint(fx,p){
+    const e=easeOutCubic(Math.max(0,Math.min(1,p)));
+    return {x:lerp(fx.from.x,fx.to.x,e),y:lerp(fx.from.y,fx.to.y,e)-Math.sin(e*Math.PI)*Math.min(92,Math.hypot(fx.to.x-fx.from.x,fx.to.y-fx.from.y)*.2)};
+  }
+
+  function drawSolarsplash(fx,t){
+    const distance=Math.hypot(fx.to.x-fx.from.x,fx.to.y-fx.from.y),base=Math.max(18,Math.min(30,distance*.062));
+    if(t<.22){
+      const e=easeInOut(t/.22),y=fx.from.y-base*.8;
+      drawSolarCore(fx.from.x,y,base*(.42+e*.58),fx.start+t*1000,e);
+      fxCtx.save();fxCtx.globalCompositeOperation='lighter';
+      for(let i=0;i<14;i++){
+        const a=i*Math.PI*2/14-t*8,d=(1-e)*(base*3.5+(i%4)*6)+base;
+        glowCircle(fxCtx,fx.from.x+Math.cos(a)*d,y+Math.sin(a)*d,2.5+(i%3),'#ffd14d',e*.48);
+      }
+      fxCtx.restore();return;
+    }
+    if(t<.69){
+      const p=(t-.18)/.51,pos=solarPoint(fx,p);
+      fxCtx.save();fxCtx.globalCompositeOperation='lighter';
+      for(let i=1;i<=24;i++){
+        const q=p-i*.018;if(q<=0) continue;
+        const trail=solarPoint(fx,q),fade=(1-i/25)*Math.min(1,p*8);
+        glowCircle(fxCtx,trail.x,trail.y,Math.max(2,base*.32+i*.14),i%4===0?'#fff0a0':'#ff9d24',fade*.25);
+      }
+      fxCtx.restore();drawSolarCore(pos.x,pos.y,base*.78,fx.start+t*1000,1);
+    }
+  }
+
+  function drawTriangleGlyph(x,y,r,rotation,alpha,color='#2fd3a6'){
+    if(alpha<=0) return;
+    fxCtx.save();fxCtx.translate(x,y);fxCtx.rotate(rotation);fxCtx.globalCompositeOperation='lighter';
+    fxCtx.globalAlpha=alpha*.2;fxCtx.fillStyle=color;fxCtx.beginPath();fxCtx.moveTo(0,-r);fxCtx.lineTo(r*.866,r*.5);fxCtx.lineTo(-r*.866,r*.5);fxCtx.closePath();fxCtx.fill();
+    fxCtx.globalAlpha=alpha;fxCtx.strokeStyle=color;fxCtx.lineWidth=2;fxCtx.stroke();
+    fxCtx.rotate(-rotation*1.7);fxCtx.globalAlpha=alpha*.78;fxCtx.strokeStyle='#ffd45a';fxCtx.lineWidth=1.15;
+    fxCtx.beginPath();fxCtx.moveTo(0,-r*.56);fxCtx.lineTo(r*.485,r*.28);fxCtx.lineTo(-r*.485,r*.28);fxCtx.closePath();fxCtx.stroke();fxCtx.restore();
+  }
+
+  function trigonPoint(fx,p){
+    const q=Math.max(0,Math.min(.9999,p)),step=Math.min(2,Math.floor(q*3)),e=easeInOut(q*3-step);
+    const p1=step===0?fx.from:step===1?{x:lerp(fx.from.x,fx.to.x,.34),y:fx.from.y-Math.min(82,Math.abs(fx.to.x-fx.from.x)*.18)}:{x:lerp(fx.from.x,fx.to.x,.68),y:fx.from.y+Math.min(68,Math.abs(fx.to.x-fx.from.x)*.14)};
+    const p2=step===0?{x:lerp(fx.from.x,fx.to.x,.34),y:fx.from.y-Math.min(82,Math.abs(fx.to.x-fx.from.x)*.18)}:step===1?{x:lerp(fx.from.x,fx.to.x,.68),y:fx.from.y+Math.min(68,Math.abs(fx.to.x-fx.from.x)*.14)}:fx.to;
+    return pointOn(p1,p2,e);
+  }
+
+  function drawTrigonCore(x,y,r,time,alpha=1){
+    fxCtx.save();fxCtx.globalCompositeOperation='lighter';glowCircle(fxCtx,x,y,r*2.2,'#2fd3a6',alpha*.28);
+    drawTriangleGlyph(x,y,r,-Math.PI/2+time*.002,alpha,'#75ffe1');
+    drawTriangleGlyph(x,y,r*.64,Math.PI/2-time*.0026,alpha*.84,'#ffd45a');
+    glowCircle(fxCtx,x,y,r*.5,'#ffffff',alpha*.68);fxCtx.restore();
+  }
+
+  function drawTrigonbomb(fx,t){
+    const distance=Math.hypot(fx.to.x-fx.from.x,fx.to.y-fx.from.y),base=Math.max(17,Math.min(28,distance*.06));
+    if(t<.24){
+      const e=easeInOut(t/.24);
+      for(let i=0;i<3;i++){
+        const a=i*Math.PI*2/3+t*12,d=(1-e)*base*3.2+base*1.15;
+        drawTriangleGlyph(fx.from.x+Math.cos(a)*d,fx.from.y+Math.sin(a)*d,base*.55+e*base*.14,a+t*7,e,'#2fd3a6');
+      }
+      if(e>.54) drawTrigonCore(fx.from.x,fx.from.y,base*(.45+(e-.54)*.72),fx.start+t*1000,(e-.54)/.46);
+      return;
+    }
+    if(t<.69){
+      const p=(t-.21)/.48,pos=trigonPoint(fx,p);
+      for(let i=1;i<=18;i++){
+        const q=p-i*.024;if(q<=0) continue;
+        const trail=trigonPoint(fx,q),fade=(1-i/19)*Math.min(1,p*8);
+        drawTriangleGlyph(trail.x,trail.y,2+fade*5,(i%2?1:-1)*t*12+i,fade*.46,i%3?'#2fd3a6':'#ffd45a');
+      }
+      drawTrigonCore(pos.x,pos.y,base*.82,fx.start+t*1000,1);
+      const lock=Math.max(0,(p-.62)/.38);
+      if(lock>0) drawTriangleGlyph(fx.to.x,fx.to.y,base*(1.15+lock*.5),-t*8,lock*.68,'#2fd3a6');
+    }
+  }
+
   function impactRing(x,y,color,e,maxR=52,width=2.4,alpha=.75){
     if(e<=0||e>=1) return;
     fxCtx.save();
@@ -1074,6 +1170,24 @@
         impactSparks(x,y,c1,e,18,92);
         drawSoulbreakSigil(x,y,30+e*64,(1-e)*.78,-t*7);
         break;
+      case 'solarsplash':
+        e=Math.max(0,(t-.62)/.38);
+        impactFlash(x,y,c1,e,104,.62);
+        fxCtx.save();fxCtx.globalCompositeOperation='lighter';fxCtx.globalAlpha=(1-e)*.9;fxCtx.strokeStyle=c1;fxCtx.lineWidth=3.4;
+        fxCtx.beginPath();fxCtx.ellipse(x,y,12+e*112,7+e*44,0,0,Math.PI*2);fxCtx.stroke();
+        fxCtx.globalAlpha=(1-e)*.62;fxCtx.strokeStyle=c2;fxCtx.lineWidth=2;
+        fxCtx.beginPath();fxCtx.ellipse(x,y,8+e*148,5+e*58,0,0,Math.PI*2);fxCtx.stroke();fxCtx.restore();
+        impactSparks(x,y,c2,e,16,106);
+        break;
+      case 'trigonbomb':
+        e=Math.max(0,(t-.61)/.39);
+        impactFlash(x,y,c1,e,88,.48);
+        for(let layer=0;layer<4;layer++){
+          const q=Math.max(0,Math.min(1,e-layer*.06));
+          if(q>0) drawTriangleGlyph(x,y,18+q*(62+layer*15),(layer%2?1:-1)*(t*7+q),Math.max(0,1-q)*(.9-layer*.12),layer%2?'#ffd45a':'#2fd3a6');
+        }
+        impactShards(x,y,c1,e,18,98);
+        break;
       case 'crown':
         e=Math.max(0,(t-.52)/.48);
         impactFlash(x,y,c1,e,72,.5);
@@ -1106,6 +1220,8 @@
       case 'rift':drawRiftTear(fx,t);break;
       case 'crown':drawCrownfall(fx,t);break;
       case 'soulbreak':drawSoulbreak(fx,t);break;
+      case 'solarsplash':drawSolarsplash(fx,t);break;
+      case 'trigonbomb':drawTrigonbomb(fx,t);break;
       default:drawArcShot(fx,t);break;
     }
     drawImpactForStyle(fx,t);
@@ -1179,6 +1295,10 @@
         tone(155,0,.34,'sine',.032,50);tone(580,.04,.3,'triangle',.018,120);break;
       case 'soulbreak':
         tone(210,0,.26,'sine',.032,74);tone(640,.08,.22,'triangle',.022,180);tone(1280,.22,.16,'sine',.018,520);noiseBurst(.24,.12,.016,1400);break;
+      case 'solarsplash':
+        tone(330,0,.28,'sine',.028,880);tone(660,.07,.24,'triangle',.024,1320);tone(1180,.18,.2,'sine',.018,620);noiseBurst(.2,.16,.018,900);break;
+      case 'trigonbomb':
+        tone(420,0,.1,'triangle',.022);tone(630,.09,.1,'triangle',.024);tone(945,.18,.14,'triangle',.027,310);noiseBurst(.24,.12,.022,1450);break;
       case 'crown':
         tone(392,0,.14,'triangle',.026);tone(587,.06,.18,'triangle',.03);tone(784,.13,.22,'sine',.024);noiseBurst(.17,.08,.012,1100);break;
       default:
@@ -1199,7 +1319,7 @@
       start:performance.now(),
       duration:{
         lightning:820,flame:1050,venom:1050,blood:820,jackpot:1150,
-        void:1200,confetti:1150,frost:1000,rift:1100,crown:1250,soulbreak:1350
+        void:1200,confetti:1150,frost:1000,rift:1100,crown:1250,soulbreak:1350,solarsplash:1450,trigonbomb:1500
       }[style]||900,
       seed:Math.random()*999,
       preview
@@ -1383,6 +1503,36 @@
     impactSparks(fx.x,fx.y,c1,e,24,122);
   }
 
+  function killSolarsplash(fx,t){
+    const [c1,c2]=labFxColor('solarsplash');
+    const gather=Math.min(1,t/.38),burst=Math.max(0,(t-.34)/.66);
+    if(t<.58) drawSolarCore(fx.x,fx.y,18+gather*24,fx.start+t*1000,Math.max(0,1-t*.72));
+    impactFlash(fx.x,fx.y,c1,burst,138,.68);
+    fxCtx.save();fxCtx.globalCompositeOperation='lighter';
+    for(let ring=0;ring<3;ring++){
+      const q=Math.max(0,Math.min(1,burst-ring*.07));if(q<=0) continue;
+      fxCtx.globalAlpha=(1-q)*(.92-ring*.18);fxCtx.strokeStyle=ring===1?c1:c2;fxCtx.lineWidth=4-ring;
+      fxCtx.beginPath();fxCtx.ellipse(fx.x,fx.y,18+q*(118+ring*28),9+q*(46+ring*13),0,0,Math.PI*2);fxCtx.stroke();
+    }
+    fxCtx.restore();impactSparks(fx.x,fx.y,c2,burst,28,142);
+  }
+
+  function killTrigonbomb(fx,t){
+    const [c1,c2]=labFxColor('trigonbomb'),gather=Math.min(1,t/.4);
+    for(let i=0;i<3;i++){
+      const a=i*Math.PI*2/3-t*7,d=(1-gather)*105+34;
+      drawTriangleGlyph(fx.x+Math.cos(a)*d,fx.y+Math.sin(a)*d,20+gather*9,a+t*9,Math.max(0,1-t*.62),i===1?'#ffd45a':c2);
+    }
+    if(t<.54) drawTrigonCore(fx.x,fx.y,22+gather*20,fx.start+t*1000,Math.max(0,1-t*.58));
+    const e=Math.max(0,(t-.38)/.62);
+    impactFlash(fx.x,fx.y,c1,e,126,.6);
+    for(let layer=0;layer<5;layer++){
+      const q=Math.max(0,Math.min(1,e-layer*.055));
+      if(q>0) drawTriangleGlyph(fx.x,fx.y,28+q*(92+layer*18),(layer%2?1:-1)*(t*8+q),Math.max(0,1-q)*(.94-layer*.11),layer%2?'#ffd45a':c2);
+    }
+    impactShards(fx.x,fx.y,c1,e,30,138);
+  }
+
   function killCrown(fx,t){
     const [c1,c2]=labFxColor('crown');
     const fall=easeOutCubic(Math.min(1,t/.56));
@@ -1409,6 +1559,8 @@
       case 'rift':killRift(fx,t);break;
       case 'crown':killCrown(fx,t);break;
       case 'soulbreak':killSoulbreak(fx,t);break;
+      case 'solarsplash':killSolarsplash(fx,t);break;
+      case 'trigonbomb':killTrigonbomb(fx,t);break;
       default:killArc(fx,t);break;
     }
     return true;

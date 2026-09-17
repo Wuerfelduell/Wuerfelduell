@@ -5,6 +5,7 @@
   if (!pack) return;
 
   Object.assign(pack.exact, {
+    "Zwei neue Angriffseffekte zum Ausprobieren in der Testumgebung: „Solarsplash“ mit Sonnenkern, Plasmaflug und goldener Korona, „Trigonbomb“ mit drei Prismensplittern und geometrischer Dreieckswelle – beide mit eigenem Kill-Effekt, noch nicht im Shop": "Two new attack effects to try out in the test lab: “Solarsplash” with a solar core, plasma flight and golden corona, “Trigonbomb” with three prism shards and a geometric triangle wave; both with their own kill effect, not in the shop yet",
     "Fähigkeiten und Duellmodi verwenden eine gemeinsame Datenquelle für Browser und künftige Serverberechnung": "Abilities and duel modes use one shared data source for the browser and future server calculations",
     "Ein serialisierbarer, streng geprüfter Duell-Zustand bildet vier Modi mit zwei bis sechs Spielern ohne Profilwerte ab": "A serializable, strictly validated duel state represents four modes with two to six players without profile data",
     "Kampfablauf und Online-Protokoll bleiben unverändert; die Regelumstellung folgt in getrennten Schritten": "Battle flow and the online protocol remain unchanged; the rules will move in separate steps",

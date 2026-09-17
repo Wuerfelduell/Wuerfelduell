@@ -3,7 +3,7 @@
   let localModeId="classic";
   function localModeRules(){return LOCAL_MODES[localModeId]||LOCAL_MODES.classic;}
 
-  const GAME_VERSION="28.14.0";
+  const GAME_VERSION="28.14.1";
   // Gemeinsamer Bild-Cache-Schluessel; identisch mit den Bild-URLs in HTML und CSS.
   const ASSET_REV="28.12.48";
   const SAVE_KEY="wuerfelduell_save_v1"; // absichtlich stabil: Updates lesen denselben Browser-Save
@@ -86,7 +86,9 @@
     rift:{name:"Rift Tear",desc:"Prestige-Riss mit violett-cyanem Nachglühen."},
     crown:{name:"Crownfall",desc:"Goldener Endgame-Effekt. Reiner Flex."},
     // labor: nur in der Testumgebung waehlbar, weder Shop noch Profil noch Kern-Renderer.
-    soulbreak:{name:"Seelenbruch",desc:"Eine Würfelseele im Goldkäfig, die am Ziel in einer Runenwelle implodiert.",labor:true}
+    soulbreak:{name:"Seelenbruch",desc:"Eine Würfelseele im Goldkäfig, die am Ziel in einer Runenwelle implodiert.",labor:true},
+    solarsplash:{name:"Solarsplash",desc:"Ein verdichteter Sonnenkern schlägt als flüssige Plasmawelle mit goldener Korona ein.",labor:true},
+    trigonbomb:{name:"Trigonbomb",desc:"Drei Prismensplitter verschmelzen zu einer Dreiecksbombe mit geometrischer Detonation.",labor:true}
   };
   const ATTACK_FX_UNLOCK_ACHIEVEMENT={
     lightning:"momentum_mori",flame:"critical_hit",venom:"backstab",blood:"vampiric_touch",
