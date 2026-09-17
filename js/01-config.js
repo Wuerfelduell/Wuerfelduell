@@ -3,7 +3,7 @@
   let localModeId="classic";
   function localModeRules(){return LOCAL_MODES[localModeId]||LOCAL_MODES.classic;}
 
-  const GAME_VERSION="28.14.8";
+  const GAME_VERSION="28.14.9";
   // Gemeinsamer Bild-Cache-Schluessel; identisch mit den Bild-URLs in HTML und CSS.
   const ASSET_REV="28.12.48";
   const SAVE_KEY="wuerfelduell_save_v1"; // absichtlich stabil: Updates lesen denselben Browser-Save
@@ -94,7 +94,9 @@
     invasion:{name:"Invasion",desc:"Ein violett-cyanes Portal entsendet fünf dunkle Invasoren in Formation.",labor:true},
     missile:{name:"Missile Attack",desc:"Drei navy-goldene Raketen erfassen das Ziel und schlagen versetzt ein.",labor:true},
     thunderstrike:{name:"Blitzeinschlag",desc:"Eine Gewitterladung markiert das Ziel, bevor ein massiver verzweigter Hauptblitz einschlägt.",labor:true},
-    catattack:{name:"Katzenangriff",desc:"Eine magische Kampfkatze springt zum Ziel und beendet ihren Angriff mit drei Krallenhieben.",labor:true}
+    catattack:{name:"Katzenangriff",desc:"Eine magische Kampfkatze springt zum Ziel und beendet ihren Angriff mit drei Krallenhieben.",labor:true},
+    quantumleap:{name:"Quantensprung",desc:"Der Angriff zerfällt in Quantenfragmente und materialisiert sich mit verschränkten Energieringen am Ziel.",labor:true},
+    cometshower:{name:"Kometenschauer",desc:"Sechs kleine Kometen schlagen versetzt ein, bevor ein großer Hauptkomet den Angriff beendet.",labor:true}
   };
   const ATTACK_FX_UNLOCK_ACHIEVEMENT={
     lightning:"momentum_mori",flame:"critical_hit",venom:"backstab",blood:"vampiric_touch",

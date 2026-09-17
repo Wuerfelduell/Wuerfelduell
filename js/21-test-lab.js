@@ -402,7 +402,9 @@
       invasion:['#75ffe1','#b06cff'],
       missile:['#ffd45a','#ff704f'],
       thunderstrike:['#75ffe1','#b06cff'],
-      catattack:['#ffd45a','#75ffe1']
+      catattack:['#ffd45a','#75ffe1'],
+      quantumleap:['#75ffe1','#b06cff'],
+      cometshower:['#ffd45a','#ff704f']
     }[style]||['#ffffff','#77bfff'];
   }
 
@@ -414,7 +416,7 @@
     const fx={
       id:`labfx-${Date.now()}-${Math.random()}`,
       style,from,to,start:performance.now(),
-      duration:style==='lightning'?430:style==='blood'?480:style==='crown'?850:style==='soulbreak'?1200:style==='solarsplash'?1250:style==='trigonbomb'?1300:style==='confettibomb'?1350:style==='polygon'?1320:style==='invasion'?1450:style==='missile'?1400:style==='thunderstrike'?1300:style==='catattack'?1350:700,
+      duration:style==='lightning'?430:style==='blood'?480:style==='crown'?850:style==='soulbreak'?1200:style==='solarsplash'?1250:style==='trigonbomb'?1300:style==='confettibomb'?1350:style==='polygon'?1320:style==='invasion'?1450:style==='missile'?1400:style==='thunderstrike'?1300:style==='catattack'?1350:style==='quantumleap'?1450:style==='cometshower'?1550:700,
       seed:Math.random()*999
     };
     activeLabFx.push(fx);
@@ -434,7 +436,7 @@
         const from=cardCenter(event?.source),to=cardCenter(event?.target);
         if(!from||!to) return false;
         const style=String(event?.style||players?.[Number(event?.source)]?.attackFx||'classic');
-        activeLabFx.push({id:event?.id||`labplay-${Date.now()}`,style,from,to,start:performance.now(),duration:style==='soulbreak'?1200:style==='solarsplash'?1250:style==='trigonbomb'?1300:style==='confettibomb'?1350:style==='polygon'?1320:style==='invasion'?1450:style==='missile'?1400:style==='thunderstrike'?1300:style==='catattack'?1350:700,seed:Math.random()*999});
+        activeLabFx.push({id:event?.id||`labplay-${Date.now()}`,style,from,to,start:performance.now(),duration:style==='soulbreak'?1200:style==='solarsplash'?1250:style==='trigonbomb'?1300:style==='confettibomb'?1350:style==='polygon'?1320:style==='invasion'?1450:style==='missile'?1400:style==='thunderstrike'?1300:style==='catattack'?1350:style==='quantumleap'?1450:style==='cometshower'?1550:700,seed:Math.random()*999});
         return true;
       },
       getLastPlayedId:()=>coreAttackFx.getLastPlayedId?.(),
@@ -1181,6 +1183,34 @@
     const p=(t-.18)/.46;if(p>0&&p<1){const pos=catAttackPoint(fx,p),next=catAttackPoint(fx,Math.min(1,p+.015)),ang=Math.atan2(next.y-pos.y,next.x-pos.x);for(let i=1;i<7;i++){const q=p-i*.07;if(q<=0)continue;const pp=catAttackPoint(fx,q);drawPawGlyph(pp.x,pp.y+base*.65,base*.24,ang,(1-i/7)*.35,i%2?'#ffd45a':'#75ffe1');}drawBattleCat(pos.x,pos.y,base,ang,Math.min(1,p*10));}
   }
 
+  function drawQuantumFragment(x,y,size,rotation,alpha,color){
+    if(alpha<=0)return;fxCtx.save();fxCtx.translate(x,y);fxCtx.rotate(rotation);fxCtx.globalAlpha=alpha;fxCtx.fillStyle=color;fxCtx.shadowColor=color;fxCtx.shadowBlur=10;fxCtx.beginPath();fxCtx.moveTo(0,-size);fxCtx.lineTo(size*.72,0);fxCtx.lineTo(0,size);fxCtx.lineTo(-size*.72,0);fxCtx.closePath();fxCtx.fill();fxCtx.restore();
+  }
+
+  function drawQuantumRing(x,y,rx,ry,rotation,alpha,color){
+    if(alpha<=0)return;fxCtx.save();fxCtx.translate(x,y);fxCtx.rotate(rotation);fxCtx.globalCompositeOperation='lighter';fxCtx.globalAlpha=alpha;fxCtx.strokeStyle=color;fxCtx.shadowColor=color;fxCtx.shadowBlur=15;fxCtx.lineWidth=2.5;fxCtx.beginPath();fxCtx.ellipse(0,0,rx,ry,0,0,Math.PI*2);fxCtx.stroke();fxCtx.restore();
+  }
+
+  function drawQuantumleap(fx,t){
+    const distance=Math.hypot(fx.to.x-fx.from.x,fx.to.y-fx.from.y),base=Math.max(18,Math.min(28,distance*.06)),charge=Math.min(1,t/.25),depart=t<.38?charge:Math.max(0,1-(t-.38)/.12);
+    if(depart>0){glowCircle(fxCtx,fx.from.x,fx.from.y,base*(1.2+charge*1.6),'#75ffe1',depart*.25);drawQuantumRing(fx.from.x,fx.from.y,base*(.8+charge),base*(.3+charge*.35),t*8,depart,'#75ffe1');drawQuantumRing(fx.from.x,fx.from.y,base*(.55+charge*.8),base*(1+charge*.7),-t*6,depart*.8,'#b06cff');for(let i=0;i<12;i++){const a=i*Math.PI*2/12+t*5,d=(1-charge)*base*2.8+base*1.2;drawQuantumFragment(fx.from.x+Math.cos(a)*d,fx.from.y+Math.sin(a)*d*.55,3+i%3,a+t*8,depart*(.55+i%2*.2),i%2?'#75ffe1':'#b06cff');}}
+    const tunnel=Math.max(0,Math.min(1,(t-.23)/.26))*Math.max(0,1-(t-.49)/.13);if(tunnel>0){fxCtx.save();fxCtx.globalCompositeOperation='lighter';fxCtx.globalAlpha=tunnel*.42;fxCtx.strokeStyle='#75ffe1';fxCtx.lineWidth=1.5;for(let lane=-2;lane<=2;lane++){fxCtx.beginPath();fxCtx.moveTo(fx.from.x,fx.from.y+lane*8);fxCtx.bezierCurveTo(lerp(fx.from.x,fx.to.x,.35),fx.from.y-70+lane*12,lerp(fx.from.x,fx.to.x,.65),fx.to.y+70-lane*12,fx.to.x,fx.to.y+lane*8);fxCtx.stroke();}fxCtx.restore();for(let i=0;i<16;i++){const p=(i/16+t*3)%1,x=lerp(fx.from.x,fx.to.x,p),y=lerp(fx.from.y,fx.to.y,p)+Math.sin(p*Math.PI*2+t*9)*22;drawQuantumFragment(x,y,2+i%3,t*12+i,tunnel*.55,i%2?'#fff4bf':'#75ffe1');}}
+    const arrive=Math.max(0,Math.min(1,(t-.42)/.2)),fade=t<.82?arrive:Math.max(0,1-(t-.82)/.18);if(fade>0){glowCircle(fxCtx,fx.to.x,fx.to.y,base*(1+arrive*2.3),'#b06cff',fade*.34);drawQuantumRing(fx.to.x,fx.to.y,base*(.65+arrive*1.9),base*(.35+arrive*.75),-t*9,fade,'#b06cff');drawQuantumRing(fx.to.x,fx.to.y,base*(.35+arrive*1.45),base*(1+arrive*1.25),t*7,fade*.88,'#75ffe1');for(let i=0;i<18;i++){const a=i*2.399+t*4,d=(1-arrive)*base*3.1+arrive*base;drawQuantumFragment(fx.to.x+Math.cos(a)*d,fx.to.y+Math.sin(a)*d*.72,3+i%4,a-t*8,fade*.72,i%3?'#75ffe1':'#ffd45a');}}
+  }
+
+  function drawCometGlyph(x,y,size,angle,alpha,main=false){
+    if(alpha<=0)return;fxCtx.save();fxCtx.translate(x,y);fxCtx.rotate(angle);fxCtx.globalCompositeOperation='lighter';fxCtx.globalAlpha=alpha;const tail=main?size*5:size*3.6,g=fxCtx.createLinearGradient(-tail,0,size,0);g.addColorStop(0,'rgba(74,143,240,0)');g.addColorStop(.55,'rgba(74,143,240,.28)');g.addColorStop(.82,'rgba(255,112,79,.72)');g.addColorStop(1,'#fff4bf');fxCtx.fillStyle=g;fxCtx.beginPath();fxCtx.moveTo(-tail,-size*.38);fxCtx.quadraticCurveTo(-size*.3,-size*.72,size,0);fxCtx.quadraticCurveTo(-size*.3,size*.72,-tail,size*.38);fxCtx.closePath();fxCtx.fill();glowCircle(fxCtx,0,0,size*1.9,main?'#fff4bf':'#ff704f',alpha*.72);fxCtx.fillStyle='#fff4bf';fxCtx.beginPath();fxCtx.arc(0,0,size*.62,0,Math.PI*2);fxCtx.fill();fxCtx.restore();
+  }
+
+  function cometShowerPoint(fx,p,lane){
+    const start={x:fx.to.x-210+lane*34,y:-45-lane*18},end={x:fx.to.x+lane*12,y:fx.to.y+lane*5},q=easeInOut(Math.max(0,Math.min(1,p)));return{x:lerp(start.x,end.x,q)+Math.sin(q*Math.PI)*45,y:lerp(start.y,end.y,q)};
+  }
+
+  function drawCometshower(fx,t){
+    const warn=Math.min(1,t/.22)*Math.max(0,1-(t-.35)/.15);if(warn>0){drawQuantumRing(fx.to.x,fx.to.y,32+warn*28,12+warn*9,t*4,warn*.6,'#ff704f');drawQuantumRing(fx.to.x,fx.to.y,20+warn*18,30+warn*20,-t*5,warn*.45,'#ffd45a');}
+    for(let i=0;i<6;i++){const p=(t-(.12+i*.07))/.34;if(p<=0||p>=1)continue;const lane=i-2.5,pos=cometShowerPoint(fx,p,lane),next=cometShowerPoint(fx,Math.min(1,p+.01),lane);drawCometGlyph(pos.x,pos.y,7+i%2*2,Math.atan2(next.y-pos.y,next.x-pos.x),Math.min(1,p*10));}
+    const p=(t-.52)/.28;if(p>0&&p<1){const pos=cometShowerPoint(fx,p,0),next=cometShowerPoint(fx,Math.min(1,p+.01),0);drawCometGlyph(pos.x,pos.y,18,Math.atan2(next.y-pos.y,next.x-pos.x),1,true);}
+  }
   function impactRing(x,y,color,e,maxR=52,width=2.4,alpha=.75){
     if(e<=0||e>=1) return;
     fxCtx.save();
@@ -1370,6 +1400,11 @@
       case 'catattack':
         for(let slash=0;slash<3;slash++){const q=Math.max(0,Math.min(1,(t-(.57+slash*.075))/.25));if(q>0&&q<1){fxCtx.save();fxCtx.translate(x+(slash-1)*8,y);fxCtx.rotate(-.72+slash*.18);fxCtx.globalAlpha=(1-q)*.94;fxCtx.strokeStyle=slash===1?'#fff4bf':c2;fxCtx.shadowColor=fxCtx.strokeStyle;fxCtx.shadowBlur=18;fxCtx.lineWidth=5;for(let claw=-1;claw<=1;claw++){fxCtx.beginPath();fxCtx.moveTo(-58,claw*13);fxCtx.quadraticCurveTo(0,-18+claw*11,lerp(-58,72,q),claw*10);fxCtx.stroke();}fxCtx.restore();}}
         e=Math.max(0,(t-.7)/.3);impactFlash(x,y,c2,e,106,.5);impactRing(x,y,c1,e,122,3.2,.82);for(let i=0;i<8;i++){const a=i*Math.PI/4,d=e*(42+(i%3)*17);drawPawGlyph(x+Math.cos(a)*d,y+Math.sin(a)*d*.7,5+i%2,a,(1-e)*.62,i%2?c2:c1);}break;
+      case 'quantumleap':
+        e=Math.max(0,(t-.56)/.44);impactFlash(x,y,'#ffffff',e,122,.66);impactRing(x,y,c1,e,142,3.6,.88);impactRing(x,y,c2,Math.min(1,e*1.15),104,2.4,.7);impactShards(x,y,c1,e,22,126);break;
+      case 'cometshower':
+        for(let i=0;i<6;i++){const q=Math.max(0,Math.min(1,(t-(.39+i*.07))/.27));if(q>0)impactFlash(x+(i-2.5)*12,y+(i%2?9:-9),i%2?c1:c2,q,50,.42);}
+        e=Math.max(0,(t-.74)/.26);impactFlash(x,y,'#fff4bf',e,150,.84);impactRing(x,y,c2,e,152,4,.92);impactRing(x,y,c1,Math.min(1,e*1.16),112,2.6,.76);impactSparks(x,y,c1,e,26,148);break;
       case 'crown':
         e=Math.max(0,(t-.52)/.48);
         impactFlash(x,y,c1,e,72,.5);
@@ -1410,6 +1445,8 @@
       case 'missile':drawMissileAttack(fx,t);break;
       case 'thunderstrike':drawThunderstrike(fx,t);break;
       case 'catattack':drawCatattack(fx,t);break;
+      case 'quantumleap':drawQuantumleap(fx,t);break;
+      case 'cometshower':drawCometshower(fx,t);break;
       default:drawArcShot(fx,t);break;
     }
     drawImpactForStyle(fx,t);
@@ -1499,6 +1536,10 @@
         tone(68,0,.5,'sawtooth',.04,34);noiseBurst(.16,.3,.065,240);tone(1420,.13,.12,'square',.016,360);break;
       case 'catattack':
         tone(720,0,.12,'triangle',.022,980);tone(460,.13,.1,'sawtooth',.02,220);noiseBurst(.28,.13,.026,980);tone(860,.34,.16,'triangle',.018,420);break;
+      case 'quantumleap':
+        tone(240,0,.34,'sine',.026,960);tone(940,.16,.22,'triangle',.02,1820);tone(1480,.36,.18,'sine',.018,420);noiseBurst(.4,.1,.012,1700);break;
+      case 'cometshower':
+        tone(220,0,.3,'sawtooth',.022,620);noiseBurst(.18,.12,.025,480);noiseBurst(.34,.12,.028,420);noiseBurst(.5,.2,.05,180);tone(92,.48,.3,'sine',.035,44);break;
       case 'crown':
         tone(392,0,.14,'triangle',.026);tone(587,.06,.18,'triangle',.03);tone(784,.13,.22,'sine',.024);noiseBurst(.17,.08,.012,1100);break;
       default:
@@ -1519,7 +1560,7 @@
       start:performance.now(),
       duration:{
         lightning:820,flame:1050,venom:1050,blood:820,jackpot:1150,
-        void:1200,confetti:1150,frost:1000,rift:1100,crown:1250,soulbreak:1350,solarsplash:1450,trigonbomb:1500,confettibomb:1550,polygon:1600,invasion:1750,missile:1650,thunderstrike:1650,catattack:1750
+        void:1200,confetti:1150,frost:1000,rift:1100,crown:1250,soulbreak:1350,solarsplash:1450,trigonbomb:1500,confettibomb:1550,polygon:1600,invasion:1750,missile:1650,thunderstrike:1650,catattack:1750,quantumleap:1750,cometshower:1850
       }[style]||900,
       seed:Math.random()*999,
       preview
@@ -1791,6 +1832,17 @@
     impactFlash(fx.x,fx.y,'#b06cff',strike,148,.7);impactRing(fx.x,fx.y,'#ffd45a',strike,158,4,.9);impactRing(fx.x,fx.y,'#75ffe1',Math.min(1,strike*1.12),124,2.6,.72);for(let i=0;i<18;i++){const a=i*Math.PI*2/18+fx.seed,d=strike*(48+(i%5)*19);drawPawGlyph(fx.x+Math.cos(a)*d,fx.y+Math.sin(a)*d*.72,6+i%3,a,(1-strike)*.7,i%2?'#75ffe1':'#ffd45a');}
   }
 
+  function killQuantumleap(fx,t){
+    const gather=Math.min(1,t/.34),collapse=Math.max(0,(t-.42)/.58),r=Math.min(fx.w,fx.h);
+    if(t<.62){glowCircle(fxCtx,fx.x,fx.y,r*(.3+gather*.7),'#4a2273',Math.max(0,1-t*.8)*.44);for(let i=0;i<5;i++)drawQuantumRing(fx.x,fx.y,r*(.2+i*.11+gather*.25),r*(.08+i*.055+gather*.12),(i%2?1:-1)*(t*(5+i)+i),Math.max(0,1-t*.7)*(.9-i*.1),i%2?'#75ffe1':'#b06cff');for(let i=0;i<32;i++){const a=i*2.399+t*6,d=(1-gather)*r*1.5+r*(.22+i%5*.08);drawQuantumFragment(fx.x+Math.cos(a)*d,fx.y+Math.sin(a)*d*.72,4+i%4,a-t*9,Math.max(0,1-t*.66)*.78,i%3?'#75ffe1':'#ffd45a');}}
+    impactFlash(fx.x,fx.y,'#ffffff',collapse,166,.8);impactRing(fx.x,fx.y,'#75ffe1',collapse,176,4.5,.94);impactRing(fx.x,fx.y,'#b06cff',Math.min(1,collapse*1.13),138,3,.78);impactShards(fx.x,fx.y,'#75ffe1',collapse,38,166);
+  }
+
+  function killCometshower(fx,t){
+    const r=Math.min(fx.w,fx.h);for(let i=0;i<10;i++){const p=(t-(.02+i*.038))/.42;if(p<=0||p>=1)continue;const fake={to:{x:fx.x+(i-4.5)*5,y:fx.y+(i%3-1)*7}},lane=(i-4.5)*.7,pos=cometShowerPoint(fake,p,lane),next=cometShowerPoint(fake,Math.min(1,p+.01),lane);drawCometGlyph(pos.x,pos.y,7+i%3,Math.atan2(next.y-pos.y,next.x-pos.x),1);}
+    const main=(t-.38)/.3;if(main>0&&main<1){const fake={to:{x:fx.x,y:fx.y}},pos=cometShowerPoint(fake,main,0),next=cometShowerPoint(fake,Math.min(1,main+.01),0);drawCometGlyph(pos.x,pos.y,r*.24,Math.atan2(next.y-pos.y,next.x-pos.x),1,true);}
+    const burst=Math.max(0,(t-.58)/.42);impactFlash(fx.x,fx.y,'#fff4bf',burst,184,.9);impactRing(fx.x,fx.y,'#ff704f',burst,188,5,.96);impactRing(fx.x,fx.y,'#ffd45a',Math.min(1,burst*1.12),148,3,.8);impactSparks(fx.x,fx.y,'#ffd45a',burst,42,178);
+  }
   function killCrown(fx,t){
     const [c1,c2]=labFxColor('crown');
     const fall=easeOutCubic(Math.min(1,t/.56));
@@ -1825,6 +1877,8 @@
       case 'missile':killMissile(fx,t);break;
       case 'thunderstrike':killThunderstrike(fx,t);break;
       case 'catattack':killCatattack(fx,t);break;
+      case 'quantumleap':killQuantumleap(fx,t);break;
+      case 'cometshower':killCometshower(fx,t);break;
       default:killArc(fx,t);break;
     }
     return true;
