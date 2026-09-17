@@ -291,9 +291,9 @@ function oneHitThenStop(state,hitFace,missFaces){
 {
   const state=attackState({modeId:'mayhem',abilities:[5,3],defenderAbilities:[4,8],faceValue:5,hp:[65,4]});
   const killed=oneHitThenStop(state,5,[1,2,3,4]);
-  equal(killed.state.turn.phase,'draft_pending','Kill-Draft blockiert die Angriffsfortsetzung in Mayhem');
-  equal({seat:killed.state.draft.active?.seat,slot:killed.state.draft.active?.slot,trigger:killed.state.draft.active?.trigger},
-    {seat:0,slot:3,trigger:'kill'},'Kill-Draft reserviert den dritten Faehigkeitsslot');
+  equal(killed.state.turn.phase,'turn_done','Rundenentscheidender Kill beendet den Zug ohne Faehigkeitsdraft');
+  equal(killed.state.draft.active,null,'Nach Rundenende bleibt kein gewaehlter Draft fuer die naechste Runde');
+  equal(killed.state.players[0].abilities,[5,3],'Der Sieger nimmt keine nach Rundenende gewaehlte Faehigkeit mit');
   equal(killed.state.round.eliminationOrder,[1],'Kill schreibt die Ausscheidereihenfolge fort');
 }
 

@@ -108,7 +108,7 @@ function act(state,type,extra={},rng=()=>0){return reduce(state,{type,seat:0,...
   state=act(state,A.ROLL_BASE,{},rng).state;
   const result=act(state,A.USE_SNAKE_EYES,{},rng);
   equal(result.state.dice.map(die=>die.value),[1,3,6,4,5],'Snake Eyes wuerfelt genau den Drilling neu');
-  equal(result.state.base.lastRollIndices,[0,1,2],'Snake Eyes ersetzt den letzten Wurfkontext');
+  equal(result.state.base.lastRollIndices,[0,1,2,3,4],'Snake Eyes behaelt den Basiswurfkontext fuer spaetere Glueckswuerfe');
   equal(result.state.players[0].effects.snakeEyesUsesThisTurn,1,'Snake-Eyes-Nutzung wird gezaehlt');
 }
 

@@ -176,6 +176,7 @@
       const rules=D.LOCAL_MODES[next.modeId],active=R.player(next,seat),slot=rules.bonusSlot;
       if(!active || active.hp<=0 || !slot || active.bonusAbilityUnlocked || active.abilities.length!==slot-1) return false;
       if(trigger==='kill' && !rules.bonusOnKill) return false;
+      if(trigger==='kill' && next.players.filter(entry=>entry.hp>0).length<=1) return false;
       active.bonusAbilityUnlocked=true;
       if(!next.draft.queue.some(entry=>entry.seat===seat)) next.draft.queue.push({seat,slot,trigger});
       return true;
@@ -339,7 +340,11 @@
         next.special.perfect25.baseTotal=total;decision('perfect25','perfect25');return;
       }
       const threshold=advance?25:26;
-      if(total<threshold){setTurnDone('exact_25');return;}
+      if(total<threshold){
+        const active=R.player(next);
+        if(R.hasAbility(next,10)) active.effects.momentumStreak=R.mastery(next,1)?Math.max(0,active.effects.momentumStreak-1):0;
+        next.attack.momentumBonus=0;setTurnDone('exact_25');return;
+      }
       if(R.hasAbility(next,12) && total>25){next.special.gambling.baseTotal=total;decision('gambling','gamble_attack');return;}
       prepareAttack(advance?total-24:total-25,total,advance?'advance':'normal');
     };
@@ -366,6 +371,7 @@
         !indices.some(index=>normalAttackHit(next.dice[index].value)||bloodNeighbors.includes(next.dice[index].value)||
           (next.attack.wildcardFace!==null&&next.dice[index].value===next.attack.wildcardFace))&&indices.length)
         next.dice[indices[0]].value=next.attack.face;
+      healTwelveBase(indices,'twelve_attack');
       next.attack.currentRollNewHits=0;
       const bloodHits=recordAttackHits(indices,bloodNeighbors);
       if(bloodNeighbors.length&&next.attack.currentRollNewHits===0&&next.attack.bloodPricePaidThisRoll>0&&R.mastery(next,1)){
@@ -385,6 +391,7 @@
       next.attack.powerUses++;next.attack.masteryRollCount++;
       next.attack.powerUsed=next.attack.powerUses>=(R.mastery(next,1)?2:1);
       for(const index of indices){const value=R.rollDie(next,random);next.dice[index]={value,locked:false,selected:false};values.push(value);}
+      healTwelveBase(indices,'twelve_second_chance');
       const before=next.attack.currentRollNewHits;recordAttackHits(indices,[]);
       emit('AttackRolled',{seat:next.turn.currentSeat,kind:'second_chance',indices,values});
       emit('HitsResolved',{seat:next.turn.currentSeat,kind:'second_chance',newHits:next.attack.currentRollNewHits-before,
@@ -394,6 +401,7 @@
     const useAttackSnakeEyes=()=>{
       const random=requireRandom(),group=attackSnakeEyesGroup(next),values=[];
       for(const index of group.indices){const value=R.rollDie(next,random);next.dice[index]={value,locked:false,selected:false};values.push(value);}
+      healTwelveBase(group.indices,'twelve_snake_bite');
       let bonusHits=0;
       for(const index of group.indices){
         const die=next.dice[index],isNormal=normalAttackHit(die.value);
@@ -537,7 +545,7 @@
         retireWildcard();
         if(next.attack.hits>0){dealAttackDamage();return;}
         if(R.hasAbility(next,2)&&R.mastery(next,1)) applyHeal(next.turn.currentSeat,2,'borrowing_life');
-        if(next.attack.source==='gambling'&&R.hasAbility(next,12)&&!next.special.gambling.retryUsed){
+        if(next.attack.source==='gambling'&&R.hasAbility(next,12)&&R.mastery(next,1)&&!next.special.gambling.retryUsed){
           next.special.gambling.retryPending=true;decision('gambling_retry_offer','gamble_retry_offer');return;
         }
         setTurnDone('attack_missed');return;
@@ -613,8 +621,8 @@
         active.effects.lastStandCooldown=Math.max(0,active.effects.lastStandCooldown-1);
         if(active.effects.lastStandCooldown===0) active.effects.lastStandUsed=false;
       }
-      active.effects.bloodRushPrimed=!!active.effects.damageSinceLastOwnTurn ||
-        (R.hasAbility(next,23,seat)&&R.mastery(next,1)&&!!active.effects.selfDamageSinceLastOwnTurn);
+      active.effects.bloodRushPrimed=R.hasAbility(next,23,seat) &&
+        (!!active.effects.damageSinceLastOwnTurn || (R.mastery(next,1)&&!!active.effects.selfDamageSinceLastOwnTurn));
       active.effects.damageSinceLastOwnTurn=false;active.effects.selfDamageSinceLastOwnTurn=false;
       active.effects.voluntaryHpPaidThisTurn=false;active.effects.snakeEyesUsesThisTurn=0;
       active.effects.underdogTurnActive=false;
@@ -630,6 +638,7 @@
       if(winner) winner.roundsWon++;
       next.round.winnerSeat=winner?.seat??null;
       next.round.result={winnerSeat:winner?.seat??null,reason:winner?'last_alive':'draw'};
+      clearCombatState();
       next.draft.active=null;next.draft.queue=[];next.draft.continuation=null;
       emit('RoundEnded',{roundNumber:next.round.number,winnerSeat:next.round.winnerSeat,reason:next.round.result.reason});
       decision('prepare_round','round_preparation',winner?.seat??next.turn.currentSeat);
@@ -701,9 +710,32 @@
     };
     const startRound=()=>{
       const random=requireRandom(),starter=next.round.lastPlaceSeat??next.players[0].seat;
-      for(let i=next.players.length-1;i>0;i--){
-        const j=Math.floor(random()*(i+1));
-        [next.players[i],next.players[j]]=[next.players[j],next.players[i]];
+      const oldOrder=next.players.slice();
+      const shuffled=()=>{
+        const candidate=oldOrder.slice();
+        for(let i=candidate.length-1;i>0;i--){
+          const j=Math.floor(random()*(i+1));
+          [candidate[i],candidate[j]]=[candidate[j],candidate[i]];
+        }
+        return candidate;
+      };
+      if(next.players.length<3){
+        next.players=shuffled();
+      }else{
+        const oldOpponent=new Map(oldOrder.map((entry,index)=>[entry.seat,oldOrder[(index+1)%oldOrder.length].seat]));
+        let candidate=null;
+        for(let attempt=0;attempt<150;attempt++){
+          const trial=shuffled();
+          if(trial.every((entry,index)=>oldOpponent.get(entry.seat)!==trial[(index+1)%trial.length].seat)){
+            candidate=trial;break;
+          }
+        }
+        if(!candidate){
+          candidate=oldOrder.slice().reverse();
+          const offset=Math.floor(random()*candidate.length);
+          candidate=candidate.slice(offset).concat(candidate.slice(0,offset));
+        }
+        next.players=candidate;
       }
       for(const active of next.players){
         const entry=next.round.preparation.find(item=>item.seat===active.seat);
@@ -724,6 +756,10 @@
     const resolveDraft=()=>{
       const activeDraft=next.draft.active,active=R.player(next,activeDraft.seat);
       active.abilities.push(action.abilityId);next.draft.active=null;
+      if(action.abilityId===23){
+        active.effects.damageSinceLastOwnTurn=false;active.effects.selfDamageSinceLastOwnTurn=false;
+        active.effects.bloodRushPrimed=false;active.effects.voluntaryHpPaidThisTurn=false;
+      }
       emit('AbilityChosen',{seat:active.seat,slot:activeDraft.slot,abilityId:action.abilityId,trigger:activeDraft.trigger});
       if(next.draft.queue.length){openQueuedDraft();return;}
       const continuation=next.draft.continuation;next.draft.continuation=null;
@@ -734,6 +770,10 @@
         const context=next.counter.pending;next.counter.pending=null;startCounter(context);return;
       }
       if(continuation==='finish_attack'){setTurnDone('attack_complete');return;}
+      if(continuation==='resume_base_select'){decision('select_base','base_select');return;}
+      if(continuation==='resume_attack_ready'){decision('roll_attack','attack_ready');return;}
+      if(continuation==='resume_attack_continue'){decision('roll_attack','attack_continue');return;}
+      if(continuation==='resume_attack_after_roll'){decision('resolve_attack','attack_after_roll');return;}
       decision('roll_base','idle',next.turn.currentSeat);
     };
 
@@ -755,7 +795,7 @@
       if(candidate.repeated) next.base.luckRerollSecondUsed=true;
       else{next.base.luckRerollUses++;next.base.rerollUsed=true;next.base.luckRerollIndex=candidate.index;next.base.luckRerollSecondUsed=false;}
       let value=1;while(value===1) value=R.rollDie(next,random);
-      next.dice[candidate.index].value=value;next.base.lastRollIndices=[candidate.index];
+      next.dice[candidate.index].value=value;
       emit('DiceRolled',{seat:next.turn.currentSeat,kind:'luck',indices:[candidate.index],values:[value]});
       decision('select_base','base_select');
     }else if(action.type===A.USE_LOADED_DICE){
@@ -764,12 +804,13 @@
       next.base.loadedDiceUses++;next.base.loadedDiceUsed=next.base.loadedDiceUses>=(R.mastery(next,1)?2:1);next.dice[index].value=5;
       const result=applyDamageToSeat(active.seat,cost,active.seat,'loaded_dice');markSelfDamage(active.seat,result.lost,true);
       emit('DieChanged',{seat:active.seat,index,from:before,to:5,source:'loaded_dice'});
+      blockDraft('resume_base_select');
     }else if(action.type===A.USE_SNAKE_EYES){
       if(next.turn.phase==='attack_after_roll') useAttackSnakeEyes();
       else{
         const group=R.snakeEyesGroup(next),random=requireRandom(),values=[];
         for(const index of group.indices){const value=R.rollDie(next,random);next.dice[index]={value,locked:false,selected:false};values.push(value);}
-        next.base.lastRollIndices=group.indices.slice();R.player(next).effects.snakeEyesUsesThisTurn++;
+        R.player(next).effects.snakeEyesUsesThisTurn++;
         emit('DiceRolled',{seat:next.turn.currentSeat,kind:'snake_eyes',indices:group.indices.slice(),values});
         healTwelveBase(group.indices,'twelve_snake_eyes');decision('select_base','base_select');
       }
@@ -782,7 +823,7 @@
       const active=R.player(next),result=applyDamageToSeat(active.seat,damage,active.seat,'base_insurance');
       markSelfDamage(active.seat,result.lost,false);if(!blockDraft('finish_base')) afterSelfDamage(context.total,context.afterMode);
     }else if(action.type===A.USE_BLOOD_PRICE){
-      const active=R.player(next),post=next.turn.phase==='attack_after_roll',cost=post?5:3,neighbors=[];
+      const resumePhase=next.turn.phase,active=R.player(next),post=resumePhase==='attack_after_roll',cost=post?5:3,neighbors=[];
       if(next.attack.face>1) neighbors.push(next.attack.face-1);if(next.attack.face<6) neighbors.push(next.attack.face+1);
       const result=applyDamageToSeat(active.seat,cost,active.seat,post?'blood_credit':'blood_price');
       markSelfDamage(active.seat,result.lost,true);emit('AbilityActivated',{seat:active.seat,abilityId:11});
@@ -797,6 +838,7 @@
       }else{
         next.attack.bloodPriceNeighbors=neighbors;next.attack.bloodPricePaidThisRoll=result.lost;activateBloodRushMid();
       }
+      blockDraft('resume_'+resumePhase);
     }else if(action.type===A.CHOOSE_ATTACK_TARGET){
       next.attack.targetSeat=action.targetSeat;emit('AttackTargetSelected',{seat:next.turn.currentSeat,targetSeat:action.targetSeat});
       startAttackAfterTarget();
@@ -811,6 +853,7 @@
     }else if(action.type===A.USE_BLOOD_RUSH_SELF_HARM){
       const active=R.player(next),result=applyDamageToSeat(active.seat,1,active.seat,'blood_rush_self_harm');
       markSelfDamage(active.seat,result.lost,true);activateBloodRushMid();
+      blockDraft('resume_attack_after_roll');
     }else if(action.type===A.ROLL_COUNTERATTACK){
       rollCounter();
     }else if(action.type===A.ROLL_GAMBLING){
@@ -821,7 +864,19 @@
       next.special.gambling.retryPending=false;
       if(retry) next.special.gambling.retryUsed=true;
       emit('SpecialDieRolled',{seat:next.turn.currentSeat,kind:retry?'gambling_retry':'gambling',sides:6,value:roll});
-      prepareAttack(roll,total,'gambling');
+      if(retry){
+        next.attack.face=roll;next.attack.hits=0;next.attack.damage=0;next.attack.firstRoll=true;
+        next.attack.currentRollNewHits=0;next.attack.rollCount=0;next.attack.masteryRollCount=0;
+        next.attack.normalHits=0;next.attack.exactFaceHits=0;next.attack.wildcardHits=0;
+        next.attack.lastRollIndices=[];next.attack.precisionUses=0;next.attack.bloodPriceNeighbors=[];
+        next.attack.bloodPricePaidThisRoll=0;next.attack.bloodPriceWasPreActivatedThisRoll=false;
+        next.attack.wildcardTriggered=false;next.attack.masteryL2BonusesApplied=false;
+        next.attack.wildcardFace=R.hasAbility(next,17)?R.rollDie(next,random):null;
+        next.dice=freshDice();
+        emit('AttackReadied',{seat:next.turn.currentSeat,targetSeat:next.attack.targetSeat,face:next.attack.face,
+          total:next.attack.baseTotal,source:next.attack.source,wildcardFace:next.attack.wildcardFace});
+        decision('roll_attack','attack_ready');
+      }else prepareAttack(roll,total,'gambling');
     }else if(action.type===A.ACCEPT_GAMBLING_RETRY){
       next.special.gambling.retryPending=true;decision('gambling_retry','gamble_retry');
     }else if(action.type===A.DECLINE_GAMBLING_RETRY){

@@ -56,7 +56,7 @@ function resolveOneHit(state,rollFace=6,rng=()=>0){
 }
 
 {
-  let state=preparedBase('classic',[6,5,5,5,5],[12]);
+  let state=preparedBase('mayhem',[6,5,5,5,5],[12,5]);
   state=act(state,A.LOCK_SELECTED).state;
   state=act(state,A.ROLL_GAMBLING,{},sequence([face(4)])).state;
   equal([state.attack.face,state.attack.source,state.turn.phase],[4,'gambling','attack_ready'],
@@ -225,6 +225,150 @@ function playRound(modeId,playerCount,seed){
   equal(state.round.result.reason,'last_alive',`${modeId} mit ${playerCount} Spielern hat genau einen Sieger`);
   return state;
 }
+
+{
+  let state=preparedBase('classic',[2,3,4,5,6],[18]);
+  state.players[0].hp=12;
+  state.dice.forEach((die,index)=>{die.selected=index===0;});
+  state=act(state,A.USE_LOADED_DICE,{},sequence(Array(32).fill(0))).state;
+  equal([state.players[0].hp,state.turn.phase,state.draft.continuation],[10,'draft_pending','resume_base_select'],
+    'Loaded Dice oeffnet den HP-Draft sofort');
+  state=act(state,A.CHOOSE_ABILITY,{abilityId:state.draft.active.choices[0]}).state;
+  equal(state.turn.phase,'base_select','Loaded-Dice-Draft setzt die Basiswahl fort');
+
+  state=attackState('classic',[11],13);
+  state.players[0].hp=13;
+  state=act(state,A.USE_BLOOD_PRICE,{},sequence(Array(32).fill(0))).state;
+  equal([state.players[0].hp,state.turn.phase,state.draft.continuation],[10,'draft_pending','resume_attack_ready'],
+    'Blutpreis oeffnet den HP-Draft sofort');
+  state=act(state,A.CHOOSE_ABILITY,{abilityId:state.draft.active.choices[0]}).state;
+  equal(state.turn.phase,'attack_ready','Blutpreis-Draft setzt den Angriff fort');
+}
+
+{
+  let state=preparedBase('classic',[5,5,5,5,5],[10]);
+  state.players[0].effects.momentumStreak=2;
+  state=act(state,A.LOCK_SELECTED).state;
+  equal([state.turn.phase,state.players[0].effects.momentumStreak],['turn_done',0],
+    'Exakt 25 ohne Angriff beendet die Momentum-Serie');
+}
+
+{
+  let state=preparedBase('mayhem',[2,2,1,4,5],[3,20]);
+  state=act(state,A.USE_LUCK_REROLL,{},sequence([face(2)])).state;
+  let result=act(state,A.USE_SNAKE_EYES,{},sequence([face(3),face(4),face(5)]));
+  equal(result.events.find(event=>event.type==='DiceRolled')?.indices,[0,1,2],
+    'Glueckswurf kann den dritten Wuerfel fuer Snake Eyes erzeugen');
+
+  state=preparedBase('mayhem',[2,2,2,1,5],[3,20]);
+  state=act(state,A.USE_LUCK_REROLL,{},sequence([face(2)])).state;
+  result=act(state,A.USE_SNAKE_EYES,{},sequence([face(1),face(3),face(4),face(5)]));
+  equal(result.events.find(event=>event.type==='DiceRolled')?.indices,[0,1,2,3],
+    'Glueckswurf nimmt auch den vierten gleichen Wuerfel in Snake Eyes auf');
+}
+
+{
+  let state=duel('mayhem',2,[25,9]);
+  state.players[0].effects.damageSinceLastOwnTurn=true;
+  state.turn.phase='turn_done';state.turn.decision={kind:'end_turn',seat:0};
+  state=act(state,A.END_TURN).state;
+  state.turn.phase='turn_done';state.turn.decision={kind:'end_turn',seat:1};
+  state=act(state,A.END_TURN).state;
+  equal(state.players[0].effects.bloodRushPrimed,false,
+    'Schaden vor dem Erhalt von Blood Rush erzeugt keine spaetere Vormerkung');
+
+  state=duel('mayhem',2,[25,9]);
+  state.players[0].hp=30;state.players[0].bonusAbilityUnlocked=true;
+  state.players[0].effects.damageSinceLastOwnTurn=true;state.players[0].effects.selfDamageSinceLastOwnTurn=true;
+  state.players[0].effects.bloodRushPrimed=true;state.players[0].effects.voluntaryHpPaidThisTurn=true;
+  state.draft.active={seat:0,slot:3,trigger:'hp',choices:[23,10]};state.draft.continuation='resume_base_select';
+  state.turn.phase='draft_pending';state.turn.decision={kind:'choose_ability',seat:0};
+  state=act(state,A.CHOOSE_ABILITY,{abilityId:23}).state;
+  equal([state.players[0].effects.damageSinceLastOwnTurn,state.players[0].effects.selfDamageSinceLastOwnTurn,
+    state.players[0].effects.bloodRushPrimed,state.players[0].effects.voluntaryHpPaidThisTurn],[false,false,false,false],
+    'Blood Rush uebernimmt beim Erwerb keine frueheren Schadensmarker');
+}
+
+{
+  let state=duel('mayhem',2,[5,3]);
+  state.turn.phase='turn_done';state.turn.decision={kind:'end_turn',seat:0};
+  state.attack.face=4;state.attack.targetSeat=1;state.attack.baseTotal=29;
+  state.players[1].hp=3;state.players[1].effects.poisonTurns=1;state.players[1].effects.poisonSourceSeat=0;
+  state=act(state,A.END_TURN).state;
+  equal([state.turn.phase,state.round.winnerSeat,state.attack.targetSeat],['round_preparation',0,null],
+    'Gift-KO des letzten Gegners bereinigt den abgeschlossenen Angriffszustand');
+}
+
+{
+  let state=attackState('mayhem',[5,3],1);
+  state.attack.face=6;state.attack.baseTotal=30;
+  state=resolveOneHit(state,6,sequence(Array(32).fill(0)));
+  equal([state.players[1].hp,state.draft.active,state.draft.queue.length],[0,null,0],
+    'Rundenbeendender Kill erzeugt keinen Bonusfaehigkeits-Draft');
+}
+
+function checkRoundStartOrder(playerCount,seed){
+  let state=playRound('classic',playerCount,seed);
+  const oldOrder=state.players.map(player=>player.seat);
+  const oldOpponent=new Map(oldOrder.map((seat,index)=>[seat,oldOrder[(index+1)%oldOrder.length]]));
+  let result=reduce(state,{type:A.PREPARE_ROUND,seat:state.turn.decision.seat},()=>0.25);
+  check(!result.rejected,`Rundenvorbereitung fuer Reihenfolgepruefung wird akzeptiert: ${result.reason||''}`);
+  state=result.state;
+  while(state.turn.decision?.kind==='choose_start_abilities'){
+    const entry=state.round.preparation.find(item=>item.seat===state.turn.decision.seat);
+    const abilities=D.CHOOSABLE_ABILITY_IDS.filter(id=>!entry.abilities.includes(id)).slice(0,entry.freeChoices);
+    result=reduce(state,{type:A.CHOOSE_START_ABILITIES,seat:entry.seat,abilities},()=>0.25);
+    check(!result.rejected,'Freie Startfaehigkeit fuer Reihenfolgepruefung wird akzeptiert');
+    state=result.state;
+  }
+  let draws=0;
+  result=reduce(state,{type:A.START_ROUND,seat:state.turn.decision.seat},()=>{draws++;return 0.999999;});
+  check(!result.rejected,'Rundenstart fuer Reihenfolgepruefung wird akzeptiert');
+  const order=result.state.players.map(player=>player.seat);
+  check(order.every((seat,index)=>oldOpponent.get(seat)!==order[(index+1)%order.length]),
+    `${playerCount} Sitze behalten beim Rundenstart keinen direkten Nachfolger`);
+  equal(draws,150*(playerCount-1)+1,`${playerCount} Sitze nutzen nach 150 Shuffles genau eine Fallback-Rotation`);
+  const reversed=oldOrder.slice().reverse(),offset=playerCount-1;
+  equal(order,reversed.slice(offset).concat(reversed.slice(0,offset)),
+    `${playerCount} Sitze verwenden dieselbe Fallback-Reihenfolge wie der Browser`);
+}
+
+function checkGamblingRetry(){
+  const state=duel('mayhem',3,[12,17,23],0x5a12);
+  const active=state.players.find(player=>player.seat===state.turn.currentSeat);
+  const target=state.players.find(player=>player.seat!==active.seat).seat;
+  active.effects.momentumStreak=4;
+  state.turn.phase='gamble_retry';state.turn.decision={kind:'gambling_retry',seat:active.seat};
+  state.special.gambling={baseTotal:29,retryUsed:false,retryPending:true};
+  Object.assign(state.attack,{face:6,targetSeat:target,hits:3,damage:9,firstRoll:false,currentRollNewHits:2,
+    rollCount:2,masteryRollCount:2,normalHits:1,exactFaceHits:1,wildcardHits:1,lastRollIndices:[0,1],
+    powerUsed:true,powerUses:2,precisionUses:2,momentumBonus:3,bloodPriceNeighbors:[target],
+    bloodPricePaidThisRoll:2,bloodPriceWasPreActivatedThisRoll:true,bloodRushActive:true,doubleTapApplied:true,
+    wildcardFace:2,wildcardSecondRollArmed:true,wildcardTriggered:true,masteryL2BonusesApplied:true,
+    source:'gambling',baseTotal:29});
+  state.dice=state.dice.map((die,index)=>({value:index+1,locked:index<2,selected:false}));
+  check(validateState(state).valid,'Gambling-Retry-Ausgangszustand ist gueltig');
+  const draws=[0.4,0.8];
+  const result=reduce(state,{type:A.ROLL_GAMBLING,seat:active.seat},()=>draws.shift());
+  check(!result.rejected,'Gambling-Retry wird akzeptiert');
+  const next=result.state;
+  equal(next.turn.phase,'attack_ready','Gambling-Retry geht direkt auf attack_ready');
+  equal(next.attack.targetSeat,target,'Gambling-Retry behaelt das Ziel');
+  equal(next.attack.face,3,'Gambling-Retry uebernimmt nur die neue Zielzahl');
+  equal([next.attack.powerUsed,next.attack.powerUses],[true,2],'Gambling-Retry behaelt Attack-Power-Nutzungen');
+  equal([next.attack.momentumBonus,active.effects.momentumStreak],[3,4],'Gambling-Retry behaelt Momentum-Bonus und -Serie');
+  equal([next.attack.bloodRushActive,next.attack.doubleTapApplied],[true,true],'Gambling-Retry behaelt Blood Rush und Double Tap');
+  equal([next.attack.hits,next.attack.damage,next.attack.rollCount,next.attack.masteryRollCount],[0,0,0,0],
+    'Gambling-Retry setzt Treffer, Schaden und Wurfzaehler zurueck');
+  equal([next.attack.precisionUses,next.attack.bloodPricePaidThisRoll,next.attack.bloodPriceWasPreActivatedThisRoll],
+    [0,0,false],'Gambling-Retry setzt Precision und Blutpreis-Felder zurueck');
+  equal(next.attack.wildcardFace,5,'Gambling-Retry wuerfelt die Wildcard neu');
+  check(next.dice.every(die=>die.value===null&&!die.locked&&!die.selected),'Gambling-Retry setzt die Wuerfel zurueck');
+}
+
+checkRoundStartOrder(3,0x5a10);
+checkRoundStartOrder(4,0x5a11);
+checkGamblingRetry();
 
 for(const [modeId,count,seed] of [['classic',2,101],['classic',4,202],['mayhem',2,303],['mayhem',4,404]]){
   playRound(modeId,count,seed);

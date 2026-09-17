@@ -101,7 +101,8 @@
       if(p.masteryLastStandCooldown===0){p.lastStandUsed=false;addLog(`🛡️ I Can Do This All Day: ${p.name} kann Last Stand wieder triggern.`);}
     }
     window.WDMastery?.noteTurnStart?.(index);
-    p.bloodRushPrimed=!!p.damageSinceLastOwnTurn || (hasMasteryUpgrade(23,1,index)&&!!p.masterySelfDamageSinceLastOwnTurn);
+    p.bloodRushPrimed=hasAbility(23,index) &&
+      (!!p.damageSinceLastOwnTurn || (hasMasteryUpgrade(23,1,index)&&!!p.masterySelfDamageSinceLastOwnTurn));
     p.damageSinceLastOwnTurn=false;
     p.masterySelfDamageSinceLastOwnTurn=false;
     p.voluntaryHpPaidThisTurn=false;

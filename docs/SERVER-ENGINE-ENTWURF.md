@@ -25,7 +25,8 @@ Release auf `main`; anschließend Bericht und **Warten auf „Weiter“**:
 | 2 | Basisphase, nur Engine und Node-Tests | V28.14.3 |
 | 3 | Angriff, nur Engine und Node-Tests | V28.14.6 |
 | 4 | Spezialwürfel, Drafts und Rundenwechsel, nur Engine und Node-Tests | V28.14.10 |
-| 5 | Produktiver Browseradapter und Bot-Paritätsprüfstand | offen; erst nach grüner Parität veröffentlichen |
+| 5a | Browserübersetzer im Schatten und Bot-Paritätsprüfstand | V28.14.16 |
+| 5b | Lokale Duelle produktiv auf den Reducer umschalten | offen; eigener Auftrag nach grüner Parität |
 | 6 | Deno-Parität und Online-Schatten | offen; kein Deployment |
 
 Die bestehende Browseroberfläche behält ihre bisherigen Spielergrenzen und
@@ -247,18 +248,42 @@ um volle Spekulation zu ermöglichen, wird ausdrücklich nicht empfohlen.
 ## Browsergrenze und spätere Abnahme
 
 Kampagne, Encounter, Weltregeln, Boss Rush, Tutorial und Testumgebung bleiben
-im Browser. Lokale Duelle und der Online-Host wechseln erst in Schritt 5
-auf den gemeinsamen Reducer. Profilpersistenz, Statistik, Freischaltungen,
+im Browser. Lokale Duelle wechseln erst in Schritt 5b, der Online-Host in einem
+späteren Schritt auf den gemeinsamen Reducer. Profilpersistenz, Statistik, Freischaltungen,
 Texte, Audio, Animationen und Botplanung bleiben außerhalb der Engine.
 Der Engine-State enthält keine Profilobjekte oder Profil-Mastery.
 
-Schritt 5 verlangt 1.000 Classic-1:1-Botduelle und ergänzende Läufe für die
+Schritt 5a verlangt 1.000 Classic-1:1-Botduelle und ergänzende Läufe für die
 anderen Modi und Spielerzahlen, mit gleicher Zustands- und Ereignisfolge
 im Browser und Node. Schritt 6 ergänzt Deno mit denselben relativen
 Side-Effect-Imports in `battle-action`, lokalem `supabase functions serve`
 und Classic-1:1-Schatten im RAM. Kein Deployment in Phase 2. Ein reiner
 Startzustandsvergleich ist kein Ersatz für die vollständige Matchparität.
 Echte Zwei-Geräte-Spieltests führt der Nutzer getrennt nach dem Umbau durch.
+
+### Ergebnis Schritt 5a
+
+`js/engine/06-adapter.js` bildet Browserzüge rein auf Reducer-Aktionen und
+Reducer-Ereignisse auf bestehende Browseraufrufe ab. Der bisherige lokale
+Browserkampf bleibt autoritativ; der Adapter zeichnet je Zug Aktion, geordnete
+Regelziehungen und den normalisierten Folgezustand aus HP, Fähigkeiten,
+Ausscheiden, Sieger und Phase nur im RAM auf. DOM, Texte, Timer, Kampagne,
+Tutorial, Testumgebung und Onlinepfad bleiben außerhalb des Übersetzers.
+
+`scripts/qa/engine-paritaet.mjs` spielt den alten Browserpfad mit gesetztem Seed
+und wiederholt dieselben Aktionen und Ziehungen im Reducer. Die kurze Stichprobe
+läuft in `npm run check`, der Vollumfang über
+`npm run check:engine-paritaet:full`. Geprüft wurden 1.500 vollständige Duelle
+mit 303.947 Aktionen: Classic 1:1 1.000 Läufe, Endurance/Overload/Mayhem 1:1 je
+100 Läufe sowie Classic und Mayhem mit drei und vier Spielern je 50 Läufe. Alle
+normalisierten Folgezustände stimmen überein.
+
+Die Paritätsfunde wurden vor der Freigabe in beiden Pfaden vereinheitlicht. Dazu
+gehören insbesondere Heilung auf Hauptangriffswürfen, erneut auslösbare Snake
+Eyes einschließlich durch Glückswurf ergänzter gleicher Augen, Momentum und
+Blood Rush erst ab Erwerb, keine Fähigkeitswahl nach Rundenende sowie die
+vollständige HP-Wiederherstellung durch Perfect Parry auch nach einem
+dazwischengeschalteten Fähigkeitsdraft. Schritt 5a schaltet kein Gameplay um.
 
 Phase 2 zuerst gegen aufgezeichnete Altpartien vergleichen. Im echten
 Schattenbetrieb bleibt der Host autoritativ; Serverantworten ändern kein Gameplay.

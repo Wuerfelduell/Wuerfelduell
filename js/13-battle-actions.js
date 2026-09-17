@@ -391,6 +391,10 @@
   }
 
   function maybeTriggerKillBonusDraft(index){
+    const roundDecided=campaignMode
+      ? !players.some(p=>p.campaignTeam==="hero"&&p.hp>0) || !players.some(p=>p.campaignTeam==="enemy"&&p.hp>0)
+      : players.filter(p=>p.hp>0).length<=1;
+    if(roundDecided) return false;
     if(maybeTriggerCampaignStandardBonusDraft(index,"kill")) return true;
     if(maybeTriggerLocalBonusDraft(index,"kill")) return true;
     return maybeTriggerCampaignKillAbilityDraft(index);
@@ -413,8 +417,11 @@
 
     addLog(`✨ ${p.name} wählt als ${slot}. Fähigkeit: ${ABILITIES[id].name}.`);
 
-    if(id===23 && index===current && (phase.startsWith("attack") || phase==="counterattack")){
-      activateBloodRushMidAttackIfEligible(index);
+    if(id===23){
+      p.damageSinceLastOwnTurn=false;
+      p.masterySelfDamageSinceLastOwnTurn=false;
+      p.bloodRushPrimed=false;
+      p.voluntaryHpPaidThisTurn=false;
     }
 
     renderAll();
@@ -435,7 +442,7 @@
     if(pendingCounterattack){
       const ctx=pendingCounterattack;
       pendingCounterattack=null;
-      setTimeout(()=>openCounterattack(ctx.defenderIndex,ctx.attackerIndex),120);
+      setTimeout(()=>openCounterattack(ctx.defenderIndex,ctx.attackerIndex,ctx.restoreHp,ctx.incomingDamage,ctx.lastStandTriggered),120);
       return;
     }
 
