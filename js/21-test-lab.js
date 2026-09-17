@@ -351,6 +351,10 @@
   let dpr=1;
   let fireParticles=[];
   let activeLabFx=[];
+  // Dimensionsbiss: gemalter Kopf als WebP mit Alpha, Ober- und Unterkiefer werden getrennt gezeichnet.
+  const dimensionbiteSprite=new Image();
+  dimensionbiteSprite.decoding='async';
+  dimensionbiteSprite.src=`assets/ui/v28/png/fx/attack-fx-dimensionsbiss-head.webp?v=${ASSET_REV}`;
   let activeKillFx=[];
   let lastLabAttack={source:null,target:null,style:null,at:0};
   let labHpSnapshot=[];
@@ -405,7 +409,9 @@
       quantumleap:['#75ffe1','#b06cff'],
       cometshower:['#ffd45a','#ff704f'],
       timefracture:['#ffd45a','#75ffe1'],
-      mirrorstorm:['#75ffe1','#fff4bf']
+      mirrorstorm:['#75ffe1','#fff4bf'],
+      dimensionbite:['#75e8ff','#b06cff'],
+      runestrike:['#ffd45a','#4a8ff0']
     }[style]||['#ffffff','#77bfff'];
   }
 
@@ -417,7 +423,7 @@
     const fx={
       id:`labfx-${Date.now()}-${Math.random()}`,
       style,from,to,start:performance.now(),
-      duration:style==='lightning'?430:style==='blood'?480:style==='crown'?850:style==='soulbreak'?1200:style==='solarsplash'?1250:style==='trigonbomb'?1300:style==='confettibomb'?1350:style==='polygon'?1320:style==='missile'?1400:style==='thunderstrike'?1300:style==='catattack'?1350:style==='quantumleap'?1450:style==='cometshower'?1550:style==='timefracture'?1500:style==='mirrorstorm'?1580:700,
+      duration:style==='lightning'?430:style==='blood'?480:style==='crown'?850:style==='soulbreak'?1200:style==='solarsplash'?1250:style==='trigonbomb'?1300:style==='confettibomb'?1350:style==='polygon'?1320:style==='missile'?1400:style==='thunderstrike'?1300:style==='catattack'?1350:style==='quantumleap'?1450:style==='cometshower'?1550:style==='timefracture'?1500:style==='mirrorstorm'?1580:style==='dimensionbite'?2050:style==='runestrike'?1750:700,
       seed:Math.random()*999
     };
     activeLabFx.push(fx);
@@ -437,7 +443,7 @@
         const from=cardCenter(event?.source),to=cardCenter(event?.target);
         if(!from||!to) return false;
         const style=String(event?.style||players?.[Number(event?.source)]?.attackFx||'classic');
-        activeLabFx.push({id:event?.id||`labplay-${Date.now()}`,style,from,to,start:performance.now(),duration:style==='soulbreak'?1200:style==='solarsplash'?1250:style==='trigonbomb'?1300:style==='confettibomb'?1350:style==='polygon'?1320:style==='missile'?1400:style==='thunderstrike'?1300:style==='catattack'?1350:style==='quantumleap'?1450:style==='cometshower'?1550:style==='timefracture'?1500:style==='mirrorstorm'?1580:700,seed:Math.random()*999});
+        activeLabFx.push({id:event?.id||`labplay-${Date.now()}`,style,from,to,start:performance.now(),duration:style==='soulbreak'?1200:style==='solarsplash'?1250:style==='trigonbomb'?1300:style==='confettibomb'?1350:style==='polygon'?1320:style==='missile'?1400:style==='thunderstrike'?1300:style==='catattack'?1350:style==='quantumleap'?1450:style==='cometshower'?1550:style==='timefracture'?1500:style==='mirrorstorm'?1580:style==='dimensionbite'?2050:style==='runestrike'?1750:700,seed:Math.random()*999});
         return true;
       },
       // Kill-Finisher: im Labor der eigene Renderer, sonst der Kern. Ohne diese
@@ -1227,6 +1233,19 @@
     if(t>.56&&t<.78){const bounce=Math.max(0,Math.min(1,(t-.56)/.18)),steps=Math.min(6,Math.floor(bounce*7));for(let i=0;i<steps;i++)drawMirrorBeam(mirrors[i],mirrors[(i*2+3)%6],i%2?'#75ffe1':'#ffd45a',.8,2.5);}
     const converge=Math.max(0,Math.min(1,(t-.69)/.17))*Math.max(0,1-(t-.86)/.08);if(converge>0)for(let i=0;i<6;i++)drawMirrorBeam(mirrors[i],fx.to,i%2?'#75ffe1':'#fff4bf',converge,3.2);
   }
+  function drawDimensionJaw(x,y,size,gape,alpha,tilt=0){
+    if(alpha<=0)return;if(!dimensionbiteSprite.complete||!dimensionbiteSprite.naturalWidth){glowCircle(fxCtx,x,y,size*1.35,'#b06cff',alpha*.38);return;}
+    const iw=dimensionbiteSprite.naturalWidth,ih=dimensionbiteSprite.naturalHeight,split=.535,sy=Math.round(ih*split),w=size*3.05,h=w*ih/iw,close=1-Math.max(0,Math.min(1,gape)),hinge=-w*.15;fxCtx.save();fxCtx.translate(x,y);fxCtx.rotate(tilt);fxCtx.globalAlpha=alpha;fxCtx.shadowColor='#5939c9';fxCtx.shadowBlur=8;
+    fxCtx.save();fxCtx.beginPath();fxCtx.rect(-w*.62,-h*.7,w*1.28,h*.72);fxCtx.clip();fxCtx.translate(hinge,0);fxCtx.rotate(close*.31);fxCtx.translate(-hinge,0);fxCtx.drawImage(dimensionbiteSprite,0,0,iw,sy,-w*.58,-h*split,w,h*split);fxCtx.restore();
+    fxCtx.save();fxCtx.beginPath();fxCtx.rect(-w*.62,-2,w*1.28,h*.75);fxCtx.clip();fxCtx.translate(hinge,0);fxCtx.rotate(-close*.34);fxCtx.translate(-hinge,0);fxCtx.drawImage(dimensionbiteSprite,0,sy,iw,ih-sy,-w*.58,0,w,h*(1-split));fxCtx.restore();fxCtx.restore();
+  }
+  function dimensionBitePoint(fx,p){const q=Math.max(0,Math.min(1,p));return{x:lerp(fx.from.x+20,fx.to.x+24,q),y:lerp(fx.from.y,fx.to.y,q)-Math.sin(q*Math.PI)*78+Math.sin(q*Math.PI*2)*12};}
+  function drawDimensionbite(fx,t){
+    const open=Math.max(0,Math.min(1,(t-.06)/.16)),riftFade=t<.72?open:Math.max(0,1-(t-.72)/.14),rx=fx.from.x+42,ry=fx.from.y;if(riftFade>0){fxCtx.save();fxCtx.globalCompositeOperation='lighter';fxCtx.globalAlpha=riftFade;fxCtx.strokeStyle='#75e8ff';fxCtx.shadowColor='#b06cff';fxCtx.shadowBlur=18;fxCtx.lineWidth=3;fxCtx.beginPath();fxCtx.ellipse(rx,ry,22+open*30,12+open*18,-t*3.4,0,Math.PI*2);fxCtx.stroke();fxCtx.restore();}
+    const flight=Math.max(0,Math.min(1,(t-.18)/.56));if(t>.17&&t<.82){for(let i=14;i>=1;i--){const q=Math.max(0,flight-i*.026),p=dimensionBitePoint(fx,q);drawQuantumFragment(p.x,p.y,3+i*.16,-flight*8+i,(1-i/15)*.22,i%2?'#75e8ff':'#b06cff');}for(const lag of [.14,.075]){const q=Math.max(0,flight-lag);if(q>0&&t<.735){const p=dimensionBitePoint(fx,q),n=dimensionBitePoint(fx,Math.min(1,q+.012));drawDimensionJaw(p.x,p.y,36+q*27,.82,(.07+q*.06)*(1-Math.max(0,(t-.68)/.055)),Math.atan2(n.y-p.y,n.x-p.x)*.5);}}const p=dimensionBitePoint(fx,flight),n=dimensionBitePoint(fx,Math.min(1,flight+.012)),rush=Math.max(0,(flight-.7)/.3),bite=Math.max(0,Math.min(1,(t-.665)/.075)),vanish=1-Math.max(0,Math.min(1,(t-.745)/.065)),bob=Math.sin(flight*Math.PI*6)*5*(1-rush),size=44+flight*24+rush*4,gape=bite>0?lerp(1,.02,easeInOut(bite)):.76+.2*(.5+.5*Math.sin(flight*Math.PI*5));drawDimensionJaw(p.x+easeOutCubic(bite)*12,p.y+bob,size,gape,vanish,Math.atan2(n.y-p.y,n.x-p.x)*.55);}
+  }
+  function drawRuneOrbit(x,y,rx,ry,rot,alpha,color){if(alpha<=0)return;fxCtx.save();fxCtx.translate(x,y);fxCtx.rotate(rot);fxCtx.globalCompositeOperation='lighter';fxCtx.globalAlpha=alpha;fxCtx.strokeStyle=color;fxCtx.shadowColor=color;fxCtx.shadowBlur=14;fxCtx.lineWidth=3;fxCtx.beginPath();fxCtx.ellipse(0,0,rx,ry,0,0,Math.PI*2);fxCtx.stroke();for(let i=0;i<10;i++){const a=i*Math.PI/5;fxCtx.save();fxCtx.translate(Math.cos(a)*rx,Math.sin(a)*ry);fxCtx.rotate(a);fxCtx.strokeRect(-4,-4,8,8);fxCtx.restore();}fxCtx.restore();}
+  function drawRunestrike(fx,t){const l1=Math.min(1,t/.18),l2=Math.max(0,Math.min(1,(t-.12)/.2)),l3=Math.max(0,Math.min(1,(t-.24)/.2)),fade=t<.88?1:Math.max(0,1-(t-.88)/.12);drawRuneOrbit(fx.to.x,fx.to.y,40+l1*24,16+l1*8,t*4,l1*fade,'#ffd45a');drawRuneOrbit(fx.to.x,fx.to.y,52+l2*28,20+l2*10,-t*5+.75,l2*fade,'#fff4bf');drawRuneOrbit(fx.to.x,fx.to.y,64+l3*28,24+l3*12,t*6-1,l3*fade,'#f6d679');if(t>.53&&t<.8){const beam=Math.min(1,(t-.53)/.045)*Math.max(0,1-(t-.71)/.09);fxCtx.save();fxCtx.globalAlpha=beam;fxCtx.strokeStyle='#4a8ff0';fxCtx.shadowColor='#75e8ff';fxCtx.shadowBlur=30;fxCtx.lineWidth=22;fxCtx.beginPath();fxCtx.moveTo(fx.to.x,-20);fxCtx.lineTo(fx.to.x,fx.to.y);fxCtx.stroke();fxCtx.strokeStyle='#fff';fxCtx.lineWidth=7;fxCtx.stroke();fxCtx.restore();}}
   function impactRing(x,y,color,e,maxR=52,width=2.4,alpha=.75){
     if(e<=0||e>=1) return;
     fxCtx.save();
@@ -1431,6 +1450,10 @@
         impactSparks(x,y,c2,e,12,68);
         break;
 
+      case 'dimensionbite':
+        e=Math.max(0,(t-.7)/.3);impactFlash(x,y,'#ffffff',e,166,.96);impactRing(x,y,c1,e,158,5.5,.98);impactRing(x,y,c2,Math.min(1,e*1.14),122,3.6,.86);impactShards(x,y,c1,e,28,142);break;
+      case 'runestrike':
+        e=Math.max(0,(t-.56)/.44);impactFlash(x,y,'#ffffff',e,158,.9);impactRing(x,y,c2,e,154,4.5,.94);impactRing(x,y,c1,Math.min(1,e*1.16),118,3,.78);impactShards(x,y,c1,e,22,126);break;
       default:
         e=Math.max(0,(t-.68)/.32);
         impactFlash(x,y,c1,e,40,.32);
@@ -1466,6 +1489,8 @@
       case 'cometshower':drawCometshower(fx,t);break;
       case 'timefracture':drawTimefracture(fx,t);break;
       case 'mirrorstorm':drawMirrorstorm(fx,t);break;
+      case 'dimensionbite':drawDimensionbite(fx,t);break;
+      case 'runestrike':drawRunestrike(fx,t);break;
       default:drawArcShot(fx,t);break;
     }
     drawImpactForStyle(fx,t);
@@ -1563,6 +1588,10 @@
         tone(1100,0,.12,'sine',.018,1480);tone(1480,.11,.13,'triangle',.018,820);tone(1860,.23,.12,'sine',.016,980);noiseBurst(.36,.16,.03,1700);break;
       case 'crown':
         tone(392,0,.14,'triangle',.026);tone(587,.06,.18,'triangle',.03);tone(784,.13,.22,'sine',.024);noiseBurst(.17,.08,.012,1100);break;
+      case 'dimensionbite':
+        tone(118,0,.46,'sawtooth',.035,48);tone(420,.2,.22,'triangle',.022,110);noiseBurst(.48,.2,.042,360);break;
+      case 'runestrike':
+        tone(392,0,.18,'triangle',.022,784);tone(784,.18,.2,'sine',.024,1568);noiseBurst(.42,.18,.04,720);break;
       default:
         tone(260,0,.15,'triangle',.025,110);noiseBurst(.05,.08,.016,900);break;
     }
@@ -1581,7 +1610,7 @@
       start:performance.now(),
       duration:{
         lightning:820,flame:1050,venom:1050,blood:820,jackpot:1150,
-        void:1200,confetti:1150,frost:1000,rift:1100,crown:1250,soulbreak:1350,solarsplash:1450,trigonbomb:1500,confettibomb:1550,polygon:1600,missile:1650,thunderstrike:1650,catattack:1750,quantumleap:1750,cometshower:1850,timefracture:1800,mirrorstorm:1900
+        void:1200,confetti:1150,frost:1000,rift:1100,crown:1250,soulbreak:1350,solarsplash:1450,trigonbomb:1500,confettibomb:1550,polygon:1600,missile:1650,thunderstrike:1650,catattack:1750,quantumleap:1750,cometshower:1850,timefracture:1800,mirrorstorm:1900,dimensionbite:2050,runestrike:1900
       }[style]||900,
       seed:Math.random()*999,
       preview
@@ -1908,6 +1937,8 @@
       case 'cometshower':killCometshower(fx,t);break;
       case 'timefracture':killTimefracture(fx,t);break;
       case 'mirrorstorm':killMirrorstorm(fx,t);break;
+      case 'dimensionbite':killRift(fx,t);break;
+      case 'runestrike':killCrown(fx,t);break;
       default:killArc(fx,t);break;
     }
     return true;

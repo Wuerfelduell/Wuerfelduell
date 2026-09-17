@@ -3,7 +3,7 @@
   let localModeId="classic";
   function localModeRules(){return LOCAL_MODES[localModeId]||LOCAL_MODES.classic;}
 
-  const GAME_VERSION="28.14.13";
+  const GAME_VERSION="28.14.14";
   // Gemeinsamer Bild-Cache-Schluessel; identisch mit den Bild-URLs in HTML und CSS.
   const ASSET_REV="28.12.48";
   const SAVE_KEY="wuerfelduell_save_v1"; // absichtlich stabil: Updates lesen denselben Browser-Save
@@ -98,7 +98,9 @@
     quantumleap:{name:"Quantensprung",desc:"Der Angriff zerfällt in Quantenfragmente und materialisiert sich mit verschränkten Energieringen am Ziel.",labor:true},
     cometshower:{name:"Kometenschauer",desc:"Sechs kleine Kometen schlagen versetzt ein, bevor ein großer Hauptkomet den Angriff beendet.",labor:true},
     timefracture:{name:"Zeitbruch",desc:"Ein Zeitsplitter erzeugt eingefrorene Nachbilder und drei zeitversetzte Echo-Treffer.",labor:true},
-    mirrorstorm:{name:"Spiegelsturm",desc:"Sechs schwebende Spiegel lenken Lichtstrahlen um, feuern gleichzeitig und zerbrechen in einen Splitterring.",labor:true}
+    mirrorstorm:{name:"Spiegelsturm",desc:"Sechs schwebende Spiegel lenken Lichtstrahlen um, feuern gleichzeitig und zerbrechen in einen Splitterring.",labor:true},
+    dimensionbite:{name:"Dimensionsbiss",desc:"Ein gemalter Dimensionsräuber gleitet durch einen Riss und schnappt am Ziel mit einem echten Biss zu.",labor:true},
+    runestrike:{name:"Runen-Orbitalschlag",desc:"Drei rotierende Runenorbits erfassen das Ziel und bündeln einen blau-goldenen Vertikalschlag.",labor:true}
   };
   const ATTACK_FX_UNLOCK_ACHIEVEMENT={
     lightning:"momentum_mori",flame:"critical_hit",venom:"backstab",blood:"vampiric_touch",

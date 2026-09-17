@@ -222,12 +222,13 @@ try{
     const knopf=o?.querySelector('.shop-vorschau-schliessen'),bild=knopf?.querySelector('.prestige-button-artwork');
     return {offen:!!o&&!o.classList.contains('hidden'),name:o?.querySelector('.shop-vorschau-name')?.textContent||'',ebene:c.style.zIndex,lit,
       breit:document.documentElement.scrollWidth<=window.innerWidth,
-      knopf:Math.round(knopf?.getBoundingClientRect().height||0),knopfBild:!!bild&&getComputedStyle(bild).position==='absolute'&&Math.round(bild.getBoundingClientRect().height)===56};});
+      knopf:Math.round(knopf?.getBoundingClientRect().height||0),knopfBild:!!bild&&getComputedStyle(bild).position==='absolute'&&Math.round(bild.getBoundingClientRect().height)===56,
+      imBody:c.parentElement===document.body};});
   await p.click('#dailyVorschauOverlay .shop-vorschau-schliessen');await p.waitForTimeout(120);
-  const vorschauZu=await p.evaluate(()=>({offen:!document.getElementById('dailyVorschauOverlay').classList.contains('hidden'),ebene:document.getElementById('attackFxCanvasMain').style.zIndex}));
-  const vorschauOk=vorschau.offen&&vorschau.name.length>1&&vorschau.ebene==='12070'&&vorschau.lit>0&&vorschau.breit&&vorschau.knopf===56&&vorschau.knopfBild;
+  const vorschauZu=await p.evaluate(()=>({offen:!document.getElementById('dailyVorschauOverlay').classList.contains('hidden'),ebene:document.getElementById('attackFxCanvasMain').style.zIndex,imLayer:document.getElementById('attackFxCanvasMain').parentElement?.id==='attackFxLayer'}));
+  const vorschauOk=vorschau.offen&&vorschau.name.length>1&&vorschau.ebene==='12070'&&vorschau.lit>0&&vorschau.breit&&vorschau.knopf===56&&vorschau.knopfBild&&vorschau.imBody;
   pruefe('Vorschau: Fenster offen, Effektname gesetzt, Leinwand ueber dem Fenster und zeichnet',vorschauOk?true:JSON.stringify(vorschau),true);
-  pruefe('Vorschau: Schliessen versteckt das Fenster und senkt die Leinwand',!vorschauZu.offen&&vorschauZu.ebene==='1',true);
+  pruefe('Vorschau: Schliessen versteckt das Fenster und senkt die Leinwand',!vorschauZu.offen&&vorschauZu.ebene==='1'&&vorschauZu.imLayer,true);
 
   // 11. Ruhe.
   await p.click('#prestigeShopScreen .shop-tab-btn[data-shop-tab="chests"]');await p.waitForTimeout(300);

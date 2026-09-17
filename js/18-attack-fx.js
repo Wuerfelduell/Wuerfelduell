@@ -11,6 +11,10 @@
   canvas.style.cssText="position:fixed;inset:0;width:100vw;height:100vh;pointer-events:none;z-index:1;";
   domLayer.appendChild(canvas);
   const ctx=canvas.getContext("2d");
+  // Dimensionsbiss: gemalter Kopf als WebP mit Alpha, Ober- und Unterkiefer werden getrennt gezeichnet.
+  const dimensionbiteSprite=new Image();
+  dimensionbiteSprite.decoding="async";
+  dimensionbiteSprite.src=`assets/ui/v28/png/fx/attack-fx-dimensionsbiss-head.webp?v=${ASSET_REV}`;
 
   const FX_SPRITE_ROOT="assets/ui/v28/svg/";
   const FX_SPRITE_PATHS={
@@ -95,7 +99,9 @@
       quantumleap:['#75ffe1','#b06cff'],
       cometshower:['#ffd45a','#ff704f'],
       timefracture:['#ffd45a','#75ffe1'],
-      mirrorstorm:['#75ffe1','#fff4bf']
+      mirrorstorm:['#75ffe1','#fff4bf'],
+      dimensionbite:['#75e8ff','#b06cff'],
+      runestrike:['#ffd45a','#4a8ff0']
     }[style]||['#ffffff','#77bfff'];
   }
   function easeOutCubic(t){return 1-Math.pow(1-t,3)}
@@ -846,6 +852,45 @@
   }
 
 
+  function drawDimensionJaw(x,y,size,gape,alpha,tilt=0){
+    if(alpha<=0)return;
+    if(!dimensionbiteSprite.complete||!dimensionbiteSprite.naturalWidth){
+      glowCircle(ctx,x,y,size*1.35,'#b06cff',alpha*.38);return;
+    }
+    const iw=dimensionbiteSprite.naturalWidth,ih=dimensionbiteSprite.naturalHeight,split=.535,sy=Math.round(ih*split),w=size*3.05,h=w*ih/iw,close=1-Math.max(0,Math.min(1,gape)),hinge=-w*.15;
+    ctx.save();ctx.translate(x,y);ctx.rotate(tilt);ctx.globalAlpha=alpha;ctx.shadowColor='#5939c9';ctx.shadowBlur=8;
+    ctx.save();ctx.beginPath();ctx.rect(-w*.62,-h*.7,w*1.28,h*.72);ctx.clip();ctx.translate(hinge,0);ctx.rotate(close*.31);ctx.translate(-hinge,0);ctx.drawImage(dimensionbiteSprite,0,0,iw,sy,-w*.58,-h*split,w,h*split);ctx.restore();
+    ctx.save();ctx.beginPath();ctx.rect(-w*.62,-2,w*1.28,h*.75);ctx.clip();ctx.translate(hinge,0);ctx.rotate(-close*.34);ctx.translate(-hinge,0);ctx.drawImage(dimensionbiteSprite,0,sy,iw,ih-sy,-w*.58,0,w,h*(1-split));ctx.restore();ctx.restore();
+  }
+
+  function dimensionBitePoint(fx,p){
+    const q=Math.max(0,Math.min(1,p));
+    return{x:lerp(fx.from.x+20,fx.to.x+24,q),y:lerp(fx.from.y,fx.to.y,q)-Math.sin(q*Math.PI)*78+Math.sin(q*Math.PI*2)*12};
+  }
+
+  function drawDimensionbite(fx,t){
+    const open=Math.max(0,Math.min(1,(t-.06)/.16)),riftFade=t<.72?open:Math.max(0,1-(t-.72)/.14),rx=fx.from.x+42,ry=fx.from.y;
+    if(riftFade>0){ctx.save();ctx.globalCompositeOperation='lighter';ctx.globalAlpha=riftFade;ctx.strokeStyle='#75e8ff';ctx.shadowColor='#b06cff';ctx.shadowBlur=18;ctx.lineWidth=3;ctx.beginPath();ctx.ellipse(rx,ry,22+open*30,12+open*18,-t*3.4,0,Math.PI*2);ctx.stroke();ctx.restore();}
+    const flight=Math.max(0,Math.min(1,(t-.18)/.56));
+    if(t>.17&&t<.82){
+      for(let i=14;i>=1;i--){const q=Math.max(0,flight-i*.026),p=dimensionBitePoint(fx,q);drawQuantumFragment(p.x,p.y,3+i*.16,-flight*8+i,(1-i/15)*.22,i%2?'#75e8ff':'#b06cff');}
+      for(const lag of [.14,.075]){const q=Math.max(0,flight-lag);if(q>0&&t<.735){const p=dimensionBitePoint(fx,q),n=dimensionBitePoint(fx,Math.min(1,q+.012));drawDimensionJaw(p.x,p.y,36+q*27,.82,(.07+q*.06)*(1-Math.max(0,(t-.68)/.055)),Math.atan2(n.y-p.y,n.x-p.x)*.5);}}
+      const p=dimensionBitePoint(fx,flight),n=dimensionBitePoint(fx,Math.min(1,flight+.012)),rush=Math.max(0,(flight-.7)/.3),bite=Math.max(0,Math.min(1,(t-.665)/.075)),vanish=1-Math.max(0,Math.min(1,(t-.745)/.065)),bob=Math.sin(flight*Math.PI*6)*5*(1-rush),size=44+flight*24+rush*4,gape=bite>0?lerp(1,.02,easeInOut(bite)):.76+.2*(.5+.5*Math.sin(flight*Math.PI*5));
+      drawDimensionJaw(p.x+easeOutCubic(bite)*12,p.y+bob,size,gape,vanish,Math.atan2(n.y-p.y,n.x-p.x)*.55);
+    }
+  }
+
+  function drawRuneOrbit(x,y,rx,ry,rot,alpha,color){
+    if(alpha<=0)return;ctx.save();ctx.translate(x,y);ctx.rotate(rot);ctx.globalCompositeOperation='lighter';ctx.globalAlpha=alpha;ctx.strokeStyle=color;ctx.shadowColor=color;ctx.shadowBlur=14;ctx.lineWidth=3;ctx.beginPath();ctx.ellipse(0,0,rx,ry,0,0,Math.PI*2);ctx.stroke();for(let i=0;i<10;i++){const a=i*Math.PI/5;ctx.save();ctx.translate(Math.cos(a)*rx,Math.sin(a)*ry);ctx.rotate(a);ctx.strokeRect(-4,-4,8,8);ctx.restore();}ctx.restore();
+  }
+
+  function drawRunestrike(fx,t){
+    const l1=Math.min(1,t/.18),l2=Math.max(0,Math.min(1,(t-.12)/.2)),l3=Math.max(0,Math.min(1,(t-.24)/.2)),fade=t<.88?1:Math.max(0,1-(t-.88)/.12);
+    drawRuneOrbit(fx.to.x,fx.to.y,40+l1*24,16+l1*8,t*4,l1*fade,'#ffd45a');drawRuneOrbit(fx.to.x,fx.to.y,52+l2*28,20+l2*10,-t*5+.75,l2*fade,'#fff4bf');drawRuneOrbit(fx.to.x,fx.to.y,64+l3*28,24+l3*12,t*6-1,l3*fade,'#f6d679');
+    if(t>.53&&t<.8){const beam=Math.min(1,(t-.53)/.045)*Math.max(0,1-(t-.71)/.09);ctx.save();ctx.globalAlpha=beam;ctx.strokeStyle='#4a8ff0';ctx.shadowColor='#75e8ff';ctx.shadowBlur=30;ctx.lineWidth=22;ctx.beginPath();ctx.moveTo(fx.to.x,-20);ctx.lineTo(fx.to.x,fx.to.y);ctx.stroke();ctx.strokeStyle='#fff';ctx.lineWidth=7;ctx.stroke();ctx.restore();}
+  }
+
+
   function impactRing(x,y,color,e,maxR=52,width=2.4,alpha=.75){
     if(e<=0||e>=1) return;
     ctx.save();
@@ -1047,6 +1092,10 @@
         e=Math.max(0,(t-.74)/.26);impactFlash(x,y,'#ffffff',e,126,.72);impactRing(x,y,c1,e,142,3.5,.88);impactRing(x,y,c2,Math.min(1,e*1.16),104,2.5,.7);break;
       case 'mirrorstorm':
         e=Math.max(0,(t-.8)/.2);impactFlash(x,y,'#ffffff',e,138,.82);impactRing(x,y,c1,e,148,3.8,.9);for(let i=0;i<30;i++){const a=i*2.399,d=e*(38+(i%7)*15);drawMirrorShard(x+Math.cos(a)*d,y+Math.sin(a)*d*.65,4+i%3,9+i%5,a+e*8,(1-e)*.82,i%3===0);}break;
+      case 'dimensionbite':
+        e=Math.max(0,(t-.7)/.3);impactFlash(x,y,'#ffffff',e,166,.96);impactRing(x,y,c1,e,158,5.5,.98);impactRing(x,y,c2,Math.min(1,e*1.14),122,3.6,.86);impactShards(x,y,c1,e,28,142);break;
+      case 'runestrike':
+        e=Math.max(0,(t-.56)/.44);impactFlash(x,y,'#ffffff',e,158,.9);impactRing(x,y,c2,e,154,4.5,.94);impactRing(x,y,c1,Math.min(1,e*1.16),118,3,.78);impactShards(x,y,c1,e,22,126);break;
       default:
         e=Math.max(0,(t-.68)/.32);
         impactFlash(x,y,c1,e,40,.32);
@@ -1082,6 +1131,8 @@
       case 'cometshower':drawCometshower(fx,t);break;
       case 'timefracture':drawTimefracture(fx,t);break;
       case 'mirrorstorm':drawMirrorstorm(fx,t);break;
+      case 'dimensionbite':drawDimensionbite(fx,t);break;
+      case 'runestrike':drawRunestrike(fx,t);break;
       default:drawArcShot(fx,t);break;
     }
     drawImpactForStyle(fx,t);
@@ -1179,6 +1230,10 @@
         tone(760,0,.18,'triangle',.02,340);tone(980,.14,.16,'sine',.018,520);tone(1240,.28,.14,'triangle',.018,680);noiseBurst(.39,.1,.014,1500);break;
       case 'mirrorstorm':
         tone(1100,0,.12,'sine',.018,1480);tone(1480,.11,.13,'triangle',.018,820);tone(1860,.23,.12,'sine',.016,980);noiseBurst(.36,.16,.03,1700);break;
+      case 'dimensionbite':
+        tone(118,0,.46,'sawtooth',.035,48);tone(420,.2,.22,'triangle',.022,110);noiseBurst(.48,.2,.042,360);break;
+      case 'runestrike':
+        tone(392,0,.18,'triangle',.022,784);tone(784,.18,.2,'sine',.024,1568);noiseBurst(.42,.18,.04,720);break;
       default:
         tone(260,0,.15,'triangle',.025,110);noiseBurst(.05,.08,.016,900);break;
     }
@@ -1198,7 +1253,7 @@
       duration:{
         lightning:820,flame:1050,venom:1050,blood:820,jackpot:1150,
         void:1200,confetti:1150,frost:1000,rift:1100,crown:1250,soulbreak:1350,
-        solarsplash:1450,trigonbomb:1500,confettibomb:1550,polygon:1600,missile:1650,thunderstrike:1650,catattack:1750,quantumleap:1750,cometshower:1850,timefracture:1800,mirrorstorm:1900
+        solarsplash:1450,trigonbomb:1500,confettibomb:1550,polygon:1600,missile:1650,thunderstrike:1650,catattack:1750,quantumleap:1750,cometshower:1850,timefracture:1800,mirrorstorm:1900,dimensionbite:2050,runestrike:1900
       }[style]||900,
       seed:Math.random()*999,
       preview
@@ -1518,6 +1573,8 @@
       case 'cometshower':killCometshower(fx,t);break;
       case 'timefracture':killTimefracture(fx,t);break;
       case 'mirrorstorm':killMirrorstorm(fx,t);break;
+      case 'dimensionbite':killRift(fx,t);break;
+      case 'runestrike':killCrown(fx,t);break;
       default:killArc(fx,t);break;
     }
     return true;
@@ -1540,7 +1597,7 @@
       kind:String(event.kind||event.variant||"laser"),
       amount:Number(event.amount)||0,
       face:event.face==null?null:Number(event.face),
-      from,to,start:performance.now(),duration:style==='soulbreak'?1200:style==='solarsplash'?1250:style==='trigonbomb'?1300:style==='confettibomb'?1350:style==='polygon'?1320:style==='missile'?1400:style==='thunderstrike'?1380:style==='catattack'?1450:style==='quantumleap'?1450:style==='cometshower'?1550:style==='timefracture'?1500:style==='mirrorstorm'?1580:760,
+      from,to,start:performance.now(),duration:style==='soulbreak'?1200:style==='solarsplash'?1250:style==='trigonbomb'?1300:style==='confettibomb'?1350:style==='polygon'?1320:style==='missile'?1400:style==='thunderstrike'?1380:style==='catattack'?1450:style==='quantumleap'?1450:style==='cometshower'?1550:style==='timefracture'?1500:style==='mirrorstorm'?1580:style==='dimensionbite'?2050:style==='runestrike'?1750:760,
       seed:Math.random()*999
     };
   }
@@ -1594,7 +1651,14 @@
     addKillFx(resolved,-1,-1,true,{x:r.x,y:r.y,width:r.width,height:r.height});
     return activeKillFx[activeKillFx.length-1]?.duration||900;
   }
-  function ebene(z){canvas.style.zIndex=z==null?"1":String(z);}
+  // Der Effekt-Layer bildet einen eigenen Stapelkontext; ein hoher z-index der
+  // Leinwand darin bleibt unter dem Vorschaufenster. Fuer die Vorschau haengt
+  // die Leinwand deshalb direkt im Body und kehrt danach in den Layer zurueck.
+  function ebene(z){
+    if(z==null){canvas.style.zIndex="1";if(canvas.parentElement!==domLayer) domLayer.appendChild(canvas);return;}
+    canvas.style.zIndex=String(z);
+    if(canvas.parentElement!==document.body) document.body.appendChild(canvas);
+  }
 
   function kill(source,target,style=null){
     const src=Number(source),dst=Number(target);
