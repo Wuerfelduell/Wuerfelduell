@@ -3,12 +3,12 @@
     // Funktioniert auch für Würfe außerhalb des aktiven Spielers, z.B. Counterattack.
     if(hasAbility(7,index)){
       const sixChance=(1/6)+0.06+(hasMasteryUpgrade(7,1,index)?0.01:0)+(hasMasteryUpgrade(7,2,index)?0.01:0);
-      const r=Math.random();
+      const r=window.WDRng.random();
       if(r<sixChance) return 6;
       const normalized=(r-sixChance)/(1-sixChance);
       return Math.min(5,Math.floor(normalized*5)+1);
     }
-    return Math.floor(Math.random()*6)+1;
+    return Math.floor(window.WDRng.random()*6)+1;
   }
 
   function randDie(){
@@ -74,13 +74,13 @@
 
     const scored=options.map(id=>({
       id,
-      score:botAbilitySynergyScore(id,owned)+(Math.random()*noise)
+      score:botAbilitySynergyScore(id,owned)+(window.WDRng.random()*noise)
     })).sort((a,b)=>b.score-a.score);
 
     // Leicht ist absichtlich nicht perfekt, aber nie mehr komplett zufällig:
     // Aus den drei besten Optionen wird gelegentlich nicht Platz 1 genommen.
     if(level==="easy" && scored.length>1){
-      const r=Math.random();
+      const r=window.WDRng.random();
       if(r<0.18) return scored[Math.min(1,scored.length-1)].id;
       if(r<0.23) return scored[Math.min(2,scored.length-1)].id;
     }
@@ -475,7 +475,7 @@
 
     // Easy = früheres Normal.
     if(level==="easy"){
-      return base<=6 || (Math.floor(base*1.5)>=targetHp && Math.random()<.72);
+      return base<=6 || (Math.floor(base*1.5)>=targetHp && window.WDRng.random()<.72);
     }
 
     // Normal = früheres Hard.

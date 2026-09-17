@@ -5,6 +5,8 @@
   if (!pack) return;
 
   Object.assign(pack.exact, {
+    "Vorbereitung für eine gemeinsame Kampf-Engine: Zufallsadapter und flüchtiges Host-Aktionsprotokoll, ohne Änderung der Spielregeln": "Preparation for a shared battle engine: random number adapter and an in-memory host action log, without changing the game rules",
+    "Ein neuer Prüfstand spielt einen Bot-Kampf zweimal mit denselben Zufallsziehungen nach; die Serverumstellung bleibt bis zur Freigabe des Entwurfs offen": "A new test replays a bot battle twice with the same random draws; the server transition remains pending until the design is approved",
     "Die Währungserklärung im Shop steht im selben Navy-Rahmen wie die Kisten- und Paketkarten, mit Luft zum oberen Ornament": "The currency explanation in the shop sits in the same navy frame as the chest and pack cards, with room below the top ornament",
     "Private Online-Tische geben keine Duellmarken mehr – sonst ließe sich mit Haupt- und Gastprofil am selben Tisch farmen": "Private online tables no longer give Duel Tokens; otherwise a main and a guest profile at the same table could farm them",
     "Für das kommende zufällige Online-Match gegen Fremde sind die Sätze festgelegt: 60 Duellmarken für einen Sieg, 20 für eine Niederlage – gebucht wird erst, wenn es den Modus gibt": "The rates for the upcoming random online match against strangers are set: 60 Duel Tokens for a win, 20 for a loss; they are credited only once that mode exists",

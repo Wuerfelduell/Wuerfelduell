@@ -779,6 +779,11 @@
     if(!isOnlineMatch() || !onlineSession.isHost || !request) throw new Error("ONLINE_NOT_HOST");
     if(!actionOwnerMatches(request)) throw new Error("WRONG_INTERACTION_OWNER");
     const rollVisual=isOnlineRollVisual(request.type);
+    window.WDRng.diagnose(()=>{
+      if(!window.WDRng.inspect().recording)window.WDRng.startTrace({gameVersion:String(GAME_VERSION),state:exportOnlineState()});
+      window.WDRng.beginAction(request);
+    });
+    let traceStatus="error";
     try{
       executeOnlineAction(request);
       // Nur in die bestehende Publish-Warteschlange einreihen: kein Netz-Await
@@ -786,8 +791,10 @@
       publishProvisional?.({...exportOnlineState(request.id,request.type),settled:false});
       await waitForEngineSettled(String(request.type||""));
       enforceOnlineControls();
+      traceStatus="ok";
       return {...exportOnlineState(request.id,request.type),settled:true};
     }finally{
+      window.WDRng.diagnose(()=>window.WDRng.endAction(traceStatus));
       if(rollVisual) finishOnlineRollWindow();
     }
   }
@@ -841,6 +848,7 @@
   }
 
   function startOnlineMatch(match,localUid,localProfileId,isHost=false){
+    window.WDRng.reset();
     const matchPlayers=Array.isArray(match?.players)?match.players:[];
     onlineSession={active:true,uid:String(localUid||""),roomCode:String(match?.roomCode||""),isHost:!!isHost,lastStateSeq:Number(match?.state?.seq)||0,actionPending:false,pendingActionId:"",pendingActionType:"",previewActionId:"",previewType:"",transportConnected:true,pendingTimer:null,lastHostActionType:"",lastHostActionAt:0,lastCombatFxId:"",playedCombatFxIds:new Set(),localRoundCommitted:false,previewStart:0,revealTimer:null};
     installOnlineInputHooks();

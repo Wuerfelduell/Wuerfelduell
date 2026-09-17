@@ -1,5 +1,5 @@
-  function randAbilityRoll(){ return Math.floor(Math.random()*25)+1; }
-  function randD4(){ return Math.floor(Math.random()*4)+1; }
+  function randAbilityRoll(){ return Math.floor(window.WDRng.random()*25)+1; }
+  function randD4(){ return Math.floor(window.WDRng.random()*4)+1; }
 
   function resetRoundStats(){
     roundStats=players.map(()=>({

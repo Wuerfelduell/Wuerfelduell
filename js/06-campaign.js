@@ -1144,7 +1144,7 @@
       const block=new Set((blocked||[]).map(Number).filter(id=>id>0));
       const pool=CHOOSABLE_ABILITY_IDS.filter(id=>!block.has(id));
       if(!pool.length)return null;
-      return pool[Math.floor(Math.random()*pool.length)];
+      return pool[Math.floor(window.WDRng.random()*pool.length)];
     };
     const makeHero=(profile,ability,pos)=>{
       let third=REAL_ABILITY_IDS.includes(grants[pos])?grants[pos]:null;

@@ -4,6 +4,8 @@ import vm from "node:vm";
 const dataFiles=["js/02-campaign-solo-data.js","js/03-campaign-duo-data.js","js/03b-campaign-trio-data.js","js/03c-campaign-endgame-data.js","js/03d-endgame-mechanics.js"];
 const context={window:{WD_LANG_PACKS:{en:{exact:{},patterns:[]}}}};
 vm.createContext(context);
+vm.runInContext(fs.readFileSync('js/engine/01-rng.js','utf8'),context);
+context.window.WDRng=context.WDRng;
 const prelude=`const REAL_ABILITY_IDS=[1,2,3,4,5,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25];const START_HP=25;const BOSS_PHASES={};const ACHIEVEMENTS={};`;
 const localization=fs.readFileSync("lang/en-campaign.js","utf8");
 const expose=`result={worlds:[...CAMPAIGN_WORLDS,...DUO_CAMPAIGN_WORLDS,...TRIO_CAMPAIGN_WORLDS],encounters:[...CAMPAIGN_ENCOUNTERS,...DUO_CAMPAIGN_ENCOUNTERS,...TRIO_CAMPAIGN_ENCOUNTERS],phases:BOSS_PHASES,mutators:ELITE_MUTATORS,profiles:ENEMY_AI_PROFILES,modifiers:ENCOUNTER_MODIFIERS,rules:ENDGAME_WORLD_RULES,ruleHandlers:WORLD_RULE_RUNTIME_HANDLERS,modifierHandlers:ENCOUNTER_MODIFIER_RUNTIME_HANDLERS,mutatorHandlers:ELITE_MUTATOR_RUNTIME_HANDLERS,phaseCrossings:bossPhaseThresholdsCrossed,translations:window.WD_LANG_PACKS.en.exact};`;

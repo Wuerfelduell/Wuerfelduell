@@ -102,7 +102,7 @@ function desiredMode(){return String(onlineModeSelect?.value||"classic");}
 function onlineModeRules(id=desiredMode()){return ({classic:{id:"classic",name:"Classic",hp:25,abilities:1},endurance50:{id:"endurance50",name:"Endurance",hp:50,abilities:2},overload75:{id:"overload75",name:"Overload",hp:75,abilities:3}})[id]||({id:"classic",name:"Classic",hp:25,abilities:1});}
 function shuffledPlayers(players){
   const out=[...(players||[])];
-  for(let i=out.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[out[i],out[j]]=[out[j],out[i]];}
+  for(let i=out.length-1;i>0;i--){const j=Math.floor(window.WDRng.random()*(i+1));[out[i],out[j]]=[out[j],out[i]];}
   return out;
 }
 function makeCode(){
@@ -331,11 +331,11 @@ function handleSupabaseSnapshot(snapshot){
 }
 
 function randomOnlineAbility(){
-  const rolled=Math.floor(Math.random()*25)+1;
+  const rolled=Math.floor(window.WDRng.random()*25)+1;
   if(rolled!==6) return {rolledAbility:rolled,ability:rolled};
   const pool=Array.isArray(window.WDOnlineBridge?.getOnlineChoicePool?.())?window.WDOnlineBridge.getOnlineChoicePool():null;
   const choices=pool?.length?pool:[1,2,3,4,5,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25];
-  return {rolledAbility:6,ability:choices[Math.floor(Math.random()*choices.length)]};
+  return {rolledAbility:6,ability:choices[Math.floor(window.WDRng.random()*choices.length)]};
 }
 function buildMatch(players){
   const ordered=shuffledPlayers(players);

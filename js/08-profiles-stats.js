@@ -29,7 +29,7 @@
   function shuffledCopy(arr){
     const copy=[...arr];
     for(let i=copy.length-1;i>0;i--){
-      const j=Math.floor(Math.random()*(i+1));
+      const j=Math.floor(window.WDRng.random()*(i+1));
       [copy[i],copy[j]]=[copy[j],copy[i]];
     }
     return copy;
@@ -85,7 +85,7 @@
     let candidate=[...oldOrder].reverse();
 
     // Zufällige Rotation ändert die Gegner nicht, aber die sichtbare Reihenfolge.
-    const offset=Math.floor(Math.random()*candidate.length);
+    const offset=Math.floor(window.WDRng.random()*candidate.length);
     candidate=candidate.slice(offset).concat(candidate.slice(0,offset));
     players=candidate;
   }

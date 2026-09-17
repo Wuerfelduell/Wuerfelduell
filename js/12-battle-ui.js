@@ -42,7 +42,7 @@
     if(profile.target==="lowest_hp")return [...aliveHeroes].sort((a,b)=>(players[a].hp/Math.max(1,players[a].maxHp))-(players[b].hp/Math.max(1,players[b].maxHp)))[0];
     if(profile.target==="highest_hp")return [...aliveHeroes].sort((a,b)=>(players[b].hp/Math.max(1,players[b].maxHp))-(players[a].hp/Math.max(1,players[a].maxHp)))[0];
     if(profile.target==="last_attacker"&&aliveHeroes.includes(encounterRuntime?.lastHeroAttacker))return encounterRuntime.lastHeroAttacker;
-    if(profile.target==="random_valid")return aliveHeroes[Math.floor(Math.random()*aliveHeroes.length)];
+    if(profile.target==="random_valid")return aliveHeroes[Math.floor(window.WDRng.random()*aliveHeroes.length)];
 
     const rotating=campaignEnemyUsesRotatingTarget(from);
     const targetTurns=encounterRuntime?.enemyTargetTurns||{};

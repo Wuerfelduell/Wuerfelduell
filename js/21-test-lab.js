@@ -287,7 +287,7 @@
   if(typeof randDieForPlayer==='function'){
     const normalRandDieForPlayer=randDieForPlayer;
     randDieForPlayer=function(index){
-      if(inLab()) return Math.random()<0.5?5:6;
+      if(inLab()) return window.WDRng.random()<0.5?5:6;
       return normalRandDieForPlayer(index);
     };
   }

@@ -28,7 +28,7 @@
   // "fehlende Wuerfelanimation, der Wuerfel ist immer weiss" gemeldet.
   function tickSpecialDie(el){
     const key=players[current]?.diceDesign||"classic";
-    renderSpecialDieFace(el,key,randDie());
+    renderSpecialDieFace(el,key,window.WDRng.visual(()=>randDie()));
   }
 
   function isStraightFive(values){
@@ -227,7 +227,7 @@
     const pool=allowed.filter(a=>!owned.has(a) && a!==7);
 
     for(let i=pool.length-1;i>0;i--){
-      const j=Math.floor(Math.random()*(i+1));
+      const j=Math.floor(window.WDRng.random()*(i+1));
       [pool[i],pool[j]]=[pool[j],pool[i]];
     }
     return pool.slice(0,2);
@@ -784,7 +784,7 @@
 
     let ticks=0;
     const timer=setInterval(()=>{
-      perfect25D4Die.textContent=String(randD4());
+      perfect25D4Die.textContent=String(window.WDRng.visual(()=>randD4()));
       if(++ticks>=8) clearInterval(timer);
     },60);
 
