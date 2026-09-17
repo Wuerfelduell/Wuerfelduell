@@ -60,18 +60,20 @@
       `<div class="prestige-wallet shop-wallet" data-waehrung="marken"><span>${tr("Duellmarken")}</span><strong id="shopWalletMarken">${bildTag(SHOPBILD(WAEHRUNG_ICON.marken),"shop-wallet-icon")}<b>0</b></strong></div>`+
       `<div class="prestige-wallet shop-wallet" data-waehrung="kerne"><span>${tr("Würfelkerne")}</span><strong id="shopWalletKerne">${bildTag(SHOPBILD(WAEHRUNG_ICON.kerne),"shop-wallet-icon")}<b>0</b></strong></div>`);
     const tabs=document.createElement("div");tabs.className="shop-tabs";tabs.setAttribute("role","tablist");
-    [["chests","Kisten","tabs/tab-kisten.webp"],["trophies","Trophäen","tabs/tab-trophaeen.webp"],["currency","Währung","tabs/tab-waehrung.webp"]].forEach(([key,label,pfad])=>{
+    // Daily: bis zur Lieferung eines eigenen Reiter-Emblems (tabs/tab-daily.webp)
+    // traegt der Reiter das vorhandene Angriffs-Icon.
+    [["chests","Kisten","tabs/tab-kisten.webp"],["trophies","Trophäen","tabs/tab-trophaeen.webp"],["currency","Währung","tabs/tab-waehrung.webp"],["daily","Daily",null]].forEach(([key,label,pfad])=>{
       const b=document.createElement("button");b.type="button";b.className="shop-tab-btn";b.dataset.shopTab=key;b.setAttribute("role","tab");
-      b.innerHTML=`${bildTag(SHOPBILD(pfad),"shop-tab-emblem")}<span>${tr(label)}</span>`;
+      b.innerHTML=`${pfad?bildTag(SHOPBILD(pfad),"shop-tab-emblem"):icon("gameplay/attack.svg")}<span>${tr(label)}</span>`;
       b.onclick=()=>{tab=key;hinweis="";render();};
       tabs.appendChild(b);
     });
     head.after(tabs);
     const panel=(id)=>{const d=document.createElement("div");d.id=id;d.className="shop-tab-panel";return d;};
-    const trophies=panel("shopTabTrophies"),chests=panel("shopTabChests"),currency=panel("shopTabCurrency");
+    const trophies=panel("shopTabTrophies"),chests=panel("shopTabChests"),currency=panel("shopTabCurrency"),daily=panel("shopTabDaily");
     if(subtitle) trophies.appendChild(subtitle);
     trophies.appendChild(equipped);trophies.appendChild(list);
-    tabs.after(trophies,chests,currency);
+    tabs.after(trophies,chests,currency,daily);
     profilSelect()?.addEventListener("change",render);
   }
 
@@ -87,8 +89,10 @@
     screen.querySelector("#shopTabTrophies").classList.toggle("hidden",tab!=="trophies");
     screen.querySelector("#shopTabChests").classList.toggle("hidden",tab!=="chests");
     screen.querySelector("#shopTabCurrency").classList.toggle("hidden",tab!=="currency");
+    screen.querySelector("#shopTabDaily").classList.toggle("hidden",tab!=="daily");
     if(tab==="chests") renderKisten(p);
     if(tab==="currency") renderWaehrung(p);
+    if(tab==="daily") renderDaily(p);
     if(typeof layoutContainedScreen==="function") requestAnimationFrame(()=>layoutContainedScreen(screen));
   }
 
@@ -156,6 +160,48 @@
     box.querySelectorAll("[data-echtgeld]").forEach(b=>b.onclick=e=>{e.preventDefault();});
   }
 
+  /* ---------- Daily Shop (Attrappe, 17.09.) ----------
+     Vier Angebote im 2x2-Raster nach dem Mockup der Lieferung: Titelplakette,
+     Band mit der Restzeit bis Mitternacht, je Angebot Effektbild, Name,
+     Preisschild und der gesperrte Goldknopf. Die Auswahl wechselt mit dem
+     Kalendertag (feste Rotation, kein Zufall), die Preise sind Platzhalter.
+     Kauf, Besitz und Rotation vom Server kommen spaeter; hier passiert
+     beim Tippen nichts, wie bei den Kern-Paketen. Die Restzeit wird beim
+     Aufbau einmal berechnet, nicht getickt: im Leerlauf keine DOM-Mutation. */
+  const DAILY_BILD={classic:"arc-shot",lightning:"thunderbolt",flame:"hellfire",venom:"venom",blood:"blood-slash",jackpot:"royal-burst",
+    void:"void-rift",confetti:"confetti-cannon",frost:"frost-lance",rift:"rift-tear",crown:"crownfall",soulbreak:"seelenbruch",
+    solarsplash:"solarsplash",trigonbomb:"trigonbomb",confettibomb:"konfettibombe",polygon:"polygon",invasion:"invasion",
+    missile:"missile-attack",thunderstrike:"blitzeinschlag",catattack:"katzenangriff"};
+  const DAILY_PREISE=[{waehrung:"marken",preis:450},{waehrung:"kerne",preis:25},{waehrung:"marken",preis:600},{waehrung:"kerne",preis:40}];
+  function dailyAngebote(){
+    const keys=Object.keys(DAILY_BILD).filter(k=>typeof ATTACK_FX_STYLES!=="undefined"&&ATTACK_FX_STYLES[k]);
+    if(!keys.length) return [];
+    const heute=new Date(),tag=Math.floor(Date.UTC(heute.getFullYear(),heute.getMonth(),heute.getDate())/86400000);
+    return [0,1,2,3].map(i=>{const key=keys[(tag*4+i)%keys.length];return {key,name:ATTACK_FX_STYLES[key].name,...DAILY_PREISE[i]};});
+  }
+  function dailyRestzeit(){
+    const jetzt=new Date(),mitternacht=new Date(jetzt.getFullYear(),jetzt.getMonth(),jetzt.getDate()+1);
+    const sek=Math.max(0,Math.floor((mitternacht-jetzt)/1000)),h=Math.floor(sek/3600),m=Math.floor(sek%3600/60);
+    return `${String(h).padStart(2,"0")}:${String(m).padStart(2,"0")}`;
+  }
+  function renderDaily(p){
+    const box=screen.querySelector("#shopTabDaily");
+    const angebote=dailyAngebote().map(a=>`<div class="shop-daily-angebot" data-daily="${a.key}">
+        <div class="shop-daily-bild">${bildTag(SHOPBILD(`daily/effects/attack-fx-${DAILY_BILD[a.key]}.webp`),"shop-daily-img")}</div>
+        <div class="prestige-item-kicker">${tr("Angriffseffekt")}</div>
+        <div class="prestige-item-name" translate="no">${esc(a.name)}</div>
+        <div class="shop-preisschild" aria-label="${esc(`${a.preis} ${tr(a.waehrung==="marken"?"Duellmarken":"Würfelkerne")}`)}">${bildTag(SHOPBILD("ribbons/price-plate.webp"),"shop-preisschild-bild")}${bildTag(SHOPBILD(WAEHRUNG_ICON[a.waehrung]),"shop-preisschild-icon")}<span class="shop-preisschild-text">${a.preis}</span></div>
+        <div class="shop-kiste-kauf"><button type="button" class="prestige-item-action prestige-item-buy shop-kaufen shop-echtgeld" data-daily-kauf="${a.key}" aria-disabled="true">${artwork("gold")}${icon("gameplay/locked.svg")}<span>${tr("Bald verfügbar")}</span></button></div>
+      </div>`).join("");
+    box.innerHTML=`<div class="shop-daily">
+        <div class="shop-daily-titel">${bildTag(SHOPBILD("ribbons/ribbon-gold.webp"),"shop-daily-titel-bild")}<span>Daily Shop</span></div>
+        <div class="shop-daily-band">${bildTag(SHOPBILD("ribbons/ribbon-navy.webp"),"shop-daily-band-bild")}<span>${tr("Neue Angebote in")} ${dailyRestzeit()}</span></div>
+        <div class="shop-daily-grid">${angebote}</div>
+        <div class="shop-daily-hinweis">${tr("Vorschau: Die täglichen Angebote sind noch nicht kaufbar.")}</div>
+      </div>`;
+    box.querySelectorAll("[data-daily-kauf]").forEach(b=>b.onclick=e=>{e.preventDefault();});
+  }
+
   /* ---------- Kauf und Oeffnung ---------- */
   function kaufe(schluessel){
     const [stufe,waehrung]=String(schluessel||"").split(":");
@@ -185,5 +231,5 @@
     if(ev.target.closest?.("[data-shop-buy],[data-shop-equip],[data-reset-cosmetic]")&&!screen.classList.contains("hidden")) queueMicrotask(render);
   });
 
-  window.WDShopUi=Object.freeze({render,zeige:key=>{if(["chests","trophies","currency"].includes(key)){tab=key;render();}}});
+  window.WDShopUi=Object.freeze({render,zeige:key=>{if(["chests","trophies","currency","daily"].includes(key)){tab=key;render();}}});
 })();

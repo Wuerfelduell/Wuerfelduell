@@ -63,7 +63,7 @@ try{
     aktiv:document.querySelector('#prestigeShopScreen .shop-tab-btn.aktiv')?.dataset.shopTab,
     titel:document.querySelector('#prestigeShopScreen .screen-title')?.textContent.trim(),
     sichtbar:!document.getElementById('prestigeShopScreen').classList.contains('hidden')}));
-  pruefe('Reiter Kisten | Trophaeen | Waehrung',reiter.labels.join('|'),'Kisten|Trophäen|Währung');
+  pruefe('Reiter Kisten | Trophaeen | Waehrung | Daily',reiter.labels.join('|'),'Kisten|Trophäen|Währung|Daily');
   pruefe('Kisten ist vorgewaehlt',reiter.aktiv,'chests');
   pruefe('Shop-Titel heisst "Shop"',reiter.titel,'Shop');
 
@@ -205,6 +205,16 @@ try{
   await p.click('#prestigeShopScreen .shop-tab-btn[data-shop-tab="trophies"]');await p.waitForTimeout(200);
   const trophaeen=await p.evaluate(()=>({items:document.querySelectorAll('#shopTabTrophies .prestige-item').length,sichtbar:!document.getElementById('shopTabTrophies').classList.contains('hidden'),kisten:document.getElementById('shopTabChests').classList.contains('hidden')}));
   pruefe('Trophaeen-Reiter zeigt die Kosmetik',trophaeen.items>0&&trophaeen.sichtbar&&trophaeen.kisten,true);
+  // 9b. Daily Shop (Attrappe): vier Angebote, gesperrte Knoepfe, Guthaben bleibt.
+  await p.click('#prestigeShopScreen .shop-tab-btn[data-shop-tab="daily"]');await p.waitForTimeout(250);
+  const daily=await p.evaluate(()=>({angebote:document.querySelectorAll('#shopTabDaily .shop-daily-angebot').length,
+    bilder:[...document.querySelectorAll('#shopTabDaily .shop-daily-img')].every(i=>i.complete&&i.naturalWidth>0),
+    gesperrt:[...document.querySelectorAll('#shopTabDaily [data-daily-kauf]')].every(b=>b.getAttribute('aria-disabled')==='true'),
+    marken:document.getElementById('shopWalletMarken')?.textContent}));
+  await p.click('#shopTabDaily [data-daily-kauf]',{force:true});await p.waitForTimeout(150);
+  const dailyDanach=await p.evaluate(()=>({marken:document.getElementById('shopWalletMarken')?.textContent,overlay:!document.getElementById('kistenTestOverlay')||document.getElementById('kistenTestOverlay').classList.contains('hidden')}));
+  pruefe('Daily Shop: vier Angebote mit geladenem Bild',daily.angebote===4&&daily.bilder,true);
+  pruefe('Daily Shop: Knoepfe gesperrt, Tipp aendert nichts',daily.gesperrt&&daily.marken===dailyDanach.marken&&dailyDanach.overlay,true);
 
   // 11. Ruhe.
   await p.click('#prestigeShopScreen .shop-tab-btn[data-shop-tab="chests"]');await p.waitForTimeout(300);
@@ -221,11 +231,11 @@ try{
   await e.click('#menuPrestigeShopBtn');await e.waitForTimeout(300);
   const enReiter=await e.evaluate(()=>[...document.querySelectorAll('#prestigeShopScreen .shop-tab-btn')].map(b=>b.textContent.trim()).join('|'));
   pruefe('Englisch: Menue "Shop"',en,'Shop');
-  pruefe('Englisch: Reiter Chests|Trophies|Currency',enReiter,'Chests|Trophies|Currency');
+  pruefe('Englisch: Reiter Chests|Trophies|Currency|Daily',enReiter,'Chests|Trophies|Currency|Daily');
   await e.close();
 }catch(e){absturz=e;}
 
-const ERWARTET=43;
+const ERWARTET=45;
 let fehler=ergebnisse.length<ERWARTET?1:0;
 if(fehler)console.log(`ACHTUNG: nur ${ergebnisse.length} von ${ERWARTET} Zusicherungen erreicht.`);
 const breite=Math.max(1,...ergebnisse.map(r=>r[0].length));
