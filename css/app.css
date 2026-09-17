@@ -1576,7 +1576,7 @@ html.legacy-flat-dice .attack-fx-beam{box-shadow:0 0 9px rgba(120,205,255,.75)}
 .attack-fx-impact.fx-crown{border-color:#ffe379;box-shadow:0 0 12px #fff0a4,0 0 38px rgba(255,177,27,.95)}
 
 /* Source glow follows the equipped effect roughly, without touching card frames. */
-.player.attack-source-flash.fx-flame,.player.attack-source-flash.fx-missile,.player.attack-source-flash.fx-cometshower{animation-name:wdAttackSourceFlame}.player.attack-source-flash.fx-venom,.player.attack-source-flash.fx-trigonbomb,.player.attack-source-flash.fx-polygon,.player.attack-source-flash.fx-catattack{animation-name:wdAttackSourceVenom}.player.attack-source-flash.fx-blood{animation-name:wdAttackSourceBlood}.player.attack-source-flash.fx-void,.player.attack-source-flash.fx-rift,.player.attack-source-flash.fx-soulbreak,.player.attack-source-flash.fx-invasion,.player.attack-source-flash.fx-thunderstrike,.player.attack-source-flash.fx-quantumleap,.player.attack-source-flash.fx-mirrorstorm{animation-name:wdAttackSourceVoid}.player.attack-source-flash.fx-crown,.player.attack-source-flash.fx-jackpot,.player.attack-source-flash.fx-solarsplash,.player.attack-source-flash.fx-confettibomb,.player.attack-source-flash.fx-timefracture{animation-name:wdAttackSourceGold}
+.player.attack-source-flash.fx-flame,.player.attack-source-flash.fx-missile,.player.attack-source-flash.fx-cometshower{animation-name:wdAttackSourceFlame}.player.attack-source-flash.fx-venom,.player.attack-source-flash.fx-trigonbomb,.player.attack-source-flash.fx-polygon,.player.attack-source-flash.fx-catattack{animation-name:wdAttackSourceVenom}.player.attack-source-flash.fx-blood{animation-name:wdAttackSourceBlood}.player.attack-source-flash.fx-void,.player.attack-source-flash.fx-rift,.player.attack-source-flash.fx-soulbreak,.player.attack-source-flash.fx-thunderstrike,.player.attack-source-flash.fx-quantumleap,.player.attack-source-flash.fx-mirrorstorm{animation-name:wdAttackSourceVoid}.player.attack-source-flash.fx-crown,.player.attack-source-flash.fx-jackpot,.player.attack-source-flash.fx-solarsplash,.player.attack-source-flash.fx-confettibomb,.player.attack-source-flash.fx-timefracture{animation-name:wdAttackSourceGold}
 @keyframes wdAttackSourceFlame{0%{box-shadow:0 0 0 rgba(255,86,30,0)}35%{box-shadow:0 0 31px rgba(255,86,30,.95)}100%{box-shadow:0 0 0 rgba(255,86,30,0)}}
 @keyframes wdAttackSourceVenom{0%{box-shadow:0 0 0 rgba(71,255,87,0)}35%{box-shadow:0 0 31px rgba(71,255,87,.9)}100%{box-shadow:0 0 0 rgba(71,255,87,0)}}
 @keyframes wdAttackSourceBlood{0%{box-shadow:0 0 0 rgba(222,23,56,0)}35%{box-shadow:0 0 31px rgba(222,23,56,.92)}100%{box-shadow:0 0 0 rgba(222,23,56,0)}}
@@ -10923,7 +10923,7 @@ html[data-v28-rework="2"] #prestigeShopScreen .prestige-cosmetic-action{
   justify-content:center;
   color:#fff4df;
 }
-html[data-v28-rework="2"] #prestigeShopScreen .prestige-button-artwork{
+html[data-v28-rework="2"] :is(#prestigeShopScreen,.shop-vorschau) .prestige-button-artwork{
   position:absolute;
   inset-inline:0;
   top:50%;
@@ -10934,14 +10934,14 @@ html[data-v28-rework="2"] #prestigeShopScreen .prestige-button-artwork{
   height:56.32px;
   pointer-events:none;
 }
-html[data-v28-rework="2"] #prestigeShopScreen .prestige-button-artwork[data-artwork="navy"]{
+html[data-v28-rework="2"] :is(#prestigeShopScreen,.shop-vorschau) .prestige-button-artwork[data-artwork="navy"]{
   grid-template-columns:14.08px minmax(0,1fr) 17.6px minmax(0,1fr) 14.08px;
 }
-html[data-v28-rework="2"] #prestigeShopScreen .prestige-button-artwork[data-artwork="green"]{
+html[data-v28-rework="2"] :is(#prestigeShopScreen,.shop-vorschau) .prestige-button-artwork[data-artwork="green"]{
   grid-template-columns:42px minmax(0,1fr) 42px;
   height:40.04px;
 }
-html[data-v28-rework="2"] #prestigeShopScreen .prestige-button-artwork>svg{
+html[data-v28-rework="2"] :is(#prestigeShopScreen,.shop-vorschau) .prestige-button-artwork>svg{
   display:block;
   width:100%;
   height:100%;
@@ -13586,16 +13586,16 @@ html[data-v28-rework="2"] #prestigeShopScreen .prestige-wallet{min-width:0;paddi
    37-abschluss.css positioniert; die Kaufknoepfe hier sitzen in einer
    eigenen Zeile und brauchen den Bezug selbst - sonst malt sich das
    Knopfbild als Band quer ueber den Bildschirm. */
-html[data-v28-rework="2"] #prestigeShopScreen .shop-kaufen{position:relative;overflow:hidden;isolation:isolate;
+html[data-v28-rework="2"] :is(#prestigeShopScreen,.shop-vorschau) .shop-kaufen{position:relative;overflow:hidden;isolation:isolate;
   display:inline-flex;align-items:center;justify-content:center;gap:6px;height:56.32px;min-height:0;padding:0 24px;
   border:0;border-radius:0;background:none;color:#2c1904;font-size:14px;white-space:nowrap;overflow-wrap:normal;
   text-shadow:0 1px 0 rgba(255,255,255,.55);box-shadow:none}
-html[data-v28-rework="2"] #prestigeShopScreen .shop-kaufen:disabled{opacity:.55;filter:none}
+html[data-v28-rework="2"] :is(#prestigeShopScreen,.shop-vorschau) .shop-kaufen:disabled{opacity:.55;filter:none}
 html[data-v28-rework="2"] #prestigeShopScreen .shop-echtgeld{opacity:.72;cursor:default}
 /* Der Knopf ist genau so hoch wie das Knopfbild (Kachelhoehe 56.32px bei
    21.12px Ornamentspalten). Das Trophaeen-Shop-Bild sitzt vertikal
    zentriert ueber transform; hier fuellt es den Knopf ohne Versatz. */
-html[data-v28-rework="2"] #prestigeShopScreen .shop-kaufen>.prestige-button-artwork{position:absolute;inset:0;height:auto;transform:none;z-index:-1}
+html[data-v28-rework="2"] :is(#prestigeShopScreen,.shop-vorschau) .shop-kaufen>.prestige-button-artwork{position:absolute;inset:0;height:auto;transform:none;z-index:-1}
 /* Unter 720px sind die Kaufknoepfe (ein- wie zweispaltig) zu schmal fuer
    das Waehrungswort; das Muenz- bzw. Kernsymbol traegt die Information. */
 @media(max-width:719px){#prestigeShopScreen .shop-kauf-label{display:none}}
@@ -13644,7 +13644,7 @@ html[data-v28-rework="2"] #prestigeShopScreen .shop-kaufen>.prestige-button-artw
 .shop-daily-band span{position:relative;font-size:clamp(10px,3vw,13px);font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#fff3d6;text-shadow:0 1px 2px rgba(0,0,0,.6)}
 .shop-daily-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:14px}
 #prestigeShopScreen .shop-daily-angebot{
-  box-sizing:border-box;display:flex;flex-direction:column;align-items:center;text-align:center;gap:5px;
+  position:relative;box-sizing:border-box;display:flex;flex-direction:column;align-items:center;text-align:center;gap:5px;
   padding:16px 10px 16px;border-style:solid;border-color:transparent;border-width:14px;
   border-image:var(--dd-frame-navy-tile) 150 fill / 14px stretch;border-radius:0;background:none;min-width:0}
 .shop-daily-bild{width:100%;aspect-ratio:1/1;overflow:hidden;border-radius:6px}
@@ -13653,6 +13653,19 @@ html[data-v28-rework="2"] #prestigeShopScreen .shop-kaufen>.prestige-button-artw
 #prestigeShopScreen .shop-daily-angebot .shop-preisschild{width:min(96%,200px)}
 #prestigeShopScreen .shop-daily-angebot .shop-kaufen{padding:0 12px;font-size:12px}
 .shop-daily-hinweis{margin-top:12px;text-align:center;font-size:11px;color:#c7d0dd}
+/* Vorschau eines Angriffseffekts: Fenster ueber dem Shop, die Effektleinwand
+   des Kampf-Renderers wird waehrend der Vorschau ueber dieses Fenster gehoben. */
+.shop-vorschau{position:fixed;inset:0;z-index:12060;display:flex;align-items:center;justify-content:center;padding:16px;background:rgba(3,8,20,.84)}
+.shop-vorschau.hidden{display:none}
+.shop-vorschau-buehne{box-sizing:border-box;width:min(100%,420px);padding:26px 18px 22px;text-align:center;
+  border-style:solid;border-color:transparent;border-width:18px;border-image:var(--dd-frame-navy-tile) 150 fill / 18px stretch;
+  background:url("../assets/ui/v28/png/backgrounds/daily-shop.webp?v=28.12.48") center/cover no-repeat}
+.shop-vorschau-name{font-size:clamp(18px,5vw,24px);font-weight:800;color:#fff3d6;text-shadow:0 1px 3px rgba(0,0,0,.7);margin:2px 0 14px}
+.shop-vorschau-karten{display:flex;justify-content:space-between;gap:16px;padding:0 4px;min-height:150px}
+.shop-vorschau-karte{position:relative;flex:0 0 40%;aspect-ratio:3/4;display:flex;align-items:flex-end;justify-content:center;
+  border-style:solid;border-color:transparent;border-width:14px;border-image:var(--dd-frame-navy-tile) 150 fill / 14px stretch}
+.shop-vorschau-karte span{font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#c7d0dd}
+.shop-vorschau .shop-vorschau-schliessen{margin:18px auto 0;width:min(100%,220px)}
 /* Zwei Spalten erst ab 480px: darunter brechen Effektnamen und der
    Knopftext in den schmalen Karten. */
 @media(max-width:479px){.shop-daily-grid{grid-template-columns:1fr}}

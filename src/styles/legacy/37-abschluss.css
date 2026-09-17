@@ -1031,7 +1031,7 @@ html[data-v28-rework="2"] #prestigeShopScreen .prestige-cosmetic-action{
   justify-content:center;
   color:#fff4df;
 }
-html[data-v28-rework="2"] #prestigeShopScreen .prestige-button-artwork{
+html[data-v28-rework="2"] :is(#prestigeShopScreen,.shop-vorschau) .prestige-button-artwork{
   position:absolute;
   inset-inline:0;
   top:50%;
@@ -1042,14 +1042,14 @@ html[data-v28-rework="2"] #prestigeShopScreen .prestige-button-artwork{
   height:56.32px;
   pointer-events:none;
 }
-html[data-v28-rework="2"] #prestigeShopScreen .prestige-button-artwork[data-artwork="navy"]{
+html[data-v28-rework="2"] :is(#prestigeShopScreen,.shop-vorschau) .prestige-button-artwork[data-artwork="navy"]{
   grid-template-columns:14.08px minmax(0,1fr) 17.6px minmax(0,1fr) 14.08px;
 }
-html[data-v28-rework="2"] #prestigeShopScreen .prestige-button-artwork[data-artwork="green"]{
+html[data-v28-rework="2"] :is(#prestigeShopScreen,.shop-vorschau) .prestige-button-artwork[data-artwork="green"]{
   grid-template-columns:42px minmax(0,1fr) 42px;
   height:40.04px;
 }
-html[data-v28-rework="2"] #prestigeShopScreen .prestige-button-artwork>svg{
+html[data-v28-rework="2"] :is(#prestigeShopScreen,.shop-vorschau) .prestige-button-artwork>svg{
   display:block;
   width:100%;
   height:100%;

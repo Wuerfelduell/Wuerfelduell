@@ -399,7 +399,6 @@
       trigonbomb:['#75ffe1','#2fd3a6'],
       confettibomb:['#ffd45a','#ff5fbc'],
       polygon:['#75ffe1','#9d72ff'],
-      invasion:['#75ffe1','#b06cff'],
       missile:['#ffd45a','#ff704f'],
       thunderstrike:['#75ffe1','#b06cff'],
       catattack:['#ffd45a','#75ffe1'],
@@ -418,7 +417,7 @@
     const fx={
       id:`labfx-${Date.now()}-${Math.random()}`,
       style,from,to,start:performance.now(),
-      duration:style==='lightning'?430:style==='blood'?480:style==='crown'?850:style==='soulbreak'?1200:style==='solarsplash'?1250:style==='trigonbomb'?1300:style==='confettibomb'?1350:style==='polygon'?1320:style==='invasion'?1450:style==='missile'?1400:style==='thunderstrike'?1300:style==='catattack'?1350:style==='quantumleap'?1450:style==='cometshower'?1550:style==='timefracture'?1500:style==='mirrorstorm'?1580:700,
+      duration:style==='lightning'?430:style==='blood'?480:style==='crown'?850:style==='soulbreak'?1200:style==='solarsplash'?1250:style==='trigonbomb'?1300:style==='confettibomb'?1350:style==='polygon'?1320:style==='missile'?1400:style==='thunderstrike'?1300:style==='catattack'?1350:style==='quantumleap'?1450:style==='cometshower'?1550:style==='timefracture'?1500:style==='mirrorstorm'?1580:700,
       seed:Math.random()*999
     };
     activeLabFx.push(fx);
@@ -438,9 +437,20 @@
         const from=cardCenter(event?.source),to=cardCenter(event?.target);
         if(!from||!to) return false;
         const style=String(event?.style||players?.[Number(event?.source)]?.attackFx||'classic');
-        activeLabFx.push({id:event?.id||`labplay-${Date.now()}`,style,from,to,start:performance.now(),duration:style==='soulbreak'?1200:style==='solarsplash'?1250:style==='trigonbomb'?1300:style==='confettibomb'?1350:style==='polygon'?1320:style==='invasion'?1450:style==='missile'?1400:style==='thunderstrike'?1300:style==='catattack'?1350:style==='quantumleap'?1450:style==='cometshower'?1550:style==='timefracture'?1500:style==='mirrorstorm'?1580:700,seed:Math.random()*999});
+        activeLabFx.push({id:event?.id||`labplay-${Date.now()}`,style,from,to,start:performance.now(),duration:style==='soulbreak'?1200:style==='solarsplash'?1250:style==='trigonbomb'?1300:style==='confettibomb'?1350:style==='polygon'?1320:style==='missile'?1400:style==='thunderstrike'?1300:style==='catattack'?1350:style==='quantumleap'?1450:style==='cometshower'?1550:style==='timefracture'?1500:style==='mirrorstorm'?1580:700,seed:Math.random()*999});
         return true;
       },
+      // Kill-Finisher: im Labor der eigene Renderer, sonst der Kern. Ohne diese
+      // Weiterleitung verpuffte der Kill-Aufruf des Kampfes seit dem Wrapper stumm.
+      kill(source,target,style=null){
+        if(!inLab()) return coreAttackFx.kill?.(source,target,style)??false;
+        const stil=style||players?.[Number(source)]?.attackFx||selectedLabFx()||'classic';
+        setTimeout(()=>playLabKillFx(source,target,String(stil),false),210);return true;
+      },
+      // Shop-Vorschau: freie Punkte und Ebene gehen immer an den Kern-Renderer.
+      spielenAn:(style,from,to)=>coreAttackFx.spielenAn?.(style,from,to)??0,
+      killAn:(style,rechteck)=>coreAttackFx.killAn?.(style,rechteck)??0,
+      ebene:z=>coreAttackFx.ebene?.(z),
       getLastPlayedId:()=>coreAttackFx.getLastPlayedId?.(),
       reset(){activeLabFx=[];coreAttackFx.reset?.();}
     };
@@ -1104,36 +1114,8 @@
     if(t<.69){const p=(t-.21)/.48,pos=polygonPoint(fx,p);for(let i=1;i<=15;i++){const q=p-i*.031;if(q<=0)continue;const trail=polygonPoint(fx,q),fade=(1-i/16)*Math.min(1,p*8);drawTriangleGlyph(trail.x,trail.y,3+fade*6,(i%2?1:-1)*(t*13+i),fade*.42,i%3?'#75ffe1':'#9d72ff');}drawPolygonGlyph(pos.x,pos.y,base*.88,8,t*11+fx.seed,1,true);}
   }
 
-  /* Invasion und Missile Attack (Lieferung 17.09., viertes Drop-in-Paket).
-     Nur in der Testumgebung. */
-  function drawInvasionPortal(x,y,rx,ry,rotation,alpha){
-    if(alpha<=0)return;fxCtx.save();fxCtx.translate(x,y);fxCtx.rotate(rotation);fxCtx.globalCompositeOperation='lighter';
-    glowCircle(fxCtx,0,0,rx*1.25,'#4a2273',alpha*.42);fxCtx.globalAlpha=alpha;fxCtx.strokeStyle='#75ffe1';fxCtx.lineWidth=3;fxCtx.beginPath();fxCtx.ellipse(0,0,rx,ry,0,0,Math.PI*2);fxCtx.stroke();
-    fxCtx.strokeStyle='#b06cff';fxCtx.lineWidth=2;fxCtx.beginPath();fxCtx.ellipse(0,0,rx*.72,ry*.68,0,0,Math.PI*2);fxCtx.stroke();
-    for(let i=0;i<8;i++){const a=i*Math.PI/4+rotation*2;glowCircle(fxCtx,Math.cos(a)*rx*.86,Math.sin(a)*ry*.86,2.6,i%2?'#ffd45a':'#75ffe1',alpha*.8);}fxCtx.restore();
-  }
-
-  function drawInvader(x,y,size,rotation,alpha){
-    if(alpha<=0)return;fxCtx.save();fxCtx.translate(x,y);fxCtx.rotate(rotation);fxCtx.globalAlpha=alpha;fxCtx.globalCompositeOperation='lighter';
-    glowCircle(fxCtx,0,0,size*1.35,'#4a2273',alpha*.24);fxCtx.fillStyle='#07152f';fxCtx.strokeStyle='#75ffe1';fxCtx.lineWidth=1.8;fxCtx.beginPath();
-    for(let i=0;i<6;i++){const a=i*Math.PI/3,px=Math.cos(a)*size,py=Math.sin(a)*size*.68;i?fxCtx.lineTo(px,py):fxCtx.moveTo(px,py);}fxCtx.closePath();fxCtx.fill();fxCtx.stroke();
-    fxCtx.strokeStyle='#b06cff';fxCtx.beginPath();fxCtx.moveTo(-size*.75,0);fxCtx.lineTo(-size*1.35,size*.42);fxCtx.moveTo(size*.75,0);fxCtx.lineTo(size*1.35,size*.42);fxCtx.stroke();
-    glowCircle(fxCtx,0,0,size*.26,'#ffd45a',alpha*.9);fxCtx.restore();
-  }
-
-  function invasionPoint(fx,p,lane=0){
-    const q=easeInOut(Math.max(0,Math.min(1,p))),dx=fx.to.x-fx.from.x,dy=fx.to.y-fx.from.y,len=Math.max(1,Math.hypot(dx,dy));
-    const gx=lerp(fx.from.x,fx.to.x,.62),gy=fx.to.y-Math.min(100,len*.22),a=1-q;
-    return{x:a*a*fx.from.x+2*a*q*gx+q*q*fx.to.x-dy/len*lane,y:a*a*fx.from.y+2*a*q*gy+q*q*fx.to.y+dx/len*lane};
-  }
-
-  function drawInvasion(fx,t){
-    const d=Math.hypot(fx.to.x-fx.from.x,fx.to.y-fx.from.y),base=Math.max(15,Math.min(25,d*.055)),gate={x:lerp(fx.from.x,fx.to.x,.62),y:fx.to.y-Math.min(100,d*.22)};
-    const open=Math.min(1,Math.max(0,(t-.08)/.2))*Math.min(1,Math.max(0,(.94-t)/.18));drawInvasionPortal(gate.x,gate.y,base*2.35,base*.82,t*7+fx.seed,open);
-    if(t<.25){const e=easeInOut(t/.25);drawInvasionPortal(fx.from.x,fx.from.y,base*(.4+e),base*(.18+e*.34),-t*8,e);}
-    for(let i=0;i<5;i++){const p=(t-(.25+i*.055))/.43;if(p<=0||p>=1)continue;const lane=(i-2)*base*.72,pos=invasionPoint(fx,p,lane),prev=invasionPoint(fx,Math.max(0,p-.03),lane);drawInvader(pos.x,pos.y,base*(.54+(i%2)*.08),Math.atan2(pos.y-prev.y,pos.x-prev.x),Math.min(1,p*8));}
-  }
-
+  /* Missile Attack (Lieferung 17.09., viertes Drop-in-Paket). Invasion aus
+     demselben Paket wurde am 17.09. wieder entfernt. */
   function drawMissileGlyph(x,y,size,angle,alpha){
     if(alpha<=0)return;fxCtx.save();fxCtx.translate(x,y);fxCtx.rotate(angle);fxCtx.globalAlpha=alpha;fxCtx.globalCompositeOperation='lighter';
     glowCircle(fxCtx,-size*.8,0,size*.8,'#ff704f',alpha*.42);fxCtx.fillStyle='#0d3975';fxCtx.strokeStyle='#f6d679';fxCtx.lineWidth=1.8;fxCtx.beginPath();fxCtx.moveTo(size,0);fxCtx.lineTo(size*.42,-size*.34);fxCtx.lineTo(-size*.66,-size*.28);fxCtx.lineTo(-size,0);fxCtx.lineTo(-size*.66,size*.28);fxCtx.lineTo(size*.42,size*.34);fxCtx.closePath();fxCtx.fill();fxCtx.stroke();
@@ -1421,10 +1403,6 @@
         impactRing(x,y,c1,e,112,3,.72);
         impactShards(x,y,c2,e,24,118);
         break;
-      case 'invasion':
-        e=Math.max(0,(t-.53)/.47);impactFlash(x,y,c1,e,108,.52);impactRing(x,y,c2,e,124,3.2,.78);
-        for(let i=0;i<5;i++){const q=Math.max(0,Math.min(1,(t-(.54+i*.045))/.3));if(q>0)impactSparks(x+(i-2)*9,y+(i%2?8:-5),i%2?c1:c2,q,7,54+i*6);}break;
-
       case 'missile':
         e=Math.max(0,(t-.55)/.45);for(let i=0;i<3;i++){const q=Math.max(0,Math.min(1,(t-(.55+i*.075))/.28));if(q>0){impactFlash(x+(i-1)*12,y+(i%2?7:-5),i%2?c1:c2,q,66,.48);impactRing(x,y,i%2?c1:c2,q,56+i*18,2.4,.64);}}
         impactSparks(x,y,c2,e,18,102);break;
@@ -1481,7 +1459,6 @@
       case 'trigonbomb':drawTrigonbomb(fx,t);break;
       case 'confettibomb':drawConfettibomb(fx,t);break;
       case 'polygon':drawPolygon(fx,t);break;
-      case 'invasion':drawInvasion(fx,t);break;
       case 'missile':drawMissileAttack(fx,t);break;
       case 'thunderstrike':drawThunderstrike(fx,t);break;
       case 'catattack':drawCatattack(fx,t);break;
@@ -1570,8 +1547,6 @@
         tone(240,0,.18,'triangle',.025,480);tone(720,.12,.11,'square',.018);tone(980,.2,.15,'sine',.022,1420);noiseBurst(.19,.18,.026,1050);break;
       case 'polygon':
         tone(290,0,.14,'sine',.024,580);tone(580,.1,.16,'triangle',.022,1160);tone(1160,.2,.2,'sine',.02,360);noiseBurst(.22,.12,.018,1650);break;
-      case 'invasion':
-        tone(92,0,.5,'sine',.035,46);tone(310,.08,.28,'triangle',.02,820);tone(760,.28,.22,'sine',.018,1420);noiseBurst(.34,.16,.018,1250);break;
       case 'missile':
         tone(190,0,.26,'sawtooth',.024,680);tone(240,.1,.24,'sawtooth',.022,840);tone(300,.2,.22,'sawtooth',.02,960);noiseBurst(.42,.24,.04,180);break;
       case 'thunderstrike':
@@ -1606,7 +1581,7 @@
       start:performance.now(),
       duration:{
         lightning:820,flame:1050,venom:1050,blood:820,jackpot:1150,
-        void:1200,confetti:1150,frost:1000,rift:1100,crown:1250,soulbreak:1350,solarsplash:1450,trigonbomb:1500,confettibomb:1550,polygon:1600,invasion:1750,missile:1650,thunderstrike:1650,catattack:1750,quantumleap:1750,cometshower:1850,timefracture:1800,mirrorstorm:1900
+        void:1200,confetti:1150,frost:1000,rift:1100,crown:1250,soulbreak:1350,solarsplash:1450,trigonbomb:1500,confettibomb:1550,polygon:1600,missile:1650,thunderstrike:1650,catattack:1750,quantumleap:1750,cometshower:1850,timefracture:1800,mirrorstorm:1900
       }[style]||900,
       seed:Math.random()*999,
       preview
@@ -1851,13 +1826,6 @@
     }
   }
 
-  function killInvasion(fx,t){
-    const gather=Math.min(1,t/.38),burst=Math.max(0,(t-.48)/.52),r=Math.min(fx.w,fx.h)*.42;
-    if(t<.72)drawInvasionPortal(fx.x,fx.y-r*.72,r*(.8+gather*.8),r*(.28+gather*.22),t*8+fx.seed,Math.max(0,1-t*.72));
-    for(let i=0;i<9;i++){const start=.12+i*.035,p=(t-start)/.5;if(p<=0||p>=1)continue;const a=i*Math.PI*2/9+fx.seed,from={x:fx.x+Math.cos(a)*r*2.4,y:fx.y-r*1.2+Math.sin(a)*r*.7},fake={from,to:{x:fx.x,y:fx.y},seed:fx.seed},pos=invasionPoint(fake,p,(i-4)*3);drawInvader(pos.x,pos.y,8+(i%3)*2,Math.atan2(fx.y-pos.y,fx.x-pos.x),Math.min(1,p*7));}
-    impactFlash(fx.x,fx.y,'#ffffff',burst,152,.7);impactRing(fx.x,fx.y,'#75ffe1',burst,164,4,.9);impactRing(fx.x,fx.y,'#b06cff',Math.min(1,burst*1.12),132,2.8,.76);impactShards(fx.x,fx.y,'#75ffe1',burst,32,148);
-  }
-
   function killMissile(fx,t){
     const r=Math.min(fx.w,fx.h)*.55;fxCtx.save();fxCtx.translate(fx.x,fx.y);fxCtx.rotate(t*4);fxCtx.globalAlpha=Math.max(0,1-t*1.15);fxCtx.strokeStyle='#ff704f';fxCtx.lineWidth=2.5;fxCtx.beginPath();fxCtx.arc(0,0,r,0,Math.PI*2);fxCtx.stroke();fxCtx.restore();
     for(let i=0;i<5;i++){const p=(t-(.05+i*.055))/.53;if(p<=0||p>=1)continue;const from={x:fx.x+(i-2)*r*.72,y:fx.y-r*3},fake={from,to:{x:fx.x+(i-2)*6,y:fx.y+(i%2?8:-5)}},pos=missilePoint(fake,p,(i-2)*4),prev=missilePoint(fake,Math.max(0,p-.025),(i-2)*4);drawMissileGlyph(pos.x,pos.y,12,Math.atan2(pos.y-prev.y,pos.x-prev.x),1);}
@@ -1933,7 +1901,6 @@
       case 'trigonbomb':killTrigonbomb(fx,t);break;
       case 'confettibomb':killConfettibomb(fx,t);break;
       case 'polygon':killPolygon(fx,t);break;
-      case 'invasion':killInvasion(fx,t);break;
       case 'missile':killMissile(fx,t);break;
       case 'thunderstrike':killThunderstrike(fx,t);break;
       case 'catattack':killCatattack(fx,t);break;

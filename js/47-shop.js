@@ -168,7 +168,7 @@
      Aufbau einmal berechnet, nicht getickt: im Leerlauf keine DOM-Mutation. */
   const DAILY_BILD={classic:"arc-shot",lightning:"thunderbolt",flame:"hellfire",venom:"venom",blood:"blood-slash",jackpot:"royal-burst",
     void:"void-rift",confetti:"confetti-cannon",frost:"frost-lance",rift:"rift-tear",crown:"crownfall",soulbreak:"seelenbruch",
-    solarsplash:"solarsplash",trigonbomb:"trigonbomb",confettibomb:"konfettibombe",polygon:"polygon",invasion:"invasion",
+    solarsplash:"solarsplash",trigonbomb:"trigonbomb",confettibomb:"konfettibombe",polygon:"polygon",
     missile:"missile-attack",thunderstrike:"blitzeinschlag",catattack:"katzenangriff"};
   const DAILY_PREISE=[{waehrung:"marken",preis:450},{waehrung:"kerne",preis:25},{waehrung:"marken",preis:600},{waehrung:"kerne",preis:40}];
   function dailyAngebote(){
@@ -185,6 +185,7 @@
   function renderDaily(p){
     const box=screen.querySelector("#shopTabDaily");
     const angebote=dailyAngebote().map(a=>`<div class="shop-daily-angebot" data-daily="${a.key}">
+        <button type="button" class="shop-info-knopf" data-daily-info="${a.key}" aria-label="${esc(tr("Vorschau anzeigen"))}" title="${esc(tr("Vorschau"))}">i</button>
         <div class="shop-daily-bild">${bildTag(SHOPBILD(`daily/effects/attack-fx-${DAILY_BILD[a.key]}.webp`),"shop-daily-img")}</div>
         <div class="prestige-item-kicker">${tr("Angriffseffekt")}</div>
         <div class="prestige-item-name" translate="no">${esc(a.name)}</div>
@@ -198,6 +199,62 @@
         <div class="shop-daily-hinweis">${tr("Vorschau: Die täglichen Angebote sind noch nicht kaufbar.")}</div>
       </div>`;
     box.querySelectorAll("[data-daily-kauf]").forEach(b=>b.onclick=e=>{e.preventDefault();});
+    box.querySelectorAll("[data-daily-info]").forEach(b=>b.onclick=()=>vorschauOeffnen(b.dataset.dailyInfo));
+  }
+
+  /* ---------- Vorschau eines Angriffseffekts ----------
+     Ein Fenster ueber dem Shop mit zwei Platzhalterkarten. Der Kern-Renderer
+     zeichnet dazwischen: Angriff, kurze Pause, Kill auf der Zielkarte, dann
+     von vorn, bis das Fenster schliesst. Keine Spielerkarten, kein Kampfzustand. */
+  let vorschau=null,vorschauTimer=0;
+  function vorschauElement(){
+    if(vorschau) return vorschau;
+    vorschau=document.createElement("div");vorschau.id="dailyVorschauOverlay";vorschau.className="shop-vorschau hidden";
+    vorschau.setAttribute("role","dialog");vorschau.setAttribute("aria-modal","true");
+    vorschau.innerHTML=`<div class="shop-vorschau-buehne">
+        <div class="prestige-item-kicker">${tr("Angriffseffekt")}</div>
+        <div class="shop-vorschau-name" translate="no"></div>
+        <div class="shop-vorschau-karten">
+          <div class="shop-vorschau-karte" data-rolle="angreifer"><span>${tr("Angreifer")}</span></div>
+          <div class="shop-vorschau-karte" data-rolle="ziel"><span>${tr("Ziel")}</span></div>
+        </div>
+        <button type="button" class="prestige-item-action prestige-item-buy shop-kaufen shop-vorschau-schliessen">${artwork("gold")}<span>${tr("Schließen")}</span></button>
+      </div>`;
+    vorschau.addEventListener("click",e=>{if(e.target===vorschau||e.target.closest(".shop-vorschau-schliessen")) vorschauSchliessen();});
+    document.addEventListener("keydown",e=>{if(e.key==="Escape"&&!vorschau.classList.contains("hidden")) vorschauSchliessen();});
+    document.body.appendChild(vorschau);
+    return vorschau;
+  }
+  function vorschauOeffnen(key){
+    const fx=window.WDAttackFx,stil=ATTACK_FX_STYLES?.[key];
+    if(!fx?.spielenAn||!stil) return;
+    const el=vorschauElement();
+    el.querySelector(".shop-vorschau-name").textContent=stil.name;
+    // Das Knopfbild kommt aus js/08; war es beim Anlegen des Fensters noch nicht da, nachholen.
+    const knopf=el.querySelector(".shop-vorschau-schliessen");
+    if(knopf&&!knopf.querySelector(".prestige-button-artwork")) knopf.innerHTML=`${artwork("gold")}<span>${tr("Schließen")}</span>`;
+    el.dataset.stil=key;
+    el.classList.remove("hidden");
+    fx.ebene(12070);
+    vorschauSchleife(key);
+  }
+  function vorschauSchleife(key){
+    const fx=window.WDAttackFx,el=vorschau;
+    if(!el||el.classList.contains("hidden")||el.dataset.stil!==key) return;
+    const mitte=r=>({x:r.left+r.width/2,y:r.top+r.height/2});
+    const a=el.querySelector('[data-rolle="angreifer"]').getBoundingClientRect(),z=el.querySelector('[data-rolle="ziel"]').getBoundingClientRect();
+    const angriff=fx.spielenAn(key,mitte(a),mitte(z));
+    vorschauTimer=setTimeout(()=>{
+      if(!el||el.classList.contains("hidden")||el.dataset.stil!==key) return;
+      const r=el.querySelector('[data-rolle="ziel"]').getBoundingClientRect();
+      const kill=fx.killAn(key,{x:r.left+r.width/2,y:r.top+r.height/2,width:r.width,height:r.height});
+      vorschauTimer=setTimeout(()=>vorschauSchleife(key),kill+700);
+    },angriff+250);
+  }
+  function vorschauSchliessen(){
+    clearTimeout(vorschauTimer);vorschauTimer=0;
+    if(vorschau){vorschau.classList.add("hidden");delete vorschau.dataset.stil;}
+    window.WDAttackFx?.reset?.();window.WDAttackFx?.ebene?.(null);
   }
 
   /* ---------- Kauf und Oeffnung ---------- */

@@ -3,7 +3,7 @@
   let localModeId="classic";
   function localModeRules(){return LOCAL_MODES[localModeId]||LOCAL_MODES.classic;}
 
-  const GAME_VERSION="28.14.12";
+  const GAME_VERSION="28.14.13";
   // Gemeinsamer Bild-Cache-Schluessel; identisch mit den Bild-URLs in HTML und CSS.
   const ASSET_REV="28.12.48";
   const SAVE_KEY="wuerfelduell_save_v1"; // absichtlich stabil: Updates lesen denselben Browser-Save
@@ -85,13 +85,13 @@
     frost:{name:"Frost Lance",desc:"Eislanze mit Splittern am Einschlag."},
     rift:{name:"Rift Tear",desc:"Prestige-Riss mit violett-cyanem Nachglühen."},
     crown:{name:"Crownfall",desc:"Goldener Endgame-Effekt. Reiner Flex."},
-    // labor: nur in der Testumgebung waehlbar, weder Shop noch Profil noch Kern-Renderer.
+    // labor: noch nicht frei waehlbar (Profil blendet sie aus); der Kern-Renderer kennt
+    // sie seit V28.14.13 fuer die Shop-Vorschau, der Verkauf kommt ueber den Daily Shop.
     soulbreak:{name:"Seelenbruch",desc:"Eine Würfelseele im Goldkäfig, die am Ziel in einer Runenwelle implodiert.",labor:true},
     solarsplash:{name:"Solarsplash",desc:"Ein verdichteter Sonnenkern schlägt als flüssige Plasmawelle mit goldener Korona ein.",labor:true},
     trigonbomb:{name:"Trigonbomb",desc:"Drei Prismensplitter verschmelzen zu einer Dreiecksbombe mit geometrischer Detonation.",labor:true},
     confettibomb:{name:"Konfettibombe",desc:"Eine navy-goldene Partykugel detoniert in einer massiven Welle aus Folien, Sternen und Würfelkonfetti.",labor:true},
     polygon:{name:"Polygon",desc:"Ein facettiertes Energiepolyeder rast zum Ziel, sperrt es ein und zerbricht in geometrische Splitter.",labor:true},
-    invasion:{name:"Invasion",desc:"Ein violett-cyanes Portal entsendet fünf dunkle Invasoren in Formation.",labor:true},
     missile:{name:"Missile Attack",desc:"Drei navy-goldene Raketen erfassen das Ziel und schlagen versetzt ein.",labor:true},
     thunderstrike:{name:"Blitzeinschlag",desc:"Eine Gewitterladung markiert das Ziel, bevor ein massiver verzweigter Hauptblitz einschlägt.",labor:true},
     catattack:{name:"Katzenangriff",desc:"Eine magische Kampfkatze springt zum Ziel und beendet ihren Angriff mit drei Krallenhieben.",labor:true},

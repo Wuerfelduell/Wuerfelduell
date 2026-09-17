@@ -215,6 +215,19 @@ try{
   const dailyDanach=await p.evaluate(()=>({marken:document.getElementById('shopWalletMarken')?.textContent,overlay:!document.getElementById('kistenTestOverlay')||document.getElementById('kistenTestOverlay').classList.contains('hidden')}));
   pruefe('Daily Shop: vier Angebote mit geladenem Bild',daily.angebote===4&&daily.bilder,true);
   pruefe('Daily Shop: Knoepfe gesperrt, Tipp aendert nichts',daily.gesperrt&&daily.marken===dailyDanach.marken&&dailyDanach.overlay,true);
+  // 9c. Vorschau: Info-Knopf oeffnet das Fenster, der Kern-Renderer zeichnet darueber, Schliessen raeumt auf.
+  await p.click('#shopTabDaily [data-daily-info]');await p.waitForTimeout(650);
+  const vorschau=await p.evaluate(()=>{const o=document.getElementById('dailyVorschauOverlay'),c=document.getElementById('attackFxCanvasMain');
+    const d=c.getContext('2d').getImageData(0,0,c.width,c.height).data;let lit=0;for(let i=3;i<d.length;i+=4*7)if(d[i]>8)lit++;
+    const knopf=o?.querySelector('.shop-vorschau-schliessen'),bild=knopf?.querySelector('.prestige-button-artwork');
+    return {offen:!!o&&!o.classList.contains('hidden'),name:o?.querySelector('.shop-vorschau-name')?.textContent||'',ebene:c.style.zIndex,lit,
+      breit:document.documentElement.scrollWidth<=window.innerWidth,
+      knopf:Math.round(knopf?.getBoundingClientRect().height||0),knopfBild:!!bild&&getComputedStyle(bild).position==='absolute'&&Math.round(bild.getBoundingClientRect().height)===56};});
+  await p.click('#dailyVorschauOverlay .shop-vorschau-schliessen');await p.waitForTimeout(120);
+  const vorschauZu=await p.evaluate(()=>({offen:!document.getElementById('dailyVorschauOverlay').classList.contains('hidden'),ebene:document.getElementById('attackFxCanvasMain').style.zIndex}));
+  const vorschauOk=vorschau.offen&&vorschau.name.length>1&&vorschau.ebene==='12070'&&vorschau.lit>0&&vorschau.breit&&vorschau.knopf===56&&vorschau.knopfBild;
+  pruefe('Vorschau: Fenster offen, Effektname gesetzt, Leinwand ueber dem Fenster und zeichnet',vorschauOk?true:JSON.stringify(vorschau),true);
+  pruefe('Vorschau: Schliessen versteckt das Fenster und senkt die Leinwand',!vorschauZu.offen&&vorschauZu.ebene==='1',true);
 
   // 11. Ruhe.
   await p.click('#prestigeShopScreen .shop-tab-btn[data-shop-tab="chests"]');await p.waitForTimeout(300);
@@ -235,7 +248,7 @@ try{
   await e.close();
 }catch(e){absturz=e;}
 
-const ERWARTET=45;
+const ERWARTET=47;
 let fehler=ergebnisse.length<ERWARTET?1:0;
 if(fehler)console.log(`ACHTUNG: nur ${ergebnisse.length} von ${ERWARTET} Zusicherungen erreicht.`);
 const breite=Math.max(1,...ergebnisse.map(r=>r[0].length));
