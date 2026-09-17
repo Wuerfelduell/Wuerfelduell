@@ -5,6 +5,8 @@
   if (!pack) return;
 
   Object.assign(pack.exact, {
+    "Die globale Winrate steht in ganzen Prozent wie in der lokalen Tabelle": "The global win rate is shown in whole percent, like the local table",
+    "Die Spaltenköpfe der globalen Tabelle laufen nicht mehr ineinander, und die Filter stehen in einem gleichmäßigen Raster": "The column headers of the global table no longer run into each other, and the filters sit in an even grid",
     "Globale Fähigkeitsstatistik mit Filtern, gewichteten Siegquoten und Level-Aufteilung für alle sichtbar":"Global ability statistics with filters, weighted win rates and level breakdowns are visible to everyone",
     "Abgewiesene Statistikmeldungen blockieren keine weiteren Beiträge; Quittungen und Fehlerprotokolle werden begrenzt aufbewahrt":"Rejected statistics reports no longer block further contributions; receipts and error logs have limited retention",
     "Super Rare hat seine eigene Kartenvorderseite: türkis mit Silberbeschlag und elfenbeinernem Namensband – bisher trug die Stufe die Rare-Karte": "Super Rare has its own card front: turquoise with silver fittings and an ivory name band; until now the tier used the Rare card",

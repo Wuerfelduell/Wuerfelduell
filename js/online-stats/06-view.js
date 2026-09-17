@@ -33,7 +33,7 @@
     const rate=r=>r.uses?r.wins/r.uses:0,sort=el("globalStatsSort").value;
     rows.sort((a,b)=>sort==="uses"?b.uses-a.uses||a.id-b.id:
       Number(a.uses<30)-Number(b.uses<30)||rate(b)-rate(a)||b.uses-a.uses||a.id-b.id);
-    const percent=r=>r.uses?`${Math.round(rate(r)*1000)/10}%`:"–";
+    const percent=r=>r.uses?`${Math.round(rate(r)*100)}%`:"–";
     el("globalStatsMeta").innerHTML=`<span>${escape(tr("Gemeldete Kämpfe insgesamt"))}: <strong>${cache.count}</strong></span> <span>${escape(tr("Geladen um"))}: <time>${escape(new Date(cache.at).toLocaleTimeString())}</time></span>`;
     el("globalStatsList").innerHTML=rows.length?`<div class="global-stat-grid global-stat-header"><span>${escape(tr("Fähigkeit"))}</span><span>${escape(tr("Einsätze"))}</span><span>${escape(tr("Siege"))}</span><span>${escape(tr("Winrate"))}</span></div>`+rows.map(r=>
       `<details data-ability="${r.id}"><summary class="global-stat-grid"><span class="global-stat-name" translate="no">${escape(window.t(ABILITIES[r.id]?.name||String(r.id),"en"))}</span><span>${r.uses}</span><span>${r.wins}</span><span>${percent(r)}</span>${r.uses<30?`<small class="global-stat-sample">${escape(tr("kleine Stichprobe"))}</small>`:""}</summary><div class="global-stat-levels">${r.levels.map((level,i)=>`<div class="global-stat-grid"><span>${escape(tr("Level "+i))}</span><span>${level.uses}</span><span>${level.wins}</span><span>${percent(level)}</span></div>`).join("")}</div></details>`).join(""):"";
