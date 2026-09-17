@@ -1,74 +1,165 @@
-# Gemeinsame Kampf-Engine – Entwurf, Phase 1
+# Gemeinsame Duell-Engine – Phase 2, Schritt 1
 
-Stand: V28.13.2, Ausgangspunkt `453217f` (V28.13.0), 17.09.2026.
-**Nicht zur Umsetzung freigegeben.** Diese Lieferung enthält nur Zufallsadapter,
-flüchtiges Aktionsprotokoll und Prüfstand. Host, Regeln, RPCs, Speicherformate und
-Edge Function bleiben in ihrer bisherigen Rolle. Keine Migration erforderlich.
+Stand: V28.14.0, Ausgangspunkt `bae6e96` (V28.13.2), 17.09.2026.
+Der Phase-1-Entwurf ist freigegeben. Geliefert ist **Schritt 1 von 6:
+Definitionen und Zustand**. Das Spiel liest die gemeinsamen Definitionen;
+Kampfentscheidungen laufen weiterhin im bisherigen Browsercode. Es gibt noch
+keinen Reducer, keinen Browseradapter und keinen neuen Online-Payload.
+Kein Deployment und keine Migration.
 
-## Befund und Grenze
+## Freigegebener Umfang und Lieferreihenfolge
 
-Die sieben untersuchten Dateien enthalten rund 5.300 Zeilen. Dateinamen sind
-keine Modulgrenzen: `12-battle-ui` enthält Zielwahl und Schadensberechnung;
-`13-battle-actions` kombiniert Regelentscheidungen mit Dialogen und Timern.
-`23-mastery` mischt Kampfeffekte, permanente Profilfortschritte und Oberfläche.
-Außerdem liegen Regeln in `06-campaign`, `37-duo-boss-rush`, `44-trio-boss-rush`
-und statische Definitionen in `01`, `02`, `03`, `03b`, `03c`, `05`.
-Diese Abhängigkeiten gehören zur Phase-2-Extraktion, nicht nur die sieben Dateien.
+Die Engine umfasst ausschließlich das Duell: `classic`, `endurance50`,
+`overload75`, `mayhem`, zwei bis sechs Spieler, Fähigkeitseffekte auf Level 0,
+in Mayhem das erzwungene `allMasteryLevel: 2`. Keine Profilwerte im State;
+Online hat keine Profil-Mastery. Kampagne, Encounter, Weltregeln, Boss Rush,
+Tutorial und Testumgebung bleiben im Browser. Gemeinsame reine Helfer werden
+in späteren Schritten von beiden Pfaden benutzt, ohne zweite Regelkopie.
 
-Der aktuelle Zustand `exportOnlineState` (Schema 6) ist ein Transportabbild mit
-HTML, Zeitstempeln und Animationen, **kein vollständiger Engine-State**. Zum
-Beispiel müssen alle Mastery-Zähler, temporäre Angriffsflags, ausstehende
-Entscheidungen und Encounter-Sets explizit aufgenommen werden. Blindes Übernehmen
-dieses Snapshots wäre keine belastbare Engine-Grenze.
+Nach Nutzer-Nachtrag vom 17.09. erfolgt jeder Schritt als eigenes geprüftes
+Release auf `main`; anschließend Bericht und **Warten auf „Weiter“**:
 
-## Zielschnitt: eine Quelle, zwei Laufzeiten
+| Schritt | Umfang | Stand |
+|---|---|---|
+| 1 | Gemeinsame Definitionen und serialisierbarer Zustand | V28.14.0 |
+| 2 | Basisphase, nur Engine und Node-Tests | offen |
+| 3 | Angriff, nur Engine und Node-Tests | offen |
+| 4 | Spezialwürfel, Drafts und Rundenwechsel, nur Engine und Node-Tests | offen; Regelfrage unten |
+| 5 | Produktiver Browseradapter und Bot-Paritätsprüfstand | offen; erst nach grüner Parität veröffentlichen |
+| 6 | Deno-Parität und Online-Schatten | offen; kein Deployment |
 
-`js/engine/` wird nach Freigabe eine Bibliothek aus klassischen IIFEs. Jede
-registriert ausschließlich auf `globalThis.WDEngine`; kein `window`, DOM,
-Storage, Timer, Audio, Netzwerk oder versteckter globaler Kampfzustand.
-Der Browser lädt die Dateien mit geordneten `defer`-Tags vor dem UI-Adapter.
-Ein Deno-Einstieg importiert dieselben Dateien als Side-Effect-Imports und liest
-anschließend `globalThis.WDEngine`. Die IIFE selbst hat keine ES-Exports und
-läuft deshalb unverändert in beiden Umgebungen.
+Die bestehende Browseroberfläche behält ihre bisherigen Spielergrenzen und
+Botfreigaben aus `LOCAL_MODES`. Die Engine kann unabhängig davon alle
+20 Kombinationen aus vier Modi und zwei bis sechs Sitzen darstellen. Erst
+Schritt 5 übernimmt lokale Duelle und die Hostberechnung. Online-Protokoll
+und Hostautorität bleiben in Phase 2 erhalten. Schatten und spätere
+Serverumschaltung sind auf Classic 1:1 begrenzt; keine Sonderregeln im Reducer.
 
-Vorschlag: `01-rng.js`, `02-definitions.js`, `03-state.js`, `04-rules.js`,
-`05-reduce.js`; Nummern und Zuschnitt erst bei Umsetzung festlegen. Der heutige
-Zufallsadapter ist Vorarbeit und kein freigegebener Reducer. Sein globaler
-Testzustand darf später **nicht** zwischen parallelen Edge-Anfragen geteilt werden.
-Der Reducer erhält je Anfrage eine eigene RNG-Instanz.
+## Gemeinsame Datenquelle
+
+`js/engine/02-definitions.js` registriert `WDEngine.definitions`:
+`RULE_VERSION`, `STATE_VERSION`, `START_HP`, `DICE_COUNT`, `SECOND_ABILITY_HP`,
+`REAL_ABILITY_IDS`, `CHOOSABLE_ABILITY_IDS`, `LOCAL_MODES`, `ABILITIES`.
+Alle Daten sind rekursiv eingefroren. `js/01-config.js` und
+`js/05-game-data-state.js` halten nur Referenzen auf diese Daten. Namen,
+Beschreibungen und Modusparameter wurden unverändert aus V28.13.2 übernommen.
+Der Tutorial-Anzeigetext für ID 0 bleibt im gemeinsamen Katalog, wird aber
+von `createState` als Duellfähigkeit abgelehnt.
+
+Der Bestand enthält **24 echte Fähigkeiten** (1–25 ohne 6), davon 23 frei
+wählbare (zusätzlich ohne 7). W25=6 ist eine freie Auswahl, keine eigene
+Fähigkeit. Die geforderte Abnahmematrix „25 Fähigkeiten je 20 Auslösungen“
+muss vor Schritt 5 geklärt werden. Vorschlag: 24 echte Fähigkeiten jeweils
+20-mal wirksam auslösen und 20 freie W25=6-Auswahlen gesondert prüfen.
+ID 0 darf diese Lücke nicht als Tutorial-Platzhalter verdecken.
+
+## Zustandsschema und API – Schritt 1
+
+`js/engine/03-state.js` ergänzt `WDEngine.createState(setup)` und
+`WDEngine.validateState(state)`. Die IIFEs benötigen ausschließlich
+`globalThis`, keine Browserobjekte, Timer, Speicherung, Netzwerk oder Uhrzeit.
+Sie verbrauchen keinen Zufall. Im Browser werden sie mit geordneten
+`defer`-Tags vor `js/01-config.js` geladen; `createState` wird vom laufenden
+Spiel noch nicht benutzt.
+
+```js
+const state = WDEngine.createState({
+  modeId: 'classic',
+  players: [{seat: 0, abilities: [1]}, {seat: 1, abilities: [2]}],
+  startingSeat: 0,
+  roundNumber: 1
+});
+const {valid, errors} = WDEngine.validateState(state);
+```
+
+`modeId` und `players` sind Pflicht. Sitze sind eindeutige Ganzzahlen 0–5;
+die Reihenfolge im Array ist die Zugfolge. `startingSeat` muss belegt sein
+und ist standardmäßig der erste Sitz. `roundNumber` beginnt standardmäßig
+bei 1. Die Fähigkeiten müssen vorab ausgewählt sein, beim Start exakt so
+viele wie der Modus verlangt, ohne Duplikate; weder ID 0 noch ID 6 ist erlaubt.
+Die Auswahlpools der bisherigen lokalen und Online-Vorbereitung bleiben
+unverändert. Die Engine kann Fähigkeit 7 auswerten, unabhängig davon, über
+welchen erlaubten Vorbereitungspfad sie erworben wurde.
+
+Ungültiges Setup wirft `TypeError`; der Validator meldet
+`{valid: false, errors: [{path, reason}]}`. Er verändert den Eingang nicht.
+Unbekannte Felder, Profilwerte, falsche Referenzen, nicht endliche Zahlen,
+Funktionen, Sets und zyklische Strukturen werden nicht still übernommen.
+Neue Zustände teilen keine veränderlichen Arrays oder Objekte miteinander
+oder mit dem Setup. JSON-Rundreisen erhalten sämtliche Werte.
+
+| Feld | Inhalt |
+|---|---|
+| `ruleVersion`, `stateVersion` | `duel-1`, 1; unabhängig von der App-Version |
+| `modeId`, `masteryLevel` | Modus und ausschließlich dessen erzwungene Stufe (Mayhem 2, sonst 0) |
+| `players` | Sitze, HP/Max-HP, Fähigkeits-IDs, Bonusfreigabe, Rundensiege, aktive Effekte und Regelzähler |
+| `turn` | Zugnummer, aktiver Sitz, Phase und Entscheidungsinhaber |
+| `dice` | Fünf Würfel mit Wert, Lock und Auswahl, ohne Animationsflags |
+| `base` | Letzte Wurfindizes und Verbrauchszähler der Basisfähigkeiten |
+| `attack` | Ziel/Summe/Quelle, Treffer und Schaden, Wurf-/Fähigkeitszähler, Wildcard, Blutpreis, Momentum und weitere temporäre Flags |
+| `counter` | Konterkontext, Konterwürfel, Treffer und vorgemerkter Konter |
+| `draft` | Aktuelle Auswahl, Warteschlange ohne vorgezogene Optionen und ausstehende Fortsetzungen |
+| `special` | Gambling Man, Perfect 25, High Stakes und Insurance-Kontexte |
+| `round` | Nummer, Ausscheidereihenfolge, letzter Platz, Sieger/Ergebnis und Vorbereitung |
+| `rng` | Algorithmus, optionaler Seed/PRNG-Zustand und Ziehungszähler; keine globale RNG-Instanz |
+| `sequence` | Aktions- und Ereigniszähler für spätere stabile Ereignis-IDs |
+
+`rng` ist optional im Setup. Standard ist
+`{algorithm: 'external', seed: null, state: null, drawIndex: 0}`. Für
+`mulberry32` werden ein uint32-Seed, ein uint32-Zustand und ein nicht negativer
+sicherer Ziehungszähler verlangt. Die State-Helfer erzeugen weder Seed noch
+Ziehungen. Der Zufallsadapter aus Phase 1 bleibt davon getrennt.
+
+Die unveränderlichen Regeln werden über `ruleVersion` und `modeId` aus den
+eingefrorenen Definitionen gelesen. Ein abweichender Regelstand wird nicht
+mit aktuellen Regeln weiterinterpretiert, sondern als ungültig abgewiesen.
+
+Prüfung für Schritt 1: `scripts/qa/engine-state.mjs` umfasst 52 gültige
+Fälle und 123 erwartete Ablehnungen, einschließlich JSON-Rundreise,
+Instanztrennung und Entscheidungsinhabern bei Draft und Konter.
+`scripts/qa/engine-state-browser.mjs` vergleicht 20 Startzustände byteweise
+mit Node und prüft 40 Kampfansichten (vier Modi, DE/EN, 320/360/390/412/1280 px).
+Dies ist ausdrücklich noch keine Reducer-Matchparität.
+
+## Reducer und Ereignisse – noch nicht implementiert
+
+Der bestätigte Schnitt für Schritte 2–4 bleibt:
 
 ```js
 const {state: next, events} = WDEngine.reduce(state, action, rng);
-// Ereignisse: DiceRolled, DamageApplied, Healed, AbilityDraftOpened,
-// DecisionRequired, TurnStarted, PlayerEliminated, MatchFinished.
 ```
 
-Der Eingang bleibt unverändert; `next` ist ein neuer serialisierbarer Zustand.
-Aktion enthält Typ, Sitz und validierte Nutzlast. Ungültige Aktionen liefern
-einen definierten Ablehnungsgrund und verbrauchen keinen RNG-Zustand. Ereignisse
-enthalten IDs und Werte, keine deutschen Sätze, HTML oder UI-Rückrufe.
-Der Browser leitet daraus Animation, übersetztes Log und modale Auswahl ab.
-Animationen dürfen niemals die Reihenfolge der Regeln bestimmen. Automatische
-Folgen laufen im Reducer bis zur nächsten echten Spielerentscheidung; sichtbare
-Pausen verarbeitet nur die UI. Stabile Event-IDs verhindern doppelte Animationen.
+Der Eingang bleibt unverändert. Ungültige Aktionen liefern
+`{rejected: true, reason}` ohne RNG-Verbrauch. Automatische Folgen laufen
+bis zur nächsten echten Spielerentscheidung. Ereignisse enthalten stabile
+IDs, Typen und Werte; Texte, HTML, Animationen und UI-Rückrufe bleiben im
+Adapter. Vorgesehen sind `DiceRolled`, `DamageApplied`, `Healed`,
+`AbilityDraftOpened`, `DecisionRequired`, `TurnStarted`, `PlayerEliminated`
+und `MatchFinished`. **Schritt 1 erzeugt noch keine Ereignisse.** Zusätzliche
+Typen und konkrete Nutzlasten werden mit dem jeweiligen Regelschritt ergänzt.
+Botlogik bleibt ein Aktionsproduzent außerhalb des Reducers.
 
-State: Engine-/Regelversion, Modus und unveränderliche Regeln, Teilnehmer und
-Sitzreihenfolge, HP/Fähigkeiten/effektive Mastery, Phase/Entscheidungsinhaber,
-Würfel und Locks, Angriffs-/Konterkontext, Draft, aktive Effekte und Zähler,
-Encounter-Runtime, Rundenergebnis sowie RNG-Zustand/Ziehungszähler. Sets werden
-explizit zu Arrays oder Maps mit definierten Schlüsseln. Keine Profilobjekte,
-Guthaben, DOM-Auswahlwerte, Wallclock oder Kosmetik im regelwirksamen Zustand.
-Permanente Freischaltungen und Statistik reagieren außerhalb der Engine auf Events.
-Geliehene Boss-Rush-Mastery bleibt strikt von gekaufter Mastery getrennt.
+## Nachgewiesene Regelunklarheit vor Schritt 4
 
-Für Deployment entweder relative Imports auf die kanonischen Dateien (mit
-lokalem `supabase functions serve` und Bundle-Test nachweisen) oder ein
-Buildschritt, der **byteidentische generierte Kopien** unter `functions/_shared`
-erzeugt und deren Hash prüft. Keine handgepflegte zweite Regelquelle. Bevorzugt
-relative Imports; generierte Kopie nur, falls die Paketgrenze das verlangt.
-Supabase empfiehlt je Function eine eigene `deno.json` für Abhängigkeiten:
-[offizielle Dokumentation](https://supabase.com/docs/guides/functions/dependencies).
-Changelog am 17.09. geprüft; keine einschlägige Änderung für diesen Entwurf.
+In Mayhem öffnet Jump Ahead bei Basissumme 24 und 31 HP durch einen Punkt
+Eigenschaden den dritten Fähigkeitsdraft. `applyBaseSelfDamage` plant
+gleichzeitig den Angriff nach 520 ms, ohne auf diesen Draft zu warten.
+Mit Startfähigkeiten `[5,4]` bietet Seed 10 legal `[9,17]` an:
+
+| Auswahl von Wildcard (17) | Ergebnis bei `attack_ready` | Ziehungen |
+|---|---|---:|
+| Vor dem 520-ms-Timer | `wildcardFace: 3` | 21 |
+| Nach dem 520-ms-Timer | `wildcardFace: null` | 20 |
+
+HP, gewählte Fähigkeit und Angriffszahl sind gleich, der regelwirksame
+Zustand und RNG-Verbrauch hängen aber von der Antwortgeschwindigkeit ab.
+Nachgewiesen mit Originalfunktionen aus `js/13-battle-actions.js` und
+kontrollierter Timerfolge, ohne Änderung der Spielregeln.
+Relevante Pfade: `resolveBase`, `applyBaseSelfDamage`,
+`initializeAttackAfterTarget`, `chooseSecondAbility`.
+Vor Umsetzung dieses Pfads ist gemäß Nutzerauftrag zu klären, ob der
+Angriff verbindlich nach der Draftwahl initialisiert werden soll.
+**Schritt 1 verändert diesen Pfad nicht.**
 
 ## Zufall und Reproduzierbarkeit
 
@@ -130,27 +221,21 @@ Timeout zeigt Wiederholen mit derselben ID. Reconnect beendet die Vorschau und
 stellt anhand bestätigter Sequenz/Event-ID wieder her. Zufallsseed offenlegen,
 um volle Spekulation zu ermöglichen, wird ausdrücklich nicht empfohlen.
 
-## Was im Browser bleibt
+## Browsergrenze und spätere Abnahme
 
-Tutorial und Testumgebung steuern ihre Szenarien lokal. Solo, Kampagne, lokales
-Spiel und Boss Rush rufen dieselbe Engine ohne Netzwerk auf. Botplanung bleibt
-ein separater Aktionsproduzent. UI/Audio/Animationen, Karten und Fortschrittsmenüs,
-Profilpersistenz und lokale Belohnungsverarbeitung bleiben Browseradapter.
-Online setzt die Datenbank autorisierte Startparameter; effektive Mastery darf
-später nicht ungeprüft aus einem manipulierten Clientprofil übernommen werden.
+Kampagne, Encounter, Weltregeln, Boss Rush, Tutorial und Testumgebung bleiben
+im Browser. Lokale Duelle und der Online-Host wechseln erst in Schritt 5
+auf den gemeinsamen Reducer. Profilpersistenz, Statistik, Freischaltungen,
+Texte, Audio, Animationen und Botplanung bleiben außerhalb der Engine.
+Der Engine-State enthält keine Profilobjekte oder Profil-Mastery.
 
-## Phasen und Aufwand
-
-| Phase | Arbeit und Abnahme | Schätzung |
-|---|---|---|
-| 1 | Inventar, Entwurf, RNG-Adapter, RAM-Protokoll, erster echter Bot-Replay; keine Serveränderung | 2–4 Arbeitstage |
-| 2 | State vollständig definieren; Regeln schrittweise extrahieren; Browseradapter; alle Fähigkeiten/Level, Entscheidungen, Kampagnen-/Rush-Regeln testen; identische Datei in Deno; Schattenvergleich | 15–25 Arbeitstage |
-| 3 | Seed-/Commit-/Idempotenz-Migrationen, Rechtewechsel, Vorschau für Host, Reconnect/Timeout/Konkurrenz, gestufter Rollout und Betrieb | 6–10 Arbeitstage |
-
-Schätzungen für eine umsetzende Person inklusive Tests, keine Terminzusage;
-ungewöhnliche Wechselwirkungen können 30–50 % Reserve verlangen. Größter Aufwand
-ist die Abtrennung von Timern, DOM-gesteuerten Entscheidungen und Persistenz,
-nicht das Hosting der Function. Shop/Kisten/Währung gehören nicht zu diesen Phasen.
+Schritt 5 verlangt 1.000 Classic-1:1-Botduelle und ergänzende Läufe für die
+anderen Modi und Spielerzahlen, mit gleicher Zustands- und Ereignisfolge
+im Browser und Node. Schritt 6 ergänzt Deno mit denselben relativen
+Side-Effect-Imports in `battle-action`, lokalem `supabase functions serve`
+und Classic-1:1-Schatten im RAM. Kein Deployment in Phase 2. Ein reiner
+Startzustandsvergleich ist kein Ersatz für die vollständige Matchparität.
+Echte Zwei-Geräte-Spieltests führt der Nutzer getrennt nach dem Umbau durch.
 
 Phase 2 zuerst gegen aufgezeichnete Altpartien vergleichen. Im echten
 Schattenbetrieb bleibt der Host autoritativ; Serverantworten ändern kein Gameplay.
@@ -192,23 +277,18 @@ Browser ist es bewusst nicht über einen neuen Menüpunkt zugänglich.
 Der Prüfstand spielt eine lokale Classic-Partie mit zwei echten Bots ab und
 wiederholt ihre Bot-Schritte mit den aufgezeichneten Ziehungen zweimal in frischen
 Browserseiten. Er prüft Ergebnis und Ziehungsfolge. Das beweist die getestete
-Partie, nicht alle 24 wählbaren Fähigkeiten, Mastery-Kombinationen oder Kampagnen.
+Partie, nicht alle 24 echten Fähigkeiten, Mastery-Kombinationen oder Kampagnen.
 Der vollständige State- und Online-Replay-Importer ist Arbeit von Phase 2.
 
-## Entscheidungen vor Phase 2/3
+## Noch offene Entscheidungen
 
-1. **Schnitt freigeben?** Gemeinsame JS-IIFE-Engine mit State + Events; Edge Function
-   rechnet, SQL-RPC committed atomar. Empfehlung: ja, nach Prüfung dieses Entwurfs.
-2. **Schattenbetrieb wie beginnen?** Empfehlung: private Testmatches mit aufgezeichneten
-   Host-Ziehungen, danach begrenzte echte Matches; keine sofortige Umschaltung.
-3. **Host-Vorschau akzeptiert?** Empfehlung: sofortige Animation, Ergebnis erst nach
-   Serverbestätigung; keine vorgetäuschten Treffer und kein veröffentlichter Seed.
-4. **Freigabe- und Betriebsbudget?** Empfehlung: obige Testmatrix und 1.000 Matches,
-   Latenzgrenze nach Mobilmessung festlegen; private Abweichungslogs sieben Tage.
-5. **Online-Startdaten und Ausfallregel?** Vor Phase 3 festlegen, welche Mastery-
-   /Profilwerte serverseitig gelten und wie lange unterbrochene Matches warten.
-   Empfehlung: bestehende Online-Regeln unverändert, kein lokaler Ersatzhost bei
-   Serverausfall; Wiederaufnahme desselben bestätigten Matches.
+- Vor Schritt 4: Reihenfolge des nachgewiesenen Mayhem-Drafts gegenüber
+  dem verzögerten Angriff, siehe oben; keine stille Verhaltensänderung.
+- Vor Schritt 5: Abnahmematrix mit 24 echten Fähigkeiten und W25=6 als
+  gesondertem Auswahlfall statt einer erfundenen 25. Fähigkeit.
+- Phase 3: Ausfall-/Wiederaufnahmeregel und gemessene Latenzgrenzen. Die
+  Hostvorschau (sofort drehen, Ergebnis nach Bestätigung) gehört in Phase 3.
+  Online hat keine Profil-Mastery; diese Entscheidung ist bereits getroffen.
 
 ## Funktionsinventar
 

@@ -1,20 +1,9 @@
-  const START_HP = 25;
-  const DICE_COUNT = 5;
+  const {START_HP,DICE_COUNT,SECOND_ABILITY_HP,REAL_ABILITY_IDS,CHOOSABLE_ABILITY_IDS,LOCAL_MODES}=globalThis.WDEngine.definitions;
   let ROLL_ANIM_MS = 430;
-  const SECOND_ABILITY_HP = 12;
-  const REAL_ABILITY_IDS = [1,2,3,4,5,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25];
-  const CHOOSABLE_ABILITY_IDS = REAL_ABILITY_IDS.filter(id=>id!==7);
-
-  const LOCAL_MODES={
-    classic:{id:"classic",name:"Classic",startHp:25,startAbilityCount:1,bonusThreshold:12,bonusSlot:2,maxPlayers:8,allowBots:true,lastPlaceFreeChoices:1},
-    endurance50:{id:"endurance50",name:"Endurance",startHp:50,startAbilityCount:2,bonusThreshold:30,bonusSlot:3,maxPlayers:4,allowBots:false,lastPlaceFreeChoices:2},
-    overload75:{id:"overload75",name:"Overload",startHp:75,startAbilityCount:3,bonusThreshold:null,bonusSlot:null,maxPlayers:4,allowBots:false,lastPlaceFreeChoices:1},
-    mayhem:{id:"mayhem",name:"Mayhem",startHp:65,startAbilityCount:2,bonusThreshold:30,bonusSlot:3,maxPlayers:6,allowBots:false,lastPlaceFreeChoices:0,bonusOnKill:true,allMasteryLevel:2}
-  };
   let localModeId="classic";
   function localModeRules(){return LOCAL_MODES[localModeId]||LOCAL_MODES.classic;}
 
-  const GAME_VERSION="28.13.3";
+  const GAME_VERSION="28.14.0";
   // Gemeinsamer Bild-Cache-Schluessel; identisch mit den Bild-URLs in HTML und CSS.
   const ASSET_REV="28.12.48";
   const SAVE_KEY="wuerfelduell_save_v1"; // absichtlich stabil: Updates lesen denselben Browser-Save

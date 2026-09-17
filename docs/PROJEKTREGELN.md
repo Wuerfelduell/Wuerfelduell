@@ -19,8 +19,9 @@ Repo: `Wuerfelduell/Wuerfelduell`. Direkte Commits auf `main` sind erlaubt.
 - `js/00-*.js` … `js/47-*.js` — in dieser Reihenfolge in `index.html`
   eingebunden, jede Datei eine IIFE. Keine Module, kein Import.
 - `js/online-stats/` — sechs eigene IIFE-Dateien, geladen nach `js/47`.
-- `js/engine/01-rng.js` — DOM-freier Zufallsadapter vor `js/01`; die gemeinsame
-  Kampf-Engine ist erst entworfen, siehe `docs/SERVER-ENGINE-ENTWURF.md`.
+- `js/engine/` — DOM-freier Zufallsadapter sowie gemeinsame Definitionen
+  und State-Helfer vor `js/01`. Noch kein produktiver Reducer; Lieferfolge
+  und Schema in `docs/SERVER-ENGINE-ENTWURF.md`.
 - `src/styles/legacy/*.css` — **11 Quelldateien**, das sind die zu
   bearbeitenden. `css/app.css` ist erzeugt und wird nie von Hand editiert.
 - `lang/de.js`, `lang/en.js`, `lang/en-campaign.js`, `lang/en-changelog.js`
@@ -48,6 +49,8 @@ Repo: `Wuerfelduell/Wuerfelduell`. Direkte Commits auf `main` sind erlaubt.
    Playwright-Chromium; `WD_CHROMIUM` erlaubt einen expliziten Browserpfad.
    Seit V28.13.2 läuft außerdem `check:engine-replay`: echte Bot-Partie,
    zwei Replays, Host-Protokoll und Kampfansicht in fünf Breiten auf DE/EN.
+   Seit V28.14.0 laufen auch `check:engine-state` (Node) und
+   `check:engine-state-browser` (vier Modi in DE/EN und fünf Breiten).
 5. `AI_Handover.md` prüfen: Tabelle unter „Stand" nachziehen, alles
    andere nur bei echter Änderung.
 

@@ -5,6 +5,9 @@
   if (!pack) return;
 
   Object.assign(pack.exact, {
+    "Fähigkeiten und Duellmodi verwenden eine gemeinsame Datenquelle für Browser und künftige Serverberechnung": "Abilities and duel modes use one shared data source for the browser and future server calculations",
+    "Ein serialisierbarer, streng geprüfter Duell-Zustand bildet vier Modi mit zwei bis sechs Spielern ohne Profilwerte ab": "A serializable, strictly validated duel state represents four modes with two to six players without profile data",
+    "Kampfablauf und Online-Protokoll bleiben unverändert; die Regelumstellung folgt in getrennten Schritten": "Battle flow and the online protocol remain unchanged; the rules will move in separate steps",
     "Neuer Angriffseffekt „Seelenbruch“ zum Ausprobieren in der Testumgebung: Würfelseele im Goldkäfig, Spiralflug und Runen-Implosion, mit eigenem Kill-Effekt – noch nicht im Shop": "New attack effect “Seelenbruch” to try out in the test lab: a dice soul in a golden cage, spiral flight and rune implosion, with its own kill effect; not in the shop yet",
     "Vorbereitung für eine gemeinsame Kampf-Engine: Zufallsadapter und flüchtiges Host-Aktionsprotokoll, ohne Änderung der Spielregeln": "Preparation for a shared battle engine: random number adapter and an in-memory host action log, without changing the game rules",
     "Ein neuer Prüfstand spielt einen Bot-Kampf zweimal mit denselben Zufallsziehungen nach; die Serverumstellung bleibt bis zur Freigabe des Entwurfs offen": "A new test replays a bot battle twice with the same random draws; the server transition remains pending until the design is approved",
