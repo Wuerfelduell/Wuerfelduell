@@ -404,7 +404,9 @@
       thunderstrike:['#75ffe1','#b06cff'],
       catattack:['#ffd45a','#75ffe1'],
       quantumleap:['#75ffe1','#b06cff'],
-      cometshower:['#ffd45a','#ff704f']
+      cometshower:['#ffd45a','#ff704f'],
+      timefracture:['#ffd45a','#75ffe1'],
+      mirrorstorm:['#75ffe1','#fff4bf']
     }[style]||['#ffffff','#77bfff'];
   }
 
@@ -416,7 +418,7 @@
     const fx={
       id:`labfx-${Date.now()}-${Math.random()}`,
       style,from,to,start:performance.now(),
-      duration:style==='lightning'?430:style==='blood'?480:style==='crown'?850:style==='soulbreak'?1200:style==='solarsplash'?1250:style==='trigonbomb'?1300:style==='confettibomb'?1350:style==='polygon'?1320:style==='invasion'?1450:style==='missile'?1400:style==='thunderstrike'?1300:style==='catattack'?1350:style==='quantumleap'?1450:style==='cometshower'?1550:700,
+      duration:style==='lightning'?430:style==='blood'?480:style==='crown'?850:style==='soulbreak'?1200:style==='solarsplash'?1250:style==='trigonbomb'?1300:style==='confettibomb'?1350:style==='polygon'?1320:style==='invasion'?1450:style==='missile'?1400:style==='thunderstrike'?1300:style==='catattack'?1350:style==='quantumleap'?1450:style==='cometshower'?1550:style==='timefracture'?1500:style==='mirrorstorm'?1580:700,
       seed:Math.random()*999
     };
     activeLabFx.push(fx);
@@ -436,7 +438,7 @@
         const from=cardCenter(event?.source),to=cardCenter(event?.target);
         if(!from||!to) return false;
         const style=String(event?.style||players?.[Number(event?.source)]?.attackFx||'classic');
-        activeLabFx.push({id:event?.id||`labplay-${Date.now()}`,style,from,to,start:performance.now(),duration:style==='soulbreak'?1200:style==='solarsplash'?1250:style==='trigonbomb'?1300:style==='confettibomb'?1350:style==='polygon'?1320:style==='invasion'?1450:style==='missile'?1400:style==='thunderstrike'?1300:style==='catattack'?1350:style==='quantumleap'?1450:style==='cometshower'?1550:700,seed:Math.random()*999});
+        activeLabFx.push({id:event?.id||`labplay-${Date.now()}`,style,from,to,start:performance.now(),duration:style==='soulbreak'?1200:style==='solarsplash'?1250:style==='trigonbomb'?1300:style==='confettibomb'?1350:style==='polygon'?1320:style==='invasion'?1450:style==='missile'?1400:style==='thunderstrike'?1300:style==='catattack'?1350:style==='quantumleap'?1450:style==='cometshower'?1550:style==='timefracture'?1500:style==='mirrorstorm'?1580:700,seed:Math.random()*999});
         return true;
       },
       getLastPlayedId:()=>coreAttackFx.getLastPlayedId?.(),
@@ -1211,6 +1213,38 @@
     for(let i=0;i<6;i++){const p=(t-(.12+i*.07))/.34;if(p<=0||p>=1)continue;const lane=i-2.5,pos=cometShowerPoint(fx,p,lane),next=cometShowerPoint(fx,Math.min(1,p+.01),lane);drawCometGlyph(pos.x,pos.y,7+i%2*2,Math.atan2(next.y-pos.y,next.x-pos.x),Math.min(1,p*10));}
     const p=(t-.52)/.28;if(p>0&&p<1){const pos=cometShowerPoint(fx,p,0),next=cometShowerPoint(fx,Math.min(1,p+.01),0);drawCometGlyph(pos.x,pos.y,18,Math.atan2(next.y-pos.y,next.x-pos.x),1,true);}
   }
+  function drawTimeShard(x,y,size,angle,alpha){
+    if(alpha<=0)return;fxCtx.save();fxCtx.translate(x,y);fxCtx.rotate(angle);fxCtx.globalCompositeOperation='lighter';fxCtx.globalAlpha=alpha;fxCtx.shadowColor='#75ffe1';fxCtx.shadowBlur=16;const g=fxCtx.createLinearGradient(-size,0,size,0);g.addColorStop(0,'#0d3975');g.addColorStop(.5,'#75ffe1');g.addColorStop(1,'#fff4bf');fxCtx.fillStyle=g;fxCtx.strokeStyle='#ffd45a';fxCtx.lineWidth=2;fxCtx.beginPath();fxCtx.moveTo(size,0);fxCtx.lineTo(0,size*.56);fxCtx.lineTo(-size,0);fxCtx.lineTo(0,-size*.56);fxCtx.closePath();fxCtx.fill();fxCtx.stroke();fxCtx.restore();
+  }
+
+  function drawClockRing(x,y,r,rotation,alpha){
+    if(alpha<=0)return;fxCtx.save();fxCtx.translate(x,y);fxCtx.rotate(rotation);fxCtx.globalCompositeOperation='lighter';fxCtx.globalAlpha=alpha;fxCtx.strokeStyle='#ffd45a';fxCtx.shadowColor='#f6d679';fxCtx.shadowBlur=12;fxCtx.lineWidth=2.4;fxCtx.beginPath();fxCtx.arc(0,0,r,0,Math.PI*2);fxCtx.stroke();for(let i=0;i<12;i++){const a=i*Math.PI/6;fxCtx.beginPath();fxCtx.moveTo(Math.cos(a)*r*.82,Math.sin(a)*r*.82);fxCtx.lineTo(Math.cos(a)*r,Math.sin(a)*r);fxCtx.stroke();}fxCtx.strokeStyle='#75ffe1';fxCtx.lineWidth=3;fxCtx.beginPath();fxCtx.moveTo(0,0);fxCtx.lineTo(Math.cos(-rotation*1.8)*r*.64,Math.sin(-rotation*1.8)*r*.64);fxCtx.moveTo(0,0);fxCtx.lineTo(Math.cos(rotation*.7+1.5)*r*.42,Math.sin(rotation*.7+1.5)*r*.42);fxCtx.stroke();fxCtx.restore();
+  }
+
+  function timeFracturePoint(fx,p){const q=easeInOut(Math.max(0,Math.min(1,p))),mid={x:lerp(fx.from.x,fx.to.x,.5),y:Math.min(fx.from.y,fx.to.y)-66},u=1-q;return{x:u*u*fx.from.x+2*u*q*mid.x+q*q*fx.to.x,y:u*u*fx.from.y+2*u*q*mid.y+q*q*fx.to.y};}
+
+  function drawTimefracture(fx,t){
+    const distance=Math.hypot(fx.to.x-fx.from.x,fx.to.y-fx.from.y),base=Math.max(17,Math.min(27,distance*.058)),charge=Math.min(1,t/.22);
+    if(t<.34){const fade=Math.max(0,1-(t-.25)/.09);drawClockRing(fx.from.x,fx.from.y,base*(.65+charge*1.25),-t*8,fade);glowCircle(fxCtx,fx.from.x,fx.from.y,base*(1+charge),'#75ffe1',fade*.28);}
+    const p=(t-.16)/.42;if(p>0&&p<1){const pos=timeFracturePoint(fx,p),next=timeFracturePoint(fx,Math.min(1,p+.01)),ang=Math.atan2(next.y-pos.y,next.x-pos.x);for(let i=1;i<=12;i++){const q=p-i*.035;if(q<=0)continue;const trail=timeFracturePoint(fx,q);drawTimeShard(trail.x,trail.y,5+i*.42,ang,(1-i/13)*.23);}drawTimeShard(pos.x,pos.y,base*.72,ang,1);for(const stop of [.23,.47,.7])if(p>stop){const ghost=timeFracturePoint(fx,stop);drawTimeShard(ghost.x,ghost.y,base*.52,ang,Math.max(0,1-(p-stop)/.5)*.35);}}
+    const lock=Math.max(0,Math.min(1,(t-.42)/.22)),fade=t<.84?lock:Math.max(0,1-(t-.84)/.16);if(fade>0){drawClockRing(fx.to.x,fx.to.y,base*(.9+lock*1.8),-t*10,fade);drawClockRing(fx.to.x,fx.to.y,base*(.5+lock),t*7,fade*.68);}
+  }
+
+  function drawMirrorShard(x,y,w,h,rotation,alpha,cracked=false){
+    if(alpha<=0)return;fxCtx.save();fxCtx.translate(x,y);fxCtx.rotate(rotation);fxCtx.globalCompositeOperation='lighter';fxCtx.globalAlpha=alpha;fxCtx.shadowColor='#75ffe1';fxCtx.shadowBlur=14;const g=fxCtx.createLinearGradient(-w/2,-h/2,w/2,h/2);g.addColorStop(0,'rgba(255,255,255,.92)');g.addColorStop(.28,'rgba(117,255,225,.36)');g.addColorStop(.66,'rgba(36,93,169,.52)');g.addColorStop(1,'rgba(176,108,255,.72)');fxCtx.fillStyle=g;fxCtx.strokeStyle='#fff4bf';fxCtx.lineWidth=1.8;fxCtx.beginPath();fxCtx.moveTo(0,-h/2);fxCtx.lineTo(w/2,-h*.12);fxCtx.lineTo(w*.3,h/2);fxCtx.lineTo(-w*.38,h*.38);fxCtx.lineTo(-w/2,-h*.2);fxCtx.closePath();fxCtx.fill();fxCtx.stroke();if(cracked){fxCtx.strokeStyle='#ffffff';fxCtx.lineWidth=1;fxCtx.globalAlpha=alpha*.65;fxCtx.beginPath();fxCtx.moveTo(0,-h*.42);fxCtx.lineTo(-w*.08,-h*.06);fxCtx.lineTo(w*.2,h*.18);fxCtx.moveTo(-w*.08,-h*.06);fxCtx.lineTo(-w*.3,h*.2);fxCtx.stroke();}fxCtx.restore();
+  }
+
+  function mirrorStormPoint(fx,p){const q=easeInOut(Math.max(0,Math.min(1,p))),mid={x:lerp(fx.from.x,fx.to.x,.54),y:Math.min(fx.from.y,fx.to.y)-82},u=1-q;return{x:u*u*fx.from.x+2*u*q*mid.x+q*q*fx.to.x,y:u*u*fx.from.y+2*u*q*mid.y+q*q*fx.to.y};}
+  function drawMirrorBeam(a,b,color,alpha,width=2.2){if(alpha<=0)return;fxCtx.save();fxCtx.globalCompositeOperation='lighter';fxCtx.globalAlpha=alpha;fxCtx.strokeStyle=color;fxCtx.shadowColor=color;fxCtx.shadowBlur=14;fxCtx.lineWidth=width;fxCtx.beginPath();fxCtx.moveTo(a.x,a.y);fxCtx.lineTo(b.x,b.y);fxCtx.stroke();fxCtx.strokeStyle='#ffffff';fxCtx.globalAlpha=alpha*.66;fxCtx.lineWidth=Math.max(1,width*.28);fxCtx.stroke();fxCtx.restore();}
+
+  function drawMirrorstorm(fx,t){
+    const distance=Math.hypot(fx.to.x-fx.from.x,fx.to.y-fx.from.y),base=Math.max(17,Math.min(27,distance*.058)),charge=Math.min(1,t/.22);
+    if(t<.34){const fade=Math.max(0,1-(t-.25)/.09);for(let i=0;i<4;i++){const a=i*Math.PI/2+t*7,d=(1-charge)*base*2.5+base*.82;drawMirrorShard(fx.from.x+Math.cos(a)*d,fx.from.y+Math.sin(a)*d*.55,base*.3+charge*4,base*.6+charge*8,a,fade);}}
+    const p=(t-.16)/.34;if(p>0&&p<1){const pos=mirrorStormPoint(fx,p),next=mirrorStormPoint(fx,Math.min(1,p+.01)),ang=Math.atan2(next.y-pos.y,next.x-pos.x);for(let i=1;i<10;i++){const q=p-i*.04;if(q<=0)continue;const trail=mirrorStormPoint(fx,q);drawMirrorShard(trail.x,trail.y,5,10,ang,(1-i/10)*.18);}drawMirrorShard(pos.x,pos.y,base*.72,base*1.35,ang,1,true);}
+    const form=Math.max(0,Math.min(1,(t-.43)/.2)),mirrors=[];for(let i=0;i<6;i++){const a=-Math.PI/2+i*Math.PI/3,r=(1-form)*12+base*2.75,point={x:fx.to.x+Math.cos(a)*r,y:fx.to.y+Math.sin(a)*r*.66};mirrors.push(point);if(form>0)drawMirrorShard(point.x,point.y,base*(.6+form*.18),base*(1.18+form*.34),a+Math.PI/2,form,true);}
+    if(t>.56&&t<.78){const bounce=Math.max(0,Math.min(1,(t-.56)/.18)),steps=Math.min(6,Math.floor(bounce*7));for(let i=0;i<steps;i++)drawMirrorBeam(mirrors[i],mirrors[(i*2+3)%6],i%2?'#75ffe1':'#ffd45a',.8,2.5);}
+    const converge=Math.max(0,Math.min(1,(t-.69)/.17))*Math.max(0,1-(t-.86)/.08);if(converge>0)for(let i=0;i<6;i++)drawMirrorBeam(mirrors[i],fx.to,i%2?'#75ffe1':'#fff4bf',converge,3.2);
+  }
   function impactRing(x,y,color,e,maxR=52,width=2.4,alpha=.75){
     if(e<=0||e>=1) return;
     fxCtx.save();
@@ -1405,6 +1439,12 @@
       case 'cometshower':
         for(let i=0;i<6;i++){const q=Math.max(0,Math.min(1,(t-(.39+i*.07))/.27));if(q>0)impactFlash(x+(i-2.5)*12,y+(i%2?9:-9),i%2?c1:c2,q,50,.42);}
         e=Math.max(0,(t-.74)/.26);impactFlash(x,y,'#fff4bf',e,150,.84);impactRing(x,y,c2,e,152,4,.92);impactRing(x,y,c1,Math.min(1,e*1.16),112,2.6,.76);impactSparks(x,y,c1,e,26,148);break;
+      case 'timefracture':
+        for(let i=0;i<3;i++){const q=Math.max(0,Math.min(1,(t-(.62+i*.045))/.25));if(q>0){const a=i*Math.PI*2/3-t*2;impactFlash(x+Math.cos(a)*28,y+Math.sin(a)*18,i===1?c1:c2,q,62,.56);impactRing(x,y,i===1?c1:c2,q,70+i*17,2.4,.64);}}
+        e=Math.max(0,(t-.74)/.26);impactFlash(x,y,'#ffffff',e,126,.72);impactRing(x,y,c1,e,142,3.5,.88);impactRing(x,y,c2,Math.min(1,e*1.16),104,2.5,.7);break;
+
+      case 'mirrorstorm':
+        e=Math.max(0,(t-.8)/.2);impactFlash(x,y,'#ffffff',e,138,.82);impactRing(x,y,c1,e,148,3.8,.9);for(let i=0;i<30;i++){const a=i*2.399,d=e*(38+(i%7)*15);drawMirrorShard(x+Math.cos(a)*d,y+Math.sin(a)*d*.65,4+i%3,9+i%5,a+e*8,(1-e)*.82,i%3===0);}break;
       case 'crown':
         e=Math.max(0,(t-.52)/.48);
         impactFlash(x,y,c1,e,72,.5);
@@ -1447,6 +1487,8 @@
       case 'catattack':drawCatattack(fx,t);break;
       case 'quantumleap':drawQuantumleap(fx,t);break;
       case 'cometshower':drawCometshower(fx,t);break;
+      case 'timefracture':drawTimefracture(fx,t);break;
+      case 'mirrorstorm':drawMirrorstorm(fx,t);break;
       default:drawArcShot(fx,t);break;
     }
     drawImpactForStyle(fx,t);
@@ -1540,6 +1582,10 @@
         tone(240,0,.34,'sine',.026,960);tone(940,.16,.22,'triangle',.02,1820);tone(1480,.36,.18,'sine',.018,420);noiseBurst(.4,.1,.012,1700);break;
       case 'cometshower':
         tone(220,0,.3,'sawtooth',.022,620);noiseBurst(.18,.12,.025,480);noiseBurst(.34,.12,.028,420);noiseBurst(.5,.2,.05,180);tone(92,.48,.3,'sine',.035,44);break;
+      case 'timefracture':
+        tone(760,0,.18,'triangle',.02,340);tone(980,.14,.16,'sine',.018,520);tone(1240,.28,.14,'triangle',.018,680);noiseBurst(.39,.1,.014,1500);break;
+      case 'mirrorstorm':
+        tone(1100,0,.12,'sine',.018,1480);tone(1480,.11,.13,'triangle',.018,820);tone(1860,.23,.12,'sine',.016,980);noiseBurst(.36,.16,.03,1700);break;
       case 'crown':
         tone(392,0,.14,'triangle',.026);tone(587,.06,.18,'triangle',.03);tone(784,.13,.22,'sine',.024);noiseBurst(.17,.08,.012,1100);break;
       default:
@@ -1560,7 +1606,7 @@
       start:performance.now(),
       duration:{
         lightning:820,flame:1050,venom:1050,blood:820,jackpot:1150,
-        void:1200,confetti:1150,frost:1000,rift:1100,crown:1250,soulbreak:1350,solarsplash:1450,trigonbomb:1500,confettibomb:1550,polygon:1600,invasion:1750,missile:1650,thunderstrike:1650,catattack:1750,quantumleap:1750,cometshower:1850
+        void:1200,confetti:1150,frost:1000,rift:1100,crown:1250,soulbreak:1350,solarsplash:1450,trigonbomb:1500,confettibomb:1550,polygon:1600,invasion:1750,missile:1650,thunderstrike:1650,catattack:1750,quantumleap:1750,cometshower:1850,timefracture:1800,mirrorstorm:1900
       }[style]||900,
       seed:Math.random()*999,
       preview
@@ -1843,6 +1889,20 @@
     const main=(t-.38)/.3;if(main>0&&main<1){const fake={to:{x:fx.x,y:fx.y}},pos=cometShowerPoint(fake,main,0),next=cometShowerPoint(fake,Math.min(1,main+.01),0);drawCometGlyph(pos.x,pos.y,r*.24,Math.atan2(next.y-pos.y,next.x-pos.x),1,true);}
     const burst=Math.max(0,(t-.58)/.42);impactFlash(fx.x,fx.y,'#fff4bf',burst,184,.9);impactRing(fx.x,fx.y,'#ff704f',burst,188,5,.96);impactRing(fx.x,fx.y,'#ffd45a',Math.min(1,burst*1.12),148,3,.8);impactSparks(fx.x,fx.y,'#ffd45a',burst,42,178);
   }
+  function killTimefracture(fx,t){
+    const gather=Math.min(1,t/.35),burst=Math.max(0,(t-.48)/.52),r=Math.min(fx.w,fx.h);
+    if(t<.72){for(let i=0;i<4;i++)drawClockRing(fx.x,fx.y,r*(.2+i*.13+gather*.18),(i%2?1:-1)*(t*(6+i)+i),Math.max(0,1-t*.72)*(.95-i*.12));for(let i=0;i<8;i++){const a=i*Math.PI/4-t*5,d=(1-gather)*r*1.4+r*(.25+i%3*.12);drawTimeShard(fx.x+Math.cos(a)*d,fx.y+Math.sin(a)*d*.66,8+i%3,a,Math.max(0,1-t*.68));}}
+    for(let echo=0;echo<5;echo++){const q=Math.max(0,Math.min(1,(t-(.4+echo*.045))/.3));if(q>0){const a=echo*Math.PI*2/5,ox=Math.cos(a)*r*.24,oy=Math.sin(a)*r*.18;impactFlash(fx.x+ox,fx.y+oy,echo%2?'#75ffe1':'#ffd45a',q,76,.58);}}
+    impactFlash(fx.x,fx.y,'#ffffff',burst,164,.8);impactRing(fx.x,fx.y,'#ffd45a',burst,174,4.5,.94);impactRing(fx.x,fx.y,'#75ffe1',Math.min(1,burst*1.14),136,3,.76);impactShards(fx.x,fx.y,'#75ffe1',burst,34,160);
+  }
+
+  function killMirrorstorm(fx,t){
+    const form=Math.min(1,t/.32),burst=Math.max(0,(t-.62)/.38),r=Math.min(fx.w,fx.h),mirrors=[];
+    for(let i=0;i<12;i++){const a=-Math.PI/2+i*Math.PI/6,d=(1-form)*18+r*.78,point={x:fx.x+Math.cos(a)*d,y:fx.y+Math.sin(a)*d*.66};mirrors.push(point);if(t<.72)drawMirrorShard(point.x,point.y,r*.13,r*.29,a+Math.PI/2,Math.max(0,1-t*.68),true);}
+    if(t>.25&&t<.62){const steps=Math.min(12,Math.floor((t-.25)/.029));for(let i=0;i<steps;i++)drawMirrorBeam(mirrors[i],mirrors[(i*5+7)%12],i%3?'#75ffe1':'#ffd45a',.72,2.2);}
+    const converge=Math.max(0,Math.min(1,(t-.48)/.12))*Math.max(0,1-(t-.64)/.1);if(converge>0)for(let i=0;i<12;i++)drawMirrorBeam(mirrors[i],{x:fx.x,y:fx.y},i%2?'#75ffe1':'#fff4bf',converge,3);
+    impactFlash(fx.x,fx.y,'#ffffff',burst,178,.88);impactRing(fx.x,fx.y,'#75ffe1',burst,184,4.5,.94);impactRing(fx.x,fx.y,'#ffd45a',Math.min(1,burst*1.13),146,3,.78);for(let i=0;i<56;i++){const a=i*2.399,d=burst*(46+(i%9)*16);drawMirrorShard(fx.x+Math.cos(a)*d,fx.y+Math.sin(a)*d*.68,4+i%4,9+i%6,a+burst*(8+i%3),(1-burst)*.86,i%4===0);}
+  }
   function killCrown(fx,t){
     const [c1,c2]=labFxColor('crown');
     const fall=easeOutCubic(Math.min(1,t/.56));
@@ -1879,6 +1939,8 @@
       case 'catattack':killCatattack(fx,t);break;
       case 'quantumleap':killQuantumleap(fx,t);break;
       case 'cometshower':killCometshower(fx,t);break;
+      case 'timefracture':killTimefracture(fx,t);break;
+      case 'mirrorstorm':killMirrorstorm(fx,t);break;
       default:killArc(fx,t);break;
     }
     return true;

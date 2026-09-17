@@ -5,6 +5,7 @@
   if (!pack) return;
 
   Object.assign(pack.exact, {
+    "Zwei weitere Angriffseffekte in der Testumgebung: „Zeitbruch“ mit cyan-goldenem Zeitsplitter, eingefrorenen Nachbildern und drei Echo-Treffern, „Spiegelsturm“ mit sechs Spiegeln, springendem Lichtstrahl, Kreuzfeuer und zerbrechendem Splitterring – beide mit Kill-Effekt, noch nicht im Shop": "Two more attack effects in the test lab: “Zeitbruch” with a cyan-gold time shard, frozen afterimages and three echo hits, “Spiegelsturm” with six mirrors, a jumping light beam, crossfire and a shattering shard ring; both with a kill effect, not in the shop yet",
     "Die gemeinsame Duell-Engine beherrscht jetzt Spezialwürfel, Fähigkeitsdrafts, Zugwechsel und vollständige Runden in allen vier Duellmodi": "The shared duel engine now handles special dice, ability drafts, turn transitions and complete rounds in all four duel modes",
     "Drafts blockieren die Fortsetzung verbindlich bis zur Wahl; Gambling Man, Perfect 25 und High Stakes laufen deterministisch ohne Timer": "Drafts now reliably block continuation until a choice is made; Gambling Man, Perfect 25 and High Stakes run deterministically without timers",
     "Ein neuer Node-Prüfstand spielt vollständige Classic- und Mayhem-Runden mit zwei und vier Spielern bis zum Sieger": "A new Node test bench plays complete Classic and Mayhem rounds with two and four players through to a winner",
