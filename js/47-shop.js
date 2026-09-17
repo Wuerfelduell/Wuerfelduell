@@ -170,7 +170,8 @@
     void:"void-rift",confetti:"confetti-cannon",frost:"frost-lance",rift:"rift-tear",crown:"crownfall",soulbreak:"seelenbruch",
     solarsplash:"solarsplash",trigonbomb:"trigonbomb",confettibomb:"konfettibombe",polygon:"polygon",
     missile:"missile-attack",thunderstrike:"blitzeinschlag",catattack:"katzenangriff",
-    quantumleap:"quantensprung",cometshower:"kometenschauer",timefracture:"zeitbruch",mirrorstorm:"spiegelsturm"};
+    quantumleap:"quantensprung",cometshower:"kometenschauer",timefracture:"zeitbruch",mirrorstorm:"spiegelsturm",
+    koenigsfall:"koenigsfall",dornenrequiem:"dornenrequiem"};
   const DAILY_PREISE=[{waehrung:"marken",preis:450},{waehrung:"kerne",preis:25},{waehrung:"marken",preis:600},{waehrung:"kerne",preis:40}];
   function dailyAngebote(){
     const keys=Object.keys(DAILY_BILD).filter(k=>typeof ATTACK_FX_STYLES!=="undefined"&&ATTACK_FX_STYLES[k]);

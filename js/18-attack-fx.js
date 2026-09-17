@@ -101,7 +101,9 @@
       timefracture:['#ffd45a','#75ffe1'],
       mirrorstorm:['#75ffe1','#fff4bf'],
       dimensionbite:['#75e8ff','#b06cff'],
-      runestrike:['#ffd45a','#4a8ff0']
+      runestrike:['#ffd45a','#4a8ff0'],
+      koenigsfall:['#e9c16d','#bd943e'],
+      dornenrequiem:['#9160d3','#8ccedf']
     }[style]||['#ffffff','#77bfff'];
   }
   function easeOutCubic(t){return 1-Math.pow(1-t,3)}
@@ -891,6 +893,79 @@
   }
 
 
+  /* Koenigsfall und Dornenrequiem (Sprite-Lieferung 17.09.): gemalte WebP-Sprites
+     statt gezeichneter Formen. Die Vorschau der Lieferung laeuft auf einer Zeitachse
+     0..7.6 in 2000 ms; hier wird das normierte t darauf abgebildet. Groessen
+     skalieren mit dem Abstand der Karten (Vorschau 788 px), Flugrichtung frei. */
+  const FX_BITMAP_PATHS={
+    kfHammer:"koenigsfall/hammer",kfCrown:"koenigsfall/crown",kfSeal:"koenigsfall/seal",kfDust:"koenigsfall/dust",
+    drBud:"dornenrequiem/bud",drPetal:"dornenrequiem/petal",drOuter:"dornenrequiem/outer",drHeart:"dornenrequiem/heart"
+  };
+  const fxBitmaps=Object.fromEntries(Object.entries(FX_BITMAP_PATHS).map(([key,pfad])=>{
+    const image=new Image();image.decoding="async";image.src=`assets/ui/v28/png/fx/${pfad}.webp?v=${ASSET_REV}`;return [key,image];
+  }));
+  const KF_HAMMER_CONTACT=.368; // Kontaktkante des Hammerkopfs, Anteil der Breite (aus dem Sprite gemessen)
+  const bmClamp=(x,a=0,b=1)=>Math.max(a,Math.min(b,x)),bmSmooth=x=>{x=bmClamp(x);return x*x*(3-2*x);};
+  function drawBitmap(key,x,y,w,angle=0,alpha=1,flip=false){
+    const im=fxBitmaps[key];if(alpha<=0||!im?.complete||!im.naturalWidth) return false;
+    const h=w*im.naturalHeight/im.naturalWidth;
+    ctx.save();ctx.globalAlpha=bmClamp(alpha);ctx.translate(x,y);ctx.rotate(angle);if(flip)ctx.scale(-1,1);
+    ctx.drawImage(im,-w/2,-h/2,w,h);ctx.restore();return true;
+  }
+  function bitmapSparks(x,y,t,color,count,k){
+    if(t<0||t>1.5) return;ctx.save();ctx.fillStyle=color;
+    for(let i=0;i<count;i++){const a=i*2.3999,s=(35+(i*37%120))*k,life=bmClamp(1-t/(.6+(i%7)*.13));ctx.globalAlpha=life*.8;
+      const sz=1.4+(i%3);ctx.fillRect(x+Math.cos(a)*s*t,y+Math.sin(a)*s*t+55*k*t*t,sz,sz);}
+    ctx.restore();
+  }
+  function bitmapFrame(fx){
+    const dx=fx.to.x-fx.from.x,dy=fx.to.y-fx.from.y,dist=Math.hypot(dx,dy)||1;
+    return {k:Math.max(.45,Math.min(1,dist/788)),dir:{x:dx/dist,y:dy/dist},flip:dx<0,dist};
+  }
+  function koenigsfallPose(fx,f,t){
+    const w=155*f.k,startY=fx.from.y-90*f.k;
+    if(t<1.2){const p=bmSmooth(t/1.2);return {x:fx.from.x,y:fx.from.y-90*f.k*p,a:-.6+.35*p,alpha:bmSmooth(t/.42),w};}
+    const u=bmClamp((t-1.2)/2.65),endX=fx.to.x-f.dir.x*KF_HAMMER_CONTACT*w*1.15,endY=fx.to.y-f.dir.y*KF_HAMMER_CONTACT*w*1.15;
+    return {x:fx.from.x+(endX-fx.from.x)*u,y:startY+(endY-startY)*u-90*f.k*Math.sin(Math.PI*u),a:-.25+(Math.PI*2+.25)*u,alpha:1-bmSmooth((t-3.85)/.55),w};
+  }
+  function drawKoenigsfall(fx,t01){
+    const t=t01*7.6,f=bitmapFrame(fx),pose=koenigsfallPose(fx,f,t),{x,y,a,alpha,w}=pose,k=f.k,to=fx.to;
+    if(t<1.2){const p=bmSmooth(t/1.2);glowCircle(ctx,x,y,135*k,'#d5ab57',.26*p);
+      for(let i=0;i<3;i++){const orbit=(1-p)*145*k,ang=i*Math.PI*2/3+t*2.3;drawBitmap('kfCrown',x+Math.cos(ang)*orbit,y+Math.sin(ang)*orbit,47*k,ang+.5,alpha*(1-p));}}
+    else if(t<3.85){for(let j=5;j>=1;j--){const q=koenigsfallPose(fx,f,Math.max(1.2,t-j*.035));drawBitmap('kfHammer',q.x,q.y,w,q.a,.026*(6-j),f.flip);}
+      glowCircle(ctx,x,y,105*k,'#bd943e',.19);const orbitAlpha=bmSmooth((t-1.2)/.2)*(1-bmSmooth((t-3.45)/.4));
+      for(let i=0;i<2;i++) drawBitmap('kfCrown',x+Math.cos(t*4+i*Math.PI)*80*k,y+Math.sin(t*4+i*Math.PI)*38*k,35*k,t*2+i,.8*orbitAlpha);}
+    drawBitmap('kfHammer',x,y,w,a,alpha,f.flip);
+    const h=t-3.85;
+    if(h>=0){const fade=1-bmSmooth((h-1.1)/1.45);glowCircle(ctx,to.x,to.y,150*k,'#e9c16d',.65*Math.exp(-h*4));
+      drawBitmap('kfSeal',to.x,to.y,160*k,0,bmSmooth(h/.16)*fade);
+      for(let i=0;i<3;i++) drawBitmap('kfDust',to.x+(i-1)*25*k,to.y-35*k*bmClamp(h),(115+i*20)*k,(i-1)*.6,bmClamp(1-h/1.05)*.6);
+      bitmapSparks(to.x,to.y,h,'#f8dc9a',32,k);
+      for(let i=0;i<5;i++) drawBitmap('kfCrown',to.x+Math.sin(i*8)*h*70*k,to.y+Math.cos(i*8)*h*50*k+30*k*h*h,(20+i*3)*k,i+h*2,bmClamp(1-h/1.1));}
+  }
+  function dornenFan(x,y,open,spin,alpha,t,k){
+    for(let i=0;i<6;i++){const a=i*Math.PI/3+spin,r=(18+open*38)*k,rock=Math.sin(t*4+i*.85)*(.055+open*.08);
+      ctx.save();ctx.translate(x+Math.sin(a)*r,y-Math.cos(a)*r);ctx.rotate(a+rock);drawBitmap(i%2?'drOuter':'drPetal',0,-(20+open*12)*k,(47+open*22)*k,0,alpha);ctx.restore();}
+    drawBitmap('drHeart',x,y,(57+open*20)*k,spin*.15,alpha);
+  }
+  function drawDornenrequiem(fx,t01){
+    const t=t01*7.6,f=bitmapFrame(fx),k=f.k,from=fx.from,to=fx.to;
+    let x=from.x,y=from.y,op=bmSmooth(t/.55),opening=0,spin=t*.4;
+    if(t<1.35){const p=bmSmooth(t/1.35);y=from.y+(45-65*p)*k;opening=.15+.12*Math.sin(t*5);glowCircle(ctx,x,y,120*k,'#9160d3',.3*p);
+      for(let i=0;i<3;i++){const a=i*2.094-t,r=(1-p)*115*k;drawBitmap('drOuter',x+Math.sin(a)*r,y-Math.cos(a)*r,50*k,a,op*(1-p));}}
+    else if(t<3.65){const u=(t-1.35)/2.3,sy=from.y-20*k,ey=to.y-40*k;x=from.x+(to.x-from.x)*u;y=sy+(ey-sy)*u-64*k*Math.sin(Math.PI*2*u);
+      opening=.1+.5*bmSmooth(u);spin=.54+u*2.4;
+      for(let j=0;j<9;j++){const q=bmClamp(u-j*.016);glowCircle(ctx,from.x+(to.x-from.x)*q,sy+(ey-sy)*q-64*k*Math.sin(Math.PI*2*q),25*k,'#624da8',.035*(9-j));}
+      for(let i=0;i<3;i++){const a=t*3+i*2.094,back=(42+i*16)*k;drawBitmap('drPetal',x-f.dir.x*back,y-f.dir.y*back+Math.sin(a)*29*k,24*k,a,.48);}
+      glowCircle(ctx,x,y,100*k,'#7464db',.23);}
+    else{const p=t-3.65;x=to.x;y=to.y-40*k+60*k*bmSmooth(p/.45);spin=2.94+p*.2;
+      opening=p<.36?.6+.4*bmSmooth(p/.36):p<.6?1-.97*bmSmooth((p-.36)/.24):p<.92?.03+.92*bmSmooth((p-.6)/.32):.95;op=1-bmSmooth((p-1.55)/1);}
+    dornenFan(x,y,opening,spin,op,t,k);
+    drawBitmap('drBud',x,y,67*k,Math.sin(t*2)*.06,op*(1-bmSmooth(opening/.75)));
+    const h=t-4.12;
+    if(h>=0){glowCircle(ctx,to.x,to.y+4*k,155*k,'#8ccedf',.52*Math.exp(-h*3));bitmapSparks(to.x,to.y,h,'#b5e1e6',21,k);
+      for(let i=0;i<6;i++){const a=i*Math.PI/3+.4,r=(48+bmSmooth(h/.5)*42)*k;drawBitmap('drOuter',to.x+Math.sin(a)*r,to.y+4*k-Math.cos(a)*r,42*k,a,bmClamp(h/.15)*(1-bmSmooth((h-.6)/1.1)));}}
+  }
   function impactRing(x,y,color,e,maxR=52,width=2.4,alpha=.75){
     if(e<=0||e>=1) return;
     ctx.save();
@@ -1096,6 +1171,10 @@
         e=Math.max(0,(t-.7)/.3);impactFlash(x,y,'#ffffff',e,166,.96);impactRing(x,y,c1,e,158,5.5,.98);impactRing(x,y,c2,Math.min(1,e*1.14),122,3.6,.86);impactShards(x,y,c1,e,28,142);break;
       case 'runestrike':
         e=Math.max(0,(t-.56)/.44);impactFlash(x,y,'#ffffff',e,158,.9);impactRing(x,y,c2,e,154,4.5,.94);impactRing(x,y,c1,Math.min(1,e*1.16),118,3,.78);impactShards(x,y,c1,e,22,126);break;
+      case 'koenigsfall':
+        e=Math.max(0,(t-.507)/.22);impactFlash(x,y,'#fff4bf',e,150,.7);impactRing(x,y,c1,e,150,4,.9);impactRing(x,y,c2,Math.min(1,e*1.15),110,2.6,.7);break;
+      case 'dornenrequiem':
+        e=Math.max(0,(t-.542)/.22);impactFlash(x,y,c2,e,120,.5);impactRing(x,y,c1,e,132,3.2,.86);impactShards(x,y,c2,e,16,110);break;
       default:
         e=Math.max(0,(t-.68)/.32);
         impactFlash(x,y,c1,e,40,.32);
@@ -1133,6 +1212,8 @@
       case 'mirrorstorm':drawMirrorstorm(fx,t);break;
       case 'dimensionbite':drawDimensionbite(fx,t);break;
       case 'runestrike':drawRunestrike(fx,t);break;
+      case 'koenigsfall':drawKoenigsfall(fx,t);break;
+      case 'dornenrequiem':drawDornenrequiem(fx,t);break;
       default:drawArcShot(fx,t);break;
     }
     drawImpactForStyle(fx,t);
@@ -1234,6 +1315,10 @@
         tone(118,0,.46,'sawtooth',.035,48);tone(420,.2,.22,'triangle',.022,110);noiseBurst(.48,.2,.042,360);break;
       case 'runestrike':
         tone(392,0,.18,'triangle',.022,784);tone(784,.18,.2,'sine',.024,1568);noiseBurst(.42,.18,.04,720);break;
+      case 'koenigsfall':
+        tone(72,0,.55,'sawtooth',.04,36);noiseBurst(.1,.28,.06,220);tone(392,.3,.16,'triangle',.024);tone(587,.38,.2,'triangle',.028);tone(784,.46,.26,'sine',.022);break;
+      case 'dornenrequiem':
+        tone(220,0,.4,'sine',.03,110);tone(330,.12,.36,'triangle',.02,165);noiseBurst(.34,.16,.03,900);tone(1320,.42,.22,'sine',.016,660);break;
       default:
         tone(260,0,.15,'triangle',.025,110);noiseBurst(.05,.08,.016,900);break;
     }
@@ -1253,7 +1338,7 @@
       duration:{
         lightning:820,flame:1050,venom:1050,blood:820,jackpot:1150,
         void:1200,confetti:1150,frost:1000,rift:1100,crown:1250,soulbreak:1350,
-        solarsplash:1450,trigonbomb:1500,confettibomb:1550,polygon:1600,missile:1650,thunderstrike:1650,catattack:1750,quantumleap:1750,cometshower:1850,timefracture:1800,mirrorstorm:1900,dimensionbite:2050,runestrike:1900
+        solarsplash:1450,trigonbomb:1500,confettibomb:1550,polygon:1600,missile:1650,thunderstrike:1650,catattack:1750,quantumleap:1750,cometshower:1850,timefracture:1800,mirrorstorm:1900,dimensionbite:2050,runestrike:1900,koenigsfall:1250,dornenrequiem:1200
       }[style]||900,
       seed:Math.random()*999,
       preview
@@ -1575,6 +1660,8 @@
       case 'mirrorstorm':killMirrorstorm(fx,t);break;
       case 'dimensionbite':killRift(fx,t);break;
       case 'runestrike':killCrown(fx,t);break;
+      case 'koenigsfall':killCrown(fx,t);break;
+      case 'dornenrequiem':killVoid(fx,t);break;
       default:killArc(fx,t);break;
     }
     return true;
@@ -1597,7 +1684,7 @@
       kind:String(event.kind||event.variant||"laser"),
       amount:Number(event.amount)||0,
       face:event.face==null?null:Number(event.face),
-      from,to,start:performance.now(),duration:style==='soulbreak'?1200:style==='solarsplash'?1250:style==='trigonbomb'?1300:style==='confettibomb'?1350:style==='polygon'?1320:style==='missile'?1400:style==='thunderstrike'?1380:style==='catattack'?1450:style==='quantumleap'?1450:style==='cometshower'?1550:style==='timefracture'?1500:style==='mirrorstorm'?1580:style==='dimensionbite'?2050:style==='runestrike'?1750:760,
+      from,to,start:performance.now(),duration:style==='soulbreak'?1200:style==='solarsplash'?1250:style==='trigonbomb'?1300:style==='confettibomb'?1350:style==='polygon'?1320:style==='missile'?1400:style==='thunderstrike'?1380:style==='catattack'?1450:style==='quantumleap'?1450:style==='cometshower'?1550:style==='timefracture'?1500:style==='mirrorstorm'?1580:style==='dimensionbite'?2050:style==='runestrike'?1750:style==='koenigsfall'?2000:style==='dornenrequiem'?2000:760,
       seed:Math.random()*999
     };
   }
