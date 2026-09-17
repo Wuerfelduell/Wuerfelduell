@@ -215,6 +215,11 @@ try{
   const dailyDanach=await p.evaluate(()=>({marken:document.getElementById('shopWalletMarken')?.textContent,overlay:!document.getElementById('kistenTestOverlay')||document.getElementById('kistenTestOverlay').classList.contains('hidden')}));
   pruefe('Daily Shop: vier Angebote mit geladenem Bild',daily.angebote===4&&daily.bilder,true);
   pruefe('Daily Shop: Knoepfe gesperrt, Tipp aendert nichts',daily.gesperrt&&daily.marken===dailyDanach.marken&&dailyDanach.overlay,true);
+  // 9b2. Jedes Bild der Tagesrotation liegt als Datei im Repo (Tippfehler in DAILY_BILD faellt sonst erst am passenden Tag auf).
+  const dailyBild=/const DAILY_BILD=\{([\s\S]*?)\};/.exec(fs.readFileSync('js/47-shop.js','utf8'))?.[1]||'';
+  const dailyDateien=[...dailyBild.matchAll(/:"([a-z-]+)"/g)].map(m=>`assets/ui/v28/png/shop/daily/effects/attack-fx-${m[1]}.webp`);
+  const dailyFehlend=dailyDateien.filter(f=>!fs.existsSync(f));
+  pruefe('Daily Shop: alle Rotationsbilder vorhanden',dailyDateien.length>=23&&dailyFehlend.length===0?true:JSON.stringify(dailyFehlend),true);
   // 9c. Vorschau: Info-Knopf oeffnet das Fenster, der Kern-Renderer zeichnet darueber, Schliessen raeumt auf.
   await p.click('#shopTabDaily [data-daily-info]');await p.waitForTimeout(650);
   const vorschau=await p.evaluate(()=>{const o=document.getElementById('dailyVorschauOverlay'),c=document.getElementById('attackFxCanvasMain');
@@ -249,7 +254,7 @@ try{
   await e.close();
 }catch(e){absturz=e;}
 
-const ERWARTET=47;
+const ERWARTET=48;
 let fehler=ergebnisse.length<ERWARTET?1:0;
 if(fehler)console.log(`ACHTUNG: nur ${ergebnisse.length} von ${ERWARTET} Zusicherungen erreicht.`);
 const breite=Math.max(1,...ergebnisse.map(r=>r[0].length));
