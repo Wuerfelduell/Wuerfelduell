@@ -37,7 +37,7 @@ function prepared(values,abilities,options={}){
   check(validateState(state).valid,'Vorbereiteter Zustand muss gueltig sein');
   return state;
 }
-function act(state,type,extra={},rng){return reduce(state,{type,seat:0,...extra},rng);}
+function act(state,type,extra={},rng=()=>0){return reduce(state,{type,seat:0,...extra},rng);}
 
 {
   const state=stateWith([1]),before=JSON.stringify(state),rng=sequence([face(1),face(2),face(3),face(4),face(6)]);
@@ -124,6 +124,14 @@ function act(state,type,extra={},rng){return reduce(state,{type,seat:0,...extra}
   const result=act(state,A.ROLL_BASE,{},rng);
   equal(result.state.players[0].hp,62,'12 heilt in Mayhem bei drei Sechsen zwei HP');
   equal(result.state.players[0].effects.healEffectCount,1,'Mayhem-Heilausloesungen bleiben serialisiert');
+}
+
+{
+  let state=stateWith([22,1],{modeId:'mayhem',hp:60});
+  state.players[0].effects.healEffectCount=1;
+  const result=act(state,A.ROLL_BASE,{},sequence([face(6),face(6),face(1),face(2),face(3)]));
+  equal(result.state.players[0].hp,62,'12 nutzt beim zweiten Heileffekt den Level-2-Bonus');
+  equal(result.state.players[0].effects.healEffectCount,2,'12 laeuft ueber den gemeinsamen Heileffekt-Zaehler');
 }
 
 {

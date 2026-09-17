@@ -323,8 +323,8 @@
       if(own(draft,'choices') && draft.choices.some(id=>!definitions.CHOOSABLE_ABILITY_IDS.includes(id) || player?.abilities.includes(id)))
         addError(errors,path+'.choices','Draft darf nur wählbare, noch nicht vorhandene Fähigkeiten anbieten');
     });
-    if(state.turn.phase==='draft_pending' && !state.draft.queue.length)
-      addError(errors,'state.draft.queue','Blockierter Draft benötigt einen Warteschlangeneintrag');
+    if(state.turn.phase==='draft_pending' && state.draft.active===null && !state.draft.queue.length)
+      addError(errors,'state.draft','Blockierter Draft benötigt eine aktive oder wartende Auswahl');
     if(state.turn.phase!=='draft_pending' && state.draft.active===null && state.draft.continuation!==null)
       addError(errors,'state.draft.continuation','Fortsetzung ohne blockierten Draft ist nicht erlaubt');
     state.round.eliminationOrder.forEach((value,i)=>{

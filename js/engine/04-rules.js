@@ -20,7 +20,19 @@
     USE_ATTACK_POWER:'use_attack_power',
     CONTINUE_DOUBLE_TAP:'continue_double_tap',
     USE_BLOOD_RUSH_SELF_HARM:'use_blood_rush_self_harm',
-    ROLL_COUNTERATTACK:'roll_counterattack'
+    ROLL_COUNTERATTACK:'roll_counterattack',
+    ROLL_GAMBLING:'roll_gambling',
+    ACCEPT_GAMBLING_RETRY:'accept_gambling_retry',
+    DECLINE_GAMBLING_RETRY:'decline_gambling_retry',
+    ROLL_PERFECT25:'roll_perfect25',
+    ROLL_PERFECT25_D4:'roll_perfect25_d4',
+    ROLL_HIGH_STAKES:'roll_high_stakes',
+    SKIP_HIGH_STAKES:'skip_high_stakes',
+    CHOOSE_ABILITY:'choose_ability',
+    END_TURN:'end_turn',
+    PREPARE_ROUND:'prepare_round',
+    CHOOSE_START_ABILITIES:'choose_start_abilities',
+    START_ROUND:'start_round'
   });
 
   function clone(value){return JSON.parse(JSON.stringify(value));}

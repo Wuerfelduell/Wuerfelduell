@@ -100,6 +100,42 @@
       if(phase!=='counterattack' || !state.counter.context) return 'Counterattack ist in dieser Phase nicht erlaubt';
       if(!state.counter.dice.some(die=>!die.locked)) return 'Keine Konterwuerfel verfuegbar';
     }
+    if(action.type===A.ROLL_GAMBLING && !['gamble_attack','gamble_retry'].includes(phase))
+      return 'Gambling Man ist in dieser Phase nicht erlaubt';
+    if(action.type===A.ACCEPT_GAMBLING_RETRY && phase!=='gamble_retry_offer')
+      return 'Gambling-Retry ist in dieser Phase nicht erlaubt';
+    if(action.type===A.DECLINE_GAMBLING_RETRY && phase!=='gamble_retry_offer')
+      return 'Gambling-Retry ist in dieser Phase nicht erlaubt';
+    if(action.type===A.ROLL_PERFECT25 && phase!=='perfect25')
+      return 'Perfect 25 ist in dieser Phase nicht erlaubt';
+    if(action.type===A.ROLL_PERFECT25_D4 && phase!=='perfect25_d4')
+      return 'Perfect-25-D4 ist in dieser Phase nicht erlaubt';
+    if(action.type===A.ROLL_HIGH_STAKES && phase!=='high_stakes')
+      return 'High Stakes ist in dieser Phase nicht erlaubt';
+    if(action.type===A.SKIP_HIGH_STAKES && phase!=='high_stakes')
+      return 'High Stakes kann in dieser Phase nicht uebersprungen werden';
+    if(action.type===A.CHOOSE_ABILITY){
+      if(phase!=='draft_pending' || !state.draft.active) return 'Faehigkeitsdraft ist in dieser Phase nicht erlaubt';
+      if(!Number.isInteger(action.abilityId) || !state.draft.active.choices.includes(action.abilityId))
+        return 'Faehigkeit gehoert nicht zum aktuellen Auswahlpaar';
+    }
+    if(action.type===A.END_TURN && phase!=='turn_done') return 'Zugende ist in dieser Phase nicht erlaubt';
+    if(action.type===A.PREPARE_ROUND &&
+      (phase!=='round_preparation' || state.turn.decision?.kind!=='prepare_round'))
+      return 'Rundenvorbereitung ist in dieser Phase nicht erlaubt';
+    if(action.type===A.CHOOSE_START_ABILITIES){
+      if(phase!=='round_preparation' || state.turn.decision?.kind!=='choose_start_abilities')
+        return 'Startfaehigkeiten koennen in dieser Phase nicht gewaehlt werden';
+      const entry=state.round.preparation.find(item=>item.seat===action.seat);
+      if(!entry || entry.ready || !Array.isArray(action.abilities) || action.abilities.length!==entry.freeChoices ||
+        new Set(action.abilities).size!==action.abilities.length ||
+        action.abilities.some(id=>!D.CHOOSABLE_ABILITY_IDS.includes(id) || entry.abilities.includes(id)))
+        return 'Ungueltige freie Startfaehigkeiten';
+    }
+    if(action.type===A.START_ROUND &&
+      (phase!=='round_preparation' || state.turn.decision?.kind!=='start_round' ||
+        state.round.preparation.length!==state.players.length || state.round.preparation.some(entry=>!entry.ready)))
+      return 'Rundenstart ist noch nicht bereit';
     return null;
   }
 
@@ -116,6 +152,15 @@
       events.push({id,type,...data});
     };
     const requireRandom=()=>R.makeRandom(next,rng);
+    const shuffledAbilityPool=(excluded=[],random=requireRandom())=>{
+      const blocked=new Set(excluded),pool=D.CHOOSABLE_ABILITY_IDS.filter(id=>!blocked.has(id));
+      for(let i=pool.length-1;i>0;i--){
+        const j=Math.floor(random()*(i+1));
+        [pool[i],pool[j]]=[pool[j],pool[i]];
+      }
+      return pool;
+    };
+    const randomAbilities=(count,excluded=[],random=requireRandom())=>shuffledAbilityPool(excluded,random).slice(0,count);
     const decision=(kind,phase=next.turn.phase,seat=next.turn.currentSeat)=>{
       next.turn.phase=phase;next.turn.decision={kind,seat};
       emit('DecisionRequired',{seat,kind});
@@ -151,7 +196,7 @@
       if(lost>0) emit('DamageApplied',{sourceSeat,targetSeat,amount:lost,source});
       if(lastStand) emit('LastStandTriggered',{seat:targetSeat,hp:target.hp});
       const threshold=D.LOCAL_MODES[next.modeId].bonusThreshold;
-      if(target.hp>0 && threshold!==null && before>threshold && target.hp<=threshold) enqueueDraft(targetSeat,'hp');
+      if(target.hp>0 && threshold!==null && target.hp<=threshold) enqueueDraft(targetSeat,'hp');
       return {before,after:target.hp,lost,lastStand};
     };
     const applyHeal=(seat,amount,source)=>{
@@ -168,14 +213,11 @@
       return healed;
     };
     const healTwelveBase=(indices,source)=>{
-      const active=R.player(next);
       if(!R.hasAbility(next,22)) return;
       const sixes=indices.filter(index=>next.dice[index].value===6).length;
       if(sixes<2) return;
       const wanted=R.mastery(next,1)&&sixes>=3?2:1;
-      const amount=Math.min(wanted,active.maxHp-active.hp);
-      if(R.mastery(next,1)) active.effects.healEffectCount++;
-      if(amount>0){active.hp+=amount;emit('Healed',{seat:active.seat,amount,source});}
+      applyHeal(next.turn.currentSeat,wanted,source);
     };
     const healTwelveCounter=(seat,values)=>{
       if(!R.hasAbility(next,22,seat)) return;
@@ -189,12 +231,19 @@
       emit('TurnEnded',{seat:next.turn.currentSeat,reason:reasonValue});
       emit('DecisionRequired',{seat:next.turn.currentSeat,kind:'end_turn'});
     };
+    const openQueuedDraft=()=>{
+      if(!next.draft.queue.length) return false;
+      const queued=next.draft.queue.shift(),active=R.player(next,queued.seat);
+      const choices=shuffledAbilityPool(active.abilities).slice(0,2);
+      next.draft.active={...queued,choices};
+      emit('AbilityDraftOpened',{seat:queued.seat,slot:queued.slot,trigger:queued.trigger,choices:choices.slice()});
+      decision('choose_ability','draft_pending',queued.seat);
+      return true;
+    };
     const blockDraft=continuation=>{
       if(!next.draft.queue.length) return false;
       next.draft.continuation=continuation;
-      const seat=next.draft.queue[0].seat;
-      decision('choose_ability','draft_pending',seat);
-      return true;
+      return openQueuedDraft();
     };
     const markEliminated=seat=>{
       if(next.round.eliminationOrder.includes(seat)) return;
@@ -267,6 +316,8 @@
       else setTurnDone('base_self_damage');
     };
     const damageOrInsurance=(total,rawDamage,afterMode)=>{
+      next.attack.baseTotal=total;
+      next.attack.source=afterMode==='advance24'?'advance':'normal';
       if(R.hasAbility(next,19)){
         next.special.insurance={total,rawDamage,afterMode};decision('insurance','insurance');
       }else{
@@ -317,8 +368,11 @@
         next.dice[indices[0]].value=next.attack.face;
       next.attack.currentRollNewHits=0;
       const bloodHits=recordAttackHits(indices,bloodNeighbors);
-      if(bloodNeighbors.length&&next.attack.currentRollNewHits===0&&next.attack.bloodPricePaidThisRoll>0&&R.mastery(next,1))
-        applyHeal(next.turn.currentSeat,Math.min(2,next.attack.bloodPricePaidThisRoll),'blood_pact');
+      if(bloodNeighbors.length&&next.attack.currentRollNewHits===0&&next.attack.bloodPricePaidThisRoll>0&&R.mastery(next,1)){
+        const refund=Math.min(2,next.attack.bloodPricePaidThisRoll),active=R.player(next);
+        active.hp+=refund;
+        emit('Healed',{seat:active.seat,amount:refund,source:'blood_pact'});
+      }
       next.attack.bloodPricePaidThisRoll=0;next.attack.bloodPriceNeighbors=[];
       emit('AttackRolled',{seat:next.turn.currentSeat,kind:'main',indices,values:indices.map(index=>next.dice[index].value),
         rollCount:next.attack.rollCount});
@@ -518,7 +572,7 @@
         const result=applyDamageToSeat(attackerSeat,raw,defenderSeat,'counterattack',true);actual=result.lost;
         if(R.hasAbility(next,2,defenderSeat)&&actual>0)
           applyHeal(defenderSeat,Math.floor(actual/2)+(R.mastery(next,2)?3:0),'counter_lifesteal');
-        if(attacker.hp<=0){markEliminated(attackerSeat);enqueueDraft(defenderSeat,'kill');}
+        if(attacker.hp<=0) markEliminated(attackerSeat);
       }
       emit('CounterattackResolved',{defenderSeat,attackerSeat,hits:next.counter.hits,damage:actual});
       next.counter.context=null;next.counter.dice=freshDice();next.counter.hits=0;next.counter.firstRoll=true;
@@ -539,6 +593,148 @@
         damage:next.counter.hits*counterDamagePerHit(seat)});
       if(newHits===0||next.counter.dice.every(die=>die.locked)){finalizeCounter();return;}
       next.counter.firstRoll=false;decision('counterattack','counterattack',seat);
+    };
+    const clearCombatState=()=>{
+      next.dice=freshDice();
+      next.base={rerollUsed:false,luckRerollIndex:null,luckRerollSecondUsed:false,luckRerollUses:0,
+        loadedDiceUsed:false,loadedDiceUses:0,lastRollIndices:[]};
+      next.attack={face:null,targetSeat:null,hits:0,damage:0,firstRoll:true,currentRollNewHits:0,rollCount:0,
+        masteryRollCount:0,normalHits:0,exactFaceHits:0,wildcardHits:0,lastRollIndices:[],powerUsed:false,
+        powerUses:0,precisionUses:0,momentumBonus:0,bloodPriceNeighbors:[],bloodPricePaidThisRoll:0,
+        bloodPriceWasPreActivatedThisRoll:false,bloodRushActive:false,doubleTapApplied:false,wildcardFace:null,
+        wildcardSecondRollArmed:false,wildcardTriggered:false,masteryL2BonusesApplied:false,source:'normal',baseTotal:null};
+      next.counter={context:null,pending:null,dice:freshDice(),hits:0,firstRoll:true};
+      next.special={gambling:{baseTotal:null,retryUsed:false,retryPending:false},
+        perfect25:{baseTotal:null,pendingTotal:null},highStakes:{decisionMade:false,rawDamage:null},insurance:null};
+    };
+    const prepareTurnEffects=seat=>{
+      const active=R.player(next,seat);
+      if(R.hasAbility(next,14,seat)&&R.mastery(next,2)&&active.effects.lastStandCooldown>0){
+        active.effects.lastStandCooldown=Math.max(0,active.effects.lastStandCooldown-1);
+        if(active.effects.lastStandCooldown===0) active.effects.lastStandUsed=false;
+      }
+      active.effects.bloodRushPrimed=!!active.effects.damageSinceLastOwnTurn ||
+        (R.hasAbility(next,23,seat)&&R.mastery(next,1)&&!!active.effects.selfDamageSinceLastOwnTurn);
+      active.effects.damageSinceLastOwnTurn=false;active.effects.selfDamageSinceLastOwnTurn=false;
+      active.effects.voluntaryHpPaidThisTurn=false;active.effects.snakeEyesUsesThisTurn=0;
+      active.effects.underdogTurnActive=false;
+      if(R.hasAbility(next,25,seat)&&R.mastery(next,1)){
+        const alive=next.players.filter(entry=>entry.hp>0);
+        active.effects.underdogTurnActive=alive.length>=2&&alive.every(entry=>entry.seat===seat||active.hp<=entry.hp);
+      }
+    };
+    const finishRoundIfNeeded=()=>{
+      const alive=next.players.filter(entry=>entry.hp>0);
+      if(alive.length>1) return false;
+      const winner=alive[0]||null;
+      if(winner) winner.roundsWon++;
+      next.round.winnerSeat=winner?.seat??null;
+      next.round.result={winnerSeat:winner?.seat??null,reason:winner?'last_alive':'draw'};
+      next.draft.active=null;next.draft.queue=[];next.draft.continuation=null;
+      emit('RoundEnded',{roundNumber:next.round.number,winnerSeat:next.round.winnerSeat,reason:next.round.result.reason});
+      decision('prepare_round','round_preparation',winner?.seat??next.turn.currentSeat);
+      return true;
+    };
+    const applyPoisonTurnStart=seat=>{
+      const active=R.player(next,seat);
+      if(!active||active.hp<=0||active.effects.poisonTurns<=0) return true;
+      const sourceSeat=active.effects.poisonSourceSeat;
+      const result=applyDamageToSeat(seat,3,sourceSeat,'poison',true);
+      active.effects.poisonTurns=Math.max(0,active.effects.poisonTurns-1);
+      if(active.effects.poisonTurns===0) active.effects.poisonSourceSeat=null;
+      emit('PoisonTicked',{sourceSeat,targetSeat:seat,amount:result.lost,turnsLeft:active.effects.poisonTurns});
+      if(active.hp>0) return true;
+      triggerToxicBomb(seat);markEliminated(seat);
+      if(sourceSeat!==null) enqueueDraft(sourceSeat,'kill');
+      return false;
+    };
+    const advanceTurn=()=>{
+      let fromSeat=next.turn.currentSeat;
+      for(let skipped=0;skipped<next.players.length;skipped++){
+        const seat=R.nextAliveSeat(next,fromSeat);
+        if(seat===null){finishRoundIfNeeded();return;}
+        next.turn.currentSeat=seat;
+        if(!applyPoisonTurnStart(seat)){
+          if(finishRoundIfNeeded()) return;
+          fromSeat=seat;continue;
+        }
+        next.turn.number++;clearCombatState();prepareTurnEffects(seat);
+        next.turn.phase='idle';next.turn.decision={kind:'roll_base',seat};
+        emit('TurnStarted',{seat,turnNumber:next.turn.number});
+        if(next.draft.queue.length) blockDraft(null);
+        else emit('DecisionRequired',{seat,kind:'roll_base'});
+        return;
+      }
+      finishRoundIfNeeded();
+    };
+    const continueRoundPreparation=()=>{
+      const pending=next.round.preparation.find(entry=>!entry.ready&&entry.freeChoices>0);
+      if(pending){decision('choose_start_abilities','round_preparation',pending.seat);return;}
+      decision('start_round','round_preparation',next.round.lastPlaceSeat??next.turn.currentSeat);
+    };
+    const prepareRound=()=>{
+      const rules=D.LOCAL_MODES[next.modeId],random=requireRandom();
+      next.round.preparation=next.players.map(active=>{
+        const isLast=active.seat===next.round.lastPlaceSeat&&active.seat!==next.round.winnerSeat;
+        if(next.modeId==='classic'){
+          if(isLast) return {seat:active.seat,roll:null,abilities:[],freeChoices:1,ready:false};
+          const roll=Math.floor(random()*25)+1;
+          return roll===6?{seat:active.seat,roll,abilities:[],freeChoices:1,ready:false}:
+            {seat:active.seat,roll,abilities:[roll],freeChoices:0,ready:true};
+        }
+        const freeChoices=isLast?Math.min(rules.lastPlaceFreeChoices,rules.startAbilityCount):0;
+        if(freeChoices>0) return {seat:active.seat,roll:null,abilities:[],freeChoices,ready:false};
+        return {seat:active.seat,roll:null,abilities:randomAbilities(rules.startAbilityCount,[],random),freeChoices:0,ready:true};
+      });
+      emit('RoundPreparationStarted',{roundNumber:next.round.number+1,
+        entries:next.round.preparation.map(entry=>({seat:entry.seat,roll:entry.roll,freeChoices:entry.freeChoices}))});
+      continueRoundPreparation();
+    };
+    const chooseStartAbilities=()=>{
+      const rules=D.LOCAL_MODES[next.modeId],entry=next.round.preparation.find(item=>item.seat===action.seat);
+      entry.abilities=action.abilities.slice();
+      const missing=rules.startAbilityCount-entry.abilities.length;
+      if(missing>0) entry.abilities.push(...randomAbilities(missing,entry.abilities));
+      entry.ready=true;
+      emit('StartAbilitiesChosen',{seat:entry.seat,abilities:entry.abilities.slice(),freeChoices:entry.freeChoices});
+      continueRoundPreparation();
+    };
+    const startRound=()=>{
+      const random=requireRandom(),starter=next.round.lastPlaceSeat??next.players[0].seat;
+      for(let i=next.players.length-1;i>0;i--){
+        const j=Math.floor(random()*(i+1));
+        [next.players[i],next.players[j]]=[next.players[j],next.players[i]];
+      }
+      for(const active of next.players){
+        const entry=next.round.preparation.find(item=>item.seat===active.seat);
+        active.hp=D.LOCAL_MODES[next.modeId].startHp;active.maxHp=active.hp;active.abilities=entry.abilities.slice();
+        active.bonusAbilityUnlocked=D.LOCAL_MODES[next.modeId].bonusSlot!==null&&
+          active.abilities.length>=D.LOCAL_MODES[next.modeId].bonusSlot;
+        active.effects={momentumStreak:0,lastStandUsed:false,lastStandCooldown:0,damageSinceLastOwnTurn:false,
+          bloodRushPrimed:false,voluntaryHpPaidThisTurn:false,selfDamageSinceLastOwnTurn:false,
+          underdogTurnActive:false,poisonTurns:0,poisonSourceSeat:null,healEffectCount:0,snakeEyesUsesThisTurn:0};
+      }
+      next.round.number++;next.round.eliminationOrder=[];next.round.lastPlaceSeat=null;next.round.winnerSeat=null;
+      next.round.result=null;next.round.preparation=[];next.draft={active:null,queue:[],continuation:null};
+      next.turn.number=1;next.turn.currentSeat=starter;clearCombatState();prepareTurnEffects(starter);
+      next.turn.phase='idle';next.turn.decision={kind:'roll_base',seat:starter};
+      emit('RoundStarted',{roundNumber:next.round.number,startingSeat:starter,seatOrder:next.players.map(entry=>entry.seat)});
+      emit('DecisionRequired',{seat:starter,kind:'roll_base'});
+    };
+    const resolveDraft=()=>{
+      const activeDraft=next.draft.active,active=R.player(next,activeDraft.seat);
+      active.abilities.push(action.abilityId);next.draft.active=null;
+      emit('AbilityChosen',{seat:active.seat,slot:activeDraft.slot,abilityId:action.abilityId,trigger:activeDraft.trigger});
+      if(next.draft.queue.length){openQueuedDraft();return;}
+      const continuation=next.draft.continuation;next.draft.continuation=null;
+      if(continuation==='finish_base'){
+        afterSelfDamage(next.attack.baseTotal,next.attack.source==='advance'?'advance24':'finish');return;
+      }
+      if(continuation==='start_counter'){
+        const context=next.counter.pending;next.counter.pending=null;startCounter(context);return;
+      }
+      if(continuation==='finish_attack'){setTurnDone('attack_complete');return;}
+      decision('roll_base','idle',next.turn.currentSeat);
     };
 
     if(action.type===A.ROLL_BASE){
@@ -617,6 +813,54 @@
       markSelfDamage(active.seat,result.lost,true);activateBloodRushMid();
     }else if(action.type===A.ROLL_COUNTERATTACK){
       rollCounter();
+    }else if(action.type===A.ROLL_GAMBLING){
+      const random=requireRandom(),retry=next.turn.phase==='gamble_retry';
+      let roll=R.rollDie(next,random);
+      if(R.mastery(next,2)) while(roll===1) roll=R.rollDie(next,random);
+      const total=next.special.gambling.baseTotal;
+      next.special.gambling.retryPending=false;
+      if(retry) next.special.gambling.retryUsed=true;
+      emit('SpecialDieRolled',{seat:next.turn.currentSeat,kind:retry?'gambling_retry':'gambling',sides:6,value:roll});
+      prepareAttack(roll,total,'gambling');
+    }else if(action.type===A.ACCEPT_GAMBLING_RETRY){
+      next.special.gambling.retryPending=true;decision('gambling_retry','gamble_retry');
+    }else if(action.type===A.DECLINE_GAMBLING_RETRY){
+      next.special.gambling.retryPending=false;next.special.gambling.retryUsed=true;
+      setTurnDone('gambling_retry_declined');
+    }else if(action.type===A.ROLL_PERFECT25){
+      const roll=R.rollDie(next,requireRandom()),threshold=R.mastery(next,2)?2:(R.mastery(next,1)?3:4);
+      emit('SpecialDieRolled',{seat:next.turn.currentSeat,kind:'perfect25_permit',sides:6,value:roll});
+      if(roll<threshold){
+        next.special.perfect25.baseTotal=null;setTurnDone('perfect25_denied');
+      }else decision('perfect25_d4','perfect25_d4');
+    }else if(action.type===A.ROLL_PERFECT25_D4){
+      const roll=Math.floor(requireRandom()()*4)+1,total=next.special.perfect25.baseTotal;
+      next.special.perfect25.baseTotal=null;
+      emit('SpecialDieRolled',{seat:next.turn.currentSeat,kind:'perfect25_attack',sides:4,value:roll});
+      prepareAttack(roll,total,'perfect25');
+    }else if(action.type===A.SKIP_HIGH_STAKES){
+      next.special.highStakes.decisionMade=true;next.special.highStakes.rawDamage=null;
+      emit('HighStakesResolved',{seat:next.turn.currentSeat,skipped:true,damage:next.attack.damage});
+      finalizeAttackDamage();
+    }else if(action.type===A.ROLL_HIGH_STAKES){
+      const roll=R.rollDie(next,requireRandom()),before=next.special.highStakes.rawDamage;
+      if(roll<=2 || (roll===3&&!R.mastery(next,1))) next.attack.damage=Math.floor(before*.5);
+      else if(roll===3) next.attack.damage=before;
+      else next.attack.damage=Math.floor(before*((roll===6&&R.mastery(next,2))?1.75:1.5));
+      next.special.highStakes.decisionMade=true;next.special.highStakes.rawDamage=null;
+      emit('SpecialDieRolled',{seat:next.turn.currentSeat,kind:'high_stakes',sides:6,value:roll});
+      emit('HighStakesResolved',{seat:next.turn.currentSeat,skipped:false,roll,before,damage:next.attack.damage});
+      finalizeAttackDamage();
+    }else if(action.type===A.CHOOSE_ABILITY){
+      resolveDraft();
+    }else if(action.type===A.END_TURN){
+      if(!finishRoundIfNeeded()) advanceTurn();
+    }else if(action.type===A.PREPARE_ROUND){
+      prepareRound();
+    }else if(action.type===A.CHOOSE_START_ABILITIES){
+      chooseStartAbilities();
+    }else if(action.type===A.START_ROUND){
+      startRound();
     }
 
     const outputValidation=engine.validateState(next);

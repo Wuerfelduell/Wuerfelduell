@@ -44,17 +44,17 @@ function targetState({modeId='classic',abilities=[1],playerCount=4,faceValue=3}=
   check(validateState(state).valid,'Vorbereitete Zielwahl ist gueltig');
   return state;
 }
-function act(state,type,extra={},rng){
+function act(state,type,extra={},rng=()=>0){
   return reduce(state,{type,seat:state.turn.decision?.seat??state.turn.currentSeat,...extra},rng);
 }
 function oneHitThenStop(state,hitFace,missFaces){
   let result=act(state,A.ROLL_ATTACK,{},sequence([face(hitFace),...missFaces.slice(0,4).map(face)]));
   state=result.state;
-  result=act(state,A.RESOLVE_ATTACK);state=result.state;
+  result=act(state,A.RESOLVE_ATTACK,{},sequence(Array(64).fill(0)));state=result.state;
   if(state.turn.phase==='attack_continue'){
     const open=state.dice.filter(die=>!die.locked).length;
     result=act(state,A.ROLL_ATTACK,{},sequence(missFaces.slice(0,open).map(face)));state=result.state;
-    result=act(state,A.RESOLVE_ATTACK);state=result.state;
+    result=act(state,A.RESOLVE_ATTACK,{},sequence(Array(64).fill(0)));state=result.state;
   }
   return {state,events:result.events};
 }
@@ -122,11 +122,22 @@ function oneHitThenStop(state,hitFace,missFaces){
 
 {
   let state=attackState({modeId:'mayhem',abilities:[11,3],defenderAbilities:[4,5],faceValue:3});
+  state.players[0].effects.healEffectCount=1;
   state=act(state,A.USE_BLOOD_PRICE).state;
   const pact=act(state,A.ROLL_ATTACK,{},sequence([face(6),face(6),face(6),face(6),face(6)]));
   equal(pact.state.players[0].hp,64,'Blood Pact erstattet bei null Treffern zwei der drei bezahlten HP');
+  equal(pact.state.players[0].effects.healEffectCount,1,'Blood Pact ist eine direkte Gutschrift und kein Heileffekt');
   check(pact.events.some(event=>event.type==='Healed'&&event.source==='blood_pact'&&event.amount===2),
     'Blood Pact meldet die Erstattung als Heilung');
+}
+
+{
+  let state=attackState({modeId:'mayhem',abilities:[5,3],defenderAbilities:[21,1],faceValue:5,hp:[3,65]});
+  state=oneHitThenStop(state,5,[2,3,4,6]).state;
+  const counter=act(state,A.ROLL_COUNTERATTACK,{},sequence([face(1),face(1),face(1),face(1),face(1)]));
+  equal(counter.state.players[0].hp,0,'Counterattack kann den Angreifer ausschalten');
+  equal([counter.state.draft.active,counter.state.draft.queue],[null,[]],
+    'Counterattack-Kill oeffnet in lokalen Modi keinen Kill-Draft');
 }
 
 {
@@ -206,7 +217,7 @@ function oneHitThenStop(state,hitFace,missFaces){
   state=act(state,A.ROLL_ATTACK,{},sequence([face(1),face(3),face(4),face(5),face(6)])).state;
   state=act(state,A.RESOLVE_ATTACK).state;
   state=act(state,A.ROLL_ATTACK,{},sequence([face(3),face(4),face(5),face(6)])).state;
-  const result=act(state,A.RESOLVE_ATTACK);
+  const result=act(state,A.RESOLVE_ATTACK,{},sequence(Array(64).fill(0)));
   equal(result.state.round.eliminationOrder[0],1,'Hauptziel wird in Ausscheidereihenfolge eingetragen');
   equal(result.state.players[2].hp,7,'Toxic Bomb trifft den benachbarten Nicht-Quellspieler');
   check(result.events.some(event=>event.type==='ToxicBombApplied'),'Toxic Bomb hat ein eigenes Ereignis');
@@ -265,15 +276,24 @@ function oneHitThenStop(state,hitFace,missFaces){
   const state=attackState({modeId:'endurance50',abilities:[5],defenderAbilities:[3],faceValue:2,hp:[50,31]});
   const blocked=oneHitThenStop(state,2,[1,3,4,5]);
   equal(blocked.state.turn.phase,'draft_pending','HP-Schwelle blockiert die Angriffsfortsetzung fuer Schritt 4');
-  equal(blocked.state.draft.queue,[{seat:1,slot:3,trigger:'hp'}],'Draft-Fortsetzung speichert Sitz, Slot und Ausloeser');
+  equal({seat:blocked.state.draft.active?.seat,slot:blocked.state.draft.active?.slot,trigger:blocked.state.draft.active?.trigger},
+    {seat:1,slot:3,trigger:'hp'},'Draft-Fortsetzung speichert Sitz, Slot und Ausloeser');
   equal(blocked.state.draft.continuation,'finish_attack','Draft merkt die Fortsetzung nach dem Angriff');
+}
+
+{
+  const state=attackState({modeId:'endurance50',abilities:[5],defenderAbilities:[3],faceValue:2,hp:[50,29]});
+  const blocked=oneHitThenStop(state,2,[1,3,4,5]);
+  equal(blocked.state.turn.phase,'draft_pending','HP-Draft greift auch ohne Schwellenuebertritt von oben');
+  equal(blocked.state.draft.active?.trigger,'hp','HP-Draft bleibt bis zur Wahl aktiv');
 }
 
 {
   const state=attackState({modeId:'mayhem',abilities:[5,3],defenderAbilities:[4,8],faceValue:5,hp:[65,4]});
   const killed=oneHitThenStop(state,5,[1,2,3,4]);
   equal(killed.state.turn.phase,'draft_pending','Kill-Draft blockiert die Angriffsfortsetzung in Mayhem');
-  equal(killed.state.draft.queue,[{seat:0,slot:3,trigger:'kill'}],'Kill-Draft reserviert den dritten Faehigkeitsslot');
+  equal({seat:killed.state.draft.active?.seat,slot:killed.state.draft.active?.slot,trigger:killed.state.draft.active?.trigger},
+    {seat:0,slot:3,trigger:'kill'},'Kill-Draft reserviert den dritten Faehigkeitsslot');
   equal(killed.state.round.eliminationOrder,[1],'Kill schreibt die Ausscheidereihenfolge fort');
 }
 

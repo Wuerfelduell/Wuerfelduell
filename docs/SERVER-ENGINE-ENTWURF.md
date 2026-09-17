@@ -24,7 +24,7 @@ Release auf `main`; anschließend Bericht und **Warten auf „Weiter“**:
 | 1 | Gemeinsame Definitionen und serialisierbarer Zustand | V28.14.0 |
 | 2 | Basisphase, nur Engine und Node-Tests | V28.14.3 |
 | 3 | Angriff, nur Engine und Node-Tests | V28.14.6 |
-| 4 | Spezialwürfel, Drafts und Rundenwechsel, nur Engine und Node-Tests | offen; Regelfrage unten |
+| 4 | Spezialwürfel, Drafts und Rundenwechsel, nur Engine und Node-Tests | V28.14.10 |
 | 5 | Produktiver Browseradapter und Bot-Paritätsprüfstand | offen; erst nach grüner Parität veröffentlichen |
 | 6 | Deno-Parität und Online-Schatten | offen; kein Deployment |
 
@@ -121,7 +121,7 @@ Instanztrennung und Entscheidungsinhabern bei Draft und Konter.
 mit Node und prüft 40 Kampfansichten (vier Modi, DE/EN, 320/360/390/412/1280 px).
 Dies ist ausdrücklich noch keine Reducer-Matchparität.
 
-## Reducer und Ereignisse – Schritte 2 und 3
+## Reducer und Ereignisse – Schritte 2 bis 4
 
 `js/engine/04-rules.js` und `js/engine/05-reduce.js` liefern den bestätigten
 Schnitt für Schritte 2–4:
@@ -142,17 +142,25 @@ bleibt mit Mastery auf 6 HP, sonst auf 1 HP. Mehrspielerangriffe blockieren an
 der Zielwahl; Counterattack ist ein eigener Angriff des Verteidigers. Nach der
 letzten Angriffsfolge steht der Zustand auf `turn_done`.
 
-Gambling Man, Perfect 25, High Stakes und fällige Fähigkeitsdrafts werden als
-blockierende Entscheidungen an Schritt 4 übergeben. Der Draftzustand speichert
-dabei Warteschlange und Fortsetzung (`finish_attack` oder `start_counter`), ohne
-Optionen vorzuziehen. Ereignisse besitzen monotone stabile IDs und reine
-JSON-Nutzlasten, darunter `DiceRolled`, `AttackRolled`, `HitsResolved`,
-`DamageApplied`, `Healed`, `RicochetApplied`, `CounterattackStarted`,
-`PlayerEliminated`, `DecisionRequired`, `TurnEnded` und `TurnStarted`; Texte,
-HTML, Timer und UI-Rückrufe bleiben im Adapter. `scripts/qa/engine-basis.mjs`
-und `scripts/qa/engine-angriff.mjs` prüfen die Regeln mit festem Zufall,
-Ablehnungen ohne Ziehung, JSON-Rundreisen sowie Classic und Mayhem mit zwei und
-vier Spielern. Botlogik bleibt ein Aktionsproduzent außerhalb des Reducers.
+Gambling Man, Perfect 25 und High Stakes laufen als blockierende Entscheidungen
+mit D6/D4 und optionalem Überspringen. Fällige Fähigkeitsdrafts ziehen ihr
+Auswahlpaar erst beim Öffnen aus dem Reducer-RNG; die Wahl löst Warteschlange und
+Fortsetzung (`finish_base`, `finish_attack`, `start_counter`) auf. Damit gilt
+verbindlich: Draft zuerst, danach wird die unterbrochene Folge fortgesetzt.
+Zugende, Gift am Zugstart, Last-Stand-Abklingzeit, Blood Rush, Underdog,
+Siegerprüfung sowie Runden-vorbereitung und -start sind ebenfalls Entscheidungen
+ohne Timer. Die Rundenvorbereitung bildet W25=6, freie Startwahlen,
+`lastPlaceFreeChoices`, modusspezifische Startfähigkeiten und Sitzreihenfolge ab.
+
+Ereignisse besitzen monotone stabile IDs und reine JSON-Nutzlasten, darunter
+`DiceRolled`, `AttackRolled`, `SpecialDieRolled`, `HitsResolved`, `DamageApplied`,
+`Healed`, `AbilityDraftOpened`, `AbilityChosen`, `CounterattackStarted`,
+`PlayerEliminated`, `RoundEnded`, `RoundStarted`, `DecisionRequired`, `TurnEnded`
+und `TurnStarted`; Texte, HTML, Timer und UI-Rückrufe bleiben im Adapter.
+`scripts/qa/engine-basis.mjs`, `scripts/qa/engine-angriff.mjs` und
+`scripts/qa/engine-runde.mjs` prüfen die Regeln mit festem Zufall, Ablehnungen
+ohne Ziehung, JSON-Rundreisen sowie vollständige Classic- und Mayhem-Runden mit
+zwei und vier Spielern. Botlogik bleibt ein Aktionsproduzent außerhalb des Reducers.
 
 ## Nachgewiesene Regelunklarheit vor Schritt 4
 

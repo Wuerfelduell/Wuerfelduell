@@ -1,12 +1,12 @@
 {
   "name": "wuerfelduell",
   "private": true,
-  "version": "28.14.9",
+  "version": "28.14.10",
   "type": "module",
   "scripts": {
     "build": "npm run build:styles",
     "build:styles": "node scripts/build-styles.mjs",
-    "check": "node scripts/build-styles.mjs --check && node scripts/verify-build.mjs && node scripts/validate-endgame.mjs && node scripts/validate-supabase.mjs && npm run check:engine-state && npm run check:engine-basis && npm run check:engine-angriff && npm run check:online-stats && npm run check:engine-replay && npm run check:engine-state-browser",
+    "check": "node scripts/build-styles.mjs --check && node scripts/verify-build.mjs && node scripts/validate-endgame.mjs && node scripts/validate-supabase.mjs && npm run check:engine-state && npm run check:engine-basis && npm run check:engine-angriff && npm run check:engine-runde && npm run check:online-stats && npm run check:engine-replay && npm run check:engine-state-browser",
     "check:endgame": "node scripts/validate-endgame.mjs",
     "check:supabase": "node scripts/validate-supabase.mjs",
     "check:online-stats": "node scripts/qa/online-stats.mjs && node scripts/qa/online-stats-capture.mjs && node scripts/qa/online-stats-db.mjs && node scripts/qa/online-stats-view.mjs",
@@ -14,6 +14,7 @@
     "check:engine-state": "node scripts/qa/engine-state.mjs",
     "check:engine-basis": "node scripts/qa/engine-basis.mjs",
     "check:engine-angriff": "node scripts/qa/engine-angriff.mjs",
+    "check:engine-runde": "node scripts/qa/engine-runde.mjs",
     "check:engine-state-browser": "node scripts/qa/engine-state-browser.mjs"
   },
   "engines": {
