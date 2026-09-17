@@ -1,10 +1,10 @@
-# Gemeinsame Duell-Engine – Phase 2, Schritt 1
+# Gemeinsame Duell-Engine – Phase 2, Schritt 2
 
-Stand: V28.14.0, Ausgangspunkt `bae6e96` (V28.13.2), 17.09.2026.
-Der Phase-1-Entwurf ist freigegeben. Geliefert ist **Schritt 1 von 6:
-Definitionen und Zustand**. Das Spiel liest die gemeinsamen Definitionen;
-Kampfentscheidungen laufen weiterhin im bisherigen Browsercode. Es gibt noch
-keinen Reducer, keinen Browseradapter und keinen neuen Online-Payload.
+Stand: V28.14.3, Ausgangspunkt `42626c2` (V28.14.2), 17.09.2026.
+Der Phase-1-Entwurf ist freigegeben. Geliefert ist **Schritt 2 von 6:
+Basisphase**. Das Spiel liest die gemeinsamen Definitionen; Kampfentscheidungen
+laufen weiterhin im bisherigen Browsercode. Es gibt noch keinen Browseradapter
+und keinen neuen Online-Payload.
 Kein Deployment und keine Migration.
 
 ## Freigegebener Umfang und Lieferreihenfolge
@@ -22,7 +22,7 @@ Release auf `main`; anschließend Bericht und **Warten auf „Weiter“**:
 | Schritt | Umfang | Stand |
 |---|---|---|
 | 1 | Gemeinsame Definitionen und serialisierbarer Zustand | V28.14.0 |
-| 2 | Basisphase, nur Engine und Node-Tests | offen |
+| 2 | Basisphase, nur Engine und Node-Tests | V28.14.3 |
 | 3 | Angriff, nur Engine und Node-Tests | offen |
 | 4 | Spezialwürfel, Drafts und Rundenwechsel, nur Engine und Node-Tests | offen; Regelfrage unten |
 | 5 | Produktiver Browseradapter und Bot-Paritätsprüfstand | offen; erst nach grüner Parität veröffentlichen |
@@ -121,23 +121,28 @@ Instanztrennung und Entscheidungsinhabern bei Draft und Konter.
 mit Node und prüft 40 Kampfansichten (vier Modi, DE/EN, 320/360/390/412/1280 px).
 Dies ist ausdrücklich noch keine Reducer-Matchparität.
 
-## Reducer und Ereignisse – noch nicht implementiert
+## Reducer und Ereignisse – Schritt 2
 
-Der bestätigte Schnitt für Schritte 2–4 bleibt:
+`js/engine/04-rules.js` und `js/engine/05-reduce.js` liefern den bestätigten
+Schnitt für Schritte 2–4:
 
 ```js
 const {state: next, events} = WDEngine.reduce(state, action, rng);
 ```
 
-Der Eingang bleibt unverändert. Ungültige Aktionen liefern
-`{rejected: true, reason}` ohne RNG-Verbrauch. Automatische Folgen laufen
-bis zur nächsten echten Spielerentscheidung. Ereignisse enthalten stabile
-IDs, Typen und Werte; Texte, HTML, Animationen und UI-Rückrufe bleiben im
-Adapter. Vorgesehen sind `DiceRolled`, `DamageApplied`, `Healed`,
-`AbilityDraftOpened`, `DecisionRequired`, `TurnStarted`, `PlayerEliminated`
-und `MatchFinished`. **Schritt 1 erzeugt noch keine Ereignisse.** Zusätzliche
-Typen und konkrete Nutzlasten werden mit dem jeweiligen Regelschritt ergänzt.
-Botlogik bleibt ein Aktionsproduzent außerhalb des Reducers.
+Der Eingang bleibt unverändert. Ungültige Aktionen liefern den unveränderten
+Zustand, leere Ereignisse sowie `{rejected: true, reason}` ohne RNG-Verbrauch.
+Automatische Folgen laufen bis zur nächsten echten Spielerentscheidung. Die
+Basisphase umfasst Würfeln, Auswahl und Locken, Glückswurf, Loaded Dice,
+Snake Eyes, Blutpreis, Insurance, Eigenschaden und Last Stand. Gambling Man
+und Perfect 25 werden als blockierende Entscheidungen an Schritt 4 übergeben;
+Angriffe beginnen erst in Schritt 3. Ereignisse besitzen monotone stabile IDs
+und reine JSON-Nutzlasten, darunter `DiceRolled`, `DiceLocked`,
+`DamageApplied`, `Healed`, `LastStandTriggered`, `DecisionRequired` und
+`TurnStarted`; Texte, HTML, Timer und UI-Rückrufe bleiben im Adapter.
+`scripts/qa/engine-basis.mjs` prüft die Basisregeln mit festem Zufall,
+Ablehnungen ohne Ziehung, RNG-Grenzen und die JSON-Rundreise. Botlogik bleibt
+ein Aktionsproduzent außerhalb des Reducers.
 
 ## Nachgewiesene Regelunklarheit vor Schritt 4
 
