@@ -3,7 +3,7 @@
   let localModeId="classic";
   function localModeRules(){return LOCAL_MODES[localModeId]||LOCAL_MODES.classic;}
 
-  const GAME_VERSION="28.14.3";
+  const GAME_VERSION="28.14.4";
   // Gemeinsamer Bild-Cache-Schluessel; identisch mit den Bild-URLs in HTML und CSS.
   const ASSET_REV="28.12.48";
   const SAVE_KEY="wuerfelduell_save_v1"; // absichtlich stabil: Updates lesen denselben Browser-Save
@@ -90,7 +90,9 @@
     solarsplash:{name:"Solarsplash",desc:"Ein verdichteter Sonnenkern schlägt als flüssige Plasmawelle mit goldener Korona ein.",labor:true},
     trigonbomb:{name:"Trigonbomb",desc:"Drei Prismensplitter verschmelzen zu einer Dreiecksbombe mit geometrischer Detonation.",labor:true},
     confettibomb:{name:"Konfettibombe",desc:"Eine navy-goldene Partykugel detoniert in einer massiven Welle aus Folien, Sternen und Würfelkonfetti.",labor:true},
-    polygon:{name:"Polygon",desc:"Ein facettiertes Energiepolyeder rast zum Ziel, sperrt es ein und zerbricht in geometrische Splitter.",labor:true}
+    polygon:{name:"Polygon",desc:"Ein facettiertes Energiepolyeder rast zum Ziel, sperrt es ein und zerbricht in geometrische Splitter.",labor:true},
+    invasion:{name:"Invasion",desc:"Ein violett-cyanes Portal entsendet fünf dunkle Invasoren in Formation.",labor:true},
+    missile:{name:"Missile Attack",desc:"Drei navy-goldene Raketen erfassen das Ziel und schlagen versetzt ein.",labor:true}
   };
   const ATTACK_FX_UNLOCK_ACHIEVEMENT={
     lightning:"momentum_mori",flame:"critical_hit",venom:"backstab",blood:"vampiric_touch",
