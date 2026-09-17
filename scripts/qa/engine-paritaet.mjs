@@ -48,6 +48,7 @@ async function openPage(){
 
 async function browserFight(modeId,playerCount,seed){
   const result=await page.evaluate(async({modeId,playerCount:requestedPlayers,seed})=>{
+    ENGINE_LOKALES_DUELL=false;
     clearBotAutomation();scheduleBotAction=()=>{};
     if(!window.__parityTimersReady){
       const cancelledTimeouts=new Set(),activeIntervals=new Set();let timerId=0;

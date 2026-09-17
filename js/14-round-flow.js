@@ -19,6 +19,32 @@
   }
 
   function prepareNextRound(){
+    if(localEngineActive()){
+      const before=window.WDEngineAdapter.getLiveState();
+      const result=window.WDEngineAdapter.dispatchLiveAction({type:window.WDEngine.actions.PREPARE_ROUND,
+        seat:before.turn.decision?.seat??before.turn.currentSeat},window.WDRng.random);
+      engineApplySideEffects(result);mirrorLocalEngineState(result.state);
+      nextRoundAbilityRolls=Array(players.length).fill(null);nextRoundAbilities.innerHTML="";
+      nextRoundTitle.textContent=`Runde ${roundNumber+1} vorbereiten`;
+      const lastName=lastPlaceIndex==null?"–":players[lastPlaceIndex].name;
+      nextRoundInfo.innerHTML=`<span class="last-place-note">${escapeHtml(lastName)}</span> startet als Letzter.<br>Freie Wahl: 1–5 oder 8–25.<br>Alle anderen würfeln W25; nur eine 6 wählt frei.<br>Glück (BETA) nur bei gewürfelter 7.`;
+      result.state.round.preparation.forEach(entry=>{
+        const index=localEnginePlayerIndex(entry.seat),player=players[index],box=document.createElement("div");box.className="round-prep-player";
+        const title=document.createElement("div");title.innerHTML=`<strong>${escapeHtml(player.name)}</strong>`;box.appendChild(title);
+        nextRoundAbilityRolls[index]=entry.roll==null?"FREE_LAST":entry.roll;
+        if(entry.freeChoices>0){
+          const note=document.createElement("div");note.className="round-note"+(entry.roll==null?" last-place-note":"");
+          note.textContent=entry.roll==null?"🏁 Letzter Platz: freie Wahl ohne Würfelwurf":"🎲 W25 = 6 → freie Wahl";box.appendChild(note);
+          const select=makeAbilityChoiceSelect("nextAbilityChoice",index,player.ability||1);
+          if(isBotPlayer(index)){select.value=botPickAbility(CHOOSABLE_ABILITY_IDS,player.botLevel,[]);select.disabled=true;}box.appendChild(select);
+        }else{
+          const ability=entry.abilities[0],note=document.createElement("div");note.className="round-note";
+          note.innerHTML=`🎲 W25 = <strong>${entry.roll}</strong> → ${escapeHtml(ABILITIES[ability].name)}`;box.appendChild(note);
+        }
+        nextRoundAbilities.appendChild(box);
+      });
+      winnerBox.classList.add("hidden");nextRoundBox.classList.remove("hidden");nextRoundAbilities.scrollTop=0;renderAll();return;
+    }
     if(lastPlaceIndex==null) return;
     const rules=localModeRules();
     if(rules.id!=="classic" && !campaignMode){
@@ -91,6 +117,21 @@
   }
 
   function startNextRound(){
+    if(localEngineActive()){
+      clearBotAutomation();let state=window.WDEngineAdapter.getLiveState(),lastResult=null;
+      for(const entry of state.round.preparation.filter(item=>!item.ready)){
+        const index=localEnginePlayerIndex(entry.seat),ability=+$(`nextAbilityChoice${index}`).value;
+        lastResult=window.WDEngineAdapter.dispatchLiveAction({type:window.WDEngine.actions.CHOOSE_START_ABILITIES,
+          seat:entry.seat,abilities:[ability]},window.WDRng.random);state=lastResult.state;
+      }
+      lastResult=window.WDEngineAdapter.dispatchLiveAction({type:window.WDEngine.actions.START_ROUND,
+        seat:state.turn.decision?.seat??state.turn.currentSeat},window.WDRng.random);
+      engineApplySideEffects(lastResult);mirrorLocalEngineState(lastResult.state);resetRoundStats();roundWinnerHandled=false;roundWinnerIndex=null;
+      winnerBox.classList.add("hidden");nextRoundBox.classList.add("hidden");logEl.innerHTML="";
+      addLog(`Runde ${roundNumber} startet. ${players[current].name} beginnt als Letztplatzierter der vorherigen Runde.`);
+      players.forEach(player=>addLog(`${player.name}: Fähigkeit ${player.ability}: ${ABILITIES[player.ability].name}. Zweitfähigkeit wird bei ≤12 HP neu freigeschaltet.`));
+      presentLocalEngineState();renderAll();return;
+    }
     // Campaign encounters are single-fight states. The generic local "next round"
     // reset would wipe campaign HP/abilities back to Classic defaults.
     if(campaignMode){

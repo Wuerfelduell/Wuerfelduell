@@ -2,8 +2,9 @@
   let ROLL_ANIM_MS = 430;
   let localModeId="classic";
   function localModeRules(){return LOCAL_MODES[localModeId]||LOCAL_MODES.classic;}
+  let ENGINE_LOKALES_DUELL=true;
 
-  const GAME_VERSION="28.14.18";
+  const GAME_VERSION="28.14.19";
   // Gemeinsamer Bild-Cache-Schluessel; identisch mit den Bild-URLs in HTML und CSS.
   const ASSET_REV="28.12.48";
   const SAVE_KEY="wuerfelduell_save_v1"; // absichtlich stabil: Updates lesen denselben Browser-Save

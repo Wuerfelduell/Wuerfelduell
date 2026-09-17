@@ -31,6 +31,309 @@
     renderSpecialDieFace(el,key,window.WDRng.visual(()=>randDie()));
   }
 
+  function localEngineEligible(){
+    const mode=String(gameContext?.mode||"");
+    return ENGINE_LOKALES_DUELL===true && localModeId==="classic" && players.length===2 &&
+      !campaignMode && !tutorialMode && mode==="local-classic" &&
+      !document.body.classList.contains("test-lab-active");
+  }
+  function localEngineActive(){return localEngineEligible() && window.WDEngineAdapter?.hasLive?.();}
+  // Der Browser-Sitz beschreibt nur die Position am gemeinsamen Gerät und darf
+  // mehrfach gewählt werden. Im Reducer ist der Sitz dagegen die eindeutige
+  // Spieler-ID; für das lokale 1:1 verwenden wir deshalb den stabilen Index.
+  function localEnginePlayerIndex(seat){
+    const index=Number(seat);
+    return Number.isInteger(index)&&index>=0&&index<players.length?index:-1;
+  }
+  function localEngineSnapshot(){
+    return {phase,currentSeat:current,
+      attackTargetSeat:attackTarget==null||attackTarget<0?null:attackTarget,
+      dice:dice.map(die=>({value:die.value,locked:!!die.locked,selected:!!die.selected}))};
+  }
+  function startLocalDuelEngine(){
+    window.WDEngineAdapter?.stopLive?.();
+    if(!localEngineEligible()) return false;
+    const setup={modeId:"classic",startingSeat:current,roundNumber,
+      players:players.map((player,index)=>({seat:index,abilities:playerAbilities(index)}))};
+    const state=window.WDEngineAdapter.startLive(setup);
+    mirrorLocalEngineState(state);
+    return true;
+  }
+  function mirrorLocalEngineState(state){
+    if(!state) return;
+    const browserPlayers=players.slice();
+    players=state.players.map(enginePlayer=>{
+      const player=browserPlayers[enginePlayer.seat];
+      if(!player) throw new Error("local_engine_player_missing:"+enginePlayer.seat);
+      player.hp=enginePlayer.hp;player.maxHp=enginePlayer.maxHp;player.wins=enginePlayer.roundsWon;
+      player.ability=enginePlayer.abilities[0]??1;player.secondAbility=enginePlayer.abilities[1]??null;
+      player.thirdAbility=enginePlayer.abilities[2]??null;
+      player.secondAbilityUnlocked=enginePlayer.abilities.length>=2;player.thirdAbilityUnlocked=enginePlayer.abilities.length>=3;
+      player.momentumStreak=enginePlayer.effects.momentumStreak;player.lastStandUsed=enginePlayer.effects.lastStandUsed;
+      player.masteryLastStandCooldown=enginePlayer.effects.lastStandCooldown;
+      player.damageSinceLastOwnTurn=enginePlayer.effects.damageSinceLastOwnTurn;
+      player.bloodRushPrimed=enginePlayer.effects.bloodRushPrimed;
+      player.voluntaryHpPaidThisTurn=enginePlayer.effects.voluntaryHpPaidThisTurn;
+      player.masterySelfDamageSinceLastOwnTurn=enginePlayer.effects.selfDamageSinceLastOwnTurn;
+      player.masteryUnderdogTurnActive=enginePlayer.effects.underdogTurnActive;
+      player.masteryPoisonTurns=enginePlayer.effects.poisonTurns;
+      player.masteryPoisonSource=enginePlayer.effects.poisonSourceSeat==null?null:localEnginePlayerIndex(enginePlayer.effects.poisonSourceSeat);
+      return player;
+    });
+    current=Math.max(0,localEnginePlayerIndex(state.turn.currentSeat));
+    dice=state.dice.map(die=>({...die,rolling:false}));phase=state.turn.phase;
+    baseRerollUsed=state.base.rerollUsed;luckRerollIndex=state.base.luckRerollIndex;
+    luckRerollSecondUsed=state.base.luckRerollSecondUsed;luckRerollUses=state.base.luckRerollUses;
+    loadedDiceUsed=state.base.loadedDiceUsed;loadedDiceUses=state.base.loadedDiceUses;lastBaseRollIndices=[...state.base.lastRollIndices];
+    attackFace=state.attack.face;attackTarget=state.attack.targetSeat==null?null:localEnginePlayerIndex(state.attack.targetSeat);
+    attackHits=state.attack.hits;attackDamage=state.attack.damage;firstAttackRoll=state.attack.firstRoll;
+    currentAttackRollNewHits=state.attack.currentRollNewHits;attackRollCount=state.attack.rollCount;
+    attackMasteryRollCount=state.attack.masteryRollCount;normalAttackHitsThisAttack=state.attack.normalHits;
+    exactFaceHitsThisAttack=state.attack.exactFaceHits;wildcardAttackHitsThisAttack=state.attack.wildcardHits;
+    lastAttackRollIndices=[...state.attack.lastRollIndices];attackPowerUsed=state.attack.powerUsed;attackPowerUses=state.attack.powerUses;
+    precisionUses=state.attack.precisionUses;momentumBonus=state.attack.momentumBonus;
+    bloodPriceNeighbors=[...state.attack.bloodPriceNeighbors];bloodPricePaidThisRoll=state.attack.bloodPricePaidThisRoll;
+    bloodPriceWasPreActivatedThisRoll=state.attack.bloodPriceWasPreActivatedThisRoll;
+    bloodRushActiveThisAttack=state.attack.bloodRushActive;doubleTapApplied=state.attack.doubleTapApplied;
+    wildcardFace=state.attack.wildcardFace;wildcardSecondRollArmed=state.attack.wildcardSecondRollArmed;
+    wildcardTriggeredThisAttack=state.attack.wildcardTriggered;masteryL2AttackBonusesApplied=state.attack.masteryL2BonusesApplied;
+    currentAttackSource=state.attack.source;currentAttackBaseTotal=state.attack.baseTotal;
+    gamblingBaseTotal=state.special.gambling.baseTotal;gamblingRetryUsed=state.special.gambling.retryUsed;
+    gamblingRetryPending=state.special.gambling.retryPending;perfect25BaseTotal=state.special.perfect25.baseTotal;
+    pendingPerfect25Total=state.special.perfect25.pendingTotal;highStakesDecisionThisAttack=state.special.highStakes.decisionMade;
+    insuranceContext=state.special.insurance?{...state.special.insurance}:null;
+    counterContext=state.counter.context?{
+      defenderIndex:localEnginePlayerIndex(state.counter.context.defenderSeat),
+      attackerIndex:localEnginePlayerIndex(state.counter.context.attackerSeat),
+      restoreHp:state.counter.context.restoreHp,incomingDamage:state.counter.context.incomingDamage,
+      lastStandTriggered:state.counter.context.lastStandTriggered,bloodRushActive:state.counter.context.bloodRushActive}:null;
+    counterDiceState=state.counter.dice.map(die=>({...die,rolling:false}));counterHits=state.counter.hits;counterFirstRoll=state.counter.firstRoll;
+    secondAbilityDraftBusy=!!state.draft.active;secondAbilityDraftIndex=state.draft.active?localEnginePlayerIndex(state.draft.active.seat):null;
+    secondAbilityDraftSlot=state.draft.active?.slot??2;secondAbilityDraftChoices=state.draft.active?.choices?.slice()||[];
+    roundNumber=state.round.number;roundEliminationOrder=state.round.eliminationOrder.map(localEnginePlayerIndex).filter(index=>index>=0);
+    lastPlaceIndex=state.round.lastPlaceSeat==null?null:localEnginePlayerIndex(state.round.lastPlaceSeat);
+    roundWinnerIndex=state.round.winnerSeat==null?null:localEnginePlayerIndex(state.round.winnerSeat);
+  }
+  function engineRecordRolls(events){
+    for(const event of events){
+      const values=(event.type==="DiceRolled"||event.type==="AttackRolled")?event.values:
+        event.type==="SpecialDieRolled"&&event.sides===6?[event.value]:
+        event.type==="AttackReadied"&&event.wildcardFace!=null?[event.wildcardFace]:[];
+      const index=localEnginePlayerIndex(event.seat);
+      values.forEach(value=>{recordD6(index,value);window.WDMastery?.noteAnyD6?.(index);});
+    }
+  }
+  function engineApplyAchievements(result){
+    const before=result.before,after=result.state,events=result.events;
+    for(const event of events){
+      const index=localEnginePlayerIndex(event.seat);
+      if(event.type==="BaseResolved"){
+        const active=before.players.find(player=>player.seat===event.seat),hasAdvance=active?.abilities?.includes(5),hasPerfect25=active?.abilities?.includes(15);
+        if(event.total<25||(event.total===25&&!hasAdvance&&!hasPerfect25)) resetFirstClassStreak(index);
+      }
+      if(event.type==="AttackReadied"&&players[index]){
+        players[index].botBloodUsesThisAttack=0;
+        if(event.source!=="perfect25") players[index].perfect25AttackArmed=false;
+        const enginePlayer=after.players.find(player=>player.seat===event.seat);
+        if(enginePlayer?.effects?.momentumStreak>=5) unlockAchievementForPlayer(index,"momentum_mori");
+      }
+      if(event.type==="SpecialDieRolled"&&event.kind==="perfect25_permit"&&players[index]){
+        players[index].perfect25AttackArmed=after.turn.phase==="perfect25_d4";
+        if(!players[index].perfect25AttackArmed) resetFirstClassStreak(index);
+      }
+      if(event.type==="LastStandTriggered"&&players[index]) players[index].roundLastStandTriggered=true;
+      if(event.type==="DiceRolled"&&event.kind==="base"&&event.values.length===5){
+        const player=players[index];player.machineBaseArmed=event.values.every(value=>value===6);
+        player.dumbassBaseArmed=event.values.every(value=>value===1);
+        if(player.machineBaseArmed) unlockAchievementForPlayer(index,"full_send");
+      }
+      if(event.type==="DiceLocked"){
+        const active=after.players.find(player=>player.seat===event.seat),values=after.dice.filter(die=>die.locked).map(die=>die.value);
+        if(players[index]?.dumbassBaseArmed&&event.indices.length===5&&values.every(value=>value===1)) unlockAchievementForPlayer(index,"dumbass");
+        if(values.length===5&&isStraightFive(values)) unlockAchievementForPlayer(index,"straight");
+      }
+      if(event.type==="DiceRolled"&&event.kind==="snake_eyes"&&roundStats[index]){
+        roundStats[index].snakeEyesUsesThisTurn++;
+        if(roundStats[index].snakeEyesUsesThisTurn>=2) unlockAchievementForPlayer(index,"snake_charmer");
+        if(roundStats[index].snakeEyesUsesThisTurn>=4) unlockAchievementForPlayer(index,"snake_oil");
+      }
+      if((event.type==="DiceRolled"||event.type==="AttackRolled")&&roundStats[index]&&
+        before.players.find(player=>player.seat===event.seat)?.abilities?.includes(22)&&
+        event.values.filter(value=>value===6).length>=2){
+        roundStats[index].twelveTriggers++;
+        if(roundStats[index].twelveTriggers>=3) unlockAchievementForPlayer(index,"twelve_x3");
+      }
+      if(event.type==="AttackRolled"&&event.kind==="main"&&event.values.length===5){
+        if(isStraightFive(event.values)) unlockAchievementForPlayer(index,"royal_flush_attack");
+        if(isFullHouseFive(event.values)) unlockAchievementForPlayer(index,"full_house_attack");
+        if(event.values.every(value=>value===before.attack.face)) unlockAchievementForPlayer(index,"laser_guided");
+        if(players[index]?.machineBaseArmed&&before.attack.face===5&&event.values.every(value=>value===5)) unlockAchievementForPlayer(index,"machine");
+        if(players[index]) players[index].machineBaseArmed=false;
+      }
+      if(event.type==="HighStakesResolved"&&!event.skipped&&roundStats[index]){
+        if(event.damage<event.before) roundStats[index].highStakesLosses++;
+        else if(event.roll>=4){roundStats[index].highStakesWins++;if(roundStats[index].highStakesWins>=3)unlockAchievementForPlayer(index,"degenerate_gambler");}
+      }
+      if(event.type==="InsuranceResolved"){
+        const total=Number(before.special.insurance?.total);
+        if(total===20&&event.roll===1) unlockAchievementForPlayer(index,"nat20_nat1");
+        if(total===24&&event.damage===0) unlockAchievementForPlayer(index,"insurance_fraud");
+      }
+      if(event.type==="Healed"&&event.amount>=10) unlockAchievementForPlayer(index,"blood_bank");
+      if(event.type==="Healed"&&event.source==="counter_lifesteal"&&event.amount>0) unlockAchievementForPlayer(index,"vampiric_touch");
+    }
+    const damageEvent=events.find(event=>event.type==="DamageApplied"&&event.source==="attack");
+    if(damageEvent){
+      const attacker=localEnginePlayerIndex(damageEvent.sourceSeat),targetBefore=before.players.find(player=>player.seat===damageEvent.targetSeat)?.hp||0;
+      if(after.attack.hits===5) unlockAchievementForPlayer(attacker,"grande");
+      if(after.attack.damage>=targetBefore+10) unlockAchievementForPlayer(attacker,"overkill");
+      if(damageEvent.amount===21) unlockAchievementForPlayer(attacker,"critical_hit");
+      if(after.attack.face===1&&damageEvent.amount>=15) unlockAchievementForPlayer(attacker,"one_or_three");
+      if(after.attack.doubleTapApplied&&after.players.find(player=>player.seat===damageEvent.targetSeat)?.hp<=0)unlockAchievementForPlayer(attacker,"double_trouble");
+    }
+    const endedAttack=events.find(event=>event.type==="TurnEnded"&&["attack_complete","attack_missed"].includes(event.reason));
+    if(damageEvent||endedAttack){
+      const seat=damageEvent?.sourceSeat??endedAttack.seat,index=localEnginePlayerIndex(seat);
+      const total=events.filter(event=>event.type==="DamageApplied"&&event.sourceSeat===seat&&["attack","ricochet","ricochet_chain"].includes(event.source))
+        .reduce((sum,event)=>sum+event.amount,0);
+      recordAttackDamageForAchievements(index,total);
+    }
+    const counter=events.find(event=>event.type==="CounterattackResolved");
+    if(counter){
+      const defender=localEnginePlayerIndex(counter.defenderSeat);
+      if(counter.hits===5) unlockAchievementForPlayer(defender,"grande");
+      if(counter.damage>=15) unlockAchievementForPlayer(defender,"backstab");
+    }
+  }
+  function engineApplySideEffects(result){
+    engineRecordRolls(result.events);engineApplyAchievements(result);
+    const lastSource=new Map();
+    for(const event of result.events){
+      if(event.type==="DamageApplied"){
+        const sourceIndex=localEnginePlayerIndex(event.sourceSeat),targetIndex=localEnginePlayerIndex(event.targetSeat);
+        lastSource.set(event.targetSeat,event.sourceSeat);
+        if(event.sourceSeat===event.targetSeat){
+          recordSelfDamage(targetIndex,event.amount,event.source);
+          if(["loaded_dice","blood_price","blood_credit","blood_rush_self_harm"].includes(event.source)) recordVoluntaryHp(targetIndex,event.amount);
+        }else{
+          if(roundStats[targetIndex]) roundStats[targetIndex].damageTaken+=event.amount;
+          recordDamageDealt(sourceIndex,event.amount,sourceIndex===current);
+          const kind=event.source==="counterattack"?"counter":(event.source.startsWith("ricochet")?"ricochet":((result.before.attack.face===4||result.before.attack.face===6)?"lightning":"laser"));
+          window.WDAttackFx?.emit?.(sourceIndex,targetIndex,kind,event.amount,result.before.attack.face);
+          pendingDamage={target:targetIndex,amount:event.amount};
+        }
+      }else if(event.type==="Healed"){
+        const index=localEnginePlayerIndex(event.seat);recordHealing(index,event.amount);pendingHeal={target:index,amount:event.amount};
+        if(event.source==="perfect_parry"&&roundStats[index]){
+          const incoming=Number(result.before.counter.context?.incomingDamage)||0;
+          roundStats[index].damageTaken=Math.max(0,roundStats[index].damageTaken-incoming);
+        }
+      }else if(event.type==="PlayerEliminated"){
+        const targetIndex=localEnginePlayerIndex(event.seat),sourceSeat=lastSource.get(event.seat),sourceIndex=localEnginePlayerIndex(sourceSeat);
+        if(sourceSeat!==event.seat&&sourceIndex>=0&&roundStats[sourceIndex]){roundStats[sourceIndex].kills++;window.WDAttackFx?.kill?.(sourceIndex,targetIndex);}
+        queueEventPopup(`${players[targetIndex].name} Died!`,"death");
+      }else if(event.type==="AbilityChosen"){
+        const index=localEnginePlayerIndex(event.seat),player=players[index];
+        if(event.slot===3) player.thirdAbilityWasChosen=true;
+        else player.secondAbilityWasChosen=true;
+        addLog(`✨ ${player.name} wählt als ${event.slot}. Fähigkeit: ${ABILITIES[event.abilityId].name}.`);
+      }else if(event.type==="TurnStarted"){
+        const index=localEnginePlayerIndex(event.seat);
+        if(turnDamageThisTurn[index]!=null) turnDamageThisTurn[index]=0;
+        if(roundStats[index]) roundStats[index].snakeEyesUsesThisTurn=0;
+      }
+    }
+  }
+  function showLocalEngineDraft(){
+    const state=window.WDEngineAdapter.getLiveState(),active=state?.draft?.active;
+    if(!active) return;
+    const index=localEnginePlayerIndex(active.seat),player=players[index];
+    secondAbilityDraftBusy=true;secondAbilityDraftIndex=index;secondAbilityDraftSlot=active.slot;secondAbilityDraftChoices=active.choices.slice();
+    secondAbilityTitle.textContent=`${player.name}: Wähle deine ${active.slot}. Fähigkeit`;
+    secondAbilityOptions.innerHTML="";
+    active.choices.forEach(id=>{const btn=document.createElement("button");btn.className="second-ability-card"+(id===7?" luck":"");
+      btn.innerHTML=`<div class="num">${id}</div><div class="name">${escapeHtml(ABILITIES[id].name)}</div><div class="desc">${escapeHtml(ABILITIES[id].desc)}</div>`;
+      btn.onclick=()=>{if(!isBotPlayer(index))chooseSecondAbility(id);};secondAbilityOptions.appendChild(btn);});
+    secondAbilityModal.classList.remove("hidden");scheduleBotAction(120);
+  }
+  function presentLocalEngineState(){
+    const state=window.WDEngineAdapter.getLiveState();if(!state) return;
+    if(state.turn.phase!=="gamble_attack"&&state.turn.phase!=="gamble_retry") gamblingModal.classList.add("hidden");
+    if(state.turn.phase!=="perfect25") perfect25Modal.classList.add("hidden");
+    if(state.turn.phase!=="perfect25_d4") perfect25D4Modal.classList.add("hidden");
+    if(state.turn.phase!=="high_stakes") highStakesModal.classList.add("hidden");
+    if(state.turn.phase!=="insurance") insuranceModal.classList.add("hidden");
+    if(state.turn.phase!=="counterattack") counterModal.classList.add("hidden");
+    if(state.turn.phase!=="draft_pending"){secondAbilityModal.classList.add("hidden");secondAbilityDraftBusy=false;}
+    if(state.turn.phase==="gamble_attack"||state.turn.phase==="gamble_retry"){
+      const designKey=players[current]?.diceDesign||"classic";gamblingDie.className=`gambling-die ${DICE_DESIGNS[designKey]?.className||"theme-classic"}`;
+      renderSpecialDieFace(gamblingDie,designKey,null);gamblingResult.textContent="Tippe den D6";gamblingDie.disabled=false;
+      gamblingRetryActions?.classList.toggle("hidden",state.turn.phase!=="gamble_retry");gamblingModal.classList.remove("hidden");
+    }else if(state.turn.phase==="perfect25"){
+      const designKey=players[current]?.diceDesign||"classic";perfect25Die.className=`special-big-die ${DICE_DESIGNS[designKey]?.className||"theme-classic"}`;
+      renderSpecialDieFace(perfect25Die,designKey,null);perfect25Die.disabled=false;perfect25Result.textContent="D6 würfeln";perfect25Modal.classList.remove("hidden");
+    }else if(state.turn.phase==="perfect25_d4"){
+      perfect25D4Die.disabled=false;perfect25D4Result.textContent="D4 würfeln";perfect25D4Modal.classList.remove("hidden");
+    }else if(state.turn.phase==="high_stakes"){
+      const designKey=players[current]?.diceDesign||"classic";highStakesDie.className=`special-big-die ${DICE_DESIGNS[designKey]?.className||"theme-classic"}`;
+      renderSpecialDieFace(highStakesDie,designKey,null);highStakesDie.disabled=false;highStakesSkip.disabled=false;
+      highStakesSub.textContent=`Aktueller Schaden: ${state.special.highStakes.rawDamage}. Du kannst ihn sicher nehmen oder jetzt gamblen.`;highStakesModal.classList.remove("hidden");scheduleBotAction(120);
+    }else if(state.turn.phase==="insurance"){
+      insuranceRolling=false;insuranceDie.disabled=false;insuranceResult.textContent="D6 würfeln";insuranceModal.classList.remove("hidden");
+    }else if(state.turn.phase==="counterattack"&&counterContext){
+      counterTitle.textContent=`${players[counterContext.defenderIndex].name} schlägt zurück!`;counterRollBtn.disabled=false;
+      counterResult.textContent=`${counterHits}/5 Treffer`;counterModal.classList.remove("hidden");renderCounterDice();scheduleBotAction(80);
+    }else if(state.turn.phase==="draft_pending") showLocalEngineDraft();
+  }
+  function finishLocalEngineResult(result){
+    engineApplySideEffects(result);mirrorLocalEngineState(result.state);presentLocalEngineState();renderAll();
+    if(result.state.round.result){
+      if(!roundWinnerHandled&&roundWinnerIndex!=null) players[roundWinnerIndex].wins=Math.max(0,players[roundWinnerIndex].wins-1);
+      checkWinner();
+    }
+    const ended=result.events.find(event=>event.type==="TurnEnded");
+    if(ended&&!result.state.round.result&&["attack_complete","counterattack_complete"].includes(ended.reason)) advanceTurn();
+    else if(ended&&["base_self_damage","exact_25","perfect25_denied"].includes(ended.reason))
+      setTimeout(()=>{if(localEngineActive()&&phase==="turn_done")advanceTurn();},220);
+    return true;
+  }
+  function animateLocalEngineDice(result,event){
+    isAnimating=true;
+    event.indices.forEach((index,offset)=>{dice[index].value=event.values[offset];dice[index].rolling=true;});renderAll();
+    setTimeout(()=>{event.indices.forEach(index=>{if(dice[index])dice[index].rolling=false;});isAnimating=false;finishLocalEngineResult(result);},ROLL_ANIM_MS);
+    return true;
+  }
+  function animateLocalEngineCounter(result,event){
+    counterRolling=true;
+    event.indices.forEach((index,offset)=>{counterDiceState[index].value=event.values[offset];counterDiceState[index].rolling=true;});renderCounterDice();
+    setTimeout(()=>{counterRolling=false;finishLocalEngineResult(result);},ROLL_ANIM_MS);return true;
+  }
+  function animateLocalEngineSpecial(result,event){
+    const configs={gambling:[gamblingDie,gamblingResult,"gamblingRolling"],gambling_retry:[gamblingDie,gamblingResult,"gamblingRolling"],
+      perfect25_permit:[perfect25Die,perfect25Result,"perfect25Rolling"],perfect25_attack:[perfect25D4Die,perfect25D4Result,"perfect25D4Rolling"],
+      high_stakes:[highStakesDie,highStakesResult,"highStakesRolling"],insurance:[insuranceDie,insuranceResult,"insuranceRolling"]};
+    const config=configs[event.kind];if(!config) return finishLocalEngineResult(result);
+    if(config[2]==="gamblingRolling")gamblingRolling=true;else if(config[2]==="perfect25Rolling")perfect25Rolling=true;
+    else if(config[2]==="perfect25D4Rolling")perfect25D4Rolling=true;else if(config[2]==="highStakesRolling")highStakesRolling=true;else insuranceRolling=true;
+    config[0].classList.add("rolling");config[0].disabled=true;config[1].textContent="...";
+    setTimeout(()=>{config[0].classList.remove("rolling");renderSpecialDieFace(config[0],players[current]?.diceDesign||"classic",event.value);
+      config[1].textContent=`${event.sides===4?"D4":"D6"} = ${event.value}`;
+      setTimeout(()=>{gamblingRolling=false;perfect25Rolling=false;perfect25D4Rolling=false;highStakesRolling=false;insuranceRolling=false;finishLocalEngineResult(result);},260);
+    },560);return true;
+  }
+  function runLocalEngineMove(name,args=[]){
+    if(!localEngineActive()) return false;
+    const result=window.WDEngineAdapter.dispatchLiveMove(name,args,localEngineSnapshot(),window.WDRng.random);
+    const counterRoll=result.events.find(event=>event.type==="AttackRolled"&&event.kind==="counterattack");
+    if(counterRoll) return animateLocalEngineCounter(result,counterRoll);
+    const special=result.events.find(event=>event.type==="SpecialDieRolled")||
+      result.events.find(event=>event.type==="DiceRolled"&&event.kind==="insurance");
+    if(special){if(special.kind==="insurance")special.sides=6,special.value=special.values[0];return animateLocalEngineSpecial(result,special);}
+    const roll=result.events.find(event=>event.type==="DiceRolled"||event.type==="AttackRolled");
+    if(roll) return animateLocalEngineDice(result,roll);
+    return finishLocalEngineResult(result);
+  }
+
   function isStraightFive(values){
     if(!Array.isArray(values)||values.length!==5) return false;
     return [...values].map(Number).sort((a,b)=>a-b).every((v,i)=>v===i+1);
@@ -62,6 +365,7 @@
   }
 
   function rollBase(){
+    if(localEngineActive()) return runLocalEngineMove("rollBase");
     const indices=[];
     dice.forEach((d,i)=>{if(!d.locked){d.selected=false;indices.push(i);}});
     lastBaseRollIndices=[...indices];
@@ -82,6 +386,7 @@
   }
 
   function useBaseReroll(){
+    if(localEngineActive()) return runLocalEngineMove("useBaseReroll");
     if(!hasAbility(3)||isAnimating) return;
     const masteryL1=hasMasteryUpgrade(3,1,current);
     const masteryL2=hasMasteryUpgrade(3,2,current);
@@ -116,6 +421,7 @@
 
 
   function useLoadedDice(){
+    if(localEngineActive()) return runLocalEngineMove("useLoadedDice");
     const loadedMax=hasMasteryUpgrade(18,1,current)?2:1;
     const nextLoadedBaseCost=(hasMasteryUpgrade(18,2,current)&&loadedDiceUses===1)?1:2;
     if(!hasAbility(18) || loadedDiceUses>=loadedMax || isAnimating || phase!=="base_select" || players[current].hp<=encounterVoluntaryCost(nextLoadedBaseCost)) return;
@@ -159,6 +465,7 @@
   }
 
   function useSnakeEyes(){
+    if(localEngineActive()) return runLocalEngineMove("useSnakeEyes");
     const attackUse=phase==="attack_after_roll"&&hasMasteryUpgrade(20,1,current);
     if(!hasAbility(20) || isAnimating || (phase!=="base_select"&&!attackUse)) return;
 
@@ -194,6 +501,7 @@
   }
 
   function lockSelected(){
+    if(localEngineActive()) return runLocalEngineMove("lockSelected");
     if(isAnimating) return;
     const selected=dice.filter(d=>d.selected&&!d.locked);
     if(!selected.length) return;
@@ -321,6 +629,7 @@
   }
 
   function openAbilityDraftForSlot(index,slot,label,reasonText=""){
+    if(localEngineActive()){showLocalEngineDraft();return;}
     const p=players[index];
     if(!p || p.hp<=0 || ![2,3,4].includes(slot)) return;
     if(slot===2 && p.secondAbility!=null) return;
@@ -401,6 +710,7 @@
   }
 
   function chooseSecondAbility(id){
+    if(localEngineActive()) return runLocalEngineMove("chooseSecondAbility",[id]);
     const index=secondAbilityDraftIndex;
     const p=players[index];
     if(!p || !REAL_ABILITY_IDS.includes(id)) return;
@@ -567,6 +877,7 @@
 
 
   function beginAttackWithFace(face,total,source="normal"){
+    if(localEngineActive()){presentLocalEngineState();renderAll();return;}
     attackFace=face;
     const targets=campaignEnemyTargets(current);
     if(campaignMode && players[current]?.campaignTeam==="hero" && !isBotPlayer(current) && targets.length>1){
@@ -632,6 +943,7 @@
   }
 
   function openGamblingMan(total){
+    if(localEngineActive()){presentLocalEngineState();renderAll();return;}
     gamblingBaseTotal=total;
     gamblingRolling=false;
     phase="gamble_attack";
@@ -649,6 +961,7 @@
   }
 
   function rollGamblingMan(){
+    if(localEngineActive()) return runLocalEngineMove("rollGamblingMan");
     if(gamblingRolling || (phase!=="gamble_attack"&&phase!=="gamble_retry")) return;
     const retryRoll=phase==="gamble_retry";
     gamblingRolling=true;
@@ -691,14 +1004,17 @@
     gamblingRetryActions?.classList.remove("hidden");gamblingModal.classList.remove("hidden");renderAll();return true;
   }
   function startGamblingRetry(){
+    if(localEngineActive()) return runLocalEngineMove("startGamblingRetry");
     if(phase!=="gamble_retry_offer"||!gamblingRetryPending)return;
     phase="gamble_retry";gamblingDie.disabled=false;gamblingResult.textContent="Tippe den D6 für deine neue Angriffszahl";gamblingRetryActions?.classList.add("hidden");
   }
   function declineGamblingRetry(){
+    if(localEngineActive()) return runLocalEngineMove("declineGamblingRetry");
     if(phase!=="gamble_retry_offer")return;gamblingRetryPending=false;gamblingRetryUsed=true;gamblingRetryActions?.classList.add("hidden");gamblingModal.classList.add("hidden");endTurn();
   }
 
   function openPerfect25(total){
+    if(localEngineActive()){presentLocalEngineState();renderAll();return;}
     markCampaignAbilityUse(current,15);
     phase="perfect25";
     perfect25BaseTotal=total;
@@ -722,6 +1038,7 @@
   }
 
   function rollPerfect25(){
+    if(localEngineActive()) return runLocalEngineMove("rollPerfect25");
     if(perfect25Rolling || phase!=="perfect25") return;
     perfect25Rolling=true;
     perfect25Die.disabled=true;
@@ -783,6 +1100,7 @@
   }
 
   function rollPerfect25D4(){
+    if(localEngineActive()) return runLocalEngineMove("rollPerfect25D4");
     if(perfect25D4Rolling || phase!=="perfect25_d4") return;
     perfect25D4Rolling=true;
     perfect25D4Die.disabled=true;
@@ -815,6 +1133,7 @@
   }
 
   function openHighStakes(){
+    if(localEngineActive()){presentLocalEngineState();renderAll();return;}
     highStakesRolling=false;
     highStakesDecisionThisAttack=true;
     const base=totalAttackDamage();
@@ -830,12 +1149,14 @@
   }
 
   function skipHighStakes(){
+    if(localEngineActive()) return runLocalEngineMove("skipHighStakes");
     if(highStakesRolling) return;
     highStakesModal.classList.add("hidden");
     finalizeAttackDamage();
   }
 
   function rollHighStakes(){
+    if(localEngineActive()) return runLocalEngineMove("rollHighStakes");
     if(highStakesRolling) return;
     markCampaignAbilityUse(current,13);
     highStakesRolling=true;
@@ -955,6 +1276,7 @@
   }
 
   function rollInsurance(){
+    if(localEngineActive()) return runLocalEngineMove("rollInsurance");
     if(insuranceRolling || phase!=="insurance" || !insuranceContext) return;
     insuranceRolling=true;
     insuranceDie.disabled=true;
@@ -1061,6 +1383,7 @@
   }
 
   function useBloodPrice(){
+    if(localEngineActive()) return runLocalEngineMove("useBloodPrice");
     if(!hasAbility(11) || isAnimating || bloodPriceNeighbors.length) return;
     const postRoll=phase==="attack_after_roll"&&hasMasteryUpgrade(11,2,current)&&!bloodPriceWasPreActivatedThisRoll;
     const preRoll=phase==="attack_ready"||phase==="attack_continue";
@@ -1107,6 +1430,7 @@
   }
 
   function useBloodRushSelfHarm(){
+    if(localEngineActive()) return runLocalEngineMove("useBloodRushSelfHarm");
     if(isAnimating||phase!=="attack_after_roll"||!hasAbility(23)||!hasMasteryUpgrade(23,2,current)||bloodRushActiveThisAttack)return;
     const cost=encounterVoluntaryCost(1);
     if(players[current].hp<=cost)return;
@@ -1122,6 +1446,7 @@
   }
 
   function rollAttack(){
+    if(localEngineActive()) return runLocalEngineMove("rollAttack");
     if(isAnimating) return;
     const indices=[];
     dice.forEach((d,i)=>{if(!d.locked)indices.push(i);});
@@ -1189,6 +1514,7 @@
   }
 
   function useAttackPower(){
+    if(localEngineActive()) return runLocalEngineMove("useAttackPower");
     const maxUses=hasMasteryUpgrade(4,1,current)?2:1;
     if(!hasAbility(4)||attackPowerUses>=maxUses||phase!=="attack_after_roll"||isAnimating) return;
     const indices=[];
@@ -1224,6 +1550,7 @@
   }
 
   function continueDoubleTapAttack(){
+    if(localEngineActive()) return runLocalEngineMove("continueDoubleTapAttack");
     if(isAnimating||phase!=="attack_after_roll") return;
     if(!(hasAbility(24)&&attackHits===2&&currentAttackRollNewHits>0)) return;
 
@@ -1236,6 +1563,7 @@
   }
 
   function resolveCurrentAttackRoll(){
+    if(localEngineActive()) return runLocalEngineMove("resolveCurrentAttackRoll");
     if(isAnimating||phase!=="attack_after_roll") return;
 
     // Double Tap QoL: Bei exakt 2 Treffern darf der Spieler den Angriff bewusst
@@ -1308,6 +1636,7 @@
   }
 
   function dealAttackDamage(){
+    if(localEngineActive()){presentLocalEngineState();renderAll();return;}
     if(attackHits===5) unlockAchievementForPlayer(current,"grande");
 
     if(hasAbility(24) && !doubleTapApplied){
@@ -1400,6 +1729,7 @@
   }
 
   function openCounterattack(defenderIndex,attackerIndex,restoreHp=null,incomingDamage=0,lastStandTriggered=false){
+    if(localEngineActive()){presentLocalEngineState();renderAll();return;}
     const defender=players[defenderIndex];
     const attacker=players[attackerIndex];
 
@@ -1559,6 +1889,7 @@
   }
 
   function rollCounterattack(){
+    if(localEngineActive()) return runLocalEngineMove("rollCounterattack");
     if(counterRolling || phase!=="counterattack" || !counterContext) return;
 
     const defenderIndex=counterContext.defenderIndex;
@@ -1639,6 +1970,7 @@
   }
 
   function finalizeAttackDamage(){
+    if(localEngineActive()){presentLocalEngineState();renderAll();return;}
     let rawDamage=totalAttackDamage();
     rawDamage=Math.max(0,rawDamage+campaignOutgoingDamageModifier(current,rawDamage));
     recordCampaignAttackResult(current,attackHits);
@@ -1796,6 +2128,9 @@
   }
 
   function finishBaseTurn(delay=500){
+    if(localEngineActive()){
+      renderAll();setTimeout(()=>{if(localEngineActive()&&phase==="turn_done")advanceTurn();},delay);return;
+    }
     if(checkWinner()){
       renderPlayers();
       flushPendingFx();
@@ -1815,6 +2150,7 @@
   }
 
   function endTurn(){
+    if(localEngineActive()){renderAll();return;}
     if(checkWinner()){
       renderPlayers();flushPendingFx();return;
     }
@@ -1830,6 +2166,7 @@
   }
 
   function advanceTurn(){
+    if(localEngineActive()){clearBotAutomation();return runLocalEngineMove("advanceTurn");}
     clearBotAutomation();
     const n=nextAlive(current);
     if(n===-1){checkWinner();return;}
@@ -1867,6 +2204,7 @@
   }
 
   function checkWinner(){
+    if(localEngineActive()&&!window.WDEngineAdapter.getLiveState()?.round?.result) return false;
     if(campaignMode) return checkCampaignWinner();
     const aliveIndices=players.map((p,i)=>p.hp>0?i:null).filter(i=>i!=null);
     if(aliveIndices.length===1){

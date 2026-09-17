@@ -26,7 +26,8 @@ Release auf `main`; anschließend Bericht und **Warten auf „Weiter“**:
 | 3 | Angriff, nur Engine und Node-Tests | V28.14.6 |
 | 4 | Spezialwürfel, Drafts und Rundenwechsel, nur Engine und Node-Tests | V28.14.10 |
 | 5a | Browserübersetzer im Schatten und Bot-Paritätsprüfstand | V28.14.16 |
-| 5b | Lokale Duelle produktiv auf den Reducer umschalten | offen; eigener Auftrag nach grüner Parität |
+| 5b-1 | Lokales Classic-1:1-Duell produktiv auf den Reducer umschalten | V28.14.19 |
+| 5b-2 | Weitere lokale Duelle produktiv auf den Reducer umschalten | offen; eigener Auftrag nach Freigabe |
 | 6 | Deno-Parität und Online-Schatten | offen; kein Deployment |
 
 Die bestehende Browseroberfläche behält ihre bisherigen Spielergrenzen und
@@ -248,8 +249,9 @@ um volle Spekulation zu ermöglichen, wird ausdrücklich nicht empfohlen.
 ## Browsergrenze und spätere Abnahme
 
 Kampagne, Encounter, Weltregeln, Boss Rush, Tutorial und Testumgebung bleiben
-im Browser. Lokale Duelle wechseln erst in Schritt 5b, der Online-Host in einem
-späteren Schritt auf den gemeinsamen Reducer. Profilpersistenz, Statistik, Freischaltungen,
+im Browser. Seit Schritt 5b-1 berechnet der gemeinsame Reducer ausschließlich
+neu gestartete lokale Classic-1:1-Duelle; weitere lokale Varianten und der
+Online-Host folgen in eigenen Schritten. Profilpersistenz, Statistik, Freischaltungen,
 Texte, Audio, Animationen und Botplanung bleiben außerhalb der Engine.
 Der Engine-State enthält keine Profilobjekte oder Profil-Mastery.
 
@@ -284,6 +286,32 @@ Eyes einschließlich durch Glückswurf ergänzter gleicher Augen, Momentum und
 Blood Rush erst ab Erwerb, keine Fähigkeitswahl nach Rundenende sowie die
 vollständige HP-Wiederherstellung durch Perfect Parry auch nach einem
 dazwischengeschalteten Fähigkeitsdraft. Schritt 5a schaltet kein Gameplay um.
+
+### Ergebnis Schritt 5b-1
+
+`ENGINE_LOKALES_DUELL` ist standardmäßig aktiv. Ausschließlich ein neu
+gestartetes lokales Classic-Duell mit genau zwei Spielern verwendet damit den
+Reducer als Regelquelle. Kampagne, Tutorial, Testumgebung, Online-Duelle und
+alle anderen lokalen Modi oder Spielerzahlen bleiben im bisherigen Browserpfad.
+Mit `false` steht für Diagnose und Paritätsprüfung weiterhin der alte Pfad bereit.
+
+Der Browseradapter hält einen flüchtigen Reducer-State, übersetzt die bestehenden
+UI-Aktionen und spiegelt HP, Fähigkeiten, Ausscheiden, Sieger, Rundenwerte und
+Phasen zurück in die vorhandenen Browservariablen. Darstellung, Texte, Audio,
+Animationen, Profilpersistenz, Statistiken, Duellmarken und Achievements bleiben
+Browseraufgaben. Rundenende, Vorbereitung, Start und Fähigkeitswahl laufen für
+diesen Gate ebenfalls über Reducer-Aktionen; nach einem Runden-Kill entsteht
+kein Draft und keine gewählte Fähigkeit wird in die nächste Runde übernommen.
+
+`scripts/qa/engine-umschaltung.mjs` spielt bei identischem Seed den alten und
+neuen Pfad gegeneinander: 20 vollständige Classic-1:1-Duelle im normalen Check,
+300 im Vollumfang. Verglichen werden HP, Fähigkeiten, Ausscheiden, Sieger,
+Rundenstatistiken, Profile, Siege, Duellmarken und Achievements. Zusätzlich
+prüft der Prüfstand echte UI-Klicks für Wurf, Lock, Angriff, Spezialwürfel,
+Counterattack, Draft und Rundenwechsel in Deutsch und Englisch bei 320, 360,
+390, 412 und 1280 Pixeln – ohne Seitenfehler, 404, horizontalen Überlauf oder
+Zustandsänderung im Leerlauf. Der ältere Paritätsprüfstand erzwingt ausdrücklich
+`ENGINE_LOKALES_DUELL=false` und bleibt damit ein unabhängiger Altpfadvergleich.
 
 Phase 2 zuerst gegen aufgezeichnete Altpartien vergleichen. Im echten
 Schattenbetrieb bleibt der Host autoritativ; Serverantworten ändern kein Gameplay.

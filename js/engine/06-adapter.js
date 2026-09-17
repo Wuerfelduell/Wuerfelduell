@@ -117,7 +117,40 @@
     return {state:current,events,actions:applied,drawIndex,remaining:draws.length-drawIndex};
   }
 
-  let shadow=null,hooked=false,originals=new Map();
+  let shadow=null,live=null,hooked=false,originals=new Map();
+
+  function startLive(setup){
+    live={setup:copy(setup),state:engine.createState(copy(setup))};
+    return getLiveState();
+  }
+  function stopLive(){const state=getLiveState();live=null;return state;}
+  function hasLive(){return !!live;}
+  function getLiveState(){return live?copy(live.state):null;}
+  function dispatchLiveAction(action,random=root.WDRng?.random){
+    if(!live) throw new Error('live_engine_not_started');
+    const before=copy(live.state),result=engine.reduce(live.state,copy(action),random);
+    if(result.rejected) throw new Error('live_action_rejected:'+result.reason);
+    live.state=result.state;
+    return {before,state:copy(live.state),events:copy(result.events),actions:[copy(action)]};
+  }
+  function dispatchLiveMove(name,args,browserState,random=root.WDRng?.random){
+    if(!live) throw new Error('live_engine_not_started');
+    const before=copy(live.state),move={name,args:copy(args||[])},actions=browserMoveToActions(move,live.state,browserState);
+    let events=[];
+    for(const action of actions){
+      const result=engine.reduce(live.state,action,random);
+      if(result.rejected) throw new Error('live_action_rejected:'+result.reason);
+      live.state=result.state;events.push(...result.events);
+    }
+    if(live.state.turn.phase==='attack_target'){
+      const targetSeat=engine.baseRules.nextAliveSeat(live.state,live.state.turn.currentSeat);
+      const action={type:A.CHOOSE_ATTACK_TARGET,seat:decisionSeat(live.state),targetSeat};
+      const result=engine.reduce(live.state,action,random);
+      if(result.rejected) throw new Error('live_target_rejected:'+result.reason);
+      live.state=result.state;actions.push(action);events.push(...result.events);
+    }
+    return {before,state:copy(live.state),events:copy(events),actions:copy(actions)};
+  }
   function finalizeShadow(){
     if(!shadow?.pending) return null;
     root.WDRng.endAction();
@@ -177,5 +210,5 @@
 
   root.WDEngineAdapter=Object.freeze({moveTypes,browserMoveToActions,reducerEventToBrowserCalls,
     normalizeBrowserState,normalizeEngineState,differences,startShadow,flush:finalizeShadow,
-    getShadow,stopShadow,replay});
+    getShadow,stopShadow,replay,startLive,stopLive,hasLive,getLiveState,dispatchLiveAction,dispatchLiveMove});
 })(globalThis);
