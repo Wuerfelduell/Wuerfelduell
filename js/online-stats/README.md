@@ -133,8 +133,10 @@ ebenfalls in npm run check: feste RPC-Antworten, Filter, Quoten, Cache und
 Zustände; 320/360/390/412/1280 px jeweils DE/EN, ohne JS-Fehler, 404, Überlauf
 oder Leerlaufmutationen. Chromium: /opt/pw-browsers/chromium, falls vorhanden,
 sonst Playwright-Installation; WD_CHROMIUM kann den Pfad überschreiben.
-Offen bleibt der Spieltest durch den Nutzer mit zwei real angemeldeten Geräten;
-die isolierten Tests ersetzen weder Auth-Netzwerk noch Browser-Speicherquoten.
+Der Spieltest mit zwei real angemeldeten Geräten wurde am 17.09.2026 vom
+Nutzer durchgeführt und bestätigt: mit angemeldetem Konto zählt jeder
+abgeschlossene Kampf. Die isolierten Tests ersetzen trotzdem weder
+Auth-Netzwerk noch Browser-Speicherquoten.
 First Blood: Gegner ohne Fähigkeit erzeugen keine Fähigkeitszeile, der Heldeneinsatz zählt.
 
 Advisor: Private Tabellen haben absichtlich keine Client-Policies (deny all).

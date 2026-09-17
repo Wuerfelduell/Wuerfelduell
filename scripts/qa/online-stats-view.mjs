@@ -14,7 +14,9 @@ const server=createServer((req,res)=>{try{
 await new Promise(r=>server.listen(0,'127.0.0.1',r));
 const executablePath=process.env.WD_CHROMIUM||(fs.existsSync('/opt/pw-browsers/chromium')?'/opt/pw-browsers/chromium':undefined);
 let browser;
-const base={source:'local',mode_id:'classic',game_version:'28.12.1',player_count:2,has_bots:false,is_bot:false,ability_level:0,acquired:'start',win_rate:100};
+// Balanceversion aus version.json: der Standardfilter zeigt nur major.minor der laufenden Version.
+const BALANCE=JSON.parse(fs.readFileSync(new URL('../../version.json',import.meta.url),'utf8')).version.split('.').slice(0,2).join('.')+'.1';
+const base={source:'local',mode_id:'classic',game_version:BALANCE,player_count:2,has_bots:false,is_bot:false,ability_level:0,acquired:'start',win_rate:100};
 const rows=[
   {...base,ability_id:1,uses:10,wins:10},
   {...base,ability_id:1,ability_level:1,uses:90,wins:0},

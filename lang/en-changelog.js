@@ -5,6 +5,8 @@
   if (!pack) return;
 
   Object.assign(pack.exact, {
+    "Meilenstein: Shop mit Duellmarken, vier Kisten und 31 Artwork-Würfeln, die Kistenöffnung mit gemalten Kisten und Karten je Seltenheit, und die globale Fähigkeitsstatistik sind vollständig": "Milestone: the shop with Duel Tokens, four chests and 31 artwork dice, the chest opening with painted chests and cards per rarity, and the global ability statistics are complete",
+    "Die Online-Statistik ist mit zwei angemeldeten Geräten im Spiel bestätigt: sobald ein Konto angemeldet ist, zählt jeder abgeschlossene Kampf": "The online statistics are confirmed in play with two signed-in devices: once an account is signed in, every finished battle counts",
     "Die globale Winrate steht in ganzen Prozent wie in der lokalen Tabelle": "The global win rate is shown in whole percent, like the local table",
     "Die Spaltenköpfe der globalen Tabelle laufen nicht mehr ineinander, und die Filter stehen in einem gleichmäßigen Raster": "The column headers of the global table no longer run into each other, and the filters sit in an even grid",
     "Globale Fähigkeitsstatistik mit Filtern, gewichteten Siegquoten und Level-Aufteilung für alle sichtbar":"Global ability statistics with filters, weighted win rates and level breakdowns are visible to everyone",
