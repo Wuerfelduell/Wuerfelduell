@@ -123,7 +123,7 @@ function firstFailure(replay){
 }
 
 try{
-  browser=await chromium.launch({executablePath:process.env.WD_CHROMIUM||undefined,args:['--no-sandbox']});
+  browser=await chromium.launch({executablePath:process.env.WD_CHROMIUM||(fs.existsSync('/opt/pw-browsers/chromium')?'/opt/pw-browsers/chromium':undefined),args:['--no-sandbox']});
   await openPage();
   for(const [modeId,playerCount,count] of plan){
     if(onlyMode&&modeId!==onlyMode||onlyPlayers&&playerCount!==onlyPlayers) continue;
