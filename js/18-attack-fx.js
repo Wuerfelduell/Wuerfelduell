@@ -1,3 +1,102 @@
+/* Sternenschmiede und Himmelsrochen (Sprite-Lieferung 18.09.): gemeinsamer Renderer
+   fuer Kampf, Labor und Shop-Vorschau. Zeichnet auf den uebergebenen Kontext in der
+   Geometrie der Lieferung (Start 207/330, Abstand 788) und wird vom Aufrufer auf die
+   echte Strecke gedreht und skaliert. Kein Spielzustand, keine DOM-Aenderung. */
+(function(){
+  "use strict";
+  const ids=new Set(["sternenschmiede","himmelsrochen"]);
+  const root="assets/ui/v28/png/fx/";
+  const paths={
+    forgeCore:"sternenschmiede/core.webp",forgeVanes:"sternenschmiede/vanes.webp",forgeKill:"sternenschmiede/kill.webp",
+    rayBody:"himmelsrochen/body.webp",rayWing:"himmelsrochen/wing.webp",rayTail:"himmelsrochen/tail.webp",rayKill:"himmelsrochen/kill.webp"
+  };
+  const images={};
+  const ready=Promise.all(Object.entries(paths).map(([name,path])=>new Promise(resolve=>{
+    const image=new Image();image.decoding="async";images[name]=image;
+    image.onload=()=>resolve(true);image.onerror=()=>resolve(false);
+    image.src=`${root}${path}?v=${ASSET_REV}`;
+  })));
+  const clamp=(v,a=0,b=1)=>Math.max(a,Math.min(b,v));
+  const smooth=v=>{v=clamp(v);return v*v*(3-2*v)};
+  const easeOut=v=>1-Math.pow(1-clamp(v),3);
+  const lerp=(a,b,t)=>a+(b-a)*t;
+  const bezier=(p0,p1,p2,p3,t)=>{const u=1-t;return{x:u*u*u*p0.x+3*u*u*t*p1.x+3*u*t*t*p2.x+t*t*t*p3.x,y:u*u*u*p0.y+3*u*u*t*p1.y+3*u*t*t*p2.y+t*t*t*p3.y}};
+  function rectangle(index){
+    if(index==null||!Number.isInteger(Number(index)))return null;
+    const r=document.getElementById(`playerCard${Number(index)}`)?.getBoundingClientRect();
+    return r?{left:r.left,top:r.top,width:r.width,height:r.height}:null;
+  }
+  function geometry(fx){
+    const dx=fx.to.x-fx.from.x,dy=fx.to.y-fx.from.y,distance=Math.max(1,Math.hypot(dx,dy));
+    const angle=Math.atan2(dy,dx),scale=clamp(distance/788,.45,1),r=fx.toRect;
+    let edge=0;
+    if(r&&r.width>0&&r.height>0){const c=Math.abs(Math.cos(angle)),s=Math.abs(Math.sin(angle));edge=Math.min(c>1e-8?r.width/2/c:Infinity,s>1e-8?r.height/2/s:Infinity)}
+    return{distance,angle,scale,contactPoint:{x:207+(distance-edge)/scale,y:330},endPoint:{x:207+distance/scale,y:330}};
+  }
+  function sprite(ctx,name,x,y,w,angle=0,alpha=1,flipX=false,flipY=false,anchorX=.5,anchorY=.5){
+    if(alpha<=0)return;const im=images[name],h=w*im.height/im.width;ctx.save();ctx.globalAlpha=clamp(alpha);ctx.translate(x,y);ctx.rotate(angle);ctx.scale(flipX?-1:1,flipY?-1:1);ctx.drawImage(im,-w*anchorX,-h*anchorY,w,h);ctx.restore();
+  }
+  function vane(ctx,index,x,y,w,angle=0,alpha=1){
+    if(alpha<=0)return;const im=images.forgeVanes,sw=im.width/3,sh=im.height,h=w*(sh/sw);ctx.save();ctx.globalAlpha=clamp(alpha);ctx.translate(x,y);ctx.rotate(angle);ctx.drawImage(im,index*sw,0,sw,sh,-w/2,-h/2,w,h);ctx.restore();
+  }
+  function glow(ctx,x,y,r,color,alpha){
+    if(alpha<=0)return;ctx.save();ctx.globalAlpha=clamp(alpha);const g=ctx.createRadialGradient(x,y,0,x,y,r);g.addColorStop(0,color);g.addColorStop(.35,color+"88");g.addColorStop(1,"transparent");ctx.fillStyle=g;ctx.fillRect(x-r,y-r,r*2,r*2);ctx.restore();
+  }
+  function trail(ctx,points,color,width,alpha){
+    if(points.length<2)return;ctx.save();ctx.lineCap="round";for(let k=0;k<3;k++){ctx.beginPath();points.forEach((p,i)=>i?ctx.lineTo(p.x,p.y):ctx.moveTo(p.x,p.y));ctx.globalAlpha=alpha*(.18+k*.12);ctx.strokeStyle=color;ctx.lineWidth=width*(1-k*.28);ctx.stroke()}ctx.restore();
+  }
+  function starScar(ctx,x,y,p,alpha){
+    ctx.save();ctx.translate(x,y);ctx.globalAlpha=alpha;ctx.shadowColor="#71e8ff";ctx.shadowBlur=18;ctx.strokeStyle="#f4d18a";ctx.fillStyle="#6ee6ff22";ctx.lineJoin="round";ctx.lineWidth=4;ctx.beginPath();for(let i=0;i<16;i++){const a=-Math.PI/2+i*Math.PI/8,r=(i%2?24:55)*p;ctx.lineTo(Math.cos(a)*r,Math.sin(a)*r)}ctx.closePath();ctx.fill();ctx.stroke();ctx.restore();
+  }
+  function forge(ctx,t,end){
+    const start={x:207,y:330};let pos=start,alpha=0,w=138,rot=0,orbit=0,spread=1;
+    if(t<.36){const q=easeOut(t/.36);alpha=smooth((t-.05)/.14);w=138*(.35+.65*q);rot=(1-q)*-1.1;orbit=(1-q)*2.6;glow(ctx,start.x,start.y,105,"#54dbff",q*.34)}
+    else if(t<1.14){const q=(t-.36)/.78;pos=bezier(start,{x:lerp(start.x,end.x,.28),y:230},{x:lerp(start.x,end.x,.72),y:405},end,q);alpha=1;w=138+7*Math.sin(q*Math.PI);rot=-.1+.18*Math.sin(q*Math.PI*2);orbit=t*13.4;const points=[];for(let s=0;s<13;s++){const u=clamp(q-s*.018);points.push(bezier(start,{x:lerp(start.x,end.x,.28),y:230},{x:lerp(start.x,end.x,.72),y:405},end,u))}trail(ctx,points,"#50dff4",18,.52)}
+    else{pos=end;alpha=1-smooth((t-1.68)/.22);w=142;rot=(t-1.14)*.65;orbit=t*16;spread=1+smooth((t-1.14)/.1)*.58-smooth((t-1.5)/.1)*.3;glow(ctx,end.x,end.y,150,"#55e8ff",.25*alpha)}
+    const summon=smooth(t/.25),fade=1-smooth((t-1.7)/.22);
+    for(let i=0;i<3;i++){const a=orbit+i*Math.PI*2/3,rad=56*spread+(t<.36?(1-summon)*150:0);vane(ctx,i,pos.x+Math.cos(a)*rad,pos.y+Math.sin(a)*rad*.55,98,rot+a+Math.PI/2,summon*fade)}
+    glow(ctx,pos.x,pos.y,80,"#42d9ff",.35*alpha);sprite(ctx,"forgeCore",pos.x,pos.y,w,rot,alpha);
+    if(t>1.25)starScar(ctx,end.x+12,end.y,easeOut((t-1.25)/.08),1-smooth((t-1.68)/.2));
+  }
+  function auroraCut(ctx,t,x,y){
+    const q=smooth((t-1.34)/.08),fade=1-smooth((t-1.74)/.2);if(q<=0||fade<=0)return;ctx.save();ctx.globalAlpha=fade;ctx.translate(x,y);ctx.rotate(-.28);const g=ctx.createLinearGradient(-110,0,110,0);g.addColorStop(0,"transparent");g.addColorStop(.3,"#6de8ff55");g.addColorStop(.55,"#f8f0c8cc");g.addColorStop(.8,"#9c6cf3aa");g.addColorStop(1,"transparent");ctx.fillStyle=g;ctx.beginPath();ctx.moveTo(-110*q,-8);ctx.bezierCurveTo(-30*q,-52,48*q,-42,110*q,-4);ctx.bezierCurveTo(46*q,16,-38*q,40,-110*q,8);ctx.closePath();ctx.fill();ctx.restore();
+  }
+  function ray(ctx,t,end){
+    const start={x:207,y:330};let pos=start,alpha=1,scale=1,angle=-.1,fold=0;
+    if(t<.3){const q=easeOut(t/.3);alpha=smooth(t/.18);scale=.34+.66*q;angle=-.7+.6*q;glow(ctx,start.x,start.y,105,"#63e9ff",q*.32)}
+    else if(t<1.12){const q=(t-.3)/.82;pos=bezier(start,{x:lerp(start.x,end.x,.28),y:180},{x:lerp(start.x,end.x,.72),y:425},end,q);angle=-.16+.24*Math.sin(q*Math.PI);const points=[];for(let s=0;s<13;s++){const u=clamp(q-s*.022);points.push(bezier(start,{x:lerp(start.x,end.x,.28),y:180},{x:lerp(start.x,end.x,.72),y:425},end,u))}trail(ctx,points,"#69dff1",20,.44);trail(ctx,points,"#a97af4",8,.28)}
+    else if(t<1.38){const q=smooth((t-1.12)/.26);pos={x:lerp(end.x,end.x+18,q),y:lerp(end.y,330,q)};fold=q;angle=lerp(.05,-.18,q);glow(ctx,pos.x,pos.y,130,"#73ecff",.32)}
+    else{pos={x:end.x+18,y:330};fold=1;angle=-.18;alpha=1-smooth((t-1.72)/.18);scale=1-.08*smooth((t-1.38)/.34);glow(ctx,pos.x,pos.y,155,"#8c72ef",.28*alpha)}
+    const flap=t>.3&&t<1.12?Math.sin((t-.3)*29)*.24:0,wingBase=lerp(.78,.11,fold),tailSwing=Math.sin(t*20-1.1)*.16*(1-fold);
+    sprite(ctx,"rayTail",pos.x-48*scale,pos.y+4*scale,150*scale,angle+tailSwing,alpha,true,false,.08,.5);
+    sprite(ctx,"rayWing",pos.x-34*scale,pos.y-8*scale,164*scale,angle-wingBase-flap,alpha,false,false,.08,.5);
+    sprite(ctx,"rayWing",pos.x-34*scale,pos.y+8*scale,164*scale,angle+wingBase+flap,alpha,false,true,.08,.5);
+    glow(ctx,pos.x+25,pos.y,68,"#52e4ff",.24*alpha);sprite(ctx,"rayBody",pos.x,pos.y,122*scale,angle,alpha,false,false,.54,.5);auroraCut(ctx,t,end.x+18,330);
+  }
+  function draw(ctx,fx,progress){
+    if(!ids.has(fx.style)||progress<0||progress>=1)return false;
+    if(Object.values(images).some(image=>!image.complete||!image.naturalWidth))return true;
+    const g=geometry(fx),t=progress*2;ctx.save();ctx.translate(fx.from.x,fx.from.y);ctx.rotate(g.angle);ctx.scale(g.scale,g.scale);ctx.translate(-207,-330);
+    if(fx.style==="sternenschmiede")forge(ctx,t,g.contactPoint);else ray(ctx,t,g.endPoint);
+    ctx.restore();return true;
+  }
+  function fractured(ctx,name,x,y,w,split,alpha){
+    const im=images[name],h=w*im.height/im.width;for(let i=0;i<8;i++){const a=i*Math.PI/4-Math.PI/8,dx=Math.cos(a)*split*78,dy=Math.sin(a)*split*68+split*split*22;ctx.save();ctx.globalAlpha=alpha*(1-split*.45);ctx.translate(x+dx,y+dy);ctx.rotate(a*split*.22+(i%2?1:-1)*split*.18);ctx.beginPath();ctx.moveTo(0,0);ctx.arc(0,0,w*.7,a-Math.PI/5,a+Math.PI/5);ctx.closePath();ctx.clip();ctx.drawImage(im,-w/2,-h/2,w,h);ctx.restore()}
+  }
+  function finish(ctx,fx,progress){
+    if(!ids.has(fx.style)||progress<0||progress>=1)return false;
+    if(Object.values(images).some(image=>!image.complete||!image.naturalWidth))return true;
+    const t=progress*2,scale=clamp(Math.min(fx.w,fx.h)/150,.6,1.25);ctx.save();ctx.translate(fx.x,fx.y);ctx.scale(scale,scale);
+    if(fx.style==="sternenschmiede"){
+      const appear=smooth(t/.24),split=smooth((t-.88)/.42),fade=1-smooth((t-1.65)/.25),w=218*(.48+.52*appear);glow(ctx,0,0,155,"#63e9ff",.35*appear*fade);if(split<.01)sprite(ctx,"forgeKill",0,0,w,-.05,appear*fade);else fractured(ctx,"forgeKill",0,0,w,split,fade);
+    }else{
+      const appear=smooth(t/.24),sweep=smooth((t-.78)/.48),fade=1-smooth((t-1.7)/.22),x=lerp(0,82,sweep),y=lerp(0,-98,sweep),w=245*(.42+.58*appear);glow(ctx,x,y,150,"#72eaff",.32*fade);sprite(ctx,"rayKill",x,y,w,-.2-sweep*.45,appear*fade);
+    }
+    ctx.restore();return true;
+  }
+  window.WDPaintedAttacks=Object.freeze({has:id=>ids.has(id),durationMs:2000,killDurationMs:2000,ready,draw,finish,rectangle,geometry});
+})();
+
 (function(){
   "use strict";
 
@@ -103,7 +202,8 @@
       dimensionbite:['#75e8ff','#b06cff'],
       runestrike:['#ffd45a','#4a8ff0'],
       koenigsfall:['#e9c16d','#bd943e'],
-      dornenrequiem:['#9160d3','#8ccedf']
+      dornenrequiem:['#9160d3','#8ccedf'],
+      sternenschmiede:['#f6d697','#63e9ff'],himmelsrochen:['#73e8f4','#b08aff']
     }[style]||['#ffffff','#77bfff'];
   }
   function easeOutCubic(t){return 1-Math.pow(1-t,3)}
@@ -1187,6 +1287,7 @@
   function drawLabFx(fx,now){
     const t=(now-fx.start)/fx.duration;
     if(t>=1) return false;
+    if(window.WDPaintedAttacks?.has(fx.style)) return window.WDPaintedAttacks.draw(ctx,fx,t);
     switch(fx.style){
       case 'lightning':drawLightning(fx,t);break;
       case 'flame':drawHellfire(fx,t);break;
@@ -1338,7 +1439,7 @@
       duration:{
         lightning:820,flame:1050,venom:1050,blood:820,jackpot:1150,
         void:1200,confetti:1150,frost:1000,rift:1100,crown:1250,soulbreak:1350,
-        solarsplash:1450,trigonbomb:1500,confettibomb:1550,polygon:1600,missile:1650,thunderstrike:1650,catattack:1750,quantumleap:1750,cometshower:1850,timefracture:1800,mirrorstorm:1900,dimensionbite:2050,runestrike:1900,koenigsfall:1250,dornenrequiem:1200
+        solarsplash:1450,trigonbomb:1500,confettibomb:1550,polygon:1600,missile:1650,thunderstrike:1650,catattack:1750,quantumleap:1750,cometshower:1850,timefracture:1800,mirrorstorm:1900,dimensionbite:2050,runestrike:1900,koenigsfall:1250,dornenrequiem:1200,sternenschmiede:2000,himmelsrochen:2000
       }[style]||900,
       seed:Math.random()*999,
       preview
@@ -1635,6 +1736,7 @@
   function drawKillFx(fx,now){
     const t=(now-fx.start)/fx.duration;
     if(t>=1) return false;
+    if(window.WDPaintedAttacks?.has(fx.style)) return window.WDPaintedAttacks.finish(ctx,fx,t);
     switch(fx.style){
       case 'lightning':killLightning(fx,t);break;
       case 'flame':killFlame(fx,t);break;
@@ -1684,7 +1786,8 @@
       kind:String(event.kind||event.variant||"laser"),
       amount:Number(event.amount)||0,
       face:event.face==null?null:Number(event.face),
-      from,to,start:performance.now(),duration:style==='soulbreak'?1200:style==='solarsplash'?1250:style==='trigonbomb'?1300:style==='confettibomb'?1350:style==='polygon'?1320:style==='missile'?1400:style==='thunderstrike'?1380:style==='catattack'?1450:style==='quantumleap'?1450:style==='cometshower'?1550:style==='timefracture'?1500:style==='mirrorstorm'?1580:style==='dimensionbite'?2050:style==='runestrike'?1750:style==='koenigsfall'?2000:style==='dornenrequiem'?2000:760,
+      from,to,toRect:event.toRect||window.WDPaintedAttacks?.rectangle(event.target)||null,
+      start:performance.now(),duration:window.WDPaintedAttacks?.has(style)?2000:style==='soulbreak'?1200:style==='solarsplash'?1250:style==='trigonbomb'?1300:style==='confettibomb'?1350:style==='polygon'?1320:style==='missile'?1400:style==='thunderstrike'?1380:style==='catattack'?1450:style==='quantumleap'?1450:style==='cometshower'?1550:style==='timefracture'?1500:style==='mirrorstorm'?1580:style==='dimensionbite'?2050:style==='runestrike'?1750:style==='koenigsfall'?2000:style==='dornenrequiem'?2000:760,
       seed:Math.random()*999
     };
   }
@@ -1726,8 +1829,8 @@
   /* Vorschau im Shop: Effekt zwischen zwei freien Punkten und Kill auf einem
      freien Rechteck, ohne Spielerkarten. Die Leinwand liegt im Kampf auf Ebene 1;
      ueber dem Shop-Fenster hebt der Aufrufer sie mit ebene() an und senkt sie danach. */
-  function spielenAn(style,from,to){
-    const fx=makeFxEvent({style:knownStyle(style),source:null,target:null,from,to,kind:"vorschau"});
+  function spielenAn(style,from,to,toRect=null){
+    const fx=makeFxEvent({style:knownStyle(style),source:null,target:null,from,to,toRect,kind:"vorschau"});
     if(!fx) return 0;
     activeLabFx.push(fx);
     return fx.duration;

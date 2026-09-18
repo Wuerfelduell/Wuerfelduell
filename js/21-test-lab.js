@@ -413,7 +413,8 @@
       dimensionbite:['#75e8ff','#b06cff'],
       runestrike:['#ffd45a','#4a8ff0'],
       koenigsfall:['#e9c16d','#bd943e'],
-      dornenrequiem:['#9160d3','#8ccedf']
+      dornenrequiem:['#9160d3','#8ccedf'],
+      sternenschmiede:['#f6d697','#63e9ff'],himmelsrochen:['#73e8f4','#b08aff']
     }[style]||['#ffffff','#77bfff'];
   }
 
@@ -424,8 +425,8 @@
     const style=String(players?.[Number(source)]?.attackFx||selectedLabFx()||'classic');
     const fx={
       id:`labfx-${Date.now()}-${Math.random()}`,
-      style,from,to,start:performance.now(),
-      duration:style==='lightning'?430:style==='blood'?480:style==='crown'?850:style==='soulbreak'?1200:style==='solarsplash'?1250:style==='trigonbomb'?1300:style==='confettibomb'?1350:style==='polygon'?1320:style==='missile'?1400:style==='thunderstrike'?1300:style==='catattack'?1350:style==='quantumleap'?1450:style==='cometshower'?1550:style==='timefracture'?1500:style==='mirrorstorm'?1580:style==='dimensionbite'?2050:style==='runestrike'?1750:style==='koenigsfall'?2000:style==='dornenrequiem'?2000:700,
+      style,from,to,toRect:window.WDPaintedAttacks?.rectangle(target)||null,start:performance.now(),
+      duration:window.WDPaintedAttacks?.has(style)?2000:style==='lightning'?430:style==='blood'?480:style==='crown'?850:style==='soulbreak'?1200:style==='solarsplash'?1250:style==='trigonbomb'?1300:style==='confettibomb'?1350:style==='polygon'?1320:style==='missile'?1400:style==='thunderstrike'?1300:style==='catattack'?1350:style==='quantumleap'?1450:style==='cometshower'?1550:style==='timefracture'?1500:style==='mirrorstorm'?1580:style==='dimensionbite'?2050:style==='runestrike'?1750:style==='koenigsfall'?2000:style==='dornenrequiem'?2000:700,
       seed:Math.random()*999
     };
     activeLabFx.push(fx);
@@ -445,7 +446,7 @@
         const from=cardCenter(event?.source),to=cardCenter(event?.target);
         if(!from||!to) return false;
         const style=String(event?.style||players?.[Number(event?.source)]?.attackFx||'classic');
-        activeLabFx.push({id:event?.id||`labplay-${Date.now()}`,style,from,to,start:performance.now(),duration:style==='soulbreak'?1200:style==='solarsplash'?1250:style==='trigonbomb'?1300:style==='confettibomb'?1350:style==='polygon'?1320:style==='missile'?1400:style==='thunderstrike'?1300:style==='catattack'?1350:style==='quantumleap'?1450:style==='cometshower'?1550:style==='timefracture'?1500:style==='mirrorstorm'?1580:style==='dimensionbite'?2050:style==='runestrike'?1750:style==='koenigsfall'?2000:style==='dornenrequiem'?2000:700,seed:Math.random()*999});
+        activeLabFx.push({id:event?.id||`labplay-${Date.now()}`,style,from,to,toRect:window.WDPaintedAttacks?.rectangle(event?.target)||null,start:performance.now(),duration:window.WDPaintedAttacks?.has(style)?2000:style==='soulbreak'?1200:style==='solarsplash'?1250:style==='trigonbomb'?1300:style==='confettibomb'?1350:style==='polygon'?1320:style==='missile'?1400:style==='thunderstrike'?1300:style==='catattack'?1350:style==='quantumleap'?1450:style==='cometshower'?1550:style==='timefracture'?1500:style==='mirrorstorm'?1580:style==='dimensionbite'?2050:style==='runestrike'?1750:style==='koenigsfall'?2000:style==='dornenrequiem'?2000:700,seed:Math.random()*999});
         return true;
       },
       // Kill-Finisher: im Labor der eigene Renderer, sonst der Kern. Ohne diese
@@ -456,7 +457,7 @@
         setTimeout(()=>playLabKillFx(source,target,String(stil),false),210);return true;
       },
       // Shop-Vorschau: freie Punkte und Ebene gehen immer an den Kern-Renderer.
-      spielenAn:(style,from,to)=>coreAttackFx.spielenAn?.(style,from,to)??0,
+      spielenAn:(style,from,to,toRect)=>coreAttackFx.spielenAn?.(style,from,to,toRect)??0,
       killAn:(style,rechteck)=>coreAttackFx.killAn?.(style,rechteck)??0,
       ebene:z=>coreAttackFx.ebene?.(z),
       getLastPlayedId:()=>coreAttackFx.getLastPlayedId?.(),
@@ -1545,6 +1546,7 @@
   function drawLabFx(fx,now){
     const t=(now-fx.start)/fx.duration;
     if(t>=1) return false;
+    if(window.WDPaintedAttacks?.has(fx.style)) return window.WDPaintedAttacks.draw(fxCtx,fx,t);
     switch(fx.style){
       case 'lightning':drawLightning(fx,t);break;
       case 'flame':drawHellfire(fx,t);break;
@@ -1695,7 +1697,7 @@
       start:performance.now(),
       duration:{
         lightning:820,flame:1050,venom:1050,blood:820,jackpot:1150,
-        void:1200,confetti:1150,frost:1000,rift:1100,crown:1250,soulbreak:1350,solarsplash:1450,trigonbomb:1500,confettibomb:1550,polygon:1600,missile:1650,thunderstrike:1650,catattack:1750,quantumleap:1750,cometshower:1850,timefracture:1800,mirrorstorm:1900,dimensionbite:2050,runestrike:1900,koenigsfall:1250,dornenrequiem:1200
+        void:1200,confetti:1150,frost:1000,rift:1100,crown:1250,soulbreak:1350,solarsplash:1450,trigonbomb:1500,confettibomb:1550,polygon:1600,missile:1650,thunderstrike:1650,catattack:1750,quantumleap:1750,cometshower:1850,timefracture:1800,mirrorstorm:1900,dimensionbite:2050,runestrike:1900,koenigsfall:1250,dornenrequiem:1200,sternenschmiede:2000,himmelsrochen:2000
       }[style]||900,
       seed:Math.random()*999,
       preview
@@ -1999,6 +2001,7 @@
   function drawKillFx(fx,now){
     const t=(now-fx.start)/fx.duration;
     if(t>=1) return false;
+    if(window.WDPaintedAttacks?.has(fx.style)) return window.WDPaintedAttacks.finish(fxCtx,fx,t);
     switch(fx.style){
       case 'lightning':killLightning(fx,t);break;
       case 'flame':killFlame(fx,t);break;

@@ -4,7 +4,7 @@
   function localModeRules(){return LOCAL_MODES[localModeId]||LOCAL_MODES.classic;}
   let ENGINE_LOKALES_DUELL=true;
 
-  const GAME_VERSION="28.14.21";
+  const GAME_VERSION="28.14.22";
   // Gemeinsamer Bild-Cache-Schluessel; identisch mit den Bild-URLs in HTML und CSS.
   const ASSET_REV="28.12.48";
   const SAVE_KEY="wuerfelduell_save_v1"; // absichtlich stabil: Updates lesen denselben Browser-Save
@@ -103,7 +103,9 @@
     dimensionbite:{name:"Dimensionsbiss",desc:"Ein gemalter Dimensionsräuber gleitet durch einen Riss und schnappt am Ziel mit einem echten Biss zu.",labor:true},
     runestrike:{name:"Runen-Orbitalschlag",desc:"Drei rotierende Runenorbits erfassen das Ziel und bündeln einen blau-goldenen Vertikalschlag.",labor:true},
     koenigsfall:{name:"Königsfall",desc:"Kronenstücke verriegeln sich um einen schwebenden Kriegshammer, der rotierend anfliegt und ein glühendes Königssiegel in die Karte prägt.",labor:true},
-    dornenrequiem:{name:"Dornenrequiem",desc:"Eine versiegelte Dornenknospe erwacht, öffnet ihre Blätter im Flug und schließt sich am Ziel wie eine Falle.",labor:true}
+    dornenrequiem:{name:"Dornenrequiem",desc:"Eine versiegelte Dornenknospe erwacht, öffnet ihre Blätter im Flug und schließt sich am Ziel wie eine Falle.",labor:true},
+    sternenschmiede:{name:"Sternenschmiede",desc:"Ein mehrteiliges Himmelsinstrument bohrt sich zum Ziel und schmiedet bei einem Kill ein zerbrechendes Sternenrelief.",labor:true},
+    himmelsrochen:{name:"Himmelsrochen",desc:"Ein gemaltes Aurorawesen schlägt mit getrennten Flügeln und vollendet Kills mit einem Fächer aus Himmelsschuppen.",labor:true}
   };
   const ATTACK_FX_UNLOCK_ACHIEVEMENT={
     lightning:"momentum_mori",flame:"critical_hit",venom:"backstab",blood:"vampiric_touch",

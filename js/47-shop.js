@@ -171,7 +171,7 @@
     solarsplash:"solarsplash",trigonbomb:"trigonbomb",confettibomb:"konfettibombe",polygon:"polygon",
     missile:"missile-attack",thunderstrike:"blitzeinschlag",catattack:"katzenangriff",
     quantumleap:"quantensprung",cometshower:"kometenschauer",timefracture:"zeitbruch",mirrorstorm:"spiegelsturm",
-    koenigsfall:"koenigsfall",dornenrequiem:"dornenrequiem"};
+    koenigsfall:"koenigsfall",dornenrequiem:"dornenrequiem",sternenschmiede:"sternenschmiede",himmelsrochen:"himmelsrochen"};
   const DAILY_PREISE=[{waehrung:"marken",preis:450},{waehrung:"kerne",preis:25},{waehrung:"marken",preis:600},{waehrung:"kerne",preis:40}];
   function dailyAngebote(){
     const keys=Object.keys(DAILY_BILD).filter(k=>typeof ATTACK_FX_STYLES!=="undefined"&&ATTACK_FX_STYLES[k]);
@@ -245,7 +245,7 @@
     if(!el||el.classList.contains("hidden")||el.dataset.stil!==key) return;
     const mitte=r=>({x:r.left+r.width/2,y:r.top+r.height/2});
     const a=el.querySelector('[data-rolle="angreifer"]').getBoundingClientRect(),z=el.querySelector('[data-rolle="ziel"]').getBoundingClientRect();
-    const angriff=fx.spielenAn(key,mitte(a),mitte(z));
+    const angriff=fx.spielenAn(key,mitte(a),mitte(z),{left:z.left,top:z.top,width:z.width,height:z.height});
     vorschauTimer=setTimeout(()=>{
       if(!el||el.classList.contains("hidden")||el.dataset.stil!==key) return;
       const r=el.querySelector('[data-rolle="ziel"]').getBoundingClientRect();
