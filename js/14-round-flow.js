@@ -124,9 +124,20 @@
         lastResult=window.WDEngineAdapter.dispatchLiveAction({type:window.WDEngine.actions.CHOOSE_START_ABILITIES,
           seat:entry.seat,abilities:[ability]},window.WDRng.random);state=lastResult.state;
       }
+      // Browser-eigene Rundenmarker wie im alten Pfad setzen: Herkunft der Startfaehigkeit
+      // (Statistik zaehlt gewaehlt gegen gewuerfelt) und die Streak-/Rundenflags, die der
+      // Reducer nicht kennt. Vor START_ROUND lesen, danach ist die Vorbereitung geleert.
+      const vorbereitung=new Map(state.round.preparation.map(entry=>[entry.seat,entry]));
       lastResult=window.WDEngineAdapter.dispatchLiveAction({type:window.WDEngine.actions.START_ROUND,
         seat:state.turn.decision?.seat??state.turn.currentSeat},window.WDRng.random);
       engineApplySideEffects(lastResult);mirrorLocalEngineState(lastResult.state);resetRoundStats();roundWinnerHandled=false;roundWinnerIndex=null;
+      players.forEach(player=>{
+        const entry=vorbereitung.get(player.engineSeat);
+        player.rolledAbility=entry?(entry.roll==null?"FREE_LAST":entry.roll):player.rolledAbility;
+        player.primaryWasChosen=!!entry&&entry.freeChoices>0;
+        player.secondAbilityWasChosen=false;player.thirdAbilityWasChosen=false;
+        player.firstClassStreak=0;player.perfect25AttackArmed=false;player.roundLastStandTriggered=false;player.botBloodUsesThisAttack=0;
+      });
       winnerBox.classList.add("hidden");nextRoundBox.classList.add("hidden");logEl.innerHTML="";
       addLog(`Runde ${roundNumber} startet. ${players[current].name} beginnt als Letztplatzierter der vorherigen Runde.`);
       players.forEach(player=>addLog(`${player.name}: Fähigkeit ${player.ability}: ${ABILITIES[player.ability].name}. Zweitfähigkeit wird bei ≤12 HP neu freigeschaltet.`));

@@ -46,6 +46,10 @@ async function setup(p){
     const nativeTimeout=window.setTimeout.bind(window);
     window.replayWait=ms=>new Promise(r=>nativeTimeout(r,ms));
     window.setTimeout=(fn,ms,...args)=>nativeTimeout(fn,Math.min(Number(ms)||0,5),...args);
+    // Dieser Pruefstand belegt die Aufzeichnung des alten Browserpfads (Diagnose fuer
+    // den Online-Host). Das lokale Classic-1:1 laeuft seit V28.14.19 ueber den Reducer;
+    // dafuer gibt es engine-umschaltung.mjs. Deshalb hier ausdruecklich der alte Pfad.
+    ENGINE_LOKALES_DUELL=false;
     WDRng.useSeed(0x13579);
     document.getElementById('menuPlayBtn').click();
     playerCount.value='2';makeNameFields();

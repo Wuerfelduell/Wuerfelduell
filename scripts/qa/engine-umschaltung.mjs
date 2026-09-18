@@ -52,30 +52,47 @@ async function play(seed,useEngine,debug=false){
     setupAbilityRolls.forEach((roll,index)=>{if(roll===6)document.getElementById('abilityChoice'+index).value=String(CHOOSABLE_ABILITY_IDS[0]);});
     startGameBtn.disabled=false;startGameBtn.onclick();clearBotAutomation();
     players.forEach(player=>{player.botLevel='normal';});
+    // Feste Bot-Wahl in Drafts und Rundenvorbereitung, damit beide Pfade dieselbe
+    // Auswahl treffen und dieselben Ziehungen verbrauchen; gilt fuer beide Laeufe.
+    botPickAbility=ids=>ids[1];
     renderAll=()=>{};renderDice=()=>{};renderPlayers=()=>{};addLog=()=>{};tickSpecialDie=()=>{};
     const trace=[],snapshot=step=>({step,phase:secondAbilityDraftBusy?'draft_pending':phase,currentSeat:players[current]?.seat,hp:players.map(player=>player.hp),
       abilities:players.map(player=>playerAbilities(players.indexOf(player))),dice:dice.map(die=>[die.value,!!die.locked]),
       attack:[attackFace,attackHits,attackDamage],draft:secondAbilityDraftBusy?secondAbilityDraftChoices.slice():null,rng:WDRng.inspect().drawIndex});
     if(debug) trace.push(snapshot(-1));
-    for(let step=0;step<30000&&!roundWinnerHandled;step++){
-      if(phase==='gamble_retry_offer') startGamblingRetry();
-      else if(phase==='gamble_retry') rollGamblingMan();
-      else performBotAction();
-      await switchWait();let waits=0;
-      while(!roundWinnerHandled&&(isAnimating||gamblingRolling||perfect25Rolling||perfect25D4Rolling||highStakesRolling||insuranceRolling||counterRolling||eventPopupBusy)){
-        if(++waits>300) throw new Error('switch_stalled:'+phase);await switchWait();
+    // Drei Runden je Seed: Der Rundenwechsel mischt die Sitzreihenfolge, und genau
+    // dort lag der Spiegelfehler von V28.14.19. Vor jeder Vorbereitung wird der
+    // Zufall neu gesetzt und die Bot-Wahl fest verdrahtet, damit alter und neuer
+    // Pfad dieselben Ziehungen in derselben Reihenfolge verbrauchen.
+    const rounds=[];
+    for(let runde=1;runde<=3;runde++){
+      for(let step=0;step<30000&&!roundWinnerHandled;step++){
+        if(phase==='gamble_retry_offer') startGamblingRetry();
+        else if(phase==='gamble_retry') rollGamblingMan();
+        else performBotAction();
+        await switchWait();let waits=0;
+        while(!roundWinnerHandled&&(isAnimating||gamblingRolling||perfect25Rolling||perfect25D4Rolling||highStakesRolling||insuranceRolling||counterRolling||eventPopupBusy)){
+          if(++waits>300) throw new Error('switch_stalled:'+phase);await switchWait();
+        }
+        for(let settle=0;settle<8;settle++)await switchWait();
+        if(debug) trace.push(snapshot(step));
       }
-      for(let settle=0;settle<8;settle++)await switchWait();
-      if(debug) trace.push(snapshot(step));
+      if(!roundWinnerHandled) throw new Error('switch_match_did_not_finish:'+phase);
+      const bySeat=players.map((player,index)=>({seat:player.seat,hp:player.hp,abilities:playerAbilities(index),
+        eliminated:player.hp<=0,wins:player.wins||0,roundStats:{...(roundStats[index]||{})}})).sort((a,b)=>a.seat-b.seat);
+      rounds.push({round:roundNumber,players:bySeat,winnerSeat:roundWinnerIndex==null?null:players[roundWinnerIndex].seat,
+        eliminationSeats:roundEliminationOrder.map(index=>players[index].seat),globalRounds:saveData.global.completedRounds});
+      if(runde===3) break;
+      WDRng.useSeed(((seed*7919)+runde)>>>0);
+      prepareNextRound();for(let settle=0;settle<4;settle++)await switchWait();
+      players.forEach((player,index)=>{const select=document.getElementById('nextAbilityChoice'+index);if(select&&!select.disabled)select.value=String(CHOOSABLE_ABILITY_IDS[2]);});
+      startNextRound();for(let settle=0;settle<8;settle++)await switchWait();
+      if(roundNumber!==runde+1||phase!=='idle') throw new Error('switch_round_start_failed:'+roundNumber+'/'+phase);
     }
-    if(!roundWinnerHandled) throw new Error('switch_match_did_not_finish:'+phase);
-    const bySeat=players.map((player,index)=>({seat:player.seat,hp:player.hp,abilities:playerAbilities(index),
-      eliminated:player.hp<=0,wins:player.wins||0,roundStats:{...(roundStats[index]||{})}})).sort((a,b)=>a.seat-b.seat);
     const profileState=saveData.profiles.map(profile=>({name:profile.name,stats:JSON.parse(JSON.stringify(profile.stats)),
       achievements:Object.keys(profile.achievements||{}).filter(key=>profile.achievements[key]).sort(),
       marks:window.WDShop?.wallet?.(profile)?.marken||0})).sort((a,b)=>a.name.localeCompare(b.name));
-    const summary={players:bySeat,winnerSeat:roundWinnerIndex==null?null:players[roundWinnerIndex].seat,
-      eliminationSeats:roundEliminationOrder.map(index=>players[index].seat),globalRounds:saveData.global.completedRounds,profiles:profileState};
+    const summary={rounds,profiles:profileState};
     return debug?{summary,trace}:summary;
   },{seed,useEngine,debug});
 }
@@ -226,7 +243,7 @@ try{
     assert.deepEqual(engine,legacy,`Umschaltungsabweichung bei Seed ${seed}:\n${JSON.stringify({legacy,engine},null,2)}`);
   }
   assert.deepEqual(pageErrors,[],'Browserfehler: '+pageErrors.join('\n'));
-  console.log(`Engine-Umschaltung ${full?'Vollumfang':'Check-Stichprobe'}: ${count} Classic-1:1-Duelle mit identischen Spiel- und Nebenwirkungszuständen.`);
+  console.log(`Engine-Umschaltung ${full?'Vollumfang':'Check-Stichprobe'}: ${count} Classic-1:1-Partien über je drei Runden mit identischen Spiel- und Nebenwirkungszuständen.`);
   await page.close();page=null;await checkUiMatrix();
   }
 }finally{

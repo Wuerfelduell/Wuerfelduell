@@ -304,8 +304,9 @@ diesen Gate ebenfalls über Reducer-Aktionen; nach einem Runden-Kill entsteht
 kein Draft und keine gewählte Fähigkeit wird in die nächste Runde übernommen.
 
 `scripts/qa/engine-umschaltung.mjs` spielt bei identischem Seed den alten und
-neuen Pfad gegeneinander: 20 vollständige Classic-1:1-Duelle im normalen Check,
-300 im Vollumfang. Verglichen werden HP, Fähigkeiten, Ausscheiden, Sieger,
+neuen Pfad gegeneinander, seit V28.14.20 über drei Runden je Partie, weil der
+Rundenstart die Sitzreihenfolge mischt: 20 Partien im normalen Check, 300 im
+Vollumfang. Verglichen werden HP, Fähigkeiten, Ausscheiden, Sieger,
 Rundenstatistiken, Profile, Siege, Duellmarken und Achievements. Zusätzlich
 prüft der Prüfstand echte UI-Klicks für Wurf, Lock, Angriff, Spezialwürfel,
 Counterattack, Draft und Rundenwechsel in Deutsch und Englisch bei 320, 360,

@@ -40,10 +40,12 @@
   function localEngineActive(){return localEngineEligible() && window.WDEngineAdapter?.hasLive?.();}
   // Der Browser-Sitz beschreibt nur die Position am gemeinsamen Gerät und darf
   // mehrfach gewählt werden. Im Reducer ist der Sitz dagegen die eindeutige
-  // Spieler-ID; für das lokale 1:1 verwenden wir deshalb den stabilen Index.
+  // Spieler-ID. Jeder Spieler traegt sie als engineSeat; der Browser-Index ist
+  // nicht stabil, weil der Rundenstart die Reihenfolge mischt (V28.14.20: davor
+  // wurden ab Runde 2 HP, Faehigkeiten und Zugrecht ueber Kreuz gespiegelt).
   function localEnginePlayerIndex(seat){
-    const index=Number(seat);
-    return Number.isInteger(index)&&index>=0&&index<players.length?index:-1;
+    const wanted=Number(seat);
+    return players.findIndex(player=>player.engineSeat===wanted);
   }
   function localEngineSnapshot(){
     return {phase,currentSeat:current,
@@ -53,6 +55,7 @@
   function startLocalDuelEngine(){
     window.WDEngineAdapter?.stopLive?.();
     if(!localEngineEligible()) return false;
+    players.forEach((player,index)=>{player.engineSeat=index;});
     const setup={modeId:"classic",startingSeat:current,roundNumber,
       players:players.map((player,index)=>({seat:index,abilities:playerAbilities(index)}))};
     const state=window.WDEngineAdapter.startLive(setup);
@@ -63,7 +66,7 @@
     if(!state) return;
     const browserPlayers=players.slice();
     players=state.players.map(enginePlayer=>{
-      const player=browserPlayers[enginePlayer.seat];
+      const player=browserPlayers.find(candidate=>candidate.engineSeat===enginePlayer.seat);
       if(!player) throw new Error("local_engine_player_missing:"+enginePlayer.seat);
       player.hp=enginePlayer.hp;player.maxHp=enginePlayer.maxHp;player.wins=enginePlayer.roundsWon;
       player.ability=enginePlayer.abilities[0]??1;player.secondAbility=enginePlayer.abilities[1]??null;
