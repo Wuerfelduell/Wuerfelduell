@@ -38,6 +38,7 @@
       !document.body.classList.contains("test-lab-active");
   }
   function localEngineActive(){return localEngineEligible() && window.WDEngineAdapter?.hasLive?.();}
+  let localEngineAttackDamage=0;
   // Der Browser-Sitz beschreibt nur die Position am gemeinsamen Gerät und darf
   // mehrfach gewählt werden. Im Reducer ist der Sitz dagegen die eindeutige
   // Spieler-ID. Jeder Spieler traegt sie als engineSeat; der Browser-Index ist
@@ -194,12 +195,19 @@
       if(after.attack.face===1&&damageEvent.amount>=15) unlockAchievementForPlayer(attacker,"one_or_three");
       if(after.attack.doubleTapApplied&&after.players.find(player=>player.seat===damageEvent.targetSeat)?.hp<=0)unlockAchievementForPlayer(attacker,"double_trouble");
     }
-    const endedAttack=events.find(event=>event.type==="TurnEnded"&&["attack_complete","attack_missed"].includes(event.reason));
-    if(damageEvent||endedAttack){
-      const seat=damageEvent?.sourceSeat??endedAttack.seat,index=localEnginePlayerIndex(seat);
-      const total=events.filter(event=>event.type==="DamageApplied"&&event.sourceSeat===seat&&["attack","ricochet","ricochet_chain"].includes(event.source))
-        .reduce((sum,event)=>sum+event.amount,0);
-      recordAttackDamageForAchievements(index,total);
+    // Der Angriffsschaden wird ueber Aktionsgrenzen hinweg gesammelt: Ein
+    // HP-Draft oder ein Counterattack schiebt das Zugende in ein spaeteres
+    // Ergebnis, in dem die Schadensereignisse nicht mehr enthalten sind. Vor
+    // V28.14.20 zaehlte so ein Treffer-Angriff als schadenlos (first_class).
+    for(const event of events){
+      if(event.type==="AttackReadied") localEngineAttackDamage=0;
+      if(event.type==="DamageApplied"&&["attack","ricochet","ricochet_chain"].includes(event.source)) localEngineAttackDamage+=event.amount;
+    }
+    const endedAttack=events.find(event=>event.type==="TurnEnded"&&
+      ["attack_complete","attack_missed","counterattack_complete","gambling_retry_declined"].includes(event.reason));
+    if(endedAttack){
+      recordAttackDamageForAchievements(localEnginePlayerIndex(endedAttack.seat),localEngineAttackDamage);
+      localEngineAttackDamage=0;
     }
     const counter=events.find(event=>event.type==="CounterattackResolved");
     if(counter){
