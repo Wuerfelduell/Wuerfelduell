@@ -39,7 +39,8 @@ expect(/signInAnonymously/.test(files.core),"anonymous online identity support i
 expect(/dd_put_account_save/.test(files.account),"Supabase account adapter does not use protected save RPC");
 expect(/DD_SAVE_CONFLICT/.test(files.account),"cloud save conflict handling is missing");
 expect(/user\.is_anonymous/.test(files.account),"anonymous online identities leak into the cloud-account UI");
-expect(/dd_submit_battle_action/.test(files.edge),"Edge Function does not submit through the validated action RPC");
+expect(/dd_server_load_action/.test(files.edge)&&/dd_server_commit_action/.test(files.edge),"Edge Function does not load and commit through the internal server RPCs");
+expect(/createBattleActionHandler/.test(files.edge)&&/_shared\/engine\.ts/.test(files.edge),"Edge Function does not reduce with the shared engine");
 expect(/auth\.getUser\(token\)/.test(files.edge),"Edge Function does not validate the caller JWT");
 expect(/verify_jwt\s*=\s*false/.test(files.supabaseConfig)&&/auth\.getUser\(token\)/.test(files.edge),"manual JWT mode is not paired with explicit token validation");
 
