@@ -60,7 +60,9 @@ expect(/interactionOwnerUid/.test(files.migration)&&/DD_STALE_STATE/.test(files.
 expect(/revision=v_revision\+1/.test(files.migration),"cloud save revision increment is missing");
 expect(/stage:"online-ready"/.test(files.battle),"battle adapter is not marked online-ready");
 expect(/reconnectRoom/.test(files.battle)&&/dd_battle_members/.test(files.battle),"Supabase battle reconnect support is missing");
-expect(/dd_submit_battle_action/.test(files.battle)&&!/functions\.invoke/.test(files.battle),"browser battle actions are not using the protected RPC directly");
+// Host-Raeume senden ueber die RPC; nur serverautoritative Raeume rufen die Edge Function.
+expect(/dd_submit_battle_action/.test(files.battle),"browser battle actions are not using the protected RPC directly");
+expect((files.battle.match(/functions\.invoke/g)||[]).length<=1&&(!/functions\.invoke/.test(files.battle)||/async function invokeServerAction[\s\S]*?functions\.invoke/.test(files.battle)),"Edge Function is invoked outside invokeServerAction");
 expect(/isSupabaseOnline/.test(files.online)&&/subscribeRoom/.test(files.online)&&/handleSupabaseMatchSnapshot/.test(files.online),"online controller is not connected to Supabase Realtime");
 expect(/if\(!isSupabaseOnline\)[\s\S]*import\("https:\/\/www\.gstatic\.com\/firebasejs/.test(files.online),"Firebase fallback is not lazy-loaded behind the provider switch");
 

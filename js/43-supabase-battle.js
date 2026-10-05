@@ -134,6 +134,31 @@
     }));
   }
 
+  /* Serverautoritative Raeume (authority='server'): die Aktion geht an die
+     Edge Function, die mit der gemeinsamen Engine rechnet und das Ergebnis
+     verbucht. Antwort: {ok, seq, state, events} oder {ok:false, error, detail}.
+     Bei DD_STALE_STATE (409) Zustand neu lesen und erneut senden. */
+  async function invokeServerAction(roomId,{id,type,payload={},baseSeq=0}={}){
+    const client=await root.getClient();
+    const {data,error}=await client.functions.invoke(window.WDBackendConfig?.supabase?.battleActionFunction||"battle-action",{
+      body:{
+        roomId:String(roomId||""),
+        actionId:String(id||globalThis.crypto?.randomUUID?.()||Date.now()),
+        baseSeq:Number(baseSeq)||0,
+        type:String(type||""),
+        payload:payload&&typeof payload==="object"?payload:{}
+      }
+    });
+    if(error){
+      let body=null;
+      try{body=await error.context?.json?.();}catch(_error){}
+      const failure=new Error(String(body?.error||error.message||"SERVER_ACTION_FAILED"));
+      failure.status=Number(error.context?.status)||0;failure.detail=String(body?.detail||"");
+      throw failure;
+    }
+    return data;
+  }
+
   async function publishState(roomId,{seq,state,actionId="",actionType=""}={}){
     return first(await rpc("dd_publish_battle_state",{
       p_room_id:String(roomId||""),
@@ -263,6 +288,7 @@
     setReady,
     startMatch,
     submitAction,
+    invokeServerAction,
     publishState,
     resolveAction,
     emitEvent,
