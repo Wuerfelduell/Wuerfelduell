@@ -20,24 +20,49 @@
 
   function prepareNextRound(){
     if(localEngineActive()){
+      const rules=localModeRules(),special=rules.id!=="classic",noLastDraw=!(rules.lastPlaceFreeChoices>0);
       const before=window.WDEngineAdapter.getLiveState();
       const result=window.WDEngineAdapter.dispatchLiveAction({type:window.WDEngine.actions.PREPARE_ROUND,
         seat:before.turn.decision?.seat??before.turn.currentSeat},window.WDRng.random);
       engineApplySideEffects(result);mirrorLocalEngineState(result.state);
       nextRoundAbilityRolls=Array(players.length).fill(null);nextRoundAbilities.innerHTML="";
-      nextRoundTitle.textContent=`Runde ${roundNumber+1} vorbereiten`;
+      nextRoundTitle.textContent=special?`Runde ${roundNumber+1} · ${rules.name}`:`Runde ${roundNumber+1} vorbereiten`;
       const lastName=lastPlaceIndex==null?"–":players[lastPlaceIndex].name;
-      nextRoundInfo.innerHTML=`<span class="last-place-note">${escapeHtml(lastName)}</span> startet als Letzter.<br>Freie Wahl: 1–5 oder 8–25.<br>Alle anderen würfeln W25; nur eine 6 wählt frei.<br>Glück (BETA) nur bei gewürfelter 7.`;
+      nextRoundInfo.innerHTML=!special
+        ? `<span class="last-place-note">${escapeHtml(lastName)}</span> startet als Letzter.<br>Freie Wahl: 1–5 oder 8–25.<br>Alle anderen würfeln W25; nur eine 6 wählt frei.<br>Glück (BETA) nur bei gewürfelter 7.`
+        : noLastDraw
+        ? `Kein Last-Place-Draw.<br>Jeder bekommt ${rules.startAbilityCount} neue zufällige Startfähigkeiten.`
+        : rules.id==="endurance50"
+        ? `<span class="last-place-note">${escapeHtml(lastName)}</span> startet als Letzter.<br>Beide Startfähigkeiten frei wählbar.<br>Alle anderen bekommen 2 neue zufällige Fähigkeiten.`
+        : `<span class="last-place-note">${escapeHtml(lastName)}</span> startet als Letzter.<br>1 von 3 Startfähigkeiten frei wählbar.<br>Die anderen 2 kommen beim Start zufällig.`;
       result.state.round.preparation.forEach(entry=>{
         const index=localEnginePlayerIndex(entry.seat),player=players[index],box=document.createElement("div");box.className="round-prep-player";
         const title=document.createElement("div");title.innerHTML=`<strong>${escapeHtml(player.name)}</strong>`;box.appendChild(title);
-        nextRoundAbilityRolls[index]=entry.roll==null?"FREE_LAST":entry.roll;
-        if(entry.freeChoices>0){
+        if(special){
+          nextRoundAbilityRolls[index]=entry.freeChoices>0?{kind:"SPECIAL_LAST",freeCount:entry.freeChoices}:
+            {kind:"SPECIAL_RANDOM",abilities:entry.abilities.slice()};
+          if(entry.freeChoices>0){
+            const owned=playerAbilities(index);
+            for(let slot=0;slot<entry.freeChoices;slot++){
+              const note=document.createElement("div");note.className="round-note last-place-note";
+              note.textContent=`🏁 Freie Wahl ${slot+1}/${entry.freeChoices}`;box.appendChild(note);
+              box.appendChild(makeSpecialAbilityChoiceSelect("nextAbilityChoice",index,slot,owned[slot]||CHOOSABLE_ABILITY_IDS[slot]));
+            }
+            const randomCount=rules.startAbilityCount-entry.freeChoices;
+            if(randomCount>0){const note=document.createElement("div");note.className="round-note";
+              note.textContent=`🎲 ${randomCount} weitere ${randomCount===1?"Fähigkeit wird":"Fähigkeiten werden"} beim Rundenstart zufällig bestimmt.`;box.appendChild(note);}
+          }else{
+            const note=document.createElement("div");note.className="round-note";
+            note.innerHTML=`🎲 ${entry.abilities.map(id=>escapeHtml(ABILITIES[id].name)).join(" · ")}`;box.appendChild(note);
+          }
+        }else if(entry.freeChoices>0){
+          nextRoundAbilityRolls[index]=entry.roll==null?"FREE_LAST":entry.roll;
           const note=document.createElement("div");note.className="round-note"+(entry.roll==null?" last-place-note":"");
           note.textContent=entry.roll==null?"🏁 Letzter Platz: freie Wahl ohne Würfelwurf":"🎲 W25 = 6 → freie Wahl";box.appendChild(note);
           const select=makeAbilityChoiceSelect("nextAbilityChoice",index,player.ability||1);
           if(isBotPlayer(index)){select.value=botPickAbility(CHOOSABLE_ABILITY_IDS,player.botLevel,[]);select.disabled=true;}box.appendChild(select);
         }else{
+          nextRoundAbilityRolls[index]=entry.roll;
           const ability=entry.abilities[0],note=document.createElement("div");note.className="round-note";
           note.innerHTML=`🎲 W25 = <strong>${entry.roll}</strong> → ${escapeHtml(ABILITIES[ability].name)}`;box.appendChild(note);
         }
@@ -118,11 +143,20 @@
 
   function startNextRound(){
     if(localEngineActive()){
+      const rules=localModeRules(),special=rules.id!=="classic";
       clearBotAutomation();let state=window.WDEngineAdapter.getLiveState(),lastResult=null;
       for(const entry of state.round.preparation.filter(item=>!item.ready)){
-        const index=localEnginePlayerIndex(entry.seat),ability=+$(`nextAbilityChoice${index}`).value;
+        const index=localEnginePlayerIndex(entry.seat),abilities=[];
+        for(let slot=0;slot<entry.freeChoices;slot++){
+          const id=+$(special?`nextAbilityChoice${index}_${slot}`:`nextAbilityChoice${index}`)?.value;
+          if(CHOOSABLE_ABILITY_IDS.includes(id)&&!abilities.includes(id))abilities.push(id);
+        }
+        while(abilities.length<entry.freeChoices)abilities.push(...randomUniqueAbilityIds(1,abilities));
         lastResult=window.WDEngineAdapter.dispatchLiveAction({type:window.WDEngine.actions.CHOOSE_START_ABILITIES,
-          seat:entry.seat,abilities:[ability]},window.WDRng.random);state=lastResult.state;
+          seat:entry.seat,abilities},window.WDRng.random);state=lastResult.state;
+        // Der alte Browser mischt auch bei null fehlenden Startfaehigkeiten
+        // den Restpool. Diese Ziehungen bestimmen danach die Sitzreihenfolge.
+        if(special&&rules.startAbilityCount===entry.freeChoices)randomUniqueAbilityIds(0,abilities);
       }
       // Browser-eigene Rundenmarker wie im alten Pfad setzen: Herkunft der Startfaehigkeit
       // (Statistik zaehlt gewaehlt gegen gewuerfelt) und die Streak-/Rundenflags, die der
@@ -133,14 +167,17 @@
       engineApplySideEffects(lastResult);mirrorLocalEngineState(lastResult.state);resetRoundStats();roundWinnerHandled=false;roundWinnerIndex=null;
       players.forEach(player=>{
         const entry=vorbereitung.get(player.engineSeat);
-        player.rolledAbility=entry?(entry.roll==null?"FREE_LAST":entry.roll):player.rolledAbility;
+        player.rolledAbility=entry?(special?(entry.freeChoices>0?"FREE_LAST_MULTI":"MULTI_RANDOM"):
+          (entry.roll==null?"FREE_LAST":entry.roll)):player.rolledAbility;
         player.primaryWasChosen=!!entry&&entry.freeChoices>0;
-        player.secondAbilityWasChosen=false;player.thirdAbilityWasChosen=false;
+        player.secondAbilityWasChosen=special&&!!entry&&entry.freeChoices>=2;player.thirdAbilityWasChosen=false;
         player.firstClassStreak=0;player.perfect25AttackArmed=false;player.roundLastStandTriggered=false;player.botBloodUsesThisAttack=0;
       });
       winnerBox.classList.add("hidden");nextRoundBox.classList.add("hidden");logEl.innerHTML="";
       addLog(`Runde ${roundNumber} startet. ${players[current].name} beginnt als Letztplatzierter der vorherigen Runde.`);
-      players.forEach(player=>addLog(`${player.name}: Fähigkeit ${player.ability}: ${ABILITIES[player.ability].name}. Zweitfähigkeit wird bei ≤12 HP neu freigeschaltet.`));
+      players.forEach((player,index)=>addLog(special
+        ? `${player.name}: ${playerAbilities(index).map(id=>ABILITIES[id].name).join(" + ")} · ${rules.startHp} HP.`
+        : `${player.name}: Fähigkeit ${player.ability}: ${ABILITIES[player.ability].name}. Zweitfähigkeit wird bei ≤12 HP neu freigeschaltet.`));
       presentLocalEngineState();renderAll();return;
     }
     // Campaign encounters are single-fight states. The generic local "next round"
@@ -207,6 +244,10 @@
     randomizePlayerOrder(true);resetRoundStats();current=Math.max(0,players.indexOf(starterPlayer));prepareBloodRushForTurn(current);
     dice=freshDice();phase="idle";isAnimating=false;attackFace=null;attackTarget=null;pendingCampaignAttackStart=null;attackHits=0;attackDamage=0;firstAttackRoll=true;currentAttackRollNewHits=0;
     baseRerollUsed=false;luckRerollIndex=null;luckRerollSecondUsed=false;loadedDiceUsed=false;loadedDiceUses=0;lastBaseRollIndices=[];attackPowerUsed=false;attackPowerUses=0;precisionUses=0;momentumBonus=0;bloodPriceNeighbors=[];bloodRushActiveThisAttack=false;doubleTapApplied=false;pendingDamage=null;pendingHeal=null;
+    // Im lokalen Altpfad muss auch der Verbrauchszaehler zur neuen Runde
+    // passen; sonst zeigt Glueckswurf "unbenutzt", lehnt den Wurf aber ab.
+    if(!campaignMode&&!tutorialMode&&String(gameContext?.mode||"")===`local-${localModeId}`&&
+      !document.body.classList.contains("test-lab-active"))luckRerollUses=0;
     winnerBox.classList.add("hidden");nextRoundBox.classList.add("hidden");logEl.innerHTML="";
     addLog(`Runde ${roundNumber} startet. ${players[current].name} beginnt als Letztplatzierter der vorherigen Runde.`);
     players.forEach((p,i)=>{
@@ -215,4 +256,3 @@
     });
     renderAll();
   }
-

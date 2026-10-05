@@ -33,12 +33,23 @@
 
   function localEngineEligible(){
     const mode=String(gameContext?.mode||"");
-    return ENGINE_LOKALES_DUELL===true && localModeId==="classic" && players.length===2 &&
-      !campaignMode && !tutorialMode && mode==="local-classic" &&
+    const rules=LOCAL_MODES[localModeId];
+    // Classic mit sieben/acht Teilnehmern ueberschreitet das Kernschema.
+    // Mayhem: Bei Advance 24 initialisiert der Kern den Angriff erst nach dem
+    // HP-Draft. Eine dort gewaehlte Wildcard wird dadurch einen Angriff zu frueh
+    // aktiv (QA: 2..6 Spieler, Seed 2). Perfect-25-Ablehnung setzt im Kern
+    // Momentum nicht zurueck. Gezielte 15+10-Zwischenstaende (Seed 7) sind
+    // auch in Classic 3..6 und Overload 2 rot, trotz gruener Zufallsstichprobe.
+    // Der bestehende Classic-1:1-Pfad gehoert zu Schritt 5b-1; weitere lokale
+    // Freigaben warten auf den gemeinsamen Kernfix.
+    const momentumBlocked=rules?.id==="endurance50"||rules?.id==="overload75"||
+      (rules?.id==="classic"&&players.length>2);
+    return ENGINE_LOKALES_DUELL===true && !!rules && players.length>=2 &&
+      players.length<=Math.min(rules.maxPlayers,6) && rules.id!=="mayhem" && !momentumBlocked &&
+      !campaignMode && !tutorialMode && mode===`local-${rules.id}` &&
       !document.body.classList.contains("test-lab-active");
   }
   function localEngineActive(){return localEngineEligible() && window.WDEngineAdapter?.hasLive?.();}
-  let localEngineAttackDamage=0;
   // Der Browser-Sitz beschreibt nur die Position am gemeinsamen Gerät und darf
   // mehrfach gewählt werden. Im Reducer ist der Sitz dagegen die eindeutige
   // Spieler-ID. Jeder Spieler traegt sie als engineSeat; der Browser-Index ist
@@ -57,7 +68,7 @@
     window.WDEngineAdapter?.stopLive?.();
     if(!localEngineEligible()) return false;
     players.forEach((player,index)=>{player.engineSeat=index;});
-    const setup={modeId:"classic",startingSeat:current,roundNumber,
+    const setup={modeId:localModeId,startingSeat:current,roundNumber,
       players:players.map((player,index)=>({seat:index,abilities:playerAbilities(index)}))};
     const state=window.WDEngineAdapter.startLive(setup);
     mirrorLocalEngineState(state);
@@ -120,7 +131,7 @@
   }
   function engineRecordRolls(events){
     for(const event of events){
-      const values=(event.type==="DiceRolled"||event.type==="AttackRolled")?event.values:
+      const values=(event.type==="DiceRolled"||event.type==="AttackRolled")?(event.rawValues||event.values):
         event.type==="SpecialDieRolled"&&event.sides===6?[event.value]:
         event.type==="AttackReadied"&&event.wildcardFace!=null?[event.wildcardFace]:[];
       const index=localEnginePlayerIndex(event.seat);
@@ -183,10 +194,15 @@
         if(total===20&&event.roll===1) unlockAchievementForPlayer(index,"nat20_nat1");
         if(total===24&&event.damage===0) unlockAchievementForPlayer(index,"insurance_fraud");
       }
-      if(event.type==="Healed"&&event.amount>=10) unlockAchievementForPlayer(index,"blood_bank");
+      if(event.type==="Healed"&&!["blood_pact","perfect_parry"].includes(event.source)&&event.amount>=10) unlockAchievementForPlayer(index,"blood_bank");
       if(event.type==="Healed"&&event.source==="counter_lifesteal"&&event.amount>0) unlockAchievementForPlayer(index,"vampiric_touch");
     }
     const damageEvent=events.find(event=>event.type==="DamageApplied"&&event.source==="attack");
+    // Grande wird schon beim Beenden der fuenf Treffer freigeschaltet,
+    // auch wenn High Stakes die Schadensanwendung erst spaeter entscheidet.
+    if(result.actions.some(action=>action.type==="resolve_attack")&&after.attack.hits===5&&
+      ["high_stakes","draft_pending","counterattack","turn_done"].includes(after.turn.phase))
+      unlockAchievementForPlayer(localEnginePlayerIndex(before.turn.currentSeat),"grande");
     if(damageEvent){
       const attacker=localEnginePlayerIndex(damageEvent.sourceSeat),targetBefore=before.players.find(player=>player.seat===damageEvent.targetSeat)?.hp||0;
       if(after.attack.hits===5) unlockAchievementForPlayer(attacker,"grande");
@@ -194,26 +210,41 @@
       if(damageEvent.amount===21) unlockAchievementForPlayer(attacker,"critical_hit");
       if(after.attack.face===1&&damageEvent.amount>=15) unlockAchievementForPlayer(attacker,"one_or_three");
       if(after.attack.doubleTapApplied&&after.players.find(player=>player.seat===damageEvent.targetSeat)?.hp<=0)unlockAchievementForPlayer(attacker,"double_trouble");
+      const ricochet=events.find(event=>event.type==="RicochetApplied"&&event.chain===1);
+      if(ricochet&&after.players.find(player=>player.seat===damageEvent.targetSeat)?.hp<=0&&
+        after.players.find(player=>player.seat===ricochet.targetSeat)?.hp<=0)
+        unlockAchievementForPlayer(attacker,"collateral_damage");
     }
-    // Der Angriffsschaden wird ueber Aktionsgrenzen hinweg gesammelt: Ein
-    // HP-Draft oder ein Counterattack schiebt das Zugende in ein spaeteres
-    // Ergebnis, in dem die Schadensereignisse nicht mehr enthalten sind. Vor
-    // V28.14.20 zaehlte so ein Treffer-Angriff als schadenlos (first_class).
-    for(const event of events){
-      if(event.type==="AttackReadied") localEngineAttackDamage=0;
-      if(event.type==="DamageApplied"&&["attack","ricochet","ricochet_chain"].includes(event.source)) localEngineAttackDamage+=event.amount;
-    }
-    const endedAttack=events.find(event=>event.type==="TurnEnded"&&
-      ["attack_complete","attack_missed","counterattack_complete","gambling_retry_declined"].includes(event.reason));
-    if(endedAttack){
-      recordAttackDamageForAchievements(localEnginePlayerIndex(endedAttack.seat),localEngineAttackDamage);
-      localEngineAttackDamage=0;
+    // Wie im alten Ablauf beim abgeschlossenen Angriff buchen, bevor ein
+    // HP-Draft, Counterattack oder Gambling Twice das Zugende verschiebt.
+    // Deren spaeteres Zugende darf denselben Angriff nicht erneut zaehlen.
+    const finalizesAttack=result.actions.some(action=>["resolve_attack","roll_high_stakes","skip_high_stakes"].includes(action.type))&&
+      ["draft_pending","counterattack","turn_done","gamble_retry_offer"].includes(after.turn.phase);
+    if(finalizesAttack){
+      const targetBefore=before.players.find(player=>player.seat===before.attack.targetSeat)?.hp;
+      // Last Stand kann HP zurueckgeben und daher kein DamageApplied ausloesen.
+      // Overkill beurteilt wie der alte Ablauf den rohen Angriff davor.
+      if(targetBefore!=null&&after.attack.damage>=targetBefore+10)
+        unlockAchievementForPlayer(localEnginePlayerIndex(before.turn.currentSeat),"overkill");
+      const damage=events.filter(event=>event.type==="DamageApplied"&&["attack","ricochet","ricochet_chain"].includes(event.source))
+        .reduce((sum,event)=>sum+event.amount,0);
+      recordAttackDamageForAchievements(localEnginePlayerIndex(before.turn.currentSeat),damage);
     }
     const counter=events.find(event=>event.type==="CounterattackResolved");
     if(counter){
       const defender=localEnginePlayerIndex(counter.defenderSeat);
       if(counter.hits===5) unlockAchievementForPlayer(defender,"grande");
       if(counter.damage>=15) unlockAchievementForPlayer(defender,"backstab");
+      const doubleTap=before.players.find(player=>player.seat===counter.defenderSeat)?.abilities.includes(24)&&
+        (counter.hits===2||(counter.hits===1&&after.masteryLevel>=1));
+      const attackerBefore=before.players.find(player=>player.seat===counter.attackerSeat)?.hp;
+      const hits=events.find(event=>event.type==="HitsResolved"&&event.kind==="counterattack");
+      // In den freigegebenen lokalen Modi ist der rohe Counter-Schaden der
+      // Trefferwert plus gegebenenfalls Double Tap; Mastery-Counter bleiben gesperrt.
+      if(after.masteryLevel===0&&attackerBefore>0&&hits&&hits.damage+(doubleTap?4:0)>=attackerBefore+10)
+        unlockAchievementForPlayer(defender,"overkill");
+      if(doubleTap&&after.players.find(player=>player.seat===counter.attackerSeat)?.hp<=0)
+        unlockAchievementForPlayer(defender,"double_trouble");
     }
   }
   function engineApplySideEffects(result){
@@ -228,13 +259,18 @@
           if(["loaded_dice","blood_price","blood_credit","blood_rush_self_harm"].includes(event.source)) recordVoluntaryHp(targetIndex,event.amount);
         }else{
           if(roundStats[targetIndex]) roundStats[targetIndex].damageTaken+=event.amount;
-          recordDamageDealt(sourceIndex,event.amount,sourceIndex===current);
+          // Giftticks zaehlen im alten Ablauf als erlittener Schaden; nur
+          // der verursachende Angriff erhoeht die Schadensstatistik der Quelle.
+          if(event.source!=="poison")recordDamageDealt(sourceIndex,event.amount,sourceIndex===current);
           const kind=event.source==="counterattack"?"counter":(event.source.startsWith("ricochet")?"ricochet":((result.before.attack.face===4||result.before.attack.face===6)?"lightning":"laser"));
           window.WDAttackFx?.emit?.(sourceIndex,targetIndex,kind,event.amount,result.before.attack.face);
           pendingDamage={target:targetIndex,amount:event.amount};
         }
       }else if(event.type==="Healed"){
-        const index=localEnginePlayerIndex(event.seat);recordHealing(index,event.amount);pendingHeal={target:index,amount:event.amount};
+        const index=localEnginePlayerIndex(event.seat);
+        // Rueckgaben von Blutpreis und Perfect Parry sind keine Heilungen.
+        if(!["blood_pact","perfect_parry"].includes(event.source))recordHealing(index,event.amount);
+        pendingHeal={target:index,amount:event.amount};
         if(event.source==="perfect_parry"&&roundStats[index]){
           const incoming=Number(result.before.counter.context?.incomingDamage)||0;
           roundStats[index].damageTaken=Math.max(0,roundStats[index].damageTaken-incoming);
@@ -304,7 +340,7 @@
     }
     const ended=result.events.find(event=>event.type==="TurnEnded");
     if(ended&&!result.state.round.result&&["attack_complete","counterattack_complete"].includes(ended.reason)) advanceTurn();
-    else if(ended&&["base_self_damage","exact_25","perfect25_denied"].includes(ended.reason))
+    else if(ended&&["base_self_damage","eliminated","no_target","exact_25","perfect25_denied"].includes(ended.reason))
       setTimeout(()=>{if(localEngineActive()&&phase==="turn_done")advanceTurn();},220);
     return true;
   }
