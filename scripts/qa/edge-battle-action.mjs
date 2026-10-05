@@ -46,8 +46,8 @@ function fakeStore({modeId,members,seed}){
     async loadAction(request){
       const auth=authorize(request);
       if(auth.replay) return auth;
-      const seat=db.state.seats?.find(entry=>entry.uid===request.userId)?.seat??auth.member.seat;
-      return {state:copy(db.state),seq:db.seq,matchId:'match-1',seat,rng:{...db.rng},ruleVersion:'duel-1'};
+      // Wie die RPC: der Lobby-Sitz, nicht der Engine-Sitz.
+      return {state:copy(db.state),seq:db.seq,matchId:'match-1',seat:auth.member.seat,rng:{...db.rng},ruleVersion:'duel-1'};
     },
     async commitAction(request){
       const auth=authorize(request);

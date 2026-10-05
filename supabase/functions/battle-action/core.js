@@ -125,9 +125,12 @@ export function createBattleActionHandler({engine,store}){
     if(BLOCKED_ACTIONS.has(request.type)) throw new ActionError(422,'ACTION_NOT_ONLINE',request.type);
     if(stored.rng?.drawIndex!==ctx.rng.drawIndex) throw new ActionError(500,'RNG_OUT_OF_SYNC');
     const state={...stored,rng:{algorithm:'mulberry32',seed:ctx.rng.seed,state:ctx.rng.state,drawIndex:ctx.rng.drawIndex}};
-    // Den Sitz bestimmt der Server aus der Mitgliedschaft, nie die Nutzlast.
+    // Den Sitz bestimmt der Server, nie die Nutzlast. Der Engine-Sitz ist die
+    // beim Start gemischte Zugfolge, nicht der Lobby-Sitz aus dd_battle_members.
+    const seat=ctx.state.seats?.find(entry=>entry.uid===request.userId)?.seat;
+    if(!Number.isInteger(seat)) throw new ActionError(403,'NOT_IN_MATCH');
     const {seat:_ignoredSeat,type:_ignoredType,...fields}=request.payload;
-    const result=engine.reduce(state,{...fields,type:request.type,seat:ctx.seat});
+    const result=engine.reduce(state,{...fields,type:request.type,seat});
     if(result.rejected) throw new ActionError(422,'ACTION_REJECTED',result.reason);
     return {engineState:result.state,seats:ctx.state.seats,events:result.events};
   }
