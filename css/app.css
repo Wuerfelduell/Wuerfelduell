@@ -13669,3 +13669,192 @@ html[data-v28-rework="2"] :is(#prestigeShopScreen,.shop-vorschau) .shop-kaufen>.
 /* Zwei Spalten erst ab 480px: darunter brechen Effektnamen und der
    Knopftext in den schmalen Karten. */
 @media(max-width:479px){.shop-daily-grid{grid-template-columns:1fr}}
+
+/* ===== 39-ui-konsistenz.css ===== */
+/* ============================================================
+   UI-Konsistenz der Menübildschirme
+   Jede Übersicht wurde gegen alle anderen verglichen (Befundliste
+   05.10., vom Nutzer am 19.10. vollständig freigegeben). Die Regeln
+   hier legen fest, was überall gleich sein muss: Innenabstand,
+   Kopfzeile, Zurück-Knopf, Untertitel, Kartenüberschriften und
+   lesbare Beschriftungen auf hellen Karten. Gemessen wird das von
+   scripts/qa/ui-konsistenz.mjs.
+   Nur Darstellung; Spielregeln, Kauf- und Online-Logik unverändert.
+   ============================================================ */
+
+/* ---- 5 · ein Innenabstand für alle Bildschirme ----
+   19px ist der Wert, der den Inhalt innerhalb des Ornamentrahmens hält
+   (siehe 37-abschluss, Abschnitt 1). Statistik, Profile, Achievements
+   und Spielvorbereitung hatten eigene, engere Werte. */
+html[data-v28-rework="2"] body :is(#setup,#achievementsScreen.screen-card:not(.hidden),.screen-card){
+  padding-top:8px!important;
+  padding-left:19px!important;
+  padding-right:19px!important;
+}
+
+/* ---- 6 · eine Kopfzeile: gleiche Höhe, gleiche Titelgröße ---- */
+html[data-v28-rework="2"] body :is(#setup,.screen-card) .screen-topbar{
+  min-height:59px;
+  align-items:center;
+  gap:10px;
+}
+html[data-v28-rework="2"] body :is(#setup,.screen-card) .screen-topbar :is(.screen-title,.setup-title){
+  margin:0;
+  font-size:clamp(21px,6.2vw,34px);
+  letter-spacing:-.02em;
+  line-height:1.12;
+}
+html[data-v28-rework="2"] body #setup .screen-topbar > div{min-width:0}
+
+/* ---- 8 · auch die Kampagnen gehen mit dem Pfeil zurück ---- */
+html[data-v28-rework="2"] body :is(#campaignBackBtn,#duoCampaignBackBtn,#trioCampaignBackBtn){
+  background:var(--p6-back-button) center/contain no-repeat!important;
+}
+
+/* ---- 9 · Untertitel überall sichtbar, gleiche Farbe und Größe ---- */
+html[data-v28-rework="2"] body .campaign-hub > .screen-subtitle{display:block}
+html[data-v28-rework="2"] body :is(#setup,.screen-card) :is(.screen-subtitle,.setup-intro){
+  color:#5d6e82;
+  font-size:13px;
+}
+
+/* ---- 3 · Fähigkeitskarten bleiben in der Spalte ---- */
+html[data-v28-rework="2"] body #abilitiesScreen .ability-list{padding-left:0;padding-right:0}
+html[data-v28-rework="2"] body #abilitiesScreen .ability-list-item{
+  width:100%;
+  min-width:0;
+  margin-left:0;
+  margin-right:0;
+}
+
+/* ---- 4 · Welt-Banner der Kampagnen: bleibt bewusst breiter ----
+   Das gemalte Banner braucht sein 3:1-Format; in der schmaleren Spalte
+   würde es entweder den Text abschneiden oder die Ornamente dehnen
+   (Projektregel „Bilder und Rahmen"). Die 32px-Überbreite aus
+   37-abschluss bleibt deshalb stehen, bis der Nutzer entscheidet. */
+
+/* Lange Profilnamen brechen in der XP-Leiste um, statt über den Rahmen zu laufen. */
+html[data-v28-rework="2"] body .campaign-hub .campaign-mastery-xp strong{
+  min-width:0;
+  white-space:normal;
+  text-align:center;
+  text-wrap:balance;
+}
+
+/* XP-Plakette der Bossfelder sitzt mittig wie bei allen anderen Feldern;
+   die Boss-Regel für das gedrehte Raute-Label nahm ihr die Zentrierung. */
+html[data-v28-rework="2"] body .campaign-hub .campaign-node.boss > .node-xp-badge{
+  transform:translateX(-50%);
+}
+
+/* ---- 2 · BETA-Abzeichen im Online-Titel wie im Hauptmenü ---- */
+html[data-v28-rework="2"] body #onlineScreen .online-beta-badge{
+  width:58px;
+  height:30px;
+  min-width:0;
+  padding:0;
+  border:0;
+  background:none;
+  box-shadow:none;
+  vertical-align:middle;
+}
+html[data-v28-rework="2"] body #onlineScreen .online-beta-badge img{
+  width:100%;height:100%;object-fit:contain;
+}
+
+/* ---- 1 · lesbare Beschriftungen auf hellen Karten (Account, Online) ----
+   Die Farben stammen noch aus dem dunklen Thema vor V28. */
+html[data-v28-rework="2"] body :is(#accountScreen,#onlineScreen) :is(.cloud-card,.online-card) label,
+html[data-v28-rework="2"] body :is(#accountScreen,#onlineScreen) :is(.online-card-sub,.online-divider,.cloud-status-card > span,.online-connection,.cloud-sync-hint){
+  color:#5d6e82;
+}
+html[data-v28-rework="2"] body .storage-note{color:#5d6e82}
+html[data-v28-rework="2"] body .storage-note strong{color:var(--dd-ink)}
+
+/* ---- 13 · Kartenüberschriften: Serif in Titelfarbe ---- */
+html[data-v28-rework="2"] body #rulesScreen .menu-info-card > strong,
+html[data-v28-rework="2"] body #settingsScreen .setting-label,
+html[data-v28-rework="2"] body .online-card-title,
+html[data-v28-rework="2"] body .cloud-card-title,
+html[data-v28-rework="2"] body .cloud-status-card > strong,
+html[data-v28-rework="2"] body .changelog-version,
+html[data-v28-rework="2"] body .ability-list-head > span:last-child{
+  font-family:Georgia,"Times New Roman",serif;
+  color:var(--dd-ink);
+  font-weight:900;
+  text-transform:none;
+  letter-spacing:0;
+}
+html[data-v28-rework="2"] body .ability-list-number{color:#9a6a12}
+
+/* ---- 12 · Kampagnen-Auswahl: Label im Kopfbanner wie beim Training ----
+   Das Label trug einen eigenen Navy-Knopf unter dem Banner; das Banner
+   des Rahmens blieb dadurch leer. */
+html[data-v28-rework="2"] body .campaign-mode-panel{padding-top:4px}
+html[data-v28-rework="2"] body .campaign-mode-panel>.utility-kicker{
+  width:auto;
+  min-height:0;
+  display:block;
+  margin:-38px 0 30px;
+  padding:0;
+  background:none!important;
+  transform:translateY(8px);
+}
+@media (max-width:540px){
+  html[data-v28-rework="2"] body .campaign-mode-panel>.utility-kicker{margin-top:-34px}
+}
+
+/* ---- 11 · keine hellen Rechtecke hinter dem Goldrahmen ----
+   Das Rahmenbild hat transparente Ränder und malt seine Fläche selbst
+   (border-image fill). Schatten und Volltonfarbe gehören aber zum ganzen
+   Kasten: der Schatten zeichnet dessen Rechteck nach, die Farbe schaut an
+   den runden Ecken heraus. */
+html[data-v28-rework="2"] body :is(#rulesScreen,#settingsScreen,#accountScreen,#onlineScreen,#statsScreen) :is(.menu-info-card,.cloud-card,.cloud-status-card,.online-card,.online-connection,.stats-kpi){
+  background-color:transparent!important;
+  box-shadow:none!important;
+}
+
+/* ---- Folgen des gemeinsamen Innenabstands auf schmalen Telefonen ----
+   Mit 19px statt 6px Rand werden einige Inhalte bei 320px enger; sie
+   müssen schrumpfen statt über die Spalte zu laufen. */
+html[data-v28-rework="2"] body #accountScreen :is(.cloud-account-shell,.cloud-account-grid){
+  grid-template-columns:minmax(0,1fr);
+}
+html[data-v28-rework="2"] body #accountScreen :is(.cloud-status-card,.cloud-card,.cloud-card input){
+  min-width:0;
+}
+html[data-v28-rework="2"] body #abilitiesScreen .ability-list-head > span:last-child{
+  min-width:0;
+  overflow-wrap:anywhere;
+  hyphens:auto;
+}
+@media (max-width:340px){
+  html[data-v28-rework="2"] body #statsScreen .ability-stats-table{grid-template-columns:minmax(0,1fr)}
+  html[data-v28-rework="2"] body #statsScreen .ability-stat-row{
+    min-width:0;
+    margin-left:0;
+    grid-template-columns:minmax(0,1fr) 36px 25px 27px 37px;
+  }
+  html[data-v28-rework="2"] body #prestigeShopScreen .prestige-wallet > span{letter-spacing:0}
+}
+
+/* ---- ein Zurück-Knopf in einer Größe, auf jeder Breite ---- */
+html[data-v28-rework="2"] body :is(#setup,.screen-card) .screen-topbar > button{
+  width:50px!important;
+  height:50px!important;
+  min-width:50px!important;
+  min-height:50px!important;
+  flex:0 0 50px!important;
+}
+
+/* ---- Online-Titel samt BETA-Abzeichen bleibt einzeilig ---- */
+html[data-v28-rework="2"] body #onlineScreen .screen-topbar .screen-title{
+  display:flex;
+  align-items:center;
+  gap:6px;
+  white-space:nowrap;
+  min-width:0;
+}
+@media (max-width:360px){
+  html[data-v28-rework="2"] body #onlineScreen .online-beta-badge{width:46px;height:24px}
+}
