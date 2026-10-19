@@ -268,8 +268,8 @@ body:not(.test-lab-active) .die.locked::after{
    ============================================================ */
 
 html[data-v28-rework="2"] #settingsScreen .menu-info-card,
-html[data-v28-rework="2"] #accountScreen .cloud-card,
-html[data-v28-rework="2"] #accountScreen .cloud-status-card,
+html[data-v28-rework="2"] :is(#accountScreen,#wdAccountGate) .cloud-card,
+html[data-v28-rework="2"] :is(#accountScreen,#wdAccountGate) .cloud-status-card,
 html[data-v28-rework="2"] #onlineScreen .online-card,
 html[data-v28-rework="2"] #onlineScreen .online-connection{
   box-sizing:border-box;
@@ -294,8 +294,8 @@ html[data-v28-rework="2"] #settingsScreen .menu-info-card{
   padding:20px 20px 12px!important;
 }
 
-html[data-v28-rework="2"] #accountScreen .cloud-card,
-html[data-v28-rework="2"] #accountScreen .cloud-status-card,
+html[data-v28-rework="2"] :is(#accountScreen,#wdAccountGate) .cloud-card,
+html[data-v28-rework="2"] :is(#accountScreen,#wdAccountGate) .cloud-status-card,
 html[data-v28-rework="2"] #onlineScreen .online-card,
 html[data-v28-rework="2"] #onlineScreen .online-connection{
   padding:20px 20px 14px;
@@ -309,8 +309,8 @@ html[data-v28-rework="2"] #onlineScreen .online-connection{
 @media (max-width:380px){
   html[data-v28-rework="2"] #statsScreen .stats-kpi,
   html[data-v28-rework="2"] #settingsScreen .menu-info-card,
-  html[data-v28-rework="2"] #accountScreen .cloud-card,
-  html[data-v28-rework="2"] #accountScreen .cloud-status-card,
+  html[data-v28-rework="2"] :is(#accountScreen,#wdAccountGate) .cloud-card,
+  html[data-v28-rework="2"] :is(#accountScreen,#wdAccountGate) .cloud-status-card,
   html[data-v28-rework="2"] #onlineScreen .online-card,
   html[data-v28-rework="2"] #onlineScreen .online-connection{
     border-image-width:10px 15px!important;
