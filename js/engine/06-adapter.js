@@ -126,9 +126,19 @@
   function stopLive(){const state=getLiveState();live=null;return state;}
   function hasLive(){return !!live;}
   function getLiveState(){return live?copy(live.state):null;}
+  function reduceLive(action,random){
+    if(action.type!==A.ROLL_ATTACK||typeof random!=='function')return engine.reduce(live.state,action,random);
+    // First Strike aendert gegebenenfalls den ersten Wuerfel. Statistiken
+    // zaehlen wie im Browser den urspruenglichen Wurf, die UI das Endergebnis.
+    const rolledState=copy(live.state),draws=[];
+    const result=engine.reduce(live.state,action,()=>{const value=random();draws.push(value);return value;});
+    const roll=result.events.find(event=>event.type==='AttackRolled'&&event.kind==='main');
+    if(roll){let index=0;roll.rawValues=roll.indices.map(()=>engine.baseRules.rollDie(rolledState,()=>draws[index++]));}
+    return result;
+  }
   function dispatchLiveAction(action,random=root.WDRng?.random){
     if(!live) throw new Error('live_engine_not_started');
-    const before=copy(live.state),result=engine.reduce(live.state,copy(action),random);
+    const before=copy(live.state),result=reduceLive(copy(action),random);
     if(result.rejected) throw new Error('live_action_rejected:'+result.reason);
     live.state=result.state;
     return {before,state:copy(live.state),events:copy(result.events),actions:[copy(action)]};
@@ -138,7 +148,7 @@
     const before=copy(live.state),move={name,args:copy(args||[])},actions=browserMoveToActions(move,live.state,browserState);
     let events=[];
     for(const action of actions){
-      const result=engine.reduce(live.state,action,random);
+      const result=reduceLive(action,random);
       if(result.rejected) throw new Error('live_action_rejected:'+result.reason);
       live.state=result.state;events.push(...result.events);
     }
