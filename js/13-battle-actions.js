@@ -37,15 +37,11 @@
     // Classic mit sieben/acht Teilnehmern ueberschreitet das Kernschema.
     // Mayhem: Bei Advance 24 initialisiert der Kern den Angriff erst nach dem
     // HP-Draft. Eine dort gewaehlte Wildcard wird dadurch einen Angriff zu frueh
-    // aktiv (QA: 2..6 Spieler, Seed 2). Perfect-25-Ablehnung setzt im Kern
-    // Momentum nicht zurueck. Gezielte 15+10-Zwischenstaende (Seed 7) sind
-    // auch in Classic 3..6 und Overload 2 rot, trotz gruener Zufallsstichprobe.
-    // Der bestehende Classic-1:1-Pfad gehoert zu Schritt 5b-1; weitere lokale
-    // Freigaben warten auf den gemeinsamen Kernfix.
-    const momentumBlocked=rules?.id==="endurance50"||rules?.id==="overload75"||
-      (rules?.id==="classic"&&players.length>2);
+    // aktiv (QA: 2..6 Spieler, Seed 2). Das ist eine offene Regelfrage, Mayhem
+    // bleibt bis zur Entscheidung im Altpfad. Die Momentum-Abweichung nach
+    // verweigertem Perfect 25 ist im Kern behoben.
     return ENGINE_LOKALES_DUELL===true && !!rules && players.length>=2 &&
-      players.length<=Math.min(rules.maxPlayers,6) && rules.id!=="mayhem" && !momentumBlocked &&
+      players.length<=Math.min(rules.maxPlayers,6) && rules.id!=="mayhem" &&
       !campaignMode && !tutorialMode && mode===`local-${rules.id}` &&
       !document.body.classList.contains("test-lab-active");
   }

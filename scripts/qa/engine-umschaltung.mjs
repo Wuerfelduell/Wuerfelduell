@@ -23,7 +23,9 @@ const momentumFailures=[{modeId:'endurance50',requestedPlayers:2,seed:38},
 function momentumFailure(test){return momentumFailures.find(item=>item.modeId===test.modeId&&item.requestedPlayers===test.requestedPlayers);}
 function targetedMomentumFailure(test){return test.modeId==='classic'&&test.requestedPlayers>=3&&test.requestedPlayers<=6||
   test.modeId==='overload75'&&test.requestedPlayers===2;}
-function coreBlocked(test){return test.requestedPlayers>6||test.modeId==='mayhem'||!!momentumFailure(test)||targetedMomentumFailure(test);}
+// Die Momentum-Abweichung nach verweigertem Perfect 25 ist im Kern behoben;
+// die frueheren Fehlerseeds und der gezielte Zwischenstand bleiben als Regressionsproben.
+function coreBlocked(test){return test.requestedPlayers>6||test.modeId==='mayhem';}
 function fallbackReason(test){return test.requestedPlayers>6?'Kern maximal 6 Sitze':
   test.modeId==='mayhem'?'Kern: Wildcard vorgezogen nach Advance-24-Draft':'Kern: Momentum bleibt nach Perfect-25-Ablehnung';}
 function seedCount(test){return test.requestedPlayers>6?1:count;}
@@ -475,17 +477,8 @@ async function checkCoreMomentum(){
       // Vorbereitung und dieselben drei Runden wie in der Paritaetsmessung.
       await p.evaluate(()=>{window.__switchEligible=localEngineEligible;localEngineEligible=()=>ENGINE_LOKALES_DUELL;});
       const forced={...test,forceCore:true};await play(forced,seed,false,false,p);
-      let mismatch;
-      try{await play(forced,seed,true,false,p);}catch(error){
-        const serialized=error.message.split('switch_action_mismatch:')[1]?.split('\n')[0];
-        if(!serialized)throw error;mismatch=JSON.parse(serialized);
-      }
-      assert.ok(mismatch,`Kern-Ausnahme muss reproduzierbar bleiben: ${test.modeId}/${test.requestedPlayers}`);
-      const legacy=JSON.parse(mismatch.legacy),engine=JSON.parse(mismatch.engine);
-      const index=legacy.players.findIndex((player,index)=>player.momentumStreak!==engine.players[index].momentumStreak);
-      assert.ok(index>=0);assert.equal(legacy.players[index].momentumStreak,0);assert.ok(engine.players[index].momentumStreak>0);
-      assert.ok(mismatch.actions.slice(-3).some(action=>action.type==='roll_perfect25'));
-      console.log(`Kern-Ausnahme ${test.modeId}/${test.requestedPlayers}, Seed ${seed}, Aktion ${mismatch.actionIndex}: Perfect 25 abgelehnt, Momentum Altpfad 0 / Kern ${engine.players[index].momentumStreak}. Folgeangriffe erhalten unberechtigt mehr Schaden.`);
+      await play(forced,seed,true,false,p);
+      console.log(`Regressionsprobe ${test.modeId}/${test.requestedPlayers}, Seed ${seed}: Perfect-25-Ablehnung, Kern und Altpfad gleich.`);
     }finally{
       await p.evaluate(()=>{localEngineEligible=window.__switchEligible;});await p.close();
     }
@@ -538,11 +531,11 @@ async function checkCoreTargetedMomentum(){
       }finally{WDEngine.createState=createState;localEngineEligible=eligible;WDEngineAdapter.stopLive();}
     },{useEngine,test});
     const legacy=await probe(false),engine=await probe(true);
-      assert.equal(legacy.momentum,0);assert.equal(engine.momentum,2);
+      assert.equal(legacy.momentum,0);assert.equal(engine.momentum,0);
       assert.equal(legacy.permitRng,1);assert.equal(engine.permitRng,1);
-      assert.equal(legacy.damage,10);assert.equal(engine.damage,14);
-      assert.equal(legacy.targetHp-engine.targetHp,4);
-      console.log(`Kern-Ausnahme ${test.modeId}/${test.requestedPlayers}, Seed 7 im legalen 15+10-Zwischenstand: Momentum 2, Basiswurf 25, Perfect 25 D6=1 abgelehnt. Altpfad Momentum 0 / Kern 2; naechster Angriff mit zwei 5er-Treffern: ${legacy.damage} / ${engine.damage} HP Schaden.`);
+      assert.equal(legacy.damage,10);assert.equal(engine.damage,10);
+      assert.equal(legacy.targetHp,engine.targetHp);
+      console.log(`Regressionsprobe ${test.modeId}/${test.requestedPlayers}, Seed 7 im 15+10-Zwischenstand: Perfect 25 D6=1 abgelehnt, Momentum und Folgeschaden in Kern und Altpfad gleich (${engine.damage} HP).`);
     }finally{await p.close();}
   }
 }
