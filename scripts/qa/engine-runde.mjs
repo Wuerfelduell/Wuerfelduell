@@ -251,6 +251,16 @@ function playRound(modeId,playerCount,seed){
   state=act(state,A.LOCK_SELECTED).state;
   equal([state.turn.phase,state.players[0].effects.momentumStreak],['turn_done',0],
     'Exakt 25 ohne Angriff beendet die Momentum-Serie');
+
+  // Gefunden vom Umschaltpruefstand (Codex, 5b-2): der Browser beendet die
+  // Serie auch, wenn Perfect 25 den Angriff verweigert.
+  state=preparedBase('endurance50',[5,5,5,5,5],[15,10]);
+  state.players[0].effects.momentumStreak=2;
+  state=act(state,A.LOCK_SELECTED).state;
+  equal(state.turn.phase,'perfect25','Perfect 25 fragt bei exakt 25');
+  state=act(state,A.ROLL_PERFECT25,{},sequence([face(1)])).state;
+  equal([state.turn.phase,state.players[0].effects.momentumStreak,state.attack.momentumBonus],['turn_done',0,0],
+    'Verweigertes Perfect 25 beendet die Momentum-Serie');
 }
 
 {
