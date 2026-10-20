@@ -20,7 +20,8 @@
     "check:engine-angriff": "node scripts/qa/engine-angriff.mjs",
     "check:engine-runde": "node scripts/qa/engine-runde.mjs",
     "check:engine-state-browser": "node scripts/qa/engine-state-browser.mjs",
-    "check:edge-battle-action": "node scripts/qa/edge-battle-action.mjs"
+    "check:edge-battle-action": "node scripts/qa/edge-battle-action.mjs",
+    "check:server-kampf-pg": "node scripts/qa/server-kampf-pg.mjs"
   },
   "engines": {
     "node": ">=20"
