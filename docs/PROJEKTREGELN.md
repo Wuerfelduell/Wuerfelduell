@@ -22,7 +22,7 @@ Repo: `Wuerfelduell/Wuerfelduell`. Direkte Commits auf `main` sind erlaubt.
 - `js/engine/` — DOM-freier Zufallsadapter sowie gemeinsame Definitionen
   und State-Helfer vor `js/01`. Noch kein produktiver Reducer; Lieferfolge
   und Schema in `docs/SERVER-ENGINE-ENTWURF.md`.
-- `src/styles/legacy/*.css` — **11 Quelldateien**, das sind die zu
+- `src/styles/legacy/*.css` — **12 Quelldateien**, das sind die zu
   bearbeitenden. `css/app.css` ist erzeugt und wird nie von Hand editiert.
 - `lang/de.js`, `lang/en.js`, `lang/en-campaign.js`, `lang/en-changelog.js`
 - `assets/ui/v28/png/…` (webp) und `…/svg/…`
@@ -31,7 +31,7 @@ Repo: `Wuerfelduell/Wuerfelduell`. Direkte Commits auf `main` sind erlaubt.
 
 ## Vor jedem Push — ohne Ausnahme
 
-1. `npm run build:styles` — erzeugt `css/app.css` aus den 11 Quellen
+1. `npm run build:styles` — erzeugt `css/app.css` aus den 12 Quellen
 2. `node scripts/bump-version.mjs <major.minor.patch>` — setzt die
    Versionsmarker in `index.html`, `js/01-config.js`, `package.json`,
    `sw.js`, `version.json`. **Den Changelog fasst das Skript nicht an.**
@@ -51,6 +51,10 @@ Repo: `Wuerfelduell/Wuerfelduell`. Direkte Commits auf `main` sind erlaubt.
    zwei Replays, Host-Protokoll und Kampfansicht in fünf Breiten auf DE/EN.
    Seit V28.14.0 laufen auch `check:engine-state` (Node) und
    `check:engine-state-browser` (vier Modi in DE/EN und fünf Breiten).
+   Seit V28.14.23 läuft `check:ui-konsistenz`: alle 14 Menübildschirme
+   gegeneinander (Kopfzeile, Innenabstand, Untertitel, Kartenüberschriften,
+   Kontrast am gerenderten Bild, Spaltenüberlauf) in DE/EN und fünf Breiten.
+   Neue Menüs gehören in die Liste `SCREENS` dieses Prüfstands.
 5. `AI_Handover.md` prüfen: Tabelle unter „Stand" nachziehen, alles
    andere nur bei echter Änderung.
 

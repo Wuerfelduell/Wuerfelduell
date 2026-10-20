@@ -201,7 +201,7 @@ async function resumeSupabaseSession(){
     if(!active) return;
     uid=String(active.uid||uid||"");
     authReady=!!uid;
-    setNotice("Laufende Supabase-Lobby wird wieder verbunden …");
+    setNotice("Laufende Lobby wird wieder verbunden …");
     await enterRoom(String(active.code||active.snapshot?.code||""),String(active.snapshot?.meta?.hostUid||"")===uid,{roomId:active.id,snapshot:active.snapshot});
   }catch(error){
     console.warn("Supabase reconnect",error);
@@ -271,11 +271,11 @@ async function enterRoom(code,isHost,{roomId=null,snapshot=null}={}){
       if(generation!==roomSubscriptionGeneration) return;
       if(status==="SUBSCRIBED"){
         transportConnected=true;
-        setConnection("Supabase Live verbunden","online");
+        setConnection("Live verbunden","online");
         bridge?.setConnected?.(true);
       }else if(["CHANNEL_ERROR","TIMED_OUT","CLOSED","ERROR"].includes(String(status||""))){
         transportConnected=false;
-        setConnection("Supabase Live getrennt","offline");
+        setConnection("Live getrennt","offline");
         bridge?.setConnected?.(false);
         if(error){
           console.error("Supabase room subscription",error);
@@ -424,7 +424,7 @@ function stageHostState(rawState,request){
   }).catch(err=>{
     console.error("Host state publish",err);
     bridge?.setConnected?.(false);
-    setNotice(`Match-State konnte nicht zu ${isSupabaseOnline?"Supabase":"Firebase"} gesendet werden. Match wurde eingefroren.`,"error");
+    setNotice("Der Spielstand konnte nicht an den Server gesendet werden. Das Match wurde eingefroren.","error");
   });
   return state;
 }
@@ -903,7 +903,7 @@ async function createRoom(){
     }
     if(!code) throw new Error("Kein freier Raumcode gefunden");
     await enterRoom(code,true);
-  }catch(err){console.error("Create room",err);setNotice(`Lobby konnte nicht erstellt werden. Prüfe Internet/${isSupabaseOnline?"Supabase":"Firebase"} und versuche es erneut.`,"error");}
+  }catch(err){console.error("Create room",err);setNotice("Lobby konnte nicht erstellt werden. Prüfe deine Internetverbindung und versuche es erneut.","error");}
   finally{setBusy(false);}
 }
 
@@ -945,7 +945,7 @@ async function joinRoom(){
     console.error("Join room",err);
     const codeText=String(err?.code||"").toLowerCase();
     const errorText=String(err?.message||"");
-    const msg=/ROOM_NOT_FOUND/i.test(errorText)?"Raumcode nicht gefunden.":/ROOM_FULL/i.test(errorText)?"Diese Lobby ist bereits voll.":/ROOM_STARTED/i.test(errorText)?"Diese Lobby läuft bereits und kann nur von vorhandenen Spielern wieder verbunden werden.":codeText.includes("permission")||/permission denied/i.test(errorText)?`${isSupabaseOnline?"Supabase":"Firebase"} verweigert den Zugriff. Bitte erneut anmelden.`:"Beitreten fehlgeschlagen. Prüfe Verbindung und versuche es erneut.";
+    const msg=/ROOM_NOT_FOUND/i.test(errorText)?"Raumcode nicht gefunden.":/ROOM_FULL/i.test(errorText)?"Diese Lobby ist bereits voll.":/ROOM_STARTED/i.test(errorText)?"Diese Lobby läuft bereits und kann nur von vorhandenen Spielern wieder verbunden werden.":codeText.includes("permission")||/permission denied/i.test(errorText)?"Der Server verweigert den Zugriff. Bitte erneut anmelden.":"Beitreten fehlgeschlagen. Prüfe Verbindung und versuche es erneut.";
     setNotice(msg,"error");
   }finally{setBusy(false);}
 }
@@ -1079,7 +1079,7 @@ async function startAnonymousAuth({retry=false}={}){
 async function startSupabaseAuth(){
   if(supabaseAuthPromise) return supabaseAuthPromise;
   supabaseAuthPromise=(async()=>{
-    setConnection("Supabase verbindet …","pending");
+    setConnection("Verbindet …","pending");
     setBusy(false);
     try{
       if(!getSupabaseBackend()) throw new Error("SUPABASE_BATTLE_BACKEND_MISSING");
@@ -1088,13 +1088,13 @@ async function startSupabaseAuth(){
       if(!uid) throw new Error("SUPABASE_IDENTITY_MISSING");
       authReady=true;
       transportConnected=navigator.onLine!==false;
-      setConnection(identity?.anonymous?"Supabase verbunden · Gastkonto":"Supabase verbunden","online");
+      setConnection(identity?.anonymous?"Verbunden · Gastkonto":"Verbunden","online");
       bridge?.setConnected?.(true);
     }catch(error){
       console.error("Supabase online auth",error);
       authReady=false;
       transportConnected=false;
-      setConnection("Supabase-Verbindung fehlgeschlagen","offline");
+      setConnection("Verbindung fehlgeschlagen","offline");
       setNotice(`Supabase-Anmeldung fehlgeschlagen · ${String(error?.message||error||"Unbekannter Fehler")}`,"error");
     }
     setBusy(false);
@@ -1112,9 +1112,9 @@ async function primeSupabaseAuth(){
       uid=String(user.id||"");
       authReady=!!uid;
       transportConnected=authReady&&navigator.onLine!==false;
-      setConnection(user.is_anonymous?"Supabase verbunden · Gastkonto":"Supabase verbunden",transportConnected?"online":"offline");
+      setConnection(user.is_anonymous?"Verbunden · Gastkonto":"Verbunden",transportConnected?"online":"offline");
     }else{
-      setConnection("Supabase bereit","pending");
+      setConnection("Bereit","pending");
     }
     const client=await root.getClient();
     supabaseAuthSubscription=client.auth.onAuthStateChange((_event,nextSession)=>{
@@ -1129,14 +1129,14 @@ async function primeSupabaseAuth(){
       authReady=!!nextUid;
       transportConnected=authReady&&navigator.onLine!==false;
       resumeAttempted=false;
-      if(authReady) setConnection(nextUser?.is_anonymous?"Supabase verbunden · Gastkonto":"Supabase verbunden",transportConnected?"online":"offline");
-      else setConnection("Supabase bereit","pending");
+      if(authReady) setConnection(nextUser?.is_anonymous?"Verbunden · Gastkonto":"Verbunden",transportConnected?"online":"offline");
+      else setConnection("Bereit","pending");
       bridge?.setConnected?.(transportConnected);
       setBusy(false);
     }).data?.subscription||null;
   }catch(error){
     console.warn("Supabase session probe",error);
-    setConnection("Supabase bereit","pending");
+    setConnection("Bereit","pending");
   }
 }
 

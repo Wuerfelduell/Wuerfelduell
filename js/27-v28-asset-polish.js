@@ -17,6 +17,7 @@
   };
 
   const titleIcons = {
+    setup:"menu/play.svg",
     accountScreen:"menu/account.svg",
     onlineScreen:"menu/online.svg",
     campaignScreen:"menu/campaign.svg",
@@ -77,12 +78,15 @@
   function decorateScreenTitles(){
     for(const [screenId,path] of Object.entries(titleIcons)){
       const screen=document.getElementById(screenId);
-      const topbar=screen?.querySelector(":scope > .screen-topbar");
-      const title=topbar?.querySelector(".screen-title");
+      // Regeln, Fähigkeiten und Changelog stecken ihre Kopfzeile in einen
+      // Scrollrahmen; die Spielvorbereitung nutzt .setup-title im Wrapper.
+      const topbar=screen?.querySelector(":scope > .screen-topbar, :scope > .screen-scroll-inner > .screen-topbar");
+      const title=topbar?.querySelector(".screen-title, .setup-title");
       if(!title || title.dataset.v28IconReady) continue;
       stripLeadingEmojiFromTitle(title);
       title.dataset.v28IconReady="1";
-      title.insertAdjacentElement("beforebegin",img(path,"screen-title-icon"));
+      const anchor=title.parentElement===topbar?title:title.parentElement;
+      anchor.insertAdjacentElement("beforebegin",img(path,"screen-title-icon"));
     }
 
   }
