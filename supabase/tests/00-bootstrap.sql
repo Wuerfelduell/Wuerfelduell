@@ -36,3 +36,6 @@ do $$ begin
     create publication supabase_realtime;
   end if;
 end $$;
+
+-- Statistik-Migrationen unterscheiden Gastkonten von registrierten Konten.
+alter table auth.users add column if not exists is_anonymous boolean not null default false;
