@@ -13727,11 +13727,28 @@ html[data-v28-rework="2"] body #abilitiesScreen .ability-list-item{
   margin-right:0;
 }
 
-/* ---- 4 · Welt-Banner der Kampagnen: bleibt bewusst breiter ----
-   Das gemalte Banner braucht sein 3:1-Format; in der schmaleren Spalte
-   würde es entweder den Text abschneiden oder die Ornamente dehnen
-   (Projektregel „Bilder und Rahmen"). Die 32px-Überbreite aus
-   37-abschluss bleibt deshalb stehen, bis der Nutzer entscheidet. */
+/* ---- 4 · Welt-Banner der Kampagnen in der Spalte ----
+   Weltname und „Welt 1 · 0/15 Encounter" teilen sich oben mittig eine
+   Zeile; die gesparte Zeile reicht, damit das gemalte 3:1-Banner in die
+   Spalte passt, ohne Text abzuschneiden oder die Ornamente zu dehnen.
+   (Vorher war es auf Telefonen 32px breiter als die Spalte.) */
+html[data-v28-rework="2"] body .campaign-hub .campaign-world-desc{
+  width:100%;
+  margin-left:0;
+  margin-right:0;
+}
+html[data-v28-rework="2"] body .campaign-hub .campaign-world-banner-copy{
+  flex-direction:row;
+  flex-wrap:wrap;
+  justify-content:center;
+  align-items:baseline;
+  column-gap:8px;
+  row-gap:2px;
+  text-align:center;
+}
+html[data-v28-rework="2"] body .campaign-hub .campaign-world-banner-copy>strong{order:1;max-width:100%}
+html[data-v28-rework="2"] body .campaign-hub .campaign-world-banner-kicker{order:2;white-space:nowrap}
+html[data-v28-rework="2"] body .campaign-hub .campaign-world-banner-desc{order:3;flex:1 0 100%}
 
 /* Lange Profilnamen brechen in der XP-Leiste um, statt über den Rahmen zu laufen. */
 html[data-v28-rework="2"] body .campaign-hub .campaign-mastery-xp strong{

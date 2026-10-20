@@ -2,8 +2,8 @@
 // Anforderung vor Umsetzung (Befundliste 05.10., vom Nutzer am 19.10. vollständig bestätigt):
 //  1  Texte lesbar: Kontrast Schrift/Hintergrund am gerenderten Bild mindestens 3:1
 //  2  BETA-Abzeichen lesbar (Bild mindestens 40×20 px wie im Hauptmenü)
-//  3/4 Kein Element ragt aus der Inhaltsspalte (außer in seitlich scrollenden Leisten und dem
-//      gemalten Welt-Banner, das für sein 3:1-Format bewusst breiter bleibt)
+//  3/4 Kein Element ragt aus der Inhaltsspalte (außer in seitlich scrollenden Leisten);
+//      der Text des Welt-Banners bleibt innerhalb der gemalten Innenfläche
 //  5  gleicher Innenabstand links/rechts auf allen Bildschirmen
 //  6  Kopfzeile überall gleich: Position, Höhe, Titelgröße, Titelschrift
 //  7  jeder Titel trägt ein Titel-Icon
@@ -88,13 +88,19 @@ async function measure(page,id){
       // kleine Zierelemente (Edelsteine, Ecken) dürfen auf der Kante sitzen
       if((cs.position==='absolute'||cs.position==='fixed')&&b.width<48)continue;
       if(el.closest('.dd-select-picker,.utility-overlay'))continue;
-      // Welt-Banner: gemaltes 3:1-Bild, auf Telefonen absichtlich 32px breiter als die Spalte
-      if(el.closest('.campaign-world-desc'))continue;
       if(b.left<L-1.5||b.right>R+1.5){
         if(overhang.some(o=>o.el.contains(el)))continue;
         overhang.push({el,text:`${el.tagName.toLowerCase()}${el.id?'#'+el.id:''}.${[...el.classList].join('.')} ${Math.round(b.left)}–${Math.round(b.right)} (Spalte ${Math.round(L)}–${Math.round(R)}) „${el.textContent.trim().slice(0,24)}“`});
       }
     }
+    const bannerSpill=[...s.querySelectorAll('.campaign-world-desc')].filter(shown).flatMap(banner=>{
+      const r=banner.getBoundingClientRect();
+      const top=r.top+r.height*0.11,bottom=r.bottom-r.height*0.14,left=r.left+r.width*0.052,right=r.right-r.width*0.052;
+      return [...banner.querySelectorAll('.campaign-world-banner-copy > *')].filter(shown).filter(el=>{
+        const range=document.createRange();range.selectNodeContents(el);const b=range.getBoundingClientRect();
+        return b.top<top-1||b.bottom>bottom+1||b.left<left-1||b.right>right+1;
+      }).map(el=>el.textContent.trim().slice(0,30));
+    });
     const headings=CARD_HEADINGS.flatMap(sel=>[...s.querySelectorAll(sel)].filter(shown).slice(0,2).map(el=>({sel,font:getComputedStyle(el).fontFamily,color:getComputedStyle(el).color})));
     const leftChevrons=[...s.querySelectorAll('.dd-trigger-icon')].filter(shown).filter(img=>/chevron-down/.test(img.getAttribute('src')||'')).map(img=>img.closest('label,.setting-row,div')?.textContent.trim().slice(0,30));
     const badge=s.querySelector('.online-beta-badge');
@@ -126,7 +132,7 @@ async function measure(page,id){
       icon:shown(icon),
       sub:sub&&shown(sub)?{size:getComputedStyle(sub).fontSize,color:getComputedStyle(sub).color}:null,
       overhang:overhang.map(o=>o.text).slice(0,5),
-      headings,leftChevrons,jargonText,opaqueCards,
+      bannerSpill,headings,leftChevrons,jargonText,opaqueCards,
       badge:badge&&{w:(badge.querySelector('img')||badge).getBoundingClientRect().width,h:(badge.querySelector('img')||badge).getBoundingClientRect().height}
     };
   },{id,CARD_HEADINGS,jargon:JARGON.source});
@@ -225,6 +231,7 @@ try{
         if(!/Georgia/.test(h.font))fail(at,`Kartenüberschrift ${h.sel} Schrift ${h.font}`);
         if(h.color!==m.title.color)fail(at,`Kartenüberschrift ${h.sel} Farbe ${h.color} statt ${m.title.color}`);
       }
+      for(const text of m.bannerSpill)fail(at,`Text läuft aus dem Welt-Banner: „${text}“`);
       for(const text of m.leftChevrons)fail(at,`Pfeil als Icon im Auswahlfeld „${text}“`);
       for(const text of m.jargonText)fail(at,`Technikbegriff: „${text}“`);
       for(const text of m.opaqueCards)fail(at,`Rechteck hinter dem Rahmenbild (Volltonfarbe oder Schatten): ${text}`);
