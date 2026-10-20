@@ -32,7 +32,8 @@
 
   const SELECT_ICON_PATHS = [
     [/localMode/i,"gameplay/dice.svg"],
-    [/playerCount/i,"gameplay/player.svg"],
+    [/playerCount|maxPlayers/i,"gameplay/player.svg"],
+    [/mode/i,"gameplay/dice.svg"],
     [/dice/i,"gameplay/dice.svg"],
     [/fx/i,"gameplay/attack.svg"],
     [/profile/i,"gameplay/player.svg"],
@@ -299,7 +300,8 @@
     if(isSetupAbilitySelect(select) && !select.value) return "gameplay/mastery.svg";
     if(/ability/i.test(select.id || "") && ABILITY_ICON_PATHS[Number(select.value)]) return ABILITY_ICON_PATHS[Number(select.value)];
     const match = SELECT_ICON_PATHS.find(([pattern]) => pattern.test(select.id || select.className || ""));
-    return match?.[1] || "navigation/chevron-down.svg";
+    // Ohne passendes Bild bleibt das Feld ohne Icon; der Pfeil steht schon rechts.
+    return match?.[1] || "";
   }
 
   function isLegacyAbilitySelect(select){

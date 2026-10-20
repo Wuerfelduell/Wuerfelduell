@@ -52,7 +52,6 @@
   function baue(){
     if(screen.querySelector(".shop-tabs")) return;
     const head=screen.querySelector(".prestige-shop-head");
-    const subtitle=screen.querySelector(".screen-subtitle");
     const equipped=document.getElementById("prestigeEquipped");
     const list=document.getElementById("prestigeShopList");
     if(!head||!equipped||!list) return;
@@ -69,7 +68,6 @@
     head.after(tabs);
     const panel=(id)=>{const d=document.createElement("div");d.id=id;d.className="shop-tab-panel";return d;};
     const trophies=panel("shopTabTrophies"),chests=panel("shopTabChests"),currency=panel("shopTabCurrency"),daily=panel("shopTabDaily");
-    if(subtitle) trophies.appendChild(subtitle);
     trophies.appendChild(equipped);trophies.appendChild(list);
     tabs.after(trophies,chests,currency,daily);
     profilSelect()?.addEventListener("change",render);
