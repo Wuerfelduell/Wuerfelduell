@@ -46,6 +46,7 @@
     const register=el("cloudRegisterBtn"),login=el("cloudLoginBtn"),hint=el("cloudSyncHint");
     if(register)register.textContent=backend.kind==="supabase"?"Account erstellen":"Lokalen Test-Account erstellen";
     if(login)login.textContent=backend.kind==="supabase"?"Einloggen":"Lokaler Test-Login";
+    el("cloudDeleteBtn")?.classList.toggle("hidden",typeof backend.deleteAccount!=="function");
     if(hint)hint.textContent=backend.kind==="supabase"?"Cloud-Saves werden mit Revisionsprüfung gespeichert. Local Save bleibt Offline-Fallback.":"Supabase ist vorbereitet, aber ohne Projekt-URL und Publishable Key bleibt dieses lokale Test-Backend aktiv.";
   }
   async function refresh(){
@@ -93,7 +94,13 @@
     updateBackendUi();
     el("cloudRegisterBtn")?.addEventListener("click",async()=>{try{clearMessage();const result=await backend.register({name:el("cloudRegisterName")?.value,email:el("cloudRegisterEmail")?.value,password:el("cloudRegisterPassword")?.value});el("cloudRegisterPassword").value="";message(result?.pendingConfirmation?"Account created. Confirm the email before logging in.":backend.kind==="supabase"?"DiceDuel account created.":"Local test account created.","good");await refresh();}catch(err){message(err.message,"error");}});
     el("cloudLoginBtn")?.addEventListener("click",async()=>{try{clearMessage();await backend.login({email:el("cloudLoginEmail")?.value,password:el("cloudLoginPassword")?.value});el("cloudLoginPassword").value="";message(backend.kind==="supabase"?"Logged in to DiceDuel Cloud.":"Logged in to the local mock backend.","good");await refresh();}catch(err){message(err.message,"error");}});
-    el("cloudLogoutBtn")?.addEventListener("click",async()=>{await backend.logout();message("Logged out.");await refresh();});el("cloudUploadBtn")?.addEventListener("click",()=>upload().catch(error=>message(error?.message||"Cloud upload failed.","error")));el("cloudDownloadBtn")?.addEventListener("click",()=>download().catch(error=>message(error?.message||"Cloud download failed.","error")));
+    el("cloudLogoutBtn")?.addEventListener("click",async()=>{await backend.logout();message("Logged out.");await refresh();});el("cloudUploadBtn")?.addEventListener("click",()=>upload().catch(error=>message(error?.message||"Cloud upload failed.","error")));el("cloudDownloadBtn")?.addEventListener("click",()=>download().catch(error=>message(error?.message||"Cloud download failed.","error")));el("cloudDeleteBtn")?.addEventListener("click",()=>deleteAccount().catch(error=>message(error?.message||"Account could not be deleted.","error")));
+  }
+  async function deleteAccount(){
+    clearMessage();const session=await backend.getSession();if(!session||typeof backend.deleteAccount!=="function")return;
+    if(!confirm("Account wirklich löschen? Dein Cloud-Save und alle Online-Daten zu diesem Account werden endgültig entfernt. Der Spielstand auf diesem Gerät bleibt erhalten."))return;
+    try{await backend.deleteAccount();message("Dein Account wurde gelöscht.","good");window.WDAccountGate?.notice?.("Dein Account wurde gelöscht.");await refresh();}
+    catch(error){message(error?.message||"Account could not be deleted.","error");}
   }
   function open(openFrontScreen){if(hideAccount())return;clearMessage();refresh().catch(error=>message(error?.message||"Account refresh failed.","error"));openFrontScreen?.(el("accountScreen"));}
   window.WDCloudBackend=Object.freeze({get current(){return backend;},set:installBackend});

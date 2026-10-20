@@ -15,7 +15,8 @@ const files={
   online:await read("js/online/01-online.js"),
   migration:await read("supabase/migrations/20260902170000_diceduel_backend_foundation.sql"),
   edge:await read("supabase/functions/battle-action/index.ts"),
-  supabaseConfig:await read("supabase/config.toml")
+  supabaseConfig:await read("supabase/config.toml"),
+  deleteAccount:await read("supabase/migrations/20261020090000_dd_delete_own_account.sql")
 };
 const errors=[];
 const expect=(condition,message)=>{if(!condition)errors.push(message);};
@@ -57,6 +58,9 @@ expect(/revoke all on public\.dd_accounts,public\.dd_account_saves/.test(files.m
 expect(/grant select on public\.dd_accounts,public\.dd_account_saves/.test(files.migration),"authorized Realtime/select access is missing");
 expect(/interactionOwnerUid/.test(files.migration)&&/DD_STALE_STATE/.test(files.migration),"battle action ownership/sequence validation is missing");
 expect(/revision=v_revision\+1/.test(files.migration),"cloud save revision increment is missing");
+expect(/security definer/.test(files.deleteAccount)&&/delete from auth\.users where id = v_uid/.test(files.deleteAccount),"account deletion must only remove the caller's own auth user");
+expect(/revoke all on function public\.dd_delete_own_account\(\) from public, anon, authenticated/.test(files.deleteAccount)&&/grant execute on function public\.dd_delete_own_account\(\) to authenticated/.test(files.deleteAccount),"account deletion RPC must be granted to authenticated only");
+expect(/dd_delete_own_account/.test(files.account)&&/resetPasswordForEmail/.test(files.account)&&/updateUser/.test(files.account),"account adapter lacks password reset or account deletion");
 expect(/stage:"online-ready"/.test(files.battle),"battle adapter is not marked online-ready");
 expect(/reconnectRoom/.test(files.battle)&&/dd_battle_members/.test(files.battle),"Supabase battle reconnect support is missing");
 expect(/dd_submit_battle_action/.test(files.battle)&&!/functions\.invoke/.test(files.battle),"browser battle actions are not using the protected RPC directly");

@@ -56,6 +56,19 @@
       <label>E-Mail<input name="email" type="email" autocomplete="email" placeholder="name@example.com"></label>
       <label>Passwort<input name="password" type="password" autocomplete="current-password" placeholder="Passwort"></label>
       <button type="submit" class="purple">Anmelden</button>
+      <button type="button" class="wd-account-gate-link" data-gate-tab="reset">Passwort vergessen?</button>
+    </form>
+    <form class="cloud-card hidden" data-gate-form="reset" novalidate>
+      <div class="cloud-card-title">Passwort zurücksetzen</div>
+      <p class="wd-account-gate-note">Wir schicken dir einen Link per E-Mail. Damit legst du ein neues Passwort fest.</p>
+      <label>E-Mail<input name="email" type="email" autocomplete="email" placeholder="name@example.com"></label>
+      <button type="submit" class="purple">Link senden</button>
+      <button type="button" class="wd-account-gate-link" data-gate-tab="login">Zurück zum Anmelden</button>
+    </form>
+    <form class="cloud-card hidden" data-gate-form="recovery" novalidate>
+      <div class="cloud-card-title">Neues Passwort festlegen</div>
+      <label>Neues Passwort<input name="password" type="password" minlength="8" autocomplete="new-password" placeholder="Mindestens 8 Zeichen"></label>
+      <button type="submit" class="good">Passwort speichern</button>
     </form>
     <div id="wdAccountGateMessage" class="cloud-account-message hidden" role="status"></div>
     <button type="button" id="wdAccountGateRetry" class="secondary hidden">Erneut verbinden</button>
@@ -311,6 +324,7 @@
           <div class="cloud-save-box"><small>CLOUD SAVE</small><strong id="cloudRemoteTime">Noch keiner</strong><span id="cloudRemoteMeta">–</span></div>
         </div>
         <div class="cloud-sync-actions"><button id="cloudUploadBtn" class="good">Local → Cloud</button><button id="cloudDownloadBtn" class="gold">Cloud → Local</button></div>
+        <div class="danger-zone cloud-delete-zone"><button id="cloudDeleteBtn" type="button">Account löschen</button></div>
         <div id="cloudSyncHint" class="cloud-sync-hint">Supabase ist vorbereitet, aber ohne Projekt-URL und Publishable Key bleibt dieses lokale Test-Backend aktiv.</div>
       </div>
       <div id="cloudAccountMessage" class="cloud-account-message hidden"></div>
@@ -562,7 +576,7 @@
     <div class="screen-topbar"><button class="menuBackBtn">←</button><h2 class="screen-title">Changelog</h2></div>
     <div class="screen-subtitle">Die großen Versionssprünge, ohne jeden Mini-Hotfix.</div>
     <div class="screen-scroll-body">
-    <div class="changelog-entry"><div class="changelog-version">V28.14.23</div><ul><li>Account-Pflicht beim ersten Start: Ohne angemeldeten Account liegt vor dem Hauptmenü ein Fenster zum Registrieren oder Anmelden; Abmelden bringt es zurück</li><li>Ist der Server nicht erreichbar, lässt sich für diese Sitzung offline weiterspielen; beim nächsten Start kommt die Abfrage wieder</li><li>Der Account-Bereich ist mit Supabase jetzt auch in lokal geladenen Builds wie der APK sichtbar</li></ul></div>
+    <div class="changelog-entry"><div class="changelog-version">V28.14.23</div><ul><li>Account-Pflicht beim ersten Start: Ohne angemeldeten Account liegt vor dem Hauptmenü ein Fenster zum Registrieren oder Anmelden; Abmelden bringt es zurück</li><li>Ist der Server nicht erreichbar, lässt sich für diese Sitzung offline weiterspielen; beim nächsten Start kommt die Abfrage wieder</li><li>Der Account-Bereich ist mit Supabase jetzt auch in lokal geladenen Builds wie der APK sichtbar</li><li>„Passwort vergessen?“ schickt eine Mail mit Link; über den Link legt man im Spiel ein neues Passwort fest</li><li>Account löschen im Account-Bereich: entfernt Account, Cloud-Save und alle Online-Daten, der Spielstand auf dem Gerät bleibt</li></ul></div>
     <div class="changelog-entry"><div class="changelog-version">V28.14.22</div><ul><li>Zwei gemalte Angriffseffekte in Testumgebung und Kern-Renderer: „Sternenschmiede“ mit dreiteiligem Himmelsinstrument und zerbrechendem Sternenrelief als Kill, „Himmelsrochen“ mit Aurorawesen, getrennten Flügeln und Schuppenfächer als Kill – beide mit Shopbild in der Tagesrotation, noch nicht kaufbar</li></ul></div>
     <div class="changelog-entry"><div class="changelog-version">V28.14.21</div><ul><li>Zweite Nachbesserung zur Umschaltung: Ein durch Fähigkeitsdraft oder Counterattack unterbrochener Angriff zählte für das Achievement „First Class“ als schadenlos, weil das Zugende ohne die Schadensereignisse ankam; der Schaden wird jetzt über den ganzen Angriff gesammelt</li></ul></div>
     <div class="changelog-entry"><div class="changelog-version">V28.14.20</div><ul><li>Nachbesserung zur Umschaltung: Ab der zweiten Runde eines lokalen Classic-1:1-Duells vertauschte der Spiegel zwischen Reducer und Anzeige die Spieler, sobald die Sitzreihenfolge neu gemischt wurde – HP, Fähigkeiten und Zugrecht standen über Kreuz und der nächste Zug brach ab; außerdem fehlten die Rundenmarker für die Profilstatistik. Der Umschaltprüfstand spielt jetzt drei Runden je Partie</li></ul></div>

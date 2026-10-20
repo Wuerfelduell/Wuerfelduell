@@ -25,7 +25,7 @@ async function fresh(lang,width,opts={}){
   await p.route('**/*',r=>new URL(r.request().url()).hostname==='127.0.0.1'?r.fallback():r.abort());
   p.on('pageerror',e=>errs.push(e.message)); p.on('response',r=>{if(r.status()===404)nf.push(r.url())});
   await p.addInitScript(l=>{try{localStorage.setItem('diceduel_language',l)}catch{}},lang);
-  await p.goto(base); await p.waitForFunction(()=>document.body.classList.contains('wd-booted'),null,{timeout:15000});
+  await p.goto(base+(opts.hash||'')); await p.waitForFunction(()=>document.body.classList.contains('wd-booted'),null,{timeout:15000});
   await p.waitForTimeout(2500);
   return {ctx,p,errs,nf};
 }
@@ -68,6 +68,60 @@ for(const lang of ['de','en']) for(const w of [320,360,390,412,1280]){
     return {a,b2,c,d,e};
   });
   ok(r.a,'ohne Account: Gate offen'); ok(r.b2,'Registrierung mit E-Mail-Bestätigung: Wechsel auf Anmelden mit E-Mail'); ok(r.c,'Anmelden schließt Gate'); ok(r.d,'Abmelden öffnet Gate wieder'); ok(r.e,'bestehende Sitzung: kein Gate');
+  await ctx.close();
+}
+// Passwort vergessen, Link aus der Mail, abgelaufener Link, Account löschen
+{
+  const {ctx,p,errs}=await fresh('de',390);
+  const r=await p.evaluate(async()=>{
+    const wait=()=>new Promise(r=>setTimeout(r,200));
+    const log=[];let session=null,cb=null,recover=null;
+    const fake={kind:'supabase',async getSession(){return session},async login(){},async register(){},async logout(){session=null;cb?.(null)},
+      onAuthStateChange(f){cb=f;return()=>{}},onPasswordRecovery(f){recover=f;return()=>{}},recoveryLink(){return {recovery:false,errorCode:''}},
+      async requestPasswordReset(email){log.push('reset:'+email)},async updatePassword(pw){log.push('pw:'+pw.length)},
+      async deleteAccount(){log.push('delete');session=null;cb?.(null)},async pushSave(){},async pullSave(){return null}};
+    WDCloudBackend.set(fake);await WDAccountGate.check();
+    const visible=s=>{const e=document.querySelector(s);return !!e&&getComputedStyle(e).display!=='none'&&e.getBoundingClientRect().height>0};
+    const login=document.querySelector('[data-gate-form="login"]'),reset=document.querySelector('[data-gate-form="reset"]'),rec=document.querySelector('[data-gate-form="recovery"]');
+    document.querySelector('[data-gate-tab="login"]').click();login.elements.email.value='seb@example.com';
+    login.querySelector('[data-gate-tab="reset"]').click();
+    const a=visible('[data-gate-form="reset"]')&&reset.elements.email.value==='seb@example.com';
+    reset.requestSubmit();await wait();
+    const b=log.includes('reset:seb@example.com')&&/Link/.test(document.getElementById('wdAccountGateMessage').textContent);
+    reset.querySelector('[data-gate-tab="login"]').click();const c=visible('[data-gate-form="login"]');
+    // Link aus der Mail: Supabase meldet PASSWORD_RECOVERY mit kurzer Sitzung
+    session={uid:'u',email:'seb@example.com',name:'Seb'};recover();cb(session);await wait();
+    const d=WDAccountGate.open&&visible('[data-gate-form="recovery"]')&&!visible('.wd-account-gate-tabs');
+    rec.elements.password.value='kurz';rec.requestSubmit();await wait();const e=WDAccountGate.open&&!log.some(x=>x.startsWith('pw:'));
+    rec.elements.password.value='neuesPasswort1';rec.requestSubmit();await wait();
+    const f=log.includes('pw:14')&&!WDAccountGate.open;
+    // Account löschen aus dem Account-Screen
+    await WDCloudAccount.refresh();const g=!document.getElementById('cloudDeleteBtn').classList.contains('hidden');
+    window.confirm=()=>true;document.getElementById('cloudDeleteBtn').click();await wait();
+    const h=log.includes('delete')&&WDAccountGate.open&&/gelöscht/.test(document.getElementById('wdAccountGateMessage').textContent);
+    return {a,b,c,d,e,f,g,h};
+  });
+  ok(r.a,'„Passwort vergessen?" öffnet Reset mit übernommener E-Mail');
+  ok(r.b,'Reset-Mail wird angefordert, Hinweis erscheint');
+  ok(r.c,'„Zurück zum Anmelden" funktioniert');
+  ok(r.d,'Link aus der Mail: Formular für neues Passwort trotz Sitzung');
+  ok(r.e,'zu kurzes neues Passwort abgewiesen');
+  ok(r.f,'neues Passwort gespeichert, Fenster geht zu');
+  ok(r.g,'Löschknopf mit Supabase sichtbar');
+  ok(r.h,'Account löschen: Aufruf, danach Fenster mit Hinweis');
+  ok(errs.length===0,`Passwort/Löschen: keine JS-Fehler ${errs.join('|')}`);
+  await ctx.close();
+}
+{
+  const {ctx,p}=await fresh('de',390,{hash:'#error=access_denied&error_code=otp_expired&error_description=x'});
+  ok(await vis(p,'[data-gate-form="reset"]') && /abgelaufen/.test(await p.textContent('#wdAccountGateMessage')),'abgelaufener Link: Reset-Formular mit Hinweis');
+  await ctx.close();
+}
+{
+  const {ctx,p}=await fresh('en',390,{hash:'#access_token=x&type=recovery'});
+  ok(await vis(p,'[data-gate-form="recovery"]'),'Link mit type=recovery: Formular für neues Passwort');
+  const t=await p.evaluate(()=>document.querySelector('#wdAccountGate').innerText);
+  ok(/Set a new password/.test(t)&&!/[äöüß]/.test(t),'Passwortformular englisch');
   await ctx.close();
 }
 // Server nicht erreichbar -> Offline-Knopf
