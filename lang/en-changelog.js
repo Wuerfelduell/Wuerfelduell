@@ -5,6 +5,7 @@
   if (!pack) return;
 
   Object.assign(pack.exact, {
+    "Spielernamen sind jetzt höchstens 12 Zeichen lang (Profil, Konto, Online); längere Namen werden gekürzt, die Supabase-Migration dazu liegt bei": "Player names are now at most 12 characters (profile, account, online); longer names are shortened, the matching Supabase migration is included",
     "Match Awards gehörten bisher immer zum ersten Kampf einer Sitzung: Jedes spätere Ergebnisfenster zeigte dessen Namen und Werte; sie werden jetzt je Match neu ermittelt": "Match Awards always belonged to the first fight of a session: every later result screen showed its names and values; they are now determined per match",
     "Duo- und Trio-Kampagne: Helden stehen immer links und Gegner rechts, auch wenn ein Team kleiner ist; gegen einen Einzelboss rutschte der dritte Held bisher in die Gegnerspalte": "Duo and trio campaign: heroes always stand on the left and enemies on the right, even when one team is smaller; against a single boss the third hero used to slip into the enemy column",
     "Gegenangriff: Ein Bot-Verteidiger konnte direkt nach dem letzten Wurf noch einmal würfeln, was einen Skriptfehler auslösen konnte": "Counterattack: a bot defender could roll once more right after its last roll, which could cause a script error",

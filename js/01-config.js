@@ -5,6 +5,8 @@
   let ENGINE_LOKALES_DUELL=true;
 
   const GAME_VERSION="28.14.24";
+  // Längster erlaubter Spielername (Profil, Konto, Online); Supabase prüft denselben Wert.
+  const PLAYER_NAME_MAX=12;
   // Gemeinsamer Bild-Cache-Schluessel; identisch mit den Bild-URLs in HTML und CSS.
   const ASSET_REV="28.12.48";
   const SAVE_KEY="wuerfelduell_save_v1"; // absichtlich stabil: Updates lesen denselben Browser-Save

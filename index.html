@@ -263,7 +263,7 @@
       <div id="cloudLoggedOut" class="cloud-account-grid">
         <div class="cloud-card">
           <div class="cloud-card-title">Account erstellen</div>
-          <label>Anzeigename<input id="cloudRegisterName" maxlength="24" autocomplete="nickname" placeholder="Dice Goblin"></label>
+          <label>Anzeigename<input id="cloudRegisterName" maxlength="12" autocomplete="nickname" placeholder="Dice Goblin"></label>
           <label>E-Mail<input id="cloudRegisterEmail" type="email" autocomplete="email" placeholder="name@example.com"></label>
           <label>Passwort<input id="cloudRegisterPassword" type="password" minlength="8" autocomplete="new-password" placeholder="Mindestens 8 Zeichen"></label>
           <button id="cloudRegisterBtn" class="good">Lokalen Test-Account erstellen</button>
@@ -450,7 +450,7 @@
     <div class="profile-create">
       <button id="profileCreateToggle" type="button" class="good profile-create-toggle" aria-expanded="false" aria-controls="profileCreateFields">Neues Profil</button>
       <div id="profileCreateFields" class="profile-create-fields" hidden>
-        <input id="newProfileName" type="text" maxlength="24" placeholder="Neues Profil">
+        <input id="newProfileName" type="text" maxlength="12" placeholder="Neues Profil">
         <button id="createProfileBtn" class="good">Erstellen</button>
       </div>
     </div>
@@ -535,7 +535,7 @@
     <div class="screen-topbar"><button class="menuBackBtn">←</button><h2 class="screen-title">Changelog</h2></div>
     <div class="screen-subtitle">Die großen Versionssprünge, ohne jeden Mini-Hotfix.</div>
     <div class="screen-scroll-body">
-    <div class="changelog-entry"><div class="changelog-version">V28.14.24</div><ul><li>Match Awards gehörten bisher immer zum ersten Kampf einer Sitzung: Jedes spätere Ergebnisfenster zeigte dessen Namen und Werte; sie werden jetzt je Match neu ermittelt</li><li>Duo- und Trio-Kampagne: Helden stehen immer links und Gegner rechts, auch wenn ein Team kleiner ist; gegen einen Einzelboss rutschte der dritte Held bisher in die Gegnerspalte</li><li>Gegenangriff: Ein Bot-Verteidiger konnte direkt nach dem letzten Wurf noch einmal würfeln, was einen Skriptfehler auslösen konnte</li><li>Wiederholte Encounter in einer abgeschlossenen Welt melden nicht mehr jedes Mal „Kampagne geschafft“ oder „Welt geschafft“, sondern nur noch beim Abschluss</li><li>Trio „Threefold Verdict“: Das Pflicht-Loadout ist vorausgewählt und gesperrt, statt den Start-Knopf ohne sichtbaren Grund zu sperren</li><li>Neue Prüfstände: Kampagnen-UI-Durchlauf (alle 255 Level in Solo, Duo und Trio starten und von Bots ausspielen lassen) und Namenslängen-Messung</li></ul></div>
+    <div class="changelog-entry"><div class="changelog-version">V28.14.24</div><ul><li>Spielernamen sind jetzt höchstens 12 Zeichen lang (Profil, Konto, Online); längere Namen werden gekürzt, die Supabase-Migration dazu liegt bei</li><li>Match Awards gehörten bisher immer zum ersten Kampf einer Sitzung: Jedes spätere Ergebnisfenster zeigte dessen Namen und Werte; sie werden jetzt je Match neu ermittelt</li><li>Duo- und Trio-Kampagne: Helden stehen immer links und Gegner rechts, auch wenn ein Team kleiner ist; gegen einen Einzelboss rutschte der dritte Held bisher in die Gegnerspalte</li><li>Gegenangriff: Ein Bot-Verteidiger konnte direkt nach dem letzten Wurf noch einmal würfeln, was einen Skriptfehler auslösen konnte</li><li>Wiederholte Encounter in einer abgeschlossenen Welt melden nicht mehr jedes Mal „Kampagne geschafft“ oder „Welt geschafft“, sondern nur noch beim Abschluss</li><li>Trio „Threefold Verdict“: Das Pflicht-Loadout ist vorausgewählt und gesperrt, statt den Start-Knopf ohne sichtbaren Grund zu sperren</li><li>Neue Prüfstände: Kampagnen-UI-Durchlauf (alle 255 Level in Solo, Duo und Trio starten und von Bots ausspielen lassen) und Namenslängen-Messung</li></ul></div>
     <div class="changelog-entry"><div class="changelog-version">V28.14.22</div><ul><li>Zwei gemalte Angriffseffekte in Testumgebung und Kern-Renderer: „Sternenschmiede“ mit dreiteiligem Himmelsinstrument und zerbrechendem Sternenrelief als Kill, „Himmelsrochen“ mit Aurorawesen, getrennten Flügeln und Schuppenfächer als Kill – beide mit Shopbild in der Tagesrotation, noch nicht kaufbar</li></ul></div>
     <div class="changelog-entry"><div class="changelog-version">V28.14.21</div><ul><li>Zweite Nachbesserung zur Umschaltung: Ein durch Fähigkeitsdraft oder Counterattack unterbrochener Angriff zählte für das Achievement „First Class“ als schadenlos, weil das Zugende ohne die Schadensereignisse ankam; der Schaden wird jetzt über den ganzen Angriff gesammelt</li></ul></div>
     <div class="changelog-entry"><div class="changelog-version">V28.14.20</div><ul><li>Nachbesserung zur Umschaltung: Ab der zweiten Runde eines lokalen Classic-1:1-Duells vertauschte der Spiegel zwischen Reducer und Anzeige die Spieler, sobald die Sitzreihenfolge neu gemischt wurde – HP, Fähigkeiten und Zugrecht standen über Kreuz und der nächste Zug brach ab; außerdem fehlten die Rundenmarker für die Profilstatistik. Der Umschaltprüfstand spielt jetzt drei Runden je Partie</li></ul></div>

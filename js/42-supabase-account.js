@@ -19,7 +19,7 @@
   }
 
   function displayName(user,fallback="Player"){
-    return String(user?.user_metadata?.display_name||user?.user_metadata?.name||fallback).trim().slice(0,24)||"Player";
+    return String(user?.user_metadata?.display_name||user?.user_metadata?.name||fallback).trim().slice(0,PLAYER_NAME_MAX).trim()||"Player";
   }
 
   function sessionShape(session){
@@ -55,7 +55,7 @@
     kind:"supabase",
     label:"SUPABASE CLOUD",
     async register({name,email,password}){
-      name=String(name||"").trim().slice(0,24);
+      name=String(name||"").trim().slice(0,PLAYER_NAME_MAX).trim();
       email=String(email||"").trim().toLowerCase();
       password=String(password||"");
       if(!name) throw new Error("Enter a display name.");
