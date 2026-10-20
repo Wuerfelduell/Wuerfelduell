@@ -90,6 +90,40 @@
       if(error) throw error;
     },
     async getSession(){return sessionShape(await root.getSession());},
+    async requestPasswordReset(email){
+      email=String(email||"").trim().toLowerCase();
+      if(!/^\S+@\S+\.\S+$/.test(email)) throw new Error("Enter a valid email.");
+      const client=await root.getClient();
+      // In der APK (file://) gibt es keine Adresse zum Zurückkehren; dann
+      // nimmt Supabase die Site URL aus den Auth-Einstellungen.
+      const web=/^https?:$/.test(location.protocol);
+      const {error}=await client.auth.resetPasswordForEmail(email,web?{redirectTo:location.origin+location.pathname}:{});
+      if(error) throw error;
+    },
+    async updatePassword(password){
+      password=String(password||"");
+      if(password.length<8) throw new Error("Password must have at least 8 characters.");
+      const client=await root.getClient();
+      const {error}=await client.auth.updateUser({password});
+      if(error) throw error;
+    },
+    recoveryLink(){return root.authLink||{recovery:false,errorCode:""};},
+    onPasswordRecovery(callback){
+      let subscription=null,cancelled=false;
+      root.getClient().then(client=>{
+        const sub=client.auth.onAuthStateChange(event=>{if(!cancelled&&event==="PASSWORD_RECOVERY") callback?.();}).data?.subscription||null;
+        if(cancelled) sub?.unsubscribe?.();
+        else subscription=sub;
+      }).catch(error=>console.warn("Supabase recovery listener",error));
+      return ()=>{cancelled=true;subscription?.unsubscribe?.();subscription=null;};
+    },
+    async deleteAccount(){
+      const client=await root.getClient();
+      const {error}=await client.rpc("dd_delete_own_account");
+      if(error) throw error;
+      // Der Account ist weg; die lokale Sitzung trotzdem abräumen.
+      await client.auth.signOut({scope:"local"}).catch(()=>{});
+    },
     onAuthStateChange(callback){
       // Der Client kommt asynchron. Wird der Listener abgeraeumt, bevor der
       // Client da ist, darf die verspaetete Registrierung nicht stehen

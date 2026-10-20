@@ -5,6 +5,11 @@
   if (!pack) return;
 
   Object.assign(pack.exact, {
+    "Account-Pflicht beim ersten Start: Ohne angemeldeten Account liegt vor dem Hauptmenü ein Fenster zum Registrieren oder Anmelden; Abmelden bringt es zurück": "Account required on first launch: without a signed-in account, a sign-up or sign-in window sits in front of the main menu; signing out brings it back",
+    "Ist der Server nicht erreichbar, lässt sich für diese Sitzung offline weiterspielen; beim nächsten Start kommt die Abfrage wieder": "If the server cannot be reached, you can keep playing offline for this session; the prompt returns on the next launch",
+    "Der Account-Bereich ist mit Supabase jetzt auch in lokal geladenen Builds wie der APK sichtbar": "With Supabase, the account area is now also visible in locally loaded builds such as the APK",
+    "„Passwort vergessen?“ schickt eine Mail mit Link; über den Link legt man im Spiel ein neues Passwort fest": "“Forgot password?” sends an email with a link; the link lets you set a new password in the game",
+    "Account löschen im Account-Bereich: entfernt Account, Cloud-Save und alle Online-Daten, der Spielstand auf dem Gerät bleibt": "Delete account in the account area: removes the account, cloud save and all online data, the progress on the device stays",
     "Menübildschirme vereinheitlicht: gleicher Innenabstand, gleiche Kopfzeile mit Titel-Icon, überall derselbe Zurück-Pfeil (auch in den Kampagnen) und sichtbarer Untertitel": "Menu screens unified: the same inner spacing, the same header with title icon, the same back arrow everywhere (campaigns included) and a visible subtitle",
     "Account und Online: Kartenüberschriften und Feldbeschriftungen wieder lesbar, BETA-Abzeichen in voller Größe, keine Technikbegriffe mehr in den Spielertexten": "Account and Online: card headings and field labels are readable again, the BETA badge is shown at full size, and player-facing texts no longer use technical terms",
     "Kartenüberschriften in Regeln, Einstellungen, Account, Online, Changelog und Fähigkeiten einheitlich in Titelschrift; keine hellen Rechtecke mehr hinter den Goldrahmen": "Card headings in Rules, Settings, Account, Online, Changelog and Abilities now share the title font; no more light rectangles behind the gold frames",

@@ -9593,8 +9593,8 @@ body:not(.test-lab-active) .die.locked::after{
    ============================================================ */
 
 html[data-v28-rework="2"] #settingsScreen .menu-info-card,
-html[data-v28-rework="2"] #accountScreen .cloud-card,
-html[data-v28-rework="2"] #accountScreen .cloud-status-card,
+html[data-v28-rework="2"] :is(#accountScreen,#wdAccountGate) .cloud-card,
+html[data-v28-rework="2"] :is(#accountScreen,#wdAccountGate) .cloud-status-card,
 html[data-v28-rework="2"] #onlineScreen .online-card,
 html[data-v28-rework="2"] #onlineScreen .online-connection{
   box-sizing:border-box;
@@ -9619,8 +9619,8 @@ html[data-v28-rework="2"] #settingsScreen .menu-info-card{
   padding:20px 20px 12px!important;
 }
 
-html[data-v28-rework="2"] #accountScreen .cloud-card,
-html[data-v28-rework="2"] #accountScreen .cloud-status-card,
+html[data-v28-rework="2"] :is(#accountScreen,#wdAccountGate) .cloud-card,
+html[data-v28-rework="2"] :is(#accountScreen,#wdAccountGate) .cloud-status-card,
 html[data-v28-rework="2"] #onlineScreen .online-card,
 html[data-v28-rework="2"] #onlineScreen .online-connection{
   padding:20px 20px 14px;
@@ -9634,8 +9634,8 @@ html[data-v28-rework="2"] #onlineScreen .online-connection{
 @media (max-width:380px){
   html[data-v28-rework="2"] #statsScreen .stats-kpi,
   html[data-v28-rework="2"] #settingsScreen .menu-info-card,
-  html[data-v28-rework="2"] #accountScreen .cloud-card,
-  html[data-v28-rework="2"] #accountScreen .cloud-status-card,
+  html[data-v28-rework="2"] :is(#accountScreen,#wdAccountGate) .cloud-card,
+  html[data-v28-rework="2"] :is(#accountScreen,#wdAccountGate) .cloud-status-card,
   html[data-v28-rework="2"] #onlineScreen .online-card,
   html[data-v28-rework="2"] #onlineScreen .online-connection{
     border-image-width:10px 15px!important;
@@ -9696,10 +9696,10 @@ html[data-v28-rework="2"] #settingsScreen input[type="text"],
 html[data-v28-rework="2"] #settingsScreen input:not([type]),
 html[data-v28-rework="2"] #profilesScreen #newProfileName,
 html[data-v28-rework="2"] #profilesScreen .profile-name-edit,
-html[data-v28-rework="2"] #accountScreen input[type="text"],
-html[data-v28-rework="2"] #accountScreen input[type="email"],
-html[data-v28-rework="2"] #accountScreen input[type="password"],
-html[data-v28-rework="2"] #accountScreen input:not([type]),
+html[data-v28-rework="2"] :is(#accountScreen,#wdAccountGate) input[type="text"],
+html[data-v28-rework="2"] :is(#accountScreen,#wdAccountGate) input[type="email"],
+html[data-v28-rework="2"] :is(#accountScreen,#wdAccountGate) input[type="password"],
+html[data-v28-rework="2"] :is(#accountScreen,#wdAccountGate) input:not([type]),
 html[data-v28-rework="2"] #onlineScreen input[type="text"],
 html[data-v28-rework="2"] #onlineScreen input:not([type]){
   box-sizing:border-box;
@@ -9736,10 +9736,10 @@ html[data-v28-rework="2"] #settingsScreen input[type="text"],
 html[data-v28-rework="2"] #settingsScreen input:not([type]),
 html[data-v28-rework="2"] #profilesScreen #newProfileName,
 html[data-v28-rework="2"] #profilesScreen .profile-name-edit,
-html[data-v28-rework="2"] #accountScreen input[type="text"],
-html[data-v28-rework="2"] #accountScreen input[type="email"],
-html[data-v28-rework="2"] #accountScreen input[type="password"],
-html[data-v28-rework="2"] #accountScreen input:not([type]),
+html[data-v28-rework="2"] :is(#accountScreen,#wdAccountGate) input[type="text"],
+html[data-v28-rework="2"] :is(#accountScreen,#wdAccountGate) input[type="email"],
+html[data-v28-rework="2"] :is(#accountScreen,#wdAccountGate) input[type="password"],
+html[data-v28-rework="2"] :is(#accountScreen,#wdAccountGate) input:not([type]),
 html[data-v28-rework="2"] #onlineScreen input[type="text"],
 html[data-v28-rework="2"] #onlineScreen input:not([type]){
   min-height:52px;
@@ -13259,6 +13259,34 @@ html[data-v28-rework="2"] #statsScreen .global-stats-selects button#globalStatsR
 html[data-v28-rework="2"] #statsScreen #globalStatsMeta{display:flex;flex-wrap:wrap;gap:6px 14px;}
 html[data-v28-rework="2"] #statsScreen #globalStatsSection{min-width:0;}
 html[data-v28-rework="2"] #statsScreen #globalStatsState:empty{display:none;}
+
+/* ============ Account-Pflicht (js/48-account-gate.js) ============
+   Liegt beim ersten Start über dem Hauptmenü, bis ein Account angemeldet
+   ist. Hintergrund und Wappen wie der Ladebildschirm, damit der Übergang
+   Laden → Anmelden ruhig wirkt; Karten und Felder teilen sich die Regeln
+   mit #accountScreen (32-nachtraege, 36-v28-hierarchie). Unter dem
+   Ladebildschirm (z-index 2147483000), über allem anderen. */
+#wdAccountGate{position:fixed;inset:0;z-index:2147482000;display:flex;justify-content:center;align-items:flex-start;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:24px 16px calc(24px + env(safe-area-inset-bottom,0px));box-sizing:border-box;background:#061428 url("../assets/ui/v28/bg-main-palace.webp?v=28.12.48") center/cover no-repeat}
+#wdAccountGate.hidden{display:none!important}
+#wdAccountGate::before{content:"";position:fixed;inset:0;background:linear-gradient(180deg,rgba(6,20,40,.42),rgba(6,20,40,.78));pointer-events:none}
+#wdAccountGate .wd-account-gate-panel{position:relative;width:100%;max-width:440px;display:grid;gap:12px;margin:auto 0;text-align:center}
+#wdAccountGate .wd-account-gate-panel>img{width:84px;height:84px;object-fit:contain;justify-self:center;filter:drop-shadow(0 8px 18px rgba(0,0,0,.45))}
+#wdAccountGate h1{margin:0;font-family:Georgia,"Times New Roman",serif;font-size:28px;letter-spacing:.12em;text-transform:uppercase;color:#f6e7c0;text-shadow:0 2px 12px rgba(0,0,0,.55)}
+#wdAccountGate .wd-account-gate-lead{margin:0;font-size:14px;line-height:1.45;color:#f6e7c0;text-shadow:0 1px 8px rgba(0,0,0,.65)}
+#wdAccountGate .wd-account-gate-tabs{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+#wdAccountGate .wd-account-gate-tabs button{min-width:0;white-space:normal}
+/* Die Elfenbeinkarte füllt sich über border-image selbst; die eckige
+   Grundfarbe aus 32-nachtraege stünde auf dem dunklen Hintergrund als Rechteck hinter den Ecken. */
+html[data-v28-rework="2"] #wdAccountGate .cloud-card{text-align:left;background:transparent!important}
+#wdAccountGate .cloud-card-title{color:var(--p1-ink);font-size:16px}
+#wdAccountGate .cloud-card label{font-size:12px;color:var(--p1-muted)}
+#wdAccountGate .cloud-account-message{font-size:12px;text-align:left}
+#wdAccountGate .wd-account-gate-note{margin:0;font-size:12px;line-height:1.45;color:var(--p1-muted)}
+/* „Passwort vergessen?" und „Zurück" sind Textverweise, keine Knöpfe:
+   ohne Rahmenbild, damit unter dem Hauptknopf keine zweite Kachel steht. */
+html[data-v28-rework="2"] #wdAccountGate button.wd-account-gate-link{justify-self:center;min-height:0;width:auto;padding:4px 8px;margin:0;border:0!important;border-image:none!important;background:none!important;box-shadow:none!important;color:var(--p1-ink)!important;font-size:13px;font-weight:700;text-decoration:underline;text-underline-offset:3px;text-shadow:none!important}
+#accountScreen .cloud-delete-zone{display:flex;justify-content:flex-end}
+body.wd-account-gate-open{overflow:hidden}
 
 /* ===== 38-kisten.css ===== */
 /* ===== Kiste: Kistenbuehne (Shop und Kistentest im Trainingsfenster) =====

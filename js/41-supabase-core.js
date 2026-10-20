@@ -4,6 +4,16 @@
   const config=window.WDBackendConfig?.supabase||{};
   let clientPromise=null;
 
+  // Der Link aus der Passwort-Mail landet mit "#...type=recovery" (oder bei
+  // abgelaufenem Link mit "#error_code=...") auf der Seite. supabase-js liest
+  // und entfernt den Hash beim Start und meldet PASSWORD_RECOVERY, bevor ein
+  // später angemeldeter Listener zuhört - deshalb hier vorab merken.
+  const authHash=new URLSearchParams(String(location.hash||"").replace(/^#/,""));
+  const authLink=Object.freeze({
+    recovery:authHash.get("type")==="recovery",
+    errorCode:String(authHash.get("error_code")||"")
+  });
+
   function assertConfigured(){
     if(!config.configured) throw new Error("SUPABASE_NOT_CONFIGURED");
   }
@@ -47,6 +57,7 @@
   window.WDSupabase=Object.freeze({
     configured:!!config.configured,
     config,
+    authLink,
     getClient,
     getSession,
     ensureOnlineIdentity
