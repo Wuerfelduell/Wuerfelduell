@@ -136,9 +136,12 @@ select public.wd_server_assert(public.dd_get_battle_snapshot(:'room')::text !~ '
  'Auch Revanche-Schnappschuss ohne Seed');
 select public.dd_leave_battle_room(:'room');
 reset role;
+-- Laufender Host-Raum aus 20-matchstart.sql; jede Datei laeuft in eigener Sitzung.
+select id as hostroom from public.dd_battle_rooms where host_user_id='aaaaaaaa-0000-0000-0000-000000000001'
+ and status='playing' and authority='host' order by created_at desc limit 1 \gset
 set role service_role;
 select public.wd_server_error(format('select public.dd_server_load_action(%L,%L,%L,0,%L,%L)',
- current_setting('wd.room'),'aaaaaaaa-0000-0000-0000-000000000001','host-rpc','init_match','{}'),'DD_NOT_SERVER_AUTHORITATIVE');
+ :'hostroom','aaaaaaaa-0000-0000-0000-000000000001','host-rpc','init_match','{}'),'DD_NOT_SERVER_AUTHORITATIVE');
 reset role;
 select public.wd_server_assert(not exists(select 1 from dd_battle_private.match_rng where room_id=:'room'),
  'Raumloeschung entfernt privaten RNG per Cascade');
