@@ -4,7 +4,7 @@
   function localModeRules(){return LOCAL_MODES[localModeId]||LOCAL_MODES.classic;}
   let ENGINE_LOKALES_DUELL=true;
 
-  const GAME_VERSION="28.14.24";
+  const GAME_VERSION="28.15.0";
   // Längster erlaubter Spielername (Profil, Konto, Online); Supabase prüft denselben Wert.
   const PLAYER_NAME_MAX=12;
   // Gemeinsamer Bild-Cache-Schluessel; identisch mit den Bild-URLs in HTML und CSS.

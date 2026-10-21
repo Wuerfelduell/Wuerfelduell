@@ -886,6 +886,10 @@
       const roll=R.rollDie(next,requireRandom()),threshold=R.mastery(next,2)?2:(R.mastery(next,1)?3:4);
       emit('SpecialDieRolled',{seat:next.turn.currentSeat,kind:'perfect25_permit',sides:6,value:roll});
       if(roll<threshold){
+        // Wie masteryMomentumFail im Browser: kein Angriff beendet die Serie.
+        const active=R.player(next);
+        if(R.hasAbility(next,10)) active.effects.momentumStreak=R.mastery(next,1)?Math.max(0,active.effects.momentumStreak-1):0;
+        next.attack.momentumBonus=0;
         next.special.perfect25.baseTotal=null;setTurnDone('perfect25_denied');
       }else decision('perfect25_d4','perfect25_d4');
     }else if(action.type===A.ROLL_PERFECT25_D4){

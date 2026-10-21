@@ -27,8 +27,8 @@ Release auf `main`; anschließend Bericht und **Warten auf „Weiter“**:
 | 4 | Spezialwürfel, Drafts und Rundenwechsel, nur Engine und Node-Tests | V28.14.10 |
 | 5a | Browserübersetzer im Schatten und Bot-Paritätsprüfstand | V28.14.16 |
 | 5b-1 | Lokales Classic-1:1-Duell produktiv auf den Reducer umschalten | V28.14.19 |
-| 5b-2 | Weitere lokale Duelle produktiv auf den Reducer umschalten | offen; eigener Auftrag nach Freigabe |
-| 6 | Deno-Parität und Online-Schatten | offen; kein Deployment |
+| 5b-2 | Weitere lokale Duelle produktiv auf den Reducer umschalten | V28.15.0 (ohne Mayhem: Wildcard-Regelfrage offen) |
+| 6 | Deno-Parität und Online-Schatten | V28.15.0 Deno-Parität; Edge Function und Migration vorbereitet, kein Deployment |
 
 Die bestehende Browseroberfläche behält ihre bisherigen Spielergrenzen und
 Botfreigaben aus `LOCAL_MODES`. Die Engine kann unabhängig davon alle
