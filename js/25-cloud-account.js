@@ -39,11 +39,11 @@
   function clearMessage(){el("cloudAccountMessage")?.classList.add("hidden");}
   function updateBackendUi(){
     const status=el("cloudBackendStatus")?.querySelector("span");
-    if(status)status.textContent=backend.kind==="supabase"?"SUPABASE · Auth + revisionsgeschützter Cloud-Save":"LOCAL MOCK · Supabase noch nicht konfiguriert";
+    if(status)status.textContent=backend.kind==="supabase"?"Online · Konto und Cloud-Speicherstand verfügbar":"Lokal · Cloud-Speicherstand nicht verfügbar";
     const register=el("cloudRegisterBtn"),login=el("cloudLoginBtn"),hint=el("cloudSyncHint");
     if(register)register.textContent=backend.kind==="supabase"?"Account erstellen":"Lokalen Test-Account erstellen";
     if(login)login.textContent=backend.kind==="supabase"?"Einloggen":"Lokaler Test-Login";
-    if(hint)hint.textContent=backend.kind==="supabase"?"Cloud-Saves werden mit Revisionsprüfung gespeichert. Local Save bleibt Offline-Fallback.":"Supabase ist vorbereitet, aber ohne Projekt-URL und Publishable Key bleibt dieses lokale Test-Backend aktiv.";
+    if(hint)hint.textContent=backend.kind==="supabase"?"Cloud-Speicherstände werden mit Versionsprüfung gesichert. Der lokale Speicherstand bleibt als Offline-Sicherung.":"Ohne Serververbindung bleibt dieser lokale Test-Account aktiv.";
   }
   async function refresh(){
     const session=await backend.getSession();
