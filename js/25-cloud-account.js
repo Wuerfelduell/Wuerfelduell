@@ -17,7 +17,7 @@
   const mockBackend={
     kind:"mock-local",label:"LOCAL MOCK",
     async register({name,email,password}){
-      name=String(name||"").trim().slice(0,24);email=String(email||"").trim().toLowerCase();password=String(password||"");
+      name=String(name||"").trim().slice(0,PLAYER_NAME_MAX).trim();email=String(email||"").trim().toLowerCase();password=String(password||"");
       if(!name)throw new Error("Enter a display name.");if(!/^\S+@\S+\.\S+$/.test(email))throw new Error("Enter a valid email.");if(password.length<8)throw new Error("Password must have at least 8 characters.");
       const users=readJson(USERS_KEY,{});if(users[email])throw new Error("A local test account with this email already exists.");
       const uid=await uidFor(email),passwordHash=await sha256(password);
@@ -39,11 +39,11 @@
   function clearMessage(){el("cloudAccountMessage")?.classList.add("hidden");}
   function updateBackendUi(){
     const status=el("cloudBackendStatus")?.querySelector("span");
-    if(status)status.textContent=backend.kind==="supabase"?"SUPABASE · Auth + revisionsgeschützter Cloud-Save":"LOCAL MOCK · Supabase noch nicht konfiguriert";
+    if(status)status.textContent=backend.kind==="supabase"?"Online · Konto und Cloud-Speicherstand verfügbar":"Lokal · Cloud-Speicherstand nicht verfügbar";
     const register=el("cloudRegisterBtn"),login=el("cloudLoginBtn"),hint=el("cloudSyncHint");
     if(register)register.textContent=backend.kind==="supabase"?"Account erstellen":"Lokalen Test-Account erstellen";
     if(login)login.textContent=backend.kind==="supabase"?"Einloggen":"Lokaler Test-Login";
-    if(hint)hint.textContent=backend.kind==="supabase"?"Cloud-Saves werden mit Revisionsprüfung gespeichert. Local Save bleibt Offline-Fallback.":"Supabase ist vorbereitet, aber ohne Projekt-URL und Publishable Key bleibt dieses lokale Test-Backend aktiv.";
+    if(hint)hint.textContent=backend.kind==="supabase"?"Cloud-Speicherstände werden mit Versionsprüfung gesichert. Der lokale Speicherstand bleibt als Offline-Sicherung.":"Ohne Serververbindung bleibt dieser lokale Test-Account aktiv.";
   }
   async function refresh(){
     const session=await backend.getSession();

@@ -1810,6 +1810,9 @@
 
   function finishCounterattackDamage(){
     if(!counterContext) return;
+    // Bis das Fenster nach 650 ms schließt, ist der Gegenangriff vorbei: kein
+    // Bot-Takt darf jetzt noch einmal würfeln und den Schaden doppelt buchen.
+    counterRolling=true;
 
     const defenderIndex=counterContext.defenderIndex;
     const attackerIndex=counterContext.attackerIndex;

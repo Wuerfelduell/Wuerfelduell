@@ -118,7 +118,11 @@
   }
 
   function decorateAwards(){
-    const box=$('winnerBox'),statsBox=$('roundStatsBox'); if(!box||box.classList.contains('hidden')||box.querySelector('.v276-awards')) return;
+    const box=$('winnerBox'),statsBox=$('roundStatsBox'); if(!box) return;
+    // Awards gehören zu genau einem Match: beim Schließen des Ergebnisfensters
+    // wegräumen, sonst zeigt jedes spätere Match die Awards des ersten.
+    if(box.classList.contains('hidden')){box.querySelector('.v276-awards')?.remove();return;}
+    if(box.querySelector('.v276-awards')) return;
     if(typeof roundStats==='undefined'||!Array.isArray(roundStats)||typeof players==='undefined') return;
     const candidates=players.map((p,i)=>({i,p,s:roundStats[i]||{}}));
     const best=(key)=>[...candidates].sort((a,b)=>(Number(b.s[key])||0)-(Number(a.s[key])||0))[0];

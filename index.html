@@ -248,10 +248,10 @@
 
 
   <section id="accountScreen" class="card screen-card hidden">
-    <div class="screen-topbar"><button id="accountBackBtn">←</button><h2 class="screen-title">DiceDuel Account</h2></div>
-    <div class="screen-subtitle">Supabase-Account und Cloud-Save mit lokalem Offline-Fallback. Ohne Projektkonfiguration bleibt automatisch das sichere lokale Test-Backend aktiv.</div>
+    <div class="screen-topbar"><button id="accountBackBtn">←</button><h2 class="screen-title">Account</h2></div>
+    <div class="screen-subtitle">Konto und Cloud-Speicherstand. Ohne Anmeldung bleibt dein Fortschritt lokal auf diesem Gerät.</div>
     <div class="cloud-account-shell">
-      <div id="cloudBackendStatus" class="cloud-status-card"><strong>Backend</strong><span>LOCAL MOCK · Supabase noch nicht konfiguriert</span></div>
+      <div id="cloudBackendStatus" class="cloud-status-card"><strong>Verbindung</strong><span>Lokal · Cloud-Speicherstand nicht verfügbar</span></div>
 
       <div class="cloud-card">
         <div class="cloud-card-title">Globale Fähigkeitsstatistik</div>
@@ -263,7 +263,7 @@
       <div id="cloudLoggedOut" class="cloud-account-grid">
         <div class="cloud-card">
           <div class="cloud-card-title">Account erstellen</div>
-          <label>Anzeigename<input id="cloudRegisterName" maxlength="24" autocomplete="nickname" placeholder="Dice Goblin"></label>
+          <label>Anzeigename<input id="cloudRegisterName" maxlength="12" autocomplete="nickname" placeholder="Dice Goblin"></label>
           <label>E-Mail<input id="cloudRegisterEmail" type="email" autocomplete="email" placeholder="name@example.com"></label>
           <label>Passwort<input id="cloudRegisterPassword" type="password" minlength="8" autocomplete="new-password" placeholder="Mindestens 8 Zeichen"></label>
           <button id="cloudRegisterBtn" class="good">Lokalen Test-Account erstellen</button>
@@ -284,7 +284,7 @@
           <div class="cloud-save-box"><small>CLOUD SAVE</small><strong id="cloudRemoteTime">Noch keiner</strong><span id="cloudRemoteMeta">–</span></div>
         </div>
         <div class="cloud-sync-actions"><button id="cloudUploadBtn" class="good">Local → Cloud</button><button id="cloudDownloadBtn" class="gold">Cloud → Local</button></div>
-        <div id="cloudSyncHint" class="cloud-sync-hint">Supabase ist vorbereitet, aber ohne Projekt-URL und Publishable Key bleibt dieses lokale Test-Backend aktiv.</div>
+        <div id="cloudSyncHint" class="cloud-sync-hint">Ohne Serververbindung bleibt dieser lokale Test-Account aktiv.</div>
       </div>
       <div id="cloudAccountMessage" class="cloud-account-message hidden"></div>
     </div>
@@ -292,9 +292,9 @@
 
   <section id="onlineScreen" class="card screen-card hidden">
     <div class="screen-topbar"><button id="onlineBackBtn">←</button><h2 class="screen-title">Online <span class="online-beta-badge">BETA</span></h2></div>
-    <div class="screen-subtitle">2–4 Spieler über Supabase Realtime. Private Raumcodes, Matchstart, Fight und Reconnect bleiben auf allen Geräten synchron; die DiceDuel-Engine läuft autoritativ beim Host.</div>
+    <div class="screen-subtitle">2–4 Spieler mit privaten Raumcodes. Matchstart, Kampf und Wiederverbinden bleiben auf allen Geräten synchron.</div>
     <div class="online-shell">
-      <div class="online-connection"><span id="onlineStatusDot" class="online-status-dot" data-state="pending"></span><span id="onlineStatus">Supabase wird vorbereitet …</span></div>
+      <div class="online-connection"><span id="onlineStatusDot" class="online-status-dot" data-state="pending"></span><span id="onlineStatus">Verbindung wird vorbereitet …</span></div>
       <div id="onlineNotice" class="online-notice hidden"></div>
 
       <div id="onlineHome">
@@ -330,7 +330,7 @@
 
 
   <section id="campaignScreen" class="card screen-card campaign-hub hidden">
-    <div class="screen-topbar"><button id="campaignBackBtn" aria-label="Kampagne schließen" title="Kampagne schließen">←</button><h2 class="screen-title">Solo-Kampagne</h2></div>
+    <div class="screen-topbar"><button id="campaignBackBtn" aria-label="Zurück" title="Zurück">←</button><h2 class="screen-title">Solo-Kampagne</h2></div>
     <div class="screen-subtitle">Ein Profil kämpft sich durch mehrere Welten mit festen Encountern. Fähigkeiten werden schrittweise freigeschaltet; spätere Welten testen Builds, Risiko, Zielwahl und Fähigkeits-Meisterung.</div>
     <div id="campaignCompleteBanner" class="campaign-complete hidden"></div>
     <div id="campaignWorldTabs" class="campaign-world-tabs"></div>
@@ -363,7 +363,7 @@
   </section>
 
   <section id="duoCampaignScreen" class="card screen-card campaign-hub hidden">
-    <div class="screen-topbar"><button id="duoCampaignBackBtn" aria-label="Kampagne schließen" title="Kampagne schließen">←</button><h2 class="screen-title">Duo-Kampagne</h2></div>
+    <div class="screen-topbar"><button id="duoCampaignBackBtn" aria-label="Zurück" title="Zurück">←</button><h2 class="screen-title">Duo-Kampagne</h2></div>
     <div class="screen-subtitle">Zwei echte Spielerprofile kämpfen gemeinsam durch mehrere Duo-Welten. In Duo sind alle regulären Hauptfähigkeiten direkt verfügbar; beide wählen ihre eigene aktive Fähigkeit. Zweitfähigkeits-Drafts nutzen ebenfalls den kompletten Pool inklusive Glück (BETA). Erfolgreiche Clears bringen beiden Profilen Trophäen. Der Fortschritt gehört genau dieser Profil-Paarung.</div>
     <div id="duoCampaignBanner" class="campaign-complete hidden"></div>
     <div id="duoCampaignWorldTabs" class="campaign-world-tabs duo-world-tabs"></div>
@@ -398,7 +398,7 @@
 
 
   <section id="trioCampaignScreen" class="card screen-card campaign-hub hidden">
-    <div class="screen-topbar"><button id="trioCampaignBackBtn" aria-label="Kampagne schließen" title="Kampagne schließen">←</button><h2 class="screen-title">Trio-Kampagne</h2></div>
+    <div class="screen-topbar"><button id="trioCampaignBackBtn" aria-label="Zurück" title="Zurück">←</button><h2 class="screen-title">Trio-Kampagne</h2></div>
     <div class="screen-subtitle">Drei echte Spielerprofile gegen koordinierte Gegnerteams in mehreren Welten mit jeweils 15 Encountern. Alle regulären Hauptfähigkeiten sind verfügbar; der Fortschritt gehört genau dieser Dreiergruppe.</div>
     <div id="trioCampaignBanner" class="campaign-complete hidden"></div>
     <div id="trioCampaignWorldTabs" class="campaign-world-tabs trio-world-tabs"></div>
@@ -450,7 +450,7 @@
     <div class="profile-create">
       <button id="profileCreateToggle" type="button" class="good profile-create-toggle" aria-expanded="false" aria-controls="profileCreateFields">Neues Profil</button>
       <div id="profileCreateFields" class="profile-create-fields" hidden>
-        <input id="newProfileName" type="text" maxlength="24" placeholder="Neues Profil">
+        <input id="newProfileName" type="text" maxlength="12" placeholder="Neues Profil">
         <button id="createProfileBtn" class="good">Erstellen</button>
       </div>
     </div>
@@ -536,6 +536,8 @@
     <div class="screen-subtitle">Die großen Versionssprünge, ohne jeden Mini-Hotfix.</div>
     <div class="screen-scroll-body">
     <div class="changelog-entry"><div class="changelog-version">V28.15.0</div><ul><li>Lokale Duelle in Classic mit drei bis sechs Spielern sowie in Endurance und Overload berechnet jetzt ebenfalls der gemeinsame Reducer; Mayhem, Classic mit sieben oder acht Spielern, Kampagne, Tutorial, Testumgebung und Online bleiben im bisherigen Browserpfad</li><li>Regelkorrektur in der Duell-Engine: Ein verweigertes Perfect 25 beendet die Momentum-Serie wie im bisherigen Browserpfad; vorher erhielten Folgeangriffe zu viel Bonusschaden</li><li>Vorbereitung für serverseitige Online-Kämpfe: Die Duell-Engine läuft auch in der Supabase Edge Function, die Datenbank hält Seed und Zufallsfortschritt privat; Online-Matches laufen weiterhin über den Host, bis Migration und Funktion eingespielt sind</li></ul></div>
+    <div class="changelog-entry"><div class="changelog-version">V28.14.24</div><ul><li>Spielernamen sind jetzt höchstens 12 Zeichen lang (Profil, Konto, Online); längere Namen werden gekürzt, die Supabase-Migration dazu liegt bei</li><li>Match Awards gehörten bisher immer zum ersten Kampf einer Sitzung: Jedes spätere Ergebnisfenster zeigte dessen Namen und Werte; sie werden jetzt je Match neu ermittelt</li><li>Duo- und Trio-Kampagne: Helden stehen immer links und Gegner rechts, auch wenn ein Team kleiner ist; gegen einen Einzelboss rutschte der dritte Held bisher in die Gegnerspalte</li><li>Gegenangriff: Ein Bot-Verteidiger konnte direkt nach dem letzten Wurf noch einmal würfeln, was einen Skriptfehler auslösen konnte</li><li>Wiederholte Encounter in einer abgeschlossenen Welt melden nicht mehr jedes Mal „Kampagne geschafft“ oder „Welt geschafft“, sondern nur noch beim Abschluss</li><li>Trio „Threefold Verdict“: Das Pflicht-Loadout ist vorausgewählt und gesperrt, statt den Start-Knopf ohne sichtbaren Grund zu sperren</li><li>Neue Prüfstände: Kampagnen-UI-Durchlauf (alle 255 Level in Solo, Duo und Trio starten und von Bots ausspielen lassen) und Namenslängen-Messung</li></ul></div>
+    <div class="changelog-entry"><div class="changelog-version">V28.14.23</div><ul><li>Menübildschirme vereinheitlicht: gleicher Innenabstand, gleiche Kopfzeile mit Titel-Icon, überall derselbe Zurück-Pfeil (auch in den Kampagnen) und sichtbarer Untertitel</li><li>Account und Online: Kartenüberschriften und Feldbeschriftungen wieder lesbar, BETA-Abzeichen in voller Größe, keine Technikbegriffe mehr in den Spielertexten</li><li>Kartenüberschriften in Regeln, Einstellungen, Account, Online, Changelog und Fähigkeiten einheitlich in Titelschrift; keine hellen Rechtecke mehr hinter den Goldrahmen</li><li>Welt-Banner der Kampagnen spaltenbreit mit Weltname und Fortschritt in einer Zeile; Fähigkeitskarten bleiben in der Spalte, XP-Plaketten der Bossfelder mittig, lange Profilnamen brechen in der Mastery-Leiste um</li><li>Auswahlfelder ohne eigenes Icon zeigen keinen zweiten Pfeil mehr; die Kampagnen-Auswahl trägt ihr Label im Kopfbanner wie der Training-Dialog</li></ul></div>
     <div class="changelog-entry"><div class="changelog-version">V28.14.22</div><ul><li>Zwei gemalte Angriffseffekte in Testumgebung und Kern-Renderer: „Sternenschmiede“ mit dreiteiligem Himmelsinstrument und zerbrechendem Sternenrelief als Kill, „Himmelsrochen“ mit Aurorawesen, getrennten Flügeln und Schuppenfächer als Kill – beide mit Shopbild in der Tagesrotation, noch nicht kaufbar</li></ul></div>
     <div class="changelog-entry"><div class="changelog-version">V28.14.21</div><ul><li>Zweite Nachbesserung zur Umschaltung: Ein durch Fähigkeitsdraft oder Counterattack unterbrochener Angriff zählte für das Achievement „First Class“ als schadenlos, weil das Zugende ohne die Schadensereignisse ankam; der Schaden wird jetzt über den ganzen Angriff gesammelt</li></ul></div>
     <div class="changelog-entry"><div class="changelog-version">V28.14.20</div><ul><li>Nachbesserung zur Umschaltung: Ab der zweiten Runde eines lokalen Classic-1:1-Duells vertauschte der Spiegel zwischen Reducer und Anzeige die Spieler, sobald die Sitzreihenfolge neu gemischt wurde – HP, Fähigkeiten und Zugrecht standen über Kreuz und der nächste Zug brach ab; außerdem fehlten die Rundenmarker für die Profilstatistik. Der Umschaltprüfstand spielt jetzt drei Runden je Partie</li></ul></div>
