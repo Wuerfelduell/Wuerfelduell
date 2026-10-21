@@ -252,7 +252,7 @@
         </button>
         <div id="${detailsId}" class="profile-card-details"${expanded?"":" hidden"}>
           <div class="profile-actions">
-            <div class="profile-field"><label>Name</label><input class="profile-name-edit" maxlength="24" value="${escapeHtml(p.name)}"></div>
+            <div class="profile-field"><label>Name</label><input class="profile-name-edit" maxlength="12" value="${escapeHtml(p.name)}"></div>
             <div class="profile-field"><label>Würfeldesign</label><select class="profile-dice-edit">${diceOptions}</select></div>
             <div class="profile-field"><label>Angriffseffekt</label><select class="profile-fx-edit">${fxOptions}</select></div>
           </div>
@@ -282,7 +282,7 @@
       };
       nameInput.onchange=()=>{
         const p=getProfile(id); if(!p) return;
-        const clean=nameInput.value.trim().slice(0,24);
+        const clean=nameInput.value.trim().slice(0,PLAYER_NAME_MAX).trim();
         if(!clean){nameInput.value=p.name;return;}
         p.name=clean; saveGameData(); renderProfiles();
       };

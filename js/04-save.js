@@ -237,7 +237,7 @@
   function normalizeProfile(raw){
     const p={...raw};
     p.id=p.id||generateProfileId();
-    p.name=String(p.name||"Spieler").slice(0,24);
+    p.name=String(p.name||"Spieler").slice(0,PLAYER_NAME_MAX).trim()||"Spieler";
     p.tagNumber=String(p.tagNumber??generateTagNumber()).padStart(4,"0").slice(-4);
     p.unlockedDice=Array.isArray(p.unlockedDice)?[...new Set(["classic","classic_v2",...p.unlockedDice])]:["classic","classic_v2"];
     p.achievements=(p.achievements&&typeof p.achievements==="object")?p.achievements:{};
@@ -464,7 +464,7 @@
   function profileForPlayer(index){return getProfile(players[index]?.profileId);}
 
   function createProfile(name){
-    const clean=String(name||"").trim().slice(0,24);
+    const clean=String(name||"").trim().slice(0,PLAYER_NAME_MAX).trim();
     if(!clean) return null;
     const p=normalizeProfile({id:generateProfileId(),name:clean,tagNumber:generateTagNumber(),unlockedDice:["classic","classic_v2"],selectedDice:"classic_v2",unlockedAttackFx:["classic"],selectedAttackFx:"classic",achievements:{},stats:emptyProfileStats()});
     saveData.profiles.push(p);

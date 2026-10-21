@@ -17,7 +17,7 @@
   const mockBackend={
     kind:"mock-local",label:"LOCAL MOCK",
     async register({name,email,password}){
-      name=String(name||"").trim().slice(0,24);email=String(email||"").trim().toLowerCase();password=String(password||"");
+      name=String(name||"").trim().slice(0,PLAYER_NAME_MAX).trim();email=String(email||"").trim().toLowerCase();password=String(password||"");
       if(!name)throw new Error("Enter a display name.");if(!/^\S+@\S+\.\S+$/.test(email))throw new Error("Enter a valid email.");if(password.length<8)throw new Error("Password must have at least 8 characters.");
       const users=readJson(USERS_KEY,{});if(users[email])throw new Error("A local test account with this email already exists.");
       const uid=await uidFor(email),passwordHash=await sha256(password);

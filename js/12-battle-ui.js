@@ -245,9 +245,14 @@
   function renderPlayers(){
     playersEl.innerHTML="";
     const onlineBattle=String(gameContext?.mode||"").startsWith("online");
+    // Duo/Trio: Helden links, Gegner rechts – auch wenn ein Team kleiner ist und
+    // die abwechselnde Reihenfolge einen Helden sonst in die Gegnerspalte schiebt.
+    const teamColumns=campaignMode&&(duoCampaignMode||trioCampaignMode);
+    playersEl.style.gridAutoFlow=teamColumns?"row dense":"";
     players.forEach((p,i)=>{
       const el=document.createElement("div");
       el.id="playerCard"+i;
+      if(teamColumns)el.style.gridColumn=p.campaignTeam==="enemy"?"2":"1";
       el.className="player"+(p.cosmeticFrame?` frame-${p.cosmeticFrame}`:"")+(i===current&&p.hp>0?" active":"")+(p.hp<=0?" dead":"")+(p.enemyInstanceId?" campaign-enemy-instance":"")+(attackTarget===i&&p.hp>0?" current-target":"");
       el.dataset.instanceId=p.enemyInstanceId||`player:${i}`;
       const bossRushWorldTheme=p.campaignTeam==="enemy"&&window.WDBossRush?.isActive?.()

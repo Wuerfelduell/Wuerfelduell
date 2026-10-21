@@ -806,7 +806,7 @@
     try{cosmeticFrame=profileCosmeticFrame(profile)||"";}catch(_){}
     return {
       id:String(profile.id||""),
-      name:String(profile.name||"Spieler").slice(0,24),
+      name:String(profile.name||"Spieler").slice(0,PLAYER_NAME_MAX),
       tagNumber:String(profile.tagNumber||"0000").padStart(4,"0").slice(-4),
       selectedDice:String(profile.selectedDice||"classic"),
       selectedAttackFx:String(profile.selectedAttackFx||"classic"),
@@ -832,7 +832,7 @@
       try{cosmeticFrame=profileCosmeticFrame(localProfile)||cosmeticFrame;}catch(_){}
     }
     return {
-      name:String(entry?.name||"Spieler").slice(0,24),
+      name:String(entry?.name||"Spieler").slice(0,PLAYER_NAME_MAX),
       battleTag:`#${String(entry?.tagNumber||"0000").padStart(4,"0").slice(-4)}`,
       profileId:localProfile?.id||null,
       onlineUid:String(entry?.uid||""),

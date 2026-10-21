@@ -123,7 +123,7 @@ function onlineProfilePayload(profile){
   const resolved=bridge?.resolveProfileCosmetics?.(profile?.id)||{dice:profile?.selectedDice||"classic",attackFx:profile?.selectedAttackFx||"classic"};
   return {
     profileId:String(profile?.id||""),
-    name:String(profile?.name||"Spieler").slice(0,24),
+    name:String(profile?.name||"Spieler").slice(0,12),
     tagNumber:String(profile?.tagNumber||"0000").padStart(4,"0").slice(-4),
     diceDesign:resolved.dice||profile?.selectedDice||"classic",
     attackFx:resolved.attackFx||profile?.selectedAttackFx||"classic",
