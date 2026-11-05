@@ -364,11 +364,17 @@ html[data-v28-rework="2"] body #profilesScreen .profile-name-text{
    Bedarf etwas höher (leichte Streckung des Rahmens ist akzeptiert).
    Teamzeile: lag 8 px neben dem Goldrand, die Überschrift „Team“ darüber
    hält 14 px. Auswahlfelder: zwei Spalten ließen bei 390 px 60 px für
-   „WWWWWWWWWWWW“ oder „1 · Brutale Einsen“; unter 430 px eine Spalte. */
+   „WWWWWWWWWWWW“ oder „1 · Brutale Einsen“; unter 430 px eine Spalte.
+   Ohne Seitenverhältnis wächst das Banner mit dem Text: eine feste
+   Mindesthöhe allein hob das „min-content“ auf, und mit breiteren
+   Systemschriften (DejaVu auf dem CI-Runner, Roboto auf Android) lief der
+   Text oben und unten hinaus. Weil der Rahmen mitgestreckt wird, ist das
+   Polster so bemessen, dass er auch bei 130 px Höhe frei bleibt. */
 @media (max-width:540px){
   html[data-v28-rework="2"] body .campaign-hub .campaign-world-desc{
+    aspect-ratio:auto;
     min-height:110px;
-    padding:14px 24px 30px;
+    padding:22px 22px 40px;
   }
 }
 html[data-v28-rework="2"] body .campaign-hub .campaign-top .menu-info-card{
