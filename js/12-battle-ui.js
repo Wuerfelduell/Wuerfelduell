@@ -726,7 +726,7 @@
     if(aliveCount()<=1) return;
     const botText=isBotPlayer(current)&&!campaignMode?` · 🤖 ${BOT_LEVELS[players[current].botLevel].name.replace("Bot · ","")}`:"";
     // Name und „ist dran“ getrennt: ein langer Name kürzt sich selbst, „ist dran“ bleibt lesbar.
-    turnLine.innerHTML=`<span class="turn-name">${escapeHtml(players[current].name)}</span> <span class="turn-rest"><span>ist dran</span>${botText}</span>`;
+    turnLine.innerHTML=`<span class="turn-name">${escapeHtml(players[current].name)}</span> <span class="turn-rest">ist dran</span>${botText?`<span class="turn-bot">${botText}</span>`:""}`;
 
     if(phase==="idle"){statusEl.textContent="Starte deinen Basiswurf mit 5 Würfeln.";sumLabel.textContent="Summe";}
     else if(phase==="base_select"){statusEl.textContent="Tippe mindestens einen Würfel an und locke ihn ein.";sumLabel.textContent="Aktuelle Summe";}

@@ -396,8 +396,12 @@ html[data-v28-rework="2"] body .turn-head .turnline .turn-name{
   text-overflow:ellipsis;
 }
 html[data-v28-rework="2"] body .turn-head .turnline .turn-rest{
+  flex:none;
+  white-space:nowrap;
+}
+html[data-v28-rework="2"] body .turn-head .turnline .turn-bot{
   flex:0 1000 auto;
-  min-width:4.2em;
+  min-width:0;
   overflow:hidden;
   white-space:nowrap;
   text-overflow:ellipsis;
