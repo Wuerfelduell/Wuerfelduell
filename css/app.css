@@ -13977,7 +13977,7 @@ html[data-v28-rework="2"] body #battleSheetOverlay .utility-kicker{
 }
 
 /* ---- 6b · Label im Kopfband: in jedem Dialog mit demselben Rahmen gleich hoch ----
-   Alle diese Dialoge tragen modal-popup.webp, ihre Labels lagen aber
+   Alle diese Dialoge tragen dasselbe Rahmenbild (modal-popup), ihre Labels lagen aber
    zwischen 20 und 42 px unter der Oberkante; nur der Verlassen-Dialog
    (26 px am Handy, 32 px ab 541 px) sitzt mittig im Band. Darüber wurde
    „Runde beendet“, „Tutorial“ und die Würfelfenster oben gekappt,
