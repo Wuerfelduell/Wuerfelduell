@@ -342,7 +342,7 @@
     card.style.marginTop = "12px";
     card.innerHTML = `
       <div class="setting-row">
-        <div><div class="setting-label">Hintergrundmusik</div><div class="setting-desc">Procedural Soundtrack für Menü, Kampagne, Kampf und Bosse.</div></div>
+        <div><div class="setting-label">Hintergrundmusik</div><div class="setting-desc">Im Spiel erzeugte Musik für Menü, Kampagne, Kampf und Bosse.</div></div>
         <select id="musicEnabledSetting" aria-label="Hintergrundmusik">
           <option value="on">An</option><option value="off">Aus</option>
         </select>

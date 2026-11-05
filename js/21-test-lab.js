@@ -279,6 +279,33 @@
   if(menuTutorial) menuTutorial.onclick=openHub;
   $lab('tutorialHubStartBtn').onclick=()=>{closeHub();document.body.classList.remove('test-lab-active');startTutorial();};
   $lab('tutorialHubLabBtn').onclick=openPicker;
+
+  // Testumgebung und Kistentest sind Werkzeuge für die Entwicklung, im Store-Spiel
+  // sieht sie niemand. Einschalten: ?dev=1 in der Adresse (bleibt gespeichert,
+  // ?dev=0 schaltet ab) oder siebenmal schnell auf die Versionszeile im Hauptmenü tippen.
+  const DEV_KEY='wuerfelduell_entwickler';
+  const devOn=()=>{try{return localStorage.getItem(DEV_KEY)==='1';}catch(_e){return false;}};
+  const setDev=on=>{try{if(on)localStorage.setItem(DEV_KEY,'1');else localStorage.removeItem(DEV_KEY);}catch(_e){}};
+  function applyDevMode(){
+    const on=devOn();
+    for(const id of ['tutorialHubLabBtn','menuKistenTestBtn','tutorialHubLabNote']){
+      const el=document.getElementById(id);
+      if(el&&el.classList.contains('hidden')===on) el.classList.toggle('hidden',!on);
+    }
+  }
+  try{const flag=new URLSearchParams(location.search).get('dev');if(flag==='1')setDev(true);else if(flag==='0')setDev(false);}catch(_e){}
+  applyDevMode();
+  const footer=document.querySelector('.version-footer');
+  if(footer){
+    let taps=0,last=0;
+    footer.addEventListener('click',()=>{
+      const now=Date.now();taps=now-last<700?taps+1:1;last=now;
+      if(taps<7) return;
+      taps=0;setDev(!devOn());applyDevMode();
+      if(typeof queueEventPopup==='function') queueEventPopup(devOn()?'Entwicklermodus an':'Entwicklermodus aus','survive');
+    });
+  }
+  window.WDEntwickler=Object.freeze({an:devOn,setzen:on=>{setDev(!!on);applyDevMode();}});
   $lab('tutorialHubCancelBtn').onclick=closeHub;
   $lab('testLabBackBtn').onclick=()=>{closePicker();openHub();};
   startBtn.onclick=startTestLab;

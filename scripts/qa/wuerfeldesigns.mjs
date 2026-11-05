@@ -51,7 +51,7 @@ if(NEU.length<5){console.log(`ACHTUNG: nur ${NEU.length} testOnly-Designs erkann
 try{
   const p=await browser.newPage({locale:'de-DE',viewport:{width:390,height:844},serviceWorkers:'block'});
   p.on('pageerror',e=>errors.push(e.message));
-  await p.goto(`http://127.0.0.1:${server.address().port}/index.html`);
+  await p.goto(`http://127.0.0.1:${server.address().port}/index.html?dev=1`);
   await p.waitForTimeout(400);
 
   // 1./2. Dateien laden und messen - im Browser, nicht am Dateisystem.
@@ -219,7 +219,7 @@ try{
   if(imProfil.gefunden!==NEU.length||imProfil.gesperrt!==NEU.length)console.log(`      im Profil: ${JSON.stringify(imProfil)}`);
 
   // 4. Die Testumgebung kennt sie.
-  await p.goto(`http://127.0.0.1:${server.address().port}/index.html`);
+  await p.goto(`http://127.0.0.1:${server.address().port}/index.html?dev=1`);
   await p.waitForTimeout(400);
   await p.click('#menuTutorialBtn');await p.waitForTimeout(250);
   await p.click('#tutorialHubLabBtn');await p.waitForTimeout(350);
