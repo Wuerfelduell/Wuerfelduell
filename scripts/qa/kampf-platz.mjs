@@ -46,7 +46,7 @@ const KASTEN=`(sel)=>{const e=document.querySelector(sel);if(!e)return null;
 async function seite(sprache='de-DE'){
   const p=await browser.newPage({locale:sprache,viewport:{width:390,height:844},serviceWorkers:'block'});
   p.on('pageerror',e=>errors.push(e.message));
-  await p.goto(`http://127.0.0.1:${server.address().port}/index.html`);
+  await p.goto(`http://127.0.0.1:${server.address().port}/index.html?dev=1`);
   await p.waitForTimeout(400);
   await p.evaluate(k=>{window.__k=eval(k);},KASTEN);
   return p;

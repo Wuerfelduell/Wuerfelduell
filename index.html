@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="de" class="wd-booting">
 <head>
-  <meta name="wd-build" content="28.15.0" />
+  <meta name="wd-build" content="28.15.1" />
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <meta name="theme-color" content="#e8f2f6" />
@@ -11,7 +11,7 @@
   <link rel="manifest" href="manifest.json" />
   <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png?v=28.12.48" />
   <link rel="apple-touch-icon" sizes="192x192" href="icon-192.png?v=28.12.48" />
-  <title>DiceDuel · V28.15.0</title>
+  <title>DiceDuel · V28.15.1</title>
   <link rel="preload" as="image" href="assets/ui/v28/bg-main-palace.webp?v=28.12.48">
   <style>
     html.wd-booting,body.wd-booting{overflow:hidden!important;overscroll-behavior:none}
@@ -26,7 +26,7 @@
     #wdBootGate.is-done{opacity:0;pointer-events:none;transition:opacity .35s ease}
     body.wd-booting>#wdBootGate~*{pointer-events:none!important}
   </style>
-  <link rel="stylesheet" href="css/app.css?v=28.15.0" />
+  <link rel="stylesheet" href="css/app.css?v=28.15.1" />
 </head>
 <body class="wd-booting">
 <div id="wdBootGate" role="progressbar" aria-busy="true" aria-label="DiceDuel wird geladen">
@@ -160,11 +160,11 @@
   <div class="utility-panel test-lab-hub">
     <div class="utility-kicker">Training</div>
     <div class="utility-title">Was willst du starten?</div>
-    <div class="utility-text">Das normale Tutorial erklärt die Grundregeln. Die Testumgebung ist unser Spiel-Labor und beeinflusst keinerlei Fortschritt.</div>
+    <div class="utility-text"><span>Das normale Tutorial erklärt die Grundregeln.</span> <span id="tutorialHubLabNote" class="hidden">Die Testumgebung ist unser Spiel-Labor und beeinflusst keinerlei Fortschritt.</span></div>
     <div class="utility-actions test-lab-hub-actions">
       <button id="tutorialHubStartBtn" class="good">🎓 Tutorial starten</button>
-      <button id="tutorialHubLabBtn" class="purple">🧪 Testumgebung</button>
-      <button id="menuKistenTestBtn" class="purple">🎁 Kistentest</button>
+      <button id="tutorialHubLabBtn" class="purple hidden">🧪 Testumgebung</button>
+      <button id="menuKistenTestBtn" class="purple hidden">🎁 Kistentest</button>
       <button id="tutorialHubCancelBtn" class="secondary">Abbrechen</button>
     </div>
   </div>
@@ -243,7 +243,7 @@
       <button id="menuRulesBtn"><span class="menu-icon" data-v28-icon-ready="1"><img class="v28-menu-icon" src="assets/ui/v28/svg/menu/rules.svg?v=28.12.48" alt="" aria-hidden="true"></span> Regeln</button>
       <button id="menuChangelogBtn"><span class="menu-icon" data-v28-icon-ready="1"><img class="v28-menu-icon" src="assets/ui/v28/svg/menu/changelog.svg?v=28.12.48" alt="" aria-hidden="true"></span> Changelog</button>
     </div>
-    <div class="version-footer">DICEDUEL · VERSION 28.15.0</div>
+    <div class="version-footer">DICEDUEL · VERSION 28.15.1</div>
   </section>
 
 
@@ -255,7 +255,7 @@
 
       <div class="cloud-card">
         <div class="cloud-card-title">Globale Fähigkeitsstatistik</div>
-        <p>Dein angemeldetes Konto ist das Hauptkonto. Lokale Gastprofile zählen mit; veröffentlicht werden nur zusammengefasste Fähigkeitswerte.</p>
+        <p>Sobald du angemeldet bist, ist dein Konto das Hauptkonto. Lokale Gastprofile zählen mit; veröffentlicht werden nur zusammengefasste Fähigkeitswerte.</p>
         <p id="onlineStatsStatus" role="status">Für globale Fähigkeitsstatistik bitte mit einem Hauptkonto anmelden.</p>
         <div id="onlineStatsRejected" hidden><span id="onlineStatsRejectedCount">0</span> <span>Meldungen abgewiesen</span> <button id="onlineStatsDiscard" type="button">Abgewiesene verwerfen</button></div>
         <button id="onlineStatsRetry" class="secondary">Statistik erneut übertragen</button>
@@ -535,6 +535,7 @@
     <div class="screen-topbar"><button class="menuBackBtn">←</button><h2 class="screen-title">Changelog</h2></div>
     <div class="screen-subtitle">Die großen Versionssprünge, ohne jeden Mini-Hotfix.</div>
     <div class="screen-scroll-body">
+    <div class="changelog-entry"><div class="changelog-version">V28.15.1</div><ul><li>Ergebnisfenster: Lange Namen passen jetzt in die Siegerzeile und in die Match Awards, „Nächste Runde“ bleibt einzeilig, und der Achievement-Hinweis verdeckt das Ergebnis nicht mehr</li><li>Alle Fenster mit Goldrahmen zeigen ihre Überschrift mittig im Kopfband, darunter Kampflog, Infos, Rundenende und die Würfelfenster; bisher wurde sie oft oben abgeschnitten</li><li>Schmale Telefone (320 px): Spielvorbereitung, Duo- und Trio-Kampagne zeigen ihre Auswahlfelder lesbar, „ist dran“ bleibt im Kampf sichtbar, Titel und Spielerprofile stehen in einer Zeile, der Verlassen-Dialog passt in seinen Rahmen</li><li>Kampagnen-Auswahl am PC, Account-Seite, Welt-Banner, Shop-Hinweise, Fähigkeitenstatistik und der Musik-Schalter in den Einstellungen sauber ausgerichtet</li><li>Testumgebung und Kistentest sind nur noch im Entwicklermodus sichtbar (siebenmal auf die Versionszeile im Hauptmenü tippen)</li></ul></div>
     <div class="changelog-entry"><div class="changelog-version">V28.15.0</div><ul><li>Lokale Duelle in Classic mit drei bis sechs Spielern sowie in Endurance und Overload berechnet jetzt ebenfalls der gemeinsame Reducer; Mayhem, Classic mit sieben oder acht Spielern, Kampagne, Tutorial, Testumgebung und Online bleiben im bisherigen Browserpfad</li><li>Regelkorrektur in der Duell-Engine: Ein verweigertes Perfect 25 beendet die Momentum-Serie wie im bisherigen Browserpfad; vorher erhielten Folgeangriffe zu viel Bonusschaden</li><li>Vorbereitung für serverseitige Online-Kämpfe: Die Duell-Engine läuft auch in der Supabase Edge Function, die Datenbank hält Seed und Zufallsfortschritt privat; Online-Matches laufen weiterhin über den Host, bis Migration und Funktion eingespielt sind</li></ul></div>
     <div class="changelog-entry"><div class="changelog-version">V28.14.24</div><ul><li>Spielernamen sind jetzt höchstens 12 Zeichen lang (Profil, Konto, Online); längere Namen werden gekürzt, die Supabase-Migration dazu liegt bei</li><li>Match Awards gehörten bisher immer zum ersten Kampf einer Sitzung: Jedes spätere Ergebnisfenster zeigte dessen Namen und Werte; sie werden jetzt je Match neu ermittelt</li><li>Duo- und Trio-Kampagne: Helden stehen immer links und Gegner rechts, auch wenn ein Team kleiner ist; gegen einen Einzelboss rutschte der dritte Held bisher in die Gegnerspalte</li><li>Gegenangriff: Ein Bot-Verteidiger konnte direkt nach dem letzten Wurf noch einmal würfeln, was einen Skriptfehler auslösen konnte</li><li>Wiederholte Encounter in einer abgeschlossenen Welt melden nicht mehr jedes Mal „Kampagne geschafft“ oder „Welt geschafft“, sondern nur noch beim Abschluss</li><li>Trio „Threefold Verdict“: Das Pflicht-Loadout ist vorausgewählt und gesperrt, statt den Start-Knopf ohne sichtbaren Grund zu sperren</li><li>Neue Prüfstände: Kampagnen-UI-Durchlauf (alle 255 Level in Solo, Duo und Trio starten und von Bots ausspielen lassen) und Namenslängen-Messung</li></ul></div>
     <div class="changelog-entry"><div class="changelog-version">V28.14.23</div><ul><li>Menübildschirme vereinheitlicht: gleicher Innenabstand, gleiche Kopfzeile mit Titel-Icon, überall derselbe Zurück-Pfeil (auch in den Kampagnen) und sichtbarer Untertitel</li><li>Account und Online: Kartenüberschriften und Feldbeschriftungen wieder lesbar, BETA-Abzeichen in voller Größe, keine Technikbegriffe mehr in den Spielertexten</li><li>Kartenüberschriften in Regeln, Einstellungen, Account, Online, Changelog und Fähigkeiten einheitlich in Titelschrift; keine hellen Rechtecke mehr hinter den Goldrahmen</li><li>Welt-Banner der Kampagnen spaltenbreit mit Weltname und Fortschritt in einer Zeile; Fähigkeitskarten bleiben in der Spalte, XP-Plaketten der Bossfelder mittig, lange Profilnamen brechen in der Mastery-Leiste um</li><li>Auswahlfelder ohne eigenes Icon zeigen keinen zweiten Pfeil mehr; die Kampagnen-Auswahl trägt ihr Label im Kopfbanner wie der Training-Dialog</li></ul></div>
@@ -967,74 +968,74 @@
      vorher zuletzt (Module sind implizit deferred), und mit defer auf den
      klassischen Scripts wuerde ein haengender CDN-Fetch sonst alles danach
      blockieren. -->
-<script defer src="lang/de.js?v=28.15.0"></script>
-<script defer src="lang/en.js?v=28.15.0"></script>
-<script defer src="lang/en-campaign.js?v=28.15.0"></script>
-<script defer src="lang/en-changelog.js?v=28.15.0"></script>
-<script defer src="js/00-i18n.js?v=28.15.0"></script>
-<script defer src="js/engine/01-rng.js?v=28.15.0"></script>
-<script defer src="js/engine/02-definitions.js?v=28.15.0"></script>
-<script defer src="js/engine/03-state.js?v=28.15.0"></script>
-<script defer src="js/engine/04-rules.js?v=28.15.0"></script>
-<script defer src="js/engine/05-reduce.js?v=28.15.0"></script>
-<script defer src="js/engine/06-adapter.js?v=28.15.0"></script>
-<script defer src="js/01-config.js?v=28.15.0"></script>
-<script defer src="js/backend-config.js?v=28.15.0"></script>
-<script defer src="js/40-backend-config.js?v=28.15.0"></script>
-<script defer src="js/41-supabase-core.js?v=28.15.0"></script>
-<script defer src="js/02-campaign-solo-data.js?v=28.15.0"></script>
-<script defer src="js/03-campaign-duo-data.js?v=28.15.0"></script>
-<script defer src="js/03b-campaign-trio-data.js?v=28.15.0"></script>
-<script defer src="js/03c-campaign-endgame-data.js?v=28.15.0"></script>
-<script defer src="js/03d-endgame-mechanics.js?v=28.15.0"></script>
-<script defer src="js/04-save.js?v=28.15.0"></script>
-<script defer src="js/05-game-data-state.js?v=28.15.0"></script>
-<script defer src="js/06-campaign.js?v=28.15.0"></script>
-<script defer src="js/07-tutorial.js?v=28.15.0"></script>
-<script defer src="js/08-profiles-stats.js?v=28.15.0"></script>
-<script defer src="js/09-battle-stats.js?v=28.15.0"></script>
-<script defer src="js/10-bots.js?v=28.15.0"></script>
-<script defer src="js/11-setup.js?v=28.15.0"></script>
-<script defer src="js/12-battle-ui.js?v=28.15.0"></script>
-<script defer src="js/13-battle-actions.js?v=28.15.0"></script>
-<script defer src="js/14-round-flow.js?v=28.15.0"></script>
-<script defer src="js/15-app.js?v=28.15.0"></script>
-<script defer src="js/16-audio.js?v=28.15.0"></script>
-<script defer src="js/18-attack-fx.js?v=28.15.0"></script>
-<script defer src="js/17-online-bridge.js?v=28.15.0"></script>
-<script defer src="js/19-build-integrity.js?v=28.15.0"></script>
-<script defer src="js/20-v276.js?v=28.15.0"></script>
-<script defer src="js/21-test-lab.js?v=28.15.0"></script>
-<script defer src="js/23-mastery.js?v=28.15.0"></script>
-<script defer src="js/24-ability-mastery-lab.js?v=28.15.0"></script>
-<script defer src="js/25-cloud-account.js?v=28.15.0"></script>
-<script defer src="js/42-supabase-account.js?v=28.15.0"></script>
-<script defer src="js/43-supabase-battle.js?v=28.15.0"></script>
-<script defer src="js/26-v28-ui.js?v=28.15.0"></script>
-<script defer src="js/27-v28-asset-polish.js?v=28.15.0"></script>
-<script defer src="js/28-v28-ui-rework.js?v=28.15.0"></script>
-<script defer src="js/29-v28-ui-phase1.js?v=28.15.0"></script>
-<script defer src="js/30-v28-ui-phase2.js?v=28.15.0"></script>
-<script defer src="js/31-v28-ui-phase4.js?v=28.15.0"></script>
-<script defer src="js/32-v28-ui-phase5.js?v=28.15.0"></script>
-<script defer src="js/33-v28-ui-phase6.js?v=28.15.0"></script>
-<script defer src="js/34-v28-ui-phase8.js?v=28.15.0"></script>
-<script defer src="js/36-emoji-sprite-pass.js?v=28.15.0"></script>
-<script defer src="js/37-duo-boss-rush.js?v=28.15.0"></script>
-<script defer src="js/39-campaign-world-themes.js?v=28.15.0"></script>
-<script defer src="js/44-trio-boss-rush.js?v=28.15.0"></script>
-<script defer src="js/45-kistentest.js?v=28.15.0"></script>
-<script defer src="js/46-shop-daten.js?v=28.15.0"></script>
-<script defer src="js/47-shop.js?v=28.15.0"></script>
-<script defer src="js/online-stats/01-contract.js?v=28.15.0"></script>
-<script defer src="js/online-stats/02-outbox.js?v=28.15.0"></script>
-<script defer src="js/online-stats/03-sync.js?v=28.15.0"></script>
-<script defer src="js/online-stats/04-collector.js?v=28.15.0"></script>
-<script defer src="js/online-stats/05-game.js?v=28.15.0"></script>
-<script defer src="js/online-stats/06-view.js?v=28.15.0"></script>
-<script defer src="js/35-boot-gate.js?v=28.15.0"></script>
-<script defer src="js/38-sw-register.js?v=28.15.0"></script>
+<script defer src="lang/de.js?v=28.15.1"></script>
+<script defer src="lang/en.js?v=28.15.1"></script>
+<script defer src="lang/en-campaign.js?v=28.15.1"></script>
+<script defer src="lang/en-changelog.js?v=28.15.1"></script>
+<script defer src="js/00-i18n.js?v=28.15.1"></script>
+<script defer src="js/engine/01-rng.js?v=28.15.1"></script>
+<script defer src="js/engine/02-definitions.js?v=28.15.1"></script>
+<script defer src="js/engine/03-state.js?v=28.15.1"></script>
+<script defer src="js/engine/04-rules.js?v=28.15.1"></script>
+<script defer src="js/engine/05-reduce.js?v=28.15.1"></script>
+<script defer src="js/engine/06-adapter.js?v=28.15.1"></script>
+<script defer src="js/01-config.js?v=28.15.1"></script>
+<script defer src="js/backend-config.js?v=28.15.1"></script>
+<script defer src="js/40-backend-config.js?v=28.15.1"></script>
+<script defer src="js/41-supabase-core.js?v=28.15.1"></script>
+<script defer src="js/02-campaign-solo-data.js?v=28.15.1"></script>
+<script defer src="js/03-campaign-duo-data.js?v=28.15.1"></script>
+<script defer src="js/03b-campaign-trio-data.js?v=28.15.1"></script>
+<script defer src="js/03c-campaign-endgame-data.js?v=28.15.1"></script>
+<script defer src="js/03d-endgame-mechanics.js?v=28.15.1"></script>
+<script defer src="js/04-save.js?v=28.15.1"></script>
+<script defer src="js/05-game-data-state.js?v=28.15.1"></script>
+<script defer src="js/06-campaign.js?v=28.15.1"></script>
+<script defer src="js/07-tutorial.js?v=28.15.1"></script>
+<script defer src="js/08-profiles-stats.js?v=28.15.1"></script>
+<script defer src="js/09-battle-stats.js?v=28.15.1"></script>
+<script defer src="js/10-bots.js?v=28.15.1"></script>
+<script defer src="js/11-setup.js?v=28.15.1"></script>
+<script defer src="js/12-battle-ui.js?v=28.15.1"></script>
+<script defer src="js/13-battle-actions.js?v=28.15.1"></script>
+<script defer src="js/14-round-flow.js?v=28.15.1"></script>
+<script defer src="js/15-app.js?v=28.15.1"></script>
+<script defer src="js/16-audio.js?v=28.15.1"></script>
+<script defer src="js/18-attack-fx.js?v=28.15.1"></script>
+<script defer src="js/17-online-bridge.js?v=28.15.1"></script>
+<script defer src="js/19-build-integrity.js?v=28.15.1"></script>
+<script defer src="js/20-v276.js?v=28.15.1"></script>
+<script defer src="js/21-test-lab.js?v=28.15.1"></script>
+<script defer src="js/23-mastery.js?v=28.15.1"></script>
+<script defer src="js/24-ability-mastery-lab.js?v=28.15.1"></script>
+<script defer src="js/25-cloud-account.js?v=28.15.1"></script>
+<script defer src="js/42-supabase-account.js?v=28.15.1"></script>
+<script defer src="js/43-supabase-battle.js?v=28.15.1"></script>
+<script defer src="js/26-v28-ui.js?v=28.15.1"></script>
+<script defer src="js/27-v28-asset-polish.js?v=28.15.1"></script>
+<script defer src="js/28-v28-ui-rework.js?v=28.15.1"></script>
+<script defer src="js/29-v28-ui-phase1.js?v=28.15.1"></script>
+<script defer src="js/30-v28-ui-phase2.js?v=28.15.1"></script>
+<script defer src="js/31-v28-ui-phase4.js?v=28.15.1"></script>
+<script defer src="js/32-v28-ui-phase5.js?v=28.15.1"></script>
+<script defer src="js/33-v28-ui-phase6.js?v=28.15.1"></script>
+<script defer src="js/34-v28-ui-phase8.js?v=28.15.1"></script>
+<script defer src="js/36-emoji-sprite-pass.js?v=28.15.1"></script>
+<script defer src="js/37-duo-boss-rush.js?v=28.15.1"></script>
+<script defer src="js/39-campaign-world-themes.js?v=28.15.1"></script>
+<script defer src="js/44-trio-boss-rush.js?v=28.15.1"></script>
+<script defer src="js/45-kistentest.js?v=28.15.1"></script>
+<script defer src="js/46-shop-daten.js?v=28.15.1"></script>
+<script defer src="js/47-shop.js?v=28.15.1"></script>
+<script defer src="js/online-stats/01-contract.js?v=28.15.1"></script>
+<script defer src="js/online-stats/02-outbox.js?v=28.15.1"></script>
+<script defer src="js/online-stats/03-sync.js?v=28.15.1"></script>
+<script defer src="js/online-stats/04-collector.js?v=28.15.1"></script>
+<script defer src="js/online-stats/05-game.js?v=28.15.1"></script>
+<script defer src="js/online-stats/06-view.js?v=28.15.1"></script>
+<script defer src="js/35-boot-gate.js?v=28.15.1"></script>
+<script defer src="js/38-sw-register.js?v=28.15.1"></script>
 <!-- Modul zuletzt: der konfigurierbare Online-Transport laedt extern. -->
-<script type="module" src="js/online/01-online.js?v=28.15.0"></script>
+<script type="module" src="js/online/01-online.js?v=28.15.1"></script>
 </body>
 </html>

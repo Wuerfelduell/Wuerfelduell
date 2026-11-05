@@ -40,7 +40,7 @@ let absturz=null;
 async function seite(){
   const p=await browser.newPage({locale:'de-DE',viewport:{width:390,height:844},serviceWorkers:'block'});
   p.on('pageerror',e=>errors.push(e.message));
-  await p.goto(`http://127.0.0.1:${server.address().port}/index.html`);
+  await p.goto(`http://127.0.0.1:${server.address().port}/index.html?dev=1`);
   await p.waitForTimeout(400);
   return p;
 }

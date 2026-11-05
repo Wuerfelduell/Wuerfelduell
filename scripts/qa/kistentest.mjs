@@ -54,7 +54,7 @@ async function seite(opts={}){
   const p=await browser.newPage({locale:opts.locale||'de-DE',viewport:{width:opts.breite||390,height:opts.hoehe||844},serviceWorkers:'block',reducedMotion:opts.reduziert?'reduce':'no-preference'});
   p.on('pageerror',e=>errors.push(e.message));
   p.on('response',r=>{if(r.status()===404)vierhundertvier.push(new URL(r.url()).pathname);});
-  await p.goto(`http://127.0.0.1:${server.address().port}/index.html`);
+  await p.goto(`http://127.0.0.1:${server.address().port}/index.html?dev=1`);
   await p.waitForTimeout(500);
   return p;
 }

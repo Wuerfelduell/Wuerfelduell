@@ -441,7 +441,7 @@
     achievementToastBusy=true;
     const {profile,achievement}=achievementToastQueue.shift();
     const rewardParts=[];if(achievement.rewardDice)rewardParts.push(`${uiIcon("gameplay/dice.svg")} ${escapeHtml(DICE_DESIGNS[achievement.rewardDice]?.name||achievement.rewardDice)}`);if(achievement.rewardFx)rewardParts.push(`${uiIcon("gameplay/attack.svg")} ${escapeHtml(ATTACK_FX_STYLES[achievement.rewardFx]?.name||achievement.rewardFx)}`);const reward=rewardParts.length?`<div class="achievement-toast-reward">${rewardParts.join(" · ")} freigeschaltet!</div>`:"";
-    achievementToastLayer.innerHTML=`<div class="achievement-toast"><div class="achievement-toast-kicker">ACHIEVEMENT UNLOCKED</div><div class="achievement-toast-title">${uiIcon("gameplay/trophy.svg")} ${escapeHtml(achievement.name)}</div><div class="achievement-toast-profile">${escapeHtml(profile.name)} <span class="battle-tag">#${escapeHtml(profile.tagNumber)}</span></div>${reward}</div>`;
+    achievementToastLayer.innerHTML=`<div class="achievement-toast"><div class="achievement-toast-kicker">ACHIEVEMENT FREIGESCHALTET</div><div class="achievement-toast-title">${uiIcon("gameplay/trophy.svg")} ${escapeHtml(achievement.name)}</div><div class="achievement-toast-profile">${escapeHtml(profile.name)} <span class="battle-tag">#${escapeHtml(profile.tagNumber)}</span></div>${reward}</div>`;
     setTimeout(()=>{achievementToastLayer.innerHTML="";achievementToastBusy=false;showNextAchievementToast();},3250);
   }
 

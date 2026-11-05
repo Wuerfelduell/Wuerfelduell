@@ -202,3 +202,301 @@ html[data-v28-rework="2"] body #onlineScreen .screen-topbar .screen-title{
 @media (max-width:360px){
   html[data-v28-rework="2"] body #onlineScreen .online-beta-badge{width:46px;height:24px}
 }
+
+/* =====================================================================
+   UI-Check 04.11.2026 (Menü-Rundgang, 12-Zeichen-Namen, 320–1280 px).
+   Prüfstand: scripts/qa/ui-befunde.mjs, Nummern wie im Bericht.
+   ===================================================================== */
+
+/* ---- 1 · Siegerzeile: ein 12-Zeichen-Name passt in das Fenster ----
+   clamp(28px,8vw,44px) machte „WWWWWWWWWWWW gewinnt“ bei 390 px 412 px
+   breit, das Fenster hat innen 330 px. Kleinere Stufe, und als letzte
+   Sicherung darf ein einzelnes überlanges Wort umbrechen statt hinauszulaufen. */
+html[data-v28-rework="2"] body #winnerBox .winner{
+  font-size:clamp(20px,6.2vw,40px);
+  overflow-wrap:anywhere;
+}
+
+/* ---- 2 · Match Awards bleiben in ihrer Karte ----
+   Das innere Raster der Karte wuchs auf die Breite des längsten Namens
+   (206 px in einer 153-px-Karte). Eine Spalte, die mitschrumpft; Namen
+   enden mit „…“ wie in den Runden-Stats, Titel brechen zwischen Wörtern. */
+html[data-v28-rework="2"] body #winnerBox .v276-award{
+  grid-template-columns:minmax(0,1fr);
+  min-width:0;
+}
+html[data-v28-rework="2"] body #winnerBox .v276-award > *{min-width:0}
+html[data-v28-rework="2"] body #winnerBox .v276-award strong{
+  font-size:14px;
+  line-height:1.2;
+  overflow-wrap:anywhere;
+}
+html[data-v28-rework="2"] body #winnerBox .v276-award span{
+  overflow:hidden;
+  white-space:nowrap;
+  text-overflow:ellipsis;
+}
+
+/* ---- 3 · „Nächste Runde“ einzeilig ----
+   Der Goldknopf hat 38 px Rahmenpolster je Seite; in der halben Zeile
+   blieben 99 px für 125 px Text. Der Text bleibt einzeilig, und reicht die
+   Zeile nicht für beide Knöpfe, steht jeder Knopf in voller Breite. */
+html[data-v28-rework="2"] body #winnerBox .controls{
+  flex-wrap:wrap;
+  gap:8px;
+}
+html[data-v28-rework="2"] body #winnerBox .controls > button{
+  flex:1 1 auto;
+  white-space:nowrap;
+}
+html[data-v28-rework="2"] body #winnerBox .controls #nextRoundPrepBtn{
+  padding-left:26px;
+  padding-right:26px;
+}
+
+/* ---- 4 · Achievement-Hinweis verdeckt das Ergebnis nicht ----
+   Oben mittig lag er genau auf Kopfband und Siegerzeile. Solange die
+   Auswertung offen ist, erscheint er am unteren Rand (dort liegt die
+   lange Auswertung erst nach dem Scrollen), auf breiten Bildschirmen
+   rechts neben dem Fenster. */
+html[data-v28-rework="2"] body:has(#winnerBox:not(.hidden)) #achievementToastLayer{
+  top:auto;
+  bottom:max(14px,env(safe-area-inset-bottom));
+}
+@media (min-width:1200px){
+  html[data-v28-rework="2"] body:has(#winnerBox:not(.hidden)) #achievementToastLayer{
+    top:14px;
+    bottom:auto;
+    left:auto;
+    right:24px;
+    transform:none;
+    width:300px;
+  }
+}
+
+/* ---- 5 · Kampagnen-Auswahl: eine Spalte auf jeder Breite ----
+   Ab 541 px standen die drei Karten nebeneinander, je 150 px breit, mit
+   62-px-Symbol und 42 px Rahmenpolster: „Solo“ lief über den rechten Rand,
+   „1 Spieler“ brach um. Am Handy sind die Karten schon untereinander; der
+   Dialog ist auch am PC schmal genug, dass das dort genauso gut aussieht. */
+html[data-v28-rework="2"] body .campaign-mode-panel .campaign-mode-grid{
+  grid-template-columns:minmax(0,1fr);
+}
+
+/* ---- 6 · Kampflog und Infos: Label im Kopfband wie beim Verlassen-Dialog ----
+   Gleicher Rahmen, aber nur der Verlassen-Dialog hatte das Label ins Band
+   gerückt; bei Kampflog und Infos saß es 6 px zu hoch und wurde oben
+   vom Bildrand gekappt. */
+html[data-v28-rework="2"] body #battleSheetOverlay .utility-kicker{
+  margin:-38px 0 39px;
+  line-height:1;
+  text-align:center;
+  transform:translateY(11px);
+}
+
+/* ---- 7 · Verlassen-Dialog: Knöpfe bleiben im Rahmen ----
+   Zwei Spalten mit einzeiligen Beschriftungen brauchen 271 px, bei 320 px
+   hat der Dialog innen 249 px. Unter 360 px stehen die Knöpfe untereinander. */
+@media (max-width:359px){
+  html[data-v28-rework="2"] body #quitModal .utility-actions{
+    grid-template-columns:minmax(0,1fr);
+  }
+}
+
+/* ---- 6b · Label im Kopfband: in jedem Dialog mit demselben Rahmen gleich hoch ----
+   Alle diese Dialoge tragen dasselbe Rahmenbild (modal-popup), ihre Labels lagen aber
+   zwischen 20 und 42 px unter der Oberkante; nur der Verlassen-Dialog
+   (26 px am Handy, 32 px ab 541 px) sitzt mittig im Band. Darüber wurde
+   „Runde beendet“, „Tutorial“ und die Würfelfenster oben gekappt,
+   „Boss besiegt“ hing unter dem Band. Verschoben wird nur das Bild
+   (translate), der Inhalt darunter bleibt, wo er ist. */
+html[data-v28-rework="2"] body :is(.special-roll-kicker,.gambling-kicker){translate:0 8px}
+html[data-v28-rework="2"] body .second-ability-kicker{translate:0 -4px}
+html[data-v28-rework="2"] body :is(#duoBossRushRewardModal,#trioBossRushRewardModal) .utility-kicker{translate:0 -10px}
+html[data-v28-rework="2"] body :is(#tutorialModal,#testLabAbilityModal) .utility-kicker{translate:0 10px}
+html[data-v28-rework="2"] body .round-overlay-kicker{translate:0 9px}
+@media (max-width:540px){
+  html[data-v28-rework="2"] body :is(.special-roll-kicker,.gambling-kicker){translate:0 4px}
+  html[data-v28-rework="2"] body :is(#duoBossRushRewardModal,#trioBossRushRewardModal) .utility-kicker{translate:0 -14px}
+  html[data-v28-rework="2"] body :is(#tutorialModal,#testLabAbilityModal) .utility-kicker{translate:0 6px}
+  html[data-v28-rework="2"] body .round-overlay-kicker{translate:0 5px}
+}
+
+/* ---- 8 · Account: Text bleibt frei von Rahmen und Schmuckstein ----
+   „Verbindung“ und sein Wert standen nebeneinander; bei 320 px lief der
+   dreizeilige Wert bis in den Goldrand. Jetzt wie jede andere Karte:
+   Überschrift, darunter der Text. Die Kartenüberschriften lagen 21 px
+   unter der Oberkante und damit unter dem Zier-Diamanten des Rahmens
+   (siehe 32-nachtraege.css); sie rücken unter ihn. */
+html[data-v28-rework="2"] body #accountScreen .cloud-status-card{
+  display:grid;
+  gap:4px;
+  justify-items:start;
+  text-align:left;
+}
+html[data-v28-rework="2"] body #accountScreen .cloud-status-card > *{min-width:0;max-width:100%}
+html[data-v28-rework="2"] body :is(#accountScreen .cloud-card-title,#accountScreen .cloud-status-card > strong,#onlineScreen .online-card-title){
+  padding-top:12px;
+}
+
+/* ---- 9 · Spielerprofile: Name in einer Zeile ----
+   Neben der Trophäenzahl blieben dem Namen bei 320 px 88 px; zwölf
+   Zeichen brachen auf drei Zeilen um. Auf Telefonen bekommt der Name die
+   volle Kartenbreite, die Trophäen rücken in die Zeile darunter, und was
+   dann noch nicht passt, endet mit „…“. */
+html[data-v28-rework="2"] body #profilesScreen .profile-name-line{min-width:0;flex-wrap:wrap;column-gap:6px}
+html[data-v28-rework="2"] body #profilesScreen .profile-name-text{
+  min-width:0;
+  max-width:100%;
+  overflow:hidden;
+  white-space:nowrap;
+  text-overflow:ellipsis;
+}
+@media (max-width:420px){
+  html[data-v28-rework="2"] body #profilesScreen .profile-head-copy{grid-template-columns:minmax(0,1fr)}
+  html[data-v28-rework="2"] body #profilesScreen .profile-head-primary{min-width:0}
+  html[data-v28-rework="2"] body #profilesScreen .profile-trophy{justify-self:start}
+}
+
+/* ---- 12 · Duo/Trio-Kampagne auf Telefonen ----
+   Welt-Banner: vier Zeilen Beschreibung reichten bis in den Edelstein der
+   unteren Goldschiene. Unten mehr Polster; das Banner wird dafür bei
+   Bedarf etwas höher (leichte Streckung des Rahmens ist akzeptiert).
+   Teamzeile: lag 8 px neben dem Goldrand, die Überschrift „Team“ darüber
+   hält 14 px. Auswahlfelder: zwei Spalten ließen bei 390 px 60 px für
+   „WWWWWWWWWWWW“ oder „1 · Brutale Einsen“; unter 430 px eine Spalte.
+   Ohne Seitenverhältnis wächst das Banner mit dem Text: eine feste
+   Mindesthöhe allein hob das „min-content“ auf, und mit breiteren
+   Systemschriften (DejaVu auf dem CI-Runner, Roboto auf Android) lief der
+   Text oben und unten hinaus. Weil der Rahmen mitgestreckt wird, ist das
+   Polster so bemessen, dass er auch bei 130 px Höhe frei bleibt. */
+@media (max-width:540px){
+  html[data-v28-rework="2"] body .campaign-hub .campaign-world-desc{
+    aspect-ratio:auto;
+    min-height:110px;
+    padding:22px 22px 40px;
+  }
+}
+html[data-v28-rework="2"] body .campaign-hub .campaign-top .menu-info-card{
+  padding-left:16px!important;
+  padding-right:16px!important;
+}
+@media (max-width:430px){
+  html[data-v28-rework="2"] body .campaign-hub .campaign-controls{grid-template-columns:minmax(0,1fr)}
+}
+
+/* ---- 11 · „ist dran“ bleibt sichtbar ----
+   Die Zeile kürzte als Ganzes: bei 320 px und zwölf Zeichen stand dort
+   „Ömer-Çağlarß is…“. Jetzt kürzt nur der Name, der Rest bleibt stehen;
+   die Bot-Stufe darf als Letztes weichen. */
+html[data-v28-rework="2"] body .turn-head .turnline:has(.turn-name){
+  display:flex;
+  align-items:baseline;
+  gap:.3em;
+}
+html[data-v28-rework="2"] body .turn-head .turnline .turn-name{
+  min-width:2.5em;
+  flex:0 1 auto;
+  overflow:hidden;
+  white-space:nowrap;
+  text-overflow:ellipsis;
+}
+html[data-v28-rework="2"] body .turn-head .turnline .turn-rest{
+  flex:none;
+  white-space:nowrap;
+}
+html[data-v28-rework="2"] body .turn-head .turnline .turn-bot{
+  flex:0 1000 auto;
+  min-width:0;
+  overflow:hidden;
+  white-space:nowrap;
+  text-overflow:ellipsis;
+}
+
+/* ---- 10 · Spiel vorbereiten bei 320 px ----
+   Vier Felder in zwei Spalten ließen jedem Feld 21 px Text: „Pr…“, „W…“,
+   „U…“. Unter 361 px eine Spalte; die Beschriftung darf dann zweizeilig
+   werden, statt mitten im Profilnamen abzubrechen. */
+@media (max-width:360px){
+  html[data-v28-rework="2"] body #setup .setup-grid{grid-template-columns:minmax(0,1fr)}
+  html[data-v28-rework="2"] body #setup .setup-grid .dd-select-trigger,
+  html[data-v28-rework="2"] body #setup .local-mode-card .dd-select-trigger{
+    height:auto;
+    min-height:44px;
+  }
+  html[data-v28-rework="2"] body #setup :is(.setup-grid,.local-mode-card) .dd-select-trigger>span{
+    font-size:11px;
+    letter-spacing:-.04em;
+    line-height:1.15;
+    white-space:normal;
+    overflow-wrap:break-word;
+    text-overflow:clip;
+  }
+}
+
+/* ---- 13 · Einstellungen: Pfeil rechts auch ohne Symbol ----
+   Das Musik-Feld hat als einziges kein Symbol. Im dreispaltigen Raster
+   (Symbol · Text · Pfeil) rutschte „An“ in die Symbolspalte und der Pfeil
+   in die Textspalte, direkt neben das Wort. */
+html[data-v28-rework="2"] body #settingsScreen .dd-select-trigger:not(:has(> .dd-trigger-icon))>span{
+  grid-column:1 / span 2;
+}
+
+/* ---- 14 · Shop: Artikelnamen brechen nicht mitten im Wort ----
+   20 px Serif in einer 120 px breiten Karte: „Quantenspru / ng“,
+   „Sternenschmie / de“. Auf Telefonen kleiner, damit ein Wort in eine
+   Zeile passt; Namen mit Bindestrich oder Leerzeichen brechen dort. */
+@media (max-width:420px){
+  html[data-v28-rework="2"] body #prestigeShopScreen .prestige-item-name{
+    font-size:clamp(13px,4.2vw,17px);
+    letter-spacing:-.01em;
+    overflow-wrap:break-word;
+  }
+}
+
+/* ---- 15 · Shop-Hinweis lesbar ----
+   Hellorange (#ffd9a0) auf einem durchscheinenden Braun, das über dem
+   Elfenbein der Karte fast weiß wird: 1,7:1. Dunkle Schrift auf einem
+   hellen Bernsteinton, gleicher gestrichelter Rand. */
+html[data-v28-rework="2"] body #prestigeShopScreen .shop-hinweis{
+  background:rgba(214,150,60,.16);
+  border-color:rgba(165,98,20,.55);
+  color:#6a3a0c;
+}
+
+/* ---- 16 · Fähigkeitenstatistik: lesbarer Tabellenkopf ----
+   8,25 px Kopfzeile und „Fähigkeit“ direkt an der linken Kante des
+   dunklen Kopfbalkens. */
+html[data-v28-rework="2"] body #statsScreen .ability-stat-row{
+  padding-left:8px;
+  padding-right:4px;
+}
+html[data-v28-rework="2"] body #statsScreen .ability-stat-row.header span{
+  font-size:10px;
+  letter-spacing:-.03em;
+}
+
+/* ---- 17 · „Local-Modus“ unter dem Zier-Diamanten ----
+   Die Überschrift lag 11 px unter der Oberkante, genau dort, wo das
+   Kartenbild oben mittig seinen Diamanten trägt („Local-Mo◆dus“). */
+html[data-v28-rework="2"] body #setup .local-mode-card{
+  padding-top:24px!important;
+}
+
+/* ---- 18 · Bildschirmtitel einzeilig bei 320 px ----
+   „Spiel vorbereiten“, „Solo-Kampagne“, „Alle Fähigkeiten“ brauchen bei
+   21 px 138–146 px, neben Zurück-Knopf und Symbol blieben 124 px. Unter
+   341 px auf allen Bildschirmen gleich: Titel 19 px, Symbol 28 px,
+   Abstände 6 px. Der Zurück-Knopf bleibt 50 px. */
+@media (max-width:340px){
+  html[data-v28-rework="2"] body :is(#setup,.screen-card) .screen-topbar{gap:6px!important}
+  html[data-v28-rework="2"] body :is(#setup,.screen-card) .screen-topbar .screen-title-icon{
+    width:28px!important;
+    height:28px!important;
+    flex:0 0 28px!important;
+  }
+  html[data-v28-rework="2"] body :is(#setup,.screen-card) .screen-topbar :is(h2,.screen-title){
+    font-size:19px!important;
+    letter-spacing:-.01em;
+  }
+}
